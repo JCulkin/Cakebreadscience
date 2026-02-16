@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Car - DeLorean Race</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0014 0%, #1a0033 100%);
+            color: #00ffff;
+            overflow: hidden;
+        }
+        
+        .nav-links {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-links a {
+            color: #00ffff;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid #00ffff;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(0, 255, 255, 0.3);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        
+        #game-canvas {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="../index.html">← Home</a>
+        <a href="../highscores.html">🏆 High Scores</a>
+    </div>
+    
+    <div id="game-canvas"></div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCuVPaA6drzbiSexez5cXct2SbQMb68kd4",
+            authDomain: "elevenstudents-76f31.firebaseapp.com",
+            databaseURL: "https://elevenstudents-76f31-default-rtdb.firebaseio.com",
+            projectId: "elevenstudents-76f31",
+            storageBucket: "elevenstudents-76f31.appspot.com",
+            messagingSenderId: "431199775636",
+            appId: "1:431199775636:web:4bd24fabc5b9fe84b70d63"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        /**
+         * DELOREAN AZUL DETALLADO
+         * [8] - PAUSA / REANUDAR (Para ir a comer)
+         * [9] - Cubos rojos medianos (20s)
+         * [FLECHAS IZQ/DER] - Movimiento lateral en 1ª Persona
+         */
+
+        let carY = 0, carVy = 0, carZ = 0;
+        let gravity = 0.6, glideGravity = 0.08;
+        let speed = 12, roadX = 0;
+        let obstacles = [], bolts = [], targets = [], rays = [], particles = [];
+        let gameState = 'PLAY';
+        let isPaused = false; // Nueva variable de pausa
+        let isGliding = false, isFlying = false;
+        let difficulty = 2;
+        let levelColors = [];
+        let lastCamChange = 0;
+        let camMode = 0;
+        let waveTimer = 0, waveActive = false;
+        let pauseStartTime = 0; // Para no perder el tiempo de los 20s al pausar
+        let score = 0;
+        let startTime = 0;
+
+
+        function setup() {
+          let canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+          canvas.parent('game-canvas');
+          smooth();
+          levelColors = [
+            { bg: color(10, 0, 20), road: color(0, 255, 255), obs: color(255, 0, 150) },
+            { bg: color(30, 0, 0), road: color(255, 100, 0), obs: color(255, 0, 0) },
+            { bg: color(0, 30, 0), road: color(0, 255, 0), obs: color(0, 0, 255) }  
+          ];
+          lastCamChange = millis();
+          startTime = millis();
+        }
+
+
+        function draw() {
+          if (gameState === 'PLAY') {
+            if (!isPaused) {
+              updateCamera();
+              playGame();
+              score = floor((millis() - startTime) / 1000);
+            } else {
+              showPauseScreen(); // Mostrar pantalla de pausa
+            }
+          } else if (gameState === 'GAMEOVER') {
+            showGameOver();
+          }
+        }
+
+
+        function updateCamera() {
+          if (millis() - lastCamChange > 20000) {
+            camMode = camMode === 0 ? 1 : 0;
+            lastCamChange = millis();
+            if(camMode === 0) carZ = 0;
+          }
+          if (camMode === 0) {
+            camera(0, -130, 850, 0, -60, 0, 0, 1, 0);
+          } else {
+            camera(-30, carY - 20, carZ, 500, carY - 20, carZ, 0, 1, 0);
+            if (keyIsDown(LEFT_ARROW)) carZ -= 5;
+            if (keyIsDown(RIGHT_ARROW)) carZ += 5;
+            carZ = constrain(carZ, -160, 160);
+          }
+        }
+
+
+        function playGame() {
+          let colors = levelColors[difficulty - 1];
+          background(red(colors.bg), green(colors.bg), blue(colors.bg));
+          ambientLight(50);
+          pointLight(255, 255, 255, 0, -200, 400);
+
+          let headLightY = carY + 30;
+          spotLight(255, 255, 220, 110, headLightY, carZ, 1, 0, 0, PI/3, 2);
+
+          drawEnvironment(colors);
+          handlePhysics();
+          handleCombatWave();
+          drawElectricBolts();
+          drawTheDeLoreanExactBlue(colors);
+          handleObstacles(colors);
+          handleShooting();
+          drawParticles();
+        }
+
+
+        function showPauseScreen() {
+          background(0, 0, 50, 100); // Fondo azul muy oscuro semitransparente
+          fill(255, 255, 0);
+          textAlign(CENTER);
+          textSize(50);
+          text("PAUSA", 0, -20);
+          textSize(20);
+          text("TECLA [8] PARA CONTINUAR COMIENDO... DIGO, JUGANDO", 0, 40);
+        }
+
+
+        function drawTheDeLoreanExactBlue(colors) {
+          push();
+          translate(0, carY + 30, carZ);
+          if(isGliding || isFlying) rotateZ(sin(frameCount * 0.1) * 0.05);
+
+          specularMaterial(0, 100, 255);
+          shininess(220);
+          stroke(0, 50, 150, 100);
+          strokeWeight(0.5);
+          box(210, 18, 90);
+
+          push();
+          translate(-10, -16, 0);
+          fill(10, 25, 60);
+          box(100, 18, 75);
+          translate(0, -9, 0);
+          box(70, 2, 60);
+          pop();
+
+          push(); translate(105, -2, 0); emissiveMaterial(255, 255, 200);
+          push(); translate(0, 0, 30); sphere(7); pop();
+          push(); translate(0, 0, -30); sphere(7); pop(); pop();
+
+          push(); translate(-90, -15, 0); fill(20, 40, 80); stroke(0);
+          push(); translate(0, 0, 28); box(40, 50, 35); pop();
+          push(); translate(0, 0, -28); box(40, 50, 35); pop();
+          translate(-18, 10, 0); emissiveMaterial(0, 200, 255); noStroke(); sphere(15); pop();
+         
+          push(); noFill(); stroke(0, 150, 255); strokeWeight(2.5);
+          line(100, 0, 47, -90, -5, 47); line(100, 0, -47, -90, -5, -47); pop();
+         
+          drawWheels(colors);
+          pop();
+        }
+
+
+        function drawWheels(colors) {
+          let wheelSpin = frameCount * (speed * 0.06);
+          let targetRot = (isGliding || isFlying) ? HALF_PI : 0;
+          let positions = [{x: -75, z: 58}, {x: 85, z: 58}, {x: -75, z: -58}, {x: 85, z: -58}];
+          positions.forEach(pos => {
+            push(); translate(pos.x, 18, pos.z); rotateX(targetRot); if(!(isGliding || isFlying)) rotateZ(wheelSpin);
+            fill(10); stroke(0, 120, 255); strokeWeight(2); torus(20, 9);
+            fill(100, 200, 255); noStroke(); sphere(8); pop();
+          });
+        }
+
+
+        function handleCombatWave() {
+          if (waveActive) {
+            if (millis() < waveTimer) {
+              if (frameCount % 25 == 0) targets.push({ x: 1600, y: random(-230, 40), z: random(-180, 180), size: 65 });
+            } else { waveActive = false; }
+          }
+          for (let i = targets.length - 1; i >= 0; i--) {
+            let t = targets[i]; t.x -= speed + 5;
+            push(); translate(t.x, t.y, t.z); emissiveMaterial(255, 0, 0); box(t.size); pop();
+            for (let j = rays.length - 1; j >= 0; j--) {
+              let r = rays[j];
+              if (dist(r.x, r.y, r.z, t.x, t.y, t.z) < 75) {
+                explode(t.x, t.y, t.z); targets.splice(i, 1); rays.splice(j, 1); break;
+              }
+            }
+            if (t && t.x < -1600) targets.splice(i, 1);
+          }
+        }
+
+
+        function handleShooting() {
+          for (let i = rays.length - 1; i >= 0; i--) {
+            let r = rays[i]; r.x += 65;
+            push(); translate(r.x, r.y, r.z); emissiveMaterial(0, 255, 255); box(75, 10, 10); pop();
+            if (r.x > 1600) rays.splice(i, 1);
+          }
+        }
+
+
+        function handlePhysics() {
+          isFlying = keyIsDown(51); // 3
+          isGliding = keyIsDown(32) && carY < 0;
+          if (isFlying) {
+            carY = lerp(carY, -135, 0.04); speed = lerp(speed, 22, 0.05); carVy = 0;
+          } else {
+            let curGrav = isGliding ? glideGravity : gravity;
+            carY += carVy;
+            if (carY < 0) carVy += curGrav; else { carY = 0; carVy = 0; }
+            speed = lerp(speed, 12, 0.05);
+          }
+        }
+
+
+        function handleObstacles(colors) {
+          if (frameCount % 80 == 0) obstacles.push({ x: 1600, h: random(60, 140), z: 0 });
+          for (let i = obstacles.length - 1; i >= 0; i--) {
+            let o = obstacles[i]; o.x -= speed;
+            push(); translate(o.x, 90 - o.h/2, o.z); fill(red(colors.obs), green(colors.obs), blue(colors.obs)); box(80, o.h, 180); pop();
+            if (o && !isFlying && o.x > -80 && o.x < 80 && carY > (90 - o.h - 40) && abs(carZ - o.z) < 95) gameState = "GAMEOVER";
+            if (o && o.x < -1600) obstacles.splice(i, 1);
+          }
+        }
+
+
+        function drawEnvironment(colors) {
+          roadX -= speed;
+          push(); translate(0, 90, 0); rotateX(HALF_PI);
+          stroke(red(colors.road), green(colors.road), blue(colors.road), 150); strokeWeight(2);
+          for(let i = -2000; i < 2000; i += 100) { line(i + (roadX % 100), -400, i + (roadX % 100), 400); }
+          pop();
+        }
+
+
+        function explode(x, y, z) {
+          for(let p=0; p<10; p++) particles.push({x, y, z, vx: random(-6,6), vy: random(-6,6), life: 255});
+        }
+
+
+        function drawParticles() {
+          for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 12;
+            push(); translate(p.x, p.y, p.z); fill(255, 100, 0, p.life); box(6); pop();
+            if (p.life <= 0) particles.splice(i, 1);
+          }
+        }
+
+
+        function drawElectricBolts() {
+          if (frameCount % 8 === 0) bolts.push({ y: carY + 30, z: carZ, life: 255 });
+          for (let i = bolts.length - 1; i >= 0; i--) {
+            let b = bolts[i]; stroke(0, 255, 255, b.life); line(-60, b.y, b.z, 60, b.y, b.z);
+            b.life -= 20; if (b.life <= 0) bolts.splice(i, 1);
+          }
+        }
+
+
+        function keyPressed() {
+          // TECLA 8 - PAUSA
+          if (keyCode === 56) {
+            isPaused = !isPaused;
+            if (isPaused) {
+              pauseStartTime = millis();
+            } else {
+              // Ajustar temporizadores para que no cuenten durante la pausa
+              let pauseDuration = millis() - pauseStartTime;
+              lastCamChange += pauseDuration;
+              startTime += pauseDuration;
+              if (waveActive) waveTimer += pauseDuration;
+            }
+          }
+
+          if (!isPaused) {
+            if (keyCode === 32 && carY >= 0) carVy = -16;
+            if (keyCode === 49) rays.push({ x: 100, y: carY + 30, z: carZ });
+            if (keyCode === 57) { waveActive = true; waveTimer = millis() + 20000; }
+          }
+
+          if (gameState === 'GAMEOVER' && keyCode === 32) {
+            gameState = 'PLAY'; obstacles = []; targets = []; rays = []; carY = 0; carZ = 0;
+            lastCamChange = millis(); camMode = 0; waveActive = false; isPaused = false;
+            startTime = millis(); score = 0;
+          }
+        }
+
+
+        function showGameOver() {
+          background(0);
+          fill(255, 0, 0);
+          textAlign(CENTER);
+          textSize(40);
+          text("OUTATIME", 0, -40);
+          textSize(30);
+          fill(0, 255, 255);
+          text("Score: " + score, 0, 20);
+          textSize(20);
+          fill(255);
+          text("ESPACIO PARA REINTENTAR", 0, 80);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organisms Gallery</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #222;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.4em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            color: #f3f3f3;
+        }
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin: 18px auto;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            max-width: 1200px;
+        }
+        .section h2 {
+            font-size: 1.6em;
+            margin-bottom: 14px;
+            color: #333;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+        .card {
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 10px;
+            text-align: center;
+            background: #fafafa;
+        }
+        .organism-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            border-radius: 10px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .common-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .scientific-name {
+            font-style: italic;
+            color: #666;
+        }
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧬 Organisms Gallery</h1>
+        <div class="subtitle">All organisms by kingdom (British common names when available)</div>
+    </div>
+
+    <div id="content" class="loading">Loading organisms…</div>
+
+    <script src="organisms_data.js"></script>
+    <script src="organisms_images.js"></script>
+    <script>
+        const placeholderUrl = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Crect fill='%23ddd' width='320' height='320'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='14'%3ENo image%3C/text%3E%3C/svg%3E`;
+        const imageFolder = 'images';
+        const imageMap = window.organismImages || {};
+
+        function buildLocalData(organism) {
+            const fileName = imageMap[organism.scientific];
+            return {
+                photoUrl: fileName ? `${imageFolder}/${fileName}` : placeholderUrl,
+                commonName: organism.common,
+                scientificName: organism.scientific,
+                taxonId: null
+            };
+        }
+
+        function createCard(org, makeLink = false) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${org.photoUrl}" alt="${org.commonName}" class="organism-image"
+                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22320%22%3E%3Crect fill=%22%23ddd%22 width=%22320%22 height=%22320%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2214%22%3ENo image%3C/text%3E%3C/svg%3E';">
+                <div class="common-name">${org.commonName}</div>
+                <div class="scientific-name">${org.scientificName}</div>
+            `;
+            if (!makeLink) {
+                return card;
+            }
+            const link = document.createElement('a');
+            link.className = 'card-link';
+            link.href = org.taxonId ? `https://www.inaturalist.org/taxa/${org.taxonId}` : `https://www.inaturalist.org/taxa/search?q=${encodeURIComponent(org.scientificName)}`;
+            link.target = '_blank';
+            link.rel = 'noopener';
+            link.appendChild(card);
+            return link;
+        }
+
+        async function renderAll() {
+            const content = document.getElementById('content');
+            content.className = '';
+            content.innerHTML = '';
+
+            const sections = [
+                { key: 'animals', title: 'Animals' },
+                { key: 'plants', title: 'Plants' },
+                { key: 'fungi', title: 'Fungi' },
+                { key: 'bacteria', title: 'Bacteria' },
+                { key: 'protoctists', title: 'Protoctists' }
+            ];
+
+            for (const section of sections) {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'section';
+                wrapper.innerHTML = `<h2>${section.title}</h2>`;
+
+                const grid = document.createElement('div');
+                grid.className = 'grid';
+                wrapper.appendChild(grid);
+                content.appendChild(wrapper);
+
+                for (let i = 0; i < sectionOrganisms[section.key].length; i++) {
+                    const organism = sectionOrganisms[section.key][i];
+                    const data = buildLocalData(organism);
+                    const makeLink = true;
+                    grid.appendChild(createCard(data, makeLink));
+                }
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderAll();
+        });
+    </script>
+</body>
+</html>

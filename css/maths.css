@@ -1,0 +1,132 @@
+/* Maths Worksheet Styles - Subject-Specific Overrides */
+@import url('./worksheet.css');
+
+/* Maths Color Scheme */
+:root {
+    --primary-color: #2c3e50;
+    --primary-light: #7f8c8d;
+    --accent-color: #3498db;
+    --accent-light: #ecf0f1;
+    --accent-lighter: #fafafa;
+    --border-color: #bdc3c7;
+}
+
+.header {
+    border-bottom-color: var(--accent-color);
+}
+
+.header::before {
+    content: "🧮";
+}
+
+.spec-ref {
+    color: var(--primary-color);
+    top: 10px;
+    font-size: 8.5pt;
+}
+
+h1 {
+    color: var(--primary-color);
+}
+
+.subtitle {
+    color: var(--primary-light);
+}
+
+h2 {
+    background: var(--accent-light);
+    border-left-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+h2.maths-section {
+    border-left-color: #e74c3c;
+}
+
+h2.science-section {
+    border-left-color: #27ae60;
+}
+
+h2.physics-section {
+    border-left-color: #f39c12;
+}
+
+h2.chemistry-section {
+    border-left-color: #e74c3c;
+}
+
+h2.biology-section {
+    border-left-color: #27ae60;
+}
+
+.question-number {
+    color: var(--primary-color);
+}
+
+.q-num {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 1px solid #999;
+    text-align: center;
+    line-height: 24px;
+    margin-right: 6px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.answer-space {
+    border-color: var(--border-color);
+    background: var(--accent-lighter);
+}
+
+.definition-box {
+    background: #e8f4f8;
+    border-left-color: var(--accent-color);
+}
+
+.definition-box strong {
+    color: var(--primary-color);
+}
+
+.marks {
+    color: #e74c3c;
+}
+
+.venn-space,
+.diagram-box,
+.grid-space {
+    border-color: var(--accent-color);
+    background: white;
+}
+
+.grid-space {
+    background: 
+        repeating-linear-gradient(0deg, #f0f0f0 0px, #f0f0f0 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(90deg, #f0f0f0 0px, #f0f0f0 1px, transparent 1px, transparent 20px);
+}
+
+.instruction {
+    color: var(--primary-light);
+}
+
+.info-item {
+    border-bottom-color: var(--border-color);
+}
+
+table {
+    border-color: var(--border-color);
+}
+
+th, td {
+    border-color: var(--border-color);
+}
+
+th {
+    background: var(--accent-light);
+    color: var(--primary-color);
+}
+
+.mark-scheme {
+    border-top-color: var(--accent-color);
+}

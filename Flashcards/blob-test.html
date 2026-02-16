@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blob Testing Ground</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        .layout {
+            display: flex;
+            gap: 30px;
+            max-width: 900px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        /* Pet House */
+        .pet-house {
+            width: 240px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            padding: 14px 16px 16px;
+            text-align: center;
+            position: sticky;
+            top: 30px;
+            overflow: hidden;
+        }
+
+        .pet-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 8px;
+            font-size: 0.75em;
+            color: #888;
+        }
+        .pet-stats .stat-val { font-weight: 700; font-size: 1.3em; color: #667eea; display: block; }
+        .pet-stats .stat-val.streak-color { color: #f39c12; }
+
+        .pet-room {
+            position: relative;
+            border-radius: 12px;
+            padding: 8px 6px 4px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: background 0.4s ease;
+            border: 2px solid #eef0f4;
+        }
+
+        .pet-room .deco { position: absolute; z-index: 4; width: 36px; height: 44px; }
+        .pet-room .deco-left { left: 4px; bottom: 6px; }
+        .pet-room .deco-right { right: 4px; bottom: 6px; }
+        .pet-room .deco svg { width: 100%; height: 100%; }
+
+        .pet-room .pet-roof {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 32px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .pet-room .pet-roof svg { width: 100%; height: 100%; }
+
+        /* Floor SVG overlay */
+        .pet-room .floor-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .pet-room .floor-overlay svg { width: 100%; height: 100%; }
+
+        /* Blob shadow */
+        .blob-shadow {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 12px;
+            background: radial-gradient(ellipse, rgba(0,0,0,0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .pet-house .pet-stage-name {
+            font-size: 0.8em;
+            font-weight: 700;
+            color: #667eea;
+            margin-top: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pet-house .pet-label {
+            font-size: 0.7em;
+            color: #aaa;
+            margin-top: 2px;
+        }
+
+        .hungry-indicator {
+            display: none;
+            font-size: 1.3em;
+            animation: hungryPulse 1.5s ease-in-out infinite;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+        .pet-house.blob-hungry .hungry-indicator { display: block; }
+
+        @keyframes hungryPulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+
+        .pet-svg-wrap {
+            animation: petBounce 2.5s ease-in-out infinite;
+            position: relative;
+            z-index: 3;
+        }
+
+        @keyframes petBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .pet-svg-wrap .eyes {
+            animation: petBlink 4s ease-in-out infinite;
+        }
+
+        @keyframes petBlink {
+            0%, 42%, 46%, 100% { transform: scaleY(1); }
+            44% { transform: scaleY(0.05); }
+        }
+
+        /* Mood */
+        .mouth-sad { display: none; }
+        .pet-house.blob-hungry .mouth-happy { display: none; }
+        .pet-house.blob-hungry .mouth-sad { display: block; }
+
+        /* Feed animation */
+        .feed-float {
+            position: absolute;
+            font-size: 1.8em;
+            z-index: 10;
+            animation: feedFloat 1s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes feedFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(0.5); opacity: 0; }
+        }
+
+        /* Accessory tier effects */
+        .acc-group { display: none; }
+        .acc-group.active { display: block; }
+        .acc-group.tier-bronze { opacity: 0.85; }
+        .acc-group.tier-silver { opacity: 1; }
+        .acc-group.tier-gold { opacity: 1; filter: drop-shadow(0 0 3px rgba(218, 165, 32, 0.6)); }
+
+        /* Stage groups */
+        .pet-stage { display: none; }
+        .pet-stage.active { display: block; }
+        .pet-stage.stage-master.active { filter: drop-shadow(0 0 6px rgba(102, 126, 234, 0.5)); }
+
+        /* House floor styles */
+        .pet-room.floor-grass { background: linear-gradient(to top, #8bc97e 0%, #b5e4a8 20%, #d4f5d0 35%, transparent 55%); }
+        .pet-room.floor-wood { background: linear-gradient(to top, #b8875a 0%, #d4a574 15%, #e8cfa8 30%, transparent 50%); }
+
+        /* House background styles */
+        .pet-room.bg-clouds { background: linear-gradient(180deg, #c5e3f6 0%, #e8f4fd 40%, #f0f8ff 100%); }
+        .pet-room.bg-stars { background: linear-gradient(180deg, #1a1a3e 0%, #2d2d5e 50%, #3d3d6e 100%); }
+        .pet-room.bg-night { background: linear-gradient(180deg, #0a0e2a 0%, #0c1445 30%, #1a237e 70%, #283593 100%); }
+
+        /* Background animated elements */
+        .pet-room .bg-cloud {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .pet-room.bg-clouds .bg-cloud { opacity: 0.5; animation: cloudDrift linear infinite; }
+
+        @keyframes cloudDrift {
+            0% { transform: translateX(-30px); }
+            100% { transform: translateX(230px); }
+        }
+
+        .pet-room .bg-star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .pet-room.bg-stars .bg-star,
+        .pet-room.bg-night .bg-star { opacity: 1; animation: twinkle ease-in-out infinite; }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.4); }
+        }
+
+        .pet-room .bg-moon {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            z-index: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .pet-room.bg-night .bg-moon { opacity: 1; }
+
+        /* Master sparkles */
+        .pet-room .sparkle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffd93d;
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 6;
+            pointer-events: none;
+        }
+        .pet-room.show-sparkles .sparkle {
+            animation: sparkleFloat 2.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkleFloat {
+            0% { opacity: 0; transform: translateY(0) scale(0); }
+            20% { opacity: 1; transform: translateY(-8px) scale(1); }
+            80% { opacity: 0.6; transform: translateY(-35px) scale(0.8); }
+            100% { opacity: 0; transform: translateY(-45px) scale(0); }
+        }
+
+        /* Combined floor + background */
+        .pet-room.floor-grass.bg-clouds { background: linear-gradient(to top, #8bc97e 0%, #b5e4a8 18%, #d4f5d0 30%, #e8f4fd 55%, #c5e3f6 100%); }
+        .pet-room.floor-grass.bg-stars { background: linear-gradient(to top, #5a8a50 0%, #6b9960 15%, #4a6a40 30%, #2d2d5e 55%, #1a1a3e 100%); }
+        .pet-room.floor-grass.bg-night { background: linear-gradient(to top, #3a5a30 0%, #4a6a40 15%, #2a4a20 30%, #1a237e 55%, #0a0e2a 100%); }
+        .pet-room.floor-wood.bg-clouds { background: linear-gradient(to top, #b8875a 0%, #d4a574 15%, #e8cfa8 28%, #e8f4fd 50%, #c5e3f6 100%); }
+        .pet-room.floor-wood.bg-stars { background: linear-gradient(to top, #8a6545 0%, #a07050 15%, #7a5535 28%, #2d2d5e 50%, #1a1a3e 100%); }
+        .pet-room.floor-wood.bg-night { background: linear-gradient(to top, #6a4535 0%, #7a5040 15%, #5a3525 28%, #1a237e 50%, #0a0e2a 100%); }
+
+        /* Controls panel */
+        .controls {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            padding: 24px;
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .controls h1 {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .controls .subtitle {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .control-section {
+            margin-bottom: 20px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #eef0f4;
+        }
+        .control-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+        .control-section h3 {
+            font-size: 0.9em;
+            color: #667eea;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .control-row label {
+            font-size: 0.8em;
+            color: #666;
+            width: 100%;
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .ctrl-btn {
+            padding: 6px 14px;
+            border: 2px solid #eef0f4;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.82em;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.2s;
+        }
+        .ctrl-btn:hover { border-color: #667eea; color: #667eea; }
+        .ctrl-btn.active { border-color: #667eea; background: #667eea; color: white; }
+
+        .ctrl-btn.tier-bronze.active { border-color: #cd7f32; background: #cd7f32; color: white; }
+        .ctrl-btn.tier-silver.active { border-color: #a0a0a0; background: #a0a0a0; color: white; }
+        .ctrl-btn.tier-gold.active { border-color: #daa520; background: #daa520; color: white; }
+
+        .ctrl-btn.food-btn { border-color: #fde8e8; }
+        .ctrl-btn.food-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-size: 0.85em;
+            margin-bottom: 16px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        .back-link:hover { opacity: 1; }
+
+        @media (max-width: 700px) {
+            .layout {
+                flex-direction: column;
+                align-items: center;
+            }
+            .pet-house { position: static; }
+            .controls { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 100%; max-width: 900px;">
+        <a href="index.html" class="back-link">&larr; Back to Flashcards</a>
+
+        <div class="layout">
+            <!-- Pet House -->
+            <div class="pet-house" id="petHouse">
+                <span class="hungry-indicator">🍽️</span>
+                <div class="pet-stats">
+                    <div><span class="stat-val" id="petPoints">42</span>pts</div>
+                    <div><span class="stat-val streak-color" id="petStreak">7</span>streak</div>
+                </div>
+                <div class="pet-room" id="petRoom">
+                    <div class="pet-roof" id="petRoof"></div>
+
+                    <!-- Background elements (clouds, stars, moon) -->
+                    <div class="bg-cloud" style="width:40px;height:16px;top:12px;left:-20px;animation-duration:18s;"></div>
+                    <div class="bg-cloud" style="width:28px;height:12px;top:28px;left:-10px;animation-duration:24s;animation-delay:6s;"></div>
+                    <div class="bg-cloud" style="width:34px;height:14px;top:8px;left:-30px;animation-duration:21s;animation-delay:12s;"></div>
+                    <div class="bg-cloud" style="width:24px;height:10px;top:40px;left:-15px;animation-duration:28s;animation-delay:3s;"></div>
+
+                    <div class="bg-star" style="top:10px;left:15%;animation-duration:2.2s;animation-delay:0s;"></div>
+                    <div class="bg-star" style="top:22px;left:75%;animation-duration:1.8s;animation-delay:0.8s;"></div>
+                    <div class="bg-star" style="top:38px;left:40%;animation-duration:2.5s;animation-delay:1.4s;"></div>
+                    <div class="bg-star" style="top:14px;left:55%;animation-duration:2.0s;animation-delay:0.3s;"></div>
+                    <div class="bg-star" style="top:45px;left:20%;animation-duration:2.8s;animation-delay:1.0s;"></div>
+                    <div class="bg-star" style="top:8px;left:85%;animation-duration:2.3s;animation-delay:1.8s;"></div>
+                    <div class="bg-star" style="top:30px;left:10%;animation-duration:1.9s;animation-delay:0.5s;"></div>
+                    <div class="bg-star" style="top:18px;left:65%;animation-duration:2.6s;animation-delay:2.0s;"></div>
+                    <div class="bg-star" style="top:50px;left:50%;animation-duration:2.1s;animation-delay:1.2s;width:3px;height:3px;"></div>
+                    <div class="bg-star" style="top:5px;left:35%;animation-duration:2.4s;animation-delay:0.7s;width:3px;height:3px;"></div>
+
+                    <svg class="bg-moon" width="18" height="18" viewBox="0 0 18 18">
+                        <circle cx="9" cy="9" r="7" fill="#ffeaa7" />
+                        <circle cx="12" cy="7" r="6" fill="#0c1445" />
+                    </svg>
+
+                    <!-- Sparkles for master stage -->
+                    <div class="sparkle" style="top:30%;left:20%;animation-delay:0s;"></div>
+                    <div class="sparkle" style="top:25%;left:75%;animation-delay:0.8s;"></div>
+                    <div class="sparkle" style="top:50%;left:15%;animation-delay:1.6s;"></div>
+                    <div class="sparkle" style="top:45%;left:80%;animation-delay:0.4s;"></div>
+
+                    <div class="deco deco-left" id="petDecoLeft"></div>
+                    <div class="deco deco-right" id="petDecoRight"></div>
+
+                    <div class="blob-shadow"></div>
+
+                    <div class="floor-overlay" id="floorOverlay"></div>
+
+                    <div class="pet-svg-wrap">
+                        <svg viewBox="0 0 120 140" width="140" height="160" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Stage 1: Egg -->
+                            <g class="pet-stage stage-egg active">
+                                <ellipse cx="60" cy="80" rx="28" ry="36" fill="#667eea" />
+                                <ellipse cx="60" cy="85" rx="22" ry="28" fill="#8b9ff5" />
+                                <polyline points="42,68 48,58 55,66 60,54 66,64 72,56 78,68" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" />
+                                <g class="eyes" style="transform-origin: 60px 62px;">
+                                    <circle cx="52" cy="62" r="3.5" fill="white" />
+                                    <circle cx="68" cy="62" r="3.5" fill="white" />
+                                    <circle cx="53" cy="62" r="2" fill="#333" />
+                                    <circle cx="69" cy="62" r="2" fill="#333" />
+                                    <circle cx="54" cy="61" r="0.8" fill="white" />
+                                    <circle cx="70" cy="61" r="0.8" fill="white" />
+                                </g>
+                            </g>
+
+                            <!-- Stage 2: Hatchling -->
+                            <g class="pet-stage stage-hatchling">
+                                <ellipse cx="60" cy="90" rx="26" ry="30" fill="#667eea" />
+                                <ellipse cx="60" cy="94" rx="20" ry="22" fill="#8b9ff5" />
+                                <g class="eyes" style="transform-origin: 60px 80px;">
+                                    <circle cx="50" cy="80" r="6" fill="white" />
+                                    <circle cx="70" cy="80" r="6" fill="white" />
+                                    <circle cx="52" cy="80" r="3.5" fill="#333" />
+                                    <circle cx="72" cy="80" r="3.5" fill="#333" />
+                                    <circle cx="53.5" cy="78.5" r="1.2" fill="white" />
+                                    <circle cx="73.5" cy="78.5" r="1.2" fill="white" />
+                                </g>
+                                <ellipse cx="42" cy="88" rx="5" ry="3" fill="rgba(255,150,150,0.4)" />
+                                <ellipse cx="78" cy="88" rx="5" ry="3" fill="rgba(255,150,150,0.4)" />
+                            </g>
+
+                            <!-- Stage 3: Junior -->
+                            <g class="pet-stage stage-junior">
+                                <ellipse cx="60" cy="88" rx="30" ry="34" fill="#667eea" />
+                                <ellipse cx="60" cy="93" rx="23" ry="24" fill="#8b9ff5" />
+                                <ellipse cx="32" cy="85" rx="8" ry="5" fill="#667eea" transform="rotate(-20,32,85)" />
+                                <ellipse cx="88" cy="85" rx="8" ry="5" fill="#667eea" transform="rotate(20,88,85)" />
+                                <g class="eyes" style="transform-origin: 60px 76px;">
+                                    <circle cx="48" cy="76" r="7" fill="white" />
+                                    <circle cx="72" cy="76" r="7" fill="white" />
+                                    <circle cx="50" cy="76" r="4" fill="#333" />
+                                    <circle cx="74" cy="76" r="4" fill="#333" />
+                                    <circle cx="51.5" cy="74.5" r="1.5" fill="white" />
+                                    <circle cx="75.5" cy="74.5" r="1.5" fill="white" />
+                                </g>
+                                <path class="mouth-happy" d="M54,90 Q60,96 66,90" fill="none" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
+                                <path class="mouth-sad" d="M54,94 Q60,89 66,94" fill="none" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
+                                <ellipse cx="38" cy="86" rx="5" ry="3" fill="rgba(255,150,150,0.35)" />
+                                <ellipse cx="82" cy="86" rx="5" ry="3" fill="rgba(255,150,150,0.35)" />
+                            </g>
+
+                            <!-- Stage 4: Teen -->
+                            <g class="pet-stage stage-teen">
+                                <ellipse cx="60" cy="85" rx="32" ry="38" fill="#667eea" />
+                                <ellipse cx="60" cy="91" rx="24" ry="26" fill="#8b9ff5" />
+                                <ellipse cx="28" cy="80" rx="10" ry="6" fill="#667eea" transform="rotate(-15,28,80)" />
+                                <ellipse cx="92" cy="80" rx="10" ry="6" fill="#667eea" transform="rotate(15,92,80)" />
+                                <line x1="50" y1="50" x2="42" y2="36" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="42" cy="34" r="4" fill="#8b9ff5" />
+                                <line x1="70" y1="50" x2="78" y2="36" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="78" cy="34" r="4" fill="#8b9ff5" />
+                                <g class="eyes" style="transform-origin: 60px 72px;">
+                                    <circle cx="47" cy="72" r="8" fill="white" />
+                                    <circle cx="73" cy="72" r="8" fill="white" />
+                                    <circle cx="49" cy="72" r="4.5" fill="#333" />
+                                    <circle cx="75" cy="72" r="4.5" fill="#333" />
+                                    <circle cx="51" cy="70" r="1.8" fill="white" />
+                                    <circle cx="77" cy="70" r="1.8" fill="white" />
+                                </g>
+                                <path class="mouth-happy" d="M50,88 Q60,96 70,88" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
+                                <path class="mouth-sad" d="M50,94 Q60,87 70,94" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
+                                <ellipse cx="48" cy="120" rx="8" ry="4" fill="#5568d3" />
+                                <ellipse cx="72" cy="120" rx="8" ry="4" fill="#5568d3" />
+                            </g>
+
+                            <!-- Stage 5: Adult -->
+                            <g class="pet-stage stage-adult">
+                                <ellipse cx="60" cy="82" rx="34" ry="40" fill="#667eea" />
+                                <ellipse cx="60" cy="89" rx="26" ry="28" fill="#8b9ff5" />
+                                <path d="M26,75 Q18,70 16,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
+                                <path d="M94,75 Q102,70 104,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
+                                <line x1="48" y1="45" x2="38" y2="28" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="38" cy="26" r="5" fill="#ffd93d" />
+                                <line x1="72" y1="45" x2="82" y2="28" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="82" cy="26" r="5" fill="#ffd93d" />
+                                <g class="eyes" style="transform-origin: 60px 68px;">
+                                    <circle cx="45" cy="68" r="9" fill="white" />
+                                    <circle cx="75" cy="68" r="9" fill="white" />
+                                    <circle cx="48" cy="68" r="5" fill="#333" />
+                                    <circle cx="78" cy="68" r="5" fill="#333" />
+                                    <circle cx="50" cy="66" r="2" fill="white" />
+                                    <circle cx="80" cy="66" r="2" fill="white" />
+                                </g>
+                                <path class="mouth-happy" d="M48,86 Q60,97 72,86" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
+                                <path class="mouth-sad" d="M48,94 Q60,85 72,94" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
+                                <ellipse cx="46" cy="120" rx="10" ry="5" fill="#5568d3" />
+                                <ellipse cx="74" cy="120" rx="10" ry="5" fill="#5568d3" />
+                            </g>
+
+                            <!-- Stage 6: Master -->
+                            <g class="pet-stage stage-master">
+                                <ellipse cx="60" cy="82" rx="34" ry="40" fill="#667eea" />
+                                <ellipse cx="60" cy="89" rx="26" ry="28" fill="#a0b4ff" />
+                                <path d="M26,75 Q16,68 14,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
+                                <path d="M94,75 Q104,68 106,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
+                                <line x1="48" y1="45" x2="36" y2="24" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                                <polygon points="36,24 31,14 36,18 36,10 40,18 41,14 36,24" fill="#ffd93d" />
+                                <line x1="72" y1="45" x2="84" y2="24" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                                <polygon points="84,24 79,14 84,18 84,10 88,18 89,14 84,24" fill="#ffd93d" />
+                                <polygon points="60,8 62,14 68,14 63,18 65,24 60,20 55,24 57,18 52,14 58,14" fill="#ffd93d" />
+                                <g class="eyes" style="transform-origin: 60px 68px;">
+                                    <circle cx="45" cy="68" r="9" fill="white" />
+                                    <circle cx="75" cy="68" r="9" fill="white" />
+                                    <circle cx="48" cy="68" r="5" fill="#4a5bbf" />
+                                    <circle cx="78" cy="68" r="5" fill="#4a5bbf" />
+                                    <circle cx="50" cy="66" r="2" fill="white" />
+                                    <circle cx="80" cy="66" r="2" fill="white" />
+                                </g>
+                                <path class="mouth-happy" d="M46,86 Q60,100 74,86" fill="rgba(255,255,255,0.3)" stroke="#333" stroke-width="2" stroke-linecap="round" />
+                                <path class="mouth-sad" d="M48,96 Q60,86 72,96" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
+                                <ellipse cx="46" cy="120" rx="10" ry="5" fill="#5568d3" />
+                                <ellipse cx="74" cy="120" rx="10" ry="5" fill="#5568d3" />
+                            </g>
+
+                            <!-- === ACCESSORIES === -->
+
+                            <!-- Book (First Steps) - improved with spine + pages -->
+                            <g class="acc-group" data-badge="first-steps">
+                                <rect x="93" y="86" width="4" height="22" rx="1" fill="#cd7f32" class="acc-main-fill" />
+                                <rect x="97" y="86" width="13" height="22" rx="1.5" fill="#cd7f32" opacity="0.85" class="acc-main-fill" />
+                                <rect x="96" y="87.5" width="12" height="19" rx="1" fill="#ffeaa7" />
+                                <line x1="98" y1="91" x2="106" y2="91" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
+                                <line x1="98" y1="94" x2="106" y2="94" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
+                                <line x1="98" y1="97" x2="104" y2="97" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
+                                <line x1="98" y1="100" x2="105" y2="100" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
+                            </g>
+
+                            <!-- Graduation Cap (Scholar) -->
+                            <g class="acc-group" data-badge="scholar">
+                                <polygon points="60,32 35,44 60,52 85,44" fill="#333" class="acc-main-fill" />
+                                <rect x="55" y="28" width="10" height="6" rx="1" fill="#333" class="acc-main-fill" />
+                                <line x1="82" y1="44" x2="82" y2="56" stroke="#cd7f32" stroke-width="1.5" class="acc-detail-stroke" />
+                                <circle cx="82" cy="57" r="2" fill="#cd7f32" class="acc-detail-fill" />
+                            </g>
+
+                            <!-- Leaf/Sprout (Biologist) -->
+                            <g class="acc-group" data-badge="biologist">
+                                <line x1="60" y1="48" x2="60" y2="32" stroke="#27ae60" stroke-width="2.5" class="acc-detail-stroke" />
+                                <ellipse cx="54" cy="30" rx="8" ry="5" fill="#27ae60" transform="rotate(-30,54,30)" class="acc-main-fill" />
+                                <ellipse cx="67" cy="32" rx="7" ry="4" fill="#2ecc71" transform="rotate(25,67,32)" />
+                            </g>
+
+                            <!-- Goggles (Chemist) -->
+                            <g class="acc-group" data-badge="chemist">
+                                <ellipse cx="46" cy="60" rx="11" ry="9" fill="none" stroke="#cd7f32" stroke-width="2.5" class="acc-main-stroke" />
+                                <ellipse cx="74" cy="60" rx="11" ry="9" fill="none" stroke="#cd7f32" stroke-width="2.5" class="acc-main-stroke" />
+                                <line x1="57" y1="60" x2="63" y2="60" stroke="#cd7f32" stroke-width="2" class="acc-main-stroke" />
+                                <ellipse cx="46" cy="60" rx="9" ry="7" fill="rgba(135,206,250,0.3)" />
+                                <ellipse cx="74" cy="60" rx="9" ry="7" fill="rgba(135,206,250,0.3)" />
+                            </g>
+
+                            <!-- Lightning Bolt (Physicist) -->
+                            <g class="acc-group" data-badge="physicist">
+                                <polygon points="64,6 56,20 62,20 54,34 70,18 63,18 70,6" fill="#f39c12" class="acc-main-fill" />
+                            </g>
+
+                            <!-- Cape (Well Rounded) -->
+                            <g class="acc-group" data-badge="well-rounded">
+                                <path d="M36,60 Q30,80 28,110 L60,105 L92,110 Q90,80 84,60" fill="#cd7f32" opacity="0.7" class="acc-main-fill" />
+                                <path d="M38,62 Q32,80 30,108 L60,103 L90,108 Q88,80 82,62" fill="#e6c17a" opacity="0.4" />
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+                <div class="pet-stage-name" id="petStageName">Egg</div>
+                <div class="pet-label">Study Blob</div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <h1>Blob Testing Ground</h1>
+                <p class="subtitle">Change everything freely &mdash; nothing is saved</p>
+
+                <!-- Evolution Stage -->
+                <div class="control-section" id="sec-stage">
+                    <h3>Evolution Stage</h3>
+                    <div class="control-row" id="stageButtons"></div>
+                </div>
+
+                <!-- Accessories -->
+                <div class="control-section" id="sec-acc">
+                    <h3>Accessories</h3>
+                    <div id="accControls"></div>
+                </div>
+
+                <!-- Mood -->
+                <div class="control-section" id="sec-mood">
+                    <h3>Mood</h3>
+                    <div class="control-row">
+                        <button class="ctrl-btn active" onclick="setMood('happy')">Happy</button>
+                        <button class="ctrl-btn" onclick="setMood('hungry')">Hungry</button>
+                    </div>
+                </div>
+
+                <!-- Feed Animation -->
+                <div class="control-section" id="sec-feed">
+                    <h3>Feed Animation</h3>
+                    <div class="control-row" id="feedButtons"></div>
+                </div>
+
+                <!-- House Decorations -->
+                <div class="control-section" id="sec-decor">
+                    <h3>House Decorations</h3>
+
+                    <div class="control-row" data-slot="floor">
+                        <label>Floor</label>
+                        <button class="ctrl-btn active" onclick="setSlot('floor', null)">None</button>
+                        <button class="ctrl-btn" onclick="setSlot('floor', 'grass-floor')">Grass</button>
+                        <button class="ctrl-btn" onclick="setSlot('floor', 'wood-floor')">Wood</button>
+                    </div>
+
+                    <div class="control-row" data-slot="background">
+                        <label>Background</label>
+                        <button class="ctrl-btn active" onclick="setSlot('background', null)">None</button>
+                        <button class="ctrl-btn" onclick="setSlot('background', 'cloud-bg')">Clouds</button>
+                        <button class="ctrl-btn" onclick="setSlot('background', 'stars-bg')">Stars</button>
+                        <button class="ctrl-btn" onclick="setSlot('background', 'night-bg')">Night</button>
+                    </div>
+
+                    <div class="control-row" data-slot="roof">
+                        <label>Roof</label>
+                        <button class="ctrl-btn active" onclick="setSlot('roof', null)">None</button>
+                        <button class="ctrl-btn" onclick="setSlot('roof', 'basic-roof')">Wooden</button>
+                        <button class="ctrl-btn" onclick="setSlot('roof', 'tile-roof')">Tiled</button>
+                        <button class="ctrl-btn" onclick="setSlot('roof', 'royal-roof')">Royal</button>
+                    </div>
+
+                    <div class="control-row" data-slot="deco-left">
+                        <label>Left Decoration</label>
+                        <button class="ctrl-btn active" onclick="setSlot('deco-left', null)">None</button>
+                        <button class="ctrl-btn" onclick="setSlot('deco-left', 'plant-l')">Plant</button>
+                        <button class="ctrl-btn" onclick="setSlot('deco-left', 'frame-l')">Frame</button>
+                    </div>
+
+                    <div class="control-row" data-slot="deco-right">
+                        <label>Right Decoration</label>
+                        <button class="ctrl-btn active" onclick="setSlot('deco-right', null)">None</button>
+                        <button class="ctrl-btn" onclick="setSlot('deco-right', 'books-r')">Books</button>
+                        <button class="ctrl-btn" onclick="setSlot('deco-right', 'lamp-r')">Lamp</button>
+                    </div>
+                </div>
+
+                <!-- Stats Display -->
+                <div class="control-section" id="sec-stats">
+                    <h3>Stats Display</h3>
+                    <div class="control-row">
+                        <label>Points</label>
+                        <input type="range" min="0" max="999" value="42" id="pointsSlider" oninput="setPoints(this.value)" style="flex:1;">
+                        <span id="pointsLabel" style="font-size:0.85em; font-weight:700; color:#667eea; min-width:35px; text-align:right;">42</span>
+                    </div>
+                    <div class="control-row">
+                        <label>Streak</label>
+                        <input type="range" min="0" max="99" value="7" id="streakSlider" oninput="setStreak(this.value)" style="flex:1;">
+                        <span id="streakLabel" style="font-size:0.85em; font-weight:700; color:#f39c12; min-width:25px; text-align:right;">7</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ---- Data ----
+        const PET_STAGES = [
+            { key: 'egg', name: 'Egg' },
+            { key: 'hatchling', name: 'Hatchling' },
+            { key: 'junior', name: 'Junior' },
+            { key: 'teen', name: 'Teen' },
+            { key: 'adult', name: 'Adult' },
+            { key: 'master', name: 'Master' },
+        ];
+
+        const ACCESSORIES = [
+            { id: 'first-steps', name: 'Book', icon: '📖' },
+            { id: 'scholar', name: 'Grad Cap', icon: '🎓' },
+            { id: 'biologist', name: 'Leaf', icon: '🌿' },
+            { id: 'chemist', name: 'Goggles', icon: '🥽' },
+            { id: 'physicist', name: 'Lightning', icon: '⚡' },
+            { id: 'well-rounded', name: 'Cape', icon: '🦸' },
+        ];
+
+        const TIER_FILLS = {
+            1: { main: '#cd7f32', detail: '#cd7f32' },
+            2: { main: '#a0a0a0', detail: '#808080' },
+            3: { main: '#daa520', detail: '#b8860b' },
+        };
+
+        const FOOD_ITEMS = [
+            { id: 'apple', emoji: '🍎' },
+            { id: 'banana', emoji: '🍌' },
+            { id: 'cookie', emoji: '🍪' },
+            { id: 'ice-cream', emoji: '🍦' },
+            { id: 'pizza', emoji: '🍕' },
+            { id: 'cake', emoji: '🎂' },
+            { id: 'sushi', emoji: '🍣' },
+            { id: 'golden-apple', emoji: '✨' },
+        ];
+
+        // ---- SVG Decoration Templates ----
+        const DECOR_SVG = {
+            // Roofs
+            'basic-roof': `<svg viewBox="0 0 200 32" preserveAspectRatio="none">
+                <polygon points="100,2 195,30 5,30" fill="#8B6C4A" stroke="#6B4C2A" stroke-width="1.5"/>
+                <line x1="52" y1="16" x2="148" y2="16" stroke="#6B4C2A" stroke-width="0.8" opacity="0.5"/>
+                <line x1="30" y1="23" x2="170" y2="23" stroke="#6B4C2A" stroke-width="0.8" opacity="0.5"/>
+                <polygon points="100,2 104,2 104,0 100,0" fill="#6B4C2A"/>
+            </svg>`,
+            'tile-roof': `<svg viewBox="0 0 200 32" preserveAspectRatio="none">
+                <path d="M5,30 Q100,-2 195,30" fill="#C75B39" stroke="#a04828" stroke-width="1"/>
+                <path d="M25,26 Q50,18 75,26" fill="none" stroke="#a04828" stroke-width="0.8" opacity="0.5"/>
+                <path d="M55,22 Q80,14 105,22" fill="none" stroke="#a04828" stroke-width="0.8" opacity="0.5"/>
+                <path d="M85,22 Q110,14 135,22" fill="none" stroke="#a04828" stroke-width="0.8" opacity="0.5"/>
+                <path d="M115,26 Q140,18 165,26" fill="none" stroke="#a04828" stroke-width="0.8" opacity="0.5"/>
+                <path d="M70,18 Q100,8 130,18" fill="none" stroke="#a04828" stroke-width="0.8" opacity="0.5"/>
+                <line x1="5" y1="30" x2="195" y2="30" stroke="#a04828" stroke-width="1.5"/>
+            </svg>`,
+            'royal-roof': `<svg viewBox="0 0 200 36" preserveAspectRatio="none">
+                <path d="M5,34 Q40,28 100,4 Q160,28 195,34" fill="#3D2B6B" stroke="#DAA520" stroke-width="1.5"/>
+                <path d="M8,33 Q42,27 100,6 Q158,27 192,33" fill="none" stroke="#DAA520" stroke-width="0.6" opacity="0.5"/>
+                <line x1="100" y1="4" x2="100" y2="-4" stroke="#DAA520" stroke-width="1.5"/>
+                <polygon points="96,-4 100,-10 104,-4" fill="#e74c3c" stroke="#DAA520" stroke-width="0.5"/>
+                <circle cx="40" cy="28" r="1.5" fill="#DAA520" opacity="0.6"/>
+                <circle cx="70" cy="20" r="1.5" fill="#DAA520" opacity="0.6"/>
+                <circle cx="130" cy="20" r="1.5" fill="#DAA520" opacity="0.6"/>
+                <circle cx="160" cy="28" r="1.5" fill="#DAA520" opacity="0.6"/>
+            </svg>`,
+
+            // Left decorations
+            'plant-l': `<svg viewBox="0 0 36 44">
+                <path d="M14,42 L14,38 L22,38 L22,42 Z" fill="#c0784a"/>
+                <path d="M12,38 L13,28 L23,28 L24,38 Z" fill="#d4915e"/>
+                <line x1="18" y1="28" x2="18" y2="14" stroke="#3a7a2a" stroke-width="2"/>
+                <ellipse cx="12" cy="16" rx="7" ry="5" fill="#3a9a2a" transform="rotate(-30,12,16)"/>
+                <ellipse cx="24" cy="18" rx="6" ry="4" fill="#2ecc71" transform="rotate(25,24,18)"/>
+                <ellipse cx="16" cy="10" rx="6" ry="4.5" fill="#4ab84a" transform="rotate(-15,16,10)"/>
+                <path d="M12,16 L18,22" stroke="#2a6a1a" stroke-width="0.5" opacity="0.5"/>
+                <path d="M24,18 L18,24" stroke="#2a6a1a" stroke-width="0.5" opacity="0.5"/>
+            </svg>`,
+            'frame-l': `<svg viewBox="0 0 36 44">
+                <rect x="4" y="6" width="28" height="32" rx="2" fill="#8B6C4A" />
+                <rect x="6" y="8" width="24" height="28" rx="1" fill="#a0845a" />
+                <rect x="8" y="10" width="20" height="24" fill="#d4e8f0" />
+                <rect x="8" y="22" width="20" height="12" fill="#7ab87a" />
+                <path d="M8,22 Q14,18 20,22 Q26,19 28,22" fill="#8ac88a"/>
+                <circle cx="22" cy="14" r="3" fill="#ffd93d" opacity="0.8"/>
+            </svg>`,
+
+            // Right decorations
+            'books-r': `<svg viewBox="0 0 36 44">
+                <rect x="2" y="36" width="32" height="3" rx="1" fill="#8B6C4A"/>
+                <rect x="4" y="10" width="6" height="26" rx="1" fill="#e74c3c"/>
+                <rect x="11" y="14" width="5" height="22" rx="1" fill="#3498db"/>
+                <rect x="17" y="8" width="6" height="28" rx="1" fill="#27ae60"/>
+                <rect x="24" y="12" width="5" height="24" rx="1" fill="#f39c12"/>
+                <rect x="30" y="16" width="4" height="20" rx="1" fill="#9b59b6"/>
+                <line x1="7" y1="13" x2="7" y2="17" stroke="white" stroke-width="0.6" opacity="0.5"/>
+                <line x1="20" y1="11" x2="20" y2="15" stroke="white" stroke-width="0.6" opacity="0.5"/>
+            </svg>`,
+            'lamp-r': `<svg viewBox="0 0 36 44">
+                <defs>
+                    <radialGradient id="lampGlow"><stop offset="0%" stop-color="#ffd93d" stop-opacity="0.4"/><stop offset="100%" stop-color="#ffd93d" stop-opacity="0"/></radialGradient>
+                </defs>
+                <circle cx="22" cy="14" r="14" fill="url(#lampGlow)"/>
+                <rect x="14" y="38" width="12" height="4" rx="2" fill="#666"/>
+                <line x1="20" y1="38" x2="20" y2="28" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="20" y1="28" x2="24" y2="16" stroke="#666" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M16,16 L32,16 L28,8 L20,8 Z" fill="#555"/>
+                <path d="M20,8 L28,8" stroke="#ffd93d" stroke-width="1" opacity="0.7"/>
+                <ellipse cx="24" cy="16" rx="7" ry="1.5" fill="#ffd93d" opacity="0.3"/>
+            </svg>`,
+
+            // Floor overlays
+            'grass-floor': `<svg viewBox="0 0 200 30" preserveAspectRatio="none">
+                <path d="M10,30 L12,16 L14,30" fill="#3a8a2a"/>
+                <path d="M25,30 L27,20 L29,30" fill="#4a9a3a"/>
+                <path d="M40,30 L43,14 L46,30" fill="#2a7a1a"/>
+                <path d="M60,30 L62,18 L64,30" fill="#4aaa3a"/>
+                <path d="M80,30 L82,12 L84,30" fill="#3a9a2a"/>
+                <path d="M95,30 L97,20 L99,30" fill="#2a8a1a"/>
+                <path d="M115,30 L118,15 L121,30" fill="#4a9a3a"/>
+                <path d="M135,30 L137,18 L139,30" fill="#3a7a2a"/>
+                <path d="M150,30 L153,13 L156,30" fill="#5aaa4a"/>
+                <path d="M170,30 L172,20 L174,30" fill="#3a9a2a"/>
+                <path d="M185,30 L188,16 L191,30" fill="#2a8a1a"/>
+                <path d="M52,30 L53,22 L54,30" fill="#5aaa4a" opacity="0.7"/>
+                <path d="M108,30 L109,24 L110,30" fill="#5aaa4a" opacity="0.7"/>
+                <path d="M162,30 L163,22 L164,30" fill="#3a9a3a" opacity="0.7"/>
+            </svg>`,
+            'wood-floor': `<svg viewBox="0 0 200 30" preserveAspectRatio="none">
+                <line x1="0" y1="8" x2="200" y2="8" stroke="#9a6b3a" stroke-width="0.8" opacity="0.4"/>
+                <line x1="0" y1="18" x2="200" y2="18" stroke="#9a6b3a" stroke-width="0.8" opacity="0.4"/>
+                <line x1="0" y1="26" x2="200" y2="26" stroke="#9a6b3a" stroke-width="0.8" opacity="0.3"/>
+                <line x1="45" y1="0" x2="45" y2="8" stroke="#9a6b3a" stroke-width="0.5" opacity="0.3"/>
+                <line x1="120" y1="8" x2="120" y2="18" stroke="#9a6b3a" stroke-width="0.5" opacity="0.3"/>
+                <line x1="80" y1="18" x2="80" y2="26" stroke="#9a6b3a" stroke-width="0.5" opacity="0.3"/>
+                <line x1="160" y1="0" x2="160" y2="8" stroke="#9a6b3a" stroke-width="0.5" opacity="0.3"/>
+                <circle cx="90" cy="12" r="3" fill="none" stroke="#9a6b3a" stroke-width="0.5" opacity="0.3"/>
+                <circle cx="90" cy="12" r="1.5" fill="none" stroke="#9a6b3a" stroke-width="0.3" opacity="0.3"/>
+            </svg>`,
+        };
+
+        // Current state
+        let currentStage = 'egg';
+        let accState = {};
+        let equipped = { floor: null, background: null, roof: null, 'deco-left': null, 'deco-right': null };
+
+        // ---- Init ----
+        ACCESSORIES.forEach(a => accState[a.id] = 0);
+        buildStageButtons();
+        buildAccControls();
+        buildFeedButtons();
+
+        // ---- Stage ----
+        function buildStageButtons() {
+            const container = document.getElementById('stageButtons');
+            container.innerHTML = PET_STAGES.map(s =>
+                `<button class="ctrl-btn ${s.key === 'egg' ? 'active' : ''}" onclick="setStage('${s.key}')">${s.name}</button>`
+            ).join('');
+        }
+
+        function setStage(key) {
+            currentStage = key;
+            const petHouse = document.getElementById('petHouse');
+            petHouse.querySelectorAll('.pet-stage').forEach(el => el.classList.remove('active'));
+            const stageEl = petHouse.querySelector(`.stage-${key}`);
+            if (stageEl) stageEl.classList.add('active');
+            document.getElementById('petStageName').textContent = PET_STAGES.find(s => s.key === key).name;
+
+            // Sparkles only for master
+            document.getElementById('petRoom').classList.toggle('show-sparkles', key === 'master');
+
+            document.querySelectorAll('#stageButtons .ctrl-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent === PET_STAGES.find(s => s.key === key).name);
+            });
+        }
+
+        // ---- Accessories ----
+        function buildAccControls() {
+            const container = document.getElementById('accControls');
+            container.innerHTML = ACCESSORIES.map(a => `
+                <div class="control-row">
+                    <label>${a.icon} ${a.name}</label>
+                    <button class="ctrl-btn active" onclick="setAcc('${a.id}', 0)">Off</button>
+                    <button class="ctrl-btn tier-bronze" onclick="setAcc('${a.id}', 1)">Bronze</button>
+                    <button class="ctrl-btn tier-silver" onclick="setAcc('${a.id}', 2)">Silver</button>
+                    <button class="ctrl-btn tier-gold" onclick="setAcc('${a.id}', 3)">Gold</button>
+                </div>
+            `).join('');
+        }
+
+        function setAcc(badgeId, tier) {
+            accState[badgeId] = tier;
+            const petHouse = document.getElementById('petHouse');
+            const el = petHouse.querySelector(`.acc-group[data-badge="${badgeId}"]`);
+            if (!el) return;
+
+            if (tier === 0) {
+                el.classList.remove('active', 'tier-bronze', 'tier-silver', 'tier-gold');
+            } else {
+                el.classList.add('active');
+                el.classList.remove('tier-bronze', 'tier-silver', 'tier-gold');
+                el.classList.add(['', 'tier-bronze', 'tier-silver', 'tier-gold'][tier]);
+
+                const tierColor = TIER_FILLS[tier];
+                el.querySelectorAll('.acc-main-fill').forEach(f => f.setAttribute('fill', tierColor.main));
+                el.querySelectorAll('.acc-main-stroke').forEach(f => f.setAttribute('stroke', tierColor.main));
+                el.querySelectorAll('.acc-detail-fill').forEach(f => f.setAttribute('fill', tierColor.detail));
+                el.querySelectorAll('.acc-detail-stroke').forEach(f => f.setAttribute('stroke', tierColor.detail));
+            }
+
+            const rows = document.querySelectorAll('#accControls .control-row');
+            const accIndex = ACCESSORIES.findIndex(a => a.id === badgeId);
+            if (accIndex >= 0 && rows[accIndex]) {
+                rows[accIndex].querySelectorAll('.ctrl-btn').forEach((btn, i) => {
+                    btn.classList.toggle('active', i === tier);
+                });
+            }
+        }
+
+        // ---- Mood ----
+        function setMood(mood) {
+            const petHouse = document.getElementById('petHouse');
+            petHouse.classList.toggle('blob-hungry', mood === 'hungry');
+
+            document.querySelectorAll('#sec-mood .ctrl-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.toLowerCase() === mood);
+            });
+        }
+
+        // ---- Feed Animation ----
+        function buildFeedButtons() {
+            const container = document.getElementById('feedButtons');
+            container.innerHTML = FOOD_ITEMS.map(f =>
+                `<button class="ctrl-btn food-btn" onclick="playFeed('${f.emoji}')">${f.emoji}</button>`
+            ).join('');
+        }
+
+        function playFeed(emoji) {
+            const petHouse = document.getElementById('petHouse');
+            const floater = document.createElement('div');
+            floater.className = 'feed-float';
+            floater.textContent = emoji;
+            floater.style.left = '50%';
+            floater.style.top = '40%';
+            petHouse.appendChild(floater);
+            setTimeout(() => floater.remove(), 1000);
+        }
+
+        // ---- House Decorations ----
+        function setSlot(slot, itemId) {
+            equipped[slot] = itemId;
+            renderHouseDecor();
+
+            // Update buttons
+            const row = document.querySelector(`#sec-decor .control-row[data-slot="${slot}"]`);
+            if (row) {
+                row.querySelectorAll('.ctrl-btn').forEach((btn, i) => {
+                    if (i === 0) btn.classList.toggle('active', itemId === null);
+                    else btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${itemId}'`));
+                });
+            }
+        }
+
+        function renderHouseDecor() {
+            const room = document.getElementById('petRoom');
+            const decoLeft = document.getElementById('petDecoLeft');
+            const decoRight = document.getElementById('petDecoRight');
+            const roof = document.getElementById('petRoof');
+            const floorOverlay = document.getElementById('floorOverlay');
+
+            // Floor CSS classes
+            room.classList.remove('floor-grass', 'floor-wood');
+            if (equipped.floor === 'grass-floor') room.classList.add('floor-grass');
+            else if (equipped.floor === 'wood-floor') room.classList.add('floor-wood');
+
+            // Floor SVG overlay
+            if (floorOverlay) {
+                floorOverlay.innerHTML = equipped.floor && DECOR_SVG[equipped.floor] ? DECOR_SVG[equipped.floor] : '';
+            }
+
+            // Background CSS classes
+            room.classList.remove('bg-clouds', 'bg-stars', 'bg-night');
+            if (equipped.background === 'cloud-bg') room.classList.add('bg-clouds');
+            else if (equipped.background === 'stars-bg') room.classList.add('bg-stars');
+            else if (equipped.background === 'night-bg') room.classList.add('bg-night');
+
+            // Left decoration SVG
+            if (decoLeft) {
+                const leftId = equipped['deco-left'];
+                decoLeft.innerHTML = leftId && DECOR_SVG[leftId] ? DECOR_SVG[leftId] : '';
+            }
+
+            // Right decoration SVG
+            if (decoRight) {
+                const rightId = equipped['deco-right'];
+                decoRight.innerHTML = rightId && DECOR_SVG[rightId] ? DECOR_SVG[rightId] : '';
+            }
+
+            // Roof SVG
+            if (roof) {
+                const roofId = equipped.roof;
+                roof.innerHTML = roofId && DECOR_SVG[roofId] ? DECOR_SVG[roofId] : '';
+            }
+        }
+
+        // ---- Stats ----
+        function setPoints(val) {
+            document.getElementById('petPoints').textContent = val;
+            document.getElementById('pointsLabel').textContent = val;
+        }
+
+        function setStreak(val) {
+            document.getElementById('petStreak').textContent = val;
+            document.getElementById('streakLabel').textContent = val;
+        }
+    </script>
+</body>
+</html>

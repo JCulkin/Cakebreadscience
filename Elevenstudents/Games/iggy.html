@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Light Switch Puzzle</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #1a1a2e;
+      font-family: sans-serif;
+      color: white;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    canvas {
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .nav-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .nav-links a {
+      color: #4ecdc4;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 1.1em;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="sketch-container"></div>
+    <div class="nav-links">
+      <a href="../index.html">← Back to Home</a>
+    </div>
+  </main>
+
+  <script>
+// Light Switch Puzzle Game
+// Level configurations
+const levels = [
+  {
+    // Level 1 - Tutorial level
+    switchToBulbs: {
+      0: [0],      // Switch 1 affects only bulb 1
+      1: [1],      // Switch 2 affects only bulb 2
+      2: [2]       // Switch 3 affects only bulb 3
+    },
+    numBulbs: 3,
+    numSwitches: 3
+  },
+  {
+    // Level 2 - Original puzzle
+    switchToBulbs: {
+      0: [0, 1],      // Switch 1 affects bulbs 1 and 2
+      1: [1, 2],      // Switch 2 affects bulbs 2 and 3
+      2: [0, 2, 3],   // Switch 3 affects bulbs 1, 3, and 4
+      3: [2, 3]       // Switch 4 affects bulbs 3 and 4
+    },
+    numBulbs: 4,
+    numSwitches: 4
+  },
+  {
+    // Level 3 - Expert challenge
+    switchToBulbs: {
+      0: [0, 2, 3],      // Switch 1 affects bulbs 1, 3, and 4
+      1: [1, 3],         // Switch 2 affects bulbs 2 and 4
+      2: [0, 1, 4],      // Switch 3 affects bulbs 1, 2, and 5
+      3: [2, 3, 4],      // Switch 4 affects bulbs 3, 4, and 5
+      4: [1, 2, 3]       // Switch 5 affects bulbs 2, 3, and 4
+    },
+    numBulbs: 5,
+    numSwitches: 5
+  }
+];
+
+let currentLevel = 0;
+let bulbStates = [];
+let switchStates = [];
+let moves = 0;
+let switches = [];
+let resetButton;
+let showingVictory = false;
+
+function setup() {
+  let canvas = createCanvas(800, 600);
+  canvas.parent('sketch-container');
+  textAlign(CENTER, CENTER);
+  initLevel();
+}
+
+function initLevel() {
+  let level = levels[currentLevel];
+  bulbStates = new Array(level.numBulbs).fill(false);
+  switchStates = new Array(level.numSwitches).fill(false);
+  moves = 0;
+  showingVictory = false;
+ 
+  // Create light switches
+  switches = [];
+  for (let i = 0; i < level.numSwitches; i++) {
+    let spacing = 800 / (level.numSwitches + 1);
+    let x = spacing * (i + 1);
+    let y = 400;
+    switches.push({
+      x: x,
+      y: y,
+      index: i
+    });
+  }
+ 
+  // Create reset button
+  resetButton = {
+    x: width / 2,
+    y: 560,
+    w: 150,
+    h: 40
+  };
+}
+
+function draw() {
+  let level = levels[currentLevel];
+ 
+  // Background gradient
+  setGradient(0, 0, width, height,
+    color(75, 0, 130), color(138, 43, 226), color(219, 39, 119));
+ 
+  // Title
+  fill(255);
+  textSize(36);
+  textStyle(BOLD);
+  text("Light Switch Puzzle", width / 2, 40);
+ 
+  textSize(18);
+  textStyle(NORMAL);
+  text(`Level ${currentLevel + 1}`, width / 2, 75);
+ 
+  textSize(16);
+  if (currentLevel === 0) {
+    text("Figure out how the switches work!", width / 2, 100);
+  } else {
+    text("Turn on all the lightbulbs!", width / 2, 100);
+  }
+ 
+  // Moves counter
+  fill(255, 255, 255, 40);
+  rect(width / 2 - 100, 125, 200, 40, 10);
+  fill(255);
+  textSize(18);
+  text(`Moves: ${moves}`, width / 2, 145);
+ 
+  // Draw lightbulbs
+  textSize(16);
+  for (let i = 0; i < level.numBulbs; i++) {
+    let spacing = 800 / (level.numBulbs + 1);
+    let x = spacing * (i + 1);
+    let y = 240;
+   
+    // Bulb glow effect
+    if (bulbStates[i]) {
+      fill(255, 215, 0, 100);
+      noStroke();
+      circle(x, y, 90);
+      fill(255, 215, 0, 50);
+      circle(x, y, 110);
+    }
+   
+    // Bulb
+    fill(bulbStates[i] ? color(255, 215, 0) : color(80, 80, 80));
+    stroke(bulbStates[i] ? color(180, 140, 0) : color(60, 60, 60));
+    strokeWeight(3);
+    circle(x, y, 60);
+   
+    // Bulb base
+    fill(bulbStates[i] ? color(200, 160, 0) : color(60, 60, 60));
+    rect(x - 15, y + 25, 30, 15, 0, 0, 5, 5);
+   
+    // Label
+    fill(255);
+    noStroke();
+    textStyle(BOLD);
+    text(`Bulb ${i + 1}`, x, y + 60);
+    textStyle(NORMAL);
+  }
+ 
+  // Draw light switches
+  textSize(16);
+  for (let sw of switches) {
+    let hover = mouseX > sw.x - 40 && mouseX < sw.x + 40 &&
+                mouseY > sw.y - 60 && mouseY < sw.y + 60;
+   
+    // Switch plate (wall plate)
+    fill(hover ? color(220, 220, 220) : color(240, 240, 240));
+    stroke(180);
+    strokeWeight(2);
+    rect(sw.x - 40, sw.y - 60, 80, 120, 5);
+   
+    // Switch plate screws
+    fill(150);
+    noStroke();
+    circle(sw.x - 25, sw.y - 45, 6);
+    circle(sw.x + 25, sw.y - 45, 6);
+    circle(sw.x - 25, sw.y + 45, 6);
+    circle(sw.x + 25, sw.y + 45, 6);
+   
+    // Switch toggle
+    let toggleY = switchStates[sw.index] ? sw.y - 15 : sw.y + 15;
+   
+    // Toggle shadow
+    fill(0, 0, 0, 50);
+    rect(sw.x - 13, toggleY - 23, 26, 46, 3);
+   
+    // Toggle
+    fill(switchStates[sw.index] ? color(100, 200, 100) : color(200, 100, 100));
+    stroke(switchStates[sw.index] ? color(70, 150, 70) : color(150, 70, 70));
+    strokeWeight(2);
+    rect(sw.x - 15, toggleY - 25, 30, 50, 3);
+   
+    // Toggle highlight
+    fill(255, 255, 255, 80);
+    noStroke();
+    rect(sw.x - 12, toggleY - 22, 10, 30, 2);
+   
+    // Label
+    fill(255);
+    textStyle(BOLD);
+    textSize(16);
+    text(`Switch ${sw.index + 1}`, sw.x, sw.y + 80);
+    textStyle(NORMAL);
+  }
+ 
+  // Victory message
+  if (allLightsOn() && !showingVictory) {
+    showingVictory = true;
+  }
+ 
+  if (showingVictory) {
+    fill(34, 197, 94, 230);
+    rect(width / 2 - 250, height / 2 - 80, 500, 160, 15);
+   
+    fill(255);
+    textSize(32);
+    textStyle(BOLD);
+    text("🎉 Level Complete! 🎉", width / 2, height / 2 - 30);
+   
+    textSize(20);
+    textStyle(NORMAL);
+    text(`You solved it in ${moves} moves!`, width / 2, height / 2 + 10);
+   
+    if (currentLevel < levels.length - 1) {
+      textSize(16);
+      text("Click anywhere to continue to next level", width / 2, height / 2 + 45);
+    } else {
+      textSize(16);
+      text("You've completed all levels! Click Reset to play again", width / 2, height / 2 + 45);
+    }
+  }
+ 
+  // Reset button
+  let hoverReset = mouseX > resetButton.x - resetButton.w/2 &&
+                   mouseX < resetButton.x + resetButton.w/2 &&
+                   mouseY > resetButton.y - resetButton.h/2 &&
+                   mouseY < resetButton.y + resetButton.h/2;
+ 
+  fill(hoverReset ? color(255, 255, 255, 80) : color(255, 255, 255, 50));
+  noStroke();
+  rect(resetButton.x - resetButton.w/2, resetButton.y - resetButton.h/2,
+       resetButton.w, resetButton.h, 10);
+ 
+  fill(255);
+  textSize(16);
+  textStyle(BOLD);
+  text("Reset Game", resetButton.x, resetButton.y);
+  textStyle(NORMAL);
+}
+
+function mousePressed() {
+  // Check reset button first (highest priority)
+  if (mouseX > resetButton.x - resetButton.w/2 &&
+      mouseX < resetButton.x + resetButton.w/2 &&
+      mouseY > resetButton.y - resetButton.h/2 &&
+      mouseY < resetButton.y + resetButton.h/2) {
+    resetGame();
+    return;
+  }
+ 
+  // If showing victory, advance to next level
+  if (showingVictory) {
+    if (currentLevel < levels.length - 1) {
+      currentLevel++;
+      initLevel();
+    }
+    return;
+  }
+ 
+  // Check light switches
+  for (let sw of switches) {
+    if (mouseX > sw.x - 40 && mouseX < sw.x + 40 &&
+        mouseY > sw.y - 60 && mouseY < sw.y + 60) {
+      toggleSwitch(sw.index);
+      return;
+    }
+  }
+}
+
+function toggleSwitch(switchIndex) {
+  let level = levels[currentLevel];
+ 
+  // Toggle the switch position
+  switchStates[switchIndex] = !switchStates[switchIndex];
+ 
+  // Toggle affected bulbs
+  let affectedBulbs = level.switchToBulbs[switchIndex];
+  for (let bulbIndex of affectedBulbs) {
+    bulbStates[bulbIndex] = !bulbStates[bulbIndex];
+  }
+  moves++;
+}
+
+function resetGame() {
+  currentLevel = 0;
+  initLevel();
+}
+
+function allLightsOn() {
+  return bulbStates.every(state => state);
+}
+
+// Helper function for gradient background
+function setGradient(x, y, w, h, c1, c2, c3) {
+  noFill();
+  for (let i = y; i <= y + h; i++) {
+    let inter1 = map(i, y, y + h/2, 0, 1);
+    let inter2 = map(i, y + h/2, y + h, 0, 1);
+    let c;
+    if (i < y + h/2) {
+      c = lerpColor(c1, c2, inter1);
+    } else {
+      c = lerpColor(c2, c3, inter2);
+    }
+    stroke(c);
+    line(x, i, x + w, i);
+  }
+}
+  </script>
+</body>
+</html>

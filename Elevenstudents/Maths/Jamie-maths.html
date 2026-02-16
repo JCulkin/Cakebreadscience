@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL MATH NEXUS | Elevenstudents(best)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Orbitron', 'Courier New', monospace;
+            background: linear-gradient(45deg, #0a0e27, #1a0033, #330867, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 10s ease infinite;
+            min-height: 100vh;
+            color: #00ffff;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 3.5em;
+            text-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff;
+            animation: glitch 2s ease-in-out infinite;
+            color: #00ffff;
+            letter-spacing: 3px;
+        }
+
+        @keyframes glitch {
+            0%, 100% { 
+                transform: translateX(0);
+                filter: hue-rotate(0deg);
+            }
+            20% { 
+                transform: translateX(-2px);
+                filter: hue-rotate(90deg);
+            }
+            40% { 
+                transform: translateX(2px);
+                filter: hue-rotate(180deg);
+            }
+            60% { 
+                transform: translateX(-1px);
+                filter: hue-rotate(270deg);
+            }
+            80% { 
+                transform: translateX(1px);
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        .back-link {
+            color: #00ffff;
+            text-decoration: none;
+            opacity: 0.9;
+            transition: all 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ffff;
+            border: 2px solid #00ffff;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .back-link:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        .game-box {
+            background: rgba(10, 14, 39, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.3), inset 0 0 30px rgba(255, 0, 255, 0.1);
+            border: 3px solid #00ffff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mode-display {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            text-shadow: 0 0 15px currentColor;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 20px currentColor;
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 0 30px currentColor;
+            }
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #00ff88;
+            font-weight: bold;
+            text-shadow: 0 0 10px #00ff88;
+        }
+
+        .timer-display {
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #ff00ff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px #ff00ff;
+        }
+
+        .timer-warning {
+            animation: timerPulse 0.5s ease-in-out infinite;
+            color: #ff0066;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { 
+                transform: scale(1);
+                color: #ff0066;
+            }
+            50% { 
+                transform: scale(1.3);
+                color: #ff3366;
+            }
+        }
+
+        .question-box {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.1) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2), inset 0 0 20px rgba(255, 0, 255, 0.1);
+            border: 2px solid #00ffff;
+        }
+
+        .question {
+            font-size: 3em;
+            text-align: center;
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 20px;
+        }
+
+        .answer-input {
+            width: 100%;
+            font-size: 2em;
+            padding: 15px;
+            border: 3px solid #00ffff;
+            border-radius: 10px;
+            text-align: center;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            color: #00ffff;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px currentColor;
+            font-family: 'Orbitron', monospace;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px currentColor;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #00ff88 0%, #00ffff 100%);
+            color: #0a0e27;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .btn-mode {
+            background: linear-gradient(135deg, #ff00ff 0%, #ff0088 100%);
+            color: white;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            margin-top: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .correct {
+            color: #00ff88;
+            animation: bounce 0.5s ease;
+            text-shadow: 0 0 20px #00ff88;
+        }
+
+        .wrong {
+            color: #ff0066;
+            animation: shake 0.5s ease;
+            text-shadow: 0 0 20px #ff0066;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .emoji-rain {
+            position: fixed;
+            font-size: 3em;
+            animation: fall 3s linear;
+            pointer-events: none;
+            z-index: 1000;
+            text-shadow: 0 0 20px currentColor;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        .comet {
+            position: fixed;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: comet 2s linear;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff;
+        }
+
+        @keyframes comet {
+            0% { transform: translateX(-200px) translateY(0) rotate(-45deg); opacity: 1; }
+            100% { transform: translateX(150vw) translateY(100vh) rotate(-45deg); opacity: 0; }
+        }
+
+        .flash-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0;
+        }
+
+        .mode-normal { 
+            background: linear-gradient(135deg, #00ffff 0%, #0088ff 100%);
+            color: #00ffff;
+        }
+        .mode-cyber { 
+            background: linear-gradient(135deg, #ff00ff 0%, #ff0088 100%);
+            color: #ff00ff;
+        }
+        .mode-neon { 
+            background: linear-gradient(135deg, #00ff88 0%, #00ffff 100%);
+            color: #00ff88;
+        }
+        .mode-glitch { 
+            background: linear-gradient(135deg, #ff0066 0%, #ffaa00 100%);
+            color: #ff0066;
+            animation: spin 2s linear infinite;
+        }
+        .mode-quantum { 
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ff00ff, #00ffff);
+            background-size: 400% 400%;
+            animation: gradientShift 1s ease infinite;
+            color: #ff00ff;
+        }
+
+        @keyframes spin {
+            from { filter: hue-rotate(0deg); }
+            to { filter: hue-rotate(360deg); }
+        }
+
+        .high-score {
+            text-align: center;
+            color: #ff00ff;
+            font-size: 1.2em;
+            margin-top: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .difficulty-effect-1 { 
+            filter: hue-rotate(60deg) saturate(1.5);
+            animation: flicker 3s ease-in-out infinite;
+        }
+        .difficulty-effect-2 { 
+            filter: hue-rotate(120deg) contrast(1.5) saturate(2);
+            animation: flicker 2s ease-in-out infinite;
+        }
+        .difficulty-effect-3 { 
+            filter: hue-rotate(180deg) contrast(2) saturate(2.5);
+            animation: flicker 1.5s ease-in-out infinite;
+        }
+        .difficulty-effect-4 { 
+            filter: hue-rotate(240deg) contrast(2.5) saturate(3);
+            animation: flicker 1s ease-in-out infinite;
+        }
+        .difficulty-effect-5 { 
+            filter: hue-rotate(300deg) contrast(3) saturate(3.5);
+            animation: flicker 0.5s ease-in-out infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes wobble {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            25% { transform: translateX(-3px) rotate(-1deg); }
+            75% { transform: translateX(3px) rotate(1deg); }
+        }
+
+        /* Trivia popup styles */
+        .trivia-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(10, 14, 39, 0.95);
+            color: #00ffff;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            z-index: 1001;
+            box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
+            transition: transform 0.3s ease;
+            border: 2px solid #00ffff;
+        }
+
+        .trivia-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .trivia-title {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #ff00ff;
+            text-align: center;
+            text-shadow: 0 0 15px #ff00ff;
+        }
+
+        .trivia-content {
+            font-size: 1.2em;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+
+        .trivia-close {
+            background: linear-gradient(135deg, #00ff88 0%, #00ffff 100%);
+            color: #0a0e27;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .trivia-close:hover {
+            box-shadow: 0 0 20px #00ffff;
+        }
+
+        /* Power-up styles */
+        .power-up {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            cursor: pointer;
+            z-index: 100;
+            animation: powerUpFloat 5s ease-in-out infinite;
+            box-shadow: 0 0 30px currentColor;
+            border: 2px solid currentColor;
+        }
+
+        @keyframes powerUpFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .power-up:hover {
+            transform: scale(1.2);
+        }
+
+        .power-up-time {
+            color: #00ff88;
+            border-color: #00ff88;
+        }
+
+        .power-up-skip {
+            color: #ff00ff;
+            border-color: #ff00ff;
+        }
+
+        .power-up-hint {
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+
+        /* Streak counter */
+        .streak-display {
+            text-align: center;
+            font-size: 1.5em;
+            color: #ff00ff;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .streak-fire {
+            display: inline-block;
+            animation: fire 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes fire {
+            from { transform: scale(1); color: #ff00ff; }
+            to { transform: scale(1.2); color: #ff0088; }
+        }
+
+        /* Keyboard shortcuts hint */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(10, 14, 39, 0.9);
+            color: #00ffff;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            z-index: 100;
+            max-width: 300px;
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .key {
+            display: inline-block;
+            background: rgba(0, 255, 255, 0.2);
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin: 0 2px;
+            font-weight: bold;
+            border: 1px solid #00ffff;
+        }
+
+        /* Import Orbitron font */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+    </style>
+</head>
+<body>
+    <div class="flash-overlay" id="flashOverlay"></div>
+    
+    <!-- Trivia popup -->
+    <div class="trivia-popup" id="triviaPopup">
+        <div class="trivia-title">🧠 CYBER TRIVIA!</div>
+        <div class="trivia-content" id="triviaContent"></div>
+        <button class="trivia-close" onclick="closeTrivia()">ACCESS GRANTED</button>
+    </div>
+    
+    <!-- Keyboard shortcuts hint -->
+    <div class="keyboard-hint">
+        <div>NEURAL CONTROLS:</div>
+        <div><span class="key">Enter</span> Submit answer</div>
+        <div><span class="key">1-5</span> Change mode</div>
+        <div><span class="key">T</span> Show trivia</div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← EXIT NEXUS</a>
+            <h1>⚡ NEURAL MATH NEXUS ⚡</h1>
+        </header>
+
+        <div class="game-box" id="gameBox">
+            <div id="modeDisplay" class="mode-display mode-normal">NORMAL MODE</div>
+            <div class="score-display">
+                Score: <span id="score">0</span>
+            </div>
+            <div class="streak-display" id="streakDisplay">
+                Streak: <span id="streak">0</span> <span id="streakFire"></span>
+            </div>
+            <div class="timer-display" id="timer">⏱️ 15</div>
+            <div class="high-score">
+                High Score: <span id="highScore">0</span>
+            </div>
+
+            <div class="question-box">
+                <div id="question" class="question">INITIALIZE NEURAL LINK...</div>
+                <input type="number" id="answer" class="answer-input" placeholder="?" disabled>
+            </div>
+
+            <div class="button-group">
+                <button id="submitBtn" class="btn-submit" disabled>TRANSMIT ANSWER</button>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-mode" onclick="setMode('normal')">Normal Mode</button>
+                <button class="btn-mode" onclick="setMode('cyber')">🔮 Cyber Mode</button>
+                <button class="btn-mode" onclick="setMode('neon')">💠 Neon Mode</button>
+                <button class="btn-mode" onclick="setMode('glitch')">🌀 Glitch Mode</button>
+                <button class="btn-mode" onclick="setMode('quantum')">⚛️ Quantum Mode</button>
+            </div>
+
+            <div id="feedback" class="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('neuralMathHighScore') || '0');
+        let currentQuestion = {};
+        let mode = 'normal';
+        let isPlaying = false;
+        let timeLeft = 15;
+        let timerInterval = null;
+        let difficultyLevel = 0;
+        let cometInterval = null;
+        let flashInterval = null;
+        let streak = 0;
+        let triviaTimeout = null;
+        let powerUpTimeout = null;
+
+        const modes = {
+            normal: { name: 'NORMAL MODE', maxNum: 12, emoji: '⚡', bgClass: 'mode-normal' },
+            cyber: { name: '🔮 CYBER MODE 🔮', maxNum: 20, emoji: '🔮', bgClass: 'mode-cyber' },
+            neon: { name: '💠 NEON MODE 💠', maxNum: 15, emoji: '💠', bgClass: 'mode-neon' },
+            glitch: { name: '🌀 GLITCH MODE 🌀', maxNum: 50, emoji: '🌀', bgClass: 'mode-glitch' },
+            quantum: { name: '⚛️ QUANTUM MODE ⚛️', maxNum: 99, emoji: '⚛️', bgClass: 'mode-quantum' }
+        };
+
+        const triviaFacts = [
+            "Quantum computers use qubits that can exist in multiple states simultaneously.",
+            "The first computer bug was literally a bug - a moth trapped in a Harvard Mark II computer in 1947.",
+            "The term 'bug' in programming was popularized by Grace Hopper, a pioneer of computer programming.",
+            "Binary code (0s and 1s) was invented by Gottfried Leibniz in the 17th century.",
+            "The first computer virus was created in 1983 and was designed to infect Apple II systems.",
+            "The word 'algorithm' comes from the name of Persian mathematician Al-Khwarizmi.",
+            "The first computer programmer was Ada Lovelace, who wrote algorithms in the 1840s.",
+            "Quantum entanglement allows particles to be connected across vast distances instantly.",
+            "The first electronic computer ENIAC weighed 30 tons and filled an entire room.",
+            "The term 'byte' was coined by Werner Buchholz in 1956.",
+            "The first computer mouse was made of wood and invented by Doug Engelbart in 1964.",
+            "The ASCII character set was developed in 1963 and is still used today.",
+            "The first 1GB hard drive in 1980 cost $40,000 and weighed 550 pounds.",
+            "The term 'firewall' in cybersecurity was coined in the late 1980s.",
+            "The first computer game 'Spacewar!' was created in 1962 on a PDP-1 computer."
+        ];
+
+        document.getElementById('highScore').textContent = highScore;
+        
+        // Enhanced keyboard controls
+        document.addEventListener('keydown', (e) => {
+            // Enter key to submit answer
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!isPlaying) {
+                    startGame();
+                } else {
+                    checkAnswer();
+                }
+            }
+            
+            // Number keys 1-5 to change modes
+            else if (e.key >= '1' && e.key <= '5') {
+                const modeKeys = ['normal', 'cyber', 'neon', 'glitch', 'quantum'];
+                setMode(modeKeys[parseInt(e.key) - 1]);
+            }
+            
+            // T key to show trivia
+            else if (e.key === 't' || e.key === 'T') {
+                showTrivia();
+            }
+        });
+        
+        document.getElementById('answer').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                checkAnswer();
+            }
+        });
+        
+        document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+
+        function setMode(newMode) {
+            mode = newMode;
+            const modeInfo = modes[mode];
+            const display = document.getElementById('modeDisplay');
+            display.textContent = modeInfo.name;
+            display.className = 'mode-display ' + modeInfo.bgClass;
+            
+            if (!isPlaying) {
+                startGame();
+            } else {
+                generateQuestion();
+            }
+        }
+
+        function startGame() {
+            isPlaying = true;
+            score = 0;
+            streak = 0;
+            difficultyLevel = 0;
+            updateScore();
+            updateStreak();
+            updateDifficulty();
+            document.getElementById('answer').disabled = false;
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('feedback').textContent = '';
+            generateQuestion();
+            
+            // Schedule trivia popup
+            scheduleTrivia();
+            
+            // Schedule power-ups
+            schedulePowerUp();
+        }
+
+        function scheduleTrivia() {
+            // Clear any existing trivia timeout
+            if (triviaTimeout) clearTimeout(triviaTimeout);
+            
+            // Schedule next trivia in 30-60 seconds
+            const delay = 30000 + Math.random() * 30000;
+            triviaTimeout = setTimeout(showTrivia, delay);
+        }
+
+        function showTrivia() {
+            const randomIndex = Math.floor(Math.random() * triviaFacts.length);
+            document.getElementById('triviaContent').textContent = triviaFacts[randomIndex];
+            document.getElementById('triviaPopup').classList.add('show');
+            
+            // Schedule next trivia
+            scheduleTrivia();
+        }
+
+        function closeTrivia() {
+            document.getElementById('triviaPopup').classList.remove('show');
+        }
+
+        function schedulePowerUp() {
+            // Clear any existing power-up timeout
+            if (powerUpTimeout) clearTimeout(powerUpTimeout);
+            
+            // Schedule next power-up in 15-30 seconds
+            const delay = 15000 + Math.random() * 15000;
+            powerUpTimeout = setTimeout(createPowerUp, delay);
+        }
+
+        function createPowerUp() {
+            const powerUpTypes = ['time', 'skip', 'hint'];
+            const type = powerUpTypes[Math.floor(Math.random() * powerUpTypes.length)];
+            
+            const powerUp = document.createElement('div');
+            powerUp.className = `power-up power-up-${type}`;
+            
+            if (type === 'time') {
+                powerUp.innerHTML = '⏱️';
+                powerUp.title = 'Click for +5 seconds!';
+            } else if (type === 'skip') {
+                powerUp.innerHTML = '⏭️';
+                powerUp.title = 'Click to skip this question!';
+            } else {
+                powerUp.innerHTML = '💡';
+                powerUp.title = 'Click for a hint!';
+            }
+            
+            // Random position
+            powerUp.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+            powerUp.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+            
+            powerUp.addEventListener('click', () => usePowerUp(type, powerUp));
+            
+            document.body.appendChild(powerUp);
+            
+            // Remove after 10 seconds if not clicked
+            setTimeout(() => {
+                if (powerUp.parentNode) {
+                    powerUp.remove();
+                }
+            }, 10000);
+            
+            // Schedule next power-up
+            schedulePowerUp();
+        }
+
+        function usePowerUp(type, element) {
+            element.remove();
+            
+            if (type === 'time') {
+                timeLeft += 5;
+                updateTimerDisplay();
+                makeEmojiRain('⏱️');
+            } else if (type === 'skip') {
+                generateQuestion();
+                makeEmojiRain('⏭️');
+            } else if (type === 'hint') {
+                const { num1, num2, op } = currentQuestion;
+                let hint = '';
+                
+                if (op === '+') {
+                    hint = `NEURAL HINT: Add ${num1} and ${num2}`;
+                } else if (op === '-') {
+                    hint = `NEURAL HINT: Subtract ${num2} from ${num1}`;
+                } else if (op === '×') {
+                    hint = `NEURAL HINT: Multiply ${num1} by ${num2}`;
+                } else if (op === '÷') {
+                    hint = `NEURAL HINT: Divide ${num1} by ${num2}`;
+                }
+                
+                document.getElementById('feedback').textContent = hint;
+                document.getElementById('feedback').className = 'feedback';
+                makeEmojiRain('💡');
+            }
+        }
+
+        function startTimer() {
+            timeLeft = 15;
+            updateTimerDisplay();
+            
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timeOut();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = `⏱️ ${timeLeft}`;
+            
+            if (timeLeft <= 3) {
+                timerEl.classList.add('timer-warning');
+            } else {
+                timerEl.classList.remove('timer-warning');
+            }
+        }
+
+        function timeOut() {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = `⚡ NEURAL TIMEOUT! Answer was ${currentQuestion.answer}. SYSTEM RESET!`;
+            feedback.className = 'feedback wrong';
+            makeEmojiRain('⚡');
+            score = 0;
+            streak = 0;
+            updateScore();
+            updateStreak();
+            updateDifficulty();
+            setTimeout(() => generateQuestion(), 2000);
+        }
+
+        function generateQuestion() {
+            const modeInfo = modes[mode];
+            const operations = ['+', '-', '×'];
+            
+            if (mode === 'glitch' || mode === 'quantum') {
+                operations.push('÷');
+            }
+            
+            const op = operations[Math.floor(Math.random() * operations.length)];
+            let num1 = Math.floor(Math.random() * modeInfo.maxNum) + 1;
+            let num2 = Math.floor(Math.random() * modeInfo.maxNum) + 1;
+            
+            if (op === '÷') {
+                num2 = Math.floor(Math.random() * 10) + 1;
+                num1 = num2 * (Math.floor(Math.random() * 10) + 1);
+            }
+            
+            if (op === '-' && num2 > num1) {
+                [num1, num2] = [num2, num1];
+            }
+            
+            let answer;
+            switch(op) {
+                case '+': answer = num1 + num2; break;
+                case '-': answer = num1 - num2; break;
+                case '×': answer = num1 * num2; break;
+                case '÷': answer = num1 / num2; break;
+            }
+            
+            currentQuestion = { num1, num2, op, answer };
+            document.getElementById('question').textContent = `${num1} ${op} ${num2} = ?`;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+            
+            startTimer();
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseInt(document.getElementById('answer').value);
+            const feedback = document.getElementById('feedback');
+            
+            if (isNaN(userAnswer)) {
+                feedback.textContent = '⚠️ NEURAL ERROR: Input numeric value!';
+                feedback.className = 'feedback';
+                return;
+            }
+            
+            clearInterval(timerInterval);
+            
+            if (userAnswer === currentQuestion.answer) {
+                score++;
+                streak++;
+                difficultyLevel = Math.floor(score / 3);
+                updateScore();
+                updateStreak();
+                updateDifficulty();
+                feedback.textContent = '✅ NEURAL SYNC SUCCESS! ' + modes[mode].emoji;
+                feedback.className = 'feedback correct';
+                makeEmojiRain(modes[mode].emoji);
+                
+                // Bonus time for streaks
+                if (streak > 0 && streak % 5 === 0) {
+                    timeLeft += 3;
+                    updateTimerDisplay();
+                    feedback.textContent += ' STREAK BONUS! +3 seconds';
+                }
+                
+                setTimeout(generateQuestion, 1000);
+            } else {
+                feedback.textContent = `❌ NEURAL MISMATCH! Answer was ${currentQuestion.answer}. SYSTEM RESET!`;
+                feedback.className = 'feedback wrong';
+                makeEmojiRain('💀');
+                score = 0;
+                streak = 0;
+                updateScore();
+                updateStreak();
+                updateDifficulty();
+                setTimeout(generateQuestion, 2000);
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            if (score > highScore) {
+                highScore = score;
+                document.getElementById('highScore').textContent = highScore;
+                localStorage.setItem('neuralMathHighScore', highScore.toString());
+            }
+        }
+
+        function updateStreak() {
+            document.getElementById('streak').textContent = streak;
+            const fireElement = document.getElementById('streakFire');
+            
+            if (streak >= 5) {
+                fireElement.innerHTML = '<span class="streak-fire">⚡</span>'.repeat(Math.floor(streak / 5));
+            } else {
+                fireElement.innerHTML = '';
+            }
+        }
+
+        function updateDifficulty() {
+            const gameBox = document.getElementById('gameBox');
+            
+            // Remove old difficulty classes
+            gameBox.className = 'game-box';
+            
+            // Add difficulty effects
+            if (difficultyLevel > 0) {
+                gameBox.classList.add(`difficulty-effect-${Math.min(difficultyLevel, 5)}`);
+            }
+            
+            // Clear old intervals
+            if (cometInterval) clearInterval(cometInterval);
+            if (flashInterval) clearInterval(flashInterval);
+            
+            // Add comets based on difficulty
+            if (difficultyLevel >= 2) {
+                const cometFrequency = Math.max(1000 - (difficultyLevel * 200), 300);
+                cometInterval = setInterval(createComet, cometFrequency);
+            }
+            
+            // Add flashing based on difficulty
+            if (difficultyLevel >= 4) {
+                const flashFrequency = Math.max(2000 - (difficultyLevel * 200), 500);
+                flashInterval = setInterval(flashScreen, flashFrequency);
+            }
+        }
+
+        function createComet() {
+            const comet = document.createElement('div');
+            comet.className = 'comet';
+            comet.style.top = Math.random() * 50 + '%';
+            comet.style.left = '-100px';
+            
+            const colors = ['#00ffff', '#ff00ff', '#00ff88', '#ff0066', '#ffaa00'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            comet.style.background = `linear-gradient(90deg, transparent, ${color}, transparent)`;
+            comet.style.boxShadow = `0 0 20px ${color}, 0 0 40px ${color}`;
+            
+            document.body.appendChild(comet);
+            setTimeout(() => comet.remove(), 2000);
+        }
+
+        function flashScreen() {
+            const flash = document.getElementById('flashOverlay');
+            const colors = ['rgba(0,255,255,0.3)', 'rgba(255,0,255,0.3)', 'rgba(0,255,136,0.3)', 'rgba(255,0,102,0.3)'];
+            flash.style.background = colors[Math.floor(Math.random() * colors.length)];
+            flash.style.opacity = '1';
+            setTimeout(() => {
+                flash.style.opacity = '0';
+            }, 100);
+        }
+
+        function makeEmojiRain(emoji) {
+            const count = 15 + difficultyLevel * 5;
+            for (let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const emojiEl = document.createElement('div');
+                    emojiEl.className = 'emoji-rain';
+                    emojiEl.textContent = emoji;
+                    emojiEl.style.left = Math.random() * 100 + '%';
+                    emojiEl.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(emojiEl);
+                    setTimeout(() => emojiEl.remove(), 4000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>

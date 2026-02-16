@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organism Identification Game</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .controls .toggle {
+            color: white;
+            margin: 0 8px;
+            font-size: 1em;
+        }
+        .controls input { margin-right: 6px; }
+        .top-link {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.35);
+            backdrop-filter: blur(4px);
+        }
+        .top-link:hover {
+            background: rgba(255,255,255,0.25);
+        }
+        .btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        .btn:active {
+            transform: translateY(0);
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(var(--cols, 3), 1fr);
+            gap: 25px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .game-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .team-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            background: #667eea;
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+            border: 2px solid #fff;
+        }
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        .game-card.revealed {
+            background: #e8f5e9;
+            cursor: default;
+        }
+        .game-card.revealed:hover {
+            transform: scale(1);
+        }
+        .organism-image {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            display: block;
+        }
+        .organism-name {
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 1.2em;
+            color: #333;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .game-card.revealed .organism-name {
+            opacity: 1;
+        }
+        .common-name {
+            font-weight: bold;
+            font-size: 1.4em;
+            margin-bottom: 4px;
+        }
+        .scientific-name {
+            font-style: italic;
+            font-size: 1.1em;
+            color: #666;
+        }
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            padding: 40px;
+        }
+        .scoreboard {
+            margin-top: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+        }
+        .score-tile {
+            background: rgba(255,255,255,0.9);
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none;
+        }
+        .score-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+        }
+        .score-team {
+            font-weight: 700;
+            color: #4a4a4a;
+            margin-bottom: 6px;
+        }
+        .score-value {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <a class="top-link" href="gallery.html">Organisms gallery</a>
+    <div class="header">
+        <h1>🔬 Organism Identification Game</h1>
+        <div class="subtitle">Click an image to reveal its name!</div>
+    </div>
+    
+    <div class="controls">
+        <label class="toggle"><input type="checkbox" id="chk-animals" checked> Animals</label>
+        <label class="toggle"><input type="checkbox" id="chk-plants"> Plants</label>
+        <label class="toggle"><input type="checkbox" id="chk-fungi"> Fungi</label>
+        <label class="toggle"><input type="checkbox" id="chk-bacteria"> Bacteria</label>
+        <label class="toggle"><input type="checkbox" id="chk-protoctists"> Protoctists</label>
+        <label class="toggle" style="margin-left:16px;">
+            Teams
+            <input type="number" id="teams-count" value="4" min="1" max="12" style="width:70px; margin-left:6px;">
+        </label>
+        <div style="margin-top:12px;">
+            <button class="btn" onclick="resetGame()">🔄 New random set</button>
+        </div>
+    </div>
+
+    <div id="game-container" class="game-container">
+        <div class="loading">Loading organisms...</div>
+    </div>
+
+    <div id="scoreboard" class="scoreboard"></div>
+
+    <script src="organisms_data.js"></script>
+    <script src="organisms_images.js"></script>
+    <script>
+        const placeholderUrl = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Crect fill='%23ddd' width='320' height='320'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='14'%3ENo image%3C/text%3E%3C/svg%3E`;
+        const imageFolder = 'images';
+        const imageMap = window.organismImages || {};
+        let allOrganisms = [];
+        let teamScores = [];
+        let lastTeamsCount = 0;
+
+        // Flattened pool for sampling
+        const organismPool = Object.values(sectionOrganisms).flat();
+
+        function getRandomSample(arr, count) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy.slice(0, count);
+        }
+
+        function getSelectedPool() {
+            const selected = [];
+            const map = {
+                animals: 'chk-animals',
+                plants: 'chk-plants',
+                fungi: 'chk-fungi',
+                bacteria: 'chk-bacteria',
+                protoctists: 'chk-protoctists'
+            };
+            for (const [key, id] of Object.entries(map)) {
+                const el = document.getElementById(id);
+                if (el && el.checked) {
+                    selected.push(...sectionOrganisms[key]);
+                }
+            }
+            return selected;
+        }
+
+        function buildLocalData(organism) {
+            const fileName = imageMap[organism.scientific];
+            return {
+                photoUrl: fileName ? `${imageFolder}/${fileName}` : placeholderUrl,
+                commonName: organism.common,
+                scientificName: organism.scientific,
+                taxonId: null
+            };
+        }
+
+        function revealCard(cardElement) {
+            if (cardElement.classList.contains('revealed')) return;
+            cardElement.classList.add('revealed');
+        }
+
+        async function resetGame() {
+            await loadNewSet();
+        }
+
+        function renderScores() {
+            const scoreboard = document.getElementById('scoreboard');
+            const teamsInput = document.getElementById('teams-count');
+            const teamsCount = Math.max(1, parseInt(teamsInput?.value || '4', 10));
+            if (teamsCount !== lastTeamsCount) {
+                const nextScores = new Array(teamsCount).fill(0);
+                for (let i = 0; i < Math.min(teamScores.length, teamsCount); i++) {
+                    nextScores[i] = teamScores[i];
+                }
+                teamScores = nextScores;
+                lastTeamsCount = teamsCount;
+            }
+
+            scoreboard.innerHTML = '';
+
+            for (let i = 1; i <= teamsCount; i++) {
+                const score = teamScores[i - 1] ?? 0;
+                const tile = document.createElement('div');
+                tile.className = 'score-tile';
+                tile.dataset.team = i.toString();
+                tile.dataset.score = score.toString();
+                tile.innerHTML = `
+                    <div class="score-team">Team ${i}</div>
+                    <div class="score-value">${score}</div>
+                `;
+                tile.addEventListener('click', () => {
+                    teamScores[i - 1] = (teamScores[i - 1] ?? 0) + 1;
+                    tile.dataset.score = teamScores[i - 1].toString();
+                    const valueEl = tile.querySelector('.score-value');
+                    if (valueEl) {
+                        valueEl.textContent = teamScores[i - 1].toString();
+                    }
+                });
+                scoreboard.appendChild(tile);
+            }
+        }
+
+        function renderCards() {
+            const container = document.getElementById('game-container');
+            container.innerHTML = '';
+            const teamsInput = document.getElementById('teams-count');
+            const teamsCount = Math.max(1, parseInt(teamsInput?.value || '4', 10));
+            container.style.setProperty('--cols', teamsCount.toString());
+            renderScores();
+            
+            allOrganisms.forEach((org, index) => {
+                const teamNumber = (index % teamsCount) + 1;
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.onclick = () => revealCard(card);
+                card.addEventListener('contextmenu', (event) => {
+                    event.preventDefault();
+                    const targetUrl = org.taxonId
+                        ? `https://www.inaturalist.org/taxa/${org.taxonId}`
+                        : `https://www.inaturalist.org/taxa/search?q=${encodeURIComponent(org.scientificName)}`;
+                    window.open(targetUrl, '_blank', 'noopener');
+                });
+                
+                card.innerHTML = `
+                    <div class="team-badge">${teamNumber}</div>
+                    <img src="${org.photoUrl}" alt="?" class="organism-image" 
+                         onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22320%22 height=%22320%22%3E%3Crect fill=%22%23ddd%22 width=%22320%22 height=%22320%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2214%22%3ENo image%3C/text%3E%3C/svg%3E';">
+                    <div class="organism-name">
+                        <div class="common-name">${org.commonName}</div>
+                        <div class="scientific-name">${org.scientificName}</div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        async function loadNewSet() {
+            try {
+                const container = document.getElementById('game-container');
+                container.innerHTML = '<div class="loading">Loading organisms...</div>';
+                allOrganisms = [];
+
+                const pool = getSelectedPool();
+                if (pool.length === 0) {
+                    container.innerHTML = '<div class="loading">Select at least one kingdom.</div>';
+                    return;
+                }
+
+                const teamsInput = document.getElementById('teams-count');
+                const teamsCount = Math.max(1, parseInt(teamsInput?.value || '4', 10));
+                container.style.setProperty('--cols', teamsCount.toString());
+                renderScores();
+                const sample = getRandomSample(pool, Math.min(teamsCount, pool.length));
+                for (const organism of sample) {
+                    const data = buildLocalData(organism);
+                    allOrganisms.push(data);
+                }
+                renderCards();
+            } catch (error) {
+                console.error('Error loading game:', error);
+                document.getElementById('game-container').innerHTML = '<div class="loading">Error loading organisms. Please refresh.</div>';
+            }
+        }
+
+        async function loadGame() {
+            await loadNewSet();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            ['animals','plants','fungi','bacteria','protoctists'].forEach(key => {
+                const el = document.getElementById(`chk-${key}`);
+                if (el) {
+                    el.addEventListener('change', loadNewSet);
+                }
+            });
+            const teamsInput = document.getElementById('teams-count');
+            if (teamsInput) {
+                let teamsDebounce = null;
+                teamsInput.addEventListener('change', loadNewSet);
+                teamsInput.addEventListener('input', () => {
+                    const container = document.getElementById('game-container');
+                    const teamsCount = Math.max(1, parseInt(teamsInput.value || '4', 10));
+                    container.style.setProperty('--cols', teamsCount.toString());
+                    renderScores();
+                    if (teamsDebounce) {
+                        clearTimeout(teamsDebounce);
+                    }
+                    teamsDebounce = setTimeout(() => {
+                        loadNewSet();
+                    }, 250);
+                });
+            }
+            loadGame();
+        });
+    </script>
+</body>
+</html>

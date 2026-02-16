@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[SUBJECT] - [TOPIC] Worksheet</title>
+    <link rel="stylesheet" href="../../css/maths.css">
+</head>
+<body>
+    <!-- HEADER SECTION -->
+    <div class="header">
+        <h1>[TOPIC NAME]</h1>
+        <div class="subtitle">IGCSE Edexcel [SUBJECT]</div>
+    </div>
+
+    <!-- KEY CONCEPTS BOX -->
+    <div class="definition-box">
+        <strong>Key Concept:</strong><br>
+        [Explain the main concept students should understand]
+    </div>
+
+    <!-- SECTION 1 -->
+    <h2 class="[subject]-section">Section A: [SECTION TITLE]</h2>
+
+    <div class="question">
+        <div class="question-number">1. [Question text] <span class="marks">[X]</span></div>
+        <div class="answer-space"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">2. [Question text] <span class="marks">[X]</span></div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <h2 class="[subject]-section">Section B: [SECTION TITLE]</h2>
+
+    <div class="question">
+        <div class="question-number">3. [Question text] <span class="marks">[X]</span></div>
+        
+        <p><strong>a)</strong> [Sub-question]</p>
+        <div class="answer-space"></div>
+
+        <p><strong>b)</strong> [Sub-question]</p>
+        <div class="answer-space"></div>
+    </div>
+
+    <!-- DIAGRAM/TABLE EXAMPLE -->
+    <div class="question">
+        <div class="question-number">4. [Question with visual] <span class="marks">[X]</span></div>
+        <div class="venn-space"></div>
+    </div>
+
+    <!-- TOTAL MARKS -->
+    <p class="total-marks">Total: [XX marks]</p>
+
+</body>
+</html>
+
+<!-- 
+NOTES FOR NEW WORKSHEET CREATION:
+
+1. SUBJECT CLASSES:
+   Use one of: maths-section, physics-section, chemistry-section, biology-section
+   
+2. ANSWER SPACE SIZES:
+   - .answer-space (default, 30px) - for short answers
+   - .answer-space.large (60px) - for medium answers
+   - .venn-space (140px) - for diagrams/venn diagrams
+   - .diagram-box (140px) - for drawings
+   - .grid-space (120px) - for graph paper
+
+3. MARKS:
+   Always use: <span class="marks">[X]</span>
+   where X is the number of marks
+   
+4. QUESTION STRUCTURE:
+   <div class="question">
+       <div class="question-number">1. Question <span class="marks">[2]</span></div>
+       <div class="answer-space"></div>
+   </div>
+
+5. SUB-QUESTIONS:
+   <p><strong>a)</strong> Text</p>
+   <div class="answer-space"></div>
+
+6. TABLES:
+   Use standard HTML tables - CSS styles them automatically
+   
+7. FILE NAMING:
+   [subject]_[topic]_worksheet.html
+   Examples: maths_quadratics_worksheet.html
+            physics_waves_worksheet.html
+            
+8. RELATIVE PATHS:
+   Always use: href="../../css/maths.css"
+   This works from any depth in resources/
+
+9. PRINT OPTIMIZATION:
+   Content automatically optimizes for printing via CSS
+   No additional action needed!
+
+10. FUTURE: METADATA
+    When ready, add to worksheet folder's metadata.json:
+    {
+        "id": "maths_quadratics_01",
+        "title": "Quadratic Equations",
+        "topics": ["quadratics", "factoring"],
+        "level": "IGCSE",
+        "marks": 25,
+        "estimatedTime": "45 minutes"
+    }
+-->

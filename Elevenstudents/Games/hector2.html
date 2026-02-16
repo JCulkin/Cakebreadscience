@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Dash 2025</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #0a0a19;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .nav-links {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .nav-links a {
+            color: #00ffff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px #00ffff;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="../index.html">← Back to Home</a>
+        <a href="../highscores.html" style="margin-left: 20px;">🏆 High Scores</a>
+    </div>
+
+    <script>
+let player;
+let obstacles = [];
+let platforms = [];
+let particles = [];
+let gameState = "MENU";
+let score = 0;
+let currentLevel = 1;
+let lastSpawnFrame = 0;
+let nextSpawnInterval = 60;
+let shakeAmount = 0;
+
+// Level Definition: Speed, Gravity, Jump Power, Colors
+const levels = {
+1: { name: "CHILL",   color: '#00ffff', speed: 6,  grav: 0.7, jump: -15, interval: [60, 90] },
+2: { name: "NEON",    color: '#ff00ff', speed: 9,  grav: 0.8, jump: -16, interval: [50, 80] },
+3: { name: "STORM",   color: '#ffff00', speed: 12, grav: 1.0, jump: -18, interval: [40, 70] },
+4: { name: "VOID",    color: '#7000ff', speed: 15, grav: 1.2, jump: -20, interval: [35, 60] },
+5: { name: "HARDCORE",color: '#ff0000', speed: 20, grav: 1.5, jump: -22, interval: [30, 50] }
+};
+
+function setup() {
+createCanvas(windowWidth, windowHeight);
+player = new Player();
+rectMode(CENTER);
+}
+
+function draw() {
+let cfg = levels[currentLevel];
+background(10, 10, 25);
+
+// Draw Background Grid
+drawGrid(cfg.speed, cfg.color);
+
+if (shakeAmount > 0) {
+translate(random(-shakeAmount, shakeAmount), random(-shakeAmount, shakeAmount));
+shakeAmount *= 0.9;
+}
+
+if (gameState === "MENU") {
+drawMainMenu();
+} else if (gameState === "PLAYING") {
+playGame(cfg);
+} else if (gameState === "GAMEOVER") {
+drawGameOver();
+}
+}
+
+function drawGrid(speed, col) {
+stroke(col + '22'); // Low opacity color
+strokeWeight(1);
+let xOff = (frameCount * speed) % 100;
+for (let x = -xOff; x < width; x += 100) line(x, 0, x, height);
+for (let y = 0; y < height; y += 100) line(0, y, width, y);
+}
+
+function drawMainMenu() {
+textAlign(CENTER);
+fill(255);
+textSize(min(width/15, 60));
+text("NEON DASH 2025", width / 2, height * 0.2);
+
+textSize(18);
+fill(200);
+text("CHOOSE YOUR DIFFICULTY", width / 2, height * 0.3);
+
+// Render Buttons
+for (let i = 1; i <= 5; i++) {
+let y = height * 0.35 + (i * 65);
+drawLevelButton(width/2, y, i, levels[i]);
+}
+}
+
+function drawLevelButton(x, y, id, cfg) {
+let hov = (mouseX > x - 100 && mouseX < x + 100 && mouseY > y - 25 && mouseY < y + 25);
+fill(hov ? cfg.color : 20);
+stroke(cfg.color);
+strokeWeight(2);
+rect(x, y, 200, 50, 10);
+
+noStroke();
+fill(hov ? 0 : 255);
+textSize(20);
+text(cfg.name, x, y + 7);
+}
+
+function playGame(cfg) {
+// Ground
+stroke(cfg.color);
+strokeWeight(4);
+line(0, height - 100, width, height - 100);
+
+// Spawning
+if (frameCount - lastSpawnFrame > nextSpawnInterval) {
+if (random(1) < 0.6) platforms.push(new Platform(cfg.speed));
+else obstacles.push(new Obstacle(cfg.speed));
+nextSpawnInterval = random(cfg.interval[0], cfg.interval[1]);
+lastSpawnFrame = frameCount;
+}
+
+// Trail Particles
+for (let i = particles.length - 1; i >= 0; i--) {
+particles[i].update(cfg.speed);
+particles[i].show(cfg.color);
+if (particles[i].alpha <= 0) particles.splice(i, 1);
+}
+
+// Platforms
+player.onPlatform = false;
+for (let i = platforms.length - 1; i >= 0; i--) {
+platforms[i].update();
+platforms[i].show(cfg.color);
+player.checkPlatform(platforms[i]);
+if (platforms[i].x < -200) platforms.splice(i, 1);
+}
+
+// Player
+player.update(cfg);
+player.show(cfg.color);
+
+// Spikes
+for (let i = obstacles.length - 1; i >= 0; i--) {
+obstacles[i].update();
+obstacles[i].show();
+if (player.collides(obstacles[i])) {
+gameState = "GAMEOVER";
+shakeAmount = 20;
+}
+if (obstacles[i].x < -50) {
+obstacles.splice(i, 1);
+score++;
+}
+}
+
+// Score
+textAlign(LEFT);
+fill(255);
+textSize(24);
+text("SCORE: " + score, 40, 50);
+}
+
+function drawGameOver() {
+background(0, 200);
+textAlign(CENTER);
+fill(255);
+textSize(60);
+text("CRASHED", width/2, height/2 - 20);
+textSize(24);
+text("FINAL SCORE: " + score, width/2, height/2 + 30);
+fill(levels[currentLevel].color);
+text("CLICK TO GO BACK", width/2, height/2 + 80);
+}
+
+// --- Interaction ---
+function mousePressed() {
+if (gameState === "MENU") {
+for (let i = 1; i <= 5; i++) {
+let y = height * 0.35 + (i * 65);
+if (mouseX > width/2 - 100 && mouseX < width/2 + 100 && mouseY > y - 25 && mouseY < y + 25) {
+startGame(i);
+}
+}
+} else if (gameState === "PLAYING") {
+player.jump();
+} else {
+gameState = "MENU";
+}
+}
+
+function startGame(id) {
+currentLevel = id;
+score = 0;
+obstacles = []; platforms = []; particles = [];
+player = new Player();
+gameState = "PLAYING";
+}
+
+// --- Classes ---
+class Player {
+constructor() {
+this.size = 40; this.x = 150; this.y = 0;
+this.vy = 0; this.angle = 0; this.onPlatform = false;
+}
+update(cfg) {
+if (!this.onPlatform) {
+this.vy += cfg.grav;
+this.y += this.vy;
+}
+let groundY = height - 100 - this.size/2;
+if (this.y > groundY) {
+this.y = groundY;
+this.vy = 0;
+}
+if (frameCount % 2 == 0) particles.push(new Particle(this.x, this.y));
+if (this.y < groundY || this.onPlatform) this.angle += 0.15;
+else this.angle = lerp(this.angle, round(this.angle/PI)*PI, 0.2);
+}
+show(col) {
+push(); translate(this.x, this.y); rotate(this.angle);
+drawingContext.shadowBlur = 20; drawingContext.shadowColor = col;
+fill(col); stroke(255); strokeWeight(2);
+rect(0, 0, this.size, this.size, 8); pop();
+}
+jump() {
+if (this.y >= height - 105 - this.size/2 || this.onPlatform) {
+this.vy = levels[currentLevel].jump;
+this.onPlatform = false;
+}
+}
+checkPlatform(p) {
+if (this.x + 20 > p.x - p.w/2 && this.x - 20 < p.x + p.w/2) {
+let pTop = p.y - 15 - this.size/2;
+if (this.y <= pTop + 10 && this.y + this.vy >= pTop) {
+this.y = pTop; this.vy = 0; this.onPlatform = true;
+}
+}
+}
+collides(o) {
+return (dist(this.x, this.y, o.x, o.y) < 35);
+}
+}
+
+class Platform {
+constructor(s) { this.x = width + 100; this.y = random(height-300, height-200); this.w = random(150, 300); this.s = s; }
+update() { this.x -= this.s; }
+show(c) {
+fill(c + '44'); stroke(c); strokeWeight(2);
+rect(this.x, this.y, this.w, 30, 5);
+}
+}
+
+class Obstacle {
+constructor(s) { this.x = width + 50; this.y = height - 120; this.s = s; }
+update() { this.x -= this.s; }
+show() {
+fill(255, 50, 50); noStroke();
+triangle(this.x-25, this.y+20, this.x+25, this.y+20, this.x, this.y-30);
+}
+}
+
+class Particle {
+constructor(x,y) { this.x=x; this.y=y; this.alpha=255; }
+update(s) { this.x -= s/2; this.alpha -= 10; }
+show(c) { noStroke(); fill(c + '88'); square(this.x - 20, this.y, 10); }
+}
+
+function windowResized() { resizeCanvas(windowWidth, windowHeight); }
+    </script>
+</body>
+</html>

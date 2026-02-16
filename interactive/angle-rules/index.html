@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angle Rules Playground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --bg: #f5f1ea;
+      --panel: #ffffff;
+      --accent: #f97316;
+      --accent-2: #0ea5e9;
+      --accent-3: #10b981;
+      --grid: rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top left, #fef6e3, var(--bg) 55%, #efe9de 100%);
+    }
+
+    header {
+      padding: 48px 8vw 24px;
+      position: relative;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 6px 14px;
+      background: rgba(15, 23, 42, 0.08);
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      transition: background 0.2s ease;
+    }
+
+    .back-link:hover {
+      background: rgba(15, 23, 42, 0.14);
+      color: var(--ink);
+    }
+
+    .layout-switcher {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .layout-switcher button {
+      border: 1px solid rgba(15, 23, 42, 0.2);
+      background: #ffffff;
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .layout-switcher button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #ffffff;
+      border-color: var(--ink);
+      box-shadow: 0 10px 18px rgba(15, 23, 42, 0.18);
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 3vw, 3.4rem);
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+    }
+
+    p.lead {
+      margin: 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    main {
+      padding: 12px 8vw 64px;
+      display: grid;
+      gap: 28px;
+    }
+
+    body[data-layout="compact"] main {
+      gap: 20px;
+      grid-template-columns: repeat(2, 1fr);
+      align-items: start;
+    }
+
+    body[data-layout="compact"] .card {
+      padding: 20px;
+    }
+
+    body[data-layout="compact"] .stage svg {
+      height: 300px;
+    }
+
+    body[data-layout="super"] header {
+      padding: 32px 6vw 16px;
+    }
+
+    body[data-layout="super"] main {
+      padding: 12px 6vw 48px;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      align-items: start;
+    }
+
+    body[data-layout="super"] .card {
+      padding: 16px;
+      gap: 12px;
+    }
+
+    body[data-layout="super"] .card h2 {
+      font-size: 1.05rem;
+    }
+
+    body[data-layout="super"] .stage svg {
+      height: 220px;
+    }
+
+    body[data-layout="super"] .controls {
+      display: none;
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+      display: grid;
+      gap: 18px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+
+    .stage {
+      background: linear-gradient(135deg, #fff4dd 0%, #f4fbff 60%, #ffffff 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .stage svg {
+      width: 100%;
+      height: 360px;
+      display: block;
+      touch-action: none;
+    }
+
+    .grid line {
+      stroke: var(--grid);
+      stroke-width: 1;
+    }
+
+    .ray {
+      stroke: var(--ink);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+    }
+
+    .ray.secondary {
+      stroke: var(--ink);
+    }
+
+    .parallel {
+      stroke: #0f172a;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+    }
+
+    .transversal {
+      stroke: #f97316;
+      stroke-width: 3.5;
+      stroke-linecap: round;
+    }
+
+    .parallel-marker {
+      fill: none;
+      stroke: var(--ink);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .triangle {
+      stroke: #0f172a;
+      stroke-width: 3.5;
+      fill: rgba(16, 185, 129, 0.08);
+    }
+
+    .quad {
+      stroke: #0f172a;
+      stroke-width: 3.5;
+      fill: rgba(14, 165, 233, 0.08);
+    }
+
+    .handle {
+      fill: var(--accent);
+      stroke: #ffffff;
+      stroke-width: 2;
+      cursor: grab;
+    }
+
+    .handle.secondary {
+      fill: var(--accent-2);
+    }
+
+    .handle.tertiary {
+      fill: var(--accent-3);
+    }
+
+    .angle-arc {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+      opacity: 0.85;
+    }
+
+    .label {
+      font-size: 21px;
+      font-weight: 600;
+      fill: var(--ink);
+      paint-order: stroke;
+      stroke: rgba(255, 255, 255, 0.9);
+      stroke-width: 6;
+      stroke-linejoin: round;
+    }
+
+    .side-tick {
+      stroke: var(--ink);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+    }
+
+    .angle-tick {
+      stroke: var(--ink);
+      stroke-width: 3;
+      stroke-linecap: round;
+    }
+
+    .key {
+      position: absolute;
+      top: 24px;
+      right: 8vw;
+      display: grid;
+      gap: 6px;
+      max-width: 240px;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+
+    .key-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(15, 23, 42, 0.12);
+      border-radius: 10px;
+      padding: 6px 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .key-icon {
+      width: 50px;
+      height: 20px;
+      flex: 0 0 auto;
+    }
+
+    .key-line,
+    .key-arc {
+      stroke: var(--ink);
+      stroke-width: 3.2;
+      fill: none;
+      stroke-linecap: round;
+    }
+
+    .diagonal {
+      stroke: var(--ink);
+      stroke-width: 2.5;
+      stroke-dasharray: 6 6;
+      opacity: 0.7;
+    }
+
+    .sum-label {
+      font-size: 18px;
+      font-weight: 700;
+      fill: var(--muted);
+    }
+
+    .z-overlay {
+      fill: none;
+      stroke: #39ff14;
+      stroke-width: 9;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 6px rgba(57, 255, 20, 0.8)) drop-shadow(0 0 14px rgba(57, 255, 20, 0.6));
+      opacity: 0.95;
+      pointer-events: none;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 8px 12px;
+    }
+
+    .controls button {
+      border: 1px solid rgba(15, 23, 42, 0.2);
+      background: #ffffff;
+      color: var(--ink);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .controls button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.12);
+    }
+
+
+    @media (max-width: 720px) {
+      .stage svg {
+        height: 300px;
+      }
+      header {
+        padding: 36px 6vw 16px;
+      }
+      main {
+        padding: 12px 6vw 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="../../index.html" class="back-link">&larr; Back to Main Menu</a>
+    <h1>Angle rules, fully draggable</h1>
+    <p class="lead">Drag the orange points to explore each angle rule with live measurements.</p>
+    <div class="layout-switcher" role="group" aria-label="Layout selector">
+      <button type="button" data-layout="full" aria-pressed="true">Full</button>
+      <button type="button" data-layout="compact" aria-pressed="false">Compact</button>
+      <button type="button" data-layout="super" aria-pressed="false">Super compact</button>
+    </div>
+    <div class="key" aria-label="Diagram key">
+      <div class="key-item">
+        <svg class="key-icon" viewBox="0 0 80 24" aria-hidden="true">
+          <line class="key-line" x1="6" y1="12" x2="74" y2="12" />
+          <line class="side-tick" x1="40" y1="4" x2="40" y2="20" />
+        </svg>
+        <span>Matching side ticks show equal line lengths.</span>
+      </div>
+      <div class="key-item">
+        <svg class="key-icon" viewBox="0 0 48 24" aria-hidden="true">
+          <path class="key-arc" d="M 6 18 A 14 14 0 0 1 42 18" />
+          <line class="angle-tick" x1="24" y1="18" x2="24" y2="6" />
+        </svg>
+        <span>Matching angle ticks show equal angles.</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Angles around a point = 360°</h2>
+      <div class="stage">
+        <svg id="round-point" viewBox="0 0 800 360" aria-label="Angles around a point diagram"></svg>
+        <div class="controls" id="round-point-controls">
+          <button type="button" data-action="remove">- line</button>
+          <button type="button" data-action="add">+ line</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Angles on a straight line = 180°</h2>
+      <div class="stage">
+        <svg id="straight-line" viewBox="0 0 800 360" aria-label="Angles on a line diagram"></svg>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Angles in a triangle = 180°</h2>
+      <div class="stage">
+        <svg id="triangle" viewBox="0 0 800 360" aria-label="Triangle angle sum diagram"></svg>
+        <div class="controls" id="triangle-controls">
+          <button type="button" data-preset="equilateral">Equilateral</button>
+          <button type="button" data-preset="isosceles">Isosceles</button>
+          <button type="button" data-preset="scalene">Scalene</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Crossing line - opposite angles are equal</h2>
+      <div class="stage">
+        <svg id="intersect" viewBox="0 0 800 360" aria-label="Intersecting lines diagram"></svg>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Parallel lines with a diagonal line - alternate angles are equal (Z rule)</h2>
+      <div class="stage">
+        <svg id="parallel-alternate" viewBox="0 0 800 360" aria-label="Parallel lines alternate angles diagram"></svg>
+        <div class="controls" id="parallel-alternate-controls">
+          <button type="button" data-action="toggle">Toggle Z overlay</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Parallel lines with a diagonal line - corresponding angles are equal</h2>
+      <div class="stage">
+        <svg id="parallel-corresponding" viewBox="0 0 800 360" aria-label="Parallel lines corresponding angles diagram"></svg>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Parallel lines with two diagonal lines</h2>
+      <div class="stage">
+        <svg id="parallel-crossing" viewBox="0 0 800 360" aria-label="Parallel lines with two crossing lines diagram"></svg>
+        <div class="controls" id="parallel-crossing-controls">
+          <button type="button" data-action="toggle">Show more angles</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Angles in a quadrilateral = 360°</h2>
+      <div class="stage">
+        <svg id="quadrilateral" viewBox="0 0 800 360" aria-label="Quadrilateral angle sum diagram"></svg>
+        <div class="controls" id="quadrilateral-controls">
+          <button type="button" data-action="split">Split into triangles</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TAU = Math.PI * 2;
+    let isDragging = false;
+    const labelMode = { showNumbers: true, labels: new Set() };
+
+    const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+    const svgPoint = (svg, clientX, clientY) => {
+      const pt = svg.createSVGPoint();
+      pt.x = clientX;
+      pt.y = clientY;
+      return pt.matrixTransform(svg.getScreenCTM().inverse());
+    };
+
+    const angleBetween = (a, b) => {
+      const dot = a.x * b.x + a.y * b.y;
+      const det = a.x * b.y - a.y * b.x;
+      return Math.atan2(Math.abs(det), dot) * (180 / Math.PI);
+    };
+
+    const ARC_COLORS = ["#6366f1", "#22c55e", "#e11d48", "#f59e0b", "#14b8a6", "#a855f7"];
+
+    const angleDirection = (vector) => Math.atan2(vector.y, vector.x);
+
+    const shortestArc = (startAngle, endAngle) => {
+      let diff = endAngle - startAngle;
+      while (diff <= -Math.PI) diff += TAU;
+      while (diff > Math.PI) diff -= TAU;
+      return { start: startAngle, end: startAngle + diff };
+    };
+
+    const chooseArcByBisector = (v1, v2, vertex, radius) => {
+      const len1 = Math.hypot(v1.x, v1.y) || 1;
+      const len2 = Math.hypot(v2.x, v2.y) || 1;
+      const bisector = { x: v1.x / len1 + v2.x / len2, y: v1.y / len1 + v2.y / len2 };
+      const bisLen = Math.hypot(bisector.x, bisector.y);
+      if (bisLen < 0.001) {
+        return shortestArc(angleDirection(v1), angleDirection(v2));
+      }
+      const target = {
+        x: vertex.x + (bisector.x / bisLen) * radius,
+        y: vertex.y + (bisector.y / bisLen) * radius
+      };
+      return chooseArcToward(angleDirection(v1), angleDirection(v2), target, vertex, radius);
+    };
+
+    const chooseArcToward = (startAngle, endAngle, target, origin, radius) => {
+      const shortArc = shortestArc(startAngle, endAngle);
+      const longArc = { start: shortArc.end, end: shortArc.start + TAU };
+      const shortMid = (shortArc.start + shortArc.end) / 2;
+      const longMid = (longArc.start + longArc.end) / 2;
+      const shortPoint = {
+        x: origin.x + Math.cos(shortMid) * radius,
+        y: origin.y + Math.sin(shortMid) * radius
+      };
+      const longPoint = {
+        x: origin.x + Math.cos(longMid) * radius,
+        y: origin.y + Math.sin(longMid) * radius
+      };
+      const shortDist = Math.hypot(shortPoint.x - target.x, shortPoint.y - target.y);
+      const longDist = Math.hypot(longPoint.x - target.x, longPoint.y - target.y);
+      return shortDist <= longDist ? shortArc : longArc;
+    };
+
+    const polygonCentroid = (pts) => {
+      const total = pts.reduce(
+        (acc, pt) => ({ x: acc.x + pt.x, y: acc.y + pt.y }),
+        { x: 0, y: 0 }
+      );
+      return { x: total.x / pts.length, y: total.y / pts.length };
+    };
+
+    const describeArc = (cx, cy, r, startAngle, endAngle) => {
+      const start = {
+        x: cx + r * Math.cos(startAngle),
+        y: cy + r * Math.sin(startAngle)
+      };
+      const end = {
+        x: cx + r * Math.cos(endAngle),
+        y: cy + r * Math.sin(endAngle)
+      };
+      const diff = endAngle - startAngle;
+      const largeArc = Math.abs(diff) > Math.PI ? 1 : 0;
+      const sweep = diff >= 0 ? 1 : 0;
+      return `M ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} ${sweep} ${end.x} ${end.y}`;
+    };
+
+    const positionAngleTick = (tick, center, startAngle, endAngle, radius, halfLength, offset = 0) => {
+      const mid = (startAngle + endAngle) / 2 + offset;
+      const cx = center.x + Math.cos(mid) * radius;
+      const cy = center.y + Math.sin(mid) * radius;
+      const rx = Math.cos(mid);
+      const ry = Math.sin(mid);
+      tick.setAttribute("x1", cx + rx * halfLength);
+      tick.setAttribute("y1", cy + ry * halfLength);
+      tick.setAttribute("x2", cx - rx * halfLength);
+      tick.setAttribute("y2", cy - ry * halfLength);
+    };
+
+    const positionAngleLabel = (label, center, startAngle, endAngle, radius, padding) => {
+      const mid = (startAngle + endAngle) / 2;
+      const dist = radius + padding;
+      label.setAttribute("x", center.x + Math.cos(mid) * dist);
+      label.setAttribute("y", center.y + Math.sin(mid) * dist);
+    };
+
+    const setLabelText = (label, numberText, letterText) => {
+      label.dataset.number = numberText;
+      label.dataset.letter = letterText;
+      label.textContent = labelMode.showNumbers ? numberText : letterText;
+      labelMode.labels.add(label);
+    };
+
+    const refreshLabels = () => {
+      labelMode.labels.forEach((label) => {
+        label.textContent = labelMode.showNumbers ? label.dataset.number : label.dataset.letter;
+      });
+    };
+
+    const enableLabelToggle = (svg) => {
+      svg.addEventListener("click", () => {
+        if (isDragging) {
+          return;
+        }
+        labelMode.showNumbers = !labelMode.showNumbers;
+        refreshLabels();
+      });
+    };
+
+    const makeHandle = (svg, x, y, className = "handle") => {
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      c.setAttribute("class", className);
+      c.setAttribute("r", "9");
+      c.setAttribute("cx", x);
+      c.setAttribute("cy", y);
+      svg.appendChild(c);
+      return c;
+    };
+
+    const makeLine = (svg, className) => {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("class", className);
+      svg.appendChild(line);
+      return line;
+    };
+
+    const makePath = (svg, className) => {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("class", className);
+      svg.appendChild(path);
+      return path;
+    };
+
+    const makeText = (svg) => {
+      const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      t.setAttribute("class", "label");
+      svg.appendChild(t);
+      return t;
+    };
+
+    const makeMarker = (svg) => {
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("class", "parallel-marker");
+      svg.appendChild(path);
+      return path;
+    };
+
+    const drawGrid = (svg) => {
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.setAttribute("class", "grid");
+      for (let x = 0; x <= 800; x += 80) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", x);
+        line.setAttribute("y1", 0);
+        line.setAttribute("x2", x);
+        line.setAttribute("y2", 360);
+        g.appendChild(line);
+      }
+      for (let y = 0; y <= 360; y += 60) {
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", 0);
+        line.setAttribute("y1", y);
+        line.setAttribute("x2", 800);
+        line.setAttribute("y2", y);
+        g.appendChild(line);
+      }
+      svg.appendChild(g);
+    };
+
+    const enableDrag = (svg, handle, onMove) => {
+      const move = (event) => {
+        isDragging = true;
+        const point = svgPoint(svg, event.clientX, event.clientY);
+        onMove(point);
+      };
+
+      const stop = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", stop);
+        handle.style.cursor = "grab";
+        setTimeout(() => {
+          isDragging = false;
+        }, 0);
+      };
+
+      handle.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        handle.style.cursor = "grabbing";
+        window.addEventListener("pointermove", move);
+        window.addEventListener("pointerup", stop, { once: true });
+      });
+    };
+
+    const intersectLines = (a, b, c, d) => {
+      const denom = (a.x - b.x) * (c.y - d.y) - (a.y - b.y) * (c.x - d.x);
+      if (Math.abs(denom) < 0.001) {
+        return { x: 400, y: 180 };
+      }
+      const x = ((a.x * b.y - a.y * b.x) * (c.x - d.x) - (a.x - b.x) * (c.x * d.y - c.y * d.x)) / denom;
+      const y = ((a.x * b.y - a.y * b.x) * (c.y - d.y) - (a.y - b.y) * (c.x * d.y - c.y * d.x)) / denom;
+      return { x, y };
+    };
+
+    const formatAngle = (value) => `${Math.round(value)}°`;
+
+    const setupIntersect = () => {
+      const svg = document.getElementById("intersect");
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const line1 = makeLine(svg, "ray");
+      const line2 = makeLine(svg, "ray secondary");
+      const arcs = [
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc")
+      ];
+      arcs.forEach((arc, i) => arc.setAttribute("stroke", ARC_COLORS[i % ARC_COLORS.length]));
+      const angleTicks = [
+        makeLine(svg, "angle-tick"),
+        makeLine(svg, "angle-tick"),
+        makeLine(svg, "angle-tick"),
+        makeLine(svg, "angle-tick")
+      ];
+      const angleTicksDouble = [
+        makeLine(svg, "angle-tick"),
+        makeLine(svg, "angle-tick"),
+        makeLine(svg, "angle-tick"),
+        makeLine(svg, "angle-tick")
+      ];
+      const labels = [makeText(svg), makeText(svg), makeText(svg), makeText(svg)];
+      const letters = ["A", "B", "C", "D"];
+
+      const points = {
+        a: { x: 120, y: 70 },
+        b: { x: 680, y: 290 },
+        c: { x: 120, y: 290 },
+        d: { x: 680, y: 70 }
+      };
+
+      const handles = {
+        a: makeHandle(svg, points.a.x, points.a.y),
+        b: makeHandle(svg, points.b.x, points.b.y),
+        c: makeHandle(svg, points.c.x, points.c.y),
+        d: makeHandle(svg, points.d.x, points.d.y)
+      };
+
+      const update = () => {
+        line1.setAttribute("x1", points.a.x);
+        line1.setAttribute("y1", points.a.y);
+        line1.setAttribute("x2", points.b.x);
+        line1.setAttribute("y2", points.b.y);
+
+        line2.setAttribute("x1", points.c.x);
+        line2.setAttribute("y1", points.c.y);
+        line2.setAttribute("x2", points.d.x);
+        line2.setAttribute("y2", points.d.y);
+
+        Object.entries(handles).forEach(([key, handle]) => {
+          handle.setAttribute("cx", points[key].x);
+          handle.setAttribute("cy", points[key].y);
+        });
+
+        const center = intersectLines(points.a, points.b, points.c, points.d);
+
+        const rays = [
+          { name: "a", vec: { x: points.a.x - center.x, y: points.a.y - center.y } },
+          { name: "b", vec: { x: points.b.x - center.x, y: points.b.y - center.y } },
+          { name: "c", vec: { x: points.c.x - center.x, y: points.c.y - center.y } },
+          { name: "d", vec: { x: points.d.x - center.x, y: points.d.y - center.y } }
+        ];
+        rays.forEach((ray) => { ray.angle = angleDirection(ray.vec); });
+        rays.sort((r1, r2) => r1.angle - r2.angle);
+
+        const arcInfo = [];
+        for (let i = 0; i < 4; i += 1) {
+          const current = rays[i];
+          const next = rays[(i + 1) % 4];
+          let start = current.angle;
+          let end = next.angle;
+          if (i === 3) {
+            end += TAU;
+          }
+          const mid = (start + end) / 2;
+          const angleValue = angleBetween(current.vec, next.vec);
+          const radius = 55 + i * 4;
+          arcs[i].setAttribute("d", describeArc(center.x, center.y, radius, start, end));
+          setLabelText(labels[i], formatAngle(angleValue), letters[i]);
+          positionAngleLabel(labels[i], center, start, end, radius, 28);
+          arcInfo.push({ start, end, radius });
+        }
+
+        const tickHalf = 8;
+        angleTicks.forEach((tick, index) => {
+          tick.style.display = "block";
+          const info = arcInfo[index];
+          positionAngleTick(tick, center, info.start, info.end, info.radius, tickHalf);
+        });
+        angleTicksDouble.forEach((tick, index) => {
+          if (index === 1 || index === 3) {
+            tick.style.display = "block";
+            const info = arcInfo[index];
+            positionAngleTick(tick, center, info.start, info.end, info.radius, tickHalf, 0.18);
+          } else {
+            tick.style.display = "none";
+          }
+        });
+      };
+
+      Object.keys(handles).forEach((key) => {
+        enableDrag(svg, handles[key], (pt) => {
+          points[key].x = clamp(pt.x, 40, 760);
+          points[key].y = clamp(pt.y, 40, 320);
+          update();
+        });
+      });
+
+      update();
+    };
+
+    const orientedNormal = (direction, prefer) => {
+      let normal = { x: -Math.sin(direction), y: Math.cos(direction) };
+      if (normal.x * prefer.x + normal.y * prefer.y < 0) {
+        normal = { x: -normal.x, y: -normal.y };
+      }
+      return normal;
+    };
+
+    const angleOptions = (lineDir, transDir, lineNormal, transNormal) => {
+      const options = [];
+      const lineDirs = [lineDir, lineDir + Math.PI];
+      const transDirs = [transDir, transDir + Math.PI];
+      lineDirs.forEach((ld) => {
+        transDirs.forEach((td) => {
+          const arc = shortestArc(ld, td);
+          const mid = (arc.start + arc.end) / 2;
+          const midVec = { x: Math.cos(mid), y: Math.sin(mid) };
+          const signLine = Math.sign(midVec.x * lineNormal.x + midVec.y * lineNormal.y) || 1;
+          const signTrans = Math.sign(midVec.x * transNormal.x + midVec.y * transNormal.y) || 1;
+          options.push({ arc, signLine, signTrans });
+        });
+      });
+      return options;
+    };
+
+    const pickAngle = (options, signLine, signTrans) =>
+      options.find((opt) => opt.signLine === signLine && opt.signTrans === signTrans) || options[0];
+
+    const pickAngleTowardPoint = (options, origin, target, radius = 42) => {
+      let best = options[0];
+      let bestDist = Infinity;
+      options.forEach((opt) => {
+        const mid = (opt.arc.start + opt.arc.end) / 2;
+        const pt = { x: origin.x + Math.cos(mid) * radius, y: origin.y + Math.sin(mid) * radius };
+        const dist = Math.hypot(pt.x - target.x, pt.y - target.y);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = opt;
+        }
+      });
+      return best;
+    };
+
+    const setupParallelDiagram = (svgId, mode) => {
+      const svg = document.getElementById(svgId);
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const topLine = makeLine(svg, "parallel");
+      const bottomLine = makeLine(svg, "parallel");
+      const transversal = makeLine(svg, "transversal");
+      const topMarker = makeMarker(svg);
+      const bottomMarker = makeMarker(svg);
+      let zOverlay = null;
+      let showZ = false;
+
+      if (mode === "alternate") {
+        zOverlay = makePath(svg, "z-overlay");
+        zOverlay.style.display = "none";
+        const controls = document.getElementById("parallel-alternate-controls");
+        controls.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          if (!button) {
+            return;
+          }
+          showZ = !showZ;
+          zOverlay.style.display = showZ ? "block" : "none";
+        });
+      }
+
+      const arcs = [makePath(svg, "angle-arc"), makePath(svg, "angle-arc")];
+      arcs[0].setAttribute("stroke", ARC_COLORS[0]);
+      arcs[1].setAttribute("stroke", ARC_COLORS[1]);
+      const angleTicks = [makeLine(svg, "angle-tick"), makeLine(svg, "angle-tick")];
+      const labels = [makeText(svg), makeText(svg)];
+      const letters = ["A", "B"];
+
+      const state = {
+        p1: { x: 120, y: 120 },
+        p2: { x: 680, y: 140 },
+        gap: 110,
+        t1: { x: 220, y: 320 },
+        t2: { x: 600, y: 40 }
+      };
+
+      const handles = {
+        p1: makeHandle(svg, state.p1.x, state.p1.y, "handle secondary"),
+        p2: makeHandle(svg, state.p2.x, state.p2.y, "handle secondary"),
+        gap: makeHandle(svg, state.p1.x + 40, state.p1.y + state.gap, "handle tertiary"),
+        t1: makeHandle(svg, state.t1.x, state.t1.y),
+        t2: makeHandle(svg, state.t2.x, state.t2.y)
+      };
+
+      const update = () => {
+        const dir = { x: state.p2.x - state.p1.x, y: state.p2.y - state.p1.y };
+        const length = Math.hypot(dir.x, dir.y) || 1;
+        const norm = { x: -dir.y / length, y: dir.x / length };
+
+        const topA = state.p1;
+        const topB = state.p2;
+        const bottomA = { x: state.p1.x + norm.x * state.gap, y: state.p1.y + norm.y * state.gap };
+        const bottomB = { x: state.p2.x + norm.x * state.gap, y: state.p2.y + norm.y * state.gap };
+
+        topLine.setAttribute("x1", topA.x);
+        topLine.setAttribute("y1", topA.y);
+        topLine.setAttribute("x2", topB.x);
+        topLine.setAttribute("y2", topB.y);
+
+        bottomLine.setAttribute("x1", bottomA.x);
+        bottomLine.setAttribute("y1", bottomA.y);
+        bottomLine.setAttribute("x2", bottomB.x);
+        bottomLine.setAttribute("y2", bottomB.y);
+
+
+        const topMid = { x: (topA.x + topB.x) / 2, y: (topA.y + topB.y) / 2 };
+        const bottomMid = { x: (bottomA.x + bottomB.x) / 2, y: (bottomA.y + bottomB.y) / 2 };
+        const topAngle = (Math.atan2(topB.y - topA.y, topB.x - topA.x) * 180) / Math.PI;
+        const bottomAngle = (Math.atan2(bottomB.y - bottomA.y, bottomB.x - bottomA.x) * 180) / Math.PI;
+        const markerPath = "M -10 -6 L 0 0 L -10 6";
+        topMarker.setAttribute("d", markerPath);
+        bottomMarker.setAttribute("d", markerPath);
+        topMarker.setAttribute("transform", `translate(${topMid.x} ${topMid.y}) rotate(${topAngle})`);
+        bottomMarker.setAttribute("transform", `translate(${bottomMid.x} ${bottomMid.y}) rotate(${bottomAngle})`);
+
+        transversal.setAttribute("x1", state.t1.x);
+        transversal.setAttribute("y1", state.t1.y);
+        transversal.setAttribute("x2", state.t2.x);
+        transversal.setAttribute("y2", state.t2.y);
+
+        handles.p1.setAttribute("cx", state.p1.x);
+        handles.p1.setAttribute("cy", state.p1.y);
+        handles.p2.setAttribute("cx", state.p2.x);
+        handles.p2.setAttribute("cy", state.p2.y);
+        handles.gap.setAttribute("cx", state.p1.x + norm.x * state.gap);
+        handles.gap.setAttribute("cy", state.p1.y + norm.y * state.gap);
+        handles.t1.setAttribute("cx", state.t1.x);
+        handles.t1.setAttribute("cy", state.t1.y);
+        handles.t2.setAttribute("cx", state.t2.x);
+        handles.t2.setAttribute("cy", state.t2.y);
+
+        const topIntersect = intersectLines(state.t1, state.t2, topA, topB);
+        const bottomIntersect = intersectLines(state.t1, state.t2, bottomA, bottomB);
+
+        if (zOverlay) {
+          const dirUnit = { x: dir.x / length, y: dir.y / length };
+          const zLength = 140;
+          const topStart = {
+            x: topIntersect.x - dirUnit.x * zLength,
+            y: topIntersect.y - dirUnit.y * zLength
+          };
+          const bottomEnd = {
+            x: bottomIntersect.x + dirUnit.x * zLength,
+            y: bottomIntersect.y + dirUnit.y * zLength
+          };
+          zOverlay.setAttribute(
+            "d",
+            `M ${topStart.x} ${topStart.y} L ${topIntersect.x} ${topIntersect.y} L ${bottomIntersect.x} ${bottomIntersect.y} L ${bottomEnd.x} ${bottomEnd.y}`
+          );
+          zOverlay.style.display = showZ ? "block" : "none";
+        }
+
+        const transDir = angleDirection({ x: state.t2.x - state.t1.x, y: state.t2.y - state.t1.y });
+        const lineDir = angleDirection({ x: topB.x - topA.x, y: topB.y - topA.y });
+
+        const transNormal = orientedNormal(transDir, { x: 1, y: 0 });
+        const lineNormalUp = orientedNormal(lineDir, { x: 0, y: -1 });
+        const lineNormalInteriorTop = orientedNormal(lineDir, norm);
+        const lineNormalInteriorBottom = orientedNormal(lineDir, { x: -norm.x, y: -norm.y });
+
+        let topChoice;
+        let bottomChoice;
+        if (mode === "corresponding") {
+          const topOptions = angleOptions(lineDir, transDir, lineNormalUp, transNormal);
+          const bottomOptions = angleOptions(lineDir, transDir, lineNormalUp, transNormal);
+          topChoice = pickAngle(topOptions, 1, 1);
+          bottomChoice = pickAngle(bottomOptions, 1, 1);
+        } else if (mode === "alternate") {
+          const topOptions = angleOptions(lineDir, transDir, lineNormalInteriorTop, transNormal).filter(
+            (opt) => opt.signLine === 1
+          );
+          const bottomOptions = angleOptions(lineDir, transDir, lineNormalInteriorBottom, transNormal).filter(
+            (opt) => opt.signLine === 1
+          );
+          topChoice = pickAngleTowardPoint(topOptions, topIntersect, bottomIntersect);
+          bottomChoice = pickAngleTowardPoint(bottomOptions, bottomIntersect, topIntersect);
+        } else {
+          const topOptions = angleOptions(lineDir, transDir, lineNormalInteriorTop, transNormal);
+          const bottomOptions = angleOptions(lineDir, transDir, lineNormalInteriorBottom, transNormal);
+          topChoice = pickAngle(topOptions, 1, -1);
+          bottomChoice = pickAngle(bottomOptions, 1, 1);
+        }
+
+        const arcTopPath = describeArc(topIntersect.x, topIntersect.y, 42, topChoice.arc.start, topChoice.arc.end);
+        const arcBottomPath = describeArc(bottomIntersect.x, bottomIntersect.y, 42, bottomChoice.arc.start, bottomChoice.arc.end);
+        arcs[0].setAttribute("d", arcTopPath);
+        arcs[1].setAttribute("d", arcBottomPath);
+
+        const tickHalf = 8;
+        angleTicks[0].style.display = "block";
+        angleTicks[1].style.display = "block";
+        positionAngleTick(angleTicks[0], topIntersect, topChoice.arc.start, topChoice.arc.end, 42, tickHalf);
+        positionAngleTick(angleTicks[1], bottomIntersect, bottomChoice.arc.start, bottomChoice.arc.end, 42, tickHalf);
+
+        const angleValue = angleBetween(
+          { x: Math.cos(topChoice.arc.start), y: Math.sin(topChoice.arc.start) },
+          { x: Math.cos(topChoice.arc.end), y: Math.sin(topChoice.arc.end) }
+        );
+        setLabelText(labels[0], formatAngle(angleValue), letters[0]);
+        setLabelText(labels[1], formatAngle(angleValue), letters[1]);
+        positionAngleLabel(labels[0], topIntersect, topChoice.arc.start, topChoice.arc.end, 42, 32);
+        positionAngleLabel(labels[1], bottomIntersect, bottomChoice.arc.start, bottomChoice.arc.end, 42, 32);
+      };
+
+      enableDrag(svg, handles.p1, (pt) => {
+        state.p1.x = clamp(pt.x, 80, 720);
+        state.p1.y = clamp(pt.y, 60, 300);
+        update();
+      });
+
+      enableDrag(svg, handles.p2, (pt) => {
+        state.p2.x = clamp(pt.x, 80, 720);
+        state.p2.y = clamp(pt.y, 60, 300);
+        update();
+      });
+
+      enableDrag(svg, handles.gap, (pt) => {
+        const dir = { x: state.p2.x - state.p1.x, y: state.p2.y - state.p1.y };
+        const length = Math.hypot(dir.x, dir.y) || 1;
+        const norm = { x: -dir.y / length, y: dir.x / length };
+        const proj = (pt.x - state.p1.x) * norm.x + (pt.y - state.p1.y) * norm.y;
+        state.gap = clamp(proj, 60, 180);
+        update();
+      });
+
+      enableDrag(svg, handles.t1, (pt) => {
+        state.t1.x = clamp(pt.x, 40, 760);
+        state.t1.y = clamp(pt.y, 20, 340);
+        update();
+      });
+
+      enableDrag(svg, handles.t2, (pt) => {
+        state.t2.x = clamp(pt.x, 40, 760);
+        state.t2.y = clamp(pt.y, 20, 340);
+        update();
+      });
+
+      update();
+    };
+
+    const setupParallelCrossing = () => {
+      const svg = document.getElementById("parallel-crossing");
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const topLine = makeLine(svg, "parallel");
+      const bottomLine = makeLine(svg, "parallel");
+      const tA = makeLine(svg, "transversal");
+      const tB = makeLine(svg, "transversal");
+      const topMarker = makeMarker(svg);
+      const bottomMarker = makeMarker(svg);
+
+      const arcs = [
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc")
+      ];
+      arcs.forEach((arc, i) => arc.setAttribute("stroke", ARC_COLORS[(i + 2) % ARC_COLORS.length]));
+      const extraArcs = [
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc")
+      ];
+      extraArcs.forEach((arc, i) => arc.setAttribute("stroke", ARC_COLORS[(i + 4) % ARC_COLORS.length]));
+      const labels = [makeText(svg), makeText(svg), makeText(svg), makeText(svg)];
+      const letters = ["A", "B", "C", "D"];
+      const extraLabels = [makeText(svg), makeText(svg), makeText(svg), makeText(svg)];
+      const extraLetters = ["E", "F", "G", "H"];
+      let showMore = false;
+
+      const state = {
+        p1: { x: 120, y: 120 },
+        p2: { x: 680, y: 140 },
+        gap: 110,
+        t1: { x: 220, y: 40 },
+        t2: { x: 580, y: 320 },
+        t3: { x: 600, y: 40 },
+        t4: { x: 260, y: 320 }
+      };
+
+      const handles = {
+        p1: makeHandle(svg, state.p1.x, state.p1.y, "handle secondary"),
+        p2: makeHandle(svg, state.p2.x, state.p2.y, "handle secondary"),
+        gap: makeHandle(svg, state.p1.x + 40, state.p1.y + state.gap, "handle tertiary"),
+        t1: makeHandle(svg, state.t1.x, state.t1.y),
+        t2: makeHandle(svg, state.t2.x, state.t2.y),
+        t3: makeHandle(svg, state.t3.x, state.t3.y),
+        t4: makeHandle(svg, state.t4.x, state.t4.y)
+      };
+
+      const update = () => {
+        const dir = { x: state.p2.x - state.p1.x, y: state.p2.y - state.p1.y };
+        const length = Math.hypot(dir.x, dir.y) || 1;
+        const norm = { x: -dir.y / length, y: dir.x / length };
+
+        const topA = state.p1;
+        const topB = state.p2;
+        const bottomA = { x: state.p1.x + norm.x * state.gap, y: state.p1.y + norm.y * state.gap };
+        const bottomB = { x: state.p2.x + norm.x * state.gap, y: state.p2.y + norm.y * state.gap };
+
+        topLine.setAttribute("x1", topA.x);
+        topLine.setAttribute("y1", topA.y);
+        topLine.setAttribute("x2", topB.x);
+        topLine.setAttribute("y2", topB.y);
+
+        bottomLine.setAttribute("x1", bottomA.x);
+        bottomLine.setAttribute("y1", bottomA.y);
+        bottomLine.setAttribute("x2", bottomB.x);
+        bottomLine.setAttribute("y2", bottomB.y);
+
+        const topMid = { x: (topA.x + topB.x) / 2, y: (topA.y + topB.y) / 2 };
+        const bottomMid = { x: (bottomA.x + bottomB.x) / 2, y: (bottomA.y + bottomB.y) / 2 };
+        const topAngle = (Math.atan2(topB.y - topA.y, topB.x - topA.x) * 180) / Math.PI;
+        const bottomAngle = (Math.atan2(bottomB.y - bottomA.y, bottomB.x - bottomA.x) * 180) / Math.PI;
+        const markerPath = "M -10 -6 L 0 0 L -10 6";
+        topMarker.setAttribute("d", markerPath);
+        bottomMarker.setAttribute("d", markerPath);
+        topMarker.setAttribute("transform", `translate(${topMid.x} ${topMid.y}) rotate(${topAngle})`);
+        bottomMarker.setAttribute("transform", `translate(${bottomMid.x} ${bottomMid.y}) rotate(${bottomAngle})`);
+
+        tA.setAttribute("x1", state.t1.x);
+        tA.setAttribute("y1", state.t1.y);
+        tA.setAttribute("x2", state.t2.x);
+        tA.setAttribute("y2", state.t2.y);
+
+        tB.setAttribute("x1", state.t3.x);
+        tB.setAttribute("y1", state.t3.y);
+        tB.setAttribute("x2", state.t4.x);
+        tB.setAttribute("y2", state.t4.y);
+
+        handles.p1.setAttribute("cx", state.p1.x);
+        handles.p1.setAttribute("cy", state.p1.y);
+        handles.p2.setAttribute("cx", state.p2.x);
+        handles.p2.setAttribute("cy", state.p2.y);
+        handles.gap.setAttribute("cx", state.p1.x + norm.x * state.gap);
+        handles.gap.setAttribute("cy", state.p1.y + norm.y * state.gap);
+        handles.t1.setAttribute("cx", state.t1.x);
+        handles.t1.setAttribute("cy", state.t1.y);
+        handles.t2.setAttribute("cx", state.t2.x);
+        handles.t2.setAttribute("cy", state.t2.y);
+        handles.t3.setAttribute("cx", state.t3.x);
+        handles.t3.setAttribute("cy", state.t3.y);
+        handles.t4.setAttribute("cx", state.t4.x);
+        handles.t4.setAttribute("cy", state.t4.y);
+
+        const topIntersectA = intersectLines(state.t1, state.t2, topA, topB);
+        const topIntersectB = intersectLines(state.t3, state.t4, topA, topB);
+        const bottomIntersectA = intersectLines(state.t1, state.t2, bottomA, bottomB);
+        const bottomIntersectB = intersectLines(state.t3, state.t4, bottomA, bottomB);
+
+        const lineDir = angleDirection({ x: topB.x - topA.x, y: topB.y - topA.y });
+        const transDirA = angleDirection({ x: state.t2.x - state.t1.x, y: state.t2.y - state.t1.y });
+        const transDirB = angleDirection({ x: state.t4.x - state.t3.x, y: state.t4.y - state.t3.y });
+
+        const lineNormalUp = orientedNormal(lineDir, { x: 0, y: -1 });
+        const lineNormalDown = orientedNormal(lineDir, { x: 0, y: 1 });
+        const transNormalRightA = orientedNormal(transDirA, { x: 1, y: 0 });
+        const transNormalRightB = orientedNormal(transDirB, { x: 1, y: 0 });
+
+        const topOptionsA = angleOptions(lineDir, transDirA, lineNormalUp, transNormalRightA);
+        const topOptionsB = angleOptions(lineDir, transDirB, lineNormalUp, transNormalRightB);
+        const bottomOptionsA = angleOptions(lineDir, transDirA, lineNormalDown, transNormalRightA);
+        const bottomOptionsB = angleOptions(lineDir, transDirB, lineNormalDown, transNormalRightB);
+
+        const choiceA = pickAngle(topOptionsA, 1, 1);
+        const choiceB = pickAngle(topOptionsB, 1, -1);
+        const choiceC = pickAngle(bottomOptionsA, 1, 1);
+        const choiceD = pickAngle(bottomOptionsB, 1, -1);
+
+        arcs[0].setAttribute("d", describeArc(topIntersectA.x, topIntersectA.y, 40, choiceA.arc.start, choiceA.arc.end));
+        arcs[1].setAttribute("d", describeArc(topIntersectB.x, topIntersectB.y, 40, choiceB.arc.start, choiceB.arc.end));
+        arcs[2].setAttribute("d", describeArc(bottomIntersectA.x, bottomIntersectA.y, 40, choiceC.arc.start, choiceC.arc.end));
+        arcs[3].setAttribute("d", describeArc(bottomIntersectB.x, bottomIntersectB.y, 40, choiceD.arc.start, choiceD.arc.end));
+
+        const angleValueA = angleBetween(
+          { x: Math.cos(choiceA.arc.start), y: Math.sin(choiceA.arc.start) },
+          { x: Math.cos(choiceA.arc.end), y: Math.sin(choiceA.arc.end) }
+        );
+        const angleValueB = angleBetween(
+          { x: Math.cos(choiceB.arc.start), y: Math.sin(choiceB.arc.start) },
+          { x: Math.cos(choiceB.arc.end), y: Math.sin(choiceB.arc.end) }
+        );
+        const angleValueC = angleBetween(
+          { x: Math.cos(choiceC.arc.start), y: Math.sin(choiceC.arc.start) },
+          { x: Math.cos(choiceC.arc.end), y: Math.sin(choiceC.arc.end) }
+        );
+        const angleValueD = angleBetween(
+          { x: Math.cos(choiceD.arc.start), y: Math.sin(choiceD.arc.start) },
+          { x: Math.cos(choiceD.arc.end), y: Math.sin(choiceD.arc.end) }
+        );
+
+        setLabelText(labels[0], formatAngle(angleValueA), letters[0]);
+        setLabelText(labels[1], formatAngle(angleValueB), letters[1]);
+        setLabelText(labels[2], formatAngle(angleValueC), letters[2]);
+        setLabelText(labels[3], formatAngle(angleValueD), letters[3]);
+        positionAngleLabel(labels[0], topIntersectA, choiceA.arc.start, choiceA.arc.end, 40, 30);
+        positionAngleLabel(labels[1], topIntersectB, choiceB.arc.start, choiceB.arc.end, 40, 30);
+        positionAngleLabel(labels[2], bottomIntersectA, choiceC.arc.start, choiceC.arc.end, 40, 30);
+        positionAngleLabel(labels[3], bottomIntersectB, choiceD.arc.start, choiceD.arc.end, 40, 30);
+
+        const oppositeArcs = [
+          { start: choiceA.arc.start + Math.PI, end: choiceA.arc.end + Math.PI },
+          { start: choiceB.arc.start + Math.PI, end: choiceB.arc.end + Math.PI },
+          { start: choiceC.arc.start + Math.PI, end: choiceC.arc.end + Math.PI },
+          { start: choiceD.arc.start + Math.PI, end: choiceD.arc.end + Math.PI }
+        ];
+        const centers = [topIntersectA, topIntersectB, bottomIntersectA, bottomIntersectB];
+        const values = [angleValueA, angleValueB, angleValueC, angleValueD];
+        if (showMore) {
+          extraArcs.forEach((arc, index) => {
+            const arcData = oppositeArcs[index];
+            const center = centers[index];
+            arc.setAttribute("d", describeArc(center.x, center.y, 40, arcData.start, arcData.end));
+            arc.style.display = "block";
+          });
+          extraLabels.forEach((label, index) => {
+            const arcData = oppositeArcs[index];
+            const center = centers[index];
+            setLabelText(label, formatAngle(values[index]), extraLetters[index]);
+            positionAngleLabel(label, center, arcData.start, arcData.end, 40, 30);
+            label.style.display = "block";
+          });
+        } else {
+          extraArcs.forEach((arc) => (arc.style.display = "none"));
+          extraLabels.forEach((label) => (label.style.display = "none"));
+        }
+      };
+
+      const controls = document.getElementById("parallel-crossing-controls");
+      controls.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) {
+          return;
+        }
+        showMore = !showMore;
+        button.textContent = showMore ? "Show fewer angles" : "Show more angles";
+        update();
+      });
+
+      Object.keys(handles).forEach((key) => {
+        enableDrag(svg, handles[key], (pt) => {
+          if (key === "gap") {
+            const dir = { x: state.p2.x - state.p1.x, y: state.p2.y - state.p1.y };
+            const length = Math.hypot(dir.x, dir.y) || 1;
+            const norm = { x: -dir.y / length, y: dir.x / length };
+            const proj = (pt.x - state.p1.x) * norm.x + (pt.y - state.p1.y) * norm.y;
+            state.gap = clamp(proj, 60, 180);
+          } else if (key === "p1" || key === "p2") {
+            state[key].x = clamp(pt.x, 80, 720);
+            state[key].y = clamp(pt.y, 60, 300);
+          } else {
+            state[key].x = clamp(pt.x, 40, 760);
+            state[key].y = clamp(pt.y, 20, 340);
+          }
+          update();
+        });
+      });
+
+      update();
+    };
+
+    const setupStraightLine = () => {
+      const svg = document.getElementById("straight-line");
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const baseLine = makeLine(svg, "ray");
+      const ray = makeLine(svg, "ray secondary");
+      const arcs = [makePath(svg, "angle-arc"), makePath(svg, "angle-arc")];
+      arcs[0].setAttribute("stroke", ARC_COLORS[4]);
+      arcs[1].setAttribute("stroke", ARC_COLORS[5]);
+      const labels = [makeText(svg), makeText(svg)];
+      const letters = ["A", "B"];
+
+      const center = { x: 400, y: 180 };
+      const state = {
+        handle: {
+          x: center.x + 120 * Math.cos(Math.PI * 0.2),
+          y: center.y + 120 * Math.sin(Math.PI * 0.2)
+        }
+      };
+
+      const handle = makeHandle(svg, state.handle.x, state.handle.y);
+
+      const update = () => {
+        const handlePos = state.handle;
+        const dx = handlePos.x - center.x;
+        const dy = handlePos.y - center.y;
+        const angle = Math.hypot(dx, dy) < 1 ? 0 : Math.atan2(dy, dx);
+        baseLine.setAttribute("x1", 60);
+        baseLine.setAttribute("y1", center.y);
+        baseLine.setAttribute("x2", 740);
+        baseLine.setAttribute("y2", center.y);
+        ray.setAttribute("x1", center.x);
+        ray.setAttribute("y1", center.y);
+        ray.setAttribute("x2", handlePos.x);
+        ray.setAttribute("y2", handlePos.y);
+        handle.setAttribute("cx", handlePos.x);
+        handle.setAttribute("cy", handlePos.y);
+
+        const rightDir = 0;
+        const leftDir = Math.PI;
+        const arcRight = shortestArc(rightDir, angle);
+        const arcLeft = shortestArc(angle, leftDir);
+        arcs[0].setAttribute("d", describeArc(center.x, center.y, 48, arcRight.start, arcRight.end));
+        arcs[1].setAttribute("d", describeArc(center.x, center.y, 48, arcLeft.start, arcLeft.end));
+
+        const angleRight = angleBetween({ x: 1, y: 0 }, { x: Math.cos(angle), y: Math.sin(angle) });
+        const angleLeft = 180 - angleRight;
+        setLabelText(labels[0], formatAngle(angleRight), letters[0]);
+        setLabelText(labels[1], formatAngle(angleLeft), letters[1]);
+        positionAngleLabel(labels[0], center, arcRight.start, arcRight.end, 48, 32);
+        positionAngleLabel(labels[1], center, arcLeft.start, arcLeft.end, 48, 32);
+      };
+
+      enableDrag(svg, handle, (pt) => {
+        state.handle.x = clamp(pt.x, 40, 760);
+        state.handle.y = clamp(pt.y, 40, 320);
+        update();
+      });
+
+      update();
+    };
+
+    const setupRoundPoint = () => {
+      const svg = document.getElementById("round-point");
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const center = { x: 400, y: 180 };
+      const rays = [];
+      const arcs = [];
+      const labels = [];
+      const handles = [];
+      const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+      const state = { count: 3, points: [] };
+
+      const makePoints = (count) => {
+        const radius = 130;
+        return Array.from({ length: count }, (_, index) => {
+          const angle = (index / count) * TAU;
+          return {
+            x: center.x + radius * Math.cos(angle),
+            y: center.y + radius * Math.sin(angle)
+          };
+        });
+      };
+
+      const syncElements = () => {
+        while (rays.length < state.count) {
+          rays.push(makeLine(svg, "ray"));
+          const arc = makePath(svg, "angle-arc");
+          arc.setAttribute("stroke", ARC_COLORS[(rays.length - 1) % ARC_COLORS.length]);
+          arcs.push(arc);
+          labels.push(makeText(svg));
+          const handle = makeHandle(svg, 0, 0, "handle");
+          handle.dataset.bound = "true";
+          handles.push(handle);
+          enableDrag(svg, handle, (pt) => {
+            const idx = Number(handle.dataset.index);
+            state.points[idx].x = clamp(pt.x, 40, 760);
+            state.points[idx].y = clamp(pt.y, 40, 320);
+            update();
+          });
+        }
+        while (rays.length > state.count) {
+          rays.pop().remove();
+          arcs.pop().remove();
+          labels.pop().remove();
+          handles.pop().remove();
+        }
+        handles.forEach((handle, index) => {
+          handle.dataset.index = String(index);
+          const className = index % 3 === 0 ? "handle" : index % 3 === 1 ? "handle secondary" : "handle tertiary";
+          handle.setAttribute("class", className);
+        });
+      };
+
+      const update = () => {
+        syncElements();
+        const points = state.points.map((pt) => ({
+          x: pt.x,
+          y: pt.y,
+          angle: Math.atan2(pt.y - center.y, pt.x - center.x)
+        }));
+
+        points.forEach((pt, index) => {
+          rays[index].setAttribute("x1", center.x);
+          rays[index].setAttribute("y1", center.y);
+          rays[index].setAttribute("x2", pt.x);
+          rays[index].setAttribute("y2", pt.y);
+          handles[index].setAttribute("cx", pt.x);
+          handles[index].setAttribute("cy", pt.y);
+        });
+
+        const sorted = [...points].sort((a, b) => a.angle - b.angle);
+        for (let i = 0; i < sorted.length; i += 1) {
+          const current = sorted[i];
+          const next = sorted[(i + 1) % sorted.length];
+          let start = current.angle;
+          let end = next.angle;
+          if (i === sorted.length - 1) {
+            end += TAU;
+          }
+          const mid = (start + end) / 2;
+          arcs[i].setAttribute("d", describeArc(center.x, center.y, 54, start, end));
+          const angleValue = ((end - start) * 180) / Math.PI;
+          setLabelText(labels[i], formatAngle(angleValue), letters[i]);
+          positionAngleLabel(labels[i], center, start, end, 54, 36);
+        }
+      };
+
+      const controls = document.getElementById("round-point-controls");
+      controls.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) {
+          return;
+        }
+        if (button.dataset.action === "add") {
+          state.count = Math.min(6, state.count + 1);
+        } else {
+          state.count = Math.max(2, state.count - 1);
+        }
+        state.points = makePoints(state.count);
+        update();
+      });
+
+      state.points = makePoints(state.count);
+      update();
+    };
+
+    const setupTriangle = () => {
+      const svg = document.getElementById("triangle");
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      polygon.setAttribute("class", "triangle");
+      svg.appendChild(polygon);
+
+      const arcs = [makePath(svg, "angle-arc"), makePath(svg, "angle-arc"), makePath(svg, "angle-arc")];
+      arcs.forEach((arc, i) => arc.setAttribute("stroke", ARC_COLORS[(i + 1) % ARC_COLORS.length]));
+      const sideTicks = [makeLine(svg, "side-tick"), makeLine(svg, "side-tick"), makeLine(svg, "side-tick")];
+      const angleTicks = [makeLine(svg, "angle-tick"), makeLine(svg, "angle-tick"), makeLine(svg, "angle-tick")];
+      const labels = [makeText(svg), makeText(svg), makeText(svg)];
+      const letters = ["A", "B", "C"];
+
+      const points = {
+        a: { x: 200, y: 80 },
+        b: { x: 620, y: 120 },
+        c: { x: 420, y: 300 }
+      };
+
+      const handles = {
+        a: makeHandle(svg, points.a.x, points.a.y),
+        b: makeHandle(svg, points.b.x, points.b.y, "handle secondary"),
+        c: makeHandle(svg, points.c.x, points.c.y, "handle tertiary")
+      };
+
+      const update = () => {
+        polygon.setAttribute("points", `${points.a.x},${points.a.y} ${points.b.x},${points.b.y} ${points.c.x},${points.c.y}`);
+        Object.entries(handles).forEach(([key, handle]) => {
+          handle.setAttribute("cx", points[key].x);
+          handle.setAttribute("cy", points[key].y);
+        });
+
+        const angleData = [
+          { vertex: points.a, p1: points.b, p2: points.c },
+          { vertex: points.b, p1: points.c, p2: points.a },
+          { vertex: points.c, p1: points.a, p2: points.b }
+        ];
+
+        const angleValues = [];
+        const angleArcs = [];
+        const angleCenters = [];
+        angleData.forEach((data, index) => {
+          const v1 = { x: data.p1.x - data.vertex.x, y: data.p1.y - data.vertex.y };
+          const v2 = { x: data.p2.x - data.vertex.x, y: data.p2.y - data.vertex.y };
+          const angleValue = angleBetween(v1, v2);
+          const arc = shortestArc(angleDirection(v1), angleDirection(v2));
+          arcs[index].setAttribute("d", describeArc(data.vertex.x, data.vertex.y, 38, arc.start, arc.end));
+          setLabelText(labels[index], formatAngle(angleValue), letters[index]);
+          positionAngleLabel(labels[index], data.vertex, arc.start, arc.end, 38, 40);
+          angleValues.push(angleValue);
+          angleArcs.push(arc);
+          angleCenters.push(data.vertex);
+        });
+
+        const sidePairs = [
+          { p1: points.a, p2: points.b },
+          { p1: points.b, p2: points.c },
+          { p1: points.c, p2: points.a }
+        ];
+        const sideLengths = sidePairs.map((pair) => Math.hypot(pair.p2.x - pair.p1.x, pair.p2.y - pair.p1.y));
+        const lengthTolerance = 3;
+        const equalSides = [false, false, false];
+        if (Math.abs(sideLengths[0] - sideLengths[1]) <= lengthTolerance) {
+          equalSides[0] = true;
+          equalSides[1] = true;
+        }
+        if (Math.abs(sideLengths[1] - sideLengths[2]) <= lengthTolerance) {
+          equalSides[1] = true;
+          equalSides[2] = true;
+        }
+        if (Math.abs(sideLengths[0] - sideLengths[2]) <= lengthTolerance) {
+          equalSides[0] = true;
+          equalSides[2] = true;
+        }
+
+        const tickHalf = 8;
+        sidePairs.forEach((pair, index) => {
+          const tick = sideTicks[index];
+          if (!equalSides[index]) {
+            tick.style.display = "none";
+            return;
+          }
+          tick.style.display = "block";
+          const mid = { x: (pair.p1.x + pair.p2.x) / 2, y: (pair.p1.y + pair.p2.y) / 2 };
+          const dx = pair.p2.x - pair.p1.x;
+          const dy = pair.p2.y - pair.p1.y;
+          const length = Math.hypot(dx, dy) || 1;
+          const nx = -dy / length;
+          const ny = dx / length;
+          tick.setAttribute("x1", mid.x + nx * tickHalf);
+          tick.setAttribute("y1", mid.y + ny * tickHalf);
+          tick.setAttribute("x2", mid.x - nx * tickHalf);
+          tick.setAttribute("y2", mid.y - ny * tickHalf);
+        });
+
+        const angleTolerance = 1.5;
+        const equalAngles = [false, false, false];
+        if (Math.abs(angleValues[0] - angleValues[1]) <= angleTolerance) {
+          equalAngles[0] = true;
+          equalAngles[1] = true;
+        }
+        if (Math.abs(angleValues[1] - angleValues[2]) <= angleTolerance) {
+          equalAngles[1] = true;
+          equalAngles[2] = true;
+        }
+        if (Math.abs(angleValues[0] - angleValues[2]) <= angleTolerance) {
+          equalAngles[0] = true;
+          equalAngles[2] = true;
+        }
+
+        const angleTickHalf = 8;
+        angleTicks.forEach((tick, index) => {
+          if (!equalAngles[index]) {
+            tick.style.display = "none";
+            return;
+          }
+          tick.style.display = "block";
+          const center = angleCenters[index];
+          const arc = angleArcs[index];
+          positionAngleTick(tick, center, arc.start, arc.end, 38, angleTickHalf);
+        });
+      };
+
+      const controls = document.getElementById("triangle-controls");
+      controls.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) {
+          return;
+        }
+        const preset = button.dataset.preset;
+        if (preset === "equilateral") {
+          points.a = { x: 300, y: 80 };
+          points.b = { x: 500, y: 80 };
+          points.c = { x: 400, y: 253.2 };
+        } else if (preset === "isosceles") {
+          points.a = { x: 260, y: 100 };
+          points.b = { x: 540, y: 100 };
+          points.c = { x: 400, y: 290 };
+        } else if (preset === "scalene") {
+          points.a = { x: 220, y: 90 };
+          points.b = { x: 640, y: 150 };
+          points.c = { x: 380, y: 300 };
+        }
+        update();
+      });
+
+      Object.keys(handles).forEach((key) => {
+        enableDrag(svg, handles[key], (pt) => {
+          points[key].x = clamp(pt.x, 60, 740);
+          points[key].y = clamp(pt.y, 40, 320);
+          update();
+        });
+      });
+
+      update();
+    };
+
+    const isConvex = (pts) => {
+      let sign = 0;
+      for (let i = 0; i < pts.length; i += 1) {
+        const p0 = pts[i];
+        const p1 = pts[(i + 1) % pts.length];
+        const p2 = pts[(i + 2) % pts.length];
+        const cross = (p1.x - p0.x) * (p2.y - p1.y) - (p1.y - p0.y) * (p2.x - p1.x);
+        if (cross !== 0) {
+          const current = Math.sign(cross);
+          if (sign === 0) {
+            sign = current;
+          } else if (current !== sign) {
+            return false;
+          }
+        }
+      }
+      return true;
+    };
+
+    const setupQuadrilateral = () => {
+      const svg = document.getElementById("quadrilateral");
+      drawGrid(svg);
+      enableLabelToggle(svg);
+
+      const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+      polygon.setAttribute("class", "quad");
+      svg.appendChild(polygon);
+
+      const arcs = [
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc"),
+        makePath(svg, "angle-arc")
+      ];
+      arcs.forEach((arc, i) => arc.setAttribute("stroke", ARC_COLORS[i % ARC_COLORS.length]));
+      const labels = [makeText(svg), makeText(svg), makeText(svg), makeText(svg)];
+      const letters = ["A", "B", "C", "D"];
+
+      const diagonal = makeLine(svg, "diagonal");
+      const triArcs = Array.from({ length: 6 }, () => makePath(svg, "angle-arc"));
+      triArcs.forEach((arc, i) => arc.setAttribute("stroke", ARC_COLORS[(i + 1) % ARC_COLORS.length]));
+      const triLabels = Array.from({ length: 6 }, () => makeText(svg));
+      const triLetters = ["A", "B", "C", "D", "E", "F"];
+      const sumLabels = [makeText(svg), makeText(svg)];
+      sumLabels.forEach((label) => label.setAttribute("class", "label sum-label"));
+      let splitMode = false;
+
+      const points = {
+        a: { x: 170, y: 90 },
+        b: { x: 640, y: 110 },
+        c: { x: 600, y: 300 },
+        d: { x: 220, y: 290 }
+      };
+
+      const handles = {
+        a: makeHandle(svg, points.a.x, points.a.y),
+        b: makeHandle(svg, points.b.x, points.b.y, "handle secondary"),
+        c: makeHandle(svg, points.c.x, points.c.y, "handle tertiary"),
+        d: makeHandle(svg, points.d.x, points.d.y, "handle")
+      };
+
+      const drawTriangleAngles = (triPoints, offset) => {
+        triPoints.forEach((vertex, index) => {
+          const prev = triPoints[(index + triPoints.length - 1) % triPoints.length];
+          const next = triPoints[(index + 1) % triPoints.length];
+          const v1 = { x: prev.x - vertex.x, y: prev.y - vertex.y };
+          const v2 = { x: next.x - vertex.x, y: next.y - vertex.y };
+          const angleValue = angleBetween(v1, v2);
+          const arc = shortestArc(angleDirection(v1), angleDirection(v2));
+          const arcIndex = offset + index;
+          triArcs[arcIndex].setAttribute("d", describeArc(vertex.x, vertex.y, 28, arc.start, arc.end));
+          setLabelText(triLabels[arcIndex], formatAngle(angleValue), triLetters[arcIndex]);
+          positionAngleLabel(triLabels[arcIndex], vertex, arc.start, arc.end, 28, 30);
+        });
+      };
+
+      const update = () => {
+        polygon.setAttribute(
+          "points",
+          `${points.a.x},${points.a.y} ${points.b.x},${points.b.y} ${points.c.x},${points.c.y} ${points.d.x},${points.d.y}`
+        );
+        Object.entries(handles).forEach(([key, handle]) => {
+          handle.setAttribute("cx", points[key].x);
+          handle.setAttribute("cy", points[key].y);
+        });
+
+        const order = [points.a, points.b, points.c, points.d];
+        if (splitMode) {
+          diagonal.setAttribute("x1", points.a.x);
+          diagonal.setAttribute("y1", points.a.y);
+          diagonal.setAttribute("x2", points.c.x);
+          diagonal.setAttribute("y2", points.c.y);
+          diagonal.style.display = "block";
+
+          const triOne = [points.a, points.b, points.c];
+          const triTwo = [points.a, points.c, points.d];
+          drawTriangleAngles(triOne, 0);
+          drawTriangleAngles(triTwo, 3);
+
+          const centerOne = polygonCentroid(triOne);
+          const centerTwo = polygonCentroid(triTwo);
+          sumLabels[0].textContent = "180°";
+          sumLabels[1].textContent = "180°";
+          sumLabels[0].setAttribute("x", centerOne.x - 18);
+          sumLabels[0].setAttribute("y", centerOne.y + 6);
+          sumLabels[1].setAttribute("x", centerTwo.x - 18);
+          sumLabels[1].setAttribute("y", centerTwo.y + 6);
+
+          arcs.forEach((arc) => (arc.style.display = "none"));
+          labels.forEach((label) => (label.style.display = "none"));
+          triArcs.forEach((arc) => (arc.style.display = "block"));
+          triLabels.forEach((label) => (label.style.display = "block"));
+          sumLabels.forEach((label) => (label.style.display = "block"));
+        } else {
+          diagonal.style.display = "none";
+          triArcs.forEach((arc) => (arc.style.display = "none"));
+          triLabels.forEach((label) => (label.style.display = "none"));
+          sumLabels.forEach((label) => (label.style.display = "none"));
+
+          order.forEach((vertex, index) => {
+            const prev = order[(index + order.length - 1) % order.length];
+            const next = order[(index + 1) % order.length];
+            const v1 = { x: prev.x - vertex.x, y: prev.y - vertex.y };
+            const v2 = { x: next.x - vertex.x, y: next.y - vertex.y };
+            const angleValue = angleBetween(v1, v2);
+            const arc = chooseArcByBisector(v1, v2, vertex, 32);
+            arcs[index].setAttribute("d", describeArc(vertex.x, vertex.y, 32, arc.start, arc.end));
+            setLabelText(labels[index], formatAngle(angleValue), letters[index]);
+            positionAngleLabel(labels[index], vertex, arc.start, arc.end, 32, 30);
+            arcs[index].style.display = "block";
+            labels[index].style.display = "block";
+          });
+        }
+      };
+
+      const controls = document.getElementById("quadrilateral-controls");
+      controls.addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) {
+          return;
+        }
+        splitMode = !splitMode;
+        button.textContent = splitMode ? "Show quadrilateral" : "Split into triangles";
+        update();
+      });
+
+      Object.keys(handles).forEach((key) => {
+        enableDrag(svg, handles[key], (pt) => {
+          const candidate = {
+            a: { ...points.a },
+            b: { ...points.b },
+            c: { ...points.c },
+            d: { ...points.d }
+          };
+          candidate[key].x = clamp(pt.x, 60, 740);
+          candidate[key].y = clamp(pt.y, 40, 320);
+          const testOrder = [candidate.a, candidate.b, candidate.c, candidate.d];
+          if (!isConvex(testOrder)) {
+            return;
+          }
+          points[key].x = candidate[key].x;
+          points[key].y = candidate[key].y;
+          update();
+        });
+      });
+
+      update();
+    };
+
+    setupRoundPoint();
+    setupStraightLine();
+    setupTriangle();
+    setupIntersect();
+    setupParallelDiagram("parallel-alternate", "alternate");
+    setupParallelDiagram("parallel-corresponding", "corresponding");
+    setupParallelCrossing();
+    setupQuadrilateral();
+
+    const layoutButtons = document.querySelectorAll(".layout-switcher button");
+    const savedLayout = window.localStorage.getItem("angleRulesLayout") || "full";
+    document.body.dataset.layout = savedLayout;
+    layoutButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", button.dataset.layout === savedLayout ? "true" : "false");
+    });
+
+    layoutButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const layout = button.dataset.layout;
+        document.body.dataset.layout = layout;
+        window.localStorage.setItem("angleRulesLayout", layout);
+        layoutButtons.forEach((btn) => {
+          btn.setAttribute("aria-pressed", btn === button ? "true" : "false");
+        });
+      });
+    });
+  </script>
+</body>
+</html>

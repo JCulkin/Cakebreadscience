@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solid Particle Model Animation | Student Work</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .animation-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #sketch-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .comments-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comments-box h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .comment-section {
+            margin-bottom: 20px;
+        }
+
+        .comment-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .comment-section.good h3 {
+            color: #7cf4c4;
+        }
+
+        .comment-section.bad h3 {
+            color: #ff9999;
+        }
+
+        .comment-section p {
+            line-height: 1.6;
+            opacity: 0.9;
+            padding-left: 15px;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← Back to Gallery</a>
+            <h1>Solid State Particle Model</h1>
+            <p class="student-name">by Audrey</p>
+        </header>
+
+        <div class="animation-box">
+            <div id="sketch-container"></div>
+        </div>
+
+        <div class="comments-box">
+            <h2>Student Comments</h2>
+            
+            <div class="comment-section good">
+                <h3>✓ What Works Well (GOOD)</h3>
+                <p>It was close together, very accurate. It vibrated lightly. It was a great solid.</p>
+            </div>
+
+            <div class="comment-section bad">
+                <h3>✗ Areas for Improvement (BAD)</h3>
+                <p>Nothing really, it was a really good solid.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // IGCSE Chemistry – Ultra-Tightly Packed Solid Particle Model
+        let particles = [];
+        let rows = 9;
+        let cols = 9;
+        let spacing = 32;        // EVEN CLOSER together than before
+        let vibration = 1;       // tiny vibration
+        let startX = 100;
+        let startY = 100;
+
+        function setup() {
+            let canvas = createCanvas(550, 550);
+            canvas.parent('sketch-container');
+            
+            // Create an ultra-tight lattice structure
+            for (let x = 0; x < cols; x++) {
+                for (let y = 0; y < rows; y++) {
+                    particles.push({
+                        baseX: startX + x * spacing,
+                        baseY: startY + y * spacing
+                    });
+                }
+            }
+        }
+
+        function draw() {
+            background(245);
+            
+            // Title
+            textSize(22);
+            fill(0);
+            text("Solid – Ultra tightly packed particles (vibrating only)", 20, 40);
+            
+            // Draw particles
+            for (let p of particles) {
+                let vx = random(-vibration, vibration);
+                let vy = random(-vibration, vibration);
+                fill(20, 70, 200);
+                noStroke();
+                circle(p.baseX + vx, p.baseY + vy, 24);  // particle size slightly increased
+            }
+        }
+    </script>
+</body>
+</html>

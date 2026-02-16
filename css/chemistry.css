@@ -1,0 +1,104 @@
+/* Chemistry Worksheet Styles - Subject-Specific Overrides */
+@import url('./worksheet.css');
+
+/* Chemistry Color Scheme */
+:root {
+    --primary-color: #78281f;
+    --primary-light: #c0392b;
+    --accent-color: #e74c3c;
+    --accent-light: #fadbd8;
+    --accent-lighter: #fef5e7;
+    --accent-border: #f5b7b1;
+}
+
+.header {
+    border-bottom-color: var(--accent-color);
+}
+
+.header::before {
+    content: "🧪";
+}
+
+.spec-ref {
+    color: var(--primary-color);
+}
+
+h1 {
+    color: var(--primary-color);
+}
+
+.subtitle {
+    color: var(--primary-light);
+}
+
+h2 {
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-border) 100%);
+    border-left-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+h2.chemistry-section {
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-border) 100%);
+    border-left-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+.question-number {
+    color: var(--primary-color);
+}
+
+.answer-space {
+    border-color: var(--accent-border);
+    background: var(--accent-lighter);
+}
+
+.definition-box {
+    background: var(--accent-light);
+    border-left-color: var(--accent-color);
+}
+
+.definition-box strong {
+    color: var(--primary-color);
+}
+
+.marks {
+    color: var(--primary-light);
+}
+
+.venn-space,
+.diagram-box,
+.grid-space {
+    border-color: var(--accent-color);
+    background: var(--accent-lighter);
+}
+
+.grid-space {
+    background: 
+        repeating-linear-gradient(0deg, #fdebd0 0px, #fdebd0 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(90deg, #fdebd0 0px, #fdebd0 1px, transparent 1px, transparent 20px);
+}
+
+.instruction {
+    color: var(--primary-light);
+}
+
+.info-item {
+    border-bottom-color: var(--accent-border);
+}
+
+table {
+    border-color: var(--accent-border);
+}
+
+th, td {
+    border-color: var(--accent-border);
+}
+
+th {
+    background: linear-gradient(135deg, var(--accent-light) 0%, var(--accent-border) 100%);
+    color: var(--primary-color);
+}
+
+.mark-scheme {
+    border-top-color: var(--accent-color);
+}

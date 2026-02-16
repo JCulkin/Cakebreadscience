@@ -1,0 +1,1114 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevenstudents(best)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+            letter-spacing: -2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        h1:hover {
+            transform: scale(1.02);
+            text-shadow: 4px 4px 0px rgba(255,255,255,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* Navigation Bar Styles */
+        .nav-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+            padding: 5px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-tab {
+            padding: 12px 30px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab span {
+            font-size: 2.1em;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* Section Container */
+        .sections-container {
+            position: relative;
+            min-height: 500px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 2px;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+        }
+
+        /* Colored backgrounds for game cards */
+        .project-card:nth-child(1) .project-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .project-card:nth-child(2) .project-preview {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .project-card:nth-child(3) .project-preview {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .project-card:nth-child(4) .project-preview {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .project-card:nth-child(5) .project-preview {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .project-card:nth-child(6) .project-preview {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .project-card:nth-child(7) .project-preview {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+        }
+
+        .project-card:nth-child(8) .project-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .project-card:nth-child(9) .project-preview {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .project-card:nth-child(10) .project-preview {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .project-card:nth-child(11) .project-preview {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .project-card:nth-child(12) .project-preview {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .project-card:nth-child(13) .project-preview {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .project-card:nth-child(14) .project-preview {
+            background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%);
+        }
+
+        .project-card:nth-child(15) .project-preview {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .project-card:nth-child(16) .project-preview {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .project-card:nth-child(17) .project-preview {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .project-card:nth-child(18) .project-preview {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .project-card:nth-child(19) .project-preview {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .project-card:nth-child(20) .project-preview {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .project-preview {
+            width: 100%;
+            height: 180px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .line-count {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-size: 0.8em;
+            text-align: right;
+            line-height: 1.3;
+        }
+
+        /* New emoji container that will pulse */
+        .emoji-container {
+            font-size: 4em; /* Smaller emojis */
+            animation: pulse 2s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pulsing animation for emojis only */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Stagger animation for each card */
+        .project-card:nth-child(1) .emoji-container {
+            animation-delay: 0s;
+        }
+        .project-card:nth-child(2) .emoji-container {
+            animation-delay: 0.2s;
+        }
+        .project-card:nth-child(3) .emoji-container {
+            animation-delay: 0.4s;
+        }
+        .project-card:nth-child(4) .emoji-container {
+            animation-delay: 0.6s;
+        }
+        .project-card:nth-child(5) .emoji-container {
+            animation-delay: 0.8s;
+        }
+        .project-card:nth-child(6) .emoji-container {
+            animation-delay: 1s;
+        }
+        .project-card:nth-child(7) .emoji-container {
+            animation-delay: 1.2s;
+        }
+        .project-card:nth-child(8) .emoji-container {
+            animation-delay: 1.4s;
+        }
+        .project-card:nth-child(9) .emoji-container {
+            animation-delay: 1.6s;
+        }
+        .project-card:nth-child(10) .emoji-container {
+            animation-delay: 1.8s;
+        }
+        .project-card:nth-child(11) .emoji-container {
+            animation-delay: 2s;
+        }
+        .project-card:nth-child(12) .emoji-container {
+            animation-delay: 2.2s;
+        }
+        .project-card:nth-child(13) .emoji-container {
+            animation-delay: 2.4s;
+        }
+        .project-card:nth-child(14) .emoji-container {
+            animation-delay: 2.6s;
+        }
+        .project-card:nth-child(15) .emoji-container {
+            animation-delay: 2.8s;
+        }
+        .project-card:nth-child(16) .emoji-container {
+            animation-delay: 3s;
+        }
+        .project-card:nth-child(17) .emoji-container {
+            animation-delay: 3.2s;
+        }
+        .project-card:nth-child(18) .emoji-container {
+            animation-delay: 3.4s;
+        }
+        .project-card:nth-child(19) .emoji-container {
+            animation-delay: 3.6s;
+        }
+        .project-card:nth-child(20) .emoji-container {
+            animation-delay: 3.8s;
+        }
+
+        /* Add a glow effect on hover */
+        .project-card:hover .emoji-container {
+            animation-play-state: paused;
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.5));
+        }
+
+        .project-info {
+            padding: 15px;
+        }
+
+        .project-title {
+            font-size: 1.4em;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .project-author {
+            opacity: 0.8;
+            margin-bottom: 12px;
+        }
+
+        .project-description {
+            opacity: 0.9;
+            line-height: 1.5;
+            font-size: 0.95em;
+        }
+
+        .cta-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-size: 1.1em;
+        }
+
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            opacity: 0.7;
+            font-size: 0.9em;
+            position: relative;
+        }
+
+        /* Different color for essay emojis */
+        .essay-card .project-preview {
+            background: rgba(100, 50, 150, 0.3);
+        }
+
+        /* Different color for simulation emojis */
+        .simulation-card .project-preview {
+            background: rgba(50, 150, 200, 0.3);
+        }
+
+        /* Different color for maths emojis */
+        .maths-card .project-preview {
+            background: rgba(200, 150, 50, 0.3);
+        }
+
+        /* Placeholder card styling for essays section */
+        .placeholder-card {
+            opacity: 0.7;
+            position: relative;
+        }
+
+        .placeholder-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .placeholder-card:hover .placeholder-overlay {
+            opacity: 1;
+        }
+
+        .placeholder-text {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .placeholder-card .emoji-container {
+            filter: grayscale(50%);
+            opacity: 0.8;
+        }
+
+        .placeholder-card:hover .emoji-container {
+            filter: grayscale(30%);
+            transform: scale(1.05);
+        }
+
+        /* 80s style AI disclaimer */
+        .ai-disclaimer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #000;
+            text-shadow: 0 0 5px #fff;
+            box-shadow: 0 0 15px #ff00ff, 0 0 25px #00ffff;
+            z-index: 1000;
+            transform: rotate(-5deg);
+            animation: blink 2s infinite;
+            border: 3px solid #ffff00;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Add a cassette tape decoration */
+        .ai-disclaimer::before {
+            content: "▶";
+            position: absolute;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffff00;
+            font-size: 0.8em;
+        }
+
+        /* Replace pseudo floppy with real clickable element */
+        .ai-disclaimer .floppy {
+            position: absolute;
+            right: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9em;
+            text-decoration: none;
+            color: inherit;
+            padding: 4px;
+        }
+
+        /* Easter egg 1: Hidden link in footer */
+        .easter-egg-1 {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 0.6em;
+            opacity: 0.3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .easter-egg-1:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        /* Easter egg 2: Konami code for hidden page */
+        .konami-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            transform: translateY(100px);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+            border: 1px solid #00ff00;
+        }
+
+        .konami-notification.show {
+            transform: translateY(0);
+        }
+        /* Easter egg 2: second hidden link (left) */
+        .easter-egg-2 {
+            position: absolute;
+            bottom: 5px;
+            left: 10px;
+            font-size: 0.6em;
+            opacity: 0.3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .easter-egg-2:hover { opacity: 1; transform: scale(1.2); }
+    </style>
+</head>
+<body>
+    <div class="ai-disclaimer">ALL MADE WITH AI<a class="floppy" href="Secret/secret-aracde.html" title="Secret Arcade">💾</a></div>
+    
+    <div class="container">
+        <header>
+            <h1 id="logo">Elevenstudents(best)</h1>
+            <p class="subtitle">Creative coding showcase • Where art meets algorithms</p>
+        </header>
+
+        <!-- Navigation Bar -->
+        <div class="nav-container">
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="showSection('games')">
+                    <span>🎮</span> Games
+                </div>
+                <div class="nav-tab" onclick="showSection('simulations')">
+                    <span>🔬</span> Simulations
+                </div>
+                <div class="nav-tab" onclick="showSection('maths')">
+                    <span>🧮</span> Maths
+                </div>
+                <div class="nav-tab" onclick="showSection('essays')">
+                    <span>📝</span> Essays
+                </div>
+            </div>
+        </div>
+
+        <!-- Sections Container -->
+        <div class="sections-container">
+            <!-- Games Section -->
+            <section id="games" class="content-section active">
+                <h2 class="section-title">🎮 Games <a href="highscores.html" style="font-size: 0.6em; margin-left: 20px; color: #00ffff; text-decoration: none; opacity: 0.9;">🏆 High Scores</a></h2>
+                <div class="gallery">
+                    <div class="project-card" onclick="window.location.href='Games/iggy.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">💡</div>
+                            <div class="line-count">351 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Light Switch Puzzle</div>
+                            <div class="project-author">by Iggy</div>
+                            <div class="project-description">
+                                Can you turn on all the lights? Figure out how each switch affects the bulbs in this brain-teasing puzzle with 3 challenging levels!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/hugo.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🐻</div>
+                            <div class="line-count">435 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Five Nights at Woodie's</div>
+                            <div class="project-author">by Hugo</div>
+                            <div class="project-description">
+                                Survive the school night shift! Monitor security cameras, manage power, and keep the doors closed. Can you make it through all 5 nights at Woodie's?
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/hector2.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">⚡</div>
+                            <div class="line-count">273 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Neon Dash 2025</div>
+                            <div class="project-author">by Hector</div>
+                            <div class="project-description">
+                                An upgraded neon platformer with 5 difficulty levels! Jump over spikes, land on platforms, and test your reflexes from Chill to Hardcore mode.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/ian-game2.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🔺</div>
+                            <div class="line-count">459 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Jump Triangles</div>
+                            <div class="project-author">by Ian</div>
+                            <div class="project-description">
+                                Double-jump your way through geometric obstacles! Time your jumps perfectly to navigate past triangles and reach the top of the screen.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/solar-system.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🪐</div>
+                            <div class="line-count">1029 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Solar System Game (REVAMPED)</div>
+                            <div class="project-author">by Cakebread</div>
+                            <div class="project-description">
+                                Epic space combat! Defeat planets to break free from orbit and face the final Jupiter battle.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/neon-car.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🏎️</div>
+                            <div class="line-count">314 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Neon Car Jump</div>
+                            <div class="project-author">by Nanook</div>
+                            <div class="project-description">
+                                Launch a neon racer across floating platforms, time your jumps, and dodge the toxic acid below.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Secret/secret-adventure.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">⛵</div>
+                            <div class="line-count">1458 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">NOT SO SECRET ADVENTURE</div>
+                            <div class="project-author">by Captain Baffin</div>
+                            <div class="project-description">
+                                The voyage begins! Set sail on an epic adventure across digital seas.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/koi-fish.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🐟</div>
+                            <div class="line-count">320 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Koi Fish Adventure</div>
+                            <div class="project-author">by Audrey</div>
+                            <div class="project-description">
+                                Guide a beautiful koi fish through the pond, eating blueberries while avoiding lily pads. Watch your fish grow as you eat more!
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="project-card" onclick="window.location.href='Games/hector-game.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🚗</div>
+                            <div class="line-count">258 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">MIATA NEON DRIVE 2025</div>
+                            <div class="project-author">by Hector</div>
+                            <div class="project-description">
+                                It's like a racing game kind of, and umm also like there's nitrous and fuel and the nitrous has a very high percentage of exploding. Collect fuel, don't stay AFK
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="project-card" onclick="window.location.href='Games/rock-game.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">✊</div>
+                            <div class="line-count">555 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">MASSIMOS BRAND NEW ROCK PAPER AND SCISSORS</div>
+                            <div class="project-author">by Massimo</div>
+                            <div class="project-description">
+                                The classic game reimagined! Challenge the computer in this brand new version of Rock Paper Scissors.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/ian-pong.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🏓</div>
+                            <div class="line-count">381 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">PONG</div>
+                            <div class="project-author">by Ian</div>
+                            <div class="project-description">
+                                The classic arcade game returns! Challenge the AI in this timeless battle of paddles and pixels.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/pasha-jumpy.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🐦</div>
+                            <div class="line-count">396 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Jumpy Game</div>
+                            <div class="project-author">by Pasha</div>
+                            <div class="project-description">
+                                Jump, jump, jump! How high can you go in this endless vertical adventure?
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/love-calculator-romi.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">💕</div>
+                            <div class="line-count">235 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Love Calculator</div>
+                            <div class="project-author">by Romi</div>
+                            <div class="project-description">
+                                Calculate your compatibility! Enter two names and discover your love percentage.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card" onclick="window.location.href='Games/snake.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🐍</div>
+                            <div class="line-count">223 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Wholesome Snake</div>
+                            <div class="project-author">by Massimo</div>
+                            <div class="project-description">
+                                Classic snake game with modern design, smooth animations, speed progression, and mobile controls. Eat fruit, grow longer, don't hit yourself!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/azul-game.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🦇</div>
+                            <div class="line-count">414 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Azul's Dungeon of Bats</div>
+                            <div class="project-author">by Azul</div>
+                            <div class="project-description">
+                                Don't be too scared.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/pablo/html.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🏎️</div>
+                            <div class="line-count">141 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">F1 reaction time practice</div>
+                            <div class="project-author">by Pablo</div>
+                            <div class="project-description">
+                                Vroom vroom
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/desert-taxi.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🚕</div>
+                            <div class="line-count">599 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Desert Taxi Chase</div>
+                            <div class="project-author">by Oli</div>
+                            <div class="project-description">
+                                It's so dry and I can't get a taxi.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/love-calculator-lila.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🐭</div>
+                            <div class="line-count">319 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Mouse</div>
+                            <div class="project-author">by Romi and Lila</div>
+                            <div class="project-description">
+                                It's like a parkour game where you're jumping obstacles. There's a mouse.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/bacon-pan.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🥓</div>
+                            <div class="line-count">403 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">bacon pan with a view of the moon</div>
+                            <div class="project-author">by Manu</div>
+                            <div class="project-description">
+                                Do you want to test your bacon pan skills with a view of the moon to boot?
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- <div class="project-card" onclick="window.location.href='Games/tanks.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🚜</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Tanks Battle</div>
+                            <div class="project-author">by Student</div>
+                            <div class="project-description">
+                                Strategic tank warfare! Control your tank, aim carefully, and battle against opponents in this action-packed combat game.
+                            </div>
+                        </div>
+                    </div> -->
+                </div>
+            </section>
+
+            <!-- Simulations Section -->
+            <section id="simulations" class="content-section">
+                <h2 class="section-title">🔬 Simulations</h2>
+                <div class="gallery">
+                    <!-- Water Evaporation Simulation -->
+                    <div class="project-card simulation-card" onclick="window.location.href='Simulations/alicia-simulation.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">💧</div>
+                            <div class="line-count">230 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Condensation Simulation</div>
+                            <div class="project-author">by Alicia</div>
+                            <div class="project-description">
+                                Watch particles transform from gas to liquid as temperature decreases. Features gravity effects and particle clustering physics.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Water Evaporation Simulation -->
+                    <div class="project-card simulation-card" onclick="window.location.href='Simulations/daniela-abril-simulation.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🌊</div>
+                            <div class="line-count">214 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Water Evaporation Simulation</div>
+                            <div class="project-author">by Daniela and Abril</div>
+                            <div class="project-description">
+                                Particle system showing liquid water heating up and transitioning to gas state with realistic physics and dynamic lighting effects.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ice Melting Simulation -->
+                    <div class="project-card simulation-card" onclick="window.location.href='Simulations/ines-simulation.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🧊</div>
+                            <div class="line-count">194 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Ice Melting Simulation</div>
+                            <div class="project-author">by Inés</div>
+                            <div class="project-description">
+                                Ice particles randomly transition to liquid state and drip downward, demonstrating phase change from solid to liquid.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Water Phase Change (Interactive) -->
+                    <div class="project-card simulation-card" onclick="window.location.href='Simulations/nanook-simulation.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🌡️</div>
+                            <div class="line-count">249 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Water Phase Change (Interactive)</div>
+                            <div class="project-author">by Nanook</div>
+                            <div class="project-description">
+                                Interactive simulation with 200 particles. Click buttons to switch between liquid and gas states and observe different molecular behavior.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Solid Particle Model -->
+                    <div class="project-card simulation-card" onclick="window.location.href='Simulations/audrey-simulation.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">❄️</div>
+                            <div class="line-count">174 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Solid State Particle Model</div>
+                            <div class="project-author">by Audrey</div>
+                            <div class="project-description">
+                                Ultra-tightly packed particle lattice demonstrating solid state matter with subtle vibration. Perfect chemistry diagram visualization.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Maths Section -->
+            <section id="maths" class="content-section">
+                <h2 class="section-title">🧮 Maths</h2>
+                <div class="gallery">
+                    <div class="project-card maths-card" onclick="window.location.href='Maths/Jamie-maths.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🧮</div>
+                            <div class="line-count">919 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Jamie's Maths Challenge</div>
+                            <div class="project-author">by Jamie</div>
+                            <div class="project-description">
+                                Test your mathematical skills with this exciting challenge game!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Essays Section -->
+            <section id="essays" class="content-section">
+                <h2 class="section-title">📝 Essays <span style="font-size: 0.5em; opacity: 0.7; margin-left: 10px;">(Coming Soon)</span></h2>
+                <div class="gallery">
+                    <div class="project-card essay-card placeholder-card" onclick="event.preventDefault();">
+                        <div class="project-preview">
+                            <div class="emoji-container">📝</div>
+                            <div class="placeholder-overlay">
+                                <div class="placeholder-text">Example Essay</div>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Example Essay Title</div>
+                            <div class="project-author">by Student Name</div>
+                            <div class="project-description">
+                                This is just an example of what an essay card might look like. Essays section is coming soon!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card essay-card placeholder-card" onclick="event.preventDefault();">
+                        <div class="project-preview">
+                            <div class="emoji-container">📝</div>
+                            <div class="placeholder-overlay">
+                                <div class="placeholder-text">Example Essay</div>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Another Example Essay</div>
+                            <div class="project-author">by Another Student</div>
+                            <div class="project-description">
+                                This is another example placeholder. Real essays will be added soon.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card essay-card placeholder-card" onclick="event.preventDefault();">
+                        <div class="project-preview">
+                            <div class="emoji-container">📝</div>
+                            <div class="placeholder-overlay">
+                                <div class="placeholder-text">Example Essay</div>
+                            </div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Yet Another Example</div>
+                            <div class="project-author">by Third Student</div>
+                            <div class="project-description">
+                                This is a third example placeholder to show how the essays section will look when complete.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="cta-section">
+            <h2 style="margin-bottom: 15px;">Built with AI</h2>
+            <p>This has been generated with minimal effort and understanding, just a test!</p>
+            <!-- Secret arcade CTA removed (access via easter egg only) -->
+        </div>
+
+        <footer>
+            <p>Elevenstudents(best) • Built in seconds</p>
+            <div class="easter-egg-1" onclick="window.location.href='Secret/secret-aracde.html'">01001000 01101111 01110000 01100101 01110010 01110100 01100001 01110010 01110011 01101001</div>
+            <div class="easter-egg-2" onclick="window.location.href='Secret/secret-lab.html'">01001100 01000001 01000010</div>
+            <div class="easter-egg-1" title="The voyage begins..." style="opacity: 0.2; font-size: 0.5em; cursor: help;" onclick="window.location.href='Secret/secret-adventure.html'">🚢 captain baffin awaits</div>        </footer>
+    </div>
+
+    <div class="konami-notification" id="konami">
+        Konami Code Activated!
+    </div>
+
+    <script>
+        // Function to show the selected section
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Add active class to the clicked tab
+            event.target.closest('.nav-tab').classList.add('active');
+        }
+
+        // Easter Egg 1: Logo click sequence
+        let logoClickCount = 0;
+        document.getElementById('logo').addEventListener('click', function() {
+            logoClickCount++;
+            if (logoClickCount === 5) {
+                window.location.href = 'admin-panel.html';
+                logoClickCount = 0;
+            }
+        });
+
+        // Easter Egg 2: Konami code
+        let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let konamiIndex = 0;
+        
+        document.addEventListener('keydown', function(e) {
+            // Check if the pressed key matches the current key in the sequence
+            if (e.key === konamiCode[konamiIndex]) {
+                konamiIndex++;
+                
+                // If the entire sequence is entered
+                if (konamiIndex === konamiCode.length) {
+                    document.getElementById('konami').classList.add('show');
+                    konamiIndex = 0;
+                }
+            } else {
+                // Reset if wrong key
+                konamiIndex = 0;
+            }
+        });
+
+        // Hide the Konami notification after 5 seconds
+        document.getElementById('konami').addEventListener('transitionend', function() {
+            if (this.classList.contains('show')) {
+                setTimeout(() => {
+                    this.classList.remove('show');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

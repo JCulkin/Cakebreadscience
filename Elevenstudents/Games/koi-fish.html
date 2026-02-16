@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Koi Fish Adventure | Elevenstudents(best)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #87CEEB, #4682B4);
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        #game-info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        
+        #game-title {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+        
+        .nav-links {
+            position: absolute;
+            top: 50px;
+            right: 10px;
+            z-index: 10;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px black;
+            opacity: 0.9;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        button {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background-color: #FF1493;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="game-info">Blueberries eaten: <span id="score">0</span></div>
+        <div id="game-title">🐟 Koi Fish Adventure 🐟</div>
+        <div class="nav-links">
+            <a href="../index.html">← Back</a>
+            <a href="../highscores.html">🏆 High Scores</a>
+        </div>
+        <div id="game-canvas"></div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+            authDomain: "elevenstudents-76f31.firebaseapp.com",
+            databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "elevenstudents-76f31",
+            storageBucket: "elevenstudents-76f31.firebasestorage.app",
+            messagingSenderId: "692298982954",
+            appId: "1:692298982954:web:987f73aec7d26d03f8c553",
+            measurementId: "G-6TN07BNZD0"
+        };
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+        function checkHighScore(finalScore) {
+            if (!database || finalScore === 0) return;
+            const scoresRef = database.ref('koiFishHighScores');
+            scoresRef.once('value').then((snapshot) => {
+                const scores = snapshot.val() || [];
+                const qualifies = scores.length < 10 || finalScore > scores[scores.length - 1].score;
+                if (qualifies) {
+                    let playerName = prompt('🎉 You made the Top 10! Enter your name:');
+                    if (playerName) {
+                        playerName = playerName.trim() || 'Anonymous';
+                        if (playerName.length > 20) playerName = playerName.substring(0, 20);
+                        scores.push({ name: playerName, score: finalScore, date: new Date().toISOString() });
+                        scores.sort((a, b) => b.score - a.score);
+                        const top10 = scores.slice(0, 10);
+                        scoresRef.set(top10).then(() => {
+                            const rank = top10.findIndex(e => e.score === finalScore && e.name === playerName) + 1;
+                            alert(`🏆 You ranked #${rank} with ${finalScore} points!`);
+                        });
+                    }
+                }
+            });
+        }
+
+        let fishX = 150;
+        let fishY = 200;
+        let fishSize = 40;
+
+        let lilies = [];
+        let bubbles = [];
+        let berries = [];
+
+        let score = 0;
+        let gameOver = false;
+
+        let restartBtn;
+
+        function setup() {
+            let canvas = createCanvas(800, 400);
+            canvas.parent('game-canvas');
+            
+            restartBtn = createButton("Restart");
+            restartBtn.position(width / 2 - 40, height / 2 + 40);
+            restartBtn.mousePressed(resetGame);
+            restartBtn.hide();
+
+            for (let i = 0; i < 25; i++) {
+                bubbles.push({
+                    x: random(width),
+                    y: random(height),
+                    r: random(3, 8),
+                    speed: random(0.3, 1)
+                });
+            }
+        }
+
+        function draw() {
+            drawWaterBackground();
+            drawCurrents();
+            drawBubbles();
+            drawBlueberries();
+            drawFish();
+
+            if (!gameOver) {
+                moveFish();
+                handleLilies();
+                restartBtn.hide();
+                document.getElementById('score').textContent = score;
+            } else {
+                fill(255);
+                textSize(40);
+                textAlign(CENTER);
+                text("Game Over", width / 2, height / 2 - 10);
+                restartBtn.show();
+            }
+
+            fill(255);
+            textSize(20);
+            textAlign(LEFT);
+            text("Blueberries eaten: " + score, 20, 30);
+        }
+
+        /* 🌊 WATER */
+        function drawWaterBackground() {
+            for (let y = 0; y < height; y++) {
+                let c = map(y, 0, height, 30, 80);
+                stroke(0, 120 + c, 200);
+                line(0, y, width, y);
+            }
+        }
+
+        function drawCurrents() {
+            noFill();
+            stroke(255, 255, 255, 40);
+            for (let i = 0; i < 6; i++) {
+                beginShape();
+                for (let x = 0; x < width; x += 40) {
+                    let y = 60 * i + sin(x * 0.02 + frameCount * 0.03 + i) * 15;
+                    curveVertex(x, y);
+                }
+                endShape();
+            }
+        }
+
+        function drawBubbles() {
+            noStroke();
+            fill(255, 255, 255, 80);
+            for (let b of bubbles) {
+                ellipse(b.x, b.y, b.r);
+                b.y -= b.speed;
+                if (b.y < -10) {
+                    b.y = height + 10;
+                    b.x = random(width);
+                }
+            }
+        }
+
+        /* 🫐 BLUEBERRIES */
+        function drawBlueberries() {
+            if (frameCount % 140 === 0) {
+                berries.push({
+                    x: width + 20,
+                    y: random(60, height - 60),
+                    r: 8
+                });
+            }
+
+            for (let i = berries.length - 1; i >= 0; i--) {
+                berries[i].x -= 2;
+
+                fill(90, 120, 255);
+                ellipse(berries[i].x, berries[i].y, berries[i].r * 2);
+
+                fill(255);
+                ellipse(berries[i].x + 2, berries[i].y - 2, 3);
+
+                let d = dist(fishX, fishY, berries[i].x, berries[i].y);
+                if (d < fishSize * 0.6) {
+                    berries.splice(i, 1);
+                    score++;
+                    fishSize += 1.5;
+                }
+
+                if (berries[i].x < -20) berries.splice(i, 1);
+            }
+        }
+
+        /* 🐟 KOI */
+        function drawFish() {
+            push();
+            translate(fishX, fishY);
+
+            let sway = sin(frameCount * 0.25);
+
+            // 🌸 FLOWERY TAIL
+            fill(255, 190, 210);
+            for (let a = 0; a < TWO_PI; a += PI / 3) {
+                ellipse(
+                    -fishSize * 1.5 + cos(a) * 12,
+                    sin(a) * 12 * sway,
+                    20,
+                    30
+                );
+            }
+
+            // Body
+            fill(255);
+            ellipse(-fishSize * 0.2, 0, fishSize * 2.4, fishSize * 1.3);
+
+            // Head
+            ellipse(fishSize * 0.8, 0, fishSize * 1.2, fishSize);
+
+            // Fins
+            fill(255, 220, 200, 180);
+            ellipse(fishSize * 0.1, fishSize * 0.5, fishSize * 0.8, fishSize * 0.4);
+            ellipse(fishSize * 0.1, -fishSize * 0.5, fishSize * 0.8, fishSize * 0.4);
+
+            // Koi patches
+            fill(255, 150, 180);
+            ellipse(fishSize * 0.5, -fishSize * 0.2, fishSize * 0.6);
+            ellipse(-fishSize * 0.2, fishSize * 0.3, fishSize * 0.5);
+
+            // 👀 BIG EYES
+            fill(255);
+            ellipse(fishSize * 1.05, -fishSize * 0.25, fishSize * 0.35);
+            ellipse(fishSize * 1.05, fishSize * 0.25, fishSize * 0.35);
+
+            fill(0);
+            ellipse(fishSize * 1.1, -fishSize * 0.25, fishSize * 0.18);
+            ellipse(fishSize * 1.1, fishSize * 0.25, fishSize * 0.18);
+
+            pop();
+        }
+
+        /* 🎮 MOVEMENT */
+        function moveFish() {
+            if (keyIsDown(UP_ARROW)) fishY -= 4;
+            if (keyIsDown(DOWN_ARROW)) fishY += 4;
+            fishY = constrain(fishY, 50, height - 50);
+        }
+
+        /* 🌸 WATER LILIES */
+        function handleLilies() {
+            if (frameCount % 160 === 0) {
+                lilies.push({
+                    x: width + 30,
+                    y: random(60, height - 60),
+                    r: random(25, 35)
+                });
+            }
+
+            for (let i = lilies.length - 1; i >= 0; i--) {
+                lilies[i].x -= 1.5;
+
+                fill(60, 150, 90);
+                ellipse(lilies[i].x, lilies[i].y, lilies[i].r * 2);
+
+                fill(30, 144, 255);
+                arc(lilies[i].x, lilies[i].y, lilies[i].r * 2, lilies[i].r * 2, -0.4, 0.4);
+
+                fill(255, 200, 220);
+                ellipse(lilies[i].x, lilies[i].y, lilies[i].r * 0.5);
+
+                let d = dist(fishX, fishY, lilies[i].x, lilies[i].y);
+                if (d < lilies[i].r * 0.8 + fishSize * 0.4) {
+                    gameOver = true;
+                }
+
+                if (lilies[i].x < -50) lilies.splice(i, 1);
+            }
+        }
+
+        /* 🔁 RESET */
+        function resetGame() {
+            if (score > 0) checkHighScore(score);
+            fishSize = 40;
+            fishY = height / 2;
+            lilies = [];
+            berries = [];
+            score = 0;
+            gameOver = false;
+        }
+    </script>
+</body>
+</html>

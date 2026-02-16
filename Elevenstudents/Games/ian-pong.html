@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P5.js Ping Pong Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #333; /* Dark background for the page */
+            flex-direction: column;
+        }
+        /* Style for the buttons created by P5.js's createButton() */
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            color: #333;
+            background-color: #ccc;
+            transition: background-color 0.2s;
+        }
+        /* Highlight styles for difficulty buttons */
+        #easyButton { background-color: #2ECC71; }
+        #mediumButton { background-color: #ccc; }
+        #hardButton { background-color: #ccc; }
+       
+        .p5-buttons {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10; /* Ensure buttons are above the canvas */
+        }
+        .nav-link {
+            position: fixed;
+            top: 12px;
+            color: #00ffff;
+            text-decoration: none;
+            border: 1px solid #00ffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.6);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+  <a class="nav-link" href="../index.html" style="right: 130px;">← BACK</a>
+  <a class="nav-link" href="highscores.html" style="right: 12px;">🏆 HIGH SCORES</a>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+  authDomain: "elevenstudents-76f31.firebaseapp.com",
+  databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "elevenstudents-76f31",
+  storageBucket: "elevenstudents-76f31.firebasestorage.app",
+  messagingSenderId: "692298982954",
+  appId: "1:692298982954:web:987f73aec7d26d03f8c553"
+};
+let database;
+try {
+  firebase.initializeApp(firebaseConfig);
+  database = firebase.database();
+} catch (error) {
+  console.error('Firebase init error:', error);
+}
+function checkHighScore(finalScore) {
+  if (!database || finalScore === 0) return;
+  const scoresRef = database.ref('pongHighScores');
+  scoresRef.once('value').then((snapshot) => {
+    const scores = snapshot.val() || [];
+    const qualifies = scores.length < 10 || finalScore > scores[scores.length - 1].score;
+    if (qualifies) {
+      let playerName = prompt('🎉 You made the Top 10! Enter your name:');
+      if (playerName) {
+        playerName = playerName.trim() || 'Anonymous';
+        if (playerName.length > 20) playerName = playerName.substring(0, 20);
+        scores.push({ name: playerName, score: finalScore, date: new Date().toISOString() });
+        scores.sort((a, b) => b.score - a.score);
+        const top10 = scores.slice(0, 10);
+        scoresRef.set(top10).then(() => {
+          const rank = top10.findIndex(e => e.score === finalScore && e.name === playerName) + 1;
+          alert(`🏆 You ranked #${rank} with ${finalScore} points!`);
+        });
+      }
+    }
+  });
+}
+
+// --- 1. GLOBAL VARIABLES ---
+let ball;
+let leftPaddle;
+let rightPaddle;
+
+let maxScore = 10;
+let gameMode = 'EASY';
+let gameState = 'START';
+
+// UI Variables
+let playButton;
+let easyButton;
+let mediumButton;
+let hardButton;
+
+// --- 2. SETUP FUNCTION ---
+function setup() {
+  // We use createCanvas to place the canvas in the center
+  let canvas = createCanvas(600, 400);
+  canvas.parent(document.body); // Attaches the canvas to the body element
+ 
+  // Initialize game elements
+  ball = new Ball();
+  leftPaddle = new Paddle(20, height / 2 - 40); // User-controlled
+  rightPaddle = new Paddle(width - 40, height / 2 - 40); // CPU-controlled
+
+  // Create UI buttons and attach them to the canvas element container for positioning
+  createUI();
+ 
+  // Initial difficulty setup
+  setDifficulty(gameMode);
+}
+
+// --- 3. DRAW FUNCTION (Game Loop) ---
+function draw() {
+  background(0); // Black background
+  drawNet();
+
+  if (gameState === 'START') {
+    drawStartScreen();
+  } else if (gameState === 'PLAY') {
+    hideUI();
+   
+    // 1. Update and Show Game Objects
+    ball.update();
+    ball.show();
+   
+    // Left Paddle (User Control)
+    leftPaddle.move(mouseY);
+    leftPaddle.show();
+
+    // Right Paddle (CPU Control)
+    rightPaddle.cpuMove(ball, gameMode);
+    rightPaddle.show();
+
+    // 2. Collision Detection
+    ball.checkPaddleCollision(leftPaddle);
+    ball.checkPaddleCollision(rightPaddle);
+
+    // 3. Scoring and Game End
+    checkScore();
+
+    // 4. Display Score
+    displayScore();
+  } else if (gameState === 'END') {
+    drawEndScreen();
+    showUI();
+  }
+}
+
+// --- 4. GAME OBJECT CLASSES ---
+
+class Paddle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.w = 10;
+    this.h = 80;
+    this.score = 0;
+    this.speed = 6; // Maximum movement speed
+  }
+
+  // User Control: follows the mouse Y position
+  move(targetY) {
+    this.y = constrain(targetY - this.h / 2, 0, height - this.h);
+  }
+
+  // AI/CPU Control: Difficulty is handled here
+  cpuMove(ball, mode) {
+    let targetY = ball.y - this.h / 2;
+    let difference = targetY - this.y;
+    let adjustedSpeed = this.speed;
+
+    // --- Difficulty Logic ---
+    let hitProbability = 1.0;
+    let inaccuracy = 0;      
+
+    if (mode === 'EASY') {
+      hitProbability = 0.6;
+      inaccuracy = 40;      
+      adjustedSpeed *= 0.6;
+    } else if (mode === 'MEDIUM') {
+      hitProbability = 0.85;
+      inaccuracy = 15;      
+      adjustedSpeed *= 0.85;
+    } else if (mode === 'HARD') {
+      // Nerfed Hard Mode
+      hitProbability = 1.0;
+      inaccuracy = 5;        
+      adjustedSpeed *= 0.95;
+    }
+
+    // --- Movement Execution ---
+    if (random(1) < hitProbability) {
+      let randomOffset = random(-inaccuracy, inaccuracy);
+      let newTargetY = ball.y + randomOffset - this.h / 2;
+     
+      let moveAmount = adjustedSpeed;
+      if (abs(difference) < moveAmount) {
+        moveAmount = abs(difference);
+      }
+     
+      if (newTargetY > this.y) {
+        this.y += moveAmount;
+      } else if (newTargetY < this.y) {
+        this.y -= moveAmount;
+      }
+    }
+   
+    this.y = constrain(this.y, 0, height - this.h);
+  }
+
+  show() {
+    fill(255);
+    rect(this.x, this.y, this.w, this.h);
+  }
+}
+
+class Ball {
+  constructor() {
+    this.r = 8; // Radius
+    this.reset();
+  }
+
+  reset() {
+    this.x = width / 2;
+    this.y = height / 2;
+   
+    let angle = random(-PI/4, PI/4);
+    if (random(1) < 0.5) {
+      angle += PI;
+    }
+    this.velocity = p5.Vector.fromAngle(angle);
+    this.velocity.setMag(5); // Initial speed
+  }
+
+  update() {
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+
+    if (this.y < this.r || this.y > height - this.r) {
+      this.velocity.y *= -1;
+    }
+  }
+
+  show() {
+    fill(255);
+    ellipse(this.x, this.y, this.r * 2);
+  }
+
+  checkPaddleCollision(paddle) {
+    if (this.x - this.r < paddle.x + paddle.w &&
+        this.x + this.r > paddle.x &&          
+        this.y + this.r > paddle.y &&          
+        this.y - this.r < paddle.y + paddle.h) {
+
+      this.velocity.x *= -1;
+      this.velocity.setMag(this.velocity.mag() + 0.5);
+     
+      let relativeIntersectY = (paddle.y + (paddle.h / 2)) - this.y;
+      let normalizedRelativeIntersection = relativeIntersectY / (paddle.h / 2);
+      let bounceAngle = normalizedRelativeIntersection * (PI / 3);
+     
+      if (paddle.x > width / 2) { // Right Paddle (CPU)
+        this.velocity.x = -abs(this.velocity.x);
+        this.velocity.y = this.velocity.mag() * -sin(bounceAngle);
+      } else { // Left Paddle (User)
+        this.velocity.x = abs(this.velocity.x);  
+        this.velocity.y = this.velocity.mag() * -sin(bounceAngle);
+      }
+    }
+  }
+
+  checkScore() {
+    if (this.x < 0) {
+      return -1; // Right player (CPU) scored
+    } else if (this.x > width) {
+      return 1; // Left player (User) scored
+    }
+    return 0; // No score
+  }
+}
+
+// --- 5. UI AND GAME STATE FUNCTIONS ---
+
+function createUI() {
+  // Use .id() to target elements for CSS styling
+  playButton = createButton('Start Game');
+  playButton.position(width / 2 - playButton.width / 2, height / 2 + 50);
+
+  easyButton = createButton('Easy');
+  easyButton.position(width / 2 - 120, height / 2 + 10);
+  easyButton.id('easyButton');
+
+  mediumButton = createButton('Medium');
+  mediumButton.position(width / 2 - 30, height / 2 + 10);
+  mediumButton.id('mediumButton');
+
+  hardButton = createButton('Hard');
+  hardButton.position(width / 2 + 60, height / 2 + 10);
+  hardButton.id('hardButton');
+
+  // Attach event listeners
+  playButton.mousePressed(startGame);
+  easyButton.mousePressed(() => setDifficulty('EASY'));
+  mediumButton.mousePressed(() => setDifficulty('MEDIUM'));
+  hardButton.mousePressed(() => setDifficulty('HARD'));
+}
+
+function startGame() {
+  leftPaddle.score = 0;
+  rightPaddle.score = 0;
+  ball.reset();
+  gameState = 'PLAY';
+  scoreSubmittedPong = false;
+}
+
+function setDifficulty(mode) {
+  gameMode = mode;
+  // Reset all to grey, then set the active one
+  document.getElementById('easyButton').style.backgroundColor = '#ccc';
+  document.getElementById('mediumButton').style.backgroundColor = '#ccc';
+  document.getElementById('hardButton').style.backgroundColor = '#ccc';
+
+  if (mode === 'EASY') document.getElementById('easyButton').style.backgroundColor = '#2ECC71';
+  else if (mode === 'MEDIUM') document.getElementById('mediumButton').style.backgroundColor = '#F39C12';
+  else if (mode === 'HARD') document.getElementById('hardButton').style.backgroundColor = '#E74C3C';
+}
+
+function hideUI() {
+  playButton.hide();
+  easyButton.hide();
+  mediumButton.hide();
+  hardButton.hide();
+}
+
+function showUI() {
+  playButton.html('Play Again');
+  playButton.show();
+  easyButton.show();
+  mediumButton.show();
+  hardButton.show();
+}
+
+function drawNet() {
+  stroke(255);
+  strokeWeight(2);
+  for (let i = 0; i < height; i += 20) {
+    line(width / 2, i, width / 2, i + 10);
+  }
+}
+
+function displayScore() {
+  fill(255);
+  textSize(32);
+  textAlign(CENTER);
+  text(leftPaddle.score, width / 4, 40);
+  text(rightPaddle.score, width * 3 / 4, 40);
+ 
+  textSize(16);
+  text('Mode: ' + gameMode, width/2, height - 10);
+}
+
+let scoreSubmittedPong = false;
+function checkScore() {
+  let scoreMade = ball.checkScore();
+ 
+  if (scoreMade === 1) {
+    leftPaddle.score++;
+    ball.reset();
+  } else if (scoreMade === -1) {
+    rightPaddle.score++;
+    ball.reset();
+  }
+
+  if (leftPaddle.score >= maxScore || rightPaddle.score >= maxScore) {
+    if (!scoreSubmittedPong && leftPaddle.score >= maxScore) {
+      checkHighScore(leftPaddle.score);
+      scoreSubmittedPong = true;
+    }
+    gameState = 'END';
+  }
+}
+
+function drawStartScreen() {
+  fill(255);
+  textSize(48);
+  textAlign(CENTER);
+  text('PONG!', width / 2, height / 2 - 50);
+  textSize(20);
+  text('Use your mouse (Y-axis) to control the left paddle.', width / 2, height / 2 - 10);
+}
+
+function drawEndScreen() {
+  let winner = leftPaddle.score > rightPaddle.score ? 'PLAYER WINS!' : 'CPU WINS!';
+  fill(255);
+  textSize(48);
+  textAlign(CENTER);
+  text(winner, width / 2, height / 2 - 30);
+  textSize(24);
+  text('Final Score: ' + leftPaddle.score + ' - ' + rightPaddle.score, width / 2, height / 2 + 10);
+}
+</script>
+
+</body>
+</html>

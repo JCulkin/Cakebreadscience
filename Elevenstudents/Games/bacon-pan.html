@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bacon Toss Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Courier New', monospace;
+            color: white;
+        }
+        
+        .game-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .game-title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .game-instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            max-width: 600px;
+        }
+        
+        .game-instructions h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #ffcc66;
+        }
+        
+        .game-instructions p {
+            margin: 5px 0;
+        }
+        
+        .game-canvas {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <a href="../index.html" style="color: #ffcc66; text-decoration: none; opacity: 0.8;">← Back to Gallery</a>
+            <a href="../highscores.html" style="color: #00ffff; text-decoration: none; margin-left: 20px;">🏆 High Scores</a>
+            <h1 class="game-title">🥓 bacon pan with a view of the moon 🥓</h1>
+            <p>by Manu</p>
+        </div>
+        
+        <div class="game-canvas" id="game-canvas"></div>
+        <footer>
+            <p>Made with Processing and AI</p>
+        </footer>
+    </div>
+
+    <script>
+        // Game code with minimal changes
+        let sizzle = 0;
+        let sizzleSpeed = 0.1;
+
+        let baconX, baconY;
+        let baconVX = 0;	
+        let baconVY = 0;
+        let gravity = 0.4;
+        let isFlying = false;
+
+        let panX, panY;
+
+        let score = 0;
+        let baseThrowSpeed = -11;
+        let throwSpeed;
+        let baseThrowVXRange = 3;
+        let throwVXRange;
+
+        let obstacles = [];
+        let showObstacles = false;
+        const obstacleSize = 25;
+
+        // Score color variables
+        let scoreHue = 0;
+        let throwTime = 0;
+
+        function setup() {
+            // Create canvas and attach it to our game-canvas div
+            let canvas = createCanvas(600, 400);
+            canvas.parent('game-canvas');
+            
+            colorMode(HSB, 360, 100, 100);
+            panX = width * 0.6;
+            panY = height * 0.55;
+
+            baconX = panX;
+            baconY = height * 0.54;
+
+            throwSpeed = baseThrowSpeed;
+            throwVXRange = baseThrowVXRange;
+        }
+
+        function draw() {
+            // Moon night background
+            background(10, 10, 30);
+
+            // Draw moon
+            let moonX = width * 0.8;
+            let moonY = height * 0.25;
+            let moonSize = 150;
+
+            colorMode(RGB);
+            noStroke();
+            fill(230, 230, 210);
+            ellipse(moonX, moonY, moonSize, moonSize);
+
+            fill(200, 200, 180, 150);
+            ellipse(moonX - 20, moonY - 20, moonSize * 0.3, moonSize * 0.3);
+            ellipse(moonX + 25, moonY, moonSize * 0.2, moonSize * 0.2);
+            ellipse(moonX + 10, moonY + 30, moonSize * 0.25, moonSize * 0.25);
+
+            // Stove background
+            noStroke();
+            fill(180);
+            rect(0, height * 0.55, width, height * 0.45);
+
+            panX = constrain(mouseX, 80, width - 80);
+            panY = constrain(mouseY, 120, height - 80);
+
+            drawPan();
+            updateBacon();
+            drawBacon();
+            drawScore();
+
+            if (showObstacles) {
+                drawObstacles();
+            }
+            
+            colorMode(HSB, 360, 100, 100);
+        }
+
+        function drawPan() {
+            let outerW = 220;
+            let outerH = 55;
+            let innerW = 190;
+            let innerH = 40;
+
+            colorMode(RGB);
+            noStroke();
+            for (let r = 180; r > 120; r -= 10) {
+                let alpha = map(r, 120, 180, 0, 120);
+                fill(255, 140, 0, alpha);
+                ellipse(panX, panY + 10, r, r * 0.6);
+            }
+
+            push();
+            translate(panX - outerW * 0.45, panY - 8);
+            rotate(-PI / 7);
+            fill(40);
+            rect(-10, -12, 120, 18, 12);
+            fill(80);
+            rect(-5, -7, 110, 10, 10);
+            pop();
+
+            fill(0, 0, 0, 80);
+            ellipse(panX, panY + 18, outerW * 1.1, outerH * 1.1);
+
+            stroke(30);
+            strokeWeight(2);
+            fill(90);
+            ellipse(panX, panY, outerW, outerH);
+
+            stroke(20);
+            strokeWeight(1);
+            fill(50);
+            ellipse(panX, panY - 4, innerW, innerH);
+
+            noStroke();
+            for (let i = 0; i < 6; i++) {
+                let amt = i / 5;
+                let w = lerp(innerW * 0.9, innerW * 0.6, amt);
+                let h = lerp(innerH * 0.7, innerH * 0.4, amt);
+                let c = lerpColor(color(60), color(30), amt);
+                fill(red(c), green(c), blue(c), 160);
+                ellipse(panX, panY + 4 + i * 2, w, h);
+            }
+
+            fill(200);
+            noStroke();
+            let boltCount = 5;
+            for (let i = 0; i < boltCount; i++) {
+                let a = TWO_PI * i / boltCount;
+                let bx = panX + cos(a) * (outerW * 0.42);
+                let by = panY + sin(a) * (outerH * 0.4);
+                ellipse(bx, by, 5, 5);
+            }
+        }
+
+        function updateBacon() {
+            colorMode(RGB);
+            let panTopY = panY - 5;
+            let baconRadius = 55;
+            let baconWidth = 110;
+            let baconHeight = 18;
+
+            if (isFlying) {
+                baconX += baconVX;
+                baconY += baconVY;
+                baconVY += gravity;
+
+                // WALL COLLISIONS
+                if (baconX - baconRadius < 0) {
+                    baconX = baconRadius;
+                    baconVX *= -0.8;
+                }
+                if (baconX + baconRadius > width) {
+                    baconX = width - baconRadius;
+                    baconVX *= -0.8;
+                }
+                if (baconY + baconRadius > height) {
+                    baconY = height - baconRadius;
+                    baconVY *= -0.8;
+                }
+
+                // OBSTACLE COLLISION - LAUNCH BACON FAST IN RANDOM DIRECTION
+                if (showObstacles) {
+                    for (let obs of obstacles) {
+                        if (
+                            rectCircleColliding(
+                                baconX,
+                                baconY,
+                                baconWidth,
+                                baconHeight,
+                                obs.x,
+                                obs.y,
+                                obstacleSize / 2
+                            )
+                        ) {
+                            // FAST RANDOM LAUNCH in any direction!
+                            let angle = random(TWO_PI);
+                            let launchSpeed = random(10, 18); // Fast launch speed
+                            baconVX = cos(angle) * launchSpeed;
+                            baconVY = sin(angle) * launchSpeed;
+                            break; // only one collision per frame
+                        }
+                    }
+                }
+
+                // PAN CATCH CHECK
+                if (baconY >= panTopY) {
+                    baconY = panTopY;
+                    let catchWidth = 110;
+                    if (baconX > panX - catchWidth && baconX < panX + catchWidth) {
+                        score++;
+                        throwVXRange = baseThrowVXRange + score * 0.4;
+                        throwSpeed *= 1.04;
+                        if (score >= 5) {
+                            showObstacles = true;
+                            generateObstacles(score - 4);
+                        }
+                    } else {
+                        resetAfterMiss();
+                    }
+                    baconX = panX;
+                    baconVX = 0;
+                    baconVY = 0;
+                    isFlying = false;
+                }
+            } else {
+                sizzle += sizzleSpeed;
+                let wiggle = sin(sizzle) * 4;
+                baconX = panX;
+                baconY = panTopY + wiggle;
+            }
+        }
+
+        function rectCircleColliding(rectX, rectY, rectW, rectH, circleX, circleY, radius) {
+            let closestX = constrain(circleX, rectX - rectW / 2, rectX + rectW / 2);
+            let closestY = constrain(circleY, rectY - rectH / 2, rectY + rectH / 2);
+
+            let distanceX = circleX - closestX;
+            let distanceY = circleY - closestY;
+            let distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+            return distanceSquared < radius * radius;
+        }
+
+        function drawBacon() {
+            colorMode(RGB);
+            sizzle += 0.05;
+            let baseColor = lerpColor(
+                color(180, 80, 60),
+                color(220, 120, 90),
+                (sin(sizzle * 2) + 1) / 2
+            );
+
+            push();
+            translate(baconX, baconY);
+            rotate(0.1 + (isFlying ? sin(frameCount * 0.1) * 0.2 : 0));
+
+            noStroke();
+            fill(baseColor);
+            rect(-55, -9, 110, 18, 6);
+
+            stroke(255, 230, 200);
+            strokeWeight(3);
+            noFill();
+
+            beginShape();
+            for (let x = -50; x <= 50; x += 10) {
+                let y = sin((x / 20) + sizzle) * 2.5;
+                vertex(x, y);
+            }
+            endShape();
+
+            beginShape();
+            for (let x = -50; x <= 50; x += 10) {
+                let y = cos((x / 18) - sizzle * 1.2) * 2.5;
+                vertex(x, y + 4);
+            }
+            endShape();
+
+            pop();
+
+            if (!isFlying) {
+                drawSteam(baconX, baconY - 20);
+            }
+        }
+
+        function drawSteam(x, y) {
+            colorMode(RGB);
+            noFill();
+            stroke(255, 255, 255, 180);
+            strokeWeight(2);
+            let t = frameCount * 0.02;
+
+            for (let i = 0; i < 3; i++) {
+                let offsetX = sin(t + i) * 8;
+                let offsetY = -i * 10 - sin(t * 1.5 + i) * 3;
+                ellipse(x + offsetX, y + offsetY, 14 - i * 3, 10 - i * 2);
+            }
+        }
+
+        function generateObstacles(n) {
+            colorMode(RGB);
+            obstacles = [];
+            n = floor(n);
+            for (let i = 0; i < n; i++) {
+                obstacles.push({
+                    x: random(50, width - 50),
+                    y: random(50, height * 0.6),
+                    size: obstacleSize,
+                });
+            }
+        }
+
+        function drawObstacles() {
+            colorMode(RGB);
+            fill(150, 0, 0);
+            stroke(100, 0, 0);
+            strokeWeight(2);
+            for (let obs of obstacles) {
+                ellipse(obs.x, obs.y, obs.size);
+            }
+            noStroke();
+        }
+
+        function resetAfterMiss() {
+            score = 0;
+            throwSpeed = baseThrowSpeed;
+            throwVXRange = baseThrowVXRange;
+            showObstacles = false;
+            obstacles = [];
+            baconX = panX;
+            baconY = panY;
+            baconVX = 0;
+            baconVY = 0;
+            isFlying = false;
+        }
+
+        function mouseClicked() {
+            if (!isFlying) {
+                isFlying = true;
+                baconVX = random(-throwVXRange, throwVXRange);
+                baconVY = throwSpeed;
+                
+                scoreHue = (scoreHue + 90) % 360;
+                throwTime = frameCount;
+            }
+        }
+
+        function keyPressed() {
+            if (keyCode === 32 && !isFlying) { // Space bar (32)
+                isFlying = true;
+                baconVX = random(-throwVXRange, throwVXRange);
+                baconVY = throwSpeed;
+                
+                scoreHue = (scoreHue + 90) % 360;
+                throwTime = frameCount;
+            }
+        }
+
+        function drawScore() {
+            let brightness = 90 + sin(frameCount * 0.1) * 10;
+            fill(scoreHue, 90, brightness);
+            noStroke();
+            textAlign(LEFT, TOP);
+            textSize(28);
+            textFont('Arial Black');
+            drawingContext.shadowColor = 'rgba(0,0,0,0.5)';
+            drawingContext.shadowBlur = 4;
+            drawingContext.shadowOffsetX = 2;
+            drawingContext.shadowOffsetY = 2;
+            
+            text("Score: " + score, 20, 20);
+            drawingContext.shadowBlur = 0;
+        }
+    </script>
+</body>
+</html>

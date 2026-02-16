@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Scores | Elevenstudents(best)</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #000428 0%, #004e92 100%);
+            min-height: 100vh;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(20, 0, 40, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5), 0 0 80px rgba(255, 0, 255, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ff00ff, 0 0 40px #00ffff; }
+            to { text-shadow: 0 0 30px #00ffff, 0 0 60px #ff00ff; }
+        }
+
+        .subtitle {
+            color: #00ffff;
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .trophy {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .highscores-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin: 30px 0;
+        }
+
+        .highscores-table th {
+            background: rgba(255, 0, 255, 0.3);
+            color: #ff00ff;
+            padding: 15px;
+            text-align: left;
+            font-size: 1.1em;
+            border: 2px solid #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+
+        .highscores-table th:first-child {
+            border-radius: 10px 0 0 10px;
+            width: 80px;
+            text-align: center;
+        }
+
+        .highscores-table th:last-child {
+            border-radius: 0 10px 10px 0;
+            text-align: right;
+        }
+
+        .highscores-table td {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 15px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s;
+        }
+
+        .highscores-table td:first-child {
+            border-radius: 10px 0 0 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            width: 80px;
+        }
+
+        .highscores-table td:last-child {
+            border-radius: 0 10px 10px 0;
+            text-align: right;
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .highscores-table tr:hover td {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            transform: scale(1.02);
+        }
+
+        .rank-1 td:first-child {
+            color: #FFD700;
+            font-size: 1.5em;
+        }
+
+        .rank-2 td:first-child {
+            color: #C0C0C0;
+            font-size: 1.4em;
+        }
+
+        .rank-3 td:first-child {
+            color: #CD7F32;
+            font-size: 1.3em;
+        }
+
+        .medal {
+            margin-right: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1.2em;
+        }
+
+        .empty-state .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border: 2px solid;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: rgba(0, 255, 255, 0.2);
+            color: #00ffff;
+            border-color: #00ffff;
+        }
+
+        .btn-primary:hover {
+            background: rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 0, 255, 0.2);
+            color: #ff00ff;
+            border-color: #ff00ff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 0, 255, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: rgba(255, 50, 50, 0.2);
+            color: #ff5050;
+            border-color: #ff5050;
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 50, 50, 0.4);
+            box-shadow: 0 0 20px rgba(255, 50, 50, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .date {
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 5px;
+        }
+
+        .game-tabs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .game-tab {
+            padding: 12px 24px;
+            font-size: 1em;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(0, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .game-tab:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            color: white;
+        }
+
+        .game-tab.active {
+            background: rgba(0, 255, 255, 0.3);
+            border-color: #00ffff;
+            color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+        }
+
+        .game-icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .highscores-table th,
+            .highscores-table td {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="trophy">🏆</div>
+            <h1>High Scores</h1>
+            <p class="subtitle" id="game-subtitle">Top 10 Leaderboards</p>
+        </header>
+
+        <div class="game-tabs">
+            <button class="game-tab active" onclick="switchGame('jumpTriangles')">
+                <span class="game-icon">▲</span>Jump Triangles
+            </button>
+            <button class="game-tab" onclick="switchGame('solarSystem')">
+                <span class="game-icon">🪐</span>Solar System
+            </button>
+            <button class="game-tab" onclick="switchGame('baconPan')">
+                <span class="game-icon">🥓</span>Bacon Pan
+            </button>
+            <button class="game-tab" onclick="switchGame('desertTaxi')">
+                <span class="game-icon">🚕</span>Desert Taxi
+            </button>
+            <button class="game-tab" onclick="switchGame('koiFish')">
+                <span class="game-icon">🐟</span>Koi Fish
+            </button>
+            <button class="game-tab" onclick="switchGame('neonCar')">
+                <span class="game-icon">🚗</span>Neon Car
+            </button>
+            <button class="game-tab" onclick="switchGame('pong')">
+                <span class="game-icon">🏓</span>Pong
+            </button>
+            <button class="game-tab" onclick="switchGame('jumpy')">
+                <span class="game-icon">🦅</span>Jumpy
+            </button>
+            <button class="game-tab" onclick="switchGame('snake')">
+                <span class="game-icon">🐍</span>Snake
+            </button>
+            <button class="game-tab" onclick="switchGame('azulDungeon')">
+                <span class="game-icon">🦇</span>Azul's Dungeon
+            </button>
+        </div>
+
+        <div id="highscores-content">
+            <!-- Content will be loaded by JavaScript -->
+        </div>
+
+        <div class="buttons">
+            <a href="solar-system.html" class="btn btn-primary" id="play-game-btn">🚀 Play Game</a>
+            <a href="../index.html" class="btn btn-secondary">🏠 Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration - LIVE VALUES
+        const firebaseConfig = {
+            apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+            authDomain: "elevenstudents-76f31.firebaseapp.com",
+            databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "elevenstudents-76f31",
+            storageBucket: "elevenstudents-76f31.firebasestorage.app",
+            messagingSenderId: "692298982954",
+            appId: "1:692298982954:web:987f73aec7d26d03f8c553",
+            measurementId: "G-6TN07BNZD0"
+        };
+
+        // Initialize Firebase
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+            document.getElementById('highscores-content').innerHTML = `
+                <div class="empty-state">
+                    <div class="icon">⚠️</div>
+                    <p>Firebase not configured!</p>
+                    <p style="margin-top: 10px; font-size: 0.9em;">Please add your Firebase config to view high scores.</p>
+                </div>
+            `;
+        }
+
+        const GAMES = {
+            jumpTriangles: {
+                name: 'Jump Triangles',
+                dbKey: 'jumpTrianglesHighScores',
+                playUrl: 'Games/ian-game2.html',
+                icon: '▲',
+                buttonText: '▲ Play Jump Triangles'
+            },
+            solarSystem: {
+                name: 'Solar System',
+                dbKey: 'highScores',
+                playUrl: 'Games/solar-system.html',
+                icon: '🪐',
+                buttonText: '🚀 Play Solar System'
+            },
+            baconPan: {
+                name: 'Bacon Pan with a View of the Moon',
+                dbKey: 'baconPanHighScores',
+                playUrl: 'Games/bacon-pan.html',
+                icon: '🥓',
+                buttonText: '🥓 Play Bacon Pan'
+            },
+            desertTaxi: {
+                name: 'Desert Taxi Chase',
+                dbKey: 'desertTaxiHighScores',
+                playUrl: 'Games/desert-taxi.html',
+                icon: '🚕',
+                buttonText: '🚕 Play Desert Taxi'
+            },
+            koiFish: {
+                name: 'Koi Fish Adventure',
+                dbKey: 'koiFishHighScores',
+                playUrl: 'Games/koi-fish.html',
+                icon: '🐟',
+                buttonText: '🐟 Play Koi Fish'
+            },
+            neonCar: {
+                name: 'Neon Car Jump',
+                dbKey: 'neonCarHighScores',
+                playUrl: 'Games/neon-car.html',
+                icon: '🚗',
+                buttonText: '🚗 Play Neon Car'
+            },
+            pong: {
+                name: 'Pong',
+                dbKey: 'pongHighScores',
+                playUrl: 'Games/pong.html',
+                icon: '🏓',
+                buttonText: '🏓 Play Pong'
+            },
+            jumpy: {
+                name: 'Jumpy Game',
+                dbKey: 'jumpyHighScores',
+                playUrl: 'Games/jumpy.html',
+                icon: '🦅',
+                buttonText: '🦅 Play Jumpy'
+            },
+            snake: {
+                name: 'Wholesome Snake',
+                dbKey: 'snakeHighScores',
+                playUrl: 'Games/snake.html',
+                icon: '🐍',
+                buttonText: '🐍 Play Snake'
+            },
+            azulDungeon: {
+                name: "Azul's Dungeon of Bats and Mouse",
+                dbKey: 'azulDungeonHighScores',
+                playUrl: 'Games/azul-game.html',
+                icon: '🦇',
+                buttonText: '🦇 Play Azul Dungeon'
+            }
+        };
+
+        let currentGame = 'jumpTriangles';
+        let currentListener = null;
+
+        function switchGame(gameId) {
+            currentGame = gameId;
+            
+            // Update active tab
+            document.querySelectorAll('.game-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.game-tab').classList.add('active');
+            
+            // Update subtitle
+            const game = GAMES[gameId];
+            document.getElementById('game-subtitle').textContent = game.name + ' - Top 10';
+            
+            // Update play button
+            const playBtn = document.getElementById('play-game-btn');
+            playBtn.href = game.playUrl;
+            playBtn.textContent = game.buttonText;
+            
+            // Remove old listener and load new scores
+            if (currentListener) {
+                database.ref(GAMES[Object.keys(GAMES).find(key => 
+                    GAMES[key].dbKey === currentListener
+                )].dbKey).off('value');
+            }
+            
+            loadHighScores();
+        }
+
+        function loadHighScores() {
+            if (!database) {
+                return;
+            }
+
+            const game = GAMES[currentGame];
+            const scoresRef = database.ref(game.dbKey);
+            currentListener = game.dbKey;
+            
+            // Listen for real-time updates
+            scoresRef.on('value', (snapshot) => {
+                const scores = snapshot.val();
+                displayHighScores(scores || []);
+            }, (error) => {
+                console.error('Error loading high scores:', error);
+                displayHighScores([]);
+            });
+        }
+
+        function displayHighScores(scores) {
+            const container = document.getElementById('highscores-content');
+
+            if (scores.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🎮</div>
+                        <p>No high scores yet!</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;">Play the game to set the first record.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let tableHTML = `
+                <table class="highscores-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            scores.forEach((entry, index) => {
+                const rank = index + 1;
+                let rankDisplay = rank;
+                let rowClass = '';
+
+                if (rank === 1) {
+                    rankDisplay = '<span class="medal">🥇</span>' + rank;
+                    rowClass = 'rank-1';
+                } else if (rank === 2) {
+                    rankDisplay = '<span class="medal">🥈</span>' + rank;
+                    rowClass = 'rank-2';
+                } else if (rank === 3) {
+                    rankDisplay = '<span class="medal">🥉</span>' + rank;
+                    rowClass = 'rank-3';
+                }
+
+                const date = new Date(entry.date).toLocaleDateString();
+                
+                tableHTML += `
+                    <tr class="${rowClass}">
+                        <td>${rankDisplay}</td>
+                        <td>
+                            ${entry.name}
+                            <div class="date">${date}</div>
+                        </td>
+                        <td>${entry.score}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+
+        // Load and display scores when page loads
+        window.addEventListener('DOMContentLoaded', loadHighScores);
+    </script>
+</body>
+</html>

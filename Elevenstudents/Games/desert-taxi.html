@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Desert Taxi Chase</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<style>
+  body { margin: 0; overflow: hidden; font-family: 'Courier New', monospace; }
+  canvas { display: block; }
+  .nav-links {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+  }
+  .nav-links a {
+    color: white;
+    text-decoration: none;
+    margin-right: 15px;
+    font-size: 14px;
+    opacity: 0.8;
+    text-shadow: 1px 1px 2px black;
+  }
+  .nav-links a:hover {
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+<div class="nav-links">
+  <a href="../index.html">← Back to Gallery</a>
+  <a href="../highscores.html">🏆 High Scores</a>
+</div>
+<script>
+// Firebase Configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+    authDomain: "elevenstudents-76f31.firebaseapp.com",
+    databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "elevenstudents-76f31",
+    storageBucket: "elevenstudents-76f31.firebasestorage.app",
+    messagingSenderId: "692298982954",
+    appId: "1:692298982954:web:987f73aec7d26d03f8c553",
+    measurementId: "G-6TN07BNZD0"
+};
+
+// Initialize Firebase
+let database;
+try {
+    firebase.initializeApp(firebaseConfig);
+    database = firebase.database();
+    console.log('Firebase initialized successfully');
+} catch (error) {
+    console.error('Firebase initialization error:', error);
+}
+
+// High score functions
+function loadHighScores(callback) {
+    if (!database) {
+        callback([]);
+        return;
+    }
+    
+    const scoresRef = database.ref('desertTaxiHighScores');
+    scoresRef.once('value')
+        .then((snapshot) => {
+            const scores = snapshot.val();
+            if (scores && Array.isArray(scores)) {
+                callback(scores);
+            } else {
+                callback([]);
+            }
+        })
+        .catch((error) => {
+            console.error('Error loading high scores:', error);
+            callback([]);
+        });
+}
+
+function saveHighScores(scores) {
+    if (!database) {
+        console.error('Firebase not initialized');
+        return;
+    }
+    
+    const scoresRef = database.ref('desertTaxiHighScores');
+    scoresRef.set(scores)
+        .then(() => {
+            console.log('High scores saved successfully');
+        })
+        .catch((error) => {
+            console.error('Error saving high scores:', error);
+        });
+}
+
+function isTopTenScore(score, callback) {
+    loadHighScores((highScores) => {
+        const qualifies = highScores.length < 10 || score > highScores[highScores.length - 1].score;
+        callback(qualifies);
+    });
+}
+
+function addHighScore(name, score) {
+    loadHighScores((highScores) => {
+        highScores.push({
+            name: name,
+            score: score,
+            date: new Date().toISOString()
+        });
+        
+        highScores.sort((a, b) => b.score - a.score);
+        const top10 = highScores.slice(0, 10);
+        saveHighScores(top10);
+        
+        const rank = top10.findIndex(entry => entry.score === score && entry.name === name) + 1;
+        alert(`🏆 Congratulations ${name}!\nYou ranked #${rank} with ${score} points!\n\nView the leaderboard to see all high scores!`);
+    });
+}
+
+function checkHighScore(finalScore) {
+    isTopTenScore(finalScore, (qualifies) => {
+        if (qualifies && finalScore > 0) {
+            let playerName = prompt('🎉 You made the Top 10! Enter your name:');
+            
+            if (playerName) {
+                playerName = playerName.trim();
+                if (playerName.length === 0) {
+                    playerName = 'Anonymous';
+                }
+                if (playerName.length > 20) {
+                    playerName = playerName.substring(0, 20);
+                }
+                
+                addHighScore(playerName, finalScore);
+            }
+        }
+    });
+}
+
+// Your entire p5.js sketch code goes here
+// Including setup(), draw(), classes, functions, variables, etc.
+
+// Example: keep your entire code between these script tags
+let player;
+let chasers = [];
+let coins = [];
+let tireMarks = [];
+let explosions = [];
+let powerups = [];
+let initialChaserCount = 3;
+let chaserSpeed = 2;
+let playerSpeed = 3;
+let score = 0;
+
+let lastMultiplyTime = 0;
+let multiplyInterval = 300;
+let lastScoreSpawn = 0;
+let gameState = "start";
+let pixelFont;
+
+let leftPressed = false;
+let rightPressed = false;
+let upPressed = false;
+let downPressed = false;
+
+let cameraX = 0;
+let cameraY = 0;
+
+let pulseAlpha = 255;
+let pulseDir = -4;
+let floatOffset = 0;
+let floatDir = 0.3;
+
+let fuel = 100;
+let fuelDrain = 0.05;
+
+function preload() {
+  // pixelFont = loadFont('PressStart2P-Regular.ttf');
+}
+
+function setup() {
+  createCanvas(600, 400);
+  textSize(20);
+  player = new Player(0,0);
+  for (let i = 0; i < initialChaserCount; i++) {
+    chasers.push(new Chaser(random(-200,200), random(-200,200)));
+  }
+  noCursor();
+}
+
+function draw() {
+  if (gameState === "start") {
+    drawStartScreen();
+  } else if (gameState === "playing") {
+    runGame();
+  } else if (gameState === "gameover") {
+    drawGameOverScreen();
+  }
+}
+
+function keyPressed() {
+  if (keyCode === LEFT_ARROW) leftPressed = true;
+  if (keyCode === RIGHT_ARROW) rightPressed = true;
+  if (keyCode === UP_ARROW) upPressed = true;
+  if (keyCode === DOWN_ARROW) downPressed = false;
+}
+
+function keyReleased() {
+  if (keyCode === LEFT_ARROW) leftPressed = false;
+  if (keyCode === RIGHT_ARROW) rightPressed = false;
+  if (keyCode === UP_ARROW) upPressed = false;
+  if (keyCode === DOWN_ARROW) downPressed = false;
+}
+
+function mousePressed() {
+  if (gameState === "start") {
+    gameState = "playing";
+    loop();
+  } else if (gameState === "gameover") {
+    checkHighScore(score);
+    resetGame();
+    gameState = "playing";
+    loop();
+  }
+}
+
+function drawStartScreen() {
+  background(237, 201, 175);
+
+  floatOffset += floatDir;
+  if (floatOffset > 8 || floatOffset < -8) floatDir *= -1;
+
+  let titleY = height / 2 - 120 + floatOffset;
+
+  push();
+  textAlign(CENTER, CENTER);
+  textSize(48);
+  if (pixelFont) textFont(pixelFont);
+  stroke(255);
+  strokeWeight(6);
+  fill(0);
+  text("Desert Taxi Chase", width / 2, titleY);
+  pop();
+
+  noStroke();
+  fill(0);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text("Collect coins, avoid the blue chasers!", width / 2, height / 2 - 30 + floatOffset);
+  text("Use Up/Down to drive, Left/Right to turn.", width / 2, height / 2 + 0 + floatOffset);
+  text("Explore! The world changes as you drive.", width / 2, height / 2 + 30 + floatOffset);
+
+  pulseAlpha += pulseDir;
+  if (pulseAlpha > 255 || pulseAlpha < 100) pulseDir *= -1;
+
+  let boxWidth = 260;
+  let boxHeight = 80;
+  let boxX = width / 2 - boxWidth / 2;
+  let boxY = height / 2 + 100 + floatOffset;
+
+  push();
+  noStroke();
+  for (let g = 12; g > 0; g--) {
+    fill(255, 255, 180, map(g, 0, 12, 0, pulseAlpha / 3));
+    rect(boxX - g / 2, boxY - g / 2, boxWidth + g, boxHeight + g, 16);
+  }
+  fill(255, 255, 255, 180);
+  stroke(0);
+  strokeWeight(3);
+  rect(boxX, boxY, boxWidth, boxHeight, 12);
+
+  textAlign(CENTER, CENTER);
+  textSize(26);
+  stroke(255);
+  strokeWeight(4);
+  fill(50, 100, 0, pulseAlpha);
+  text("Click to Play", width / 2, boxY + boxHeight / 2);
+  pop();
+
+  noLoop();
+}
+
+function drawGameOverScreen() {
+  background(150, 0, 0);
+
+  push();
+  textAlign(CENTER, CENTER);
+  textSize(48);
+  if (pixelFont) textFont(pixelFont);
+  stroke(255);
+  strokeWeight(6);
+  fill(0);
+  text("Game Over!", width / 2, height / 2 - 60);
+  pop();
+
+  fill(255);
+  noStroke();
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  text("Final Score: " + score, width / 2, height / 2);
+  text("Click to Restart", width / 2, height / 2 + 50);
+  noLoop();
+}
+
+function runGame() {
+  cameraX = player.pos.x;
+  cameraY = player.pos.y;
+  push();
+  translate(width/2 - cameraX, height/2 - cameraY);
+
+  drawProceduralBackground(cameraX, cameraY);
+
+  for (let i = tireMarks.length - 1; i >= 0; i--) {
+    let mark = tireMarks[i];
+    mark.life -= 1;
+    stroke(40, 30, 30, mark.life);
+    strokeWeight(4);
+    line(mark.x1, mark.y1, mark.x2, mark.y2);
+    line(mark.x1b, mark.y1b, mark.x2b, mark.y2b);
+    if (mark.life <= 0) tireMarks.splice(i, 1);
+  }
+
+  drawExplosions();
+
+  noStroke();
+
+  player.update();
+  player.display();
+
+  // Fuel system
+  fuel -= fuelDrain;
+  if (fuel <= 0) {
+    fuel = 0;
+    gameState = "gameover";
+    noLoop();
+    pop();
+    return;
+  }
+
+  // Spawn more chasers over time
+  if (frameCount - lastMultiplyTime > multiplyInterval) {
+    spawnChaser();
+    lastMultiplyTime = frameCount;
+  }
+
+  if (score >= lastScoreSpawn + 2) {
+    spawnChaser();
+    lastScoreSpawn = score;
+  }
+
+  // Powerup spawns
+  if (frameCount % 600 === 0) {
+    spawnPowerup();
+  }
+
+  // Powerup logic
+  for (let i = powerups.length - 1; i >= 0; i--) {
+    powerups[i].display();
+    if (powerups[i].collectedBy(player)) {
+      powerups.splice(i, 1);
+      player.maxSpeed = 7;
+      setTimeout(() => player.maxSpeed = 5, 5000);
+    }
+  }
+
+  for (let i = coins.length - 1; i >= 0; i--) {
+    coins[i].display();
+    if (coins[i].collectedBy(player)) {
+      coins.splice(i, 1);
+      score++;
+      refuel();
+    }
+  }
+
+  for (let i = chasers.length - 1; i >= 0; i--) {
+    let chaser = chasers[i];
+    chaser.speed = chaserSpeed;
+    chaser.wander();
+    chaser.chase(player);
+    chaser.update();
+    chaser.display();
+
+    if (chaser.collidesWith(player)) {
+      explosions.push(new Explosion(player.pos.x, player.pos.y));
+      gameState = "gameover";
+      noLoop();
+      pop();
+      return;
+    }
+    for (let j = chasers.length - 1; j > i; j--) {
+      let other = chasers[j];
+      if (chaser.collidesWith(other)) {
+        let coinX = (chaser.pos.x + other.pos.x) / 2;
+        let coinY = (chaser.pos.y + other.pos.y) / 2;
+        coins.push(new Coin(coinX, coinY));
+        chasers.splice(j, 1);
+        chasers.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  fill(0);
+  textAlign(LEFT, TOP);
+  pop();
+
+  // Draw HUD
+  fill(0);
+  textAlign(LEFT, TOP);
+  text("Score: " + score, 10, 10);
+  text("Fuel: " + nf(fuel, 0, 1), 10, 40);
+}
+
+// Refuel when collecting coin
+function refuel() {
+  fuel = min(fuel + 10, 100);
+}
+
+function resetGame() {
+  score = 0;
+  chasers = [];
+  coins = [];
+  tireMarks = [];
+  explosions = [];
+  powerups = [];
+  player = new Player(0,0);
+  fuel = 100;
+  for (let i = 0; i < initialChaserCount; i++) {
+    chasers.push(new Chaser(random(-200,200), random(-200,200)));
+  }
+  lastMultiplyTime = 0;
+  lastScoreSpawn = 0;
+  chaserSpeed = 2;
+}
+
+// --- Explosion Effect ---
+class Explosion {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.life = 30;
+  }
+  display() {
+    noStroke();
+    fill(255, random(150,255), 0, this.life * 8);
+    ellipse(this.pos.x, this.pos.y, (30 - this.life) * 3);
+  }
+}
+
+function drawExplosions() {
+  for (let i = explosions.length - 1; i >= 0; i--) {
+    explosions[i].display();
+    explosions[i].life--;
+    if (explosions[i].life <= 0) explosions.splice(i, 1);
+  }
+}
+
+// --- Powerups ---
+class Powerup {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.size = 20;
+  }
+  display() {
+    fill(0, 255, 255);
+    ellipse(this.pos.x, this.pos.y, this.size);
+  }
+  collectedBy(player) {
+    return dist(this.pos.x, this.pos.y, player.pos.x, player.pos.y) < (this.size/2 + player.size/2);
+  }
+}
+
+function spawnPowerup() {
+  powerups.push(new Powerup(
+    cameraX + random(-300, 300),
+    cameraY + random(-300, 300)
+  ));
+}
+
+// --- Player with smooth car-like controls ---
+class Player {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.size = 40;
+    this.angle = 0;
+    this.speed = 0;
+    this.maxSpeed = 5;
+    this.acceleration = 0.2;
+    this.turnAccel = 0.012;
+    this.turnFriction = 0.93;
+    this.angularVel = 0;
+    this.prevPos = createVector(x, y);
+    this.swerveAngle = 0;
+  }
+  update() {
+    if (leftPressed) this.angularVel -= this.turnAccel;
+    if (rightPressed) this.angularVel += this.turnAccel;
+    this.angularVel *= this.turnFriction;
+    this.angle += this.angularVel;
+    if (upPressed) this.speed += this.acceleration;
+    if (downPressed) this.speed -= this.acceleration;
+    this.speed *= 0.96;
+    this.speed = constrain(this.speed, -this.maxSpeed, this.maxSpeed);
+
+    this.prevPos.set(this.pos.x, this.pos.y);
+    this.pos.x += cos(this.angle) * this.speed;
+    this.pos.y += sin(this.angle) * this.speed;
+
+    let targetSwerve = constrain(this.angularVel * 4 * min(abs(this.speed)/this.maxSpeed, 1), -0.6, 0.6);
+    this.swerveAngle = lerp(this.swerveAngle, targetSwerve, 0.18);
+
+    if (abs(this.swerveAngle) > 0.3 && random(1) < 0.15 && abs(this.speed) > 1.5) {
+      let offset = this.size * 0.32;
+      let offsetb = -this.size * 0.32;
+      let perpAngle = this.angle + HALF_PI + this.swerveAngle * 0.7;
+      let x1 = this.pos.x + offset * cos(perpAngle);
+      let y1 = this.pos.y + offset * sin(perpAngle);
+      let x2 = this.prevPos.x + offset * cos(perpAngle);
+      let y2 = this.prevPos.y + offset * sin(perpAngle);
+
+      let x1b = this.pos.x + offsetb * cos(perpAngle);
+      let y1b = this.pos.y + offsetb * sin(perpAngle);
+      let x2b = this.prevPos.x + offsetb * cos(perpAngle);
+      let y2b = this.prevPos.y + offsetb * sin(perpAngle);
+
+      tireMarks.push({x1, y1, x2, y2, x1b, y1b, x2b, y2b, life: 100});
+    }
+  }
+  display() {
+    push();
+    translate(this.pos.x, this.pos.y);
+    rotate(this.angle + this.swerveAngle);
+    stroke(0);
+    strokeWeight(2);
+    fill(255, 204, 0);
+    rectMode(CENTER);
+    rect(0, 0, this.size, this.size * 0.7, 6);
+    noStroke();
+
+    fill(255);
+    rect(0, -this.size * 0.45, this.size * 0.6, this.size * 0.2, 3);
+    fill(0);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text("TAXI", 0, -this.size * 0.45);
+    pop();
+  }
+}
+
+class Chaser {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.size = 40;
+    this.speed = chaserSpeed;
+    this.wanderAngle = random(TWO_PI);
+    this.vel = p5.Vector.random2D().mult(this.speed);
+  }
+  wander() {
+    let change = 0.3;
+    this.wanderAngle += random(-change, change);
+    let wanderForce = p5.Vector.fromAngle(this.wanderAngle).mult(0.3);
+    this.vel.add(wanderForce);
+    this.vel.limit(this.speed);
+  }
+  chase(target) {
+    let desired = p5.Vector.sub(target.pos, this.pos);
+    desired.setMag(this.speed * 1.2);
+    this.vel.lerp(desired, 0.15);
+  }
+  update() {
+    this.pos.add(this.vel);
+  }
+  display() {
+    let flashPeriod = 30;
+    let blueOn = (frameCount % (flashPeriod * 2) < flashPeriod);
+    let redOn = !blueOn;
+    let lightY = this.pos.y - this.size * 0.33;
+    let lightXOffset = this.size * 0.20;
+
+    fill(0, 102, 204);
+    rectMode(CENTER);
+    rect(this.pos.x, this.pos.y, this.size, this.size * 0.6, 8);
+
+    if (blueOn) {
+      fill(30,144,255);
+      ellipse(this.pos.x - lightXOffset, lightY, this.size * 0.16, this.size * 0.16);
+    }
+    if (redOn) {
+      fill(255,0,40);
+      ellipse(this.pos.x + lightXOffset, lightY, this.size * 0.16, this.size * 0.16);
+    }
+
+    fill(255, 255, 255, 60);
+    ellipse(this.pos.x, lightY, this.size * 0.32, this.size * 0.12);
+
+    fill(255, 0, 0);
+    ellipse(this.pos.x - this.size * 0.3, this.pos.y - this.size * 0.2, this.size * 0.15, this.size * 0.15);
+    ellipse(this.pos.x - this.size * 0.3, this.pos.y + this.size * 0.2, this.size * 0.15, this.size * 0.15);
+
+    fill(255);
+    ellipse(this.pos.x + this.size * 0.3, this.pos.y - this.size * 0.2, this.size * 0.15, this.size * 0.15);
+    ellipse(this.pos.x + this.size * 0.3, this.pos.y + this.size * 0.2, this.size * 0.15, this.size * 0.15);
+  }
+  collidesWith(other) {
+    let d = dist(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
+    return d < (this.size + other.size) / 2;
+  }
+}
+
+class Coin {
+  constructor(x, y) {
+    this.pos = createVector(x, y);
+    this.size = 15;
+  }
+  display() {
+    noStroke();
+    fill(255, 215, 0);
+    ellipse(this.pos.x, this.pos.y, this.size);
+  }
+  collectedBy(player) {
+    let d = dist(this.pos.x, this.pos.y, player.pos.x, player.pos.y);
+    return d < (this.size / 2 + player.size / 2);
+  }
+}
+
+function spawnChaser() {
+  chasers.push(new Chaser(
+    cameraX + random(-250, 250),
+    cameraY + random(-250, 250)
+  ));
+  chaserSpeed = min(chaserSpeed + 0.2, playerSpeed - 0.1);
+}
+
+// --- PROCEDURAL BACKGROUND with roads and trees ---
+function drawProceduralBackground(cx, cy) {
+  let tileSize = 100;
+  let tilesX = ceil(width/tileSize) + 4;
+  let tilesY = ceil(height/tileSize) + 4;
+  let startX = floor((cx - width/2)/tileSize) - 2;
+  let startY = floor((cy - height/2)/tileSize) - 2;
+  noStroke();
+  for (let i = startX; i < startX + tilesX; i++) {
+    for (let j = startY; j < startY + tilesY; j++) {
+      let baseY = j * tileSize;
+      let inter = map(baseY, -3000, 3000, 0, 1);
+      let c = lerpColor(color(237, 201, 175), color(194, 142, 84), inter);
+      fill(c);
+      rect(i*tileSize, j*tileSize, tileSize, tileSize);
+
+      let rng = (sin(i*321.9 + j*157.3) * 10000) % 1;
+      if (i % 10 === 0 || j % 10 === 0) {
+        fill(110, 120, 120);
+        rect(i*tileSize + tileSize/4, j*tileSize + tileSize/4, tileSize/2, tileSize/2, 8);
+      } else if (rng > 0.85) {
+        let tx = i*tileSize + tileSize/2;
+        let ty = j*tileSize + tileSize/2;
+        fill(50, 120 + 40*rng, 40, 230);
+        ellipse(tx, ty, 36, 36 + 8*rng);
+        fill(46, 74, 14);
+        rect(tx-4, ty+8, 8, 18, 4);
+      }
+    }
+  }
+}
+
+
+
+</script>
+</body>
+</html>
+
+

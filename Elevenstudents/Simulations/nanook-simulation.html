@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Phase Change Animation | Student Work</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .animation-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #sketch-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .comments-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comments-box h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .comment-section {
+            margin-bottom: 20px;
+        }
+
+        .comment-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .comment-section.good h3 {
+            color: #7cf4c4;
+        }
+
+        .comment-section.bad h3 {
+            color: #ff9999;
+        }
+
+        .comment-section p {
+            line-height: 1.6;
+            opacity: 0.9;
+            padding-left: 15px;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+
+        /* Override p5.js default paragraph styling */
+        p {
+            color: white !important;
+            font-family: 'Courier New', monospace !important;
+            margin: 10px 0 !important;
+        }
+
+        /* Style the buttons created by p5.js */
+        button {
+            background: linear-gradient(180deg, #7cf4c4, #51dfad) !important;
+            color: #0b0e20 !important;
+            border: none !important;
+            padding: 10px 20px !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: transform 0.1s ease !important;
+            font-family: 'Courier New', monospace !important;
+        }
+
+        button:hover {
+            transform: translateY(-2px) !important;
+        }
+
+        button:active {
+            transform: translateY(0) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← Back to Gallery</a>
+            <h1>Water Phase Change Simulation</h1>
+            <p class="student-name">by Nanook</p>
+        </header>
+
+        <div class="animation-box">
+            <div id="sketch-container"></div>
+        </div>
+
+        <div class="comments-box">
+            <h2>Student Comments</h2>
+            
+            <div class="comment-section good">
+                <h3>✓ What Works Well (GOOD)</h3>
+                <p>[Add student's positive comments here]</p>
+            </div>
+
+            <div class="comment-section bad">
+                <h3>✗ Areas for Improvement (BAD)</h3>
+                <p>[Add student's improvement comments here]</p>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script>
+        let particles = [];
+        let currentState = 'liquid';
+        const NUM_PARTICLES = 200; // Más partículas para un efecto más denso
+
+        function setup() {
+            let canvas = createCanvas(600, 400);
+            canvas.parent('sketch-container');
+            frameRate(60); // Asegura una alta velocidad de fotogramas si es posible
+            
+            for (let i = 0; i < NUM_PARTICLES; i++) {
+                particles.push(new Particle());
+            }
+            
+            createP('Change State:').position(10, 410);
+            createButton('Start as Liquid Water').position(160, 425).mousePressed(() => setState('liquid'));
+            createButton('Boil into Gas').position(320, 425).mousePressed(() => setState('gas'));
+        }
+
+        function draw() {
+            background(240);
+            
+            // Draw container base
+            stroke(150);
+            strokeWeight(2);
+            line(0, height - 50, width, height - 50);
+            
+            // Display current state title
+            textSize(24);
+            textAlign(CENTER);
+            fill(0);
+            text('Water Phase: ' + currentState.charAt(0).toUpperCase() + currentState.slice(1), width / 2, 30);
+            
+            // Update and display particles
+            for (let particle of particles) {
+                particle.update(currentState);
+                particle.display(currentState);
+            }
+        }
+
+        function setState(newState) {
+            currentState = newState;
+            if (newState === 'liquid') {
+                for (let p of particles) {
+                    p.resetToLiquid();
+                }
+            }
+        }
+
+        // --- Particle Class ---
+        class Particle {
+            constructor() {
+                this.resetToLiquid();
+                this.size = 10;
+            }
+            
+            resetToLiquid() {
+                this.position = createVector(random(width/4, 3*width/4), random(height/2, height - 50));
+                // Velocidad inicial ligeramente más alta
+                this.velocity = createVector(random(-3, 3), random(-3, 3)); 
+            }
+
+            update(mode) {
+                if (mode === 'gas') {
+                    // Gas behavior: movimiento ultra-rápido y caótico
+                    this.velocity.add(random(-1, 1), random(-1, 1)); // Aceleración aumentada
+                    this.velocity.limit(15); // Límite de velocidad muy alto
+                    this.position.add(this.velocity);
+                    
+                    // Bounce off all canvas edges
+                    if (this.position.x < 0 || this.position.x > width) { this.velocity.x *= -1; }
+                    if (this.position.y < 0 || this.position.y > height) { this.velocity.y *= -1; }
+                    
+                    this.position.x = constrain(this.position.x, 0, width);
+                    this.position.y = constrain(this.position.y, 0, height);
+                } else {
+                    // Liquid behavior: movimiento agitado
+                    this.velocity.add(random(-0.5, 0.5), random(-0.5, 0.5));
+                    this.velocity.limit(6); // Límite de velocidad líquido alto
+                    this.position.add(this.velocity);
+                    
+                    // Bounce off walls and bottom line
+                    if (this.position.x < 0 || this.position.x > width) { this.velocity.x *= -1; }
+                    if (this.position.y < 0 || this.position.y > height - 50) { this.velocity.y *= -1; }
+                    
+                    this.position.x = constrain(this.position.x, 0, width);
+                    this.position.y = constrain(this.position.y, 0, height - 50);
+                }
+            }
+
+            display(displayState) {
+                // Water color (light blue)
+                fill(50, 150, 255); 
+                noStroke();
+                ellipse(this.position.x, this.position.y, this.size, this.size);
+            }
+        }
+    </script>
+</body>
+</html>

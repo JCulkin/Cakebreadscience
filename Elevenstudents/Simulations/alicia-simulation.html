@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Condensation Simulation | Student Work</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .animation-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #sketch-container {
+            /* The canvas will be placed here */
+        }
+
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .comments-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comments-box h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .comment-section {
+            margin-bottom: 20px;
+        }
+
+        .comment-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            color: #7cf4c4;
+        }
+
+        .comment-section.good h3 {
+            color: #7cf4c4;
+        }
+
+        .comment-section.bad h3 {
+            color: #ff9999;
+        }
+
+        .comment-section p {
+            line-height: 1.6;
+            opacity: 0.9;
+            padding-left: 15px;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← Back to Gallery</a>
+            <h1>Condensation simulation</h1>
+            <p class="student-name">by Alicia</p>
+        </header>
+
+        <div class="animation-box">
+            <!-- The p5.js canvas will be created inside this div -->
+            <div id="sketch-container"></div>
+        </div>
+
+        <div class="comments-box">
+            <h2>Student Comments - Alicia</h2>
+            
+            <div class="comment-section good">
+                <h3>✓ What Works Well (GOOD)</h3>
+                <p>Something that is good from the simulation is that the particles start slowing down to show how the gas particles move fast and that liquid particles move slower.</p>
+            </div>
+
+            <div class="comment-section bad">
+                <h3>✗ Areas for Improvement (BAD)</h3>
+                <p>Something bad is that when the gas particles change to liquid particles don't go down or to the bottom, so it doesn't turn to a really good liquid.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- ===             ALICIA'S SKETCH IN INSTANCE MODE             === -->
+    <!-- ================================================================= -->
+    <script>
+    const sketch = (p) => {
+
+        let particles = [];
+        let numParticles = 100;
+        // Start with a high temperature (gas) value
+        let temperature = 1.0; 
+        let gravity = 0.1; // A small downward force
+
+        p.setup = () => {
+            p.createCanvas(400, 400); 
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle());
+            }
+            p.textSize(16);
+            p.textAlign(p.CENTER, p.TOP);
+        }
+
+        p.draw = () => {
+            p.background(220);
+
+            // Automatically decrease the temperature every frame (cooling down)
+            if (temperature > 0.05) {
+                temperature -= 0.001; 
+            } else {
+                temperature = 0.05; // Stop cooling when liquid state is reached
+            }
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].display();
+            }
+
+            // Display temperature status
+            let state = "Gas (cooling down)";
+            if (temperature <= 0.05) {
+                state = "Liquid (settled at bottom)";
+            }
+            p.fill(0);
+            p.text("Automatic Condensation (with Gravity)", p.width / 2, 10);
+            p.text("State: " + state, p.width / 2, 30);
+        }
+
+        class Particle {
+            constructor() {
+                this.x = p.random(p.width);
+                this.y = p.random(p.height);
+                this.vx = p.random(-2, 2); 
+                this.vy = p.random(-2, 2);
+                this.radius = 5;
+            }
+
+            update() {
+                // Velocity is scaled by the decreasing temperature variable
+                this.x += this.vx * temperature * 4; 
+                this.y += this.vy * temperature * 4;
+                
+                // *** Apply gravity to vertical velocity ***
+                this.vy += gravity;
+
+                // --- Boundary Collisions (Container walls and floor) ---
+                
+                // Bounce off left and right walls
+                if (this.x < 0 || this.x > p.width) {
+                    this.vx *= -1;
+                    // Keep within bounds
+                    this.x = p.constrain(this.x, 0, p.width);
+                }
+                
+                // Bounce off top and bottom (container floor)
+                if (this.y < 0 || this.y > p.height - this.radius) {
+                    this.vy *= -0.8; // Lose some energy on floor bounce
+                    // Keep on the floor/within bounds
+                    this.y = p.constrain(this.y, 0, p.height - this.radius);
+                }
+                
+                // --- Simple particle collision and clustering logic ---
+                for (let other of particles) {
+                    if (other !== this) {
+                        let d = p.dist(this.x, this.y, other.x, other.y);
+                        // Collision logic only activates when cold enough to stick/cluster
+                        if (d < this.radius * 2 && temperature < 0.3) { 
+                            let overlap = (this.radius * 2) - d;
+                            this.x += (this.x - other.x) / d * overlap * 0.1;
+                            this.y += (this.y - other.y) / d * overlap * 0.1;
+                        }
+                    }
+                }
+            }
+
+            display() {
+                p.noStroke();
+                // Color changes from hot (gas) to cold (liquid/blue)
+                p.fill(p.map(temperature, 0.05, 1, 0, 100), 150, p.map(temperature, 0.05, 1, 255, 100)); 
+                p.ellipse(this.x, this.y, this.radius * 2);
+            }
+        }
+    };
+
+    // This line creates a new p5 instance, runs the sketch function,
+    // and places the resulting canvas inside the element with the ID 'sketch-container'.
+    new p5(sketch, 'sketch-container');
+
+    </script>
+</body>
+</html>

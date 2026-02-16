@@ -1,0 +1,19 @@
+        // Global state
+        let currentUser = null;
+        let currentDeck = null;
+        let currentCard = null;
+        let isFlipped = false;
+        let studyQueue = [];
+        let userProgress = {};
+        let settings = {
+            newCardsPerDay: 20,
+            lastStudyDate: null,
+            newCardsToday: 0
+        };
+        let deckCards = {}; // Store all parsed cards by deck
+        let deckMetadata = {
+            biology: { name: 'IGCSE Biology', file: 'ANKI files/IGCSE__Biology_v2.apkg', cards: [] },
+            chemistry: { name: 'IGCSE Chemistry', file: 'ANKI files/IGCSE__Chemistry_v3.apkg', cards: [] },
+            physics: { name: 'IGCSE Physics', file: 'ANKI files/IGCSE__Physics_v1.apkg', cards: [] },
+            'physics-eqns': { name: 'IGCSE Physics Equations', file: 'ANKI files/IGCSE__Physics-eqns_v1.apkg', cards: [] }
+        };

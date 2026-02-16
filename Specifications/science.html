@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>IGCSE Science (Double Award) Specification Breakdown</title>
+	<link rel="stylesheet" href="../css/index.css">
+	<style>
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			min-height: 100vh;
+			padding: 20px 15px;
+		}
+
+		.container {
+			max-width: none;
+			width: 100vw;
+			margin: 0 auto;
+		}
+
+		header {
+			text-align: center;
+			color: white;
+			margin-bottom: 25px;
+		}
+
+		.top-bar {
+			position: sticky;
+			top: 0;
+			z-index: 10;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 10px 14px;
+			background: rgba(255, 255, 255, 0.9);
+			backdrop-filter: blur(10px);
+			border-radius: 10px;
+			box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+			border: 1px solid rgba(0,0,0,0.06);
+			margin-bottom: 20px;
+		}
+
+		.top-bar-title {
+			font-weight: 600;
+			font-size: 13px;
+			color: #1f2937;
+			margin-right: 6px;
+			white-space: nowrap;
+		}
+
+		.top-bar-link {
+			text-decoration: none;
+			color: #1f2937;
+			background: rgba(15, 23, 42, 0.06);
+			border: 1px solid rgba(15, 23, 42, 0.12);
+			padding: 8px 14px;
+			border-radius: 20px;
+			font-size: 13px;
+			transition: all 0.2s ease;
+		}
+
+		.top-bar-link:hover {
+			background: rgba(15, 23, 42, 0.12);
+			transform: translateY(-1px);
+		}
+
+		.top-bar-link.back-link {
+			background: rgba(59, 130, 246, 0.15);
+			border-color: rgba(59, 130, 246, 0.35);
+			color: #1d4ed8;
+		}
+
+		.top-bar-link.back-link:hover {
+			background: rgba(59, 130, 246, 0.25);
+		}
+
+		.top-bar-link.subject-link.biology {
+			background: rgba(34, 197, 94, 0.18);
+			border-color: rgba(34, 197, 94, 0.4);
+			color: #166534;
+		}
+
+		.top-bar-link.subject-link.biology:hover {
+			background: rgba(34, 197, 94, 0.28);
+		}
+
+		.top-bar-link.subject-link.chemistry {
+			background: rgba(124, 58, 237, 0.16);
+			border-color: rgba(124, 58, 237, 0.4);
+			color: #5b21b6;
+		}
+
+		.top-bar-link.subject-link.chemistry:hover {
+			background: rgba(124, 58, 237, 0.26);
+		}
+
+		.top-bar-link.subject-link.physics {
+			background: rgba(245, 158, 11, 0.2);
+			border-color: rgba(245, 158, 11, 0.45);
+			color: #92400e;
+		}
+
+		.top-bar-link.subject-link.physics:hover {
+			background: rgba(245, 158, 11, 0.3);
+		}
+
+		h1 {
+			font-size: 32px;
+			margin-bottom: 5px;
+			text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+		}
+
+			subtitle {
+			font-size: 15px;
+			opacity: 0.95;
+		}
+
+
+		.subject-section {
+			background: white;
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+			margin-bottom: 20px;
+			width: 100%;
+		}
+
+		.subject-header {
+			padding: 16px 20px;
+			color: white;
+			font-weight: bold;
+			font-size: 18px;
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			justify-content: flex-start;
+			gap: 12px;
+		}
+
+		.subject-header span {
+			display: inline-block;
+			margin-right: 8px;
+		}
+
+		.subject-header.biology {
+			background: linear-gradient(135deg, #27ae60 0%, #1e5631 100%);
+		}
+
+		.subject-header.chemistry {
+			background: linear-gradient(135deg, #6c5ce7 0%, #341f97 100%);
+		}
+
+		.subject-header.physics {
+			background: linear-gradient(135deg, #f39c12 0%, #7d6608 100%);
+		}
+
+		.subject-content {
+			padding: 20px;
+			width: 100%;
+			max-width: none;
+		}
+
+		.content-label {
+			font-weight: 700;
+			font-size: 14px;
+			color: #2c3e50;
+			text-transform: uppercase;
+			letter-spacing: 0.6px;
+			margin-bottom: 12px;
+		}
+
+		.subject-toc {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin: 0;
+			padding: 0;
+			background: transparent;
+			border: none;
+			position: static;
+		}
+
+		.subject-toc a {
+			text-decoration: none;
+			color: white;
+			background: rgba(255,255,255,0.2);
+			border: 1px solid rgba(255,255,255,0.35);
+			padding: 6px 10px;
+			border-radius: 14px;
+			font-size: 12px;
+			transition: all 0.2s ease;
+		}
+
+		.subject-toc a:hover {
+			border-color: rgba(255,255,255,0.7);
+			color: white;
+			transform: translateY(-1px);
+		}
+
+		.topic-grid {
+			column-width: 420px;
+			column-gap: 16px;
+			column-fill: balance;
+		}
+
+		.topic-card {
+			border: 1px solid #ecf0f1;
+			border-radius: 12px;
+			padding: 16px;
+			background: #ffffff;
+			box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+			break-inside: avoid;
+			display: inline-block;
+			width: 100%;
+			margin-bottom: 16px;
+		}
+
+		#biology .topic-grid .topic-card:nth-of-type(1) {
+			background: #f5fcf7;
+		}
+		#biology .topic-grid .topic-card:nth-of-type(2) {
+			background: #eef9f2;
+		}
+		#biology .topic-grid .topic-card:nth-of-type(3) {
+			background: #e6f6ec;
+		}
+		#biology .topic-grid .topic-card:nth-of-type(4) {
+			background: #ddf2e5;
+		}
+		#biology .topic-grid .topic-card:nth-of-type(5) {
+			background: #d4efde;
+		}
+
+		#chemistry .topic-grid .topic-card:nth-of-type(1) {
+			background: #f4f1ff;
+		}
+		#chemistry .topic-grid .topic-card:nth-of-type(2) {
+			background: #efeaff;
+		}
+		#chemistry .topic-grid .topic-card:nth-of-type(3) {
+			background: #e8e2ff;
+		}
+		#chemistry .topic-grid .topic-card:nth-of-type(4) {
+			background: #e1dbff;
+		}
+
+		#physics .topic-grid .topic-card:nth-of-type(1) {
+			background: #fff8e8;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(2) {
+			background: #fff3d9;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(3) {
+			background: #ffefca;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(4) {
+			background: #ffeabb;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(5) {
+			background: #ffe5ac;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(6) {
+			background: #ffe09d;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(7) {
+			background: #ffdc8e;
+		}
+		#physics .topic-grid .topic-card:nth-of-type(8) {
+			background: #ffd87f;
+		}
+
+		.subject-header.biology .subject-toc a {
+			background: rgba(34, 197, 94, 0.2);
+			border-color: rgba(34, 197, 94, 0.45);
+			color: #f0fdf4;
+		}
+		.subject-header.biology .subject-toc a:hover {
+			background: rgba(34, 197, 94, 0.32);
+		}
+
+		.subject-header.chemistry .subject-toc a {
+			background: rgba(124, 58, 237, 0.22);
+			border-color: rgba(124, 58, 237, 0.5);
+			color: #f5f3ff;
+		}
+		.subject-header.chemistry .subject-toc a:hover {
+			background: rgba(124, 58, 237, 0.34);
+		}
+
+		.subject-header.physics .subject-toc a {
+			background: rgba(245, 158, 11, 0.26);
+			border-color: rgba(245, 158, 11, 0.55);
+			color: #fff7ed;
+		}
+		.subject-header.physics .subject-toc a:hover {
+			background: rgba(245, 158, 11, 0.38);
+		}
+
+		.topic-title {
+			font-weight: 700;
+			font-size: 16px;
+			color: #2c3e50;
+			margin-bottom: 10px;
+		}
+
+		.subtopic-title {
+			font-weight: 600;
+			font-size: 13px;
+			color: #34495e;
+			margin: 12px 0 6px;
+		}
+
+		.spec-list {
+			list-style: none;
+			padding-left: 0;
+			margin: 0;
+		}
+
+		.spec-item {
+			padding: 6px 0;
+			border-bottom: 1px dashed #ecf0f1;
+			font-size: 13px;
+			color: #2c3e50;
+		}
+
+		.spec-item:last-child {
+			border-bottom: none;
+		}
+
+		.bullet-list {
+			margin: 6px 0 8px 18px;
+			padding-left: 18px;
+			color: #2c3e50;
+		}
+
+		.bullet-list li {
+			list-style: disc;
+			margin: 3px 0;
+			font-size: 13px;
+		}
+
+		.inline-label {
+			font-weight: 600;
+			margin: 8px 0 4px;
+			color: #2c3e50;
+		}
+
+		.practical-tag {
+			display: inline-block;
+			margin-right: 6px;
+			padding: 2px 6px;
+			border-radius: 10px;
+			background: #f1f8ff;
+			color: #2980b9;
+			border: 1px solid #d6eaf8;
+			font-size: 10px;
+			letter-spacing: 0.3px;
+			vertical-align: middle;
+		}
+
+		.spec-divider {
+			border-top: 1px solid #ecf0f1;
+			margin: 4px 0;
+			color: #95a5a6;
+			font-family: 'Courier New', monospace;
+			font-size: 12px;
+			text-align: center;
+		}
+
+		footer {
+			text-align: center;
+			color: white;
+			margin-top: 40px;
+			padding-top: 15px;
+			border-top: 1px solid rgba(255,255,255,0.1);
+		}
+
+		footer p {
+			margin: 5px 0;
+			font-size: 13px;
+		}
+
+		@media (max-width: 768px) {
+			h1 {
+				font-size: 26px;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<nav class="top-bar">
+			<a href="../index.html" class="top-bar-link back-link">← Back</a>
+			<span class="top-bar-title">IGCSE Double Science</span>
+			<a href="#biology" class="top-bar-link subject-link biology">Biology</a>
+			<a href="#chemistry" class="top-bar-link subject-link chemistry">Chemistry</a>
+			<a href="#physics" class="top-bar-link subject-link physics">Physics</a>
+		</nav>
+
+		<section id="biology" class="subject-section">
+			<div class="subject-header biology">
+				<span>Biology</span>
+				<nav class="subject-toc">
+					<a href="#biology-topic-1">Topic 1</a>
+					<a href="#biology-topic-2">Topic 2</a>
+					<a href="#biology-topic-3">Topic 3</a>
+					<a href="#biology-topic-4">Topic 4</a>
+					<a href="#biology-topic-5">Topic 5</a>
+				</nav>
+			</div>
+			<div class="subject-content">
+				<div class="topic-grid">
+					<article class="topic-card">
+						<h3 id="biology-topic-1" class="topic-title">Topic 1: The Nature and Variety of Living Organisms</h3>
+						<h4 class="subtopic-title">(a) Characteristics of Living Organisms</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.1 Understand how living organisms share the following characteristics:
+								<ul class="bullet-list">
+									<li>They require nutrition</li>
+									<li>They respire</li>
+									<li>They excrete their waste</li>
+									<li>They respond to their surroundings</li>
+									<li>They move</li>
+									<li>They control their internal conditions</li>
+									<li>They reproduce</li>
+									<li>They grow and develop</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Variety of Living Organisms</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.2 Describe the common features shown by eukaryotic organisms:
+								<p class="inline-label">Plants:</p>
+								<ul class="bullet-list">
+									<li>Multicellular organisms</li>
+									<li>Cells contain chloroplasts and carry out photosynthesis</li>
+									<li>Cells have cellulose cell walls</li>
+									<li>Store carbohydrates as starch or sucrose</li>
+									<li>Examples: flowering plants (e.g., maize, peas, beans)</li>
+								</ul>
+								<p class="inline-label">Animals:</p>
+								<ul class="bullet-list">
+									<li>Multicellular organisms</li>
+									<li>Cells do not contain chloroplasts and cannot carry out photosynthesis</li>
+									<li>No cell walls</li>
+									<li>Usually have nervous coordination and can move</li>
+									<li>Often store carbohydrate as glycogen</li>
+									<li>Examples: mammals (e.g., humans), insects (e.g., housefly, mosquito)</li>
+								</ul>
+								<p class="inline-label">Fungi:</p>
+								<ul class="bullet-list">
+									<li>Cannot carry out photosynthesis</li>
+									<li>Body organized into mycelium made from thread-like hyphae</li>
+									<li>Some examples are single-celled</li>
+									<li>Cells have walls made of chitin</li>
+									<li>Feed by saprotrophic nutrition</li>
+									<li>May store carbohydrate as glycogen</li>
+									<li>Examples: Mucor, yeast</li>
+								</ul>
+								<p class="inline-label">Protoctists:</p>
+								<ul class="bullet-list">
+									<li>Microscopic single-celled organisms</li>
+									<li>Some like Amoeba have animal-like features</li>
+									<li>Others like Chlorella have chloroplasts and are plant-like</li>
+									<li>Pathogenic example: Plasmodium (causes malaria)</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.3 Describe the common features shown by prokaryotic organisms (bacteria):
+								<ul class="bullet-list">
+									<li>Microscopic single-celled organisms</li>
+									<li>Have cell wall, cell membrane, cytoplasm and plasmids</li>
+									<li>Lack nucleus but contain circular chromosome of DNA</li>
+									<li>Some can photosynthesize, most feed off other organisms</li>
+									<li>Examples: Lactobacillus bulgaricus (yoghurt production), Pneumococcus (causes pneumonia)</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.4 Understand the term 'pathogen':
+								<ul class="bullet-list">
+									<li>Pathogens may include fungi, bacteria, protoctists and viruses</li>
+								</ul>
+								<p class="inline-label">Viruses:</p>
+								<ul class="bullet-list">
+									<li>Not living organisms</li>
+									<li>Small particles, smaller than bacteria</li>
+									<li>Parasitic, reproduce only inside living cells</li>
+									<li>Have protein coat and contain DNA or RNA</li>
+									<li>Examples: tobacco mosaic virus, influenza virus, HIV</li>
+								</ul>
+							</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="biology-topic-2" class="topic-title">Topic 2: Structure and Functions in Living Organisms</h3>
+						<h4 class="subtopic-title">(a) Level of Organisation</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.1 Describe the levels of organisation in organisms:
+								<ul class="bullet-list">
+									<li>Organelles → Cells → Tissues → Organs → Systems</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Cell Structure</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.2 Describe cell structures:
+								<ul class="bullet-list">
+									<li>Nucleus</li>
+									<li>Cytoplasm</li>
+									<li>Cell membrane</li>
+									<li>Cell wall</li>
+									<li>Mitochondria</li>
+									<li>Chloroplasts</li>
+									<li>Ribosomes</li>
+									<li>Vacuole</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.3 Describe the functions of cell structures:
+								<ul class="bullet-list">
+									<li>All structures listed above</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.4 Know the similarities and differences in the structure of plant and animal cells</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Biological Molecules</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.7 Identify chemical elements present in:
+								<ul class="bullet-list">
+									<li>Carbohydrates</li>
+									<li>Proteins</li>
+									<li>Lipids (fats and oils)</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.8 Describe structure of biological molecules:
+								<ul class="bullet-list">
+									<li>Starch and glycogen from simple sugars</li>
+									<li>Protein from amino acids</li>
+									<li>Lipid from fatty acids and glycerol</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate food samples for presence of glucose, starch, protein and fat</li>
+							<li class="spec-item">2.10 Understand the role of enzymes as biological catalysts in metabolic reactions</li>
+							<li class="spec-item">2.11 Understand how temperature changes affect enzyme function, including changes to active site shape</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate how enzyme activity is affected by changes in temperature</li>
+							<li class="spec-item">2.13 Understand how enzyme function is affected by pH changes altering the active site</li>
+						</ul>
+						<h4 class="subtopic-title">(d) Movement of Substances Into and Out of Cells</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.15 Understand the processes of:
+								<ul class="bullet-list">
+									<li>Diffusion</li>
+									<li>Osmosis</li>
+									<li>Active transport</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.16 Understand how factors affect rate of movement of substances:
+								<ul class="bullet-list">
+									<li>Surface area to volume ratio</li>
+									<li>Distance</li>
+									<li>Temperature</li>
+									<li>Concentration gradient</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate diffusion and osmosis using living and non-living systems</li>
+						</ul>
+						<h4 class="subtopic-title">(e) Nutrition</h4>
+						<p class="inline-label">Flowering Plants</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.18 Understand photosynthesis and its importance in converting light energy to chemical energy</li>
+							<li class="spec-item">2.19 Know word equation and balanced chemical symbol equation for photosynthesis</li>
+							<li class="spec-item">2.20 Understand how these affect rate of photosynthesis:
+								<ul class="bullet-list">
+									<li>Carbon dioxide concentration</li>
+									<li>Light intensity</li>
+									<li>Temperature</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.21 Describe structure of leaf and explain adaptations for photosynthesis</li>
+							<li class="spec-item">2.22 Understand plants require mineral ions:
+								<ul class="bullet-list">
+									<li>Magnesium ions for chlorophyll</li>
+									<li>Nitrate ions for amino acids</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate photosynthesis:
+								<ul class="bullet-list">
+									<li>Evolution of oxygen from water plant</li>
+									<li>Production of starch</li>
+									<li>Requirements of light, carbon dioxide and chlorophyll</li>
+								</ul>
+							</li>
+						</ul>
+						<p class="inline-label">Humans</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.24 Understand balanced diet should include appropriate proportions of:
+								<ul class="bullet-list">
+									<li>Carbohydrate</li>
+									<li>Protein</li>
+									<li>Lipid</li>
+									<li>Vitamins</li>
+									<li>Minerals</li>
+									<li>Water</li>
+									<li>Dietary fibre</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.25 Identify sources and describe functions of:
+								<ul class="bullet-list">
+									<li>Carbohydrate, protein, lipid</li>
+									<li>Vitamins A, C and D</li>
+									<li>Mineral ions: calcium and iron</li>
+									<li>Water and dietary fibre</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.26 Understand how energy requirements vary with:
+								<ul class="bullet-list">
+									<li>Activity levels</li>
+									<li>Age</li>
+									<li>Pregnancy</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.27 Describe structure and function of human alimentary canal:
+								<ul class="bullet-list">
+									<li>Mouth</li>
+									<li>Oesophagus</li>
+									<li>Stomach</li>
+									<li>Small intestine (duodenum and ileum)</li>
+									<li>Large intestine (colon and rectum)</li>
+									<li>Pancreas</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.28 Understand how food is moved through gut by peristalsis</li>
+							<li class="spec-item">2.29 Understand role of digestive enzymes:
+								<ul class="bullet-list">
+									<li>Amylase and maltase: starch → glucose</li>
+									<li>Proteases: proteins → amino acids</li>
+									<li>Lipases: lipids → fatty acids and glycerol</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.30 Understand bile is produced by liver and stored in gall bladder</li>
+							<li class="spec-item">2.31 Understand role of bile:
+								<ul class="bullet-list">
+									<li>Neutralising stomach acid</li>
+									<li>Emulsifying lipids</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.32 Understand how small intestine is adapted for absorption, including villus structure</li>
+						</ul>
+						<h4 class="subtopic-title">(f) Respiration</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.34 Understand how respiration produces ATP in living organisms</li>
+							<li class="spec-item">2.35 Know that ATP provides energy for cells</li>
+							<li class="spec-item">2.36 Describe differences between aerobic and anaerobic respiration</li>
+							<li class="spec-item">2.37 Know word equation and balanced chemical symbol equation for aerobic respiration</li>
+							<li class="spec-item">2.38 Know word equation for anaerobic respiration in:
+								<ul class="bullet-list">
+									<li>Plants</li>
+									<li>Animals</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate evolution of carbon dioxide and heat from respiring seeds or other organisms</li>
+						</ul>
+						<h4 class="subtopic-title">(g) Gas Exchange</h4>
+						<p class="inline-label">Humans</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.46 Describe structure of thorax:
+								<ul class="bullet-list">
+									<li>Ribs</li>
+									<li>Intercostal muscles</li>
+									<li>Diaphragm</li>
+									<li>Trachea</li>
+									<li>Bronchi</li>
+									<li>Bronchioles</li>
+									<li>Alveoli</li>
+									<li>Pleural membranes</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.47 Understand role of intercostal muscles and diaphragm in ventilation</li>
+							<li class="spec-item">2.48 Explain how alveoli are adapted for gas exchange by diffusion</li>
+							<li class="spec-item">2.49 Understand biological consequences of smoking:
+								<ul class="bullet-list">
+									<li>Effects on lungs</li>
+									<li>Effects on circulatory system</li>
+									<li>Coronary heart disease</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate breathing in humans:
+								<ul class="bullet-list">
+									<li>Release of carbon dioxide</li>
+									<li>Effect of exercise</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(h) Transport</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.51 Understand why simple, unicellular organisms can rely on diffusion</li>
+							<li class="spec-item">2.52 Understand need for transport system in multicellular organisms</li>
+						</ul>
+						<p class="inline-label">Flowering Plants</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.53 Describe role of phloem in transporting sucrose and amino acids</li>
+							<li class="spec-item">2.54 Describe role of xylem in transporting water and mineral ions</li>
+						</ul>
+						<p class="inline-label">Humans</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.59 Describe composition of blood:
+								<ul class="bullet-list">
+									<li>Red blood cells</li>
+									<li>White blood cells</li>
+									<li>Platelets</li>
+									<li>Plasma</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.60 Understand role of plasma in transport of:
+								<ul class="bullet-list">
+									<li>Carbon dioxide</li>
+									<li>Digested food</li>
+									<li>Urea</li>
+									<li>Hormones</li>
+									<li>Heat energy</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.61 Understand adaptations of red blood cells:
+								<ul class="bullet-list">
+									<li>Shape</li>
+									<li>Absence of nucleus</li>
+									<li>Presence of haemoglobin</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.62 Understand immune system response using white blood cells:
+								<ul class="bullet-list">
+									<li>Phagocytes ingesting pathogens</li>
+									<li>Lymphocytes releasing antibodies</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.65 Describe structure and function of the heart</li>
+							<li class="spec-item">2.66 Explain how heart rate changes:
+								<ul class="bullet-list">
+									<li>During exercise</li>
+									<li>Under influence of adrenaline</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.67 Understand specific factors increasing risk of coronary heart disease</li>
+							<li class="spec-item">2.68 Understand how structure of arteries, veins and capillaries relates to function</li>
+							<li class="spec-item">2.69 Understand general structure of circulation system</li>
+						</ul>
+						<h4 class="subtopic-title">(i) Excretion</h4>
+						<p class="inline-label">Flowering Plants</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.70 Understand origin of carbon dioxide and oxygen as waste products and their loss from stomata</li>
+						</ul>
+						<p class="inline-label">Humans</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.71 Know excretory products of:
+								<ul class="bullet-list">
+									<li>Lungs</li>
+									<li>Kidneys</li>
+									<li>Skin</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(j) Co-ordination and Response</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.80 Understand how organisms respond to changes in their environment</li>
+							<li class="spec-item">2.81 Understand homeostasis as maintenance of constant internal environment:
+								<ul class="bullet-list">
+									<li>Body water content</li>
+									<li>Body temperature</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.82 Understand coordinated response requires:
+								<ul class="bullet-list">
+									<li>Stimulus</li>
+									<li>Receptor</li>
+									<li>Effector</li>
+								</ul>
+							</li>
+						</ul>
+						<p class="inline-label">Flowering Plants</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.83 Understand that plants respond to stimuli</li>
+							<li class="spec-item">2.84 Describe geotropic and phototropic responses of roots and stems</li>
+							<li class="spec-item">2.85 Understand role of auxin in phototropic response of stems</li>
+						</ul>
+						<p class="inline-label">Humans</p>
+						<ul class="spec-list">
+							<li class="spec-item">2.86 Describe how nervous and hormonal communication control responses</li>
+							<li class="spec-item">2.87 Understand central nervous system consists of:
+								<ul class="bullet-list">
+									<li>Brain and spinal cord</li>
+									<li>Linked to sense organs by nerves</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.88 Understand stimulation of receptors sends electrical impulses resulting in rapid responses</li>
+							<li class="spec-item">2.89 Understand role of neurotransmitters at synapses</li>
+							<li class="spec-item">2.90 Describe structure and functioning of simple reflex arc</li>
+							<li class="spec-item">2.91 Describe structure and function of eye as a receptor</li>
+							<li class="spec-item">2.92 Understand eye function in:
+								<ul class="bullet-list">
+									<li>Focusing on near and distant objects</li>
+									<li>Responding to changes in light intensity</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.93 Describe role of skin in temperature regulation:
+								<ul class="bullet-list">
+									<li>Sweating</li>
+									<li>Vasoconstriction</li>
+									<li>Vasodilation</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.94 Understand sources, roles and effects of hormones:
+								<ul class="bullet-list">
+									<li>Adrenaline</li>
+									<li>Insulin</li>
+									<li>Testosterone</li>
+									<li>Progesterone</li>
+									<li>Oestrogen</li>
+								</ul>
+							</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="biology-topic-3" class="topic-title">Topic 3: Reproduction and Inheritance</h3>
+						<h4 class="subtopic-title">(a) Reproduction</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.1 Understand differences between sexual and asexual reproduction</li>
+							<li class="spec-item">3.2 Understand fertilisation involves fusion of male and female gamete to produce zygote</li>
+						</ul>
+						<p class="inline-label">Flowering Plants</p>
+						<ul class="spec-list">
+							<li class="spec-item">3.3 Describe structures of insect-pollinated and wind-pollinated flowers and adaptations</li>
+							<li class="spec-item">3.4 Understand growth of pollen tube and fertilisation leads to seed and fruit formation</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate conditions needed for seed germination</li>
+							<li class="spec-item">3.6 Understand how germinating seeds utilise food reserves</li>
+							<li class="spec-item">3.7 Understand plants can reproduce asexually by:
+								<ul class="bullet-list">
+									<li>Natural methods (e.g., runners)</li>
+									<li>Artificial methods (e.g., cuttings)</li>
+								</ul>
+							</li>
+						</ul>
+						<p class="inline-label">Humans</p>
+						<ul class="spec-list">
+							<li class="spec-item">3.8 Understand structure of male and female reproductive systems</li>
+							<li class="spec-item">3.9 Understand roles of oestrogen and progesterone in menstrual cycle</li>
+							<li class="spec-item">3.11 Describe role of placenta in nutrition of developing embryo</li>
+							<li class="spec-item">3.12 Understand how developing embryo is protected by amniotic fluid</li>
+							<li class="spec-item">3.13 Understand roles of oestrogen and testosterone in development of secondary sexual characteristics</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Inheritance</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.14 Understand:
+								<ul class="bullet-list">
+									<li>Genome is entire DNA of organism</li>
+									<li>Gene is section of DNA molecule coding for specific protein</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.15 Understand nucleus contains chromosomes on which genes are located</li>
+							<li class="spec-item">3.19 Understand genes exist in alternative forms called alleles</li>
+							<li class="spec-item">3.20 Understand the terms:
+								<ul class="bullet-list">
+									<li>Dominant</li>
+									<li>Recessive</li>
+									<li>Homozygous</li>
+									<li>Heterozygous</li>
+									<li>Phenotype</li>
+									<li>Genotype</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.22 Understand most phenotypic features result from polygenic inheritance</li>
+							<li class="spec-item">3.23 Describe patterns of monohybrid inheritance using genetic diagrams</li>
+							<li class="spec-item">3.24 Understand how to interpret family pedigrees</li>
+							<li class="spec-item">3.25 Predict probabilities of outcomes from monohybrid crosses</li>
+							<li class="spec-item">3.26 Understand sex is controlled by one pair of chromosomes:
+								<ul class="bullet-list">
+									<li>XX in females</li>
+									<li>XY in males</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.27 Describe determination of sex of offspring at fertilisation using genetic diagram</li>
+							<li class="spec-item">3.28 Understand division of diploid cell by mitosis produces two identical cells</li>
+							<li class="spec-item">3.29 Understand mitosis occurs during:
+								<ul class="bullet-list">
+									<li>Growth</li>
+									<li>Repair</li>
+									<li>Cloning</li>
+									<li>Asexual reproduction</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.30 Understand division by meiosis produces four cells with half the chromosomes (haploid gametes)</li>
+							<li class="spec-item">3.31 Understand how random fertilisation produces genetic variation</li>
+							<li class="spec-item">3.32 Know in human cells:
+								<ul class="bullet-list">
+									<li>Diploid number = 46</li>
+									<li>Haploid number = 23</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.33 Understand variation within species can be:
+								<ul class="bullet-list">
+									<li>Genetic</li>
+									<li>Environmental</li>
+									<li>Combination of both</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.34 Understand mutation is rare, random change in genetic material that can be inherited</li>
+							<li class="spec-item">3.38 Explain Darwin's theory of evolution by natural selection</li>
+							<li class="spec-item">3.39 Understand how resistance to antibiotics can increase in bacterial populations</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="biology-topic-4" class="topic-title">Topic 4: Ecology and the Environment</h3>
+						<h4 class="subtopic-title">(a) The Organism in the Environment</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.1 Understand the terms:
+								<ul class="bullet-list">
+									<li>Population</li>
+									<li>Community</li>
+									<li>Habitat</li>
+									<li>Ecosystem</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate population size in two different areas using quadrats</li>
+							<li class="spec-item">4.5 Understand how abiotic and biotic factors affect population size and distribution</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Feeding Relationships</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.6 Understand names given to trophic levels:
+								<ul class="bullet-list">
+									<li>Producers</li>
+									<li>Primary consumers</li>
+									<li>Secondary consumers</li>
+									<li>Tertiary consumers</li>
+									<li>Decomposers</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.7 Understand concepts of:
+								<ul class="bullet-list">
+									<li>Food chains</li>
+									<li>Food webs</li>
+									<li>Pyramids of number</li>
+									<li>Pyramids of biomass</li>
+									<li>Pyramids of energy transfer</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.8 Understand transfer of substances and energy along food chain</li>
+							<li class="spec-item">4.9 Understand why only about 10% of energy is transferred from one trophic level to next</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Cycles Within Ecosystems</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.10 Describe stages in carbon cycle:
+								<ul class="bullet-list">
+									<li>Respiration</li>
+									<li>Photosynthesis</li>
+									<li>Decomposition</li>
+									<li>Combustion</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(d) Human Influences on the Environment</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.12 Understand biological consequences of air pollution by:
+								<ul class="bullet-list">
+									<li>Sulfur dioxide</li>
+									<li>Carbon monoxide</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.13 Understand greenhouse gases:
+								<ul class="bullet-list">
+									<li>Water vapour</li>
+									<li>Carbon dioxide</li>
+									<li>Nitrous oxide</li>
+									<li>Methane</li>
+									<li>CFCs</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.14 Understand how human activities contribute to greenhouse gases</li>
+							<li class="spec-item">4.15 Understand how increase in greenhouse gases results in enhanced greenhouse effect and global warming</li>
+							<li class="spec-item">4.16 Understand biological consequences of water pollution by sewage</li>
+							<li class="spec-item">4.17 Understand biological consequences of eutrophication caused by leached minerals from fertiliser</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="biology-topic-5" class="topic-title">Topic 5: Use of Biological Resources</h3>
+						<h4 class="subtopic-title">(a) Food Production</h4>
+						<p class="inline-label">Crop Plants</p>
+						<ul class="spec-list">
+							<li class="spec-item">5.1 Describe how glasshouses and polythene tunnels increase crop yield</li>
+							<li class="spec-item">5.2 Understand effects on crop yield of:
+								<ul class="bullet-list">
+									<li>Increased carbon dioxide in glasshouses</li>
+									<li>Increased temperature in glasshouses</li>
+								</ul>
+							</li>
+							<li class="spec-item">5.3 Understand how use of fertiliser can increase crop yield</li>
+							<li class="spec-item">5.4 Understand reasons for pest control and advantages/disadvantages of:
+								<ul class="bullet-list">
+									<li>Pesticides</li>
+									<li>Biological control</li>
+								</ul>
+							</li>
+						</ul>
+						<p class="inline-label">Micro-organisms</p>
+						<ul class="spec-list">
+							<li class="spec-item">5.5 Understand role of yeast in food production (e.g., bread)</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate role of anaerobic respiration by yeast in different conditions</li>
+							<li class="spec-item">5.7 Understand role of bacteria (Lactobacillus) in yoghurt production</li>
+							<li class="spec-item">5.8 Understand use of industrial fermenter and need for suitable conditions:
+								<ul class="bullet-list">
+									<li>Aseptic precautions</li>
+									<li>Nutrients</li>
+									<li>Optimum temperature and pH</li>
+									<li>Oxygenation</li>
+									<li>Agitation</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Selective Breeding</h4>
+						<ul class="spec-list">
+							<li class="spec-item">5.10 Understand how selective breeding can develop plants with desired characteristics</li>
+							<li class="spec-item">5.11 Understand how selective breeding can develop animals with desired characteristics</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Genetic Modification</h4>
+						<ul class="spec-list">
+							<li class="spec-item">5.12 Understand how restriction enzymes cut DNA and ligase enzymes join DNA</li>
+							<li class="spec-item">5.13 Understand how plasmids and viruses act as vectors</li>
+							<li class="spec-item">5.14 Understand how large amounts of human insulin can be manufactured from genetically modified bacteria</li>
+							<li class="spec-item">5.15 Understand how genetically modified plants improve food production</li>
+							<li class="spec-item">5.16 Understand term 'transgenic' means transfer of genetic material from one species to different species</li>
+						</ul>
+					</article>
+				</div>
+			</div>
+		</section>
+
+		<section id="chemistry" class="subject-section">
+			<div class="subject-header chemistry">
+				<span>Chemistry</span>
+				<nav class="subject-toc">
+					<a href="#chemistry-topic-1">Topic 1</a>
+					<a href="#chemistry-topic-2">Topic 2</a>
+					<a href="#chemistry-topic-3">Topic 3</a>
+					<a href="#chemistry-topic-4">Topic 4</a>
+				</nav>
+			</div>
+			<div class="subject-content">
+				<div class="topic-grid">
+					<article class="topic-card">
+						<h3 id="chemistry-topic-1" class="topic-title">Topic 1: Principles of Chemistry</h3>
+						<h4 class="subtopic-title">(a) States of Matter</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.1 Understand three states of matter in terms of:
+								<ul class="bullet-list">
+									<li>Arrangement of particles</li>
+									<li>Movement of particles</li>
+									<li>Energy of particles</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.2 Understand interconversions between states:
+								<ul class="bullet-list">
+									<li>Names of interconversions</li>
+									<li>How they are achieved</li>
+									<li>Changes in arrangement, movement and energy of particles</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.3 Understand how experiments involving dilution of coloured solutions and diffusion of gases can be explained</li>
+							<li class="spec-item">1.4 Know what is meant by the terms:
+								<ul class="bullet-list">
+									<li>Solvent</li>
+									<li>Solute</li>
+									<li>Solution</li>
+									<li>Saturated solution</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Elements, Compounds and Mixtures</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.8 Understand how to classify a substance as:
+								<ul class="bullet-list">
+									<li>Element</li>
+									<li>Compound</li>
+									<li>Mixture</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.9 Understand pure substance has fixed melting and boiling point, but mixture may melt/boil over range</li>
+							<li class="spec-item">1.10 Describe experimental techniques for separation:
+								<ul class="bullet-list">
+									<li>Simple distillation</li>
+									<li>Fractional distillation</li>
+									<li>Filtration</li>
+									<li>Crystallisation</li>
+									<li>Paper chromatography</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.11 Understand how chromatogram provides information about composition of mixture</li>
+							<li class="spec-item">1.12 Understand how to use Rf values to identify components of mixture</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate paper chromatography using inks/food colourings</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Atomic Structure</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.14 Know what is meant by:
+								<ul class="bullet-list">
+									<li>Atom</li>
+									<li>Molecule</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.15 Know structure of atom in terms of:
+								<ul class="bullet-list">
+									<li>Positions of sub-atomic particles</li>
+									<li>Relative masses of sub-atomic particles</li>
+									<li>Relative charges of sub-atomic particles</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.16 Know what is meant by:
+								<ul class="bullet-list">
+									<li>Atomic number</li>
+									<li>Mass number</li>
+									<li>Isotopes</li>
+									<li>Relative atomic mass (Ar)</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.17 Calculate relative atomic mass from isotopic abundances</li>
+						</ul>
+						<h4 class="subtopic-title">(d) The Periodic Table</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.18 Understand how elements are arranged in Periodic Table:
+								<ul class="bullet-list">
+									<li>In order of atomic number</li>
+									<li>In groups and periods</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.19 Understand how to deduce electronic configurations of first 20 elements</li>
+							<li class="spec-item">1.20 Understand how to use electrical conductivity and acid-base character of oxides to classify elements</li>
+							<li class="spec-item">1.21 Identify element as metal or non-metal from position in Periodic Table</li>
+							<li class="spec-item">1.22 Understand how electronic configuration of main group element relates to position</li>
+							<li class="spec-item">1.23 Understand why elements in same group have similar chemical properties</li>
+							<li class="spec-item">1.24 Understand why noble gases (Group 0) do not readily react</li>
+						</ul>
+						<h4 class="subtopic-title">(e) Chemical Formulae, Equations and Calculations</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.25 Write word equations and balanced chemical equations (including state symbols)</li>
+							<li class="spec-item">1.26 Calculate relative formula masses (Mr) from relative atomic masses (Ar)</li>
+							<li class="spec-item">1.27 Know mole (mol) is unit for amount of substance</li>
+							<li class="spec-item">1.28 Understand how to carry out calculations involving:
+								<ul class="bullet-list">
+									<li>Amount of substance</li>
+									<li>Relative atomic mass (Ar)</li>
+									<li>Relative formula mass (Mr)</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.29 Calculate reacting masses using experimental data and chemical equations</li>
+							<li class="spec-item">1.30 Calculate percentage yield</li>
+							<li class="spec-item">1.31 Understand how formulae of simple compounds can be obtained experimentally</li>
+							<li class="spec-item">1.32 Know what is meant by:
+								<ul class="bullet-list">
+									<li>Empirical formula</li>
+									<li>Molecular formula</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.33 Calculate empirical and molecular formulae from experimental data</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Determine formula of metal oxide by combustion or reduction</li>
+						</ul>
+						<h4 class="subtopic-title">(f) Ionic Bonding</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.37 Understand how ions are formed by electron loss or gain</li>
+							<li class="spec-item">1.38 Know charges of these ions:
+								<ul class="bullet-list">
+									<li>Metals in Groups 1, 2 and 3</li>
+									<li>Non-metals in Groups 5, 6 and 7</li>
+									<li>Common ions: Ag+, Cu2+, Fe2+, Fe3+, Pb2+, Zn2+</li>
+									<li>H+, OH–, NH4+, CO32–, NO3–, SO42–</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.39 Write formulae for compounds formed between listed ions</li>
+							<li class="spec-item">1.40 Draw dot-and-cross diagrams for ionic compounds (outer electrons only)</li>
+							<li class="spec-item">1.41 Understand ionic bonding in terms of electrostatic attractions</li>
+							<li class="spec-item">1.42 Understand why compounds with giant ionic lattices have high melting and boiling points</li>
+							<li class="spec-item">1.43 Know ionic compounds:
+								<ul class="bullet-list">
+									<li>Do not conduct electricity when solid</li>
+									<li>Do conduct electricity when molten and in aqueous solution</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(g) Covalent Bonding</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.44 Know covalent bond is formed by sharing pair of electrons</li>
+							<li class="spec-item">1.45 Understand covalent bonds in terms of electrostatic attractions</li>
+							<li class="spec-item">1.46 Understand how to use dot-and-cross diagrams for:
+								<ul class="bullet-list">
+									<li>Diatomic molecules (H2, O2, N2, halogens, hydrogen halides)</li>
+									<li>Inorganic molecules (water, ammonia, carbon dioxide)</li>
+									<li>Organic molecules with up to 2 carbons</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.47 Explain why substances with simple molecular structures have low melting/boiling points</li>
+							<li class="spec-item">1.48 Explain why melting/boiling points of simple molecular substances increase with relative molecular mass</li>
+							<li class="spec-item">1.49 Explain why substances with giant covalent structures have high melting/boiling points</li>
+							<li class="spec-item">1.50 Explain how structures of diamond, graphite and C60 influence properties</li>
+							<li class="spec-item">1.51 Know covalent compounds do not usually conduct electricity</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="chemistry-topic-2" class="topic-title">Topic 2: Inorganic Chemistry</h3>
+						<h4 class="subtopic-title">(a) Group 1 (Alkali Metals)</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.1 Understand how similarities in reactions with water provide evidence for family of elements</li>
+							<li class="spec-item">2.2 Understand how differences in reactions with air and water provide evidence for trend in reactivity</li>
+							<li class="spec-item">2.3 Use knowledge of trends to predict properties of other alkali metals</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Group 7 (Halogens)</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.5 Know colours, physical states and trends in physical properties</li>
+							<li class="spec-item">2.6 Use knowledge of trends to predict properties of other halogens</li>
+							<li class="spec-item">2.7 Understand how displacement reactions provide evidence for trend in reactivity</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Gases in the Atmosphere</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.9 Know approximate percentages by volume of four most abundant gases in dry air</li>
+							<li class="spec-item">2.10 Understand how to determine percentage by volume of oxygen in air</li>
+							<li class="spec-item">2.11 Describe combustion of elements in oxygen:
+								<ul class="bullet-list">
+									<li>Magnesium</li>
+									<li>Hydrogen</li>
+									<li>Sulfur</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.12 Describe formation of carbon dioxide from thermal decomposition of metal carbonates</li>
+							<li class="spec-item">2.13 Know carbon dioxide is greenhouse gas contributing to climate change</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Determine approximate percentage by volume of oxygen in air</li>
+						</ul>
+						<h4 class="subtopic-title">(d) Reactivity Series</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.15 Understand how metals can be arranged in reactivity series based on reactions with:
+								<ul class="bullet-list">
+									<li>Water</li>
+									<li>Dilute hydrochloric or sulfuric acid</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.16 Understand arrangement based on displacement reactions between:
+								<ul class="bullet-list">
+									<li>Metals and metal oxides</li>
+									<li>Metals and aqueous solutions of metal salts</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.17 Know order of reactivity: K, Na, Li, Ca, Mg, Al, Zn, Fe, Cu, Ag, Au</li>
+							<li class="spec-item">2.18 Know conditions under which iron rusts</li>
+							<li class="spec-item">2.19 Understand how rusting may be prevented by:
+								<ul class="bullet-list">
+									<li>Barrier methods</li>
+									<li>Galvanising</li>
+									<li>Sacrificial protection</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.20 Understand the terms:
+								<ul class="bullet-list">
+									<li>Oxidation</li>
+									<li>Reduction</li>
+									<li>Redox</li>
+									<li>Oxidising agent</li>
+									<li>Reducing agent (in terms of gain/loss of oxygen and electrons)</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate reactions between dilute acids and metals</li>
+						</ul>
+						<h4 class="subtopic-title">(e) Acids, Alkalis and Titrations</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.28 Describe use of indicators:
+								<ul class="bullet-list">
+									<li>Litmus</li>
+									<li>Phenolphthalein</li>
+									<li>Methyl orange</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.29 Understand how to use pH scale (0-14):
+								<ul class="bullet-list">
+									<li>Strongly acidic (0-3)</li>
+									<li>Weakly acidic (4-6)</li>
+									<li>Neutral (7)</li>
+									<li>Weakly alkaline (8-10)</li>
+									<li>Strongly alkaline (11-14)</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.30 Describe use of universal indicator to measure approximate pH</li>
+							<li class="spec-item">2.31 Know acids are source of H+ ions and alkalis are source of OH– ions</li>
+							<li class="spec-item">2.32 Know alkalis can neutralise acids</li>
+						</ul>
+						<h4 class="subtopic-title">(f) Acids, Bases and Salt Preparations</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.34 Know general rules for predicting solubility of ionic compounds in water</li>
+							<li class="spec-item">2.35 Understand acids and bases in terms of proton transfer</li>
+							<li class="spec-item">2.36 Understand acid is proton donor and base is proton acceptor</li>
+							<li class="spec-item">2.37 Describe reactions of acids with metals, bases and carbonates to form salts</li>
+							<li class="spec-item">2.38 Know metal oxides, metal hydroxides and ammonia can act as bases</li>
+							<li class="spec-item">2.39 Describe experiment to prepare pure, dry sample of soluble salt from insoluble reactant</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Prepare sample of pure, dry hydrated copper(II) sulfate crystals</li>
+						</ul>
+						<h4 class="subtopic-title">(g) Chemical Tests</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.44 Describe tests for gases:
+								<ul class="bullet-list">
+									<li>Hydrogen</li>
+									<li>Oxygen</li>
+									<li>Carbon dioxide</li>
+									<li>Ammonia</li>
+									<li>Chlorine</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.45 Describe how to carry out flame test</li>
+							<li class="spec-item">2.46 Know colours formed in flame tests:
+								<ul class="bullet-list">
+									<li>Li+ = red</li>
+									<li>Na+ = yellow</li>
+									<li>K+ = lilac</li>
+									<li>Ca2+ = orange-red</li>
+									<li>Cu2+ = blue-green</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.47 Describe tests for cations:
+								<ul class="bullet-list">
+									<li>NH4+ using sodium hydroxide solution</li>
+									<li>Cu2+, Fe2+, Fe3+ using sodium hydroxide solution</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.48 Describe tests for anions:
+								<ul class="bullet-list">
+									<li>Cl–, Br–, I– using acidified silver nitrate</li>
+									<li>SO42– using acidified barium chloride</li>
+									<li>CO32– using hydrochloric acid</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.49 Describe test for water using anhydrous copper(II) sulfate</li>
+							<li class="spec-item">2.50 Describe physical test to show whether water is pure</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="chemistry-topic-3" class="topic-title">Topic 3: Physical Chemistry</h3>
+						<h4 class="subtopic-title">(a) Energetics</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.1 Know chemical reactions can be:
+								<ul class="bullet-list">
+									<li>Exothermic (heat energy given out)</li>
+									<li>Endothermic (heat energy taken in)</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.2 Describe simple calorimetry experiments for:
+								<ul class="bullet-list">
+									<li>Combustion</li>
+									<li>Displacement</li>
+									<li>Dissolving</li>
+									<li>Neutralisation</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.3 Calculate heat energy change using Q = mcΔT</li>
+							<li class="spec-item">3.4 Calculate molar enthalpy change (ΔH) from heat energy change Q</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate temperature changes for:
+								<ul class="bullet-list">
+									<li>Salts dissolving in water</li>
+									<li>Neutralisation reactions</li>
+									<li>Displacement reactions</li>
+									<li>Combustion reactions</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Rates of Reaction</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.9 Describe experiments to investigate effects on rate of:
+								<ul class="bullet-list">
+									<li>Surface area of solid</li>
+									<li>Concentration of solution</li>
+									<li>Temperature</li>
+									<li>Use of catalyst</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.10 Describe effects of changes in these factors on rate</li>
+							<li class="spec-item">3.11 Explain effects using particle collision theory</li>
+							<li class="spec-item">3.12 Know catalyst increases rate but is chemically unchanged</li>
+							<li class="spec-item">3.13 Know catalyst works by providing alternative pathway with lower activation energy</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate effect of:
+								<ul class="bullet-list">
+									<li>Surface area of marble chips</li>
+									<li>Concentration of hydrochloric acid on rate of reaction</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate effect of different solids on catalytic decomposition of hydrogen peroxide</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Reversible Reactions and Equilibria</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.17 Know some reactions are reversible (indicated by ⇌)</li>
+							<li class="spec-item">3.18 Describe reversible reactions:
+								<ul class="bullet-list">
+									<li>Dehydration of hydrated copper(II) sulfate</li>
+									<li>Effect of heat on ammonium chloride</li>
+								</ul>
+							</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="chemistry-topic-4" class="topic-title">Topic 4: Organic Chemistry</h3>
+						<h4 class="subtopic-title">(a) Introduction</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.1 Know hydrocarbon is compound of hydrogen and carbon only</li>
+							<li class="spec-item">4.2 Understand how to represent organic molecules using:
+								<ul class="bullet-list">
+									<li>Empirical formulae</li>
+									<li>Molecular formulae</li>
+									<li>General formulae</li>
+									<li>Structural formulae</li>
+									<li>Displayed formulae</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.3 Know what is meant by:
+								<ul class="bullet-list">
+									<li>Homologous series</li>
+									<li>Functional group</li>
+									<li>Isomerism</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.4 Understand how to name compounds using IUPAC nomenclature (up to 6 carbons)</li>
+							<li class="spec-item">4.5 Understand how to write possible structural and displayed formulae from molecular formula</li>
+							<li class="spec-item">4.6 Understand how to classify reactions as:
+								<ul class="bullet-list">
+									<li>Substitution</li>
+									<li>Addition</li>
+									<li>Combustion</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Crude Oil</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.7 Know crude oil is mixture of hydrocarbons</li>
+							<li class="spec-item">4.8 Describe industrial process of fractional distillation</li>
+							<li class="spec-item">4.9 Know names and uses of main fractions:
+								<ul class="bullet-list">
+									<li>Refinery gases</li>
+									<li>Gasoline</li>
+									<li>Kerosene</li>
+									<li>Diesel</li>
+									<li>Fuel oil</li>
+									<li>Bitumen</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.10 Know trend in colour, boiling point and viscosity of fractions</li>
+							<li class="spec-item">4.11 Know fuel releases heat energy when burned</li>
+							<li class="spec-item">4.12 Know possible products of complete and incomplete combustion</li>
+							<li class="spec-item">4.13 Understand why carbon monoxide is poisonous (effect on blood oxygen transport)</li>
+							<li class="spec-item">4.14 Know nitrogen and oxygen from air react at high temperatures forming oxides of nitrogen</li>
+							<li class="spec-item">4.15 Explain how combustion of impurities results in sulfur dioxide formation</li>
+							<li class="spec-item">4.16 Understand how sulfur dioxide and nitrogen oxides contribute to acid rain</li>
+							<li class="spec-item">4.17 Describe how long-chain alkanes are converted to alkenes and shorter-chain alkanes by cracking</li>
+							<li class="spec-item">4.18 Explain why cracking is necessary (balance between supply and demand)</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Alkanes</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.19 Know general formula for alkanes</li>
+							<li class="spec-item">4.20 Explain why alkanes are classified as saturated hydrocarbons</li>
+							<li class="spec-item">4.21 Understand how to draw structural and displayed formulae for alkanes (up to 5 carbons)</li>
+							<li class="spec-item">4.22 Describe reactions of alkanes with halogens in UV radiation (mono-substitution)</li>
+						</ul>
+						<h4 class="subtopic-title">(d) Alkenes</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.23 Know alkenes contain >C=C< functional group</li>
+							<li class="spec-item">4.24 Know general formula for alkenes</li>
+							<li class="spec-item">4.25 Explain why alkenes are classified as unsaturated hydrocarbons</li>
+							<li class="spec-item">4.26 Understand how to draw formulae for alkenes (up to 4 carbons)</li>
+							<li class="spec-item">4.27 Describe reactions of alkenes with bromine to produce dibromoalkanes</li>
+							<li class="spec-item">4.28 Describe how bromine water distinguishes between alkane and alkene</li>
+						</ul>
+						<h4 class="subtopic-title">(e) Synthetic Polymers</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.44 Know addition polymer is formed by joining monomers</li>
+							<li class="spec-item">4.45 Understand how to draw repeat unit of addition polymers</li>
+							<li class="spec-item">4.46 Understand how to deduce monomer from repeat unit and vice versa</li>
+							<li class="spec-item">4.47 Explain problems in disposal of addition polymers:
+								<ul class="bullet-list">
+									<li>Inertness and inability to biodegrade</li>
+									<li>Production of toxic gases when burned</li>
+								</ul>
+							</li>
+						</ul>
+					</article>
+				</div>
+			</div>
+		</section>
+
+		<section id="physics" class="subject-section">
+			<div class="subject-header physics">
+				<span>Physics</span>
+				<nav class="subject-toc">
+					<a href="#physics-topic-1">Topic 1</a>
+					<a href="#physics-topic-2">Topic 2</a>
+					<a href="#physics-topic-3">Topic 3</a>
+					<a href="#physics-topic-4">Topic 4</a>
+					<a href="#physics-topic-5">Topic 5</a>
+					<a href="#physics-topic-6">Topic 6</a>
+					<a href="#physics-topic-7">Topic 7</a>
+					<a href="#physics-topic-8">Topic 8</a>
+				</nav>
+			</div>
+			<div class="subject-content">
+				<div class="topic-grid">
+					<article class="topic-card">
+						<h3 id="physics-topic-1" class="topic-title">Topic 1: Forces and Motion</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.1 Use the following units:
+								<ul class="bullet-list">
+									<li>kilogram (kg)</li>
+									<li>metre (m)</li>
+									<li>metre/second (m/s)</li>
+									<li>metre/second² (m/s²)</li>
+									<li>newton (N)</li>
+									<li>second (s)</li>
+									<li>newton/kilogram (N/kg)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Movement and Position</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.3 Plot and explain distance-time graphs</li>
+							<li class="spec-item">1.4 Know and use relationship: average speed = distance moved / time taken</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate motion of everyday objects</li>
+							<li class="spec-item">1.6 Know and use relationship: acceleration = change in velocity / time taken a = (v − u) / t</li>
+							<li class="spec-item">1.7 Plot and explain velocity-time graphs</li>
+							<li class="spec-item">1.8 Determine acceleration from gradient of velocity-time graph</li>
+							<li class="spec-item">1.9 Determine distance travelled from area between velocity-time graph and time axis</li>
+							<li class="spec-item">1.10 Use relationship: v² = u² + (2 × a × s)</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Forces, Movement, Shape and Momentum</h4>
+						<ul class="spec-list">
+							<li class="spec-item">1.11 Describe effects of forces:
+								<ul class="bullet-list">
+									<li>Changes in speed</li>
+									<li>Changes in shape</li>
+									<li>Changes in direction</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.12 Identify different types of force:
+								<ul class="bullet-list">
+									<li>Gravitational</li>
+									<li>Electrostatic</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.13 Understand how vector quantities differ from scalar quantities</li>
+							<li class="spec-item">1.14 Understand force is vector quantity</li>
+							<li class="spec-item">1.15 Calculate resultant force of forces along a line</li>
+							<li class="spec-item">1.16 Know friction is force that opposes motion</li>
+							<li class="spec-item">1.17 Know and use relationship: force = mass × acceleration F = m × a</li>
+							<li class="spec-item">1.18 Know and use relationship: weight = mass × gravitational field strength W = m × g</li>
+							<li class="spec-item">1.19 Know stopping distance = thinking distance + braking distance</li>
+							<li class="spec-item">1.20 Describe factors affecting vehicle stopping distance:
+								<ul class="bullet-list">
+									<li>Speed</li>
+									<li>Mass</li>
+									<li>Road condition</li>
+									<li>Reaction time</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.21 Describe forces on falling objects and explain terminal velocity</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate how extension varies with applied force for:
+								<ul class="bullet-list">
+									<li>Helical springs</li>
+									<li>Metal wires</li>
+									<li>Rubber bands</li>
+								</ul>
+							</li>
+							<li class="spec-item">1.23 Know initial linear region of force-extension graph associated with Hooke's law</li>
+							<li class="spec-item">1.24 Describe elastic behaviour as ability to recover original shape</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-2" class="topic-title">Topic 2: Electricity</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.1 Use the following units:
+								<ul class="bullet-list">
+									<li>ampere (A)</li>
+									<li>coulomb (C)</li>
+									<li>joule (J)</li>
+									<li>ohm (Ω)</li>
+									<li>second (s)</li>
+									<li>volt (V)</li>
+									<li>watt (W)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Mains Electricity</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.2 Understand how these protect device/user:
+								<ul class="bullet-list">
+									<li>Insulation</li>
+									<li>Double insulation</li>
+									<li>Earthing</li>
+									<li>Fuses</li>
+									<li>Circuit breakers</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.3 Understand why current in resistor results in:
+								<ul class="bullet-list">
+									<li>Electrical transfer of energy</li>
+									<li>Increase in temperature</li>
+									<li>Uses in domestic contexts</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.4 Know and use relationship: power = current × voltage P = I × V</li>
+							<li class="spec-item">2.5 Use relationship: energy transferred = current × voltage × time E = I × V × t</li>
+							<li class="spec-item">2.6 Know difference between:
+								<ul class="bullet-list">
+									<li>AC (mains electricity)</li>
+									<li>DC (cell/battery)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Energy and Voltage in Circuits</h4>
+						<ul class="spec-list">
+							<li class="spec-item">2.7 Explain why series or parallel circuit more appropriate for applications</li>
+							<li class="spec-item">2.8 Understand how current in series circuit depends on voltage and components</li>
+							<li class="spec-item">2.9 Describe how current varies with voltage in:
+								<ul class="bullet-list">
+									<li>Wires</li>
+									<li>Resistors</li>
+									<li>Metal filament lamps</li>
+									<li>Diodes</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.10 Describe qualitative effect of changing resistance on current</li>
+							<li class="spec-item">2.11 Describe qualitative variation of resistance of:
+								<ul class="bullet-list">
+									<li>LDRs with illumination</li>
+									<li>Thermistors with temperature</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.12 Know lamps and LEDs can indicate presence of current</li>
+							<li class="spec-item">2.13 Know and use relationship: voltage = current × resistance V = I × R</li>
+							<li class="spec-item">2.14 Know current is rate of flow of charge</li>
+							<li class="spec-item">2.15 Know and use relationship: charge = current × time Q = I × t</li>
+							<li class="spec-item">2.16 Know electric current in solid metallic conductors is flow of negatively charged electrons</li>
+							<li class="spec-item">2.17 Understand why current is conserved at junction</li>
+							<li class="spec-item">2.18 Know voltage across components in parallel is same</li>
+							<li class="spec-item">2.19 Calculate currents, voltages and resistances of two resistive components in series</li>
+							<li class="spec-item">2.20 Know:
+								<ul class="bullet-list">
+									<li>Voltage is energy transferred per unit charge</li>
+									<li>Volt is joule per coulomb</li>
+								</ul>
+							</li>
+							<li class="spec-item">2.21 Know and use relationship: energy transferred = charge × voltage E = Q × V</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-3" class="topic-title">Topic 3: Waves</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.1 Use the following units:
+								<ul class="bullet-list">
+									<li>degree (°)</li>
+									<li>hertz (Hz)</li>
+									<li>metre (m)</li>
+									<li>metre/second (m/s)</li>
+									<li>second (s)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Properties of Waves</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.2 Explain difference between longitudinal and transverse waves</li>
+							<li class="spec-item">3.3 Know definitions of:
+								<ul class="bullet-list">
+									<li>Amplitude</li>
+									<li>Wavefront</li>
+									<li>Frequency</li>
+									<li>Wavelength</li>
+									<li>Period</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.4 Know waves transfer energy and information without transferring matter</li>
+							<li class="spec-item">3.5 Know and use relationship: wave speed = frequency × wavelength v = f × λ</li>
+							<li class="spec-item">3.6 Use relationship: frequency = 1 / time period f = 1 / T</li>
+							<li class="spec-item">3.7 Use relationships for sound and electromagnetic waves</li>
+							<li class="spec-item">3.8 Explain Doppler effect</li>
+							<li class="spec-item">3.9 Explain all waves can be reflected and refracted</li>
+						</ul>
+						<h4 class="subtopic-title">(c) The Electromagnetic Spectrum</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.10 Know light is part of continuous electromagnetic spectrum:
+								<ul class="bullet-list">
+									<li>Radio</li>
+									<li>Microwave</li>
+									<li>Infrared</li>
+									<li>Visible</li>
+									<li>Ultraviolet</li>
+									<li>X-ray</li>
+									<li>Gamma ray All travel at same speed in free space</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.11 Know order in terms of:
+								<ul class="bullet-list">
+									<li>Decreasing wavelength</li>
+									<li>Increasing frequency</li>
+									<li>Including colours of visible spectrum</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.12 Explain uses of electromagnetic radiations:
+								<ul class="bullet-list">
+									<li>Radio waves: broadcasting and communications</li>
+									<li>Microwaves: cooking and satellite transmissions</li>
+									<li>Infrared: heaters and night vision equipment</li>
+									<li>Visible light: optical fibres and photography</li>
+									<li>Ultraviolet: fluorescent lamps</li>
+									<li>X-rays: medical applications</li>
+									<li>Gamma rays: sterilising food and medical equipment</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.13 Explain detrimental effects of excessive exposure:
+								<ul class="bullet-list">
+									<li>Microwaves: internal heating of body tissue</li>
+									<li>Infrared: skin burns</li>
+									<li>Ultraviolet: damage to surface cells and blindness</li>
+									<li>Gamma rays: cancer, mutation Describe simple protective measures</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(d) Light and Sound</h4>
+						<ul class="spec-list">
+							<li class="spec-item">3.14 Know light waves are transverse and can be reflected and refracted</li>
+							<li class="spec-item">3.15 Use law of reflection (angle of incidence = angle of reflection)</li>
+							<li class="spec-item">3.16 Draw ray diagrams for reflection and refraction</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate refraction using:
+								<ul class="bullet-list">
+									<li>Rectangular blocks</li>
+									<li>Semi-circular blocks</li>
+									<li>Triangular prisms</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.18 Know and use relationship: n = sin i / sin r</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate refractive index of glass</li>
+							<li class="spec-item">3.20 Describe role of total internal reflection in:
+								<ul class="bullet-list">
+									<li>Optical fibres</li>
+									<li>Prisms</li>
+								</ul>
+							</li>
+							<li class="spec-item">3.21 Explain meaning of critical angle c</li>
+							<li class="spec-item">3.22 Know and use relationship: n = 1 / sin c</li>
+							<li class="spec-item">3.23 Know sound waves are longitudinal waves which can be reflected and refracted</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-4" class="topic-title">Topic 4: Energy Resources and Energy Transfers</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.1 Use the following units:
+								<ul class="bullet-list">
+									<li>kilogram (kg)</li>
+									<li>joule (J)</li>
+									<li>metre (m)</li>
+									<li>metre/second (m/s)</li>
+									<li>metre/second² (m/s²)</li>
+									<li>newton (N)</li>
+									<li>second (s)</li>
+									<li>watt (W)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Energy Transfers</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.2 Describe energy transfers involving:</li>
+						</ul>
+						<p class="inline-label">Energy stores:</p>
+						<ul class="bullet-list">
+							<li>Chemical</li>
+							<li>Kinetic</li>
+							<li>Gravitational</li>
+							<li>Elastic</li>
+							<li>Thermal</li>
+							<li>Magnetic</li>
+							<li>Electrostatic</li>
+							<li>Nuclear</li>
+						</ul>
+						<p class="inline-label">Energy transfers:</p>
+						<ul class="bullet-list">
+							<li>Mechanically</li>
+							<li>Electrically</li>
+							<li>By heating</li>
+							<li>By radiation (light and sound)</li>
+						</ul>
+						<ul class="spec-list">
+							<li class="spec-item">4.3 Use principle of conservation of energy</li>
+							<li class="spec-item">4.4 Know and use relationship: efficiency = (useful energy output / total energy output) × 100%</li>
+							<li class="spec-item">4.5 Describe variety of devices and situations using Sankey diagrams</li>
+							<li class="spec-item">4.6 Describe how thermal energy transfer may take place by:
+								<ul class="bullet-list">
+									<li>Conduction</li>
+									<li>Convection</li>
+									<li>Radiation</li>
+								</ul>
+							</li>
+							<li class="spec-item">4.7 Explain role of convection in everyday phenomena</li>
+							<li class="spec-item">4.8 Explain how emission and absorption of radiation related to surface and temperature</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate thermal energy transfer by conduction, convection and radiation</li>
+							<li class="spec-item">4.10 Explain ways of reducing unwanted energy transfer</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Work and Power</h4>
+						<ul class="spec-list">
+							<li class="spec-item">4.11 Know and use relationship: work done = force × distance moved W = F × d</li>
+							<li class="spec-item">4.12 Know work done equals energy transferred</li>
+							<li class="spec-item">4.13 Know and use relationship: gravitational potential energy = mass × gravitational field strength × height GPE = m × g × h</li>
+							<li class="spec-item">4.14 Know and use relationship: kinetic energy = ½ × mass × speed² KE = ½ × m × v²</li>
+							<li class="spec-item">4.15 Understand conservation of energy links GPE, KE and work</li>
+							<li class="spec-item">4.16 Describe power as rate of transfer of energy or rate of doing work</li>
+							<li class="spec-item">4.17 Use relationship: power = work done / time taken P = W / t</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-5" class="topic-title">Topic 5: Solids, Liquids and Gases</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">5.1 Use the following units:
+								<ul class="bullet-list">
+									<li>degree Celsius (°C)</li>
+									<li>Kelvin (K)</li>
+									<li>joule (J)</li>
+									<li>kilogram (kg)</li>
+									<li>kilogram/metre³ (kg/m³)</li>
+									<li>metre (m)</li>
+									<li>metre² (m²)</li>
+									<li>metre³ (m³)</li>
+									<li>metre/second (m/s)</li>
+									<li>metre/second² (m/s²)</li>
+									<li>newton (N)</li>
+									<li>pascal (Pa)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Density and Pressure</h4>
+						<ul class="spec-list">
+							<li class="spec-item">5.3 Know and use relationship: density = mass / volume ρ = m / V</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate density using direct measurements</li>
+							<li class="spec-item">5.5 Know and use relationship: pressure = force / area p = F / A</li>
+							<li class="spec-item">5.6 Understand pressure at point in gas or liquid acts equally in all directions</li>
+							<li class="spec-item">5.7 Know and use relationship: pressure difference = height × density × gravitational field strength p = h × ρ × g</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Ideal Gas Molecules</h4>
+						<ul class="spec-list">
+							<li class="spec-item">5.15 Explain how molecules in gas:
+								<ul class="bullet-list">
+									<li>Have random motion</li>
+									<li>Exert force and pressure on container walls</li>
+								</ul>
+							</li>
+							<li class="spec-item">5.16 Understand why there is absolute zero of temperature (−273°C)</li>
+							<li class="spec-item">5.17 Describe Kelvin scale and convert between Kelvin and Celsius</li>
+							<li class="spec-item">5.18 Understand why increase in temperature increases average speed of gas molecules</li>
+							<li class="spec-item">5.19 Know Kelvin temperature proportional to average kinetic energy of molecules</li>
+							<li class="spec-item">5.20 Explain qualitative relationship between:
+								<ul class="bullet-list">
+									<li>Pressure and volume at constant temperature</li>
+									<li>Pressure and Kelvin temperature at constant volume</li>
+								</ul>
+							</li>
+							<li class="spec-item">5.21 Use relationship: p₁/T₁ = p₂/T₂ (fixed mass of gas at constant volume)</li>
+							<li class="spec-item">5.22 Use relationship: p₁V₁ = p₂V₂ (fixed mass of gas at constant temperature)</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-6" class="topic-title">Topic 6: Magnetism and Electromagnetism</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">6.1 Use the following units:
+								<ul class="bullet-list">
+									<li>ampere (A)</li>
+									<li>volt (V)</li>
+									<li>watt (W)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Magnetism</h4>
+						<ul class="spec-list">
+							<li class="spec-item">6.2 Know magnets:
+								<ul class="bullet-list">
+									<li>Repel and attract other magnets</li>
+									<li>Attract magnetic substances</li>
+								</ul>
+							</li>
+							<li class="spec-item">6.3 Describe properties of magnetically hard and soft materials</li>
+							<li class="spec-item">6.4 Understand term 'magnetic field line'</li>
+							<li class="spec-item">6.5 Know magnetism is induced in some materials in magnetic field</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate magnetic field pattern for:
+								<ul class="bullet-list">
+									<li>Permanent bar magnet</li>
+									<li>Between two bar magnets</li>
+								</ul>
+							</li>
+							<li class="spec-item">6.7 Describe how to use two permanent magnets to produce uniform magnetic field</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Electromagnetism</h4>
+						<ul class="spec-list">
+							<li class="spec-item">6.8 Know electric current in conductor produces magnetic field around it</li>
+							<li class="spec-item">6.12 Understand why force is exerted on current-carrying wire in magnetic field and applications in:
+								<ul class="bullet-list">
+									<li>DC electric motors</li>
+									<li>Loudspeakers</li>
+								</ul>
+							</li>
+							<li class="spec-item">6.13 Use left-hand rule to predict direction of force</li>
+							<li class="spec-item">6.14 Describe how force changes with:
+								<ul class="bullet-list">
+									<li>Magnitude of field</li>
+									<li>Direction of field</li>
+									<li>Magnitude of current</li>
+									<li>Direction of current</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(d) Electromagnetic Induction</h4>
+						<ul class="spec-list">
+							<li class="spec-item">6.15 Know voltage is induced when:
+								<ul class="bullet-list">
+									<li>Conductor/coil moves through magnetic field</li>
+									<li>Magnetic field changes through conductor/coil Describe factors affecting induced voltage</li>
+								</ul>
+							</li>
+							<li class="spec-item">6.16 Describe generation of electricity by:
+								<ul class="bullet-list">
+									<li>Rotation of magnet within coil</li>
+									<li>Rotation of coil within magnetic field Describe factors affecting induced voltage</li>
+								</ul>
+							</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-7" class="topic-title">Topic 7: Radioactivity and Particles</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">7.1 Use the following units:
+								<ul class="bullet-list">
+									<li>becquerel (Bq)</li>
+									<li>centimetre (cm)</li>
+									<li>hour (h)</li>
+									<li>minute (min)</li>
+									<li>second (s)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Radioactivity</h4>
+						<ul class="spec-list">
+							<li class="spec-item">7.2 Describe structure of atom and use symbols (e.g., ¹⁴₆C)</li>
+							<li class="spec-item">7.3 Know the terms:
+								<ul class="bullet-list">
+									<li>Atomic (proton) number</li>
+									<li>Mass (nucleon) number</li>
+									<li>Isotope</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.4 Know alpha (α), beta (β⁻) and gamma (γ) are:
+								<ul class="bullet-list">
+									<li>Ionising radiations</li>
+									<li>Emitted from unstable nuclei</li>
+									<li>Emitted in random process</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.5 Describe nature of α, β⁻ and γ rays in terms of:
+								<ul class="bullet-list">
+									<li>Penetrating power</li>
+									<li>Ability to ionise</li>
+								</ul>
+							</li>
+							<li class="spec-item"><span class="practical-tag">PRACTICAL</span>: Investigate penetration powers of different types of radiation</li>
+							<li class="spec-item">7.7 Describe effects on atomic and mass numbers of emission of:
+								<ul class="bullet-list">
+									<li>Alpha</li>
+									<li>Beta</li>
+									<li>Gamma</li>
+									<li>Neutron radiation</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.8 Understand how to balance nuclear equations</li>
+							<li class="spec-item">7.9 Know photographic film or Geiger-Müller detector can detect ionising radiations</li>
+							<li class="spec-item">7.10 Explain sources of background radiation from Earth and space</li>
+							<li class="spec-item">7.11 Know activity of radioactive source:
+								<ul class="bullet-list">
+									<li>Decreases over time</li>
+									<li>Measured in becquerels</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.12 Know definition of 'half-life' and that it differs for different isotopes</li>
+							<li class="spec-item">7.13 Use concept of half-life in calculations including graphical methods</li>
+							<li class="spec-item">7.14 Describe uses of radioactivity in industry and medicine</li>
+							<li class="spec-item">7.15 Describe difference between contamination and irradiation</li>
+							<li class="spec-item">7.16 Describe dangers of ionising radiations:
+								<ul class="bullet-list">
+									<li>Can cause mutations</li>
+									<li>Can damage cells and tissue</li>
+									<li>Problems from radioactive waste disposal</li>
+									<li>How associated risks can be reduced</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Fission and Fusion</h4>
+						<ul class="spec-list">
+							<li class="spec-item">7.17 Know nuclear reactions can be source of energy:
+								<ul class="bullet-list">
+									<li>Fission</li>
+									<li>Fusion</li>
+									<li>Radioactive decay</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.18 Understand fission of U-235:
+								<ul class="bullet-list">
+									<li>Split by collision with neutron</li>
+									<li>Releases energy as kinetic energy of fission products</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.19 Know fission of U-235 produces:
+								<ul class="bullet-list">
+									<li>Two radioactive daughter nuclei</li>
+									<li>Small number of neutrons</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.20 Describe how chain reaction can be set up</li>
+							<li class="spec-item">7.21 Describe role of:
+								<ul class="bullet-list">
+									<li>Control rods</li>
+									<li>Moderator in fission process</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.22 Understand role of shielding around nuclear reactor</li>
+							<li class="spec-item">7.23 Explain difference between nuclear fusion and fission</li>
+							<li class="spec-item">7.24 Describe nuclear fusion:
+								<ul class="bullet-list">
+									<li>Creation of larger nuclei from smaller nuclei</li>
+									<li>Loss of mass</li>
+									<li>Release of energy</li>
+								</ul>
+							</li>
+							<li class="spec-item">7.25 Know fusion is energy source for stars</li>
+							<li class="spec-item">7.26 Explain why fusion doesn't happen at low temperatures/pressures (electrostatic repulsion)</li>
+						</ul>
+					</article>
+
+					<div class="spec-divider"></div>
+
+					<article class="topic-card">
+						<h3 id="physics-topic-8" class="topic-title">Topic 8: Astrophysics</h3>
+						<h4 class="subtopic-title">(a) Units</h4>
+						<ul class="spec-list">
+							<li class="spec-item">8.1 Use the following units:
+								<ul class="bullet-list">
+									<li>kilogram (kg)</li>
+									<li>metre (m)</li>
+									<li>metre/second (m/s)</li>
+									<li>metre/second² (m/s²)</li>
+									<li>newton (N)</li>
+									<li>second (s)</li>
+									<li>newton/kilogram (N/kg)</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="subtopic-title">(b) Motion in the Universe</h4>
+						<ul class="spec-list">
+							<li class="spec-item">8.2 Know that:
+								<ul class="bullet-list">
+									<li>Universe is collection of billions of galaxies</li>
+									<li>Galaxy is collection of billions of stars</li>
+									<li>Our solar system is in Milky Way galaxy</li>
+								</ul>
+							</li>
+							<li class="spec-item">8.3 Understand why gravitational field strength (g) varies and is different on:
+								<ul class="bullet-list">
+									<li>Other planets</li>
+									<li>Moon compared to Earth</li>
+								</ul>
+							</li>
+							<li class="spec-item">8.4 Explain gravitational force causes:
+								<ul class="bullet-list">
+									<li>Moons to orbit planets</li>
+									<li>Planets to orbit Sun</li>
+									<li>Artificial satellites to orbit Earth</li>
+									<li>Comets to orbit Sun</li>
+								</ul>
+							</li>
+							<li class="spec-item">8.5 Describe differences in orbits of:
+								<ul class="bullet-list">
+									<li>Comets</li>
+									<li>Moons</li>
+									<li>Planets</li>
+								</ul>
+							</li>
+							<li class="spec-item">8.6 Use relationship: orbital speed = (2 × π × orbital radius) / time period v = (2 × π × r) / T</li>
+						</ul>
+						<h4 class="subtopic-title">(c) Stellar Evolution</h4>
+						<ul class="spec-list">
+							<li class="spec-item">8.7 Understand how stars classified according to colour</li>
+							<li class="spec-item">8.8 Know star's colour related to temperature</li>
+							<li class="spec-item">8.9 Describe evolution of stars similar mass to Sun:
+								<ul class="bullet-list">
+									<li>Nebula</li>
+									<li>Star (main sequence)</li>
+									<li>Red giant</li>
+									<li>White dwarf</li>
+								</ul>
+							</li>
+							<li class="spec-item">8.10 Describe evolution of stars with mass larger than Sun</li>
+						</ul>
+					</article>
+				</div>
+			</div>
+		</section>
+
+		<footer></footer>
+	</div>
+</body>
+</html>

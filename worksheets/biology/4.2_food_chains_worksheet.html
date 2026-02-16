@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Chains and Food Webs Worksheet</title>
+    <link rel="stylesheet" href="../../css/biology.css">
+    <style>
+        .animal-image {
+            max-width: 120px;
+            max-height: 120px;
+            border-radius: 8px;
+            margin: 5px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        .image-card {
+            text-align: center;
+            padding: 8px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            page-break-inside: avoid;
+        }
+        .image-card p {
+            margin: 5px 0 0 0;
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .question-title {
+            font-weight: 700;
+        }
+
+        .ecosystem-info {
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px 25px;
+            margin: 8px auto;
+            max-width: 500px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .ecosystem-info-item {
+            margin: 4px 0;
+        }
+        
+        /* Print optimization */
+        @media print {
+            .image-container {
+                page-break-inside: auto;
+            }
+            .image-card {
+                page-break-inside: auto;
+            }
+            h2 {
+                page-break-after: avoid;
+            }
+            .question {
+                page-break-inside: auto;
+            }
+            .question > div {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            .question-number {
+                page-break-after: avoid;
+                break-after: avoid;
+                break-inside: avoid;
+            }
+            .answer-space, .answer-space.large {
+                page-break-before: avoid;
+                break-before: avoid;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Food Chains and Food Webs</h1>
+        <div class="subtitle">IGCSE Edexcel Biology</div>
+        <div class="spec-ref">4.6–4.9 Feeding Relationships and Energy Transfer</div>
+    </div>
+
+    <h2>Section A: Identifying Trophic Levels</h2>
+    <div id="section-a-images" class="image-container"></div>
+
+    <div class="question">
+        <div class="question-number">1. The aye-aye is a nocturnal primate that eats insects, fruit, and nectar. In a food chain: mango tree → insect pest → aye-aye <span class="marks">[3]</span></div>
+        <div>(a) Identify the producer in this food chain</div>
+        <div class="answer-space"></div>
+        <div>(b) What is the trophic level of the insect pest?</div>
+        <div class="answer-space"></div>
+        <div>(c) Is the aye-aye a herbivore, carnivore, or omnivore? Explain your answer.</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">2. Meerkats live in the Kalahari Desert and primarily eat insects, scorpions, and small vertebrates. <span class="marks">[4]</span></div>
+        <div>(a) Construct a food chain that includes: acacia tree, locust, scorpion, meerkat, and martial eagle</div>
+        <div class="answer-space large"></div>
+        <div>(b) What trophic level is the meerkat in this chain?</div>
+        <div class="answer-space"></div>
+        <div>(c) What would happen to the locust population if meerkats were removed?</div>
+        <div class="answer-space large"></div>
+        <div>(d) Explain why there are fewer eagles than locusts in this ecosystem</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <h2>Section B: Aquatic Food Chains</h2>
+    <div id="section-b-images" class="image-container"></div>
+
+    <div class="question">
+        <div class="question-number">3. The axolotl is an aquatic salamander found in Mexican lakes. Consider this food chain:<br>
+        green algae → pond snail → axolotl → great blue heron <span class="marks">[3]</span></div>
+        <div>(a) Identify the primary consumer</div>
+        <div class="answer-space"></div>
+        <div>(b) If the green algae contains 10,000 kJ of energy, calculate how much energy would be available to the axolotl (assume 10% energy transfer)</div>
+        <div class="answer-space large"></div>
+        <div>(c) How much energy would reach the heron?</div>
+        <div class="answer-space"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">4. <span class="question-title">Marine ecosystems contain complex food chains.</span> <span class="marks">[5]</span></div>
+        <div class="ecosystem-info">
+            <div class="ecosystem-info-item"><strong>Producers:</strong> phytoplankton</div>
+            <div class="ecosystem-info-item"><strong>Primary consumers:</strong> krill</div>
+            <div class="ecosystem-info-item"><strong>Secondary consumers:</strong> octopus, dolphin</div>
+            <div class="ecosystem-info-item"><strong>Tertiary consumers:</strong> orca</div>
+        </div>
+        <div>(a) Write a food chain that includes all organisms above</div>
+        <div class="answer-space large"></div>
+        <div>(b) What is the role of phytoplankton in this ecosystem?</div>
+        <div class="answer-space"></div>
+        <div>(c) Both orcas and dolphins are marine mammals. Suggest why they occupy different positions in some food chains</div>
+        <div class="answer-space large"></div>
+        <div>(d) If octopus populations decreased dramatically, explain two possible effects on the ecosystem</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <h2>Section C: Terrestrial Ecosystem Food Chains</h2>
+    <div id="section-c-images" class="image-container"></div>
+
+    <div class="question">
+        <div class="question-number">5. The ocelot is a wild cat found in Central and South American rainforests. It hunts small mammals, birds, and reptiles. The agouti is a rodent that feeds on seeds and Brazil nuts from rainforest trees (including the Brazil nut tree). The jaguar is an apex predator that can prey on ocelots and other mammals. <span class="marks">[4]</span></div>
+        <div>(a) Create a food chain using these organisms</div>
+        <div class="answer-space large"></div>
+        <div>(b) What is the trophic level of the ocelot in this chain?</div>
+        <div class="answer-space"></div>
+        <div>(c) Rainforest ecosystems are highly complex with many interconnected feeding relationships. Draw a food web showing the connections between these organisms:<br>
+        <div style="margin: 10px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #8B4513; border-radius: 4px; font-size: 0.95em;">
+            <strong>Producers:</strong> Brazil nut tree, Fruit trees, Rainforest trees<br>
+            <strong>Primary consumers:</strong> Agouti (eats nuts/seeds), Fruit bat (eats fruit), Caterpillars (eat leaves)<br>
+            <strong>Secondary consumers:</strong> Ocelot, Harpy eagle<br>
+            <strong>Tertiary consumer:</strong> Jaguar
+        </div>
+        </div>
+        <div class="answer-space" style="min-height: 350px;"></div>
+        <div>(d) Explain how the toco toucan and agouti might compete in this ecosystem</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">6. African savanna ecosystems support diverse wildlife with complex predator-prey relationships. The acacia tree, giraffe, zebra, wildebeest, lion, hyena, and wild dog all inhabit this ecosystem. <span class="marks">[5]</span></div>
+        <div>(a) Giraffes can reach leaves high in acacia trees. Explain how this is an adaptation that reduces competition</div>
+        <div class="answer-space large"></div>
+        <div>(b) What would be the effect on the acacia tree population if giraffe numbers increased significantly?</div>
+        <div class="answer-space large"></div>
+        <div>(c) African savanna ecosystems show complex predator-prey relationships. Complete the food web by drawing arrows to show ALL feeding relationships between these organisms:<br>
+        <div style="margin: 10px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #DAA520; border-radius: 4px; font-size: 0.95em;">
+            <strong>Producers:</strong> Acacia tree, Grass<br>
+            <strong>Primary consumers:</strong> Giraffe, Zebra, Wildebeest<br>
+            <strong>Secondary consumers:</strong> Lion, Hyena, Wild dog<br>
+            <strong>Note:</strong> Hyenas and wild dogs hunt medium-sized herbivores; lions hunt all three herbivores
+        </div>
+        </div>
+        <div class="answer-space" style="min-height: 350px;"></div>
+        <div>(d) Lions are apex predators. Explain what this term means</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <h2>Section D: Comparing Different Ecosystems</h2>
+    <div id="section-d-top-images" class="image-container"></div>
+
+    <div class="question">
+        <div class="question-number">7. Compare food chains in different habitats: <span class="marks">[4]</span></div>
+        <div>(a) Arctic: Arctic willow → Arctic hare → Arctic fox → Inuit people / Snowy owl<br>
+        Temperate: Grass → European rabbit → red fox → wolf<br>
+        Identify one similarity and one difference between these food chains</div>
+        <div class="answer-space large"></div>
+        <div>(b) Why are Arctic food chains typically shorter than tropical rainforest food chains?</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <div id="section-d-bottom-images" class="image-container"></div>
+
+    <div class="question">
+        <div class="question-number">8. The platypus is a unique Australian mammal that hunts underwater for invertebrates like insect larvae and crayfish. <span class="marks">[5]</span></div>
+        <div>(a) Write a food chain: water lily → mayfly larvae → platypus → saltwater crocodile</div>
+        <div class="answer-space large"></div>
+        <div>(b) The platypus is described as a secondary consumer. Explain why this term is used</div>
+        <div class="answer-space large"></div>
+        <div>(c) Suggest what might happen to mayfly larvae populations if platypus numbers decreased</div>
+        <div class="answer-space large"></div>
+        <div>(d) Saltwater crocodiles are opportunistic predators. Explain what this means for food web complexity</div>
+        <div class="answer-space large"></div>
+        <div>(e) Suggest why the platypus and saltwater crocodile might not directly compete for food despite both living in Australian waterways</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">9. The nine-banded armadillo feeds on insects, grubs, and plant material. <span class="marks">[5]</span></div>
+        <div>(a) Is the armadillo a herbivore, carnivore, or omnivore?</div>
+        <div class="answer-space"></div>
+        <div>(b) Write two different food chains that both include the armadillo:<br>
+        Chain 1 (armadillo as primary consumer):<br>
+        Chain 2 (armadillo as secondary consumer):</div>
+        <div class="answer-space large"></div>
+        <div>(c) Explain why omnivores like the armadillo can be at different trophic levels</div>
+        <div class="answer-space large"></div>
+        <div>(d) Suggest an advantage of being an omnivore in terms of survival</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">10. Food Web Analysis: Desert Ecosystem <span class="marks">[5]</span></div>
+        <div>Here is a partially completed food web from a desert ecosystem:</div>
+        <div style="margin: 15px 10px; padding: 20px; background: #f5f5f5; border: 2px solid #ddd; border-radius: 6px;">
+            <div style="margin: 8px 0; font-size: 0.95em;"><strong>Producers:</strong> Desert plant, Seeds</div>
+            <div style="margin: 8px 0; font-size: 0.95em;"><strong>Primary consumers:</strong> Locust, Lizard, Mouse</div>
+            <div style="margin: 8px 0; font-size: 0.95em;"><strong>Secondary consumers:</strong> Roadrunner, Snake</div>
+            <div style="margin: 12px 0; padding-top: 12px; border-top: 1px solid #ddd; font-size: 0.9em; font-family: monospace; line-height: 1.8;">
+                Desert plant → Locust → Roadrunner<br>
+                Desert plant → Lizard → Roadrunner<br>
+                Desert plant → Lizard → Snake<br>
+                Seeds → Mouse → Snake<br>
+                Seeds → Mouse → ?
+            </div>
+        </div>
+        <div>(a) Complete the food web by suggesting an organism that could eat the mouse (other than snake)</div>
+        <div class="answer-space"></div>
+        <div>(b) Using the food web above, identify which organism is the producer</div>
+        <div class="answer-space"></div>
+        <div>(c) The roadrunner eats both locusts and lizards. What term describes an organism that feeds at multiple trophic levels?</div>
+        <div class="answer-space"></div>
+        <div>(d) Explain why removing all the snakes would have a greater effect on this food web than removing all the roadrunners</div>
+        <div class="answer-space large"></div>
+        <div>(e) Suggest one advantage of having a complex food web rather than simple food chains in this desert ecosystem</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <h2>Section E: Food Web Analysis</h2>
+    <div id="section-e-images" class="image-container"></div>
+
+    <div class="question">
+        <div class="question-number">11. <span class="question-title">A complex marine ecosystem</span> <span class="marks">[8]</span></div>
+        <div style="margin: 15px 0; padding: 15px; background: #f9f9f9; border-left: 4px solid #1E90FF; border-radius: 4px;">
+            <div style="margin: 8px 0; font-size: 0.95em;"><strong>Kelp forest ecosystem:</strong> A cold-water marine environment where giant kelp provides shelter and food</div>
+            <div style="margin: 12px 0; padding-top: 12px; border-top: 1px solid #ddd;">
+                <div style="margin: 6px 0; font-size: 0.95em;"><strong>Producers:</strong> kelp, phytoplankton</div>
+                <div style="margin: 6px 0; font-size: 0.95em;"><strong>Primary consumers:</strong> purple sea urchin (eats kelp), Antarctic krill (eats phytoplankton), anchovy (eats phytoplankton)</div>
+                <div style="margin: 6px 0; font-size: 0.95em;"><strong>Secondary consumers:</strong> giant Pacific octopus (eats urchins, krill, fish), bottlenose dolphin (eats fish)</div>
+                <div style="margin: 6px 0; font-size: 0.95em;"><strong>Tertiary consumer:</strong> orca (eats dolphins, octopus, and large fish)</div>
+            </div>
+        </div>
+        <div>(a) Draw a detailed food web showing the feeding relationships between all these organisms. Remember to include all possible feeding connections.</div>
+        <div class="answer-space" style="min-height: 400px;"></div>
+        <div>(b) Identify two organisms that might compete for the same food source</div>
+        <div class="answer-space"></div>
+        <div>(c) If a disease killed most of the Antarctic krill population, explain the likely effects on:<br>
+        (i) Phytoplankton populations<br>
+        (ii) Bottlenose dolphin populations<br>
+        (iii) Orca populations</div>
+        <div class="answer-space" style="min-height: 200px;"></div>
+        <div>(d) Explain why food webs provide a more realistic representation of ecosystems than food chains</div>
+        <div class="answer-space large"></div>
+    </div>
+
+    <div class="total-marks">Total marks: 58</div>
+
+    <div class="mark-scheme">
+        <h2>Mark Scheme</h2>
+        
+        <div class="question">
+            <strong>1. (a)</strong> Mango tree [1]<br>
+            <strong>(b)</strong> Second trophic level / primary consumer [1]<br>
+            <strong>(c)</strong> Omnivore - it eats both plant material (fruit, nectar) and animals (insects) [1]
+        </div>
+
+        <div class="question">
+            <strong>2. (a)</strong> Acacia tree → locust → scorpion → meerkat → martial eagle [1]<br>
+            <strong>(b)</strong> Fourth trophic level / tertiary consumer [1]<br>
+            <strong>(c)</strong> Locust population would decrease / with no meerkat predation, scorpion populations increase, eating more locusts [1]<br>
+            <strong>(d)</strong> Energy is lost at each trophic level / only 10% transferred / less energy available to support large populations at higher levels [1]
+        </div>
+
+        <div class="question">
+            <strong>3. (a)</strong> Pond snail [1]<br>
+            <strong>(b)</strong> 10,000 × 0.1 = 1,000 kJ to snail; 1,000 × 0.1 = 100 kJ to axolotl [1]<br>
+            <strong>(c)</strong> 100 × 0.1 = 10 kJ [1]
+        </div>
+
+        <div class="question">
+            <strong>4. (a)</strong> Phytoplankton → krill → octopus → orca [1]<br>
+            <strong>(b)</strong> Producer / makes food through photosynthesis [1]<br>
+            <strong>(c)</strong> Different prey preferences / different hunting methods / occupy different niches / dolphins eat fish while orcas can eat larger prey including marine mammals [1]<br>
+            <strong>(d)</strong> Any two: prey species (krill/small fish) would increase [1]; predators (dolphin/orca) may decrease or switch to other prey [1]; ecosystem balance would be disrupted [1] (max 2)
+        </div>
+
+        <div class="question">
+            <strong>5. (a)</strong> Brazil nut tree → agouti → ocelot → jaguar [1]<br>
+            <strong>(b)</strong> Third trophic level / secondary consumer [1]<br>
+            <strong>(c)</strong> Food web should show: Brazil nut tree → agouti; fruit trees → agouti AND fruit bat; rainforest trees → caterpillars; fruit bat → harpy eagle; caterpillars → harpy eagle AND birds; agouti → ocelot; ocelot → jaguar [2]<br>
+            <strong>(d)</strong> Both may eat fruits/nuts from trees / compete for the same food resource [1]
+        </div>
+        <div style="margin: 8px 0 14px 0;">
+            <svg width="640" height="420" viewBox="0 0 640 420" xmlns="http://www.w3.org/2000/svg" style="background:#fff;border:1px solid #eee;border-radius:6px">
+                <!-- Nodes -->
+                <!-- Tertiary consumer (top) -->
+                <rect x="275" y="30" width="90" height="32" rx="6" fill="#ffebee" stroke="#ffcdd2"/>
+                <text x="320" y="51" text-anchor="middle" font-size="12">Jaguar</text>
+
+                <!-- Secondary consumers (row 2) -->
+                <rect x="140" y="120" width="90" height="32" rx="6" fill="#fff8e1" stroke="#ffe082"/>
+                <text x="185" y="141" text-anchor="middle" font-size="12">Ocelot</text>
+                <rect x="360" y="120" width="110" height="32" rx="6" fill="#fff8e1" stroke="#ffe082"/>
+                <text x="415" y="141" text-anchor="middle" font-size="12">Harpy eagle</text>
+                <rect x="520" y="120" width="80" height="32" rx="6" fill="#fff8e1" stroke="#ffe082"/>
+                <text x="560" y="141" text-anchor="middle" font-size="12">Birds</text>
+
+                <!-- Primary consumers (row 3) -->
+                <rect x="60" y="210" width="90" height="32" rx="6" fill="#e3f2fd" stroke="#bbdefb"/>
+                <text x="105" y="231" text-anchor="middle" font-size="12">Agouti</text>
+                <rect x="260" y="210" width="90" height="32" rx="6" fill="#e3f2fd" stroke="#bbdefb"/>
+                <text x="305" y="231" text-anchor="middle" font-size="12">Fruit bat</text>
+                <rect x="440" y="210" width="110" height="32" rx="6" fill="#e3f2fd" stroke="#bbdefb"/>
+                <text x="495" y="231" text-anchor="middle" font-size="12">Caterpillars</text>
+
+                <!-- Producers (bottom) -->
+                <rect x="40" y="300" width="160" height="32" rx="6" fill="#e8f5e9" stroke="#c8e6c9"/>
+                <text x="120" y="321" text-anchor="middle" font-size="12">Brazil nut tree</text>
+                <rect x="240" y="300" width="120" height="32" rx="6" fill="#e8f5e9" stroke="#c8e6c9"/>
+                <text x="300" y="321" text-anchor="middle" font-size="12">Fruit trees</text>
+                <rect x="390" y="300" width="140" height="32" rx="6" fill="#e8f5e9" stroke="#c8e6c9"/>
+                <text x="460" y="321" text-anchor="middle" font-size="12">Rainforest trees</text>
+
+                <!-- Arrows (edges) -->
+                <!-- Producers to primary consumers (upward) -->
+                <!-- Brazil nut tree -> Agouti -->
+                <path d="M 120 300 L 120 242" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <!-- Fruit trees -> Agouti & Fruit bat -->
+                <path d="M 300 300 L 105 242" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <path d="M 300 300 L 305 242" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <!-- Rainforest trees -> Caterpillars -->
+                <path d="M 460 300 L 495 242" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+
+                <!-- Primary to secondary consumers (upward) -->
+                <!-- Agouti -> Ocelot -->
+                <path d="M 105 242 L 185 210" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <!-- Fruit bat -> Harpy eagle -->
+                <path d="M 305 242 L 415 210" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <!-- Caterpillars -> Harpy eagle & Birds -->
+                <path d="M 495 242 L 415 210" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <path d="M 495 242 L 560 210" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+
+                <!-- Secondary to tertiary consumer (upward) -->
+                <!-- Ocelot & Harpy eagle -> Jaguar -->
+                <path d="M 185 152 L 320 62" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+                <path d="M 415 152 L 320 62" stroke="#777" fill="none" marker-end="url(#arrow)"/>
+
+                <!-- Definitions -->
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#777" />
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+
+        <div class="question">
+            <strong>6. (a)</strong> Long neck allows access to food other herbivores cannot reach / reduces competition for lower vegetation with other herbivores [1]<br>
+            <strong>(b)</strong> Acacia population would decrease / more browsing pressure / could affect tree regeneration [1]<br>
+            <strong>(c)</strong> Food web should show: both acacia and grass as producers; arrows from both to giraffe, zebra, and wildebeest; arrows from all herbivores to lion, hyena, and wild dog [2]<br>
+            <strong>(d)</strong> Top predator / no natural predators / at the top of the food chain [1]
+        </div>
+
+        <div class="question">
+            <strong>7. (a)</strong> Similarity: both have three trophic levels / both show plant producers and herbivores and carnivores / both show energy transfer [1]<br>
+            Difference: Arctic uses Arctic hare/fox/owl while temperate uses rabbit/fox/wolf / different species adapted to different climates / Arctic animals have cold-adapted features [1]<br>
+            <strong>(b)</strong> Less primary productivity in cold environments / shorter growing season / fewer plants mean fewer herbivores / harsh conditions limit number of species [1]
+        </div>
+
+        <div class="question">
+            <strong>8. (a)</strong> Water lily → mayfly larvae → platypus → saltwater crocodile [1]<br>
+            <strong>(b)</strong> Secondary consumer because it eats primary consumers (herbivorous invertebrates like mayfly larvae that feed on plants/algae) / it is at the third trophic level [1]<br>
+            <strong>(c)</strong> Mayfly larvae would increase / less predation pressure / population would rise without control [1]<br>
+            <strong>(d)</strong> They eat various prey at different trophic levels / increases number of connections in food web / makes food web more complex and interconnected [1]<br>
+            <strong>(e)</strong> Different food preferences / eat different sized prey / occupy different habitats/depths / different hunting methods / niche separation [1]
+        </div>
+
+        <div class="question">
+            <strong>9. (a)</strong> Omnivore [1]<br>
+            <strong>(b)</strong> Chain 1 (armadillo as primary consumer): Plant → armadillo → predator (e.g., coyote) [1]<br>
+            Chain 2 (armadillo as secondary consumer): Plant → insect/grub → armadillo → predator (e.g., coyote) [1]<br>
+            <strong>(c)</strong> When feeding on plants they are primary consumers / when feeding on insects/animals they are secondary consumers / trophic position depends on their diet in that specific food chain [1]<br>
+            <strong>(d)</strong> More food sources available / can switch diet if one food source becomes scarce / better survival in changing environmental conditions / increased adaptability [1]
+        </div>
+
+        <div class="question">
+            <strong>10. (a)</strong> Any predator of mice: e.g., hawk, owl, fox, snake (already mentioned), coyote, etc. [1]<br>
+            <strong>(b)</strong> Desert plant / producer [1]<br>
+            <strong>(c)</strong> Omnivore / heterotroph eating at multiple trophic levels [1]<br>
+            <strong>(d)</strong> Snakes eat mice and lizards (multiple food sources) so their removal removes a connection affecting multiple species / removal of roadrunners removes only one predator pathway / snakes have more impact on food web complexity [1]<br>
+            <strong>(e)</strong> Any one: if one food source becomes scarce, organisms have alternatives / greater stability/resilience to environmental change / less vulnerable to extinction of single species / maintains ecosystem balance better [1]
+        </div>
+
+        <div class="question">
+            <strong>11. (a)</strong> Food web should show: kelp and phytoplankton as producers with arrows to all primary consumers; urchin → octopus; krill → octopus, dolphin, orca; anchovy → octopus, dolphin, orca; octopus → orca [2]<br>
+            <strong>(b)</strong> Antarctic krill and anchovy (both eat phytoplankton) [1]<br>
+            <strong>(c)</strong> (i) Phytoplankton would increase / less grazing pressure by krill [1]<br>
+            (ii) Bottlenose dolphins would decrease / lose food source / or switch to other prey [1]<br>
+            (iii) Orcas would decrease / indirect effect from reduced dolphin/octopus numbers / less prey available [1]<br>
+            <strong>(d)</strong> Shows multiple feeding relationships / organisms often eat more than one thing / shows interconnections / more realistic than linear chains / shows complexity of ecosystems [1]
+        </div>
+    </div>
+
+    <script>
+        // Organisms by section with scientific names for exact matching
+        const sectionOrganisms = {
+            'section-a': [
+                { common: 'Mango Tree', scientific: 'Mangifera indica' },
+                { common: 'Ladybug', scientific: 'Coccinella septempunctata' },
+                { common: 'Aye-aye', scientific: 'Daubentonia madagascariensis' },
+                { common: 'Prickly Pear Cactus', scientific: 'Opuntia ficus-indica' },
+                { common: 'Locust', scientific: 'Schistocerca gregaria' },
+                { common: 'Meerkat', scientific: 'Suricata suricatta' },
+                { common: 'Golden Eagle', scientific: 'Aquila chrysaetos' },
+                { common: 'Scorpion', scientific: 'Parabuthus transvaalicus' }
+            ],
+            'section-b': [
+                { common: 'Green Algae', scientific: 'Spirogyra' },
+                { common: 'Pond Snail', scientific: 'Lymnaea stagnalis' },
+                { common: 'Axolotl', scientific: 'Ambystoma mexicanum' },
+                { common: 'Great Blue Heron', scientific: 'Ardea herodias' },
+                { common: 'Phytoplankton', scientific: 'Coscinodiscus' },
+                { common: 'Antarctic Krill', scientific: 'Euphausia superba' },
+                { common: 'Giant Pacific Octopus', scientific: 'Enteroctopus dofleini' },
+                { common: 'Orca', scientific: 'Orcinus orca' }
+            ],
+            'section-c': [
+                { common: 'Brazil Nut Tree', scientific: 'Bertholletia excelsa' },
+                { common: 'Agouti', scientific: 'Dasyprocta punctata' },
+                { common: 'Ocelot', scientific: 'Leopardus pardalis' },
+                { common: 'Jaguar', scientific: 'Panthera onca' },
+                { common: 'Toco Toucan', scientific: 'Ramphastos toco' },
+                { common: 'Acacia Tree', scientific: 'Acacia tortilis' },
+                { common: 'Giraffe', scientific: 'Giraffa camelopardalis' },
+                { common: 'Lion', scientific: 'Panthera leo' }
+            ],
+            'section-d-top': [
+                { common: 'Arctic Willow', scientific: 'Salix arctica' },
+                { common: 'Arctic Hare', scientific: 'Lepus arcticus' },
+                { common: 'Arctic Fox', scientific: 'Vulpes lagopus' },
+                { common: 'Polar Bear', scientific: 'Ursus maritimus' },
+                { common: 'Clover', scientific: 'Trifolium repens' },
+                { common: 'European Rabbit', scientific: 'Oryctolagus cuniculus' },
+                { common: 'Red Fox', scientific: 'Vulpes vulpes' },
+                { common: 'Gray Wolf', scientific: 'Canis lupus' }
+            ],
+            'section-d-bottom': [
+                { common: 'Water Lily', scientific: 'Nymphaea alba' },
+                { common: 'Mayfly Larvae', scientific: 'Ephemeroptera' },
+                { common: 'Platypus', scientific: 'Ornithorhynchus anatinus' },
+                { common: 'Saltwater Crocodile', scientific: 'Crocodylus porosus' },
+                { common: 'Nine-banded Armadillo', scientific: 'Dasypus novemcinctus' },
+                { common: 'Coyote', scientific: 'Canis latrans' },
+                { common: 'White-tailed Deer', scientific: 'Odocoileus virginianus' },
+                { common: 'Bald Eagle', scientific: 'Haliaeetus leucocephalus' }
+            ],
+            'section-e': [
+                { common: 'Kelp', scientific: 'Macrocystis pyrifera' },
+                { common: 'Phytoplankton', scientific: 'Coscinodiscus' },
+                { common: 'Purple Sea Urchin', scientific: 'Strongylocentrotus purpuratus' },
+                { common: 'Antarctic Krill', scientific: 'Euphausia superba' },
+                { common: 'Anchovy', scientific: 'Engraulis mordax' },
+                { common: 'Giant Pacific Octopus', scientific: 'Enteroctopus dofleini' },
+                { common: 'Bottlenose Dolphin', scientific: 'Tursiops truncatus' },
+                { common: 'Orca', scientific: 'Orcinus orca' }
+            ]
+        };
+
+        // Cache to store already fetched organisms
+        const organismCache = new Map();
+
+        // Function to fetch a single organism's image using scientific name
+        async function fetchOrganismImage(organism) {
+            // Check if already cached
+            const cacheKey = organism.scientific;
+            if (organismCache.has(cacheKey)) {
+                return organismCache.get(cacheKey);
+            }
+
+            try {
+                // Search by scientific name for exact results
+                const response = await fetch(`https://api.inaturalist.org/v1/taxa?q=${encodeURIComponent(organism.scientific)}&rank=species,genus,order,class,phylum&per_page=5`);
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    // Find the best match (prefer exact scientific name match)
+                    let taxon = data.results.find(t => 
+                        t.name.toLowerCase() === organism.scientific.toLowerCase()
+                    ) || data.results[0];
+                    
+                    let cardHtml = '';
+                    if (taxon.default_photo) {
+                        const photoUrl = taxon.default_photo.medium_url;
+                        const commonName = taxon.preferred_common_name || organism.common;
+                        const scientificName = taxon.name;
+                        
+                        cardHtml = `
+                            <div class="image-card">
+                                <img src="${photoUrl}" alt="${commonName}" class="animal-image" title="${scientificName}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect fill=%22%23ddd%22 width=%22120%22 height=%22120%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 font-size=%2212%22%3ENo image%3C/text%3E%3C/svg%3E';">
+                                <p><strong>${commonName}</strong><br><em>${scientificName}</em></p>
+                            </div>
+                        `;
+                    } else {
+                        // Return placeholder if no photo available
+                        cardHtml = `
+                            <div class="image-card">
+                                <div class="animal-image" style="background:#eee;display:flex;align-items:center;justify-content:center;font-size:0.8em;color:#666;text-align:center;padding:5px;">No image available</div>
+                                <p><strong>${organism.common}</strong><br><em>${organism.scientific}</em></p>
+                            </div>
+                        `;
+                    }
+                    
+                    // Cache the result
+                    organismCache.set(cacheKey, cardHtml);
+                    return cardHtml;
+                }
+            } catch (error) {
+                console.error(`Error fetching ${organism.common}:`, error);
+            }
+            
+            // Return placeholder on error
+            const errorCard = `
+                <div class="image-card">
+                    <div class="animal-image" style="background:#eee;display:flex;align-items:center;justify-content:center;font-size:0.8em;color:#666;text-align:center;padding:5px;">Loading failed</div>
+                    <p><strong>${organism.common}</strong><br><em>${organism.scientific}</em></p>
+                </div>
+            `;
+            organismCache.set(cacheKey, errorCard);
+            return errorCard;
+        }
+
+        // Function to populate a section with images
+        async function populateSectionImages(sectionId) {
+            const container = document.getElementById(`${sectionId}-images`);
+            if (!container) return;
+            
+            const organisms = sectionOrganisms[sectionId];
+            if (!organisms) return;
+            
+            // Show loading state
+            container.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color:#666;">Loading images...</p>';
+            
+            const imageCards = [];
+            
+            for (const organism of organisms) {
+                const card = await fetchOrganismImage(organism);
+                imageCards.push(card); // Always push, even if empty/placeholder
+                
+                // Small delay to avoid rate limiting
+                await new Promise(resolve => setTimeout(resolve, 150));
+            }
+            
+            container.innerHTML = imageCards.join('');
+        }
+
+        // Load images for all sections when page loads
+        window.addEventListener('DOMContentLoaded', async () => {
+            for (const sectionId of Object.keys(sectionOrganisms)) {
+                await populateSectionImages(sectionId);
+            }
+        });
+    </script>
+</body>
+</html>

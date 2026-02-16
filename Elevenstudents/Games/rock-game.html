@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            color: #fff;
+        }
+        
+        .game-container {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            font-size: 2.8rem;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #b0b0b0;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .score {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        .score h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        
+        #player-score {
+            color: #4CAF50;
+        }
+        
+        #computer-score {
+            color: #f44336;
+        }
+        
+        #tie-score {
+            color: #2196F3;
+        }
+        
+        .choices {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .choice {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 5px solid transparent;
+        }
+        
+        .choice:hover {
+            transform: scale(1.05);
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .choice.selected {
+            border-color: #ffcc00;
+            background-color: rgba(255, 204, 0, 0.1);
+        }
+        
+        #rock {
+            color: #9c27b0;
+        }
+        
+        #paper {
+            color: #2196F3;
+        }
+        
+        #scissors {
+            color: #f44336;
+        }
+        
+        .vs {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .vs span {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: #ffcc00;
+        }
+        
+        .game-result {
+            min-height: 120px;
+            margin-bottom: 30px;
+        }
+        
+        .result-text {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #ffcc00;
+            min-height: 60px;
+        }
+        
+        .computer-choice {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            min-height: 30px;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        #play-btn {
+            background-color: #4CAF50;
+            color: white;
+            flex: 2;
+        }
+        
+        #play-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+        }
+        
+        #reset-btn {
+            background-color: #f44336;
+            color: white;
+            flex: 1;
+        }
+        
+        #reset-btn:hover {
+            background-color: #d32f2f;
+            transform: translateY(-3px);
+        }
+        
+        .rules {
+            margin-top: 30px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: left;
+        }
+        
+        .rules h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        
+        .rules ul {
+            padding-left: 20px;
+            color: #b0b0b0;
+        }
+        
+        .rules li {
+            margin-bottom: 5px;
+        }
+        
+        .history {
+            margin-top: 20px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 15px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .history h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        
+        .history-list {
+            list-style-type: none;
+            color: #b0b0b0;
+        }
+        
+        .history-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .win {
+            color: #4CAF50;
+        }
+        
+        .lose {
+            color: #f44336;
+        }
+        
+        .draw {
+            color: #2196F3;
+        }
+        
+        @media (max-width: 768px) {
+            .choices {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .choice {
+                width: 120px;
+                height: 120px;
+                font-size: 4rem;
+            }
+            
+            .score-board {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Rock Paper Scissors</h1>
+        <p class="subtitle">Choose your weapon and see if you can beat the computer!</p>
+        
+        <div class="score-board">
+            <div class="score">
+                <h3>Player</h3>
+                <div id="player-score" class="score-value">0</div>
+            </div>
+            <div class="score">
+                <h3>Ties</h3>
+                <div id="tie-score" class="score-value">0</div>
+            </div>
+            <div class="score">
+                <h3>Computer</h3>
+                <div id="computer-score" class="score-value">0</div>
+            </div>
+        </div>
+        
+        <div class="choices">
+            <div class="choice" id="rock" data-choice="rock">
+                <i class="fas fa-fist-raised"></i>
+            </div>
+            <div class="choice" id="paper" data-choice="paper">
+                <i class="fas fa-hand-paper"></i>
+            </div>
+            <div class="choice" id="scissors" data-choice="scissors">
+                <i class="fas fa-hand-scissors"></i>
+            </div>
+        </div>
+        
+        <div class="vs">
+            <span>VS</span>
+        </div>
+        
+        <div class="game-result">
+            <div class="result-text">Make your selection!</div>
+            <div class="computer-choice">Computer is waiting...</div>
+        </div>
+        
+        <div class="buttons">
+            <button id="play-btn">
+                <i class="fas fa-play-circle"></i> Play Round
+            </button>
+            <button id="reset-btn">
+                <i class="fas fa-redo"></i> Reset Game
+            </button>
+        </div>
+        
+        <div class="rules">
+            <h3>Game Rules</h3>
+            <ul>
+                <li>Rock beats Scissors (crushes them)</li>
+                <li>Scissors beats Paper (cuts it)</li>
+                <li>Paper beats Rock (covers it)</li>
+                <li>If both players choose the same, it's a tie</li>
+            </ul>
+        </div>
+        
+        <div class="history">
+            <h3>Game History</h3>
+            <ul class="history-list" id="history-list">
+                <!-- Game history will appear here -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Game variables
+        let playerScore = 0;
+        let computerScore = 0;
+        let tieScore = 0;
+        let playerChoice = null;
+        let gameHistory = [];
+        
+        // DOM elements
+        const playerScoreElement = document.getElementById('player-score');
+        const computerScoreElement = document.getElementById('computer-score');
+        const tieScoreElement = document.getElementById('tie-score');
+        const resultTextElement = document.querySelector('.result-text');
+        const computerChoiceElement = document.querySelector('.computer-choice');
+        const historyListElement = document.getElementById('history-list');
+        const choiceElements = document.querySelectorAll('.choice');
+        const playButton = document.getElementById('play-btn');
+        const resetButton = document.getElementById('reset-btn');
+        
+        // Add event listeners to choices
+        choiceElements.forEach(choice => {
+            choice.addEventListener('click', function() {
+                // Remove selected class from all choices
+                choiceElements.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked choice
+                this.classList.add('selected');
+                
+                // Set player choice
+                playerChoice = this.getAttribute('data-choice');
+                
+                // Update UI
+                resultTextElement.textContent = `You selected ${capitalizeFirstLetter(playerChoice)}`;
+                computerChoiceElement.textContent = "Now click 'Play Round' to see the computer's choice!";
+            });
+        });
+        
+        // Play button event listener
+        playButton.addEventListener('click', function() {
+            if (!playerChoice) {
+                resultTextElement.textContent = "Please select Rock, Paper, or Scissors first!";
+                return;
+            }
+            
+            playRound();
+        });
+        
+        // Reset button event listener
+        resetButton.addEventListener('click', resetGame);
+        
+        // Function to play a round
+        function playRound() {
+            // Get computer choice
+            const computerChoice = getComputerChoice();
+            const computerChoiceText = capitalizeFirstLetter(computerChoice);
+            
+            // Determine winner
+            const result = determineWinner(playerChoice, computerChoice);
+            
+            // Update scores
+            updateScores(result);
+            
+            // Display result
+            displayResult(result, computerChoiceText);
+            
+            // Add to history
+            addToHistory(result, playerChoice, computerChoice);
+            
+            // Reset player choice for next round
+            playerChoice = null;
+            choiceElements.forEach(c => c.classList.remove('selected'));
+        }
+        
+        // Function to get computer choice
+        function getComputerChoice() {
+            const choices = ['rock', 'paper', 'scissors'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            return choices[randomIndex];
+        }
+        
+        // Function to determine winner
+        function determineWinner(player, computer) {
+            if (player === computer) {
+                return 'tie';
+            }
+            
+            if (
+                (player === 'rock' && computer === 'scissors') ||
+                (player === 'paper' && computer === 'rock') ||
+                (player === 'scissors' && computer === 'paper')
+            ) {
+                return 'win';
+            }
+            
+            return 'lose';
+        }
+        
+        // Function to update scores
+        function updateScores(result) {
+            if (result === 'win') {
+                playerScore++;
+                playerScoreElement.textContent = playerScore;
+            } else if (result === 'lose') {
+                computerScore++;
+                computerScoreElement.textContent = computerScore;
+            } else {
+                tieScore++;
+                tieScoreElement.textContent = tieScore;
+            }
+        }
+        
+        // Function to display result
+        function displayResult(result, computerChoiceText) {
+            const playerChoiceText = capitalizeFirstLetter(playerChoice);
+            
+            if (result === 'win') {
+                resultTextElement.textContent = `You win! ${playerChoiceText} beats ${computerChoiceText}`;
+                resultTextElement.style.color = '#4CAF50';
+            } else if (result === 'lose') {
+                resultTextElement.textContent = `You lose! ${computerChoiceText} beats ${playerChoiceText}`;
+                resultTextElement.style.color = '#f44336';
+            } else {
+                resultTextElement.textContent = `It's a tie! Both chose ${playerChoiceText}`;
+                resultTextElement.style.color = '#2196F3';
+            }
+            
+            computerChoiceElement.textContent = `Computer chose ${computerChoiceText}`;
+        }
+        
+        // Function to add result to history
+        function addToHistory(result, playerChoice, computerChoice) {
+            const resultClass = result === 'win' ? 'win' : result === 'lose' ? 'lose' : 'draw';
+            const resultText = result === 'win' ? 'Win' : result === 'lose' ? 'Loss' : 'Draw';
+            const playerChoiceText = capitalizeFirstLetter(playerChoice);
+            const computerChoiceText = capitalizeFirstLetter(computerChoice);
+            
+            const historyItem = document.createElement('li');
+            historyItem.className = resultClass;
+            historyItem.innerHTML = `<i class="fas fa-${getIconForChoice(playerChoice)}"></i> ${playerChoiceText} vs ${computerChoiceText} <span class="result-text">(${resultText})</span>`;
+            
+            // Add to beginning of list
+            historyListElement.insertBefore(historyItem, historyListElement.firstChild);
+            
+            // Keep only last 10 items
+            if (historyListElement.children.length > 10) {
+                historyListElement.removeChild(historyListElement.lastChild);
+            }
+        }
+        
+        // Function to reset the game
+        function resetGame() {
+            playerScore = 0;
+            computerScore = 0;
+            tieScore = 0;
+            playerChoice = null;
+            
+            playerScoreElement.textContent = '0';
+            computerScoreElement.textContent = '0';
+            tieScoreElement.textContent = '0';
+            
+            resultTextElement.textContent = 'Make your selection!';
+            resultTextElement.style.color = '#ffcc00';
+            computerChoiceElement.textContent = 'Computer is waiting...';
+            
+            choiceElements.forEach(c => c.classList.remove('selected'));
+            
+            // Clear history
+            historyListElement.innerHTML = '';
+        }
+        
+        // Helper function to capitalize first letter
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+        
+        // Helper function to get icon for choice
+        function getIconForChoice(choice) {
+            switch(choice) {
+                case 'rock': return 'fist-raised';
+                case 'paper': return 'hand-paper';
+                case 'scissors': return 'hand-scissors';
+                default: return 'question';
+            }
+        }
+        
+        // Initialize the game
+        window.addEventListener('DOMContentLoaded', () => {
+            // Add a welcome message to history
+            const welcomeItem = document.createElement('li');
+            welcomeItem.textContent = 'Game started. Make your first move!';
+            historyListElement.appendChild(welcomeItem);
+        });
+    </script>
+</body>
+</html>

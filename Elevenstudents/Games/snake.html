@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wholesome Snake v2</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      background:#0f1226;
+      font-family:sans-serif;
+      color:white;
+    }
+    .wrap { width:500px; }
+    canvas {
+      width:100%;
+      height:auto;
+      background:#171a36;
+      border-radius:10px;
+      display:block;
+    }
+    .hud {
+      display:flex;
+      justify-content:space-between;
+      margin-bottom:10px;
+    }
+    .overlay {
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,0.6);
+      color:white;
+      font-size:1.2rem;
+    }
+    button { margin:5px; padding:8px 12px; }
+    .nav-links { text-align: center; margin-top: 10px; }
+    .nav-links a { color: #4ecdc4; text-decoration: none; margin: 0 10px; }
+    .nav-links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hud">
+      <div>Score: <span id="score">0</span></div>
+      <div>Best: <span id="best">0</span></div>
+      <div>Status: <span id="status">Paused</span></div>
+    </div>
+    <div style="position:relative">
+      <canvas id="board" width="480" height="480"></canvas>
+      <div id="overlay" class="overlay">Press Start to Play</div>
+    </div>
+    <div>
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn">Pause</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div class="nav-links">
+      <a href="../index.html">← Back to Gallery</a>
+      <a href="../highscores.html">🏆 High Scores</a>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+        authDomain: "elevenstudents-76f31.firebaseapp.com",
+        databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "elevenstudents-76f31",
+        storageBucket: "elevenstudents-76f31.firebasestorage.app",
+        messagingSenderId: "692298982954",
+        appId: "1:692298982954:web:987f73aec7d26d03f8c553"
+    };
+    let database;
+    try {
+        firebase.initializeApp(firebaseConfig);
+        database = firebase.database();
+    } catch (error) {
+        console.error('Firebase init error:', error);
+    }
+    function checkHighScore(finalScore) {
+        if (!database || finalScore === 0) return;
+        const scoresRef = database.ref('snakeHighScores');
+        scoresRef.once('value').then((snapshot) => {
+            const scores = snapshot.val() || [];
+            const qualifies = scores.length < 10 || finalScore > scores[scores.length - 1].score;
+            if (qualifies) {
+                let playerName = prompt('🎉 You made the Top 10! Enter your name:');
+                if (playerName) {
+                    playerName = playerName.trim() || 'Anonymous';
+                    if (playerName.length > 20) playerName = playerName.substring(0, 20);
+                    scores.push({ name: playerName, score: finalScore, date: new Date().toISOString() });
+                    scores.sort((a, b) => b.score - a.score);
+                    const top10 = scores.slice(0, 10);
+                    scoresRef.set(top10).then(() => {
+                        const rank = top10.findIndex(e => e.score === finalScore && e.name === playerName) + 1;
+                        alert(`🏆 You ranked #${rank} with ${finalScore} points!`);
+                    });
+                }
+            }
+        });
+    }
+
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const statusEl = document.getElementById('status');
+    const overlay = document.getElementById('overlay');
+
+    const COLS = 24, ROWS = 24, CELL = canvas.width / COLS;
+    let snake, dir, nextDir, food, score, best, loop, speedMs, running, gameOver;
+
+    best = Number(localStorage.getItem('snakeBest') || 0);
+    bestEl.textContent = best;
+
+    function init(){
+      snake = [{x:12,y:12}];
+      dir = {x:1,y:0};
+      nextDir = {...dir};
+      score = 0;
+      speedMs = 140;
+      running = false;
+      gameOver = false;
+      placeFood();
+      updateHUD();
+      clear();
+      draw();
+      overlay.style.display = "flex";
+      overlay.textContent = "Press Start to Play";
+      statusEl.textContent = "Paused";
+    }
+
+    function start(){
+      if(gameOver){ init(); }
+      if(running) return;
+      running = true;
+      statusEl.textContent = "Running";
+      overlay.style.display = "none";   // FIX: overlay disappears
+      loop = setInterval(tick, speedMs);
+    }
+
+    function pause(){
+      if(!running) return;
+      running = false;
+      statusEl.textContent = "Paused";
+      clearInterval(loop);
+      overlay.style.display = "flex";
+      overlay.textContent = "Game Paused";
+    }
+
+    function reset(){
+      clearInterval(loop);
+      init();
+    }
+
+    function end(){
+      running = false;
+      gameOver = true;
+      statusEl.textContent = "Game Over";
+      clearInterval(loop);
+      overlay.style.display = "flex";
+      overlay.textContent = "Game Over! Press Start to try again.";
+      if (score > 0) checkHighScore(score);
+    }
+
+    function updateHUD(){
+      scoreEl.textContent = score;
+      bestEl.textContent = best;
+    }
+
+    function clear(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
+
+    function drawCell(x,y,color){
+      ctx.fillStyle = color;
+      ctx.fillRect(x*CELL, y*CELL, CELL-2, CELL-2);
+    }
+
+    function draw(){
+      if(food) drawCell(food.x, food.y, "lime");
+      snake.forEach((seg,i)=>drawCell(seg.x, seg.y, i===0?"yellow":"green"));
+    }
+
+    function tick(){
+      dir = nextDir;
+      const head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+      if(head.x<0||head.y<0||head.x>=COLS||head.y>=ROWS||hitsSelf(head)){ end(); return; }
+      snake.unshift(head);
+      if(head.x===food.x && head.y===food.y){
+        score++;
+        // FIX: speed increases every fruit
+        speedMs = Math.max(60, speedMs - 5);
+        clearInterval(loop);
+        loop = setInterval(tick, speedMs);
+        updateBest();
+        updateHUD();
+        placeFood();
+      } else {
+        snake.pop();
+      }
+      clear(); draw();
+    }
+
+    function hitsSelf(pt){ return snake.some(s=>s.x===pt.x && s.y===pt.y); }
+    function randInt(n){ return Math.floor(Math.random()*n); }
+    function placeFood(){
+      let x,y;
+      do{ x=randInt(COLS); y=randInt(ROWS); }
+      while(snake.some(s=>s.x===x && s.y===y));
+      food={x,y};
+    }
+    function updateBest(){
+      if(score>best){ best=score; localStorage.setItem('snakeBest',best); }
+    }
+
+    function setDirection(key){
+      const map={ArrowUp:{x:0,y:-1},ArrowDown:{x:0,y:1},ArrowLeft:{x:-1,y:0},ArrowRight:{x:1,y:0}};
+      const nd=map[key]; if(!nd) return;
+      if(snake.length>1 && nd.x===-dir.x && nd.y===-dir.y) return;
+      nextDir=nd;
+    }
+
+    window.addEventListener('keydown',e=>{
+      if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){ e.preventDefault(); setDirection(e.key); }
+      if(e.code==="Space"){ e.preventDefault(); running?pause():start(); }
+    });
+
+    document.getElementById('startBtn').onclick=start;
+    document.getElementById('pauseBtn').onclick=pause;
+    document.getElementById('resetBtn').onclick=reset;
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Melting Animation | Student Work</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        .animation-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #sketch-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        canvas {
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .comments-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comments-box h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #ffd700;
+        }
+
+        .comment-section {
+            margin-bottom: 20px;
+        }
+
+        .comment-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .comment-section.good h3 {
+            color: #7cf4c4;
+        }
+
+        .comment-section.bad h3 {
+            color: #ff9999;
+        }
+
+        .comment-section p {
+            line-height: 1.6;
+            opacity: 0.9;
+            padding-left: 15px;
+            border-left: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin-right: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="../index.html" class="back-link">← Back to Gallery</a>
+            <h1>Ice Melting Simulation</h1>
+            <p class="student-name">by Inés</p>
+        </header>
+
+        <div class="animation-box">
+            <div id="sketch-container"></div>
+        </div>
+
+        <div class="comments-box">
+            <h2>Student Comments</h2>
+            
+            <div class="comment-section good">
+                <h3>✓ What Works Well (GOOD)</h3>
+                <p>It shows very clearly how ice is melting.</p>
+            </div>
+
+            <div class="comment-section bad">
+                <h3>✗ Areas for Improvement (BAD)</h3>
+                <p>It does it very quickly and you don't see the process well.</p>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script>
+        let numParticles = 50; // Number of particles
+        let particles = []; // Array to hold particles
+
+        function setup() {
+            let canvas = createCanvas(400, 400);
+            canvas.parent('sketch-container');
+            
+            for (let i = 0; i < numParticles; i++) {
+                let x = random(width);
+                let y = random(height / 2);
+                particles[i] = new Particle(x, y);
+            }
+        }
+
+        function draw() {
+            background(255); // White background
+            
+            // Draw the ice at the top
+            fill(173, 216, 230); // Ice color (light blue)
+            rect(0, 0, width, height / 2);
+            
+            // Update and display each particle
+            for (let i = 0; i < numParticles; i++) {
+                particles[i].update();
+                particles[i].display();
+            }
+        }
+
+        // Particle class
+        class Particle {
+            constructor(x, y) {
+                this.x = x; // Position of the particle
+                this.y = y; 
+                this.speed = random(1, 2); // Random speed
+                this.isMelting = false; // Initially not melting
+            }
+
+            update() {
+                // Randomly change to melting state
+                if (!this.isMelting && random(1) < 0.03) { // 3% chance to start melting
+                    this.isMelting = true;
+                }
+                
+                // If melting, move down
+                if (this.isMelting) {
+                    this.y += this.speed;
+                }
+                
+                // Prevent moving off the screen
+                if (this.y > height) {
+                    this.y = height; // Keep at the bottom
+                }
+            }
+
+            display() {
+                if (this.isMelting) {
+                    fill(0, 0, 255, 150); // Water color (blue with transparency)
+                } else {
+                    fill(173, 216, 230); // Ice color (light blue)
+                }
+                noStroke();
+                ellipse(this.x, this.y, 10, 10); // Draw the particle
+            }
+        }
+    </script>
+</body>
+</html>

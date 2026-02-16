@@ -1,0 +1,165 @@
+/* Main Index Page Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 50px;
+}
+
+h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+.resources {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.resource-section {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+.resource-section:hover {
+    transform: translateY(-5px);
+}
+
+.section-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.section-header.maths {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.section-header.physics {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.section-header.chemistry {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+}
+
+.section-header.biology {
+    background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+    color: #333;
+}
+
+.resource-list {
+    padding: 20px;
+}
+
+.resource-item {
+    padding: 12px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.resource-item:last-child {
+    border-bottom: none;
+}
+
+.resource-item a {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: normal;
+    transition: color 0.3s ease;
+}
+
+.resource-item a:hover {
+    color: #3498db;
+}
+
+.topic-group {
+    margin-bottom: 15px;
+    padding-left: 20px;
+    border-left: 4px solid #bdc3c7;
+}
+
+.topic-group.maths {
+    border-left-color: #3498db;
+}
+
+.topic-group.physics {
+    border-left-color: #e74c3c;
+}
+
+.topic-group.chemistry {
+    border-left-color: #9b59b6;
+}
+
+.topic-group.biology {
+    border-left-color: #27ae60;
+}
+
+.topic-title {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 11pt;
+    margin-bottom: 8px;
+}
+
+.spec-text {
+    font-size: 9pt;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-left: auto;
+    padding-left: 20px;
+    flex-shrink: 0;
+}
+
+footer {
+    text-align: center;
+    color: white;
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+footer p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .resources {
+        grid-template-columns: 1fr;
+    }
+    
+    h1 {
+        font-size: 36px;
+    }
+}

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Five Nights at Woodie's</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #0a0a0a;
+      font-family: sans-serif;
+      color: white;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    canvas {
+      border-radius: 10px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .nav-links {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .nav-links a {
+      color: #4ecdc4;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 1.1em;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div id="sketch-container"></div>
+    <div class="nav-links">
+      <a href="../index.html">← Back to Home</a>
+    </div>
+  </main>
+
+  <script>
+/*
+  Five Nights at Woodie's: Long Battery Edition
+  - Power drains 3x slower.
+  - School Hours: 9 AM - 4 PM.
+  - Doors are safe when closed.
+  - Clear window lights.
+*/
+
+// --- GAME SETTINGS ---
+let currentNight = 1;
+let maxNights = 5;
+
+// --- TEACHER APPEARANCE ---
+let charlieColor = [139, 69, 19];  
+let scienceColor = [240, 240, 250];
+
+// --- GAME VARIABLES ---
+let gameState = "MENU";
+let gameTime = 0;
+let power = 100;
+let usage = 1;
+
+let leftDoorClosed = false;
+let rightDoorClosed = false;
+let leftLightOn = false;
+let rightLightOn = false;
+
+// AI LOCATIONS
+// 0:Stage, 1:Dining, 2:Kitchen, 3:Restrooms,
+// 4:W.Hall, 5:E.Hall, 6:W.Corner, 7:E.Corner,
+// 8:L.Door, 9:R.Door
+let charlieRoom = 0;
+let scienceRoom = 0;
+
+// AI TIMERS
+let charlieTimer = 0;
+let scienceTimer = 0;
+let moveThreshold = 0;
+let moveChance = 0;    
+
+let enemyInside = false;
+
+let currentCam = 0;
+let camNames = [
+  "Stage (1A)", "Dining (1B)", "Kitchen (1C)", "Restrooms (1D)",
+  "W. Hall (2A)", "E. Hall (2B)", "W. Corner (3A)", "E. Corner (3B)"
+];
+
+function setup() {
+  let canvas = createCanvas(800, 600);
+  canvas.parent('sketch-container');
+  textAlign(CENTER, CENTER);
+  noStroke();
+  updateDifficulty();
+}
+
+function draw() {
+  background(0);
+
+  if (gameState === "MENU") {
+    drawMenu();
+  } else if (gameState === "NIGHT_INTRO") {
+    drawNightIntro();
+  } else if (gameState === "GAME") {
+    drawOffice();
+    drawHUD();
+    handleGameLogic();
+  } else if (gameState === "CAMERAS") {
+    drawCameras();
+    drawHUD();
+    handleGameLogic();
+  } else if (gameState === "JUMPSCARE") {
+    drawJumpscare();
+  } else if (gameState === "GAMEOVER") {
+    drawGameOver();
+  } else if (gameState === "WIN") {
+    drawWinScreen();
+  }
+}
+
+// --- GAME LOGIC (AI & DIFFICULTY) ---
+
+function updateDifficulty() {
+  if (currentNight === 1) {
+    moveThreshold = 500;
+    moveChance = 0.3;    
+  } else if (currentNight === 2) {
+    moveThreshold = 400;
+    moveChance = 0.4;
+  } else if (currentNight === 3) {
+    moveThreshold = 300;
+    moveChance = 0.5;
+  } else if (currentNight === 4) {
+    moveThreshold = 200;
+    moveChance = 0.7;
+  } else {
+    moveThreshold = 150;
+    moveChance = 0.9;
+  }
+
+  charlieTimer = random(100);
+  scienceTimer = random(100);
+  enemyInside = false;
+}
+
+function handleGameLogic() {
+  gameTime += 0.015;
+  if (gameTime >= 100) {
+    gameState = "WIN";
+  }
+ 
+  usage = 1;
+  if (leftDoorClosed) usage++; if (rightDoorClosed) usage++;
+  if (leftLightOn) usage++; if (rightLightOn) usage++;
+  if (gameState === "CAMERAS") usage++;
+ 
+  power -= (usage * 0.003);
+ 
+  if (power <= 0) {
+    power = 0;
+    leftDoorClosed = false; rightDoorClosed = false;
+    leftLightOn = false; rightLightOn = false;
+    if (gameState === "CAMERAS") gameState = "GAME";
+    triggerJumpscare();
+  }
+ 
+  if (enemyInside) return;
+ 
+  charlieTimer++;
+  if (charlieTimer > moveThreshold) {
+    charlieTimer = 0;
+    if (random(1) < moveChance) moveCharlie();
+  }
+  scienceTimer++;
+  if (scienceTimer > moveThreshold) {
+    scienceTimer = 0;
+    if (random(1) < moveChance) moveScience();
+  }
+}
+
+function moveCharlie() {
+  if (charlieRoom === 0) charlieRoom = 1;
+  else if (charlieRoom === 1) charlieRoom = random(1) < 0.5 ? 2 : 4;
+  else if (charlieRoom === 2) charlieRoom = 1;
+  else if (charlieRoom === 4) charlieRoom = 6;
+  else if (charlieRoom === 6) {
+    if (random(1) > 0.5) charlieRoom = 8;
+  }
+  else if (charlieRoom === 8) {
+    if (leftDoorClosed) {
+      charlieRoom = 1;
+    } else {
+      enterOffice();
+    }
+  }
+}
+
+function moveScience() {
+  if (scienceRoom === 0) scienceRoom = 1;
+  else if (scienceRoom === 1) scienceRoom = random(1) < 0.5 ? 3 : 5;
+  else if (scienceRoom === 3) scienceRoom = 5;
+  else if (scienceRoom === 5) scienceRoom = 7;
+  else if (scienceRoom === 7) {
+    if (random(1) > 0.5) scienceRoom = 9;
+  }
+  else if (scienceRoom === 9) {
+    if (rightDoorClosed) {
+      scienceRoom = 1;
+    } else {
+      enterOffice();
+    }
+  }
+}
+
+function enterOffice() {
+  if (gameState === "CAMERAS") {
+    enemyInside = true;
+  } else {
+    triggerJumpscare();
+  }
+}
+
+function triggerJumpscare() {
+  gameState = "JUMPSCARE";
+}
+
+// --- VISUALS ---
+
+function drawWinScreen() {
+  background(0);
+  for(let i=0; i<10; i++) {
+    fill(random(255), random(255), random(255));
+    rect(random(width), random(height), 5, 5);
+  }
+  fill(240, 240, 220); rect(100, 150, 600, 300);
+  noFill(); stroke(0); strokeWeight(2); rect(110, 160, 580, 280);
+  fill(0); noStroke(); textAlign(LEFT);
+  textSize(30); text("Bank of Woodie's", 130, 200);
+  textSize(15); text("Date: Night " + currentNight, 550, 200);
+  textSize(20); text("Pay to: _________________", 130, 280);
+  textSize(25); text("The Student", 350, 275);
+  textSize(40); text("67 Rupees", 500, 300);
+  stroke(0); strokeWeight(2); line(130, 350, 650, 350); noStroke();
+  textSize(15); text("Memo: Good Job", 130, 380);
+  textSize(20); text("Signed: Mr. Wood", 450, 400);
+
+  fill(255); textAlign(CENTER);
+  textSize(20); text("Click the check to advance", width/2, 550);
+}
+
+function drawOffice() {
+  background(15);
+  fill(30); quad(0, 600, 800, 600, 700, 300, 100, 300);
+  fill(25); quad(0, 0, 800, 0, 700, 100, 100, 100);
+  fill(40); rect(100, 100, 600, 200);
+  fill(200); rect(250, 120, 60, 80); rect(490, 120, 60, 80);
+  drawDoor(true);  drawDoor(false);
+  fill(60, 40, 20); rect(0, 400, 800, 200);
+}
+
+function drawDoor(isLeft) {
+  let xOffset = isLeft ? 0 : 650;
+  let doorClosed = isLeft ? leftDoorClosed : rightDoorClosed;
+  let lightOn = isLeft ? leftLightOn : rightLightOn;
+ 
+  fill(5); rect(xOffset, 100, 150, 400);
+
+  if (lightOn) {
+    fill(255, 255, 220, 100);
+    rect(xOffset, 100, 150, 200);
+   
+    if (isLeft && charlieRoom === 8) {
+      push(); translate(xOffset+75, 250); scale(1.2); drawCharlie(); pop();
+    }
+    if (!isLeft && scienceRoom === 9) {
+      push(); translate(xOffset+75, 250); scale(1.2); drawScience(); pop();
+    }
+  }
+
+  if (doorClosed) {
+    fill(80); stroke(40); strokeWeight(8); rect(xOffset, 100, 150, 400);
+    noStroke(); fill(50); rect(xOffset+10, 150, 130, 300);
+  }
+ 
+  let btnX = isLeft ? 160 : 600;
+  stroke(100); strokeWeight(2);
+  if (doorClosed) fill(0, 200, 0); else fill(200, 0, 0); rect(btnX, 250, 40, 40, 5);
+  if (lightOn) fill(200, 255, 255); else fill(220); rect(btnX, 300, 40, 40, 5);
+}
+
+function drawCameras() {
+  background(10);
+  drawRoomBackground(currentCam);
+  push(); translate(width/2, height/2 + 50);
+  if (charlieRoom === currentCam) { push(); translate(-100, 0); drawCharlie(); pop(); }
+  if (scienceRoom === currentCam) { push(); translate(100, 0); drawScience(); pop(); }
+  pop();
+ 
+  for(let i=0; i<300; i++) { fill(255, 40); rect(random(width), random(height), 2, 2); }
+ 
+  fill(255); textSize(24); textAlign(LEFT); noStroke();
+  text("REC ●", 50, 50); text(camNames[currentCam], 50, 80);
+ 
+  if (enemyInside) {
+    fill(255, 0, 0); textSize(30); text("!! ERROR !!", width/2 - 50, height/2);
+    text("SYSTEM COMPROMISED", width/2 - 100, height/2 + 40);
+  }
+  textAlign(CENTER); drawMap();
+}
+
+function drawRoomBackground(camID) {
+  stroke(50); strokeWeight(1);
+  line(0,0,width/2,height/2); line(width,0,width/2,height/2);
+  line(0,height,width/2,height/2); line(width,height,width/2,height/2); noStroke();
+ 
+  if (camID === 0) {
+    fill(100, 0, 0); rect(100, 100, 600, 400);
+    fill(50, 20, 0); rect(150, 450, 500, 100);
+  }
+  else if (camID === 1 || camID === 2) {
+    for(let x=0; x<width; x+=100) {
+      for(let y=300; y<height; y+=50) {
+        if ((x+y)%100===0) fill(255); else fill(20);
+        rect(x, y, 100, 50);
+      }
+    }
+    if (camID === 2) {
+      fill(100); rect(100, 200, 200, 300);
+      fill(80); rect(400, 300, 300, 200);
+    }
+  }
+  else if (camID >= 4) {
+    fill(10); rect(200, 200, 400, 400);
+    stroke(100); line(200, 200, 200, 600); line(600, 200, 600, 600); noStroke();
+  }
+}
+
+function drawMap() {
+  let mx = 600; let my = 350;
+  fill(0, 150); rect(mx - 20, my - 20, 200, 200, 10);
+  drawMapBtn(0, mx+60, my, "1A"); drawMapBtn(1, mx+60, my+40, "1B");
+  drawMapBtn(2, mx+110, my+40, "1C"); drawMapBtn(3, mx+110, my+80, "1D");
+  drawMapBtn(4, mx+10, my+80, "2A"); drawMapBtn(5, mx+60, my+80, "2B");
+  drawMapBtn(6, mx+10, my+120, "3A"); drawMapBtn(7, mx+60, my+120, "3B");
+}
+
+function drawMapBtn(id, x, y, label) {
+  if (currentCam === id) fill(0, 255, 0); else fill(80);
+  rect(x, y, 40, 30); fill(255); textSize(10); text(label, x+20, y+15);
+}
+
+function drawCharlie() {
+  noStroke();
+  fill(charlieColor[0], charlieColor[1], charlieColor[2]);
+  rectMode(CENTER);
+  rect(0, 60, 110, 130, 20);
+  fill(255); triangle(-20, 0, 20, 0, 0, 80);
+  fill(100, 0, 0); triangle(-5, 0, 5, 0, 0, 40);
+  fill(255, 224, 189); ellipse(0, -40, 70, 80);
+  fill(50, 30, 10); arc(0, -50, 75, 60, PI, 0);
+  fill(0); ellipse(-15, -40, 8, 8); ellipse(15, -40, 8, 8);
+  noFill(); stroke(0); strokeWeight(2);
+  line(-25, -40, 25, -40); rect(-25, -45, 20, 12); rect(5, -45, 20, 12);
+  noStroke(); fill(0); rect(0, -10, 20, 2);
+  rectMode(CORNER);
+}
+
+function drawScience() {
+  noStroke();
+  fill(scienceColor[0], scienceColor[1], scienceColor[2]);
+  rectMode(CENTER);
+  rect(0, 60, 60, 140, 5);
+  fill(50, 50, 150); rect(0, 60, 10, 140);
+  fill(255, 224, 189); ellipse(0, -40, 60, 70);
+  fill(20); arc(0, -45, 65, 50, PI, 0);
+  fill(0); ellipse(-10, -40, 6, 6); ellipse(10, -40, 6, 6);
+  fill(0); rect(0, -15, 15, 2);
+  rectMode(CORNER);
+}
+
+function drawMenu() {
+  background(10); fill(255); textSize(40); text("Five Nights at Woodie's", width/2, 150); textSize(20); text("School Hours Edition", width/2, 200);
+  fill(100); rect(width/2 - 100, 250, 200, 50); fill(255); text("START NIGHT " + currentNight, width/2, 282);
+}
+
+function drawNightIntro() {
+  background(0); fill(255); textSize(50); text("NIGHT " + currentNight, width/2, height/2); textSize(15); text("Click to Begin", width/2, height/2 + 100);
+}
+
+function drawGameOver() {
+  background(50, 0, 0); fill(255); textSize(50); text("GAME OVER", width/2, height/2);
+}
+
+function drawJumpscare() {
+  background(0); if (frameCount % 5 === 0) background(150, 0, 0);
+  push(); translate(width/2 + random(-15,15), height/2 + random(-15,15)); scale(3.5); if (random(1) > 0.5) drawCharlie(); else drawScience(); pop();
+}
+
+function drawHUD() {
+  fill(255, 255, 255, 100); rect(200, 550, 400, 50); fill(0); textSize(20);
+  text(gameState === "GAME" ? "OPEN MONITOR" : "CLOSE MONITOR", 400, 575);
+  textAlign(LEFT); textSize(18); fill(255); text("Power: " + floor(power) + "%", 20, 30); text("Night: " + currentNight, 20, 55);
+ 
+  textSize(24); textAlign(CENTER);
+  let hour = floor(map(gameTime, 0, 100, 9, 16));
+  let displayTime = "";
+  if (hour < 12) displayTime = hour + " AM";
+  else if (hour === 12) displayTime = "12 PM";
+  else displayTime = (hour - 12) + " PM";
+  text(displayTime, 700, 30);
+}
+
+// --- CONTROLS ---
+
+function mousePressed() {
+  if (gameState === "MENU") {
+    gameState = "NIGHT_INTRO";
+  }
+  else if (gameState === "NIGHT_INTRO") {
+    gameState = "GAME";
+    updateDifficulty();
+  }
+  else if (gameState === "JUMPSCARE" || gameState === "GAMEOVER") {
+    gameState = "MENU";
+    power = 100; gameTime = 0; charlieRoom = 0; scienceRoom = 0;
+  }
+  else if (gameState === "WIN") {
+    if (currentNight < maxNights) { currentNight++; gameState = "NIGHT_INTRO"; }
+    else { gameState = "MENU"; currentNight = 1; }
+    power = 100; gameTime = 0; updateDifficulty();
+  }
+ 
+  else if (gameState === "GAME") {
+    if (mouseY > 550 && mouseX > 200 && mouseX < 600) gameState = "CAMERAS";
+   
+    if (mouseX > 160 && mouseX < 200) {
+      if (mouseY > 250 && mouseY < 290) { leftDoorClosed = !leftDoorClosed; }
+      if (mouseY > 300 && mouseY < 340) leftLightOn = !leftLightOn;
+    }
+    if (mouseX > 600 && mouseX < 640) {
+      if (mouseY > 250 && mouseY < 290) { rightDoorClosed = !rightDoorClosed; }
+      if (mouseY > 300 && mouseY < 340) rightLightOn = !rightLightOn;
+    }
+  }
+  else if (gameState === "CAMERAS") {
+    if (mouseY > 550 && mouseX > 200 && mouseX < 600) {
+      if (enemyInside) triggerJumpscare();
+      else gameState = "GAME";
+    }
+    let mx = 600; let my = 350;
+    if (mouseX>mx+60 && mouseX<mx+100 && mouseY>my && mouseY<my+30) currentCam = 0;
+    if (mouseX>mx+60 && mouseX<mx+100 && mouseY>my+40 && mouseY<my+70) currentCam = 1;
+    if (mouseX>mx+110 && mouseX<mx+150 && mouseY>my+40 && mouseY<my+70) currentCam = 2;
+    if (mouseX>mx+110 && mouseX<mx+150 && mouseY>my+80 && mouseY<my+110) currentCam = 3;
+    if (mouseX>mx+10 && mouseX<mx+50 && mouseY>my+80 && mouseY<my+110) currentCam = 4;
+    if (mouseX>mx+60 && mouseX<mx+100 && mouseY>my+80 && mouseY<my+110) currentCam = 5;
+    if (mouseX>mx+10 && mouseX<mx+50 && mouseY>my+120 && mouseY<my+150) currentCam = 6;
+    if (mouseX>mx+60 && mouseX<mx+100 && mouseY>my+120 && mouseY<my+150) currentCam = 7;
+  }
+}
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Theory Worksheet</title>
+    <link rel="stylesheet" href="../../css/maths.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Set Theory - Create Your Own Sets</h1>
+        <div class="subtitle">IGCSE Edexcel Mathematics - Extended</div>
+        <div class="spec-ref">1.3 Sets & Venn Diagrams<br>1.4 Set Notation</div>
+    </div>
+
+    <div class="definition-box">
+        <strong>Key Terms:</strong><br>
+        <span class="notation"><strong>∪</strong> = Union (all elements in either set)</span><br>
+        <span class="notation"><strong>∩</strong> = Intersection (elements in both sets)</span><br>
+        <span class="notation"><strong>'</strong> = Complement (elements NOT in the set)</span><br>
+        <span class="notation"><strong>ξ</strong> = Universal set (all possible elements)</span><br>
+        <span class="notation"><strong>n(A)</strong> = Number of elements in set A</span>
+    </div>
+
+    <h2>Venn Diagram Reference</h2>
+    <div class="diagram-box">
+        <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 30px;">
+            <div style="text-align: center;">
+                <svg width="180" height="150" viewBox="0 0 180 150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <rect width="180" height="150" fill="white"/>
+                    <!-- Left circle outline -->
+                    <circle cx="60" cy="75" r="45" fill="none" stroke="#333" stroke-width="2"/>
+                    <!-- Right circle outline -->
+                    <circle cx="120" cy="75" r="45" fill="none" stroke="#333" stroke-width="2"/>
+                    <!-- Intersection shading -->
+                    <defs>
+                        <clipPath id="intersect">
+                            <circle cx="60" cy="75" r="45"/>
+                        </clipPath>
+                    </defs>
+                    <circle cx="120" cy="75" r="45" fill="#3498db" opacity="0.7" clip-path="url(#intersect)"/>
+                    <!-- Labels -->
+                    <text x="35" y="80" font-size="16" font-weight="bold" fill="#333">A</text>
+                    <text x="125" y="80" font-size="16" font-weight="bold" fill="#333">B</text>
+                </svg>
+                <p style="margin-top: 10px;"><strong>A ∩ B (Intersection)</strong><br><small>Only shared part shaded</small></p>
+            </div>
+            <div style="text-align: center;">
+                <svg width="180" height="150" viewBox="0 0 180 150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <rect width="180" height="150" fill="white"/>
+                    <!-- Left circle -->
+                    <circle cx="60" cy="75" r="45" fill="#3498db" opacity="0.7" stroke="#333" stroke-width="2"/>
+                    <!-- Right circle -->
+                    <circle cx="120" cy="75" r="45" fill="#3498db" opacity="0.7" stroke="#333" stroke-width="2"/>
+                    <!-- Labels -->
+                    <text x="35" y="80" font-size="16" font-weight="bold" fill="#333">A</text>
+                    <text x="125" y="80" font-size="16" font-weight="bold" fill="#333">B</text>
+                </svg>
+                <p style="margin-top: 10px;"><strong>A ∪ B (Union)</strong><br><small>Both circles shaded</small></p>
+            </div>
+            <div style="text-align: center;">
+                <svg width="180" height="150" viewBox="0 0 180 150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Outer rectangle (universal set) -->
+                    <rect width="180" height="150" fill="#3498db" opacity="0.7"/>
+                    <!-- Circle (set A) -->
+                    <circle cx="90" cy="75" r="40" fill="white" stroke="#333" stroke-width="2"/>
+                    <!-- Labels -->
+                    <text x="80" y="80" font-size="16" font-weight="bold" fill="#333">A</text>
+                    <text x="20" y="30" font-size="12" font-weight="bold" fill="#333">A'</text>
+                    <text x="140" y="145" font-size="20" font-weight="bold" fill="#333">ξ</text>
+                </svg>
+                <p style="margin-top: 10px;"><strong>A' (Complement)</strong><br><small>Everything outside A shaded</small></p>
+            </div>
+        </div>
+    </div>
+
+    <h2>Part A: Creating Your Own Sets</h2>
+
+    <div class="question">
+        <div class="question-number">1. Define the following sets using your own examples: <span class="marks">[8]</span></div>
+        <div class="instruction">(List the elements using set notation, e.g., A = {2, 4, 6, 8})</div>
+        
+        <p><strong>a)</strong> Set A = A set of 6 even numbers between 1 and 20</p>
+        <div class="answer-space">A = { }</div>
+
+        <p><strong>b)</strong> Set B = A set of 5 prime numbers less than 20</p>
+        <div class="answer-space">B = { }</div>
+
+        <p><strong>c)</strong> Set C = A set of 4 multiples of 3 between 1 and 20</p>
+        <div class="answer-space">C = { }</div>
+
+        <p><strong>d)</strong> Universal set ξ = All integers from 1 to 20</p>
+        <div class="answer-space">ξ = { }</div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">2. Using your sets from Question 1, list the elements of: <span class="marks">[8]</span></div>
+        
+        <p><strong>a)</strong> A ∩ B (elements in both A and B)</p>
+        <div class="answer-space"></div>
+
+        <p><strong>b)</strong> A ∪ C (all elements in A or C or both)</p>
+        <div class="answer-space"></div>
+
+        <p><strong>c)</strong> B ∩ C</p>
+        <div class="answer-space"></div>
+
+        <p><strong>d)</strong> A' (elements in ξ but not in A)</p>
+        <div class="answer-space"></div>
+    </div>
+
+    <h2>Part B: Venn Diagrams</h2>
+
+    <div class="question">
+        <div class="question-number">3. Draw a Venn diagram to represent your sets A and B from Question 1. <span class="marks">[4]</span></div>
+        <div class="instruction">(Draw two overlapping circles, label them A and B, and place all elements in the correct regions)</div>
+        <div class="venn-space"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-number">4. Real-Life Application <span class="marks">[10]</span></div>
+        <p>Create your own example using school-based scenarios:</p>
+        
+        <p><strong>a)</strong> Define the universal set and two subsets. For example:</p>
+        <div class="instruction">ξ = {all students in your class}<br>
+        Set A = Students who play football<br>
+        Set B = Students who play cricket</div>
+        <div class="answer-space">
+            ξ = <br><br>
+            Set A = <br><br>
+            Set B = <br><br>
+        </div>
+        
+        <p><strong>b)</strong> Use your sets to answer these questions:</p>
+        <div class="answer-space">
+            n(A) = _____&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n(B) = _____&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n(ξ) = _____<br><br>
+            n(A ∩ B) = _____&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;n(A ∪ B) = _____
+        </div>
+
+        <p><strong>c)</strong> Complete the Venn diagram:</p>
+        <div class="venn-space"></div>
+    </div>
+
+    <p style="text-align: right; margin-top: 30px;"><strong>Total: [30 marks]</strong></p>
+
+</body>
+</html>

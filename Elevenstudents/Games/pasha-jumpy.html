@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pasha Jumpy</title>
+  <style>
+    body { margin: 0; background: #0e0b16; color: #fff; font-family: "Courier New", monospace; }
+    .back { position: fixed; top: 12px; right: 12px; color: #00e5ff; text-decoration: none; border: 1px solid #00e5ff; padding: 8px 12px; border-radius: 8px; font-weight: bold; }
+    .hint { position: fixed; top: 12px; left: 12px; background: rgba(0,0,0,0.6); padding: 8px 12px; border: 1px solid #00e5ff; border-radius: 8px; box-shadow: 0 0 12px rgba(0,229,255,0.35); }
+    canvas { display: block; margin: 0 auto; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.2/p5.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+  <a class="back" href="../index.html">← BACK</a>
+  <a class="back" href="highscores.html" style="right: 130px;">🏆 HIGH SCORES</a>
+  <div class="hint">SPACE to flap • Survive the chaos</div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+      authDomain: "elevenstudents-76f31.firebaseapp.com",
+      databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "elevenstudents-76f31",
+      storageBucket: "elevenstudents-76f31.firebasestorage.app",
+      messagingSenderId: "692298982954",
+      appId: "1:692298982954:web:987f73aec7d26d03f8c553"
+    };
+    let database;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      database = firebase.database();
+    } catch (error) {
+      console.error('Firebase init error:', error);
+    }
+    function checkHighScore(finalScore) {
+      if (!database || finalScore === 0) return;
+      const scoresRef = database.ref('jumpyHighScores');
+      scoresRef.once('value').then((snapshot) => {
+        const scores = snapshot.val() || [];
+        const qualifies = scores.length < 10 || finalScore > scores[scores.length - 1].score;
+        if (qualifies) {
+          let playerName = prompt('🎉 You made the Top 10! Enter your name:');
+          if (playerName) {
+            playerName = playerName.trim() || 'Anonymous';
+            if (playerName.length > 20) playerName = playerName.substring(0, 20);
+            scores.push({ name: playerName, score: finalScore, date: new Date().toISOString() });
+            scores.sort((a, b) => b.score - a.score);
+            const top10 = scores.slice(0, 10);
+            scoresRef.set(top10).then(() => {
+              const rank = top10.findIndex(e => e.score === finalScore && e.name === playerName) + 1;
+              alert(`🏆 You ranked #${rank} with ${finalScore} points!`);
+            });
+          }
+        }
+      });
+    }
+
+    //=========================================================
+    // 🤯 SUPER ULTIMATE FLAPPY BIRD P5.JS (CHAOS EDITION)
+    //=========================================================
+
+    // --- Global Game Variables ---
+
+    let bird;
+    let pipes = [];
+    let score = 0;
+    let highscore = 0;
+    let isPlaying = false;
+    let groundY;
+    let groundSpeed = 2;
+
+    // --- LEVEL AND THEME DEFINITIONS ---
+    const THEMES = [
+        // Level 1: Blue Night (Static Pipes, Base Speed)
+        { threshold: 0, speedMultiplier: 1.0, movingPipes: false, background: [20, 30, 70], pipeColor: [0, 80, 200] },
+        // Level 2: Red Dusk (Moving Pipes start here, faster)
+        { threshold: 10, speedMultiplier: 1.25, movingPipes: true, background: [150, 50, 0], pipeColor: [180, 50, 50] },
+        // Level 3: Green Day (Faster, Pipes move faster/wider)
+        { threshold: 20, speedMultiplier: 1.5, movingPipes: true, background: [135, 206, 235], pipeColor: [50, 150, 50] },
+        // Level 4: Purple Cosmic (Maximum chaos)
+        { threshold: 30, speedMultiplier: 1.75, movingPipes: true, background: [80, 0, 150], pipeColor: [255, 200, 0] }
+    ];
+
+    let currentTheme;
+    let pipeSpawnRate = 100;
+
+    // --- 1. Setup Function (runs once) ---
+
+    function setup() {
+        createCanvas(600, 480);
+        noSmooth();
+        groundY = height - 50;
+        resetGame();
+        textSize(32);
+        textAlign(CENTER, TOP);
+        frameRate(60);
+    }
+
+    // --- 2. Draw Function (runs continuously) ---
+
+    function draw() {
+        background(currentTheme.background);
+
+        // Bird's forward position is adjusted based on level speed
+        bird.x = width / 4 + (currentTheme.speedMultiplier - 1.0) * 50;
+
+        drawScrollingGround();
+
+        // --- Update and Draw Pipes ---
+        for (let i = pipes.length - 1; i >= 0; i--) {
+            pipes[i].show();
+
+            if (isPlaying) {
+                pipes[i].update();
+
+                // Collision Check
+                if (pipes[i].hits(bird)) {
+                    gameOver();
+                }
+
+                // Score Check
+                if (pipes[i].pass(bird)) {
+                    score++;
+                    checkThemeChange();
+                }
+
+                // Clean up
+                if (pipes[i].offscreen()) {
+                    pipes.splice(i, 1);
+                }
+            }
+        }
+
+        // --- Bird Update and Drawing ---
+        bird.show();
+
+        if (isPlaying) {
+            bird.update();
+
+            // Pipe generation
+            if (frameCount % pipeSpawnRate === 0) {
+                pipes.push(new Pipe(groundY, currentTheme.speedMultiplier));
+            }
+
+            // Ground/ceiling collision check (must happen AFTER bird update)
+            if (bird.y > groundY - bird.size / 2 || bird.y < 0) {
+                gameOver();
+                bird.y = groundY - bird.size / 2;
+            }
+
+        } else {
+            displayOverlay();
+        }
+
+        displayHUD();
+    }
+
+    // --- 3. Theme Management and Resets ---
+
+    function checkThemeChange() {
+        for (let i = THEMES.length - 1; i >= 0; i--) {
+            if (score >= THEMES[i].threshold) {
+                if (currentTheme !== THEMES[i]) {
+                    currentTheme = THEMES[i];
+                }
+                break;
+            }
+        }
+    }
+
+    function resetGame() {
+        score = 0;
+        pipes = [];
+        bird = new Bird();
+        currentTheme = THEMES[0];
+        pipes.push(new Pipe(groundY, currentTheme.speedMultiplier));
+        scoreSubmittedJumpy = false;
+    }
+
+    // --- 4. Supporting Functions (Ground, HUD, Input, GameOver) ---
+
+    function drawScrollingGround() {
+        fill(40, 50, 70);
+        rect(0, groundY, width, height - groundY);
+
+        let offset = frameCount * groundSpeed * currentTheme.speedMultiplier;
+
+        for (let i = 0; i < width / 10; i++) {
+            let xPos = (i * 50 + offset) % (width + 50) - 50;
+            fill(255, 255, 100);
+            rect(xPos, groundY - 5, 2, 2);
+        }
+    }
+
+    function displayHUD() {
+        fill(255);
+        text("SCORE: " + score, width / 2, 10);
+
+        textSize(16);
+        text("HIGH: " + highscore, width - 60, 10);
+
+        let currentLevel = THEMES.indexOf(currentTheme) + 1;
+        text("LEVEL: " + currentLevel, 60, 10);
+
+        if (!isPlaying) {
+            if (frameCount % 60 < 30) {
+                textSize(24);
+                text("Press SPACE to Flap & Begin", width / 2, height / 2 + 80);
+            }
+        }
+        textSize(32);
+    }
+
+    function keyPressed() {
+        if (key === ' ' || keyCode === 32) {
+            if (!isPlaying) {
+                resetGame();
+                isPlaying = true;
+            }
+            bird.flap();
+        }
+    }
+
+    function displayOverlay() {
+        if (frameCount % 10 < 5 && bird.isDead) {
+             fill(255, 255, 255, 180);
+             rect(0, 0, width, height);
+        }
+
+        fill(100, 0, 0, 200);
+        rect(0, 0, width, height);
+
+        fill(255);
+        text("GAME OVER", width / 2, height / 2 - 40);
+        text("Final Score: " + score, width / 2, height / 2);
+    }
+
+    let scoreSubmittedJumpy = false;
+    function gameOver() {
+        if (isPlaying) {
+            isPlaying = false;
+            bird.isDead = true;
+            if (score > highscore) {
+                highscore = score;
+            }
+            if (!scoreSubmittedJumpy) {
+                checkHighScore(score);
+                scoreSubmittedJumpy = true;
+            }
+        }
+    }
+
+    // --- 5. Bird Class (UPDATED for speed visual and wing animation) ---
+
+    class Bird {
+        constructor() {
+            this.y = height / 2;
+            this.x = width / 4;
+            this.size = 20;
+            this.gravity = 0.5;
+            this.velocity = 0;
+            this.lift = -7.0;
+            this.angle = 0;
+            this.isDead = false;
+            this.deathSpinRate = 0.5;
+            this.wingFlap = 0;
+            this.eagleSound = null;
+        }
+
+        update() {
+            if (this.isDead) {
+                this.gravity = 1.0;
+                this.angle += this.deathSpinRate;
+                this.deathSpinRate += 0.05;
+            }
+
+            this.velocity += this.gravity;
+            this.y += this.velocity;
+
+            this.velocity = constrain(this.velocity, -12, 12);
+            this.wingFlap = (this.wingFlap + 0.15) % TWO_PI; // Continuous wing animation
+        }
+
+        flap() {
+            if (!this.isDead) {
+                this.velocity = this.lift;
+                this.playEagleSound();
+            }
+        }
+
+        playEagleSound() {
+            // Play bald eagle sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioContext.currentTime;
+            
+            // Create oscillators for eagle chirp sound
+            const osc1 = audioContext.createOscillator();
+            const osc2 = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+            const gain2 = audioContext.createGain();
+            
+            osc1.type = 'sine';
+            osc2.type = 'triangle';
+            
+            osc1.frequency.setValueAtTime(800, now);
+            osc1.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
+            
+            osc2.frequency.setValueAtTime(600, now);
+            osc2.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+            
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            gain2.gain.setValueAtTime(0.08, now);
+            gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            osc1.connect(gain);
+            osc2.connect(gain2);
+            gain.connect(audioContext.destination);
+            gain2.connect(audioContext.destination);
+            
+            osc1.start(now);
+            osc1.stop(now + 0.2);
+            osc2.start(now);
+            osc2.stop(now + 0.2);
+        }
+
+        show() {
+            push();
+            // Note: X-position is updated globally in draw() for forward speed effect
+            translate(this.x, this.y);
+            rotate(this.angle);
+
+            // Draw bird body
+            stroke(0);
+            strokeWeight(1);
+            fill(255, 200, 0); // Gold color
+            rectMode(CENTER);
+            rect(0, 0, this.size, this.size * 0.8);
+
+            // Draw animated wings
+            let wingOffset = sin(this.wingFlap) * 8;
+            
+            // Left wing
+            fill(200, 140, 0); // Darker gold
+            arc(-this.size / 2, 0, 12, 8, -PI / 2, PI / 2 + wingOffset * 0.1);
+            
+            // Right wing
+            arc(this.size / 2, 0, 12, 8, PI / 2, PI + PI / 2 - wingOffset * 0.1);
+
+            // Beak
+            fill(255, 165, 0);
+            rect(this.size / 2, 0, 4, 4);
+
+            // Eye (white)
+            fill(255);
+            rect(this.size / 4, -this.size / 4, 4, 4);
+            
+            // Eye pupil
+            fill(0);
+            rect(this.size / 4 + 1, -this.size / 4 + 1, 2, 2);
+
+            pop();
+        }
+    }
+
+    // --- 6. Pipe Class (UPDATED for vertical movement) ---
+
+    class Pipe {
+        constructor(gY, speedMultiplier) {
+            this.gY = gY;
+            this.gap = 120;
+            this.x = width;
+            this.w = 40;
+            this.speed = 2.5 * speedMultiplier;
+            this.scored = false;
+
+            // Initial static gap position
+            this.initialTop = random(height / 8, gY - 250);
+            this.top = this.initialTop;
+
+            // Movement variables for sine wave oscillation
+            this.moveOffset = random(0, 100); // Ensures pipes start at different vertical phases
+            this.moveAmplitude = 50 + (speedMultiplier - 1.0) * 100; // Oscillation height increases with speed
+            this.moveFrequency = 0.03 * speedMultiplier; // Oscillation speed increases with speed
+
+            // Calculate bottom based on current top
+            this.bottom = gY - this.top - this.gap;
+        }
+
+        update() {
+            this.x -= this.speed;
+
+            // Check if movement is enabled by the current theme
+            if (currentTheme.movingPipes) {
+                // Calculate new top position using sine wave for smooth up/down motion
+                // map() ensures the movement stays within a safe vertical range
+                let verticalShift = sin(frameCount * this.moveFrequency + this.moveOffset) * this.moveAmplitude;
+
+                // Apply the shift, constrained to avoid pipes going too high or low
+                this.top = constrain(this.initialTop + verticalShift,
+                                     height / 8,
+                                     this.gY - this.gap - height / 8);
+
+                // Recalculate bottom position based on the new top
+                this.bottom = this.gY - this.top - this.gap;
+            }
+        }
+
+        show() {
+            let themeColor = currentTheme.pipeColor;
+
+            let baseColor = color(themeColor[0], themeColor[1], themeColor[2]);
+            let highlight = color(themeColor[0] + 100, themeColor[1] + 100, themeColor[2] + 100);
+            let headColor = color(themeColor[0] + 50, themeColor[1] + 50, themeColor[2] + 50);
+
+            // TOP Pipe Body
+            fill(baseColor);
+            rect(this.x, 0, this.w, this.top);
+            fill(highlight);
+            rect(this.x + this.w - 5, 0, 2, this.top);
+
+            // BOTTOM Pipe Body
+            fill(baseColor);
+            rect(this.x, this.gY - this.bottom, this.w, this.bottom);
+            fill(highlight);
+            rect(this.x + this.w - 5, this.gY - this.bottom, 2, this.bottom);
+
+
+            // Pipe Head/Lid
+            fill(headColor);
+            rect(this.x - 5, this.top - 10, this.w + 10, 10);
+            rect(this.x - 5, this.gY - this.bottom - 10, this.w + 10, 10);
+        }
+
+        // ... (offscreen, pass, hits functions remain the same)
+        offscreen() {
+            return this.x < -this.w;
+        }
+
+        pass(bird) {
+            if (bird.x > this.x + this.w / 2 && !this.scored) {
+                this.scored = true;
+                return true;
+            }
+            return false;
+        }
+
+        hits(bird) {
+            if (bird.x + bird.size / 2 > this.x && bird.x - bird.size / 2 < this.x + this.w) {
+
+                let topCollision = bird.y - bird.size / 2 < this.top;
+                let bottomCollision = bird.y + bird.size / 2 > this.gY - this.bottom;
+
+                if (topCollision || bottomCollision) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+  </script>
+</body>
+</html>

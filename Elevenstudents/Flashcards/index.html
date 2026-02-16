@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevenstudents Flashcards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 90%;
+            padding: 20px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            color: #667eea;
+        }
+
+        .login-screen, .deck-selector, .study-screen {
+            display: none;
+        }
+
+        .login-screen.active, .deck-selector.active, .study-screen.active {
+            display: block;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-google {
+            background: #4285f4;
+        }
+
+        .btn-google:hover {
+            background: #357ae8;
+        }
+
+        .deck-list {
+            margin: 20px 0;
+        }
+
+        .deck-item {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .deck-item:hover {
+            background: #e8e8e8;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .deck-item h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .deck-item p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .flashcard {
+            background: white;
+            border-radius: 12px;
+            padding: 60px 40px;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+            line-height: 1.6;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 2px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+        }
+
+        .flashcard.flipped {
+            background: #f9f9f9;
+        }
+
+        .rating-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .rating-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rating-btn:hover {
+            transform: translateY(-3px);
+        }
+
+        .rating-btn-1 {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .rating-btn-2 {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        .rating-btn-3 {
+            background: #6bcf7f;
+            color: white;
+        }
+
+        .rating-btn-4 {
+            background: #4dabf7;
+            color: white;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .hint {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .card img {
+            max-width: 100%;
+            height: auto;
+            max-height: 500px;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
+        .user-info {
+            text-align: right;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: white;
+        }
+
+        .back-btn {
+            background: #95a5a6;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+
+        .progress-bar-container {
+            display: flex;
+            height: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .progress-unseen {
+            background: #95a5a6;
+        }
+
+        .progress-learning {
+            background: #ffd93d;
+            color: #333;
+        }
+
+        .progress-mastered {
+            background: #6bcf7f;
+        }
+
+        .deck-stats {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+
+        .badge-unseen {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+
+        .badge-learning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-mastered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .settings-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 2px solid #4a90e2;
+            color: #4a90e2;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .settings-button:hover {
+            background: #4a90e2;
+            color: white;
+        }
+
+        .settings-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-panel {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .settings-panel h2 {
+            margin-top: 0;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .setting-item {
+            margin-bottom: 25px;
+        }
+
+        .setting-item label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        .setting-item input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            box-sizing: border-box;
+        }
+
+        .setting-item input[type="number"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .reset-button {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .reset-button:hover {
+            background: #c0392b;
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .settings-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .save-settings {
+            background: #6bcf7f;
+            color: white;
+        }
+
+        .save-settings:hover {
+            background: #5ab86d;
+        }
+
+        .cancel-settings {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .cancel-settings:hover {
+            background: #7f8c8d;
+        }
+
+        .setting-description {
+            font-size: 0.85em;
+            color: #777;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Login Screen -->
+        <div class="login-screen active">
+            <div class="card">
+                <h1>🎓 Elevenstudents Flashcards</h1>
+                <p style="text-align: center; margin-bottom: 30px; font-size: 1.1em; color: #666;">
+                    Master IGCSE Science with spaced repetition
+                </p>
+                <button class="btn btn-google" onclick="loginWithGoogle()">
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+
+        <!-- Deck Selector -->
+        <div class="deck-selector">
+            <button class="settings-button" onclick="openSettings()" style="right: 260px;">⚙️ Settings</button>
+            <button class="settings-button" onclick="openProgress()" style="right: 140px;">📊 Progress</button>
+            <button class="settings-button" onclick="openDebugConsole()" style="right: 20px;">🐛 Debug</button>
+            <div class="card">
+                <div class="user-info" id="userInfo"></div>
+                <h1>Choose Your Deck</h1>
+                <div class="deck-list" id="deckList">
+                    <div class="loading">Loading decks...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Study Screen -->
+        <div class="study-screen">
+            <div class="card">
+                <button class="btn back-btn" onclick="backToDecks()">← Back to Decks</button>
+                
+                <h2 id="deckTitle" style="text-align: center; color: #667eea; margin-bottom: 20px;"></h2>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="newCount">0</div>
+                        <div class="stat-label">New</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="reviewCount">0</div>
+                        <div class="stat-label">Review</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="studiedToday">0</div>
+                        <div class="stat-label">Studied</div>
+                    </div>
+                </div>
+
+                <div id="flashcardContainer">
+                    <div class="loading">Loading cards...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-screen" class="settings-screen">
+            <div class="settings-panel">
+                <h2>⚙️ Settings</h2>
+                
+                <div class="setting-item">
+                    <label for="newCardsPerDay">New Cards Per Day</label>
+                    <input type="number" id="newCardsPerDay" min="1" max="100" value="5">
+                    <div class="setting-description">Maximum number of new cards to introduce each day</div>
+                </div>
+
+                <div class="setting-item">
+                    <label>Reset All Progress</label>
+                    <button class="reset-button" onclick="resetProgress()">⚠️ Reset Everything</button>
+                    <div class="setting-description">Warning: This will delete all your study progress permanently</div>
+                </div>
+
+                <div class="settings-actions">
+                    <button class="save-settings" onclick="saveSettings()">Save Settings</button>
+                    <button class="cancel-settings" onclick="closeSettings()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Console Modal -->
+        <div id="debug-console" class="settings-screen">
+            <div class="settings-panel" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+                <h2>🐛 Debug Console</h2>
+                <div id="debugContent" style="font-family: monospace; font-size: 0.85em; white-space: pre-wrap; background: #f5f5f5; padding: 15px; border-radius: 6px; max-height: 500px; overflow-y: auto;"></div>
+                <div class="settings-actions">
+                    <button class="cancel-settings" onclick="closeDebugConsole()">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Screen -->
+        <div id="progress-screen" class="settings-screen">
+            <div class="settings-panel" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+                <h2>📊 Your Progress</h2>
+                <button class="cancel-settings" onclick="closeProgress()" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 10px 20px;">Close</button>
+                <div style="margin-top: 40px;">
+                    <div id="progressCharts" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                        <div>
+                            <h3 id="overallChartTitle" style="text-align: center; margin-bottom: 15px;">Overall Progress - All Decks</h3>
+                            <canvas id="overallChart" style="max-width: 100%;"></canvas>
+                        </div>
+                        <div>
+                            <h3 style="text-align: center; margin-bottom: 15px;">By Deck (click to filter)</h3>
+                            <canvas id="deckChart" style="max-width: 100%;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Libraries for parsing .apkg files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fzstd@0.1.1/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+            authDomain: "elevenstudents-76f31.firebaseapp.com",
+            projectId: "elevenstudents-76f31",
+            storageBucket: "elevenstudents-76f31.firebasestorage.app",
+            messagingSenderId: "692298982954",
+            appId: "1:692298982954:web:87168356e4206206f8c553",
+            measurementId: "G-12TNV8DRZT"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Global state
+        let currentUser = null;
+        let currentDeck = null;
+        let currentCard = null;
+        let isFlipped = false;
+        let studyQueue = [];
+        let userProgress = {};
+        let settings = {
+            newCardsPerDay: 5,
+            lastStudyDate: null,
+            newCardsToday: {}  // Track per deck: { deckId: count }
+        };
+        let deckCards = {}; // Store all parsed cards by deck
+        let deckMetadata = {
+            biology: { name: 'IGCSE Biology', file: 'ANKI files/IGCSE__Biology_v2.apkg', cards: [] },
+            chemistry: { name: 'IGCSE Chemistry', file: 'ANKI files/IGCSE__Chemistry_v3.apkg', cards: [] },
+            physics: { name: 'IGCSE Physics', file: 'ANKI files/IGCSE__Physics_v1.apkg', cards: [] },
+            'physics-eqns': { name: 'IGCSE Physics Equations', file: 'ANKI files/IGCSE__Physics-eqns_v1.apkg', cards: [] }
+        };
+        let debugLog = []; // Capture all debug output
+
+        // Override console.log to capture debug output
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            debugLog.push('[LOG] ' + args.join(' '));
+            originalLog.apply(console, args);
+        };
+        console.error = function(...args) {
+            debugLog.push('[ERROR] ' + args.join(' '));
+            originalError.apply(console, args);
+        };
+        console.warn = function(...args) {
+            debugLog.push('[WARN] ' + args.join(' '));
+            originalWarn.apply(console, args);
+        };
+
+        // SM-2 Algorithm implementation
+        class SM2 {
+            static calculate(quality, repetitions, easiness, interval) {
+                if (quality < 1 || quality > 4) quality = 1;
+                
+                let newEasiness = easiness + (0.1 - (4 - quality) * (0.08 + (4 - quality) * 0.02));
+                if (newEasiness < 1.3) newEasiness = 1.3;
+
+                let newRepetitions = repetitions;
+                let newInterval = interval;
+
+                if (quality < 3) {
+                    // Failed recall
+                    newRepetitions = 0;
+                    newInterval = 1;
+                } else {
+                    newRepetitions++;
+                    if (newRepetitions === 1) {
+                        newInterval = 1;
+                    } else if (newRepetitions === 2) {
+                        newInterval = 6;
+                    } else {
+                        newInterval = Math.round(interval * newEasiness);
+                    }
+                }
+
+                return {
+                    easiness: newEasiness,
+                    repetitions: newRepetitions,
+                    interval: newInterval,
+                    nextReview: Date.now() + (newInterval * 24 * 60 * 60 * 1000)
+                };
+            }
+        }
+
+        // Login with Google
+        window.loginWithGoogle = async function() {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                currentUser = result.user;
+                await initializeUser();
+                showScreen('deck-selector');
+                loadDecks();
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Login failed. Please try again.');
+            }
+        };
+
+        // Initialize user in Firestore
+        async function initializeUser() {
+            const userRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userRef);
+            
+            if (!userDoc.exists()) {
+                await setDoc(userRef, {
+                    email: currentUser.email,
+                    displayName: currentUser.displayName,
+                    createdAt: Date.now(),
+                    progress: {},
+                    settings: {
+                        newCardsPerDay: 5,
+                        lastStudyDate: null,
+                        newCardsToday: {}
+                    }
+                });
+            }
+            
+            const userData = userDoc.data();
+            userProgress = userData?.progress || {};
+            settings = userData?.settings || {
+                newCardsPerDay: 5,
+                lastStudyDate: null,
+                newCardsToday: {}
+            };
+            
+            // Ensure newCardsToday is an object
+            if (typeof settings.newCardsToday !== 'object' || settings.newCardsToday === null) {
+                settings.newCardsToday = {};
+            }
+            
+            // Reset daily counter if new day
+            const today = new Date().toDateString();
+            if (settings.lastStudyDate !== today) {
+                settings.lastStudyDate = today;
+                settings.newCardsToday = {};
+            }
+        }
+
+        // Show specific screen
+        function showScreen(screenName) {
+            document.querySelectorAll('.login-screen, .deck-selector, .study-screen').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelector(`.${screenName}`).classList.add('active');
+            
+            if (screenName === 'deck-selector' && currentUser) {
+                document.getElementById('userInfo').textContent = `Signed in as ${currentUser.email}`;
+            }
+        }
+
+        // Calculate card categories
+        function categorizeCard(cardKey) {
+            const progress = userProgress[cardKey];
+            
+            if (!progress || progress.repetitions === 0) {
+                return 'unseen';
+            } else if (progress.interval < 21) {
+                return 'learning';
+            } else {
+                return 'mastered';
+            }
+        }
+
+        // Get deck statistics
+        function getDeckStats(deckId) {
+            const cards = deckCards[deckId] || [];
+            let unseen = 0, learning = 0, mastered = 0;
+
+            cards.forEach(card => {
+                const cardKey = `${deckId}_${card.id}`;
+                const category = categorizeCard(cardKey);
+                if (category === 'unseen') unseen++;
+                else if (category === 'learning') learning++;
+                else mastered++;
+            });
+
+            return { unseen, learning, mastered, total: cards.length };
+        }
+
+        // Strip HTML tags from Anki cards
+        function stripHtml(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            return tmp.textContent || tmp.innerText || '';
+        }
+
+        // Process HTML with images pointing to media folder
+        function processHtmlWithImages(html) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            
+            // Find all img tags and update src to point to media folder
+            const images = tmp.querySelectorAll('img');
+            images.forEach(img => {
+                const src = img.getAttribute('src');
+                // If it's a local file reference (not http/https), prepend media/
+                if (src && !src.startsWith('http://') && !src.startsWith('https://')) {
+                    img.src = 'media/' + src;
+                }
+            });
+            
+            return tmp.innerHTML;
+        }
+
+        // Parse .apkg file - ONLY SOURCE OF CARDS
+        async function parseApkgFile(filePath) {
+            console.log(`[APKG] Attempting to load: ${filePath}`);
+            try {
+                const response = await fetch(encodeURI(filePath));
+                console.log(`[APKG] Fetch response status: ${response.status}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const blob = await response.blob();
+                console.log(`[APKG] Blob size: ${blob.size} bytes`);
+                
+                if (!window.JSZip) {
+                    throw new Error('JSZip library not loaded');
+                }
+                
+                const zip = await window.JSZip.loadAsync(blob);
+                console.log(`[APKG] ZIP loaded, files: ${Object.keys(zip.files).join(', ')}`);
+                
+                // Try different database file names in order of preference
+                let dbFile = zip.file('collection.anki21b') ||
+                             zip.file('collection.anki21') || 
+                             zip.file('collection.anki2');
+                
+                if (!dbFile) {
+                    console.error('[APKG] Available files in ZIP:', Object.keys(zip.files));
+                    throw new Error('No collection.anki* found in archive');
+                }
+                
+                console.log(`[APKG] Found database: ${dbFile.name}`);
+                let dbData = await dbFile.async('uint8array');
+                console.log(`[APKG] Database size: ${dbData.length} bytes`);
+                
+                // Check if it's zstd compressed and decompress if needed
+                if (dbData[0] === 0x28 && dbData[1] === 0xb5 && dbData[2] === 0x2f && dbData[3] === 0xfd) {
+                    console.log('[APKG] Database is zstd compressed, decompressing...');
+                    const decompressed = fzstd.decompress(dbData);
+                    dbData = new Uint8Array(decompressed);
+                    console.log(`[APKG] Decompressed database size: ${dbData.length} bytes`);
+                }
+                
+                // Initialize SQL.js
+                if (!window.initSqlJs) {
+                    throw new Error('SQL.js library not loaded');
+                }
+                
+                const SQL = await window.initSqlJs({
+                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+                });
+                
+                const db = new SQL.Database(dbData);
+                console.log('[APKG] SQLite database opened');
+                
+                // Get all cards
+                const result = db.exec(`
+                    SELECT notes.flds, cards.id
+                    FROM cards
+                    JOIN notes ON cards.nid = notes.id
+                `);
+                
+                if (!result.length) {
+                    console.error('[APKG] No results from query');
+                    db.close();
+                    return [];
+                }
+                
+                console.log(`[APKG] Query returned ${result[0].values.length} cards`);
+                
+                const cards = [];
+                result[0].values.forEach((row) => {
+                    const fields = row[0].split('\x1f'); // Anki uses \x1f as field separator
+                    const cardId = row[1];
+                    
+                    // Process HTML to point images to media folder
+                    const front = processHtmlWithImages(fields[0]);
+                    const back = processHtmlWithImages(fields[1]);
+                    
+                    cards.push({
+                        id: cardId,
+                        front: front,
+                        back: back
+                    });
+                });
+                
+                db.close();
+                console.log(`[APKG] Successfully extracted ${cards.length} cards`);
+                return cards;
+            } catch (error) {
+                console.error(`[APKG] ERROR parsing ${filePath}:`, error);
+                console.error('[APKG] Error details:', error.message, error.stack);
+                return [];
+            }
+        }
+        
+        // Parse all deck files from .apkg ONLY
+        async function parseAllDecks() {
+            console.log('[DECKS] Starting to parse all .apkg files...');
+            const promises = Object.keys(deckMetadata).map(async (deckId) => {
+                const deck = deckMetadata[deckId];
+                console.log(`[DECKS] Loading ${deckId} from ${deck.file}`);
+                const cards = await parseApkgFile(deck.file);
+                deckCards[deckId] = cards || [];
+                deck.cardCount = deckCards[deckId].length;
+                console.log(`[DECKS] ${deckId}: ${deck.cardCount} cards loaded`);
+            });
+            await Promise.all(promises);
+            console.log('[DECKS] All decks parsed');
+        }
+
+        // Load available decks
+        async function loadDecks() {
+            const deckList = document.getElementById('deckList');
+            
+            // Parse all .apkg files
+            try {
+                await parseAllDecks();
+            } catch (e) {
+                console.error('[DECKS] Critical error during parsing:', e);
+                alert('Failed to load flashcard decks. Check browser console for details.');
+            }
+            
+            const decks = Object.keys(deckMetadata).map(id => ({
+                id,
+                name: deckMetadata[id].name,
+                cardCount: deckMetadata[id].cardCount || 0
+            }));
+
+            if (decks.every(d => d.cardCount === 0)) {
+                console.error('[DECKS] NO CARDS LOADED FROM ANY DECK!');
+                deckList.innerHTML = `
+                    <div style="padding: 20px; color: #e74c3c; background: #fee; border-radius: 8px; margin: 20px 0;">
+                        <h3 style="color: #e74c3c;">⚠️ No Cards Loaded</h3>
+                        <p>Unable to load cards from .apkg files. Check the browser console (F12) for error details.</p>
+                        <p style="margin-top: 10px; font-size: 0.9em;">Common issues:</p>
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li>Files not found in 'ANKI files/' folder</li>
+                            <li>Browser blocking file access</li>
+                            <li>Corrupt .apkg files</li>
+                        </ul>
+                    </div>
+                `;
+                return;
+            }
+
+            deckList.innerHTML = decks.map(deck => `
+                <div class="deck-item" onclick="selectDeck('${deck.id}')">
+                    <h3>${deck.name}</h3>
+                    <p>${deck.cardCount} cards • Click to study</p>
+                    <div class="deck-stats" id="deckStats_${deck.id}">
+                        <span class="category-badge badge-unseen">0 Unseen</span>
+                        <span class="category-badge badge-learning">0 Learning</span>
+                        <span class="category-badge badge-mastered">0 Mastered</span>
+                    </div>
+                    <div class="progress-bar-container" id="progressBar_${deck.id}">
+                        <div class="progress-segment progress-unseen" style="width: 100%">100%</div>
+                    </div>
+                    <button class="btn" style="margin-top: 10px; padding: 10px; font-size: 0.9em;" onclick="event.stopPropagation(); studyFiveMore('${deck.id}');">+ Study 5 More</button>
+                </div>
+            `).join('');
+
+            // Update stats for each deck
+            decks.forEach(deck => {
+                updateDeckProgress(deck.id);
+            });
+        }
+
+        // Update progress display for a deck
+        function updateDeckProgress(deckId) {
+            const stats = getDeckStats(deckId);
+            const statsEl = document.getElementById(`deckStats_${deckId}`);
+            const progressBar = document.getElementById(`progressBar_${deckId}`);
+            
+            if (!statsEl || !progressBar) return;
+
+            // Update badges
+            statsEl.innerHTML = `
+                <span class="category-badge badge-unseen">${stats.unseen} Unseen</span>
+                <span class="category-badge badge-learning">${stats.learning} Learning</span>
+                <span class="category-badge badge-mastered">${stats.mastered} Mastered</span>
+            `;
+
+            // Update progress bar
+            const unseenPct = Math.round((stats.unseen / stats.total) * 100);
+            const learningPct = Math.round((stats.learning / stats.total) * 100);
+            const masteredPct = 100 - unseenPct - learningPct;
+
+            let progressHTML = '';
+            if (unseenPct > 0) {
+                progressHTML += `<div class="progress-segment progress-unseen" style="width: ${unseenPct}%">${unseenPct}%</div>`;
+            }
+            if (learningPct > 0) {
+                progressHTML += `<div class="progress-segment progress-learning" style="width: ${learningPct}%">${learningPct}%</div>`;
+            }
+            if (masteredPct > 0) {
+                progressHTML += `<div class="progress-segment progress-mastered" style="width: ${masteredPct}%">${masteredPct}%</div>`;
+            }
+
+            progressBar.innerHTML = progressHTML;
+        }
+
+        // Settings functions
+        window.openSettings = function() {
+            const settingsScreen = document.getElementById('settings-screen');
+            const newCardsInput = document.getElementById('newCardsPerDay');
+            
+            newCardsInput.value = settings.newCardsPerDay;
+            settingsScreen.style.display = 'flex';
+        }
+
+        window.closeSettings = function() {
+            document.getElementById('settings-screen').style.display = 'none';
+        }
+
+        window.openDebugConsole = function() {
+            const debugConsole = document.getElementById('debug-console');
+            const debugContent = document.getElementById('debugContent');
+            debugContent.textContent = debugLog.join('\n');
+            debugConsole.style.display = 'flex';
+        }
+
+        window.closeDebugConsole = function() {
+            document.getElementById('debug-console').style.display = 'none';
+        }
+
+        let overallChart = null;
+        let deckChart = null;
+        let selectedDeckId = null;
+
+        function updateOverallChart(data) {
+            if (overallChart) {
+                overallChart.data.datasets[0].data = [data.unseen, data.learning, data.mastered];
+                overallChart.update();
+            }
+        }
+
+        window.openProgress = function() {
+            const progressScreen = document.getElementById('progress-screen');
+            progressScreen.style.display = 'flex';
+            selectedDeckId = null;
+            
+            // Destroy old charts if they exist
+            if (overallChart) overallChart.destroy();
+            if (deckChart) deckChart.destroy();
+            
+            // Calculate stats
+            let unseenTotal = 0, learningTotal = 0, masteredTotal = 0;
+            const deckStats = {};
+            
+            Object.keys(deckMetadata).forEach(deckId => {
+                const cards = deckCards[deckId] || [];
+                let unseen = 0, learning = 0, mastered = 0;
+                
+                cards.forEach(card => {
+                    const cardKey = `${deckId}_${card.id}`;
+                    const category = categorizeCard(cardKey);
+                    if (category === 'unseen') unseen++;
+                    else if (category === 'learning') learning++;
+                    else mastered++;
+                });
+                
+                deckStats[deckId] = { unseen, learning, mastered, total: cards.length };
+                unseenTotal += unseen;
+                learningTotal += learning;
+                masteredTotal += mastered;
+            });
+            
+            // Draw overall progress pie chart
+            const ctxOverall = document.getElementById('overallChart').getContext('2d');
+            overallChart = new Chart(ctxOverall, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Unseen', 'Learning', 'Mastered'],
+                    datasets: [{
+                        data: [unseenTotal, learningTotal, masteredTotal],
+                        backgroundColor: ['#95a5a6', '#f39c12', '#27ae60'],
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            
+            // Draw deck breakdown bar chart
+            const deckLabels = [];
+            const masteredData = [];
+            const learningData = [];
+            const unseenData = [];
+            
+            Object.entries(deckStats).forEach(([deckId, stats]) => {
+                const deckName = deckMetadata[deckId].name.split(' ').pop();
+                deckLabels.push(deckName);
+                masteredData.push(stats.mastered);
+                learningData.push(stats.learning);
+                unseenData.push(stats.unseen);
+            });
+            
+            const ctxDeck = document.getElementById('deckChart').getContext('2d');
+            deckChart = new Chart(ctxDeck, {
+                type: 'bar',
+                data: {
+                    labels: deckLabels,
+                    datasets: [
+                        {
+                            label: 'Mastered',
+                            data: masteredData,
+                            backgroundColor: '#27ae60'
+                        },
+                        {
+                            label: 'Learning',
+                            data: learningData,
+                            backgroundColor: '#f39c12'
+                        },
+                        {
+                            label: 'Unseen',
+                            data: unseenData,
+                            backgroundColor: '#95a5a6'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            stacked: true
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                }
+            });
+            
+            // Update chart title
+            document.getElementById('overallChartTitle').textContent = 'Overall Progress - All Decks';
+        }
+
+        window.selectDeck = function(deckId) {
+            selectedDeckId = deckId;
+            
+            if (deckId === null) {
+                // Show all decks
+                let unseenTotal = 0, learningTotal = 0, masteredTotal = 0;
+                
+                Object.keys(deckMetadata).forEach(id => {
+                    const cards = deckCards[id] || [];
+                    cards.forEach(card => {
+                        const cardKey = `${id}_${card.id}`;
+                        const category = categorizeCard(cardKey);
+                        if (category === 'unseen') unseenTotal++;
+                        else if (category === 'learning') learningTotal++;
+                        else masteredTotal++;
+                    });
+                });
+                
+                updateOverallChart({ unseen: unseenTotal, learning: learningTotal, mastered: masteredTotal });
+                document.getElementById('overallChartTitle').textContent = 'Overall Progress - All Decks';
+            } else {
+                // Show only selected deck
+                const cards = deckCards[deckId] || [];
+                let unseen = 0, learning = 0, mastered = 0;
+                
+                cards.forEach(card => {
+                    const cardKey = `${deckId}_${card.id}`;
+                    const category = categorizeCard(cardKey);
+                    if (category === 'unseen') unseen++;
+                    else if (category === 'learning') learning++;
+                    else mastered++;
+                });
+                
+                updateOverallChart({ unseen, learning, mastered });
+                const deckName = deckMetadata[deckId].name;
+                document.getElementById('overallChartTitle').textContent = `Overall Progress - ${deckName}`;
+            }
+        }
+
+        window.closeProgress = function() {
+            document.getElementById('progress-screen').style.display = 'none';
+            if (overallChart) overallChart.destroy();
+            if (deckChart) deckChart.destroy();
+        }
+
+        window.saveSettings = async function() {
+            const newCardsInput = document.getElementById('newCardsPerDay');
+            settings.newCardsPerDay = parseInt(newCardsInput.value) || 5;
+
+            // Save to Firestore
+            if (currentUser) {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    'settings': settings
+                });
+            }
+
+            closeSettings();
+            alert('Settings saved!');
+        }
+
+        window.resetProgress = async function() {
+            if (!confirm('⚠️ Are you sure you want to reset ALL your progress? This cannot be undone!')) {
+                return;
+            }
+
+            if (!confirm('Really delete everything? Last chance!')) {
+                return;
+            }
+
+            // Reset local state
+            userProgress = {};
+            settings.newCardsToday = {};
+            settings.lastStudyDate = new Date().toDateString();
+
+            // Reset in Firestore
+            if (currentUser) {
+                await updateDoc(doc(db, 'users', currentUser.uid), {
+                    'progress': {},
+                    'settings': settings
+                });
+            }
+
+            // Refresh all deck stats
+            const decks = ['biology', 'chemistry', 'physics', 'physics-eqns'];
+            decks.forEach(deckId => updateDeckProgress(deckId));
+
+            closeSettings();
+            alert('✅ All progress has been reset!');
+        }
+
+        // Select and start studying a deck
+        window.selectDeck = async function(deckId, bypassLimit = false) {
+            currentDeck = deckId;
+            showScreen('study-screen');
+            await loadDeckCards(deckId, bypassLimit);
+            showNextCard();
+        };
+
+        // Study 5 more cards (bypass daily limit)
+        window.studyFiveMore = async function(deckId) {
+            await selectDeck(deckId, true);
+        };
+
+        // Load cards for a deck (placeholder - will parse .apkg next)
+        async function loadDeckCards(deckId, bypassLimit = false) {
+            const allCards = deckCards[deckId] || [];
+            const now = Date.now();
+            
+            // Get deck-specific counter
+            const deckNewCardsToday = settings.newCardsToday[deckId] || 0;
+            
+            // Filter cards based on new cards limit
+            let newCardsCount = 0;
+            studyQueue = allCards.filter(card => {
+                const cardKey = `${deckId}_${card.id}`;
+                const progress = userProgress[cardKey];
+                
+                // Check if card is due for review
+                if (progress && progress.nextReview > now) {
+                    return false; // Not due yet
+                }
+                
+                const category = categorizeCard(cardKey);
+                
+                // Always include learning/mastered cards
+                if (category !== 'unseen') {
+                    return true;
+                }
+                
+                // Limit new cards per day (unless bypassing)
+                const limit = bypassLimit ? (deckNewCardsToday + 5) : settings.newCardsPerDay;
+                if (deckNewCardsToday + newCardsCount < limit) {
+                    newCardsCount++;
+                    return true;
+                }
+                
+                return false;
+            });
+
+            updateStats();
+        }
+
+        // Show next card
+        function showNextCard() {
+            if (studyQueue.length === 0) {
+                document.getElementById('flashcardContainer').innerHTML = `
+                    <div style="text-align: center; padding: 40px;">
+                        <h2 style="color: #667eea;">🎉 All done for today!</h2>
+                        <p style="color: #666; margin-top: 20px;">Great work! Come back tomorrow for more reviews.</p>
+                        <button class="btn" onclick="backToDecks()">Back to Decks</button>
+                    </div>
+                `;
+                return;
+            }
+updateDeckProgress(currentDeck);
+            
+            currentCard = studyQueue[0];
+            isFlipped = false;
+
+            document.getElementById('flashcardContainer').innerHTML = `
+                <div class="flashcard" onclick="flipCard()">
+                    <div id="cardContent">${currentCard.front}</div>
+                </div>
+                <div class="hint">Click card or press SPACE to flip</div>
+                <div id="ratingButtons" style="display: none;">
+                    <div class="rating-buttons">
+                        <button class="rating-btn rating-btn-1" onclick="rateCard(1)">
+                            <div style="font-size: 1.5em;">1</div>
+                            Again
+                        </button>
+                        <button class="rating-btn rating-btn-2" onclick="rateCard(2)">
+                            <div style="font-size: 1.5em;">2</div>
+                            Hard
+                        </button>
+                        <button class="rating-btn rating-btn-3" onclick="rateCard(3)">
+                            <div style="font-size: 1.5em;">3</div>
+                            Good
+                        </button>
+                        <button class="rating-btn rating-btn-4" onclick="rateCard(4)">
+                            <div style="font-size: 1.5em;">4</div>
+                            Easy
+                        </button>
+                    </div>
+                    <div class="hint">Press 1-4 to rate</div>
+                </div>
+            `;
+        }
+
+        // Flip card
+        window.flipCard = function() {
+            if (isFlipped) return;
+            isFlipped = true;
+            
+            document.getElementById('cardContent').textContent = currentCard.back;
+            document.querySelector('.flashcard').classList.add('flipped');
+            document.getElementById('ratingButtons').style.display = 'block';
+        };
+
+        // Rate card
+        window.rateCard = async function(quality) {
+            if (!isFlipped) return;
+
+            // If rating is 0, re-add card to end of queue
+            if (quality === 0) {
+                studyQueue.push(studyQueue.shift());
+                isFlipped = false;
+                showCard();
+                return;
+            }
+
+            // Get current card progress
+            const cardKey = `${currentDeck}_${currentCard.id}`;
+            const oldProgress = userProgress[cardKey];
+            const wasUnseen = !oldProgress || oldProgress.repetitions === 0;
+            
+            const progress = oldProgress || {
+                easiness: 2.5,
+                repetitions: 0,
+                interval: 0,
+                nextReview: Date.now()
+            };
+
+            // Calculate new values using SM-2
+            const newProgress = SM2.calculate(quality, progress.repetitions, progress.easiness, progress.interval);
+            userProgress[cardKey] = newProgress;
+
+            // Increment new cards counter if this was unseen
+            if (wasUnseen) {
+                if (!settings.newCardsToday[currentDeck]) {
+                    settings.newCardsToday[currentDeck] = 0;
+                }
+                settings.newCardsToday[currentDeck]++;
+            }
+
+            // Save to Firestore
+            const userRef = doc(db, 'users', currentUser.uid);
+            await updateDoc(userRef, {
+                [`progress.${cardKey}`]: newProgress,
+                'settings': settings
+            });
+
+            // Remove from queue and show next
+            studyQueue.shift();
+            updateStats();
+            showNextCard();
+        };
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('newCount').textContent = studyQueue.length;
+            document.getElementById('reviewCount').textContent = '0';
+            document.getElementById('studiedToday').textContent = '0';
+        }
+
+        // Back to decks
+        window.backToDecks = function() {
+            showScreen('deck-selector');
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' && !isFlipped) {
+                e.preventDefault();
+                flipCard();
+            } else if (['1', '2', '3', '4'].includes(e.key) && isFlipped) {
+                e.preventDefault();
+                rateCard(parseInt(e.key));
+            }
+        });
+
+        // Check auth state
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                initializeUser().then(() => {
+                    showScreen('deck-selector');
+                    loadDecks();
+                });
+            } else {
+                showScreen('login-screen');
+            }
+        });
+    </script>
+</body>
+</html>

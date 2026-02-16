@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marrucho's RT | Global Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+   
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+   
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body tabindex="0">
+
+
+    <div id="app-container" onclick="handleTap()">
+       
+        <div class="brand-header">
+            <img src="logo.png" alt="Logo" class="brand-logo">
+            <div class="brand-text">
+                POWERED BY <span class="brand-highlight">MARRUCHO'S RT</span>
+            </div>
+            <img src="logo.png" alt="Logo" class="brand-logo">
+        </div>
+
+
+        <div class="lights-container">
+            <div class="light" id="light-1"></div>
+            <div class="light" id="light-2"></div>
+            <div class="light" id="light-3"></div>
+            <div class="light" id="light-4"></div>
+            <div class="light" id="light-5"></div>
+        </div>
+
+
+        <div id="message">WAIT FOR LIGHTS OUT</div>
+        <div id="result">0.000</div>
+
+
+        <button id="start-button" onclick="startTest(event)">START ENGINE</button>
+        <p class="hint">[ SPACEBAR TO START ]</p>
+
+
+        <div id="stats-container">
+            <div class="stat-box">
+                <span class="stat-label">SESSION BEST</span>
+                <span class="stat-value" id="best-time">--</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">AVERAGE (LAST 10)</span>
+                <span class="stat-value" id="avg-10-time">--</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">AVERAGE (ALL)</span>
+                <span class="stat-value" id="avg-time">--</span>
+            </div>
+        </div>
+   
+        <div id="auth-status" class="auth-box">
+            <span id="user-info">Get your Driver's License to save results and join a team!</span>
+            <button id="login-button" onclick="loginWithGoogle()">LOGIN WITH GOOGLE</button>
+        </div>
+       
+        <div id="team-management" class="auth-box team-management-box" style="display:none;">
+            <h4 class="dashboard-title team-title" style="margin-bottom: 5px;">Team Management</h4>
+            <p id="team-info" style="margin: 5px 0 10px 0; color:#ccc; font-weight:600; font-size: 0.9em;"></p>
+            <div id="team-controls" style="width:100%; display:flex; flex-wrap:wrap;">
+                <input type="text" id="team-name-input" placeholder="Team Name or ID" style="flex:1 1 100%; padding:8px; background:#000; border:1px solid #444; color:white; border-radius:4px; margin-bottom:10px;">
+                <button onclick="createOrJoinTeam('create')" id="create-team-btn" class="team-btn" style="background: var(--orange); flex:1;">CREATE TEAM</button>
+                <button onclick="createOrJoinTeam('join')" id="join-team-btn" class="team-btn" style="background:#28a745; flex:1; margin-left:5px;">JOIN TEAM</button>
+                <button onclick="leaveTeam()" id="leave-team-btn" class="team-btn" style="background:#dc3545; flex:1; margin-left:5px; display:none;">LEAVE TEAM</button>
+            </div>
+        </div>
+       
+        <div class="filter-dashboard">
+            <h3 class="dashboard-title">GLOBAL LEADERBOARDS</h3>
+            <div id="leaderboard-container">
+               
+                <div id="leaderboard-type-selector" style="margin-bottom: 10px;">
+                    <button data-type="drivers" class="leaderboard-type active" onclick="setLeaderboardType('drivers')">Drivers</button>
+                    <button data-type="teams" class="leaderboard-type" onclick="setLeaderboardType('teams')">Teams</button>
+                </div>
+
+
+                <div id="driver-criteria-selector">
+                    <button data-criteria="best" class="leaderboard-criteria active" onclick="setLeaderboardCriteria('drivers', 'best')">Best Time</button>
+                    <button data-criteria="avg10" class="leaderboard-criteria" onclick="setLeaderboardCriteria('drivers', 'avg10')">Avg (Last 10)</button>
+                    <button data-criteria="avgAll" class="leaderboard-criteria" onclick="setLeaderboardCriteria('drivers', 'avgAll')">Avg (Total)</button>
+                </div>
+               
+                <div id="team-criteria-selector" style="display:none;">
+                    <button data-criteria="bestSingle" class="leaderboard-criteria active" onclick="setLeaderboardCriteria('teams', 'bestSingle')">Team Best Single Lap</button>
+                    <button data-criteria="avgbest" class="leaderboard-criteria" onclick="setLeaderboardCriteria('teams', 'avgbest')">Avg Best Times</button>
+                    <button data-criteria="avg10" class="leaderboard-criteria" onclick="setLeaderboardCriteria('teams', 'avg10')">Avg (Last 10)</button>
+                    <button data-criteria="avgAll" class="leaderboard-criteria" onclick="setLeaderboardCriteria('teams', 'avgAll')">Avg (Total)</button>
+                </div>
+
+
+                <div id="leaderboard-table" style="margin-top: 15px;">
+                    Loading...
+                </div>
+            </div>
+        </div>
+
+
+        <div class="filter-dashboard">
+            <h3 class="dashboard-title">YOUR PERSONAL STATS</h3>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>View Mode:</label>
+                    <select id="chart-view-mode" onchange="renderCurrentChart()">
+                        <option value="all">All Attempts</option>
+                        <option value="hour">Avg per Hour</option>
+                        <option value="day">Avg per Day</option>
+                        <option value="week">Avg per Week</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Reaction Range (s):</label>
+                    <div class="inline-inputs">
+                        <input type="number" id="min-rt" placeholder="0.000" step="0.01">
+                        <span>-</span>
+                        <input type="number" id="max-rt" placeholder="1.000" step="0.01">
+                    </div>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label>Date Range:</label>
+                    <div class="inline-inputs">
+                        <input type="date" id="start-date">
+                        <span>to</span>
+                        <input type="date" id="end-date">
+                    </div>
+                </div>
+                <div class="filter-group color-control">
+                    <label for="accent-color">Profile Color:</label>
+                    <input type="color" id="accent-color" value="#FF4500" class="small-input">
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group button-group full-width">
+                    <button id="apply-filters" onclick="renderCurrentChart()">Apply</button>
+                    <button id="clear-filters" onclick="clearFilters()">Reset</button>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="chart-container">
+            <canvas id="reactionChart"></canvas>
+        </div>
+
+
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+

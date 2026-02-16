@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Bat Dungeon Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            border: 3px solid #fff;
+            image-rendering: pixelated;
+        }
+        .nav-link {
+            position: fixed;
+            top: 12px;
+            color: #00ffff;
+            text-decoration: none;
+            border: 1px solid #00ffff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+    <a class="nav-link" href="../index.html" style="right: 130px;">← BACK</a>
+    <a class="nav-link" href="../highscores.html" style="right: 12px;">🏆 HIGH SCORES</a>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
+            authDomain: "elevenstudents-76f31.firebaseapp.com",
+            databaseURL: "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "elevenstudents-76f31",
+            storageBucket: "elevenstudents-76f31.firebasestorage.app",
+            messagingSenderId: "692298982954",
+            appId: "1:692298982954:web:987f73aec7d26d03f8c553"
+        };
+        let database;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+        } catch (error) {
+            console.error('Firebase init error:', error);
+        }
+        function checkHighScore(finalScore) {
+            if (!database || finalScore === 0) return;
+            const scoresRef = database.ref('azulDungeonHighScores');
+            scoresRef.once('value').then((snapshot) => {
+                const scores = snapshot.val() || [];
+                const qualifies = scores.length < 10 || finalScore > scores[scores.length - 1].score;
+                if (qualifies) {
+                    let playerName = prompt('🎉 You made the Top 10! Enter your name:');
+                    if (playerName) {
+                        playerName = playerName.trim() || 'Anonymous';
+                        if (playerName.length > 20) playerName = playerName.substring(0, 20);
+                        scores.push({ name: playerName, score: finalScore, date: new Date().toISOString() });
+                        scores.sort((a, b) => b.score - a.score);
+                        const top10 = scores.slice(0, 10);
+                        scoresRef.set(top10).then(() => {
+                            const rank = top10.findIndex(e => e.score === finalScore && e.name === playerName) + 1;
+                            alert(`🏆 You ranked #${rank} with ${finalScore} points!`);
+                        });
+                    }
+                }
+            });
+        }
+
+        let player, tiles = [];
+        let collectibles = [];
+        let bats = [];
+        let fireballs = [];
+        let score = 0;
+        let gameOver = false, win = false;
+        let level = 1;
+        let nextLevelTimer = 0;
+        let showNextLevel = false;
+
+        function setup() {
+            createCanvas(800, 600);
+            startLevel(1);
+        }
+
+        function draw() {
+            background(68, 52, 98);
+            drawMap();
+
+            for (let c of collectibles) c.draw();
+
+            for (let fb of fireballs) {
+                fb.update();
+                fb.draw();
+                if (dist(player.x, player.y, fb.x, fb.y) < 30 && !gameOver) {
+                    gameOver = true;
+                }
+            }
+
+            for (let i = fireballs.length - 1; i >= 0; i--) {
+                if (fireballs[i].toDelete) {
+                    fireballs.splice(i, 1);
+                }
+            }
+
+            for (let b of bats) {
+                b.update();
+                b.draw();
+                if (dist(player.x, player.y, b.x, b.y) < 34 && !gameOver) {
+                    gameOver = true;
+                }
+            }
+
+            player.update();
+            player.draw();
+
+            for (let c of collectibles) {
+                if (!c.collected && dist(player.x, player.y, c.x, c.y) < 32) {
+                    c.collected = true;
+                    score++;
+                }
+            }
+
+            if (level >= 4 && bats.length > 0 && frameCount % 90 === 0 && !gameOver) {
+                let b = bats[0];
+                fireballs.push(new Fireball(b.x, b.y));
+            }
+
+            fill(40, 230, 180);
+            textSize(24);
+            textAlign(LEFT, TOP);
+            text('Tesoros: ' + score + ' / ' + collectibles.length, 28, 18);
+            text('Nivel: ' + level, 650, 18);
+
+            if (gameOver) {
+                if (!window.scoreSubmittedAzul) {
+                    checkHighScore(score);
+                    window.scoreSubmittedAzul = true;
+                }
+                fill(255, 40, 40);
+                textSize(72);
+                textAlign(CENTER, CENTER);
+                text("GAME OVER", width / 2, height / 2);
+                fill(255);
+                textSize(24);
+                text("Press R to restart", width / 2, height / 2 + 60);
+                noLoop();
+                return;
+            }
+
+            if (score >= collectibles.length && !win) {
+                win = true;
+                showNextLevel = true;
+                nextLevelTimer = millis();
+                setTimeout(() => {
+                    level++;
+                    startLevel(level);
+                }, 2500);
+            }
+
+            if (showNextLevel) {
+                if (millis() - nextLevelTimer < 2500) {
+                    fill(255);
+                    textSize(72);
+                    textAlign(CENTER, CENTER);
+                    text("LEVEL " + level, width / 2, height / 2);
+                } else {
+                    showNextLevel = false;
+                }
+            }
+        }
+
+        function keyPressed() {
+            if ((key === 'r' || key === 'R') && gameOver) {
+                level = 1;
+                window.scoreSubmittedAzul = false;
+                startLevel(1);
+            }
+        }
+
+        function startLevel(nivel) {
+            tiles = [];
+            collectibles = [];
+            bats = [];
+            fireballs = [];
+            score = 0;
+            win = false;
+            gameOver = false;
+            showNextLevel = false;
+            makeMap();
+            player = new Player(80, 80);
+
+            let cantTesoros = 10 + 2 * nivel;
+            for (let i = 0; i < cantTesoros; i++) {
+                collectibles.push(createCollectible());
+            }
+
+            let cantMurcielagos = nivel + 2;
+            for (let i = 0; i < cantMurcielagos; i++) {
+                let x = random(width / 2 + 50, width - 50);
+                let y = random(100, height - 100);
+                bats.push(new Bat(x, y));
+            }
+
+            loop();
+        }
+
+        function makeMap() {
+            for (let x = 0; x < 16; x++) {
+                for (let y = 0; y < 12; y++) {
+                    let wall = (random(1) < 0.16) && !(x < 2 && y < 2);
+                    tiles.push({ x: x * 50, y: y * 50, wall: wall });
+                }
+            }
+        }
+
+        function drawMap() {
+            noStroke();
+            for (const t of tiles) {
+                if (t.wall) {
+                    fill(0);
+                    rect(t.x, t.y, 50, 50, 2);
+                } else {
+                    fill(110, 93, 133);
+                    rect(t.x, t.y, 50, 50, 2);
+                }
+            }
+        }
+
+        function createCollectible() {
+            let attempts = 0;
+            while (attempts < 100) {
+                let x = int(random(16)) * 50 + 25;
+                let y = int(random(12)) * 50 + 25;
+                let free = true;
+
+                for (let t of tiles) {
+                    if (t.wall && dist(x, y, t.x + 25, t.y + 25) < 40) {
+                        free = false;
+                        break;
+                    }
+                }
+
+                if (free) {
+                    return {
+                        x: x,
+                        y: y,
+                        collected: false,
+                        draw: function () {
+                            if (!this.collected) {
+                                push();
+                                fill(240, 212, 58, 230);
+                                stroke(255, 230, 88, 180);
+                                strokeWeight(3);
+                                ellipse(this.x, this.y, 18 + 5 * sin(frameCount / 10), 18 + 5 * sin(frameCount / 10));
+                                pop();
+                            }
+                        }
+                    };
+                }
+                attempts++;
+            }
+            // Fallback if no valid position found
+            return {
+                x: 100,
+                y: 100,
+                collected: false,
+                draw: function () {
+                    if (!this.collected) {
+                        push();
+                        fill(240, 212, 58, 230);
+                        stroke(255, 230, 88, 180);
+                        strokeWeight(3);
+                        ellipse(this.x, this.y, 18, 18);
+                        pop();
+                    }
+                }
+            };
+        }
+
+        class Player {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 38;
+                this.speed = 3;
+                this.dx = 0;
+                this.dy = 0;
+                this.animWalk = 0;
+            }
+
+            update() {
+                let oldX = this.x, oldY = this.y;
+                this.dx = keyIsDown(68) - keyIsDown(65);
+                this.dy = keyIsDown(83) - keyIsDown(87);
+                let mag = sqrt(this.dx * this.dx + this.dy * this.dy);
+
+                if (mag > 0) {
+                    this.x += this.speed * this.dx / mag;
+                    this.y += this.speed * this.dy / mag;
+                    this.animWalk += 0.25;
+                } else {
+                    this.animWalk = 0;
+                }
+
+                for (const t of tiles) {
+                    if (t.wall && abs(this.x - (t.x + 25)) < 30 && abs(this.y - (t.y + 25)) < 30) {
+                        this.x = oldX;
+                        this.y = oldY;
+                    }
+                }
+
+                this.x = constrain(this.x, 25, width - 25);
+                this.y = constrain(this.y, 25, height - 25);
+            }
+
+            draw() {
+                push();
+                translate(this.x, this.y);
+                noStroke();
+                fill(50, 40, 68, 80);
+                ellipse(0, 20, 26 + 4 * sin(this.animWalk));
+                fill(40, 230, 180);
+                ellipse(0, 0, this.size, this.size - 6 + 6 * sin(this.animWalk));
+                fill(245, 225, 208);
+                ellipse(0, -16, 22, 19);
+                fill(40, 20, 10);
+                ellipse(-4, -18, 4, 4);
+                ellipse(4, -18, 4, 4);
+                stroke(245, 225, 208);
+                strokeWeight(3);
+                line(-8, -6, -18, 4 + 7 * sin(this.animWalk * 2));
+                line(8, -6, 18, 4 + 7 * sin(this.animWalk * 2));
+                pop();
+            }
+        }
+
+        class Bat {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 32;
+                this.speed = 1.8;
+                this.flap = random(100);
+            }
+
+            update() {
+                let dirX = player.x - this.x;
+                let dirY = player.y - this.y;
+                let mag = sqrt(dirX * dirX + dirY * dirY);
+
+                if (mag > 0) {
+                    dirX /= mag;
+                    dirY /= mag;
+                }
+
+                let newX = this.x + dirX * this.speed;
+                let newY = this.y + dirY * this.speed;
+
+                let collidedX = false;
+                for (const t of tiles) {
+                    if (t.wall && abs(newX - (t.x + 25)) < 32 && abs(this.y - (t.y + 25)) < 32) {
+                        collidedX = true;
+                        break;
+                    }
+                }
+
+                if (!collidedX) {
+                    this.x = newX;
+                }
+
+                let collidedY = false;
+                for (const t of tiles) {
+                    if (t.wall && abs(this.x - (t.x + 25)) < 32 && abs(newY - (t.y + 25)) < 32) {
+                        collidedY = true;
+                        break;
+                    }
+                }
+
+                if (!collidedY) {
+                    this.y = newY;
+                }
+
+                if (collidedX || collidedY) {
+                    this.x += random(-1, 1) * this.speed;
+                    this.y += random(-1, 1) * this.speed;
+                }
+
+                this.x = constrain(this.x, 25, width - 25);
+                this.y = constrain(this.y, 25, height - 25);
+                this.flap += 0.18;
+            }
+
+            draw() {
+                push();
+                translate(this.x, this.y);
+                fill(60, 44, 80);
+                stroke(10, 8, 20);
+                ellipse(0, 0, this.size, 14);
+                fill(35, 25, 50);
+                ellipse(0, -9, 16, 12);
+                noStroke();
+                triangle(-5, -17, -3, -8, 0, -12);
+                triangle(5, -17, 3, -8, 0, -12);
+                fill(60, 44, 80, 200);
+                beginShape();
+                for (let i = -1; i <= 1; i += 2) {
+                    vertex(i * 16, 0);
+                    vertex(i * 48, sin(this.flap) * 20);
+                    vertex(i * 22, 3 + cos(this.flap) * 17);
+                }
+                endShape(CLOSE);
+                pop();
+            }
+        }
+
+        class Fireball {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = 20;
+                let angle = random(TWO_PI);
+                this.speedX = 5 * cos(angle);
+                this.speedY = 5 * sin(angle);
+                this.toDelete = false;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.toDelete = true;
+                }
+            }
+
+            draw() {
+                push();
+                noStroke();
+                fill(255, 100, 0, 200);
+                ellipse(this.x, this.y, this.size);
+                fill(255, 180, 50, 180);
+                ellipse(this.x, this.y, this.size * 0.6);
+                pop();
+            }
+        }
+    </script>
+</body>
+</html>
