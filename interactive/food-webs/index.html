@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Web Builder - Cakebread Science</title>
+  <meta name="description" content="Drag and drop organisms to build food webs, then draw energy arrows and check your ecosystem." />
+  <meta name="keywords" content="IGCSE, biology, food webs, ecosystems, interactive" />
+  <meta name="author" content="Cakebread Science" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="canonical" href="https://cakebreadscience.com/interactive/food-webs/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --bg: #f6f1e7;
+      --panel: #ffffff;
+      --accent: #0f766e;
+      --accent-2: #f59e0b;
+      --accent-3: #ef4444;
+      --soft: rgba(15, 118, 110, 0.12);
+      --ring: rgba(15, 118, 110, 0.3);
+      --grid: rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Manrope", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(15, 118, 110, 0.16), transparent 50%),
+        radial-gradient(circle at 80% 0%, rgba(245, 158, 11, 0.18), transparent 45%),
+        linear-gradient(135deg, #f7efe1 0%, #f2f7f6 55%, #eef3f2 100%);
+      padding: 18px;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    header {
+      display: grid;
+      gap: 10px;
+      padding: 12px 4px 0;
+      position: relative;
+    }
+
+    .wip-sticker {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #f59e0b;
+      color: #1f2937;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.08);
+      color: var(--muted);
+      font-size: 0.85rem;
+      width: fit-content;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .back-link:hover {
+      background: rgba(15, 23, 42, 0.15);
+      color: var(--ink);
+    }
+
+    h1 {
+      font-family: "Fraunces", serif;
+      font-size: clamp(2.2rem, 4vw, 3.2rem);
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .lead {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(260px, 0.9fr) minmax(0, 2.1fr);
+      align-items: start;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      border: 1px solid rgba(15, 23, 42, 0.06);
+    }
+
+    .panel h2 {
+      font-family: "Fraunces", serif;
+      margin: 0 0 10px;
+      font-size: 1.35rem;
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    select, button {
+      font-family: inherit;
+      border-radius: 12px;
+      border: 1px solid rgba(15, 23, 42, 0.16);
+      padding: 8px 12px;
+      background: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.2s ease, border 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+      border-color: rgba(15, 118, 110, 0.5);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    button.ghost {
+      background: transparent;
+    }
+
+    .status {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(15, 118, 110, 0.08);
+      border: 1px solid rgba(15, 118, 110, 0.15);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .legend {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .bank {
+      display: grid;
+      gap: 10px;
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .card {
+      display: grid;
+      grid-template-columns: 54px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      cursor: grab;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+    }
+
+    .thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: 12px;
+      background: #eef2f7;
+      overflow: hidden;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card h3 {
+      margin: 0 0 2px;
+      font-size: 0.98rem;
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .board-shell {
+      display: grid;
+      gap: 12px;
+    }
+
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .board {
+      position: relative;
+      min-height: 560px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.86));
+      border: 1px solid rgba(15, 23, 42, 0.1);
+      overflow: hidden;
+    }
+
+    .board::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .board-inner {
+      position: absolute;
+      inset: 0;
+    }
+
+    .node {
+      position: absolute;
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 16px;
+      background: #ffffff;
+      border: 2px solid transparent;
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+      cursor: grab;
+      user-select: none;
+      min-width: 170px;
+    }
+
+    .node.active {
+      border-color: var(--accent);
+      box-shadow: 0 16px 30px rgba(15, 118, 110, 0.25);
+    }
+
+    .node .thumb {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+    }
+
+    .node h4 {
+      margin: 0 0 2px;
+      font-size: 0.92rem;
+    }
+
+    .node small {
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    .web-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .web-lines line {
+      stroke: rgba(15, 23, 42, 0.5);
+      stroke-width: 2.2;
+    }
+
+    .web-lines line.invalid {
+      stroke: var(--accent-3);
+    }
+
+    .hint-lines line {
+      stroke: rgba(245, 158, 11, 0.45);
+      stroke-dasharray: 6 6;
+      stroke-width: 2;
+    }
+
+    .pill {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.1);
+      color: var(--muted);
+      font-size: 0.78rem;
+      border: 1px solid rgba(15, 118, 110, 0.2);
+    }
+
+    .coach {
+      display: grid;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .coach strong {
+      color: var(--ink);
+    }
+
+
+    .footer-note {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <a class="back-link" href="../../index.html">Back to home</a>
+      <span class="wip-sticker">Work in progress</span>
+      <h1>Food Web Builder</h1>
+      <p class="lead">Drag organisms from the bank onto the canvas, then click a food source and a consumer to draw energy arrows. Try to build a balanced web and check it for common mistakes.</p>
+    </header>
+
+    <section class="layout">
+      <aside class="panel">
+        <h2>Web setup</h2>
+        <div class="controls">
+          <div class="row">
+            <label for="preset">Preset web</label>
+            <select id="preset"></select>
+          </div>
+          <div class="row">
+            <button class="primary" id="load-preset">Load organisms</button>
+            <button class="ghost" id="auto-arrange">Auto arrange</button>
+          </div>
+          <div class="row">
+            <button id="clear-board">Clear board</button>
+            <button id="clear-links">Clear links</button>
+          </div>
+          <div class="row">
+            <button id="check-web">Check web</button>
+            <button id="show-hints">Show hints</button>
+          </div>
+          <div class="status" id="status">Choose a preset and load organisms to begin.</div>
+        </div>
+
+        <div class="legend">
+          <span><span class="dot" style="background:#16a34a"></span> Producer</span>
+          <span><span class="dot" style="background:#22c55e"></span> Primary consumer</span>
+          <span><span class="dot" style="background:#f59e0b"></span> Secondary consumer</span>
+          <span><span class="dot" style="background:#ef4444"></span> Tertiary consumer</span>
+          <span><span class="dot" style="background:#64748b"></span> Decomposer</span>
+        </div>
+
+        <h2 style="margin-top:16px;">Organism bank</h2>
+        <div class="bank" id="bank"></div>
+        <p class="footer-note">Tip: click a card to drop it quickly onto the board.</p>
+      </aside>
+
+      <section class="board-shell">
+        <div class="panel board-header">
+          <div class="row">
+            <span class="pill" id="active-preset">No preset loaded</span>
+            <span class="pill" id="node-count">0 organisms</span>
+            <span class="pill" id="link-count">0 links</span>
+          </div>
+          <div class="row">
+            <span class="pill" id="mode-pill">Mode: build</span>
+          </div>
+        </div>
+
+        <div class="board" id="board">
+          <svg class="web-lines" id="links">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(15, 23, 42, 0.6)"></path>
+              </marker>
+              <marker id="arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
+              </marker>
+            </defs>
+          </svg>
+          <svg class="web-lines hint-lines" id="hint-lines">
+            <defs>
+              <marker id="arrow-hint" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(245, 158, 11, 0.7)"></path>
+              </marker>
+            </defs>
+          </svg>
+          <div class="board-inner" id="board-inner"></div>
+        </div>
+
+        <div class="panel coach" id="coach">
+          <strong>How to build:</strong>
+          <span>1. Drag organisms onto the board (or click them).</span>
+          <span>2. Click a food source, then a consumer to draw an arrow.</span>
+          <span>3. Use Check web to spot gaps or wrong directions.</span>
+        </div>
+
+      </section>
+    </section>
+  </div>
+
+  <script src="../organisms/organisms_data.js"></script>
+  <script src="../organisms/organisms_images.js"></script>
+  <script>
+    const imageFolder = "../organisms/images";
+    const imageMap = window.organismImages || {};
+
+    const roleMeta = {
+      producer: { label: "Producer", color: "#16a34a", level: 0 },
+      primary: { label: "Primary", color: "#22c55e", level: 1 },
+      secondary: { label: "Secondary", color: "#f59e0b", level: 2 },
+      tertiary: { label: "Tertiary", color: "#ef4444", level: 3 },
+      decomposer: { label: "Decomposer", color: "#64748b", level: 0 }
+    };
+
+    const webPresets = [
+      {
+        id: "pond",
+        name: "Pond web",
+        description: "Simple pond web with a few producers, herbivores, and a top predator.",
+        organisms: [
+          { common: "Duckweed", role: "producer" },
+          { common: "Elodea", role: "producer" },
+          { common: "Zooplankton", role: "primary" },
+          { common: "Snail", role: "primary" },
+          { common: "Goldfish", role: "secondary" },
+          { common: "Frog", role: "secondary" },
+          { common: "European Otter", role: "tertiary" },
+          { common: "Mucor", role: "decomposer" }
+        ],
+        edges: [
+          ["Duckweed", "Snail"],
+          ["Elodea", "Snail"],
+          ["Zooplankton", "Goldfish"],
+          ["Snail", "Goldfish"],
+          ["Frog", "European Otter"],
+          ["Goldfish", "European Otter"],
+          ["Goldfish", "Mucor"]
+        ]
+      },
+      {
+        id: "grassland",
+        name: "Grassland web",
+        description: "Small grassland web focused on crops, insects, and birds.",
+        organisms: [
+          { common: "Wheat", role: "producer" },
+          { common: "Dandelion", role: "producer" },
+          { common: "Grasshopper", role: "primary" },
+          { common: "European Rabbit", role: "primary" },
+          { common: "House Sparrow", role: "secondary" },
+          { common: "Barn Owl", role: "tertiary" },
+          { common: "Earthworm", role: "decomposer" }
+        ],
+        edges: [
+          ["Wheat", "Grasshopper"],
+          ["Dandelion", "European Rabbit"],
+          ["Grasshopper", "House Sparrow"],
+          ["European Rabbit", "Barn Owl"],
+          ["House Sparrow", "Barn Owl"],
+          ["European Rabbit", "Earthworm"]
+        ]
+      },
+      {
+        id: "marine",
+        name: "Marine web",
+        description: "Compact marine web with plankton, fish, and one top predator.",
+        organisms: [
+          { common: "Plankton", role: "producer" },
+          { common: "Sea Lettuce", role: "producer" },
+          { common: "Copepod", role: "primary" },
+          { common: "Anchovy", role: "secondary" },
+          { common: "Common Dolphin", role: "tertiary" },
+          { common: "Sea Cucumber", role: "decomposer" }
+        ],
+        edges: [
+          ["Plankton", "Copepod"],
+          ["Sea Lettuce", "Copepod"],
+          ["Copepod", "Anchovy"],
+          ["Anchovy", "Common Dolphin"],
+          ["Anchovy", "Sea Cucumber"]
+        ]
+      }
+    ];
+
+    const presetSelect = document.getElementById("preset");
+    const bankEl = document.getElementById("bank");
+    const board = document.getElementById("board");
+    const boardInner = document.getElementById("board-inner");
+    const linksSvg = document.getElementById("links");
+    const hintSvg = document.getElementById("hint-lines");
+    const statusEl = document.getElementById("status");
+    const activePresetEl = document.getElementById("active-preset");
+    const nodeCountEl = document.getElementById("node-count");
+    const linkCountEl = document.getElementById("link-count");
+    const modePill = document.getElementById("mode-pill");
+    const coachEl = document.getElementById("coach");
+
+    const state = {
+      preset: null,
+      organisms: [],
+      nodes: new Map(),
+      edges: [],
+      selectedNodeId: null,
+      draggingId: null,
+      showHints: false
+    };
+
+    function buildOrganismMap() {
+      const all = Object.values(window.sectionOrganisms || {}).flat();
+      const map = new Map();
+      for (const org of all) {
+        map.set(org.common.toLowerCase(), org);
+        map.set(org.scientific.toLowerCase(), org);
+      }
+      return map;
+    }
+
+    const organismMap = buildOrganismMap();
+
+    function resolveOrganism(entry) {
+      const target = organismMap.get(entry.common.toLowerCase()) || organismMap.get(entry.scientific?.toLowerCase());
+      if (!target) {
+        return null;
+      }
+      const imageName = imageMap[target.scientific];
+      return {
+        ...target,
+        role: entry.role,
+        imageUrl: imageName ? `${imageFolder}/${imageName}` : ""
+      };
+    }
+
+    function populatePresetSelect() {
+      presetSelect.innerHTML = "";
+      for (const preset of webPresets) {
+        const option = document.createElement("option");
+        option.value = preset.id;
+        option.textContent = preset.name;
+        presetSelect.appendChild(option);
+      }
+      presetSelect.value = webPresets[0].id;
+    }
+
+    function renderBank() {
+      bankEl.innerHTML = "";
+      for (const org of state.organisms) {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.draggable = true;
+        card.dataset.common = org.common;
+        card.innerHTML = `
+          <div class="thumb"><img src="${org.imageUrl}" alt="${org.common}" onerror="this.src=''; this.parentElement.style.background='#e2e8f0';"></div>
+          <div>
+            <h3>${org.common}</h3>
+            <p>${org.scientific}</p>
+            <span class="role-badge" style="color:${roleMeta[org.role].color}">
+              <span class="dot" style="background:${roleMeta[org.role].color}"></span>
+              ${roleMeta[org.role].label}
+            </span>
+          </div>
+        `;
+        card.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData("text/plain", org.common);
+        });
+        card.addEventListener("click", () => {
+          addNode(org.common, 120 + Math.random() * 320, 120 + Math.random() * 260);
+        });
+        bankEl.appendChild(card);
+      }
+    }
+
+    function updateStatus(message) {
+      statusEl.textContent = message;
+    }
+
+    function clearBoard() {
+      state.nodes.clear();
+      state.edges = [];
+      boardInner.innerHTML = "";
+      renderEdges();
+      updateCounts();
+    }
+
+    function clearLinks() {
+      state.edges = [];
+      renderEdges();
+      updateCounts();
+    }
+
+    function updateCounts() {
+      nodeCountEl.textContent = `${state.nodes.size} organisms`;
+      linkCountEl.textContent = `${state.edges.length} links`;
+    }
+
+    function addNode(commonName, x, y) {
+      const org = state.organisms.find((item) => item.common === commonName);
+      if (!org) {
+        return null;
+      }
+      const id = `${org.common}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const node = document.createElement("div");
+      node.className = "node";
+      node.dataset.id = id;
+      node.style.left = `${x}px`;
+      node.style.top = `${y}px`;
+      node.innerHTML = `
+        <div class="thumb"><img src="${org.imageUrl}" alt="${org.common}" onerror="this.src=''; this.parentElement.style.background='#e2e8f0';"></div>
+        <div>
+          <h4>${org.common}</h4>
+          <small>${roleMeta[org.role].label}</small>
+        </div>
+      `;
+      node.addEventListener("pointerdown", (event) => startDrag(event, id));
+      node.addEventListener("click", (event) => handleNodeClick(event, id));
+      boardInner.appendChild(node);
+      state.nodes.set(id, { org, element: node });
+      updateCounts();
+      renderEdges();
+      return id;
+    }
+
+    function startDrag(event, id) {
+      const node = state.nodes.get(id);
+      if (!node) {
+        return;
+      }
+      state.draggingId = id;
+      const rect = boardInner.getBoundingClientRect();
+      const nodeRect = node.element.getBoundingClientRect();
+      const offsetX = event.clientX - nodeRect.left;
+      const offsetY = event.clientY - nodeRect.top;
+      node.element.setPointerCapture(event.pointerId);
+
+      function onMove(moveEvent) {
+        const x = moveEvent.clientX - rect.left - offsetX;
+        const y = moveEvent.clientY - rect.top - offsetY;
+        node.element.style.left = `${Math.max(10, Math.min(x, rect.width - 180))}px`;
+        node.element.style.top = `${Math.max(10, Math.min(y, rect.height - 80))}px`;
+        renderEdges();
+      }
+
+      function onUp(upEvent) {
+        node.element.releasePointerCapture(upEvent.pointerId);
+        state.draggingId = null;
+        node.element.removeEventListener("pointermove", onMove);
+        node.element.removeEventListener("pointerup", onUp);
+      }
+
+      node.element.addEventListener("pointermove", onMove);
+      node.element.addEventListener("pointerup", onUp);
+    }
+
+    function handleNodeClick(event, id) {
+      if (state.draggingId) {
+        return;
+      }
+      if (!state.selectedNodeId) {
+        state.selectedNodeId = id;
+        highlightSelected();
+        modePill.textContent = "Mode: select target";
+        return;
+      }
+      if (state.selectedNodeId === id) {
+        state.selectedNodeId = null;
+        highlightSelected();
+        modePill.textContent = "Mode: build";
+        return;
+      }
+      createEdge(state.selectedNodeId, id);
+      state.selectedNodeId = null;
+      highlightSelected();
+      modePill.textContent = "Mode: build";
+    }
+
+    function highlightSelected() {
+      for (const [nodeId, node] of state.nodes) {
+        node.element.classList.toggle("active", nodeId === state.selectedNodeId);
+      }
+    }
+
+    function createEdge(fromId, toId) {
+      if (fromId === toId) {
+        return;
+      }
+      if (state.edges.some((edge) => edge.from === fromId && edge.to === toId)) {
+        return;
+      }
+      state.edges.push({ from: fromId, to: toId });
+      updateCounts();
+      renderEdges();
+    }
+
+    function renderEdges() {
+      linksSvg.querySelectorAll("line").forEach((line) => line.remove());
+      for (const edge of state.edges) {
+        const fromNode = state.nodes.get(edge.from);
+        const toNode = state.nodes.get(edge.to);
+        if (!fromNode || !toNode) {
+          continue;
+        }
+        const points = getEdgePoints(fromNode.element, toNode.element, 34);
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        const isInvalid = !isEdgeValid(fromNode.org.role, toNode.org.role);
+        line.setAttribute("x1", points.x1);
+        line.setAttribute("y1", points.y1);
+        line.setAttribute("x2", points.x2);
+        line.setAttribute("y2", points.y2);
+        line.setAttribute("marker-end", isInvalid ? "url(#arrow-bad)" : "url(#arrow)");
+        if (isInvalid) {
+          line.classList.add("invalid");
+        }
+        linksSvg.appendChild(line);
+      }
+      renderHints();
+    }
+
+    function renderHints() {
+      hintSvg.querySelectorAll("line").forEach((line) => line.remove());
+      if (!state.showHints || !state.preset) {
+        return;
+      }
+      for (const [fromName, toName] of state.preset.edges) {
+        const fromNode = findNodeByCommon(fromName);
+        const toNode = findNodeByCommon(toName);
+        if (!fromNode || !toNode) {
+          continue;
+        }
+        const points = getEdgePoints(fromNode.element, toNode.element, 30);
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", points.x1);
+        line.setAttribute("y1", points.y1);
+        line.setAttribute("x2", points.x2);
+        line.setAttribute("y2", points.y2);
+        line.setAttribute("marker-end", "url(#arrow-hint)");
+        hintSvg.appendChild(line);
+      }
+    }
+
+    function getEdgePoints(fromElement, toElement, padding) {
+      const boardRect = board.getBoundingClientRect();
+      const fromRect = fromElement.getBoundingClientRect();
+      const toRect = toElement.getBoundingClientRect();
+      const from = {
+        x: fromRect.left - boardRect.left + fromRect.width * 0.5,
+        y: fromRect.top - boardRect.top + fromRect.height * 0.5
+      };
+      const to = {
+        x: toRect.left - boardRect.left + toRect.width * 0.5,
+        y: toRect.top - boardRect.top + toRect.height * 0.5
+      };
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const distance = Math.max(1, Math.hypot(dx, dy));
+      const offsetX = (dx / distance) * padding;
+      const offsetY = (dy / distance) * padding;
+      return {
+        x1: from.x + offsetX,
+        y1: from.y + offsetY,
+        x2: to.x - offsetX,
+        y2: to.y - offsetY
+      };
+    }
+
+    function getNodeCenter(element) {
+      const boardRect = board.getBoundingClientRect();
+      const rect = element.getBoundingClientRect();
+      return {
+        x: rect.left - boardRect.left + rect.width * 0.5,
+        y: rect.top - boardRect.top + rect.height * 0.5
+      };
+    }
+
+    function findNodeByCommon(commonName) {
+      for (const node of state.nodes.values()) {
+        if (node.org.common === commonName) {
+          return node;
+        }
+      }
+      return null;
+    }
+
+    function isEdgeValid(fromRole, toRole) {
+      if (fromRole === "decomposer") {
+        return false;
+      }
+      if (toRole === "producer") {
+        return false;
+      }
+      if (toRole === "decomposer") {
+        return true;
+      }
+      return roleMeta[fromRole].level <= roleMeta[toRole].level;
+    }
+
+    function checkWeb() {
+      if (!state.nodes.size) {
+        updateStatus("Add organisms before checking.");
+        return;
+      }
+      const issues = [];
+      const nodeStats = new Map();
+
+      for (const [id, node] of state.nodes) {
+        nodeStats.set(id, { incoming: 0, outgoing: 0, role: node.org.role, name: node.org.common });
+      }
+
+      for (const edge of state.edges) {
+        const from = nodeStats.get(edge.from);
+        const to = nodeStats.get(edge.to);
+        if (from) {
+          from.outgoing += 1;
+        }
+        if (to) {
+          to.incoming += 1;
+        }
+      }
+
+      let invalidLinks = 0;
+      for (const edge of state.edges) {
+        const from = state.nodes.get(edge.from);
+        const to = state.nodes.get(edge.to);
+        if (from && to && !isEdgeValid(from.org.role, to.org.role)) {
+          invalidLinks += 1;
+        }
+      }
+
+      for (const stats of nodeStats.values()) {
+        if (stats.role === "producer" && stats.outgoing === 0) {
+          issues.push(`${stats.name} has no consumers.`);
+        }
+        if (stats.role === "primary" && (stats.incoming === 0 || stats.outgoing === 0)) {
+          issues.push(`${stats.name} needs both food and a predator.`);
+        }
+        if (stats.role === "secondary" && stats.incoming === 0) {
+          issues.push(`${stats.name} needs a food source.`);
+        }
+        if (stats.role === "tertiary" && stats.incoming === 0) {
+          issues.push(`${stats.name} needs at least one prey.`);
+        }
+        if (stats.role === "decomposer" && stats.incoming === 0) {
+          issues.push(`${stats.name} needs a food source to decompose.`);
+        }
+      }
+
+      if (!issues.length && invalidLinks === 0) {
+        updateStatus("Nice work. Your web is balanced and directionally correct.");
+        coachEl.innerHTML = "<strong>Great job.</strong> Try adding more organisms or exploring another preset.";
+        return;
+      }
+
+      const issueText = issues.slice(0, 5).map((issue) => `<span>- ${issue}</span>`).join("");
+      const invalidText = invalidLinks ? `<span>- ${invalidLinks} link(s) point the wrong direction.</span>` : "";
+      coachEl.innerHTML = `<strong>Fix these:</strong>${invalidText}${issueText}`;
+      updateStatus("Keep going. You are close.");
+    }
+
+    function autoArrange() {
+      const rect = board.getBoundingClientRect();
+      const columns = 4;
+      const groups = {
+        producer: [],
+        primary: [],
+        secondary: [],
+        tertiary: [],
+        decomposer: []
+      };
+
+      for (const node of state.nodes.values()) {
+        groups[node.org.role].push(node);
+      }
+
+      const layoutOrder = ["producer", "primary", "secondary", "tertiary", "decomposer"];
+      layoutOrder.forEach((role, index) => {
+        const nodes = groups[role];
+        const y = 80 + index * (rect.height / layoutOrder.length);
+        nodes.forEach((node, i) => {
+          const x = 40 + (i % columns) * 220;
+          node.element.style.left = `${x}px`;
+          node.element.style.top = `${Math.min(y, rect.height - 90)}px`;
+        });
+      });
+      renderEdges();
+    }
+
+    function loadPreset() {
+      const presetId = presetSelect.value;
+      const preset = webPresets.find((item) => item.id === presetId);
+      if (!preset) {
+        return;
+      }
+      state.preset = preset;
+      state.organisms = preset.organisms
+        .map(resolveOrganism)
+        .filter(Boolean);
+      state.selectedNodeId = null;
+      state.showHints = false;
+      renderBank();
+      clearBoard();
+      loadPresetNodesAndEdges();
+      activePresetEl.textContent = preset.name;
+      updateStatus(preset.description);
+      modePill.textContent = "Mode: build";
+      document.getElementById("show-hints").textContent = "Show hints";
+    }
+
+    function loadPresetNodesAndEdges() {
+      const rect = board.getBoundingClientRect();
+      const roleOrder = ["producer", "primary", "secondary", "tertiary", "decomposer"];
+      const laneHeight = rect.height / roleOrder.length;
+      const laneOffsets = roleOrder.reduce((acc, role, index) => {
+        acc[role] = 40 + index * laneHeight;
+        return acc;
+      }, {});
+
+      const nodesByName = new Map();
+      const columns = 4;
+      const spacingX = 210;
+
+      const grouped = roleOrder.reduce((acc, role) => {
+        acc[role] = state.organisms.filter((org) => org.role === role);
+        return acc;
+      }, {});
+
+      for (const role of roleOrder) {
+        const items = grouped[role];
+        items.forEach((org, index) => {
+          const col = index % columns;
+          const row = Math.floor(index / columns);
+          const x = 40 + col * spacingX + (row % 2) * 20;
+          const y = laneOffsets[role] + row * 90;
+          const id = addNode(org.common, x, Math.min(y, rect.height - 80));
+          if (id) {
+            nodesByName.set(org.common, id);
+          }
+        });
+      }
+
+      state.edges = [];
+      for (const [fromName, toName] of state.preset.edges) {
+        const fromId = nodesByName.get(fromName);
+        const toId = nodesByName.get(toName);
+        if (fromId && toId) {
+          state.edges.push({ from: fromId, to: toId });
+        }
+      }
+      updateCounts();
+      renderEdges();
+    }
+
+    function toggleHints() {
+      state.showHints = !state.showHints;
+      renderEdges();
+      document.getElementById("show-hints").textContent = state.showHints ? "Hide hints" : "Show hints";
+    }
+
+    board.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+
+    board.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const common = event.dataTransfer.getData("text/plain");
+      const rect = boardInner.getBoundingClientRect();
+      addNode(common, event.clientX - rect.left - 40, event.clientY - rect.top - 20);
+    });
+
+    document.getElementById("load-preset").addEventListener("click", loadPreset);
+    presetSelect.addEventListener("change", loadPreset);
+    document.getElementById("auto-arrange").addEventListener("click", autoArrange);
+    document.getElementById("clear-board").addEventListener("click", clearBoard);
+    document.getElementById("clear-links").addEventListener("click", clearLinks);
+    document.getElementById("check-web").addEventListener("click", checkWeb);
+    document.getElementById("show-hints").addEventListener("click", toggleHints);
+
+    populatePresetSelect();
+    loadPreset();
+  </script>
+</body>
+</html>

@@ -1,13 +1,15 @@
-# AIR - Academic & Interactive Resources
+# Cakebread Science
 
 A collection of educational websites for IGCSE Edexcel students, featuring worksheets, interactive tools, flashcards, and games.
+
+**Domain:** https://cakebreadscience.com
 
 ## 🌐 Project Structure
 
 This repository contains **two separate educational sites**:
 
 ### 1. **Main Site** (Root Directory)
-The primary IGCSE Edexcel resources site with a focus on printable worksheets and curriculum tools.
+The primary IGCSE Edexcel resources site with a focus on printable worksheets (50 total) and curriculum tools.
 
 **Homepage:** `index.html`
 
@@ -17,7 +19,7 @@ The primary IGCSE Edexcel resources site with a focus on printable worksheets an
   - Naming: `[section].[subsection]_[topic].html`
   - Print-optimized A4 layout
 
-- **`Specifications/`** - Interactive curriculum browsers
+- **`specifications/`** - Interactive curriculum browsers
   - `maths.html` - Mathematics specification navigator
   - `science.html` - Biology, Chemistry, Physics specification navigator
 
@@ -104,7 +106,7 @@ interactive/
 2. Save to `worksheets/{subject}/[section].[subsection]_[topic].html`
 3. Update CSS path: `../../css/{subject}.css`
 4. Add link to `worksheets/index.html`
-5. Add to appropriate specification file (`Specifications/maths.html` or `Specifications/science.html`)
+5. Add to appropriate specification file (`specifications/maths.html` or `specifications/science.html`)
 
 ### Creating a New Interactive Tool
 1. Create folder in `interactive/[tool-name]/`
@@ -140,16 +142,11 @@ interactive/
 
 ## 🔧 Development Notes
 
-### No Version Control
-⚠️ This project is **not currently in Git**. Consider initializing a repository:
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-```
+### Git
+Git is initialized; commit changes as needed.
 
 ### Python Scripts
-- `interactive/organisms/update_organism_images.py` - Generates `organisms_data.js` from image files
+- `interactive/organisms/download_organism_images.py` - Generates `organisms_data.js` from image files
 
 ### Browser Compatibility
 - Modern browsers (Chrome, Firefox, Safari, Edge)
@@ -184,7 +181,6 @@ git commit -m "Initial commit"
 
 ### Immediate
 - [ ] Add link to Elevenstudents from main index.html
-- [ ] Consider adding Git version control
 - [ ] Create backup strategy for Firebase data
 
 ### Future Enhancements
