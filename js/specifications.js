@@ -169,8 +169,8 @@
         }
 
         if (currentUser) {
-            const displayName = currentUser.displayName || currentUser.email || "Student";
-            authStatus.textContent = `Signed in as ${displayName}`;
+            const email = currentUser.email || "Student";
+            authStatus.textContent = `Signed in as ${email}`;
             if (loginButton) loginButton.classList.add("hidden");
             if (logoutButton) {
                 logoutButton.textContent = "Sign out";
@@ -398,6 +398,12 @@
                 total: state.total,
                 subjects: remoteSubjects,
                 updatedAt
+            }, { merge: true });
+            
+            // Update last access timestamp in users collection
+            const userRef = db.collection("users").doc(currentUser.uid);
+            await userRef.set({
+                lastAccess: new Date().toISOString()
             }, { merge: true });
         } catch (error) {
             console.error("Failed to save remote progress", error);

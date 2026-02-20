@@ -19,9 +19,13 @@
     <div class="spec-shell">
         <nav class="spec-topbar">
             <div class="topbar-left">
-                <a href="../index.html" class="topbar-link">Back</a>
+                <a href="../index.html" class="topbar-link">← Back</a>
+                <a href="biology.html" class="topbar-link subject-bio">Biology</a>
+                <a href="chemistry.html" class="topbar-link subject-chem">Chemistry</a>
+                <a href="physics.html" class="topbar-link subject-phys">Physics</a>
             </div>
             <div class="topbar-right">
+                <button class="auth-button" id="users-button" style="display: none; margin-right: 10px;">👥 Users</button>
                 <span class="auth-status" data-auth-status>Not signed in</span>
                 <button class="auth-button" data-auth-login>Sign in with Google</button>
                 <button class="auth-button secondary hidden" data-auth-logout>Sign out</button>
@@ -32,64 +36,384 @@
             <div class="science-hero-copy">
                 <span class="hero-eyebrow">IGCSE Edexcel Science</span>
                 <h1>Science Specification Tracker</h1>
-                <p class="hero-lede">Each subject page breaks the spec into short, manageable points. Use checkboxes for completion or RAG (Red = unsure, Amber = ok, Green = confident) to show confidence at a glance.</p>
-                <div class="hero-actions">
-                    <div class="hero-toggle" role="group" aria-label="Progress display mode">
-                        <button class="hero-toggle-button is-active" type="button" data-landing-mode="checkbox">Checkbox</button>
-                        <button class="hero-toggle-button" type="button" data-landing-mode="rag">RAG</button>
-                    </div>
-                </div>
+                <p class="hero-lede">Master Biology, Chemistry, and Physics with detailed specification breakdowns. Track your progress with checkboxes or RAG (Red / Amber / Green) confidence levels.</p>
                 <p class="hero-note">Progress saves locally and syncs to your account when signed in.</p>
-            </div>
-            <div class="science-hero-panel">
-                <div class="panel-title">Current progress</div>
-                <div class="progress-mini-grid" data-progress-overview>
-                    <a class="progress-mini-card" data-progress-card data-subject-id="biology" href="biology.html" aria-label="Open Biology specification">
-                        <div class="progress-mini-head">
-                            <span class="progress-mini-title">Biology</span>
-                            <span class="progress-mini-mode" data-progress-mode>Mode: --</span>
-                        </div>
-                        <div class="progress-mini-bar" role="presentation">
-                            <span class="bar-seg is-green" data-progress-green></span>
-                            <span class="bar-seg is-amber" data-progress-amber></span>
-                            <span class="bar-seg is-red" data-progress-red></span>
-                        </div>
-                        <div class="progress-mini-meta" data-progress-meta>Waiting for data...</div>
-                    </a>
-                    <a class="progress-mini-card" data-progress-card data-subject-id="chemistry" href="chemistry.html" aria-label="Open Chemistry specification">
-                        <div class="progress-mini-head">
-                            <span class="progress-mini-title">Chemistry</span>
-                            <span class="progress-mini-mode" data-progress-mode>Mode: --</span>
-                        </div>
-                        <div class="progress-mini-bar" role="presentation">
-                            <span class="bar-seg is-green" data-progress-green></span>
-                            <span class="bar-seg is-amber" data-progress-amber></span>
-                            <span class="bar-seg is-red" data-progress-red></span>
-                        </div>
-                        <div class="progress-mini-meta" data-progress-meta>Waiting for data...</div>
-                    </a>
-                    <a class="progress-mini-card" data-progress-card data-subject-id="physics" href="physics.html" aria-label="Open Physics specification">
-                        <div class="progress-mini-head">
-                            <span class="progress-mini-title">Physics</span>
-                            <span class="progress-mini-mode" data-progress-mode>Mode: --</span>
-                        </div>
-                        <div class="progress-mini-bar" role="presentation">
-                            <span class="bar-seg is-green" data-progress-green></span>
-                            <span class="bar-seg is-amber" data-progress-amber></span>
-                            <span class="bar-seg is-red" data-progress-red></span>
-                        </div>
-                        <div class="progress-mini-meta" data-progress-meta>Waiting for data...</div>
-                    </a>
-                </div>
             </div>
         </section>
 
+        <section class="science-subjects">
+            <article class="subject-card biology-card">
+                <div class="card-header">
+                    <h2>🧬 Biology</h2>
+                    <p class="card-subtitle">Living organisms and biological systems</p>
+                </div>
+                <div class="card-progress" id="bio-progress">
+                    <div class="progress-bar" data-progress-bar></div>
+                    <span class="progress-text" data-progress-text>Loading...</span>
+                </div>
+                <a href="biology.html" class="card-link">Explore Specification →</a>
+            </article>
+
+            <article class="subject-card chemistry-card">
+                <div class="card-header">
+                    <h2>⚗️ Chemistry</h2>
+                    <p class="card-subtitle">Matter, reactions, and chemical properties</p>
+                </div>
+                <div class="card-progress" id="chem-progress">
+                    <div class="progress-bar" data-progress-bar></div>
+                    <span class="progress-text" data-progress-text>Loading...</span>
+                </div>
+                <a href="chemistry.html" class="card-link">Explore Specification →</a>
+            </article>
+
+            <article class="subject-card physics-card">
+                <div class="card-header">
+                    <h2>⚛️ Physics</h2>
+                    <p class="card-subtitle">Forces, energy, and motion</p>
+                </div>
+                <div class="card-progress" id="phys-progress">
+                    <div class="progress-bar" data-progress-bar></div>
+                    <span class="progress-text" data-progress-text>Loading...</span>
+                </div>
+                <a href="physics.html" class="card-link">Explore Specification →</a>
+            </article>
+        </section>
     </div>
+
+    <!-- Users Modal -->
+    <div id="users-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: white; border-radius: 12px; padding: 30px; max-width: 1200px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                <h2 style="margin: 0; color: #294f7a; font-size: 24px;">👥 User Progress Overview</h2>
+                <button id="close-users-modal" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
+            </div>
+            <div id="users-content" style="color: #333;">
+                <div style="text-align: center; padding: 40px;">Loading users...</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .science-subjects {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 32px 0;
+        }
+
+        .subject-card {
+            border-radius: 16px;
+            padding: 28px;
+            color: white;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.2);
+        }
+
+        .biology-card {
+            background: linear-gradient(135deg, #1f5c3b 0%, #2f7d4b 45%, #4aa06b 100%);
+        }
+
+        .chemistry-card {
+            background: linear-gradient(135deg, #204a72 0%, #2b5f8e 45%, #3f7ab0 100%);
+        }
+
+        .physics-card {
+            background: linear-gradient(135deg, #8f4f12 0%, #b06a19 45%, #d28d38 100%);
+        }
+
+        .card-header {
+            flex-grow: 1;
+        }
+
+        .card-header h2 {
+            margin: 0 0 8px 0;
+            font-size: 26px;
+            letter-spacing: -0.5px;
+        }
+
+        .card-subtitle {
+            margin: 0;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card-progress {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            display: block;
+            height: 100%;
+            width: var(--progress-width, 0%);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            opacity: 0.85;
+        }
+
+        .card-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .card-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            transform: translateX(4px);
+        }
+
+        @media (max-width: 768px) {
+            .science-subjects {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .subject-card {
+                padding: 20px;
+            }
+
+            .card-header h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
 
     <script src="../js/firebase-config.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="../js/specifications.js"></script>
+    <script>
+        (() => {
+            let auth = null;
+            let db = null;
+            let currentUser = null;
+
+            // Wait for Firebase to be available
+            const waitForFirebase = () => {
+                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
+                    initializeProgressCards();
+                    initializeUsers();
+                } else {
+                    setTimeout(waitForFirebase, 100);
+                }
+            };
+            waitForFirebase();
+
+            function initializeProgressCards() {
+                auth = firebase.auth();
+                db = firebase.firestore();
+
+                auth.onAuthStateChanged(async (user) => {
+                    currentUser = user;
+                    if (currentUser) {
+                        loadProgressCards();
+                    } else {
+                        // Show default state for logged out users
+                        document.getElementById('bio-progress').querySelector('.progress-text').textContent = 'Sign in to see progress';
+                        document.getElementById('chem-progress').querySelector('.progress-text').textContent = 'Sign in to see progress';
+                        document.getElementById('phys-progress').querySelector('.progress-text').textContent = 'Sign in to see progress';
+                    }
+                });
+            }
+
+            async function loadProgressCards() {
+                try {
+                    const specProgressDoc = await db.collection('specProgress').doc(currentUser.uid).get();
+                    
+                    if (!specProgressDoc.exists()) {
+                        document.getElementById('bio-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                        document.getElementById('chem-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                        document.getElementById('phys-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                        return;
+                    }
+
+                    const data = specProgressDoc.data();
+                    const subjects = data.subjects || {};
+
+                    const updateCard = (subjectId, subjectData) => {
+                        const items = subjectData.items || {};
+                        const total = Object.keys(items).length;
+                        const completed = Object.keys(items).filter(key => items[key] && items[key].status === true).length;
+                        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                        const card = document.getElementById(subjectId + '-progress');
+                        if (card) {
+                            card.querySelector('[data-progress-bar]').style.setProperty('--progress-width', percent + '%');
+                            card.querySelector('.progress-text').textContent = `${completed} / ${total} (${percent}%)`;
+                        }
+                    };
+
+                    updateCard('bio', subjects.biology || {});
+                    updateCard('chem', subjects.chemistry || {});
+                    updateCard('phys', subjects.physics || {});
+
+                } catch (error) {
+                    console.error('Error loading progress:', error);
+                    document.getElementById('bio-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                    document.getElementById('chem-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                    document.getElementById('phys-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                }
+            }
+
+            function initializeUsers() {
+                const usersButton = document.getElementById('users-button');
+                const usersModal = document.getElementById('users-modal');
+                const usersContent = document.getElementById('users-content');
+                const closeButton = document.getElementById('close-users-modal');
+                const authorizedEmail = 'culkincakebread@gmail.com';
+
+                auth.onAuthStateChanged((user) => {
+                    if (user && user.email === authorizedEmail) {
+                        usersButton.style.display = 'inline-block';
+                    } else {
+                        usersButton.style.display = 'none';
+                    }
+                });
+
+                usersButton.addEventListener('click', async () => {
+                    if (!currentUser || currentUser.email !== authorizedEmail) {
+                        alert('Access denied.');
+                        return;
+                    }
+                    usersModal.style.display = 'flex';
+                    usersContent.innerHTML = '<div style="text-align: center; padding: 40px;">Loading users...</div>';
+
+                    try {
+                        const usersSnap = await db.collection('users').get();
+                        const users = [];
+
+                        usersSnap.forEach(doc => {
+                            const data = doc.data();
+                            
+                            // Count completion items from progress field
+                            const progress = data.progress || {};
+                            let totalItems = 0;
+                            let bioItems = 0;
+                            let chemItems = 0;
+                            let physItems = 0;
+
+                            Object.keys(progress).forEach(key => {
+                                if (progress[key] && typeof progress[key] === 'object' && progress[key].status === true) {
+                                    totalItems++;
+                                    // Try to categorize by key prefix
+                                    if (key.startsWith('flashcards_')) {
+                                        // Skip flashcard progress, focus on spec progress
+                                    }
+                                }
+                            });
+
+                            // Format last access date
+                            let lastAccessText = 'Never';
+                            if (data.lastAccess) {
+                                const lastAccessDate = new Date(data.lastAccess);
+                                const now = new Date();
+                                const diffMs = now - lastAccessDate;
+                                const diffMins = Math.floor(diffMs / 60000);
+                                const diffHours = Math.floor(diffMs / 3600000);
+                                const diffDays = Math.floor(diffMs / 86400000);
+
+                                if (diffMins < 1) {
+                                    lastAccessText = 'Just now';
+                                } else if (diffMins < 60) {
+                                    lastAccessText = `${diffMins}m ago`;
+                                } else if (diffHours < 24) {
+                                    lastAccessText = `${diffHours}h ago`;
+                                } else if (diffDays < 7) {
+                                    lastAccessText = `${diffDays}d ago`;
+                                } else {
+                                    lastAccessText = lastAccessDate.toLocaleDateString();
+                                }
+                            }
+
+                            users.push({
+                                name: data.displayName || data.email || 'Unknown',
+                                email: data.email || '',
+                                totalItems: totalItems,
+                                lastAccess: lastAccessText
+                            });
+                        });
+
+                        users.sort((a, b) => b.totalItems - a.totalItems);
+
+                        if (users.length === 0) {
+                            usersContent.innerHTML = '<p style="text-align: center; color: #888;">No users found.</p>';
+                            return;
+                        }
+
+                        let html = `<div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">`;
+
+                        users.forEach(u => {
+                            html += `<div style="background: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                <div style="margin-bottom: 16px;">
+                                    <h3 style="margin: 0 0 4px 0; font-size: 18px; color: #1f2937;">${u.name}</h3>
+                                    <p style="margin: 0; font-size: 12px; color: #6b7280;">${u.email}</p>
+                                </div>
+                                
+                                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+                                        <span style="font-weight: 600; color: #1f2937;">Total Progress</span>
+                                        <span style="font-size: 24px; font-weight: bold; color: #667eea;">${u.totalItems}</span>
+                                    </div>
+                                    <p style="margin: 0; font-size: 12px; color: #9ca3af;">items completed</p>
+                                </div>
+                                
+                                <div style="padding-top: 12px; border-top: 1px solid #f0f0f0;">
+                                    <p style="margin: 0; font-size: 11px; color: #9ca3af;">Last accessed: <strong>${u.lastAccess}</strong></p>
+                                </div>
+                            </div>`;
+                        });
+
+                        html += '</div>';
+                        usersContent.innerHTML = html;
+
+                    } catch (error) {
+                        console.error('Error loading users:', error);
+                        usersContent.innerHTML = `<p style="color: #e74c3c; text-align: center; padding: 40px;">Error loading users. Please try again.</p>`;
+                    }
+                });
+
+                closeButton.addEventListener('click', () => {
+                    usersModal.style.display = 'none';
+                });
+
+                usersModal.addEventListener('click', (e) => {
+                    if (e.target === usersModal) {
+                        usersModal.style.display = 'none';
+                    }
+                });
+            }
+        })();
+    </script>
 </body>
 </html>

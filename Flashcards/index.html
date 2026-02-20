@@ -1804,24 +1804,20 @@
 
         // Parse .apkg file - ONLY SOURCE OF CARDS
         async function parseApkgFile(filePath) {
-            console.log(`[APKG] Attempting to load: ${filePath}`);
             try {
                 const response = await fetch(encodeURI(filePath));
-                console.log(`[APKG] Fetch response status: ${response.status}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const blob = await response.blob();
-                console.log(`[APKG] Blob size: ${blob.size} bytes`);
                 
                 if (!window.JSZip) {
                     throw new Error('JSZip library not loaded');
                 }
                 
                 const zip = await window.JSZip.loadAsync(blob);
-                console.log(`[APKG] ZIP loaded, files: ${Object.keys(zip.files).join(', ')}`);
                 
                 // Try different database file names in order of preference
                 let dbFile = zip.file('collection.anki21b') ||
@@ -1833,16 +1829,12 @@
                     throw new Error('No collection.anki* found in archive');
                 }
                 
-                console.log(`[APKG] Found database: ${dbFile.name}`);
                 let dbData = await dbFile.async('uint8array');
-                console.log(`[APKG] Database size: ${dbData.length} bytes`);
                 
                 // Check if it's zstd compressed and decompress if needed
                 if (dbData[0] === 0x28 && dbData[1] === 0xb5 && dbData[2] === 0x2f && dbData[3] === 0xfd) {
-                    console.log('[APKG] Database is zstd compressed, decompressing...');
                     const decompressed = fzstd.decompress(dbData);
                     dbData = new Uint8Array(decompressed);
-                    console.log(`[APKG] Decompressed database size: ${dbData.length} bytes`);
                 }
                 
                 // Initialize SQL.js
@@ -1855,7 +1847,6 @@
                 });
                 
                 const db = new SQL.Database(dbData);
-                console.log('[APKG] SQLite database opened');
                 
                 // Get all cards
                 const result = db.exec(`
@@ -1865,12 +1856,9 @@
                 `);
                 
                 if (!result.length) {
-                    console.error('[APKG] No results from query');
                     db.close();
                     return [];
                 }
-                
-                console.log(`[APKG] Query returned ${result[0].values.length} cards`);
                 
                 const cards = [];
                 result[0].values.forEach((row) => {
@@ -1889,7 +1877,6 @@
                 });
                 
                 db.close();
-                console.log(`[APKG] Successfully extracted ${cards.length} cards`);
                 return cards;
             } catch (error) {
                 console.error(`[APKG] ERROR parsing ${filePath}:`, error);
@@ -1900,17 +1887,13 @@
         
         // Parse all deck files from .apkg ONLY
         async function parseAllDecks() {
-            console.log('[DECKS] Starting to parse all .apkg files...');
             const promises = Object.keys(deckMetadata).map(async (deckId) => {
                 const deck = deckMetadata[deckId];
-                console.log(`[DECKS] Loading ${deckId} from ${deck.file}`);
                 const cards = await parseApkgFile(deck.file);
                 deckCards[deckId] = cards || [];
                 deck.cardCount = deckCards[deckId].length;
-                console.log(`[DECKS] ${deckId}: ${deck.cardCount} cards loaded`);
             });
             await Promise.all(promises);
-            console.log('[DECKS] All decks parsed');
         }
 
         // Load available decks
@@ -2226,6 +2209,12 @@
 
         // Users page
         window.openUsers = async function() {
+            // Restrict access to authorized user only
+            if (!currentUser || currentUser.email !== 'culkincakebread@gmail.com') {
+                alert('Access denied. This feature is only available to authorized users.');
+                return;
+            }
+
             const screen = document.getElementById('users-screen');
             const content = document.getElementById('usersContent');
             screen.style.display = 'flex';
@@ -3012,6 +3001,11 @@ updateDeckProgress(currentDeck);
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
+                // Show/hide Users button based on email authorization
+                const usersBtn = document.querySelector('button[onclick="openUsers()"]');
+                if (usersBtn) {
+                    usersBtn.style.display = user.email === 'culkincakebread@gmail.com' ? 'block' : 'none';
+                }
                 initializeUser().then(() => {
                     showScreen('deck-selector');
                     loadDecks();
