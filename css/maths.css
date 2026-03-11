@@ -1,37 +1,20 @@
-/* Maths Worksheet Styles - Subject-Specific Overrides */
+/* Maths Worksheet Styles */
 @import url('./worksheet.css');
 
-/* Maths Color Scheme */
 :root {
-    --primary-color: #2c3e50;
-    --primary-light: #7f8c8d;
-    --accent-color: #3498db;
-    --accent-light: #ecf0f1;
-    --accent-lighter: #fafafa;
-    --border-color: #bdc3c7;
+    --primary-color:  #1a3a8c;
+    --primary-light:  #2255cc;
+    --accent-color:   #2255cc;
+    --accent-light:   #e4ecff;
+    --accent-lighter: #f5f8ff;
+    --border-color:   #b0c0e8;
 }
 
-.header {
-    border-bottom-color: var(--accent-color);
-}
-
-.header::before {
-    content: "🧮";
-}
-
-.spec-ref {
-    color: var(--primary-color);
-    top: 10px;
-    font-size: 8.5pt;
-}
-
-h1 {
-    color: var(--primary-color);
-}
-
-.subtitle {
-    color: var(--primary-light);
-}
+.header { border-bottom-color: var(--accent-color); }
+.header::before { content: "🧮"; }
+.spec-ref { color: var(--primary-color); top: 10px; font-size: 8.5pt; }
+h1 { color: var(--primary-color); }
+.subtitle { color: var(--primary-light); }
 
 h2 {
     background: var(--accent-light);
@@ -39,29 +22,13 @@ h2 {
     color: var(--primary-color);
 }
 
-h2.maths-section {
-    border-left-color: #e74c3c;
-}
+h2.maths-section    { border-left-color: #c8001e; }
+h2.science-section  { border-left-color: #005e22; }
+h2.physics-section  { border-left-color: #d08000; }
+h2.chemistry-section{ border-left-color: #c8001e; }
+h2.biology-section  { border-left-color: #005e22; }
 
-h2.science-section {
-    border-left-color: #27ae60;
-}
-
-h2.physics-section {
-    border-left-color: #f39c12;
-}
-
-h2.chemistry-section {
-    border-left-color: #e74c3c;
-}
-
-h2.biology-section {
-    border-left-color: #27ae60;
-}
-
-.question-number {
-    color: var(--primary-color);
-}
+.question-number { color: var(--primary-color); }
 
 .q-num {
     display: inline-block;
@@ -75,58 +42,25 @@ h2.biology-section {
     font-size: 0.9em;
 }
 
-.answer-space {
-    border-color: var(--border-color);
-    background: var(--accent-lighter);
-}
+.answer-space { border-color: var(--border-color); background: var(--accent-lighter); }
+.definition-box { background: var(--accent-light); border-left-color: var(--accent-color); }
+.definition-box strong { color: var(--primary-color); }
+.marks { color: #c8001e; }
 
-.definition-box {
-    background: #e8f4f8;
-    border-left-color: var(--accent-color);
-}
-
-.definition-box strong {
-    color: var(--primary-color);
-}
-
-.marks {
-    color: #e74c3c;
-}
-
-.venn-space,
-.diagram-box,
-.grid-space {
+.venn-space, .diagram-box, .grid-space {
     border-color: var(--accent-color);
     background: white;
 }
 
 .grid-space {
-    background: 
-        repeating-linear-gradient(0deg, #f0f0f0 0px, #f0f0f0 1px, transparent 1px, transparent 20px),
-        repeating-linear-gradient(90deg, #f0f0f0 0px, #f0f0f0 1px, transparent 1px, transparent 20px);
+    background:
+        repeating-linear-gradient(0deg, #e4ecff 0px, #e4ecff 1px, transparent 1px, transparent 20px),
+        repeating-linear-gradient(90deg, #e4ecff 0px, #e4ecff 1px, transparent 1px, transparent 20px);
 }
 
-.instruction {
-    color: var(--primary-light);
-}
-
-.info-item {
-    border-bottom-color: var(--border-color);
-}
-
-table {
-    border-color: var(--border-color);
-}
-
-th, td {
-    border-color: var(--border-color);
-}
-
-th {
-    background: var(--accent-light);
-    color: var(--primary-color);
-}
-
-.mark-scheme {
-    border-top-color: var(--accent-color);
-}
+.instruction { color: var(--primary-light); }
+.info-item { border-bottom-color: var(--border-color); }
+table { border-color: var(--border-color); }
+th, td { border-color: var(--border-color); }
+th { background: var(--accent-light); color: var(--primary-color); }
+.mark-scheme { border-top-color: var(--accent-color); }

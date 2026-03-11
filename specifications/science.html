@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -219,7 +220,36 @@
             let db = null;
             let currentUser = null;
 
-            // Wait for Firebase to be available
+            function getLocalState(subjectId) {
+                try {
+                    const raw = localStorage.getItem(`spec-progress-v1-${subjectId}`);
+                    return raw ? JSON.parse(raw) : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function updateCard(cardId, subjectState) {
+                const card = document.getElementById(cardId + '-progress');
+                if (!card) return;
+                if (!subjectState) {
+                    card.querySelector('.progress-text').textContent = 'No progress yet';
+                    return;
+                }
+                const items = subjectState.items || {};
+                const total = subjectState.total || Object.keys(items).length;
+                const completed = Object.keys(items).filter(key => items[key] && items[key].checkbox === true).length;
+                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+                card.querySelector('[data-progress-bar]').style.setProperty('--progress-width', percent + '%');
+                card.querySelector('.progress-text').textContent = `${completed} / ${total} (${percent}%)`;
+            }
+
+            // Show from localStorage immediately (same source as the per-subject popup)
+            updateCard('bio', getLocalState('biology'));
+            updateCard('chem', getLocalState('chemistry'));
+            updateCard('phys', getLocalState('physics'));
+
+            // Also load from Firestore when signed in (cross-device sync)
             const waitForFirebase = () => {
                 if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                     initializeProgressCards();
@@ -237,52 +267,22 @@
                 auth.onAuthStateChanged(async (user) => {
                     currentUser = user;
                     if (currentUser) {
-                        loadProgressCards();
-                    } else {
-                        // Show default state for logged out users
-                        document.getElementById('bio-progress').querySelector('.progress-text').textContent = 'Sign in to see progress';
-                        document.getElementById('chem-progress').querySelector('.progress-text').textContent = 'Sign in to see progress';
-                        document.getElementById('phys-progress').querySelector('.progress-text').textContent = 'Sign in to see progress';
+                        loadProgressFromFirestore();
                     }
                 });
             }
 
-            async function loadProgressCards() {
+            async function loadProgressFromFirestore() {
                 try {
-                    const specProgressDoc = await db.collection('specProgress').doc(currentUser.uid).get();
-                    
-                    if (!specProgressDoc.exists()) {
-                        document.getElementById('bio-progress').querySelector('.progress-text').textContent = 'No progress yet';
-                        document.getElementById('chem-progress').querySelector('.progress-text').textContent = 'No progress yet';
-                        document.getElementById('phys-progress').querySelector('.progress-text').textContent = 'No progress yet';
-                        return;
-                    }
-
-                    const data = specProgressDoc.data();
+                    const doc = await db.collection('specProgress').doc(currentUser.uid).get();
+                    if (!doc.exists) return;
+                    const data = doc.data();
                     const subjects = data.subjects || {};
-
-                    const updateCard = (subjectId, subjectData) => {
-                        const items = subjectData.items || {};
-                        const total = Object.keys(items).length;
-                        const completed = Object.keys(items).filter(key => items[key] && items[key].status === true).length;
-                        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-                        const card = document.getElementById(subjectId + '-progress');
-                        if (card) {
-                            card.querySelector('[data-progress-bar]').style.setProperty('--progress-width', percent + '%');
-                            card.querySelector('.progress-text').textContent = `${completed} / ${total} (${percent}%)`;
-                        }
-                    };
-
-                    updateCard('bio', subjects.biology || {});
-                    updateCard('chem', subjects.chemistry || {});
-                    updateCard('phys', subjects.physics || {});
-
+                    if (subjects.biology) updateCard('bio', subjects.biology);
+                    if (subjects.chemistry) updateCard('chem', subjects.chemistry);
+                    if (subjects.physics) updateCard('phys', subjects.physics);
                 } catch (error) {
-                    console.error('Error loading progress:', error);
-                    document.getElementById('bio-progress').querySelector('.progress-text').textContent = 'No progress yet';
-                    document.getElementById('chem-progress').querySelector('.progress-text').textContent = 'No progress yet';
-                    document.getElementById('phys-progress').querySelector('.progress-text').textContent = 'No progress yet';
+                    console.error('Error loading progress from Firestore:', error);
                 }
             }
 
@@ -383,7 +383,7 @@
                                 <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0;">
                                     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
                                         <span style="font-weight: 600; color: #1f2937;">Total Progress</span>
-                                        <span style="font-size: 24px; font-weight: bold; color: #667eea;">${u.totalItems}</span>
+                                        <span style="font-size: 24px; font-weight: bold; color: #005e22;">${u.totalItems}</span>
                                     </div>
                                     <p style="margin: 0; font-size: 12px; color: #9ca3af;">items completed</p>
                                 </div>

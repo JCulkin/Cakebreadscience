@@ -13,12 +13,12 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #eeeae0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #111;
         }
 
         .container {
@@ -28,10 +28,10 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
+            background: white;
+            border-radius: 0;
             padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 4px 4px 0 #111;
             color: #333;
         }
 
@@ -39,7 +39,7 @@
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
-            color: #667eea;
+            color: #005e22;
         }
 
         .login-screen, .deck-selector, .study-screen {
@@ -51,8 +51,8 @@
         }
 
         .btn {
-            background: #667eea;
-            color: white;
+            background: #005e22;
+            color: #111;
             border: none;
             padding: 15px 30px;
             border-radius: 8px;
@@ -66,7 +66,7 @@
         }
 
         .btn:hover {
-            background: #5568d3;
+            background: #004d1a;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
@@ -95,12 +95,12 @@
 
         .deck-item:hover {
             background: #e8e8e8;
-            border-color: #667eea;
+            border-color: #005e22;
             transform: translateX(5px);
         }
 
         .deck-item h3 {
-            color: #667eea;
+            color: #005e22;
             margin-bottom: 5px;
         }
 
@@ -156,7 +156,7 @@
 
         .rating-btn-1 {
             background: #ff6b6b;
-            color: white;
+            color: #111;
         }
 
         .rating-btn-2 {
@@ -166,12 +166,12 @@
 
         .rating-btn-3 {
             background: #6bcf7f;
-            color: white;
+            color: #111;
         }
 
         .rating-btn-4 {
             background: #4dabf7;
-            color: white;
+            color: #111;
         }
 
         .stats {
@@ -190,7 +190,7 @@
         .stat-value {
             font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: #005e22;
         }
 
         .stat-label {
@@ -217,7 +217,7 @@
             text-align: right;
             margin-bottom: 20px;
             font-size: 0.9em;
-            color: white;
+            color: #111;
         }
 
         .back-btn {
@@ -247,7 +247,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #111;
             font-size: 0.85em;
             font-weight: bold;
             transition: all 0.3s;
@@ -311,7 +311,7 @@
 
         .settings-button:hover {
             background: #4a90e2;
-            color: white;
+            color: #111;
         }
 
         .settings-screen {
@@ -371,7 +371,7 @@
             width: 100%;
             padding: 12px;
             background: #e74c3c;
-            color: white;
+            color: #111;
             border: none;
             border-radius: 6px;
             font-size: 1em;
@@ -403,7 +403,7 @@
 
         .save-settings {
             background: #6bcf7f;
-            color: white;
+            color: #111;
         }
 
         .save-settings:hover {
@@ -412,7 +412,7 @@
 
         .cancel-settings {
             background: #95a5a6;
-            color: white;
+            color: #111;
         }
 
         .cancel-settings:hover {
@@ -460,7 +460,7 @@
             <div class="card">
                 <button class="btn back-btn" onclick="backToDecks()">← Back to Decks</button>
                 
-                <h2 id="deckTitle" style="text-align: center; color: #667eea; margin-bottom: 20px;"></h2>
+                <h2 id="deckTitle" style="text-align: center; color: #005e22; margin-bottom: 20px;"></h2>
                 
                 <div class="stats">
                     <div class="stat-item">
@@ -1262,7 +1262,7 @@
             if (studyQueue.length === 0) {
                 document.getElementById('flashcardContainer').innerHTML = `
                     <div style="text-align: center; padding: 40px;">
-                        <h2 style="color: #667eea;">🎉 All done for today!</h2>
+                        <h2 style="color: #005e22;">🎉 All done for today!</h2>
                         <p style="color: #666; margin-top: 20px;">Great work! Come back tomorrow for more reviews.</p>
                         <button class="btn" onclick="backToDecks()">Back to Decks</button>
                     </div>

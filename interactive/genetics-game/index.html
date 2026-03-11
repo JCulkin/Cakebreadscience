@@ -1,0 +1,2387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Genetics Adventure!</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #2d2d50; color: #eee;
+      height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    header {
+      background: #252545; padding: 8px 18px;
+      display: flex; align-items: center; gap: 14px;
+      border-bottom: 2px solid #e94560; flex-shrink: 0; z-index: 10;
+    }
+    header h1 { font-size: 1.25rem; color: #e94560; white-space: nowrap; }
+    header p  { font-size: 0.78rem; color: #aaa; }
+    #expand-toggle {
+      margin-left: auto; white-space: nowrap;
+      padding: 5px 14px; border: 2px solid #8e24aa;
+      border-radius: 20px; cursor: pointer; font-size: 0.82rem;
+      background: transparent; color: #cc88ff; font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+    }
+    #expand-toggle.active {
+      background: #8e24aa; color: #fff;
+    }
+    #expand-toggle:hover { filter: brightness(1.2); }
+
+    .main-layout { display: flex; flex: 1; overflow: hidden; }
+    #game-container { flex: 1; position: relative; overflow: hidden; background: #1a3a5c; }
+    #canvas { display: block; width: 100%; height: 100%; cursor: pointer; }
+
+    #tooltip {
+      position: absolute; pointer-events: none;
+      background: rgba(22,33,62,0.97); border: 1px solid #e94560;
+      border-radius: 8px; padding: 7px 11px; font-size: 0.74rem;
+      z-index: 50; display: none; max-width: 220px; color: #eee;
+    }
+    #tooltip .tt-name   { font-weight: bold; font-size: 0.88rem; }
+    #tooltip .tt-gender { color: #e94560; }
+
+    #sidebar {
+      width: 316px; background: #252545;
+      border-left: 2px solid #e94560;
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sidebar-section { border-bottom: 1px solid #2a2a4e; flex-shrink: 0; }
+    .sidebar-section h2 {
+      font-size: 0.7rem; color: #e94560;
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 10px 13px 7px; margin: 0;
+      cursor: pointer; user-select: none;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .sidebar-section h2:hover { color: #ff7090; }
+    .sidebar-section h2 .arrow { margin-left: auto; transition: transform 0.2s; font-size: 0.65rem; }
+    .sidebar-section.collapsed h2 .arrow { transform: rotate(-90deg); }
+    .section-content { padding: 0 13px 10px; }
+    .sidebar-section.collapsed .section-content { display: none; }
+    #wildmode-btn {
+      white-space: nowrap;
+      padding: 5px 14px; border: 2px solid #27ae60;
+      border-radius: 20px; cursor: pointer; font-size: 0.82rem;
+      background: transparent; color: #44cc66; font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+    }
+    #wildmode-btn.active { background: #27ae60; color: #fff; }
+    #wildmode-btn:hover { filter: brightness(1.2); }
+
+    .btn-row { display: flex; gap: 5px; margin-bottom: 5px; }
+    .btn {
+      flex: 1; padding: 6px 8px; border: none; border-radius: 6px;
+      cursor: pointer; font-size: 0.8rem;
+      transition: filter 0.15s, transform 0.1s; font-family: inherit; white-space: nowrap;
+    }
+    .btn:hover  { filter: brightness(1.18); }
+    .btn:active { transform: scale(0.97); }
+    .btn-green  { background: #27ae60; color: #fff; }
+    .btn-red    { background: #c0392b; color: #fff; }
+    .btn-blue   { background: #2980b9; color: #fff; }
+    .btn-orange { background: #d35400; color: #fff; }
+    .btn-purple { background: #8e24aa; color: #fff; }
+
+    #mate-btn {
+      width: 100%; padding: 11px; font-size: 1.12rem; font-weight: bold;
+      background: linear-gradient(135deg, #e94560, #f5a623);
+      color: #fff; border: none; border-radius: 10px; cursor: pointer;
+      box-shadow: 0 4px 18px rgba(233,69,96,0.35);
+      transition: filter 0.15s, transform 0.1s; font-family: inherit; margin-bottom: 7px;
+    }
+    #mate-btn:hover    { filter: brightness(1.1); transform: scale(1.01); }
+    #mate-btn:active   { transform: scale(0.98); }
+    #mate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .speed-row {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 0.78rem; color: #aaa; margin-top: 4px;
+    }
+    #speed-slider { flex: 1; accent-color: #e94560; cursor: pointer; }
+    #speed-label  { min-width: 24px; color: #eee; }
+
+    .creature-list-scroll { max-height: 110px; overflow-y: auto; }
+    .creature-list-scroll::-webkit-scrollbar { width: 4px; }
+    .creature-list-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+    .cli-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 0.78rem;
+    }
+    .cli-item:hover  { background: #0f3460; }
+    .cli-item.active { background: #e94560; color: #fff; }
+
+    #info-panel { flex: 1; overflow-y: auto; padding: 11px 13px; }
+    #info-panel::-webkit-scrollbar { width: 4px; }
+    #info-panel::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+    .ip-empty {
+      height: 100%; display: flex; align-items: center; justify-content: center;
+      text-align: center; color: #555; font-style: italic; font-size: 0.84rem; padding: 20px;
+    }
+    .ip-name-row { display: flex; align-items: center; gap: 7px; margin-bottom: 6px; }
+    #ip-name-input {
+      flex: 1; background: #0f3460; border: 1px solid #444; border-radius: 5px;
+      color: #fff; padding: 4px 8px; font-size: 0.98rem; font-family: inherit;
+    }
+    #ip-name-input:focus { outline: 1px solid #e94560; }
+    .ip-age { font-size: 0.72rem; color: #aaa; margin-bottom: 7px; }
+    .ip-parents {
+      font-size: 0.74rem; color: #aaa; margin-bottom: 9px;
+      background: #0a1a2e; border-radius: 5px; padding: 5px 8px;
+    }
+    .ip-parents strong { color: #e94560; }
+    .parent-link { color: #5abeff; text-decoration: none; cursor: pointer; font-weight: bold; }
+    .parent-link:hover { text-decoration: underline; }
+
+    .gt-section-label {
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px;
+      color: #8e24aa; margin: 9px 0 4px; border-top: 1px solid #2a2a4e; padding-top: 7px;
+    }
+    .gt-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .gt-table th {
+      text-align: left; color: #e94560; padding: 3px 4px;
+      border-bottom: 1px solid #2a2a4e; font-size: 0.68rem;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .gt-table td { padding: 3px 4px; border-bottom: 1px solid #1a1a2e; vertical-align: middle; }
+    .allele-d { color: #f5a623; font-weight: bold; font-family: monospace; font-size: 0.87rem; }
+    .allele-r { color: #777;    font-family: monospace; font-size: 0.87rem; }
+    .ph-chip     { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 0.68rem; }
+    .ph-dom      { background: #1a3a1a; color: #6dbe6d; }
+    .ph-rec      { background: #3a1a1a; color: #e06d6d; }
+    .ph-disease  { background: #1a3a1a; color: #44ff66; font-weight: bold; }
+    .ph-disease2 { background: #3a1a3a; color: #ff88ff; font-weight: bold; }
+
+    #mode-banner {
+      position: absolute; bottom: 10px; left: 10px; pointer-events: none;
+      font-size: 0.72rem; color: rgba(200,140,255,0.6);
+      font-style: italic;
+    }
+    #msg-overlay {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+      background: rgba(22,33,62,0.92); border: 2px solid #e94560; border-radius: 12px;
+      padding: 13px 22px; font-size: 1.05rem; color: #fff;
+      pointer-events: none; display: none; text-align: center; z-index: 20;
+      white-space: pre-line;
+    }
+    #mp-hint {
+      position: absolute; bottom: 14px; right: 14px; pointer-events: none;
+      background: rgba(233,69,96,0.18); border: 1px solid rgba(233,69,96,0.55);
+      border-radius: 20px; padding: 6px 15px; font-size: 0.8rem; color: #ff9ab0;
+      display: none; animation: mp-pulse 1.8s ease-in-out infinite; z-index: 15;
+    }
+    @keyframes mp-pulse { 0%,100%{opacity:0.65} 50%{opacity:1} }
+
+    /* ── MATE PREDICT MODAL ────────────────────────────────────── */
+    #mp-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.80);
+      display: none; align-items: center; justify-content: center;
+    }
+    #mp-overlay.open { display: flex; }
+    #mp-modal {
+      background: #1a2840; border: 2px solid #e94560; border-radius: 16px;
+      width: min(90vw, 820px); max-height: 90vh; overflow-y: auto;
+      padding: 22px 26px; position: relative;
+      box-shadow: 0 12px 60px rgba(0,0,0,0.7);
+    }
+    #mp-modal::-webkit-scrollbar { width: 5px; }
+    #mp-modal::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    #mp-close-btn {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; color: #888; font-size: 1.5rem;
+      cursor: pointer; line-height: 1; font-family: inherit;
+    }
+    #mp-close-btn:hover { color: #e94560; }
+    #mp-modal h2 { font-size: 1.08rem; color: #e94560; margin-bottom: 18px; }
+    .mp-section-label {
+      font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+      color: #e94560; margin: 0 0 10px; border-top: 1px solid #2a3a5e; padding-top: 14px;
+    }
+    .mp-trait-btns { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+    .mp-trait-btn {
+      padding: 5px 12px; border-radius: 14px; border: 1px solid #3a4a6e;
+      background: transparent; color: #bbb; font-size: 0.78rem; cursor: pointer;
+      font-family: inherit; transition: background 0.15s, color 0.15s;
+    }
+    .mp-trait-btn:hover { background: #243050; color: #fff; }
+    .mp-trait-btn.sel { background: #e94560; border-color: #e94560; color: #fff; }
+    .al-d { color: #f5a623; }
+    .al-r { color: #888; }
+    /* Punnett table */
+    .pt-table {
+      border-collapse: separate; border-spacing: 7px;
+      margin: 0 auto 20px;
+    }
+    .pt-corner { background: transparent; min-width: 20px; min-height: 20px; }
+    .pt-parent-hd {
+      background: #0a1628; border-radius: 9px;
+      text-align: center; padding: 8px 12px; vertical-align: middle;
+    }
+    .pt-canvas { display: block; margin: 0 auto; }
+    .pt-pname { font-size: 0.82rem; font-weight: bold; margin-top: 3px; white-space: nowrap; }
+    .pt-allele {
+      background: #162440; color: #e94560; font-family: monospace; font-size: 1.25rem;
+      font-weight: bold; text-align: center; padding: 12px 20px; border-radius: 9px;
+    }
+    .pt-cell {
+      background: #0f1e38; text-align: center; padding: 16px 20px;
+      border-radius: 9px; min-width: 120px;
+    }
+    .pt-alleles { font-family: monospace; font-size: 1.2rem; font-weight: bold; margin-bottom: 7px; }
+    .pt-ph { font-size: 0.82rem; font-weight: bold; }
+    #mp-punnett-row {
+      display: flex; align-items: flex-start; gap: 18px; margin-bottom: 4px;
+    }
+    .punnett-outcome {
+      background: #0a1628; border-radius: 10px; padding: 14px 18px;
+      font-size: 0.85rem; color: #ccc; line-height: 1.7;
+      display: none; min-width: 160px; flex-shrink: 0; align-self: center;
+    }
+    .po-heading {
+      font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px;
+      color: #e94560; margin-bottom: 6px; margin-top: 10px;
+    }
+    .po-heading:first-child { margin-top: 0; }
+    .po-row { display: flex; align-items: baseline; gap: 7px; }
+    .po-geno { font-family: monospace; font-size: 1rem; font-weight: bold; min-width: 32px; }
+    .po-frac { font-weight: bold; color: #fff; }
+    .po-pct  { color: #888; font-size: 0.78rem; }
+
+    /* ── BOARD / DISPLAY MODE ────────────────────────────────── */
+    #board-toggle {
+      white-space: nowrap; padding: 5px 14px; border: 2px solid #2980b9;
+      border-radius: 20px; cursor: pointer; font-size: 0.82rem;
+      background: transparent; color: #6ab4e8; font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+    }
+    #board-toggle.active { background: #2980b9; color: #fff; }
+    #board-toggle:hover { filter: brightness(1.2); }
+
+    /* Base: white bg, very dark text, much larger everywhere */
+    body.board-mode { background: #f5f9fc; color: #08192a; font-size: 132%; }
+
+    /* Header stays dark — strong contrast bar at top */
+    body.board-mode header { background: #08192a; border-bottom: 3px solid #e94560; }
+    body.board-mode header h1 { color: #e94560; font-size: 1.5rem; font-weight: 900; }
+    body.board-mode header p  { color: #a8c8e8; font-size: 0.88rem; }
+
+    /* Sidebar: clean white, very dark text */
+    body.board-mode #sidebar { background: #ffffff; border-left: 3px solid #e94560; }
+    body.board-mode .sidebar-section { border-bottom: 2px solid #d0dde8; }
+    body.board-mode .sidebar-section h2 {
+      color: #c0392b; font-size: 0.9rem; padding: 14px 14px 10px; letter-spacing: 1.5px;
+    }
+    body.board-mode .sidebar-section h2:hover { color: #e84040; }
+    body.board-mode .section-content { padding-bottom: 14px; }
+
+    /* Creature list items — big, bold, clear */
+    body.board-mode .cli-item {
+      background: #edf4fa; color: #08192a; border-color: #b0cce0;
+      font-size: 1rem; font-weight: 700; padding: 8px 11px;
+      border-radius: 8px; margin-bottom: 3px;
+    }
+    body.board-mode .cli-item.active { background: #2980b9; color: #ffffff; }
+
+    /* Buttons larger */
+    body.board-mode .btn { font-size: 0.95rem; padding: 9px 10px; font-weight: 600; }
+    body.board-mode #mate-btn { font-size: 1.3rem; padding: 14px; }
+
+    /* Info panel: white, dark text */
+    body.board-mode #info-panel { background: #ffffff; color: #08192a; }
+    body.board-mode .ip-name-row input {
+      background: #f0f8ff; color: #08192a; border-color: #80acd0;
+      font-size: 1.05rem; font-weight: bold;
+    }
+    body.board-mode .ip-age { color: #1a3050; font-size: 0.9rem; }
+    body.board-mode .ip-parents { color: #2a4a70; font-size: 0.85rem; }
+    body.board-mode .gt-section-label { color: #c0392b; border-color: #c8d8e8; font-size: 0.78rem; }
+    body.board-mode .gt-table { font-size: 0.95rem; }
+    body.board-mode .gt-table th { color: #c0392b; border-color: #c8d8e8; padding: 7px 10px; }
+    body.board-mode .gt-table td { color: #08192a; border-color: #c8d8e8; padding: 7px 10px; }
+    body.board-mode .ph-chip { font-size: 0.88rem; padding: 3px 8px; }
+
+    /* Genetics prediction modal */
+    body.board-mode #mp-modal { background: #f5f9fc; border-color: #e94560; color: #08192a; }
+    body.board-mode #mp-modal h2 { font-size: 1.3rem; color: #c0392b; }
+    body.board-mode .mp-section-label { color: #c0392b; border-color: #c8d8e8; font-size: 0.78rem; }
+    body.board-mode .mp-trait-btn {
+      background: #edf4fa; border-color: #a0c0dc; color: #08192a;
+      font-size: 0.9rem; padding: 7px 16px; font-weight: 600;
+    }
+    body.board-mode .mp-trait-btn.sel { background: #e94560; color: #fff; border-color: #e94560; }
+    body.board-mode .mp-trait-btn:hover { background: #d0e8f8; }
+    body.board-mode .pt-parent-hd { background: #ddeef8; }
+    body.board-mode .pt-pname { color: #08192a; font-size: 0.95rem; }
+    body.board-mode .pt-allele {
+      background: #ddeef8; color: #c0392b; font-size: 1.5rem; padding: 16px 24px;
+    }
+    body.board-mode .pt-cell { background: #eef6fc; color: #08192a; padding: 18px 24px; }
+    body.board-mode .pt-alleles { font-size: 1.4rem; }
+    body.board-mode .pt-ph { font-size: 0.95rem; font-weight: 700; }
+    body.board-mode .al-d { color: #c06000; }
+    body.board-mode .al-r { color: #333; }
+    body.board-mode .punnett-outcome { background: #ddeef8; color: #08192a; }
+    body.board-mode .po-heading { color: #c0392b; font-size: 0.75rem; }
+    body.board-mode .po-row { font-size: 1rem; gap: 10px; }
+    body.board-mode .po-geno { font-size: 1.15rem; }
+    body.board-mode .po-frac { color: #08192a; font-size: 1rem; }
+    body.board-mode .po-pct  { color: #2a5070; font-size: 0.88rem; }
+
+    /* Misc canvas UI */
+    body.board-mode #tooltip { background: #f0f8ff; border-color: #e94560; color: #08192a; font-size: 1rem; }
+    body.board-mode #mode-banner {
+      background: rgba(240,248,255,0.95); color: #08192a; font-size: 0.9rem; font-weight: 700;
+    }
+    body.board-mode #mp-hint {
+      background: rgba(220,50,50,0.10); border-color: rgba(220,50,50,0.4);
+      color: #7a1010; font-weight: bold; font-size: 0.88rem;
+    }
+
+    /* ── PEDIGREE MODAL ──────────────────────────────────────── */
+    #ped-overlay {
+      position: fixed; inset: 0; z-index: 300;
+      background: rgba(0,0,0,0.82);
+      display: none; align-items: center; justify-content: center;
+    }
+    #ped-overlay.open { display: flex; }
+    #ped-modal {
+      background: #1a2840; border: 2px solid #e94560; border-radius: 16px;
+      width: min(92vw, 820px); max-height: 92vh; overflow-y: auto;
+      padding: 22px 26px; position: relative;
+      box-shadow: 0 12px 60px rgba(0,0,0,0.7);
+    }
+    #ped-modal h2 { font-size: 1.08rem; color: #e94560; margin-bottom: 4px; }
+    #ped-subject-line { font-size: 0.82rem; color: #aaa; margin-bottom: 14px; }
+    #ped-close-btn {
+      position: absolute; top: 14px; right: 16px;
+      background: none; border: none; color: #888; font-size: 1.5rem;
+      cursor: pointer; line-height: 1; font-family: inherit;
+    }
+    #ped-close-btn:hover { color: #e94560; }
+    #ped-canvas {
+      display: block; width: 100%; height: auto;
+      border-radius: 10px; margin: 14px 0 10px;
+    }
+    #ped-legend {
+      display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+      font-size: 0.78rem; color: #aaa; margin-bottom: 6px;
+    }
+    .ped-li { display: flex; align-items: center; gap: 6px; }
+    .ped-sw {
+      width: 16px; height: 16px; border: 2px solid #888;
+      display: inline-block; flex-shrink: 0;
+    }
+    #pedigree-btn {
+      width: 100%; padding: 8px; font-size: 0.88rem; font-weight: bold;
+      background: linear-gradient(135deg,#1a6898,#2980b9);
+      color: #fff; border: none; border-radius: 8px; cursor: pointer;
+      font-family: inherit; margin-bottom: 6px;
+      transition: filter 0.15s;
+    }
+    #pedigree-btn:hover { filter: brightness(1.15); }
+    body.board-mode #ped-modal { background: #f5f9fc; border-color: #e94560; color: #08192a; }
+    body.board-mode #ped-modal h2 { color: #c0392b; }
+    body.board-mode #ped-subject-line { color: #2a4060; }
+    body.board-mode #ped-legend { color: #1a3050; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>&#129516; Genetics Adventure!</h1>
+  <p>Click creatures to reveal their genetics &bull; <strong style="color:#f5a623">MATE!</strong> to breed &bull; traits pass to offspring</p>
+  <button id="wildmode-btn" class="active">&#129418; Wild</button>
+  <button id="expand-toggle">&#128300; Extra Traits Mode</button>
+  <button id="board-toggle">&#128187; Board Mode</button>
+</header>
+
+<!-- ── PEDIGREE MODAL ─────────────────────────────────────────── -->
+<div id="ped-overlay">
+  <div id="ped-modal">
+    <button id="ped-close-btn">&#10005;</button>
+    <h2>&#127795; Family Pedigree</h2>
+    <div id="ped-subject-line"></div>
+    <div class="mp-section-label">Select a Trait</div>
+    <div class="mp-trait-btns" id="ped-trait-btns"></div>
+    <canvas id="ped-canvas" width="680" height="560"></canvas>
+    <div id="ped-legend"></div>
+  </div>
+</div>
+
+<!-- ── MATE PREDICT MODAL ─────────────────────────────────────── -->
+<div id="mp-overlay">
+  <div id="mp-modal">
+    <button id="mp-close-btn">&#10005;</button>
+    <h2>&#128300; Genetics Prediction</h2>
+    <div id="mp-punnett-row">
+      <div id="mp-punnett-grid"></div>
+      <div class="punnett-outcome" id="mp-punnett-outcome"></div>
+    </div>
+    <div class="mp-section-label">Select a Trait to Analyse</div>
+    <div class="mp-trait-btns" id="mp-trait-btns"></div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div id="game-container">
+    <canvas id="canvas"></canvas>
+    <div id="tooltip">
+      <div class="tt-name"   id="tt-name"></div>
+      <div class="tt-gender" id="tt-gender"></div>
+      <div id="tt-traits" style="margin-top:4px;color:#ccc;line-height:1.55"></div>
+    </div>
+    <div id="mode-banner">Standard Mode — 10 traits</div>
+    <div id="msg-overlay"></div>
+    <div id="mp-hint">&#128270; Click another creature to predict their offspring genetics</div>
+  </div>
+
+  <div id="sidebar">
+    <div class="sidebar-section">
+      <h2>Actions <span class="arrow">&#9660;</span></h2>
+      <div class="section-content">
+        <button id="mate-btn">&#128149; MATE!</button>
+        <div class="btn-row">
+          <button class="btn btn-green"  id="add-btn">+ Normal</button>
+          <button class="btn btn-purple" id="mutant-btn">&#9889; Mutant</button>
+          <button class="btn btn-red"    id="remove-btn">&#8722; Remove</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-blue"   id="add5-btn">+5 Random</button>
+          <button class="btn btn-orange" id="cull-btn">&#9760; Cull</button>
+        </div>
+        <button id="pedigree-btn">&#127795; Pedigree Chart</button>
+        <div class="btn-row">
+          <button class="btn btn-blue" id="save-btn">&#128190; Save</button>
+          <button class="btn btn-blue" id="load-btn">&#128193; Load</button>
+        </div>
+        <div class="speed-row">
+          <span>Speed:</span>
+          <input type="range" id="speed-slider" min="0" max="10" step="0.5" value="1">
+          <span id="speed-label">1x</span>
+        </div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <h2>Creatures <span id="creature-count" style="color:#aaa">(0)</span> <span class="arrow">&#9660;</span></h2>
+      <div class="section-content">
+        <div class="creature-list-scroll" id="creature-list"></div>
+      </div>
+    </div>
+    <div id="info-panel">
+      <div class="ip-empty">&#128062; Click a creature<br>to reveal its genetics!</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================================================================
+//  TRAIT DEFINITIONS
+//  First 10 = Standard Mode.  All 20 = Expanded Mode.
+// ================================================================
+const TRAITS = [
+  // ── Standard (10) ───────────────────────────────────────────────
+  { key:'eyeColor',     name:'Eye Colour',        dom:'B', domName:'Brown',           rec:'b', recName:'Blue'             },
+  { key:'bodyColor',    name:'Body Colour',        dom:'C', domName:'Warm Orange',     rec:'c', recName:'Cool Purple'       },
+  { key:'spots',        name:'Spots',              dom:'P', domName:'Plain',            rec:'p', recName:'Spotted'           },
+  { key:'tail',         name:'Tail',               dom:'T', domName:'Has Tail',         rec:'t', recName:'No Tail'           },
+  { key:'size',         name:'Body Size',           dom:'G', domName:'Large',            rec:'g', recName:'Small'             },
+  { key:'horns',        name:'Horns',              dom:'H', domName:'No Horns',         rec:'h', recName:'Horns'             },
+  { key:'eyeCount',     name:'Eye Count',           dom:'E', domName:'Two Eyes',         rec:'e', recName:'Three Eyes'        },
+  { key:'antenna',      name:'Antennae',            dom:'A', domName:'No Antennae',      rec:'a', recName:'Antennae'          },
+  { key:'speed',        name:'Movement Speed',      dom:'F', domName:'Fast',             rec:'f', recName:'Slow'              },
+  { key:'disease',      name:'Frenzy Disease',      dom:'D', domName:'Healthy',          rec:'d', recName:'DISEASED \u2623'   },
+  // ── Expanded (10 more) ──────────────────────────────────────────
+  { key:'wings',        name:'Wings',              dom:'W', domName:'No Wings',         rec:'w', recName:'Wings'             },
+  { key:'stripes',      name:'Stripes',             dom:'N', domName:'Plain Body',       rec:'n', recName:'Striped'           },
+  { key:'glow',         name:'Bioluminescence',     dom:'L', domName:'No Glow',          rec:'l', recName:'Glowing'           },
+  { key:'bodyShape',    name:'Body Shape',          dom:'R', domName:'Smooth',           rec:'r', recName:'Spiky'             },
+  { key:'snout',        name:'Snout',              dom:'S', domName:'No Snout',         rec:'s', recName:'Has Snout'         },
+  { key:'limbs',        name:'Limb Count',          dom:'X', domName:'4 Limbs',          rec:'x', recName:'6 Limbs'           },
+  { key:'eyeSize',      name:'Eye Size',            dom:'M', domName:'Normal Eyes',      rec:'m', recName:'Giant Eyes'        },
+  { key:'shrink',       name:'Shrink Sickness',     dom:'Q', domName:'Healthy',          rec:'q', recName:'SHRINKING \u2623'  },
+  { key:'markings',     name:'Body Markings',       dom:'K', domName:'No Markings',      rec:'k', recName:'Chevron Mark'      },
+  { key:'fin',          name:'Dorsal Fin',          dom:'Z', domName:'No Fin',           rec:'z', recName:'Dorsal Fin'        },
+];
+const TRAIT_STANDARD = TRAITS.slice(0, 10);
+
+// ── Male-only traits (all creatures carry the genes, only ♂ express them visually) ──
+const MALE_TRAITS = [
+  { key:'hairType',  name:'Hair Type',   dom:'V', domName:'Spiky',      rec:'v', recName:'Floppy'      },
+  { key:'hairColor', name:'Hair Colour', dom:'J', domName:'Dark Hair',  rec:'j', recName:'Ginger Hair'  },
+];
+const ALL_TRAITS = [...TRAITS, ...MALE_TRAITS];
+
+// ================================================================
+//  NAME GENERATOR
+// ================================================================
+const NA = ['Blo','Fri','Zap','Moo','Gri','Snu','Pli','Wob','Yip','Kaz','Nug','Fuzz','Bop','Zip','Glo','Pip','Rum','Snaz','Daz','Vex','Quib','Lum','Drib','Splo','Flob','Grunk','Glob','Zork','Nip','Blim','Troz','Squib','Orf','Plunk','Vorp','Dweeb','Flib','Grot','Snurp','Krix','Thwib','Zog','Morp'];
+const NB = ['ble','zle','pop','dor','fin','wick','by','ple','ling','ton','mop','doo','kin','zy','bell','ford','nix','mur','zip','pux','gle','wump','bop','nik','flar','drip','zonk','blib','plop','gunk','dum','zot','snop','rug','dink','wort','kle','zig'];
+const NC = ['ster','ling','worth','more','wick','ford','moor','ton','burg','sby','mont','well','top','shaw','den'];
+function randomName() {
+  const a = NA[Math.floor(Math.random()*NA.length)];
+  const b = NB[Math.floor(Math.random()*NB.length)];
+  if (Math.random() < 0.35) return a + b + NC[Math.floor(Math.random()*NC.length)];
+  return a + b;
+}
+function mixNames(n1, n2) {
+  if (!n1||n1.length<2) return n2||randomName();
+  if (!n2||n2.length<2) return n1||randomName();
+  const m = n1.slice(0, Math.max(1,Math.ceil(n1.length/2))) + n2.slice(Math.max(0,Math.floor(n2.length/2)));
+  return m.length<2 ? randomName() : m[0].toUpperCase()+m.slice(1).toLowerCase();
+}
+
+// ================================================================
+//  GENETICS HELPERS
+// ================================================================
+function randomGenotype(gender) {
+  const g = {};
+  for (const t of TRAITS)
+    g[t.key] = [Math.random()<0.5?t.dom:t.rec, Math.random()<0.5?t.dom:t.rec];
+  for (const t of MALE_TRAITS)
+    g[t.key] = (gender === 'male') ? (Math.random()<0.5 ? t.dom : t.rec) : null;
+  return g;
+}
+function getPhenotype(genotype, gender) {
+  const p = {};
+  for (const t of TRAITS) {
+    const [a1,a2] = genotype[t.key];
+    p[t.key] = (a1===t.dom||a2===t.dom) ? t.domName : t.recName;
+  }
+  for (const t of MALE_TRAITS) {
+    const v = genotype[t.key];
+    p[t.key] = (gender === 'male' && v !== null) ? (v === t.dom ? t.domName : t.recName) : null;
+  }
+  return p;
+}
+// maleG = father's genotype, femaleG = mother's genotype, childGender = child's sex
+function breedGenotype(maleG, femaleG, childGender) {
+  const c = {};
+  for (const t of TRAITS)
+    c[t.key] = [maleG[t.key][Math.random()<0.5?0:1], femaleG[t.key][Math.random()<0.5?0:1]];
+  for (const t of MALE_TRAITS)
+    c[t.key] = childGender === 'male' ? maleG[t.key] : null; // Y-linked: son gets father's allele exactly
+  return c;
+}
+
+// ================================================================
+//  COLOUR HELPERS
+// ================================================================
+function bodyColors(p, exp) {
+  if (p.disease === 'DISEASED \u2623')
+    return { main:'#2ecc52', dark:'#1a8832', light:'#5eff80', mid:'#28aa44' };
+  if (exp && p.shrink === 'SHRINKING \u2623')
+    return { main:'#d480d4', dark:'#8a3a8a', light:'#f0aaef', mid:'#bb60bb' };
+  if (p.bodyColor === 'Warm Orange')
+    return { main:'#e8834a', dark:'#b85c20', light:'#f5b07c', mid:'#d4693a' };
+  return   { main:'#7a6be8', dark:'#4a3bb8', light:'#a89cf5', mid:'#6559d4' };
+}
+function eyeIrisColor(p, exp) {
+  if (p.disease === 'DISEASED \u2623') return '#ff2020';
+  if (exp && p.shrink === 'SHRINKING \u2623') return '#dd44dd';
+  return p.eyeColor === 'Brown' ? '#b05e00' : '#1060d0';
+}
+function geneticSpeedFactor(p, exp) {
+  if (p.disease === 'DISEASED \u2623') return 5.5;
+  if (exp && p.shrink === 'SHRINKING \u2623') return 0.32; // sickly slow
+  return p.speed === 'Fast' ? 1.8 : 0.52;
+}
+
+// ================================================================
+//  PARTICLE EFFECTS
+// ================================================================
+class HeartEffect {
+  constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-0.5)*1.6;this.vy=-1.6-Math.random()*1.4;this.alpha=1;this.sz=13+Math.random()*9;}
+  update(){this.x+=this.vx;this.y+=this.vy;this.alpha-=0.013;}
+  draw(ctx){ctx.save();ctx.globalAlpha=Math.max(0,this.alpha);ctx.font=`${this.sz}px serif`;ctx.textAlign='center';ctx.fillText('♥',this.x,this.y);ctx.restore();}
+  dead(){return this.alpha<=0;}
+}
+class SparkEffect {
+  constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-0.5)*3.5;this.vy=-1.5-Math.random()*2.5;this.alpha=1;this.sz=10+Math.random()*8;this.e=['✨','⭐','🌟'][Math.floor(Math.random()*3)];}
+  update(){this.x+=this.vx;this.y+=this.vy;this.vy+=0.06;this.alpha-=0.018;}
+  draw(ctx){ctx.save();ctx.globalAlpha=Math.max(0,this.alpha);ctx.font=`${this.sz}px serif`;ctx.textAlign='center';ctx.fillText(this.e,this.x,this.y);ctx.restore();}
+  dead(){return this.alpha<=0;}
+}
+
+class EggCrackEffect {
+  constructor(x, y, onCreate=null) {
+    this.x=x; this.y=y; this.timer=0; this.shards=null; this.onCreate=onCreate;
+  }
+  update() {
+    this.timer++;
+    if (this.timer===295) {
+      // shatter: create flying shell fragments + spawn creature
+      this.shards = Array.from({length:9}, ()=>({
+        x:this.x, y:this.y,
+        vx:(Math.random()-0.5)*5,
+        vy:-2-Math.random()*4,
+        rot:Math.random()*Math.PI*2, drot:(Math.random()-0.5)*0.25,
+        w:5+Math.random()*9, h:3+Math.random()*5,
+        alpha:1,
+      }));
+      if (this.onCreate) this.onCreate();
+    }
+    if (this.shards) {
+      for (const s of this.shards) {
+        s.x+=s.vx; s.y+=s.vy; s.vy+=0.22; s.rot+=s.drot; s.alpha-=0.028;
+      }
+    }
+  }
+  draw(ctx) {
+    if (!this.shards) {
+      // Wobbling egg — gentle through most of incubation, intense near hatch
+      const nearEnd = this.timer > 270;
+      const wobble = Math.sin(this.timer*0.5) * (nearEnd ? 4.5 : 1.2);
+      const squeeze = nearEnd ? 1+Math.sin(this.timer*0.8)*0.09 : 1;
+      ctx.save();
+      ctx.translate(this.x+wobble, this.y);
+      ctx.scale(1/squeeze, squeeze);
+      // shell
+      ctx.beginPath(); ctx.ellipse(0, 2, 13, 17, 0, 0, Math.PI*2);
+      ctx.fillStyle='#fffbe8'; ctx.fill();
+      ctx.strokeStyle='#c8a830'; ctx.lineWidth=1.8; ctx.stroke();
+      // speckles
+      ctx.fillStyle='rgba(180,140,20,0.25)';
+      for (const [sx,sy,sr] of [[-4,-3,3],[3,1,2.5],[-1,6,2],[4,-8,2]]) {
+        ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
+      }
+      // crack lines appear in final moments
+      if (this.timer > 280) {
+        ctx.strokeStyle='#8a6010'; ctx.lineWidth=1.4; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(-3,-6); ctx.lineTo(1,3); ctx.lineTo(5,-2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(1,3); ctx.lineTo(-4,9); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-3,-6); ctx.lineTo(-7,-1); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    // flying shards
+    if (this.shards) {
+      for (const s of this.shards) {
+        if (s.alpha<=0) continue;
+        ctx.save();
+        ctx.globalAlpha=Math.max(0,s.alpha);
+        ctx.translate(s.x,s.y); ctx.rotate(s.rot);
+        ctx.beginPath(); ctx.ellipse(0,0,s.w,s.h,0,0,Math.PI*2);
+        ctx.fillStyle='#fffbe8'; ctx.fill();
+        ctx.strokeStyle='#c8a830'; ctx.lineWidth=1; ctx.stroke();
+        ctx.restore();
+      }
+    }
+  }
+  dead() { return this.shards!==null && this.shards.every(s=>s.alpha<=0); }
+}
+
+// ================================================================
+//  EYE DRAWING  (full-colour iris)
+// ================================================================
+function drawEye(ctx, x, y, r, irisColor) {
+  ctx.beginPath(); ctx.ellipse(x,y,r,r*0.92,0,0,Math.PI*2);
+  ctx.fillStyle=irisColor; ctx.fill();
+  ctx.strokeStyle='#111'; ctx.lineWidth=1.2; ctx.stroke();
+  ctx.beginPath(); ctx.arc(x+r*0.08,y,r*0.36,0,Math.PI*2);
+  ctx.fillStyle='#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(x-r*0.18,y-r*0.22,r*0.2,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.fill();
+}
+
+// ================================================================
+//  CREATURE CLASS
+// ================================================================
+let _idCtr = 0;
+const childrenRegistry = new Map(); // parentId → [{id, gender}] — persists after death
+const creatureArchive  = new Map(); // id → {id,name,gender,genotype,parents} — never deleted
+let expandedMode = false; // global — controlled by toggle button
+let boardMode    = false; // classroom display mode
+
+class Creature {
+  constructor(x, y, gender, genotype, name, parents=null, mutant=false) {
+    this.id = _idCtr++;
+    this.x=x; this.y=y; this.gender=gender;
+    this.genotype=genotype; this.phenotype=getPhenotype(genotype, gender);
+    this.name=name; this.parents=parents; this.mutant=mutant;
+    this.age=0; this.generation=0; this.selected=false; this.highlightTimer=0; this.mateGlow=0;
+    this.shakeTimer=0; this.fightTimer=0; this.scars=0;
+    this.trail=[];
+    this.matingTarget=null; // {x,y} — creature glides here during mating
+    this.interactCooldown=0; // frames before this creature can mate/fight again
+    this.diseaseTimer=0;
+    this.shrinkFactor=1.0; // used by Shrink Sickness in expanded mode
+    const ang=Math.random()*Math.PI*2, spd=0.5+Math.random()*0.8;
+    this.vx=Math.cos(ang)*spd; this.vy=Math.sin(ang)*spd;
+    this.wanderCd=60+Math.random()*160;
+    this.sleeping=false; this.sleepTimer=0; this.sleepFade=1.0;
+    this.sleepAngle=0; this.fastSleep=false;
+  }
+
+  radius() {
+    const base = this.phenotype.size==='Large' ? 30 : 20;
+    return base * (expandedMode ? this.shrinkFactor : 1.0);
+  }
+
+  update(canvasW, canvasH, userSpd) {
+    if (userSpd === 0) return; // full pause — no timers, no movement, no disease death
+    if (this.sleeping) {
+      this.sleepTimer++;
+      if (this.sleepAngle < Math.PI/2) this.sleepAngle += 0.04;
+      const fStart = this.fastSleep ? 10 : 90;
+      const fRate  = this.fastSleep ? 0.03 : 0.008;
+      if (this.sleepTimer > fStart) this.sleepFade = Math.max(0, this.sleepFade-fRate);
+      return;
+    }
+    if (this.highlightTimer>0) this.highlightTimer--;
+    if (this.mateGlow>0) this.mateGlow--;
+    if (this.interactCooldown>0) this.interactCooldown--;
+    if (this.shakeTimer>0) this.shakeTimer--;
+    if (this.fightTimer>0) { this.fightTimer--; return; } // frozen during fight
+
+    const p  = this.phenotype;
+    const gf = geneticSpeedFactor(p, expandedMode);
+    const ef = userSpd * gf;
+
+    // Shrink Sickness (expanded only)
+    if (expandedMode && p.shrink==='SHRINKING \u2623') {
+      this.shrinkFactor = Math.max(0.12, this.shrinkFactor - 0.00018);
+      if (this.shrinkFactor <= 0.13) { this.goToSleep(true); return; }
+    }
+
+    // Frenzy Disease death over time
+    if (p.disease==='DISEASED \u2623') {
+      this.diseaseTimer++;
+      if (this.diseaseTimer % 300 === 0) {
+        const rounds = Math.floor(this.diseaseTimer/300);
+        const chance = 0.08 + (rounds-1)*0.12;
+        if (Math.random() < Math.min(chance, 0.95)) { this.goToSleep(true); return; }
+      }
+    }
+
+    // Glide towards mating rendezvous (overrides all normal movement)
+    if (this.matingTarget) {
+      this.trail=[]; // no trail while approaching — prevents ghost shapes
+      const dx=this.matingTarget.x-this.x, dy=this.matingTarget.y-this.y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if (dist>1.5) {
+        const spd=Math.min(dist*0.12, 5.5);
+        this.x+=dx/dist*spd; this.y+=dy/dist*spd;
+      }
+      return;
+    }
+
+    // Wander
+    this.wanderCd -= ef;
+    if (this.wanderCd <= 0) {
+      const s=0.45+Math.random()*0.9, a=Math.random()*Math.PI*2;
+      this.vx=Math.cos(a)*s; this.vy=Math.sin(a)*s;
+      const base = p.disease==='DISEASED \u2623' ? 12 : 70;
+      this.wanderCd = base + Math.random()*100;
+    }
+
+    if (gf >= 1.8) {
+      this.trail.push({x:this.x, y:this.y});
+      if (this.trail.length>7) this.trail.shift();
+    } else { this.trail=[]; }
+
+    this.x += this.vx*ef; this.y += this.vy*ef;
+    const r=this.radius();
+    if (this.x<r)           {this.x=r;          this.vx= Math.abs(this.vx);}
+    if (this.x>canvasW-r)   {this.x=canvasW-r;  this.vx=-Math.abs(this.vx);}
+    if (this.y<r)           {this.y=r;           this.vy= Math.abs(this.vy);}
+    if (this.y>canvasH-r)   {this.y=canvasH-r;  this.vy=-Math.abs(this.vy);}
+  }
+
+  goToSleep(fast=false) {
+    this.sleeping=true; this.sleepTimer=0; this.sleepFade=1.0;
+    this.sleepAngle=0; this.fastSleep=fast; this.vx=0; this.vy=0; this.trail=[]; this.matingTarget=null;
+  }
+  dead() { return this.sleeping && this.sleepFade<=0; }
+  containsPoint(px,py) {
+    const r=this.radius(), dx=px-this.x, dy=py-this.y;
+    return (dx*dx)/(r*r*1.2)+(dy*dy)/(r*r*0.92)<1;
+  }
+
+  draw(ctx) {
+    const p   = this.phenotype;
+    const r   = this.radius();
+    const col = bodyColors(p, expandedMode);
+    const diseased  = p.disease === 'DISEASED \u2623';
+    const shrinking = expandedMode && p.shrink === 'SHRINKING \u2623';
+    const glowing   = expandedMode && p.glow   === 'Glowing';
+    const shakeOff  = this.shakeTimer > 0 ? Math.sin(this.shakeTimer * 1.8) * (this.fightTimer > 0 ? 9 : 4) : 0;
+
+    // Trail
+    if (this.trail.length>1) {
+      for (let i=0;i<this.trail.length;i++) {
+        const a = ((i+1)/(this.trail.length+1))*0.22;
+        const tr= r*(0.35+0.5*(i/this.trail.length));
+        ctx.beginPath(); ctx.ellipse(this.trail[i].x,this.trail[i].y,tr,tr*0.75,0,0,Math.PI*2);
+        ctx.fillStyle=diseased?`rgba(50,240,80,${a})`:`rgba(255,180,50,${a})`;
+        ctx.fill();
+      }
+    }
+
+    ctx.save();
+    ctx.translate(this.x + shakeOff, this.y);
+    if (this.sleeping) { ctx.rotate(this.sleepAngle); ctx.globalAlpha=Math.max(0,this.sleepFade); }
+
+    // Apply shrink scale
+    if (expandedMode && this.shrinkFactor < 0.999 && !this.sleeping) {
+      ctx.scale(this.shrinkFactor, this.shrinkFactor);
+    }
+
+    // ── BIOLUMINESCENCE (expanded) ──────────────────────────────
+    if (glowing && !this.sleeping) {
+      const pulse = 0.55+0.45*Math.sin(Date.now()*0.003);
+      ctx.shadowColor='#00ffcc'; ctx.shadowBlur=22*pulse;
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.25,r*1.0,0,0,Math.PI*2);
+      ctx.fillStyle=`rgba(0,255,200,${0.07*pulse})`; ctx.fill();
+      ctx.shadowBlur=0;
+    }
+
+    // ── WINGS (expanded) ───────────────────────────────────────
+    if (expandedMode && p.wings==='Wings') {
+      ctx.save(); ctx.globalAlpha *= 0.62;
+      for (const dir of [-1,1]) {
+        ctx.beginPath();
+        ctx.ellipse(dir*r*1.55, -r*0.25, r*1.05, r*0.42, dir*0.28, 0, Math.PI*2);
+        ctx.fillStyle=col.light; ctx.fill();
+        ctx.strokeStyle=col.dark; ctx.lineWidth=1; ctx.stroke();
+        // vein
+        ctx.beginPath();
+        ctx.moveTo(dir*r*0.85, -r*0.1);
+        ctx.lineTo(dir*r*2.3, -r*0.4);
+        ctx.strokeStyle=col.dark+'99'; ctx.lineWidth=0.7; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(dir*r*0.9, -r*0.0);
+        ctx.lineTo(dir*r*2.1, r*0.1);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // ── DORSAL FIN (expanded) ──────────────────────────────────
+    if (expandedMode && p.fin==='Dorsal Fin') {
+      ctx.beginPath();
+      ctx.moveTo(-r*0.28, -r*0.78);
+      ctx.lineTo(r*0.08, -r*1.62);
+      ctx.lineTo(r*0.35, -r*0.78);
+      ctx.closePath();
+      ctx.fillStyle=col.mid; ctx.fill();
+      ctx.strokeStyle=col.dark; ctx.lineWidth=1.5; ctx.stroke();
+    }
+
+    // ── TAIL ───────────────────────────────────────────────────
+    if (p.tail==='Has Tail') {
+      ctx.beginPath();
+      ctx.moveTo(-r*0.6,r*0.2);
+      ctx.bezierCurveTo(-r*1.4,r*0.1,-r*1.7,-r*0.45,-r*1.1,-r*0.75);
+      ctx.strokeStyle=col.dark; ctx.lineWidth=r*0.28; ctx.lineCap='round'; ctx.stroke();
+      ctx.shadowBlur=0;
+      ctx.beginPath(); ctx.arc(-r*1.1,-r*0.75,r*0.16,0,Math.PI*2);
+      ctx.fillStyle=col.dark; ctx.fill();
+    }
+    ctx.shadowBlur=0;
+
+    // ── GLOW / SELECTION shadow (applied before body fill) ─────
+    if      (this.selected && !this.sleeping)        {ctx.shadowColor='#fff';    ctx.shadowBlur=14;}
+    else if (this.mateGlow>0 && !this.sleeping)      {ctx.shadowColor='#e94560'; ctx.shadowBlur=10*(this.mateGlow/60);}
+    else if (this.highlightTimer>0 && !this.sleeping){ctx.shadowColor='#f5a623'; ctx.shadowBlur=12;}
+
+    // ── BODY SHADOW ────────────────────────────────────────────
+    ctx.beginPath(); ctx.ellipse(3,4,r*1.08,r*0.82,0,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,0.18)'; ctx.fill(); ctx.shadowBlur=0;
+
+    // ── SPIKY outline (expanded, drawn before body so tips stick out) ──
+    if (expandedMode && p.bodyShape==='Spiky') {
+      const nSpikes=9; ctx.fillStyle=col.dark;
+      for (let i=0;i<nSpikes;i++) {
+        const ang=(i/nSpikes)*Math.PI*2;
+        const bx=Math.cos(ang)*r*1.06, by=Math.sin(ang)*r*0.84;
+        const tx=Math.cos(ang)*r*1.55, ty=Math.sin(ang)*r*1.22;
+        const la=ang-0.18, ra=ang+0.18;
+        ctx.beginPath();
+        ctx.moveTo(Math.cos(la)*r*1.0, Math.sin(la)*r*0.8);
+        ctx.lineTo(tx,ty);
+        ctx.lineTo(Math.cos(ra)*r*1.0, Math.sin(ra)*r*0.8);
+        ctx.closePath(); ctx.fill();
+      }
+    }
+
+    // ── BODY ───────────────────────────────────────────────────
+    ctx.beginPath(); ctx.ellipse(0,0,r*1.08,r*0.84,0,0,Math.PI*2);
+    ctx.fillStyle=col.main; ctx.fill();
+    ctx.strokeStyle=col.dark; ctx.lineWidth=1.8; ctx.stroke();
+
+    // Highlight
+    ctx.beginPath(); ctx.ellipse(-r*0.22,-r*0.28,r*0.42,r*0.27,-0.3,0,Math.PI*2);
+    ctx.fillStyle=col.light+'55'; ctx.fill();
+
+    // ── BODY STRIPES (expanded, clipped) ──────────────────────
+    if (expandedMode && p.stripes==='Striped') {
+      ctx.save();
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.08,r*0.84,0,0,Math.PI*2); ctx.clip();
+      ctx.fillStyle=col.dark+'99';
+      const sh=r*0.24;
+      for (let sy=-r*0.9; sy<r*1.0; sy+=sh*2.1)
+        ctx.fillRect(-r*1.2, sy, r*2.4, sh);
+      ctx.restore();
+    }
+
+    // ── CHEVRON MARKINGS (expanded, clipped) ──────────────────
+    if (expandedMode && p.markings==='Chevron Mark') {
+      ctx.save();
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.08,r*0.84,0,0,Math.PI*2); ctx.clip();
+      ctx.strokeStyle=col.dark+'cc'; ctx.lineWidth=r*0.13; ctx.lineCap='round';
+      for (const oy of [-r*0.3, r*0.05]) {
+        ctx.beginPath();
+        ctx.moveTo(-r*0.5,oy+r*0.25); ctx.lineTo(0,oy); ctx.lineTo(r*0.5,oy+r*0.25);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // ── SPOTS ─────────────────────────────────────────────────
+    if (p.spots==='Spotted') {
+      ctx.save();
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.08,r*0.84,0,0,Math.PI*2); ctx.clip();
+      for (const [sx,sy,sr] of [
+        [-r*0.76,-r*0.22,r*0.12], [-r*0.72, r*0.28,r*0.11],
+        [-r*0.44,-r*0.50,r*0.10], [-r*0.42, r*0.48,r*0.12],
+        [-r*0.18,-r*0.16,r*0.16], [ r*0.08, r*0.36,r*0.13],
+        [ r*0.05,-r*0.50,r*0.10], [ r*0.28,-r*0.20,r*0.10],
+        [ r*0.42,-r*0.48,r*0.10], [ r*0.40, r*0.46,r*0.12],
+        [ r*0.70,-r*0.20,r*0.12], [ r*0.68, r*0.24,r*0.11],
+      ]) {
+        ctx.beginPath(); ctx.ellipse(sx,sy,sr,sr*0.82,0.3,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,252,230,0.88)'; ctx.fill();
+        ctx.strokeStyle=col.dark; ctx.lineWidth=1.1; ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // Disease pulsing ring
+    if (diseased) {
+      const pulse=0.5+0.5*Math.sin(Date.now()*0.006);
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.08,r*0.84,0,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(100,255,100,${0.3+pulse*0.5})`; ctx.lineWidth=3; ctx.stroke();
+    }
+    // Shrink sickness wavery ring
+    if (shrinking) {
+      const pulse=0.5+0.5*Math.sin(Date.now()*0.008);
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.1,r*0.87,0,0,Math.PI*2);
+      ctx.strokeStyle=`rgba(220,120,220,${0.3+pulse*0.5})`; ctx.lineWidth=2.5; ctx.stroke();
+    }
+
+    // ── LEGS ──────────────────────────────────────────────────
+    const sixLimbs = expandedMode && p.limbs==='6 Limbs';
+    const legXs = sixLimbs
+      ? [-r*0.68,-r*0.38,-r*0.08,r*0.22,r*0.52,r*0.78]
+      : [-r*0.52,-r*0.2,r*0.2,r*0.52];
+    ctx.fillStyle=col.dark;
+    for (const lx of legXs) {
+      ctx.beginPath(); ctx.ellipse(lx,r*0.78,r*0.12,r*0.17,0,0,Math.PI*2); ctx.fill();
+    }
+
+    // ── SNOUT (expanded) ──────────────────────────────────────
+    if (expandedMode && p.snout==='Has Snout') {
+      ctx.beginPath(); ctx.ellipse(r*0.92,r*0.08,r*0.28,r*0.19,0,0,Math.PI*2);
+      ctx.fillStyle=col.mid; ctx.fill();
+      ctx.strokeStyle=col.dark; ctx.lineWidth=1; ctx.stroke();
+      ctx.fillStyle=col.dark;
+      ctx.beginPath(); ctx.arc(r*0.84,r*0.08,1.8,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(r*1.00,r*0.08,1.8,0,Math.PI*2); ctx.fill();
+    }
+
+    // ── HORNS ─────────────────────────────────────────────────
+    if (p.horns==='Horns') {
+      for (const [x1,y1,x2,y2,x3,y3] of [
+        [-r*0.35,-r*0.75,-r*0.5,-r*1.18,-r*0.12,-r*0.75],
+        [ r*0.12,-r*0.75, r*0.35,-r*1.18, r*0.5, -r*0.75]
+      ]) {
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.lineTo(x3,y3);
+        ctx.closePath(); ctx.fillStyle='#c9a227'; ctx.fill();
+        ctx.strokeStyle='#9a7a10'; ctx.lineWidth=1; ctx.stroke();
+      }
+    }
+
+    // ── HAIR (♂ males only) ──────────────────────────────────
+    if (this.gender === 'male') {
+      const hairCol = diseased ? '#1f7a26' : (p.hairColor==='Dark Hair' ? '#2e1a08' : '#c04e10');
+      const hairHl  = diseased ? '#44bb44' : (p.hairColor==='Dark Hair' ? '#5a3820' : '#e07830');
+      if (p.hairType === 'Spiky') {
+        ctx.fillStyle = hairCol;
+        // 5 sharp triangular spikes across the crown
+        for (const [bx,by,tx,ty] of [
+          [-r*0.72,-r*0.58,-r*0.86,-r*1.18],
+          [-r*0.34,-r*0.74,-r*0.38,-r*1.38],
+          [ r*0.0, -r*0.78, r*0.0, -r*1.48],
+          [ r*0.34,-r*0.74, r*0.38,-r*1.38],
+          [ r*0.72,-r*0.58, r*0.86,-r*1.18],
+        ]) {
+          ctx.beginPath();
+          ctx.moveTo(bx-r*0.11,by+r*0.05); ctx.lineTo(tx,ty); ctx.lineTo(bx+r*0.11,by+r*0.05);
+          ctx.closePath(); ctx.fill();
+        }
+      } else {
+        // Floppy — rounded drooping hair blob
+        ctx.fillStyle = hairCol;
+        ctx.beginPath();
+        ctx.moveTo(-r*0.85,-r*0.52);
+        ctx.bezierCurveTo(-r*1.02,-r*1.02,-r*0.3,-r*1.16, 0,-r*1.08);
+        ctx.bezierCurveTo(r*0.3,-r*1.16,r*1.02,-r*1.02,r*0.85,-r*0.52);
+        ctx.bezierCurveTo(r*0.62,-r*0.14,r*0.22,-r*0.26, 0,-r*0.30);
+        ctx.bezierCurveTo(-r*0.22,-r*0.26,-r*0.62,-r*0.14,-r*0.85,-r*0.52);
+        ctx.closePath(); ctx.fill();
+        // Hair sheen
+        ctx.beginPath(); ctx.ellipse(-r*0.12,-r*0.85,r*0.22,r*0.11,-0.3,0,Math.PI*2);
+        ctx.fillStyle=hairHl+'55'; ctx.fill();
+      }
+    }
+
+    // ── ANTENNAE ──────────────────────────────────────────────
+    if (p.antenna==='Antennae') {
+      ctx.strokeStyle='#999'; ctx.lineWidth=1.5;
+      for (const dir of [-1,1]) {
+        ctx.beginPath();
+        ctx.moveTo(dir*r*0.22,-r*0.78);
+        ctx.quadraticCurveTo(dir*r*0.48,-r*1.28,dir*r*0.55,-r*1.48);
+        ctx.stroke();
+        ctx.beginPath(); ctx.arc(dir*r*0.55,-r*1.48,3.5,0,Math.PI*2);
+        ctx.fillStyle=diseased?'#ff2020':'#e94560'; ctx.fill();
+      }
+    }
+
+    // ── EYES ──────────────────────────────────────────────────
+    const eCol = eyeIrisColor(p, expandedMode);
+    const giant = expandedMode && p.eyeSize==='Giant Eyes';
+    const er    = giant ? r*0.3 : r*0.22;
+    if (p.eyeCount==='Three Eyes') {
+      drawEye(ctx,-r*0.37,-r*(giant?0.08:0.1), er*0.85, eCol);
+      drawEye(ctx, 0,     -r*(giant?0.38:0.36),er*0.85, eCol);
+      drawEye(ctx, r*0.37,-r*(giant?0.08:0.1), er*0.85, eCol);
+    } else {
+      drawEye(ctx,-r*0.3,-r*0.12,er,eCol);
+      drawEye(ctx, r*0.3,-r*0.12,er,eCol);
+    }
+
+    // ── MOUTH ─────────────────────────────────────────────────
+    ctx.strokeStyle=col.dark; ctx.lineWidth=2;
+    const mouthR = diseased?r*0.34:r*0.28;
+    ctx.beginPath();
+    if (this.scars >= 3) {
+      // Scowl — upper half of a circle gives frown shape
+      ctx.arc(0, r*0.40, mouthR*0.6, Math.PI+0.18, -0.18);
+    } else {
+      ctx.arc(0, r*0.22, mouthR, 0.1, Math.PI-0.1);
+    }
+    ctx.stroke();
+
+    // ── SCARS ─────────────────────────────────────────────────
+    if (this.scars > 0) {
+      ctx.save();
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.08,r*0.84,0,0,Math.PI*2); ctx.clip();
+      ctx.strokeStyle='rgba(255,255,255,0.72)'; ctx.lineWidth=1.4; ctx.lineCap='round';
+      const scarDefs = [
+        [-r*0.12,-r*0.22, r*0.1, r*0.1],
+        [ r*0.25, r*0.04, r*0.44,r*0.28],
+        [-r*0.40, r*0.10,-r*0.18,r*0.32],
+        [ r*0.02,-r*0.42, r*0.22,-r*0.18],
+        [-r*0.28,-r*0.36,-r*0.06,-r*0.14],
+      ];
+      for (let i=0; i<Math.min(this.scars, scarDefs.length); i++) {
+        const [x1,y1,x2,y2]=scarDefs[i];
+        ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x1+r*0.05,y1+r*0.04); ctx.lineTo(x2+r*0.05,y2+r*0.04); ctx.stroke();
+      }
+      ctx.restore();
+    }
+    if (this.scars >= 2) {
+      // Angry furrowed brows — outer-high, inner-low
+      ctx.strokeStyle=col.dark; ctx.lineWidth=r*0.11; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(-r*0.52,-r*0.38); ctx.lineTo(-r*0.16,-r*0.26); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo( r*0.16,-r*0.26); ctx.lineTo( r*0.52,-r*0.38); ctx.stroke();
+      // Damaged left eye — red X drawn over it
+      const eyeX = p.eyeCount==='Three Eyes' ? -r*0.37 : -r*0.3;
+      const eyeY = p.eyeCount==='Three Eyes' ? -r*0.10 : -r*0.12;
+      const eR   = (expandedMode && p.eyeSize==='Giant Eyes') ? r*0.26 : r*0.18;
+      ctx.strokeStyle='rgba(220,40,40,0.9)'; ctx.lineWidth=2.2; ctx.lineCap='round';
+      ctx.beginPath(); ctx.moveTo(eyeX-eR,eyeY-eR); ctx.lineTo(eyeX+eR,eyeY+eR); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(eyeX+eR,eyeY-eR); ctx.lineTo(eyeX-eR,eyeY+eR); ctx.stroke();
+    }
+
+    // ── FIGHT FLASH ───────────────────────────────────────────
+    if (this.fightTimer > 0) {
+      const pulse = 0.5+0.5*Math.sin(Date.now()*0.02);
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.2,r*0.96,0,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,30,30,${0.22+pulse*0.28})`; ctx.fill();
+      ctx.strokeStyle=`rgba(255,80,60,${0.7+pulse*0.3})`;
+      ctx.lineWidth=3.5; ctx.stroke();
+    }
+
+    // ── SELECTION DASHES ──────────────────────────────────────
+    if (this.selected && !this.sleeping) {
+      ctx.beginPath(); ctx.ellipse(0,0,r*1.22,r*0.98,0,0,Math.PI*2);
+      ctx.strokeStyle='rgba(255,255,255,0.85)';
+      ctx.lineWidth=2.5; ctx.setLineDash([6,5]); ctx.stroke(); ctx.setLineDash([]);
+    }
+
+    ctx.restore();
+
+    // ── NAME LABEL (always upright) ───────────────────────────
+    const nameY = this.y + r*1.05 + 17;
+    const gSym  = this.gender==='male' ? '♂' : '♀';
+    const label = `${this.name} ${gSym}`;
+    ctx.save();
+    ctx.globalAlpha = this.sleeping ? Math.max(0,this.sleepFade) : 1;
+    ctx.font = `bold ${boardMode?18:13}px "Segoe UI",sans-serif`;
+    ctx.textAlign='center';
+    const tw=ctx.measureText(label).width, pad=5;
+    ctx.fillStyle = this.selected ? 'rgba(233,69,96,0.82)' : (boardMode?'rgba(255,255,255,0.82)':'rgba(0,0,0,0.62)');
+    ctx.beginPath();
+    ctx.roundRect(this.x+shakeOff-tw/2-pad, nameY-12, tw+pad*2, 17, 5); ctx.fill();
+    ctx.fillStyle = this.selected?'#fff':(diseased?'#44ff66':(shrinking?'#ff88ff':(boardMode?'#12253a':'#e8e8e8')));
+    ctx.fillText(label, this.x+shakeOff, nameY);
+    ctx.restore();
+
+    // ── ZZZ ───────────────────────────────────────────────────
+    if (this.sleeping) {
+      const t=this.sleepTimer*0.04;
+      ctx.save(); ctx.globalAlpha=Math.max(0,this.sleepFade*0.85);
+      for (let i=0;i<3;i++) {
+        const ox=(i-1)*13+Math.sin(t+i*1.2)*4;
+        const oy=this.y-r*1.3-i*13-Math.cos(t+i)*4;
+        ctx.font=`${12+i*4}px serif`; ctx.fillStyle='#aaa'; ctx.textAlign='center';
+        ctx.fillText(['z','z','Z'][i],this.x+ox,oy);
+      }
+      ctx.restore();
+    }
+  }
+}
+
+// ================================================================
+//  GAME STATE
+// ================================================================
+const canvas        = document.getElementById('canvas');
+const ctx           = canvas.getContext('2d');
+const gameContainer = document.getElementById('game-container');
+
+let creatures=[], effects=[], selected=null, speedMult=1.0, mating=false, cullFlash=0;
+
+function resizeCanvas() {
+  canvas.width=gameContainer.offsetWidth; canvas.height=gameContainer.offsetHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// ================================================================
+//  ADD / REMOVE
+// ================================================================
+function registerCreature(c) {
+  creatureArchive.set(c.id, { id:c.id, name:c.name, gender:c.gender, genotype:c.genotype, parents:c.parents });
+}
+
+function addCreature() {
+  const r=40;
+  const x=r+Math.random()*(canvas.width-r*2);
+  const y=r+Math.random()*(canvas.height-r*2);
+  const gender=Math.random()<0.5?'male':'female';
+  let geno;
+  do { geno=randomGenotype(gender); } while (getPhenotype(geno,gender).disease!=='Healthy');
+  const c=new Creature(x,y,gender,geno,randomName());
+  registerCreature(c);
+  creatures.push(c); updateList();
+}
+function removeSelected() {
+  if (!selected) return;
+  creatures=creatures.filter(c=>c!==selected); selected=null;
+  updateList(); updateInfoPanel();
+}
+
+// ================================================================
+//  CULL
+// ================================================================
+function cullCreatures() {
+  const alive=creatures.filter(c=>!c.sleeping);
+  if (!alive.length) { showMsg('No active creatures!', 1800); return; }
+  const pct=0.3+Math.random()*0.4;
+  const count=Math.max(1,Math.round(alive.length*pct));
+  const victims=[...alive].sort(()=>Math.random()-0.5).slice(0,count);
+  cullFlash=1.0;
+  setTimeout(()=>{
+    victims.forEach(c=>c.goToSleep(true));
+    showMsg(`☠ Disease outbreak!\n${count} creature${count>1?'s':''} lost (${Math.round(pct*100)}%)`,2400);
+    updateList();
+  },300);
+}
+
+// ================================================================
+//  ADD MUTANT
+// ================================================================
+function addMutant() {
+  const r=50;
+  const x=r+Math.random()*(canvas.width-r*2);
+  const y=r+Math.random()*(canvas.height-r*2);
+  const gender=Math.random()<0.5?'male':'female';
+  const g={
+    eyeColor:['b','b'],bodyColor:['c','c'],spots:['p','p'],tail:['t','t'],
+    size:['G','G'],horns:['h','h'],eyeCount:['e','e'],antenna:['a','a'],
+    speed:['F','F'],disease:['d','d'],
+    // expanded traits — extreme recessives
+    wings:['w','w'],stripes:['n','n'],glow:['l','l'],bodyShape:['r','r'],
+    snout:['s','s'],limbs:['x','x'],eyeSize:['m','m'],shrink:['Q','Q'],
+    markings:['k','k'],fin:['z','z'],
+    hairType: gender==='male'?'v':null, hairColor: gender==='male'?'j':null,
+  };
+  const name='Xeno-'+randomName();
+  const c=new Creature(x,y,gender,g,name,null,true);
+  registerCreature(c);
+  c.highlightTimer=240; creatures.push(c);
+  for (let i=0;i<12;i++) effects.push(new SparkEffect(x+(Math.random()-0.5)*60,y+(Math.random()-0.5)*60));
+  showMsg('⚡ A mutant organism has arrived!\nCarries Frenzy Disease + all expanded traits!',2800);
+  updateList(); selectCreature(c);
+}
+
+// ================================================================
+//  MATING
+// ================================================================
+function doMating() {
+  if (mating) return;
+  const males  =creatures.filter(c=>c.gender==='male'  &&!c.sleeping);
+  const females=creatures.filter(c=>c.gender==='female'&&!c.sleeping);
+  if (!males.length||!females.length) { showMsg('Need ♂ and ♀ to mate!',2000); return; }
+  mating=true; document.getElementById('mate-btn').disabled=true;
+
+  // Nearest-neighbour pairing
+  const availF=[...females]; const pairs=[];
+  for (const m of males) {
+    if (!availF.length) break;
+    let bi=0, bd=Infinity;
+    for (let i=0;i<availF.length;i++) {
+      const dx=m.x-availF[i].x, dy=m.y-availF[i].y, d=dx*dx+dy*dy;
+      if (d<bd) {bd=d;bi=i;}
+    }
+    pairs.push([m,availF[bi]]); availF.splice(bi,1);
+  }
+
+  // Phase 1 — send each creature gliding to just beside their partner
+  pairs.forEach(([m,f])=>{
+    m.mateGlow=200; f.mateGlow=200;
+    // rendezvous point is the midpoint; offset each by ~6 px so they sit side-by-side
+    const midX=(m.x+f.x)/2, midY=(m.y+f.y)/2;
+    const dx=f.x-m.x, dy=f.y-m.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+    m.matingTarget={x:midX-(dx/d)*6, y:midY-(dy/d)*6};
+    f.matingTarget={x:midX+(dx/d)*6, y:midY+(dy/d)*6};
+  });
+
+  // Phase 2 — once close together, burst of hearts
+  setTimeout(()=>{
+    pairs.forEach(([m,f])=>{
+      const mx=(m.x+f.x)/2, my=(m.y+f.y)/2;
+      for (let i=0;i<10;i++)
+        effects.push(new HeartEffect(mx+(Math.random()-0.5)*24, my+(Math.random()-0.5)*24));
+    });
+  }, 900);
+
+  // Phase 3 — lay egg(s), release parents; creature hatches when egg cracks (5 s later)
+  setTimeout(()=>{
+    pairs.forEach(([m,f])=>{
+      const mx=(m.x+f.x)/2, my=(m.y+f.y)/2;
+      const nk=1+Math.floor(Math.random()*2);
+      for (let k=0;k<nk;k++) {
+        const cx=clamp(mx+(Math.random()-0.5)*30,40,canvas.width-40);
+        const cy=clamp(my+(Math.random()-0.5)*30,40,canvas.height-40);
+        const cGender=Math.random()<0.5?'male':'female';
+        const cg=breedGenotype(m.genotype,f.genotype,cGender);
+        const cName=mixNames(m.name.replace('Xeno-',''),f.name.replace('Xeno-',''));
+        const parents={fatherName:m.name,fatherId:m.id,motherName:f.name,motherId:f.id};
+        effects.push(new EggCrackEffect(cx, cy, ()=>{
+          const child=new Creature(cx,cy,cGender,cg,cName,parents);
+          child.generation=Math.max(m.generation,f.generation)+1;
+          registerCreature(child);
+          child.highlightTimer=160; creatures.push(child);
+          for (const pid of [m.id, f.id]) {
+            if (!childrenRegistry.has(pid)) childrenRegistry.set(pid, []);
+            childrenRegistry.get(pid).push({id: child.id, gender: child.gender});
+          }
+          updateList();
+        }));
+      }
+      // release parents to wander again
+      m.matingTarget=null; f.matingTarget=null;
+      m.age++; f.age++;
+      if (Math.random()<0.12+m.age*0.09) m.goToSleep();
+      if (Math.random()<0.12+f.age*0.09) f.goToSleep();
+    });
+    updateList(); mating=false;
+    document.getElementById('mate-btn').disabled=false;
+  }, 1800);
+}
+
+function lerp(a,b,t) {return a+(b-a)*t;}
+function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+
+// ================================================================
+//  WILD MODE — proximity auto-mating and fighting
+// ================================================================
+let normalMode = true; // on by default
+
+class SwordsEffect {
+  constructor(x, y) { this.x=x; this.y=y; this.timer=0; this.alpha=1; this.rise=0; }
+  update() {
+    this.timer++;
+    if (this.timer < 20) this.rise += 1.4;
+    if (this.timer > 70) this.alpha -= 0.03;
+  }
+  draw(ctx) {
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, this.alpha);
+    const scale = this.timer < 10 ? this.timer/10 : 1;
+    ctx.font = `${Math.round(42*scale)}px serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('\u2694\uFE0F', this.x, this.y - this.rise);
+    ctx.restore();
+  }
+  dead() { return this.alpha <= 0; }
+}
+
+class GravestoneEffect {
+  constructor(x, y) { this.x=x; this.y=y; this.timer=0; }
+  update() { this.timer++; }
+  draw(ctx) {
+    const alpha = this.timer > 480 ? Math.max(0, 1-(this.timer-480)/120) : 1;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = '28px serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('\uD83E\uDEA6', this.x, this.y);
+    ctx.restore();
+  }
+  dead() { return this.timer >= 600; }
+}
+
+function fightStrength(c) {
+  let s = Math.random() * 2.5; // randomness keeps it interesting
+  if (c.phenotype.size    === 'Large')         s += 3;
+  if (c.phenotype.horns   === 'Horns')         s += 2;
+  if (c.phenotype.disease === 'DISEASED \u2623') s += 3; // frenzied = dangerous
+  if (c.phenotype.speed   === 'Fast')           s += 1;
+  if (expandedMode) {
+    if (c.phenotype.bodyShape === 'Spiky')      s += 2;
+    if (c.phenotype.limbs     === '6 Limbs')    s += 1;
+  }
+  return s;
+}
+
+function fight(a, b) {
+  const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+  effects.push(new SwordsEffect(mx, my));
+  // Freeze both in place and shake hard for ~1.5 s (90 frames)
+  a.fightTimer = 90; b.fightTimer = 90;
+  a.shakeTimer = 90; b.shakeTimer = 90;
+  const sA = fightStrength(a), sB = fightStrength(b);
+  const loser  = sA >= sB ? b : a;
+  const winner = sA >= sB ? a : b;
+  setTimeout(() => {
+    if (loser.sleeping) return;
+    // Both always get a scar
+    loser.scars++;
+    winner.scars++;
+    // Loser dies based on strength gap — more evenly matched = less likely to die
+    const gap = Math.abs(sA - sB);
+    const deathChance = 0.25 + Math.min(gap * 0.07, 0.55);
+    if (Math.random() < deathChance) {
+      effects.push(new GravestoneEffect(loser.x, loser.y));
+      loser.goToSleep(true);
+    }
+    updateList();
+  }, 1500);
+}
+
+function proximityMate(male, female) {
+  male.mateGlow=200; female.mateGlow=200;
+  const dx=female.x-male.x, dy=female.y-male.y, d=Math.sqrt(dx*dx+dy*dy)||1;
+  const midX=(male.x+female.x)/2, midY=(male.y+female.y)/2;
+  male.matingTarget  ={x:midX-(dx/d)*6, y:midY-(dy/d)*6};
+  female.matingTarget={x:midX+(dx/d)*6, y:midY+(dy/d)*6};
+
+  setTimeout(()=>{
+    if (male.sleeping||female.sleeping) return;
+    const mx=(male.x+female.x)/2, my=(male.y+female.y)/2;
+    for (let i=0;i<8;i++)
+      effects.push(new HeartEffect(mx+(Math.random()-0.5)*20, my+(Math.random()-0.5)*20));
+  }, 800);
+
+  setTimeout(()=>{
+    if (male.sleeping||female.sleeping) {
+      male.matingTarget=null; female.matingTarget=null; return;
+    }
+    male.matingTarget=null; female.matingTarget=null;
+    const mx=(male.x+female.x)/2, my=(male.y+female.y)/2;
+    const cGender=Math.random()<0.5?'male':'female';
+    const cg=breedGenotype(male.genotype,female.genotype,cGender);
+    const cName=mixNames(male.name.replace('Xeno-',''),female.name.replace('Xeno-',''));
+    const parents={fatherName:male.name,fatherId:male.id,motherName:female.name,motherId:female.id};
+    const cx=clamp(mx+(Math.random()-0.5)*30,40,canvas.width-40);
+    const cy=clamp(my+(Math.random()-0.5)*30,40,canvas.height-40);
+    effects.push(new EggCrackEffect(cx, cy, ()=>{
+      const child=new Creature(cx, cy, cGender, cg, cName, parents);
+      child.generation=Math.max(male.generation,female.generation)+1;
+      registerCreature(child);
+      child.highlightTimer=160; creatures.push(child);
+      for (const pid of [male.id, female.id]) {
+        if (!childrenRegistry.has(pid)) childrenRegistry.set(pid, []);
+        childrenRegistry.get(pid).push({id: child.id, gender: child.gender});
+      }
+      updateList();
+    }));
+    male.age++; female.age++;
+    if (Math.random()<0.12+male.age*0.09)   male.goToSleep();
+    if (Math.random()<0.12+female.age*0.09) female.goToSleep();
+    updateList();
+  }, 1600);
+}
+
+// ================================================================
+//  MATE PREDICT
+// ================================================================
+let matePredictOpen = false;
+
+function drawCreaturePreview(canvasEl, creature) {
+  const ctx2 = canvasEl.getContext('2d');
+  const W = canvasEl.width;
+  const H = canvasEl.height;
+  const scale = 0.5;
+  const sv = {
+    x: creature.x, y: creature.y, name: creature.name,
+    sleeping: creature.sleeping, selected: creature.selected,
+    shakeTimer: creature.shakeTimer, fightTimer: creature.fightTimer,
+    trail: creature.trail, sleepFade: creature.sleepFade,
+    matingTarget: creature.matingTarget, highlightTimer: creature.highlightTimer,
+    mateGlow: creature.mateGlow,
+  };
+  // Position creature in the centre of the scaled drawing space
+  creature.x = W / scale / 2;
+  creature.y = H / scale * 0.52;
+  creature.name = '';
+  creature.sleeping = false; creature.selected = false;
+  creature.shakeTimer = 0; creature.fightTimer = 0;
+  creature.trail = []; creature.sleepFade = 1;
+  creature.matingTarget = null; creature.highlightTimer = 0; creature.mateGlow = 0;
+
+  ctx2.clearRect(0, 0, W, H);
+  ctx2.save();
+  ctx2.scale(scale, scale);
+  creature.draw(ctx2);
+  ctx2.restore();
+  Object.assign(creature, sv);
+}
+
+function openMatePredict(a, b) {
+  matePredictOpen = true;
+
+  const aGSym = a.gender === 'male' ? '♂' : '♀';
+  const aGCol = a.gender === 'male' ? '#5abeff' : '#ff7eb9';
+  const bGSym = b.gender === 'male' ? '♂' : '♀';
+  const bGCol = b.gender === 'male' ? '#5abeff' : '#ff7eb9';
+
+  // Build Punnett table skeleton with creature canvases in header cells
+  document.getElementById('mp-punnett-grid').innerHTML = `<table class="pt-table">
+    <tr>
+      <td class="pt-corner"></td>
+      <td class="pt-corner"></td>
+      <td colspan="2" class="pt-parent-hd">
+        <canvas id="pt-canvas-a" class="pt-canvas" width="100" height="96"></canvas>
+        <div class="pt-pname" style="color:${aGCol}">${escHtml(a.name)} ${aGSym}</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="pt-corner"></td>
+      <td class="pt-corner"></td>
+      <td class="pt-allele" id="pta1">&nbsp;</td>
+      <td class="pt-allele" id="pta2">&nbsp;</td>
+    </tr>
+    <tr>
+      <td rowspan="2" class="pt-parent-hd">
+        <canvas id="pt-canvas-b" class="pt-canvas" width="100" height="96"></canvas>
+        <div class="pt-pname" style="color:${bGCol}">${escHtml(b.name)} ${bGSym}</div>
+      </td>
+      <td class="pt-allele" id="ptb1">&nbsp;</td>
+      <td class="pt-cell" id="ptc00"></td>
+      <td class="pt-cell" id="ptc01"></td>
+    </tr>
+    <tr>
+      <td class="pt-allele" id="ptb2">&nbsp;</td>
+      <td class="pt-cell" id="ptc10"></td>
+      <td class="pt-cell" id="ptc11"></td>
+    </tr>
+  </table>`;
+
+  // Draw creatures into the header canvases
+  drawCreaturePreview(document.getElementById('pt-canvas-a'), a);
+  drawCreaturePreview(document.getElementById('pt-canvas-b'), b);
+
+  // Hide outcome until trait selected
+  const outcomeEl = document.getElementById('mp-punnett-outcome');
+  outcomeEl.innerHTML = '';
+  outcomeEl.style.display = 'none';
+
+  // Trait buttons
+  const traitBtnsEl = document.getElementById('mp-trait-btns');
+  const shownTraits = [
+    ...TRAIT_STANDARD,
+    ...(expandedMode ? TRAITS.slice(10) : []),
+    ...MALE_TRAITS,
+  ];
+  traitBtnsEl.innerHTML = shownTraits.map(t =>
+    `<button class="mp-trait-btn" data-key="${t.key}">${t.name}</button>`
+  ).join('');
+
+  traitBtnsEl.querySelectorAll('.mp-trait-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      traitBtnsEl.querySelectorAll('.mp-trait-btn').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      showPunnett(btn.dataset.key, a, b);
+    });
+  });
+
+  document.getElementById('mp-overlay').classList.add('open');
+}
+
+function closeMatePredict() {
+  matePredictOpen = false;
+  document.getElementById('mp-overlay').classList.remove('open');
+}
+
+function showPunnett(traitKey, a, b) {
+  const trait = ALL_TRAITS.find(t => t.key === traitKey);
+  if (!trait) return;
+
+  const isYLinked = MALE_TRAITS.some(t => t.key === traitKey);
+  const outcomeEl = document.getElementById('mp-punnett-outcome');
+
+  function alClsFn(al)   { return al === trait.dom ? 'al-d' : 'al-r'; }
+  function alSpan(al)    { return `<span class="${alClsFn(al)}">${al}</span>`; }
+  function phenoOf(x, y) { return (x===trait.dom||y===trait.dom) ? trait.domName : trait.recName; }
+  function phColor(ph) {
+    if (traitKey==='disease' && ph===trait.recName) return '#44ff66';
+    if (traitKey==='shrink'  && ph===trait.recName) return '#ff88ff';
+    return ph===trait.domName ? '#f5a623' : '#999';
+  }
+
+  // ── Y-linked (hair) special case ─────────────────────────────
+  if (isYLinked) {
+    const father  = a.gender === 'male' ? a : b;
+    const fAllele = father.genotype[traitKey];
+    const isDom   = fAllele === trait.dom;
+    const phName  = isDom ? trait.domName : trait.recName;
+    const aCls    = alClsFn(fAllele);
+
+    ['pta1','pta2','ptb1','ptb2','ptc00','ptc01','ptc10','ptc11'].forEach(id => {
+      document.getElementById(id).innerHTML = '';
+    });
+    document.getElementById('ptc00').innerHTML =
+      `<div style="font-size:0.75rem;color:#888;line-height:1.6;padding:4px 0">
+        Y-linked gene<br>only males carry it
+      </div>`;
+    document.getElementById('pta1').innerHTML = `<span class="${aCls}">${fAllele}</span>`;
+    document.getElementById('ptb1').innerHTML = `<span style="color:#555">—</span>`;
+
+    outcomeEl.innerHTML =
+      `<div class="po-heading">Y-linked — Father to Sons only</div>
+      <div class="po-row" style="margin-bottom:6px">
+        <span class="po-geno"><span class="${aCls}">${fAllele}</span></span>
+        <span style="color:${isDom?'#f5a623':'#999'};font-weight:bold">${phName}</span>
+        <span class="po-frac">all sons</span>
+        <span class="po-pct">(100%)</span>
+      </div>
+      <div class="po-row">
+        <span class="po-geno" style="color:#555">—</span>
+        <span style="color:#555">No hair gene</span>
+        <span class="po-frac" style="color:#555">all daughters</span>
+      </div>`;
+    outcomeEl.style.display = 'block';
+    return;
+  }
+
+  // ── Standard diploid Punnett ──────────────────────────────────
+  const [a1, a2] = a.genotype[traitKey];
+  const [b1, b2] = b.genotype[traitKey];
+
+  function cellHtml(x, y) {
+    const ph = phenoOf(x, y);
+    return `<div class="pt-alleles">${alSpan(x)}${alSpan(y)}</div>
+      <div class="pt-ph" style="color:${phColor(ph)}">${ph}</div>`;
+  }
+
+  document.getElementById('pta1').innerHTML = alSpan(a1);
+  document.getElementById('pta2').innerHTML = alSpan(a2);
+  document.getElementById('ptb1').innerHTML = alSpan(b1);
+  document.getElementById('ptb2').innerHTML = alSpan(b2);
+
+  document.getElementById('ptc00').innerHTML = cellHtml(a1, b1);
+  document.getElementById('ptc01').innerHTML = cellHtml(a2, b1);
+  document.getElementById('ptc10').innerHTML = cellHtml(a1, b2);
+  document.getElementById('ptc11').innerHTML = cellHtml(a2, b2);
+
+  const combos = [[a1,b1],[a2,b1],[a1,b2],[a2,b2]];
+  const genoCounts = {};
+  combos.forEach(([x, y]) => {
+    const key = x === trait.dom ? x+y : y+x;
+    genoCounts[key] = (genoCounts[key] || 0) + 1;
+  });
+  const phenoCounts = {};
+  combos.forEach(([x, y]) => {
+    const ph = phenoOf(x, y);
+    phenoCounts[ph] = (phenoCounts[ph] || 0) + 1;
+  });
+
+  const genoRows = Object.entries(genoCounts).map(([g, n]) => {
+    const pct = Math.round(n / 4 * 100);
+    return `<div class="po-row">
+      <span class="po-geno">${alSpan(g[0])}${alSpan(g[1])}</span>
+      <span class="po-frac">${n}/4</span><span class="po-pct">(${pct}%)</span>
+    </div>`;
+  }).join('');
+  const phenoRows = Object.entries(phenoCounts).map(([ph, n]) => {
+    const pct = Math.round(n / 4 * 100);
+    return `<div class="po-row">
+      <span style="color:${phColor(ph)};font-weight:bold">${ph}</span>
+      <span class="po-frac">${n}/4</span><span class="po-pct">(${pct}%)</span>
+    </div>`;
+  }).join('');
+
+  outcomeEl.innerHTML =
+    `<div class="po-heading">Genotypes</div>${genoRows}` +
+    `<div class="po-heading">Phenotypes</div>${phenoRows}`;
+  outcomeEl.style.display = 'block';
+}
+
+document.getElementById('mp-close-btn').addEventListener('click', closeMatePredict);
+document.getElementById('mp-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('mp-overlay')) closeMatePredict();
+});
+
+// ================================================================
+//  PEDIGREE CHART
+// ================================================================
+let pedSubject = null;
+
+function openPedigree(creature) {
+  pedSubject = creature;
+  const gSym = creature.gender === 'male' ? '♂' : '♀';
+  document.getElementById('ped-subject-line').textContent =
+    `Showing full family pedigree for: ${creature.name} ${gSym}`;
+
+  // Trait buttons — all standard + expanded if on, + male traits if ♂
+  const btnsEl = document.getElementById('ped-trait-btns');
+  const shownTraits = [
+    ...TRAIT_STANDARD,
+    ...(expandedMode ? TRAITS.slice(10) : []),
+    ...(creature.gender === 'male' ? MALE_TRAITS : []),
+  ];
+  btnsEl.innerHTML = shownTraits.map(t =>
+    `<button class="mp-trait-btn" data-key="${t.key}">${t.name}</button>`
+  ).join('');
+
+  // Clear canvas
+  const canvas = document.getElementById('ped-canvas');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  document.getElementById('ped-legend').innerHTML = '';
+
+  btnsEl.querySelectorAll('.mp-trait-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btnsEl.querySelectorAll('.mp-trait-btn').forEach(b => b.classList.remove('sel'));
+      btn.classList.add('sel');
+      drawPedigreeChart(btn.dataset.key);
+    });
+  });
+
+  document.getElementById('ped-overlay').classList.add('open');
+}
+
+function closePedigree() {
+  document.getElementById('ped-overlay').classList.remove('open');
+}
+
+function drawPedigreeChart(traitKey) {
+  const pedCanvas = document.getElementById('ped-canvas');
+  const ctx = pedCanvas.getContext('2d');
+  const W = pedCanvas.width, H = pedCanvas.height;
+  const trait = ALL_TRAITS.find(t => t.key === traitKey);
+  if (!trait || !pedSubject) return;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = boardMode ? '#eef6fc' : '#0d1828';
+  ctx.fillRect(0, 0, W, H);
+
+  const ancGen    = 3;  // ancestor rows: parents, grandparents, great-grandparents
+  const descGen   = 2;  // descendant rows: children, grandchildren
+  const totalRows = ancGen + 1 + descGen; // 6
+  const leftPad   = 90;
+  const rightPad  = 8;
+  const rowH      = H / totalRows;
+  const nodeR     = 18;
+  const usableW   = W - leftPad - rightPad;
+  const isYLinked = MALE_TRAITS.some(t => t.key === traitKey);
+
+  // Row index 0 = top (great-grandparents), ancGen = subject, ancGen+descGen = bottom
+  function rowY(ri) { return (ri + 0.5) * rowH; }
+
+  // Ancestors: binary tree positioning
+  function ancX(genUp, pos) { return leftPad + (pos + 0.5) / Math.pow(2, genUp) * usableW; }
+  function ancY(genUp)      { return rowY(ancGen - genUp); }
+
+  const subjectX = ancX(0, 0); // = leftPad + usableW/2
+  const subjectY = ancY(0);
+
+  // ── Build ancestor tree ──────────────────────────────────────
+  // Uses creatureArchive so deceased ancestors still show their genotype
+  const ancNodes = [];
+  function buildAncestors(id, genUp, pos) {
+    const info  = creatureArchive.get(id) || null;
+    const alive = creatures.some(c => c.id === id);
+    ancNodes.push({ info, alive, id, genUp, pos });
+    if (genUp < ancGen && info?.parents) {
+      buildAncestors(info.parents.fatherId, genUp + 1, pos * 2);
+      buildAncestors(info.parents.motherId, genUp + 1, pos * 2 + 1);
+    }
+  }
+  buildAncestors(pedSubject.id, 0, 0);
+
+  // ── Build descendant tree ────────────────────────────────────
+  const childEntries = childrenRegistry.get(pedSubject.id) || [];
+  const childrenData = childEntries.map(({ id, gender }) => {
+    const info  = creatureArchive.get(id) || null;
+    const alive = creatures.some(c => c.id === id);
+    const gcEntries = childrenRegistry.get(id) || [];
+    return { id, gender, info, alive, gcEntries };
+  });
+
+  // Slot-based X layout: each child occupies max(1, its_grandchild_count) slots
+  let totalSlots = 0;
+  for (const cd of childrenData) totalSlots += Math.max(1, cd.gcEntries.length);
+  if (totalSlots === 0) totalSlots = 1;
+  const slotW = usableW / totalSlots;
+
+  const descNodes = [];
+  let slotOffset = 0;
+  for (const cd of childrenData) {
+    const mySlots = Math.max(1, cd.gcEntries.length);
+    const childX = leftPad + (slotOffset + mySlots / 2) * slotW;
+    descNodes.push({ info: cd.info, alive: cd.alive, id: cd.id, gender: cd.gender, genDown: 1, x: childX });
+    for (let gi = 0; gi < cd.gcEntries.length; gi++) {
+      const { id: gcId, gender: gcGender } = cd.gcEntries[gi];
+      const gcInfo  = creatureArchive.get(gcId) || null;
+      const gcAlive = creatures.some(c => c.id === gcId);
+      descNodes.push({
+        info: gcInfo, alive: gcAlive, id: gcId, gender: gcGender, genDown: 2,
+        x: leftPad + (slotOffset + gi + 0.5) * slotW,
+        parentX: childX,
+      });
+    }
+    slotOffset += mySlots;
+  }
+
+  // ── Status helper ────────────────────────────────────────────
+  function getStatus(info, gender) {
+    if (!info) return 'unknown';
+    if (isYLinked) {
+      if (gender === 'female') return 'na';
+      const gv = info.genotype[traitKey];
+      return gv === trait.rec ? 'affected' : 'unaffected';
+    }
+    const gv = info.genotype?.[traitKey];
+    if (!Array.isArray(gv)) return 'unknown';
+    const [a1, a2] = gv;
+    if (a1 !== trait.dom && a2 !== trait.dom) return 'affected';
+    if (a1 !== a2) return 'carrier';
+    return 'unaffected';
+  }
+
+  // Colour scheme
+  const affCol     = boardMode ? '#1a3050' : '#c0392b';
+  const emptyBg    = boardMode ? '#f8fcff' : '#12233a';
+  const unknownBg  = boardMode ? '#c8d8e4' : '#1e3040';
+  const outlineCol = boardMode ? '#1a3050' : '#b8cce0';
+  const lineCol    = boardMode ? '#8aaccc' : '#3a5a7a';
+  const textOnLight = boardMode ? '#1a3050' : '#a8c8e0';
+
+  // ── Generation labels (left margin) ──────────────────────────
+  const genLabels = ['Great-grandparents', 'Grandparents', 'Parents', 'Subject', 'Children', 'Grandchildren'];
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = boardMode ? '#5a7090' : '#4a6a8a';
+  for (let ri = 0; ri < totalRows; ri++) {
+    let hasContent;
+    if (ri <= ancGen) hasContent = ancNodes.some(n => n.genUp === ancGen - ri);
+    else              hasContent = descNodes.some(n => n.genDown === ri - ancGen);
+    if (!hasContent) continue;
+    ctx.font = `bold ${boardMode ? 10 : 9}px "Segoe UI"`;
+    const parts = genLabels[ri].split(' ');
+    const y = rowY(ri);
+    parts.forEach((p, i) => ctx.fillText(p, 4, y + (i - (parts.length - 1) / 2) * 12));
+  }
+
+  // ── Connecting lines ─────────────────────────────────────────
+  ctx.strokeStyle = lineCol; ctx.lineWidth = 1.8; ctx.setLineDash([]);
+
+  // Ancestor lines (binary tree — same formula as before)
+  for (const node of ancNodes) {
+    if (node.genUp === 0 || node.pos % 2 !== 0) continue;
+    const { genUp, pos } = node;
+    const childPos  = pos / 2;
+    if (!ancNodes.find(n => n.genUp === genUp - 1 && n.pos === childPos)) continue;
+    const fx    = ancX(genUp, pos);
+    const mx    = ancX(genUp, pos + 1);
+    const yP    = ancY(genUp);
+    const yC    = ancY(genUp - 1);
+    const midXP = (fx + mx) / 2;
+    ctx.beginPath(); ctx.moveTo(fx + nodeR, yP); ctx.lineTo(mx - nodeR, yP); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(midXP, yP);       ctx.lineTo(midXP, yC - nodeR); ctx.stroke();
+  }
+
+  // Descendant lines — subject → children
+  const childNodes     = descNodes.filter(n => n.genDown === 1);
+  const childrenRowY   = rowY(ancGen + 1);
+  const grandchildRowY = rowY(ancGen + 2);
+
+  if (childNodes.length > 0) {
+    const midY   = (subjectY + childrenRowY) / 2;
+    const childXs = childNodes.map(n => n.x);
+    ctx.beginPath(); ctx.moveTo(subjectX, subjectY + nodeR); ctx.lineTo(subjectX, midY); ctx.stroke();
+    if (childXs.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(Math.min(...childXs), midY); ctx.lineTo(Math.max(...childXs), midY); ctx.stroke();
+    }
+    for (const cn of childNodes) {
+      ctx.beginPath(); ctx.moveTo(cn.x, midY); ctx.lineTo(cn.x, childrenRowY - nodeR); ctx.stroke();
+    }
+  }
+
+  // Descendant lines — children → grandchildren
+  for (const cn of childNodes) {
+    const myGc = descNodes.filter(n => n.genDown === 2 && n.parentX === cn.x);
+    if (myGc.length === 0) continue;
+    const midY  = (childrenRowY + grandchildRowY) / 2;
+    const gcXs  = myGc.map(n => n.x);
+    ctx.beginPath(); ctx.moveTo(cn.x, childrenRowY + nodeR); ctx.lineTo(cn.x, midY); ctx.stroke();
+    if (gcXs.length > 1) {
+      ctx.beginPath();
+      ctx.moveTo(Math.min(...gcXs), midY); ctx.lineTo(Math.max(...gcXs), midY); ctx.stroke();
+    }
+    for (const gcn of myGc) {
+      ctx.beginPath(); ctx.moveTo(gcn.x, midY); ctx.lineTo(gcn.x, grandchildRowY - nodeR); ctx.stroke();
+    }
+  }
+
+  // ── Node drawing helper ──────────────────────────────────────
+  // info = archive record (has genotype/name even if dead); alive = still in creatures[]
+  function drawNode(x, y, gender, info, alive, isSubject) {
+    const status = getStatus(info, gender);
+    ctx.save();
+    if (!info) ctx.setLineDash([5, 3]);           // truly unknown ancestor
+    else if (!alive) ctx.setLineDash([4, 2]);     // deceased but known
+    ctx.lineWidth   = isSubject ? 3.5 : 2;
+    ctx.strokeStyle = isSubject ? '#f5a623' : ((!info || !alive) ? '#556677' : outlineCol);
+    const bgFill = status === 'affected' ? affCol : (status === 'unknown' ? unknownBg : emptyBg);
+
+    function shapePath() {
+      ctx.beginPath();
+      if (gender === 'male') ctx.rect(x - nodeR, y - nodeR, nodeR * 2, nodeR * 2);
+      else                   ctx.arc(x, y, nodeR, 0, Math.PI * 2);
+    }
+
+    shapePath(); ctx.fillStyle = bgFill; ctx.fill();
+
+    if (status === 'carrier') {
+      ctx.save(); shapePath(); ctx.clip();
+      ctx.fillStyle = affCol;
+      ctx.fillRect(x - nodeR, y - nodeR, nodeR, nodeR * 2);
+      ctx.restore();
+    }
+
+    shapePath(); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Allele text inside node
+    const gv = info?.genotype?.[traitKey];
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (!info) {
+      ctx.fillStyle = '#888'; ctx.font = `bold ${nodeR}px sans-serif`;
+      ctx.fillText('?', x, y);
+    } else if (status === 'na') {
+      ctx.fillStyle = '#888'; ctx.font = `${nodeR * 0.8}px sans-serif`;
+      ctx.fillText('—', x, y);
+    } else {
+      const alStr = Array.isArray(gv) ? gv[0] + gv[1] : (gv !== null ? String(gv) : '');
+      if (alStr) {
+        ctx.fillStyle = status === 'affected' ? '#fff' : textOnLight;
+        ctx.font = `bold ${nodeR * 0.78}px monospace`;
+        ctx.fillText(alStr, x, y);
+      }
+    }
+
+    // Name + deceased marker below node
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    if (info) {
+      ctx.font = `bold ${boardMode ? 11 : 9}px "Segoe UI"`;
+      ctx.fillStyle = alive ? (boardMode ? '#1a3050' : '#90b0cc') : '#667788';
+      let name = info.name;
+      const maxW = nodeR * 3.2;
+      while (ctx.measureText(name).width > maxW && name.length > 2) name = name.slice(0, -1);
+      if (name !== info.name) name += '…';
+      ctx.fillText(name, x, y + nodeR + 3);
+      if (!alive) {
+        ctx.font = `${boardMode ? 9 : 8}px "Segoe UI"`; ctx.fillStyle = '#556677';
+        ctx.fillText('(deceased)', x, y + nodeR + 14);
+      }
+    } else {
+      ctx.font = '9px "Segoe UI"'; ctx.fillStyle = '#556677';
+      ctx.fillText('Unknown', x, y + nodeR + 3);
+    }
+    ctx.restore();
+  }
+
+  // ── Draw ancestor nodes ──────────────────────────────────────
+  for (const node of ancNodes) {
+    const x = ancX(node.genUp, node.pos);
+    const y = ancY(node.genUp);
+    const gender = node.genUp === 0 ? pedSubject.gender : (node.pos % 2 === 0 ? 'male' : 'female');
+    drawNode(x, y, gender, node.info, node.alive, node.genUp === 0);
+  }
+
+  // ── Draw descendant nodes ────────────────────────────────────
+  for (const node of descNodes) {
+    drawNode(node.x, rowY(ancGen + node.genDown), node.gender, node.info, node.alive, false);
+  }
+
+  // ── Legend ───────────────────────────────────────────────────
+  const ledEl = document.getElementById('ped-legend');
+  function sw(style) { return `<span class="ped-sw" style="${style}"></span>`; }
+  const items = [
+    { s: `background:${emptyBg};border:2px solid ${outlineCol}`, t: `Unaffected (${trait.domName})` },
+    ...(!isYLinked ? [{ s: `background:linear-gradient(to right,${affCol} 50%,${emptyBg} 50%);border:2px solid ${outlineCol}`, t: 'Carrier (heterozygous)' }] : []),
+    { s: `background:${affCol};border:2px solid ${outlineCol}`, t: `Affected (${trait.recName})` },
+    { s: `background:${unknownBg};border:2px dashed #888`, t: 'Deceased / unknown' },
+  ];
+  ledEl.innerHTML = items.map(it => `<div class="ped-li">${sw(it.s)}<span>${it.t}</span></div>`).join('');
+}
+
+document.getElementById('ped-close-btn').addEventListener('click', closePedigree);
+document.getElementById('ped-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('ped-overlay')) closePedigree();
+});
+document.getElementById('pedigree-btn').addEventListener('click', () => {
+  if (!selected) { showMsg('Select a creature first', 1800); return; }
+  openPedigree(selected);
+});
+
+function checkProximityInteractions() {
+  if (!normalMode || speedMult===0) return;
+  const active = creatures.filter(c => !c.sleeping && !c.matingTarget && c.interactCooldown===0);
+  for (let i=0; i<active.length; i++) {
+    for (let j=i+1; j<active.length; j++) {
+      const a=active[i], b=active[j];
+      const dx=a.x-b.x, dy=a.y-b.y;
+      const thresh = a.radius()+b.radius()+6;
+      if (dx*dx+dy*dy < thresh*thresh) {
+        const COOLDOWN = 420; // ~7 s at 60 fps
+        a.interactCooldown=COOLDOWN; b.interactCooldown=COOLDOWN;
+        if (a.gender !== b.gender) {
+          const male   = a.gender==='male'   ? a : b;
+          const female = a.gender==='female' ? a : b;
+          proximityMate(male, female);
+        } else {
+          fight(a, b);
+        }
+      }
+    }
+  }
+}
+
+// ================================================================
+//  MESSAGE OVERLAY
+// ================================================================
+let msgTO=null;
+function showMsg(text,dur) {
+  const el=document.getElementById('msg-overlay');
+  el.textContent=text; el.style.display='block';
+  if (msgTO) clearTimeout(msgTO);
+  msgTO=setTimeout(()=>{el.style.display='none';},dur);
+}
+
+// ================================================================
+//  GAME LOOP
+// ================================================================
+function gameLoop() {
+  if (!matePredictOpen) {
+    checkProximityInteractions();
+    for (const c of creatures) c.update(canvas.width,canvas.height,speedMult);
+  }
+  creatures=creatures.filter(c=>{
+    if (c.dead()) {
+      if (c===selected){selected=null;updateInfoPanel();} return false;
+    } return true;
+  });
+  effects.forEach(e=>e.update()); effects=effects.filter(e=>!e.dead());
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  const grad=ctx.createRadialGradient(canvas.width/2,canvas.height/2,0,canvas.width/2,canvas.height/2,canvas.width*0.7);
+  if (boardMode) { grad.addColorStop(0,'#daeef8'); grad.addColorStop(1,'#a8d4e8'); }
+  else           { grad.addColorStop(0,'#1e4a6e'); grad.addColorStop(1,'#112a44'); }
+  ctx.fillStyle=grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = boardMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.055)';
+  for (let gx=30;gx<canvas.width;gx+=38)
+    for (let gy=30;gy<canvas.height;gy+=38) {
+      ctx.beginPath(); ctx.arc(gx,gy,1.3,0,Math.PI*2); ctx.fill();
+    }
+
+  for (const c of creatures) c.draw(ctx);
+  for (const e of effects)   e.draw(ctx);
+
+  if (cullFlash>0) {
+    ctx.fillStyle=`rgba(200,0,0,${cullFlash*0.45})`;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    cullFlash=Math.max(0,cullFlash-0.022);
+  }
+
+  const alive=creatures.filter(c=>!c.sleeping).length;
+  ctx.font=`${boardMode?'15':'12'}px "Segoe UI"`; ctx.fillStyle=boardMode?'rgba(10,30,60,0.55)':'rgba(255,255,255,0.25)';
+  ctx.textAlign='left'; ctx.fillText(`Active: ${alive}  Total: ${creatures.length}`,10,20);
+
+  requestAnimationFrame(gameLoop);
+}
+
+// ================================================================
+//  UI
+// ================================================================
+function updateList() {
+  document.getElementById('creature-count').textContent=`(${creatures.length})`;
+  const list=document.getElementById('creature-list'); list.innerHTML='';
+  const sorted=[...creatures].sort((a,b)=>(a.sleeping?1:0)-(b.sleeping?1:0));
+  for (const c of sorted) {
+    const div=document.createElement('div');
+    div.className='cli-item'+(c===selected?' active':'');
+    const diseased=c.phenotype.disease==='DISEASED \u2623';
+    const shrinking=expandedMode&&c.phenotype.shrink==='SHRINKING \u2623';
+    const glowing=expandedMode&&c.phenotype.glow==='Glowing';
+    const gCol=c.gender==='male'?'#5abeff':'#ff7eb9';
+    const badge=(c.mutant?'⚡':'')+(diseased?'☣':'')+(shrinking?'🔻':'')+(glowing?'✨':'')+(c.scars>0?'🗡'.repeat(Math.min(c.scars,3)):'');
+    div.innerHTML=
+      `<span style="color:${gCol}">${c.gender==='male'?'♂':'♀'}</span>`+
+      `<span style="${diseased?'color:#44ff66':(shrinking?'color:#ff88ff':'')}${c.mutant?';font-weight:bold':''}">${escHtml(c.name)}</span>`+
+      (badge?`<span style="font-size:0.75rem">${badge}</span>`:'')+
+      `<span style="margin-left:auto;color:#555;font-size:0.68rem">gen ${c.generation}</span>`+
+      (c.sleeping?`<span>💤</span>`:'');
+    div.addEventListener('click',()=>{
+      if (selected && c !== selected) {
+        if (selected.gender === c.gender) { showMsg('Need ♂ + ♀ to predict offspring', 2000); return; }
+        openMatePredict(selected, c); return;
+      }
+      selectCreature(c);
+    });
+    list.appendChild(div);
+  }
+}
+
+function selectCreature(c) {
+  if (selected) selected.selected=false;
+  selected=(selected===c)?null:c;
+  if (selected) selected.selected=true;
+  document.getElementById('mp-hint').style.display = selected ? 'block' : 'none';
+  updateList(); updateInfoPanel();
+}
+
+function traitRows(traitList, c) {
+  return traitList.map(t=>{
+    const gv = c.genotype[t.key];
+    const isMaleTrait = MALE_TRAITS.some(mt=>mt.key===t.key);
+    if (isMaleTrait) {
+      // Y-linked: single allele
+      if (gv === null) return '';
+      const dom = gv === t.dom;
+      const alCls = dom ? 'allele-d' : 'allele-r';
+      return `<tr>
+        <td>${t.name}</td>
+        <td><span class="${alCls}">${gv}</span> <span style="color:#555;font-size:0.72rem">(Y)</span></td>
+        <td><span class="ph-chip ${dom?'ph-dom':'ph-rec'}">${dom?t.domName:t.recName}</span></td>
+      </tr>`;
+    }
+    const [a1,a2]=gv;
+    const dom=(a1===t.dom||a2===t.dom);
+    const phName=dom?t.domName:t.recName;
+    const isD1=t.key==='disease'&&!dom;
+    const isD2=t.key==='shrink'&&!dom;
+    const phClass=isD1?'ph-disease':(isD2?'ph-disease2':(dom?'ph-dom':'ph-rec'));
+    const a1cls=a1===t.dom?'allele-d':'allele-r';
+    const a2cls=a2===t.dom?'allele-d':'allele-r';
+    return `<tr>
+      <td>${t.name}</td>
+      <td><span class="${a1cls}">${a1}</span><span class="${a2cls}">${a2}</span></td>
+      <td><span class="ph-chip ${phClass}">${phName}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateInfoPanel() {
+  const panel=document.getElementById('info-panel');
+  if (!selected) {
+    panel.innerHTML='<div class="ip-empty">🐾 Click a creature<br>to reveal its genetics!</div>'; return;
+  }
+  const c=selected;
+  const diseased =c.phenotype.disease==='DISEASED \u2623';
+  const shrinking=expandedMode&&c.phenotype.shrink==='SHRINKING \u2623';
+
+  let parentsHtml='';
+  if (c.parents) {
+    const {fatherName,fatherId,motherName,motherId}=c.parents;
+    const fA=creatures.find(x=>x.id===fatherId);
+    const mA=creatures.find(x=>x.id===motherId);
+    const fl=fA?`<a class="parent-link" href="#" data-id="${fatherId}">${escHtml(fatherName)} ♂</a>`:`<span style="color:#555">${escHtml(fatherName)} ♂ (gone)</span>`;
+    const ml=mA?`<a class="parent-link" href="#" data-id="${motherId}">${escHtml(motherName)} ♀</a>`:`<span style="color:#555">${escHtml(motherName)} ♀ (gone)</span>`;
+    parentsHtml=`<div class="ip-parents"><strong>Parents:</strong><br>${fl} &times; ${ml}</div>`;
+  } else {
+    parentsHtml=`<div class="ip-parents" style="color:#555"><em>Wild-born (no parents recorded)</em></div>`;
+  }
+
+  const gCol=c.gender==='male'?'#5abeff':'#ff7eb9';
+  const stdRows = traitRows(TRAIT_STANDARD, c);
+  const extRows = expandedMode ? traitRows(TRAITS.slice(10), c) : '';
+
+  panel.innerHTML=`
+    <div class="ip-name-row">
+      <input type="text" id="ip-name-input" value="${escHtml(c.name)}">
+      <span style="color:${gCol};font-size:1.1rem">${c.gender==='male'?'♂':'♀'}</span>
+      ${c.mutant?'<span title="Mutant" style="font-size:1rem">⚡</span>':''}
+    </div>
+    <div class="ip-age">
+      Generation: ${c.generation} &bull; ${c.sleeping?'💤 Sleeping...':'Active'}
+      ${c.scars>0?` &bull; <span style="color:#ff9966;font-weight:bold">🗡 ${c.scars} scar${c.scars>1?'s':''}</span>`:''}
+      ${diseased?' &bull; <span style="color:#44ff66;font-weight:bold">☣ DISEASED</span>':''}
+      ${shrinking?' &bull; <span style="color:#ff88ff;font-weight:bold">🔻 SHRINKING</span>':''}
+    </div>
+    ${parentsHtml}
+    <table class="gt-table">
+      <thead><tr><th>Trait</th><th>Alleles</th><th>Expression</th></tr></thead>
+      <tbody>${stdRows}</tbody>
+    </table>
+    ${expandedMode?`<div class="gt-section-label">⬡ Expanded Traits</div>
+    <table class="gt-table"><tbody>${extRows}</tbody></table>`:''}
+    ${c.gender==='male'?`<div class="gt-section-label">♂ Male Traits</div>
+    <table class="gt-table"><tbody>${traitRows(MALE_TRAITS, c)}</tbody></table>`:''}
+    <div style="margin-top:9px;font-size:0.74rem;color:#555;line-height:1.6">
+      <span style="color:#f5a623;font-weight:bold">Orange</span> = dominant allele &nbsp;&bull;&nbsp;
+      <span style="color:#777">Gray</span> = recessive allele
+    </div>`;
+
+  document.getElementById('ip-name-input').addEventListener('input',e=>{
+    c.name=e.target.value;
+    if (creatureArchive.has(c.id)) creatureArchive.get(c.id).name=c.name;
+    updateList();
+  });
+  panel.querySelectorAll('.parent-link').forEach(link=>{
+    link.addEventListener('click',ev=>{
+      ev.preventDefault();
+      const par=creatures.find(x=>x.id===parseInt(ev.target.dataset.id));
+      if (par) selectCreature(par);
+    });
+  });
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ================================================================
+//  TOOLTIP
+// ================================================================
+const tooltip=document.getElementById('tooltip');
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+  const mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sy;
+  let hit=null;
+  for (let i=creatures.length-1;i>=0;i--) if (creatures[i].containsPoint(mx,my)){hit=creatures[i];break;}
+  if (hit) {
+    const p=hit.phenotype;
+    document.getElementById('tt-name').textContent=hit.name+(hit.mutant?' ⚡':'');
+    document.getElementById('tt-gender').textContent=hit.gender==='male'?'♂ Male':'♀ Female';
+    const std=[`Eyes: ${p.eyeColor}`,`Body: ${p.bodyColor}`,`Speed: ${p.speed}`,`Disease: ${p.disease}`,
+                p.spots,p.tail,p.horns,p.eyeCount,p.antenna];
+    const ext=expandedMode?[`Wings: ${p.wings}`,`Stripes: ${p.stripes}`,`Glow: ${p.glow}`,
+                `Shape: ${p.bodyShape}`,`Snout: ${p.snout}`,`Limbs: ${p.limbs}`,
+                `Eyes: ${p.eyeSize}`,`Shrink: ${p.shrink}`,`Marks: ${p.markings}`,`Fin: ${p.fin}`]:[];
+    document.getElementById('tt-traits').innerHTML=[...std,...ext].join('<br>');
+    let tx=e.clientX+14, ty=e.clientY+10;
+    if (tx+220>window.innerWidth)  tx=e.clientX-225;
+    if (ty+200>window.innerHeight) ty=e.clientY-205;
+    tooltip.style.left=tx+'px'; tooltip.style.top=ty+'px';
+    tooltip.style.display='block'; canvas.style.cursor='pointer';
+  } else { tooltip.style.display='none'; canvas.style.cursor='default'; }
+});
+canvas.addEventListener('mouseleave',()=>{tooltip.style.display='none';});
+
+// ================================================================
+//  CLICK
+// ================================================================
+canvas.addEventListener('click',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const sx=canvas.width/rect.width, sy=canvas.height/rect.height;
+  const mx=(e.clientX-rect.left)*sx, my=(e.clientY-rect.top)*sy;
+  let hit=null;
+  for (let i=creatures.length-1;i>=0;i--) if (creatures[i].containsPoint(mx,my)){hit=creatures[i];break;}
+  // Second distinct click → open genetics prediction modal
+  if (selected && hit && hit !== selected) {
+    if (selected.gender === hit.gender) { showMsg('Need ♂ + ♀ to predict offspring', 2000); return; }
+    openMatePredict(selected, hit);
+    return;
+  }
+  selectCreature(hit);
+});
+
+// ================================================================
+//  BUTTONS
+// ================================================================
+document.getElementById('add-btn').addEventListener('click', addCreature);
+document.getElementById('add5-btn').addEventListener('click',()=>{for(let i=0;i<5;i++)addCreature();});
+document.getElementById('remove-btn').addEventListener('click', removeSelected);
+document.getElementById('mate-btn').addEventListener('click', doMating);
+document.getElementById('cull-btn').addEventListener('click', cullCreatures);
+document.getElementById('mutant-btn').addEventListener('click', addMutant);
+document.getElementById('speed-slider').addEventListener('input',e=>{
+  speedMult=parseFloat(e.target.value);
+  document.getElementById('speed-label').textContent=speedMult+'x';
+});
+// Collapsible sidebar sections
+document.querySelectorAll('.sidebar-section h2').forEach(h2 => {
+  h2.addEventListener('click', () => {
+    h2.closest('.sidebar-section').classList.toggle('collapsed');
+  });
+});
+
+// Wild Mode toggle
+document.getElementById('wildmode-btn').addEventListener('click', ()=>{
+  normalMode = !normalMode;
+  const btn = document.getElementById('wildmode-btn');
+  btn.classList.toggle('active', normalMode);
+  btn.textContent = normalMode ? '\uD83E\uDD8A Wild' : '\uD83E\uDD8A Wild: OFF';
+});
+
+document.getElementById('expand-toggle').addEventListener('click',()=>{
+  expandedMode=!expandedMode;
+  const btn=document.getElementById('expand-toggle');
+  btn.classList.toggle('active', expandedMode);
+  btn.textContent=expandedMode?'📋 Standard Mode':'🔬 Extra Traits Mode';
+  document.getElementById('mode-banner').textContent=
+    expandedMode?'Expanded Mode — 20 traits':'Standard Mode — 10 traits';
+  // Update all creatures' phenotypes to expose new traits
+  for (const c of creatures) c.phenotype=getPhenotype(c.genotype, c.gender);
+  if (selected) updateInfoPanel();
+  updateList();
+  showMsg(expandedMode
+    ?'🔬 Extra Traits Mode — 10 new traits unlocked!\nWings · Stripes · Glow · Spiky · Snout · 6 Limbs\nGiant Eyes · Shrink Sickness · Chevrons · Dorsal Fin'
+    :'📋 Back to Standard Mode — 10 traits',2800);
+});
+
+document.getElementById('board-toggle').addEventListener('click', ()=>{
+  boardMode = !boardMode;
+  document.body.classList.toggle('board-mode', boardMode);
+  document.getElementById('board-toggle').classList.toggle('active', boardMode);
+});
+
+// ================================================================
+//  SAVE / LOAD
+// ================================================================
+const SAVE_KEY = 'genetics-game-save';
+
+function saveState() {
+  const data = {
+    idCtr: _idCtr,
+    expandedMode,
+    normalMode,
+    speedMult,
+    childrenRegistry: [...childrenRegistry.entries()],
+    creatureArchive:  [...creatureArchive.entries()],
+    creatures: creatures.map(c => ({
+      id: c.id, x: c.x, y: c.y, gender: c.gender,
+      genotype: c.genotype, name: c.name, parents: c.parents,
+      mutant: c.mutant, age: c.age, generation: c.generation,
+      scars: c.scars, shrinkFactor: c.shrinkFactor, diseaseTimer: c.diseaseTimer,
+      sleeping: c.sleeping, sleepFade: c.sleepFade, sleepAngle: c.sleepAngle,
+      fastSleep: c.fastSleep, sleepTimer: c.sleepTimer,
+    })),
+  };
+  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+  showMsg('\uD83D\uDCBE Game saved!', 1600);
+}
+
+function loadState() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) { showMsg('No saved game found!', 1800); return; }
+  const data = JSON.parse(raw);
+
+  _idCtr = data.idCtr ?? _idCtr;
+  speedMult = data.speedMult ?? 1;
+  document.getElementById('speed-slider').value = speedMult;
+  document.getElementById('speed-label').textContent = speedMult + 'x';
+
+  if ((data.expandedMode ?? false) !== expandedMode) {
+    expandedMode = data.expandedMode;
+    const btn = document.getElementById('expand-toggle');
+    btn.classList.toggle('active', expandedMode);
+    btn.textContent = expandedMode ? '\uD83D\uDCCB Standard Mode' : '\uD83D\uDD2C Extra Traits Mode';
+    document.getElementById('mode-banner').textContent =
+      expandedMode ? 'Expanded Mode \u2014 20 traits' : 'Standard Mode \u2014 10 traits';
+  }
+
+  normalMode = data.normalMode ?? true;
+  const wmBtn = document.getElementById('wildmode-btn');
+  wmBtn.classList.toggle('active', normalMode);
+  wmBtn.textContent = normalMode ? '\uD83E\uDD8A Wild' : '\uD83E\uDD8A Wild: OFF';
+
+  childrenRegistry.clear();
+  for (const [k, v] of (data.childrenRegistry ?? [])) childrenRegistry.set(k, v);
+  creatureArchive.clear();
+  for (const [k, v] of (data.creatureArchive ?? [])) creatureArchive.set(k, v);
+
+  creatures = (data.creatures ?? []).map(d => {
+    const c = new Creature(d.x, d.y, d.gender, d.genotype, d.name, d.parents, d.mutant ?? false);
+    c.id             = d.id;
+    if (!creatureArchive.has(c.id)) registerCreature(c);
+    c.age            = d.age ?? 0;
+    c.generation     = d.generation ?? 0;
+    c.scars          = d.scars ?? 0;
+    c.shrinkFactor   = d.shrinkFactor ?? 1;
+    c.diseaseTimer   = d.diseaseTimer ?? 0;
+    if (d.sleeping) {
+      c.sleeping   = true;
+      c.sleepFade  = d.sleepFade ?? 0;
+      c.sleepAngle = d.sleepAngle ?? Math.PI / 2;
+      c.fastSleep  = d.fastSleep ?? false;
+      c.sleepTimer = d.sleepTimer ?? 999;
+      c.vx = 0; c.vy = 0;
+    }
+    return c;
+  });
+
+  selected = null; effects = []; mating = false;
+  document.getElementById('mate-btn').disabled = false;
+  updateList(); updateInfoPanel();
+  showMsg('\uD83D\uDCC2 Game loaded!', 1600);
+}
+
+document.getElementById('save-btn').addEventListener('click', saveState);
+document.getElementById('load-btn').addEventListener('click', loadState);
+
+// ================================================================
+//  INIT
+// ================================================================
+for (let i=0;i<4;i++) addCreature();
+updateList();
+requestAnimationFrame(gameLoop);
+</script>
+</body>
+</html>

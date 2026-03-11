@@ -64,10 +64,17 @@ A companion educational site with additional resources and games.
 - **Template-based workflow** - Consistent structure across all worksheets
 
 ### Subject Color Scheme
-- **Maths:** Blue (`#3498db`)
-- **Biology:** Green (`#27ae60`)
-- **Chemistry:** Red (`#e74c3c`)
-- **Physics:** Orange (`#f39c12`)
+- **Maths:** Blue (`#2255cc`)
+- **Biology:** Green (`#005e22`)
+- **Chemistry:** Red (`#c8001e`)
+- **Physics:** Amber (`#d08000`)
+
+### Site Design System (v2.0.0 — Lok)
+- **Background:** Cream `#eeeae0`
+- **Ink:** Jet black `#111111`
+- **Accent:** Forest green `#005e22`
+- **Fonts:** Barlow Condensed 900 (headings), Barlow 400/600 (body)
+- **Style:** Zero border-radius, flat offset shadows (`3px 3px 0 #111`), unequal-width stripe motif
 
 ---
 
@@ -157,6 +164,15 @@ Git is initialized; commit changes as needed.
 
 ## 📊 Recent Updates
 
+### 2026-03-10 - v2.0.0 Design Overhaul (Lok)
+- Complete visual restyle to "Lok" design system (retro East German constructivist aesthetic)
+- Cream background, jet black ink, forest green accent throughout
+- Barlow Condensed 900 headings, zero border-radius, flat offset box-shadows
+- Unequal-width stripe motif on hero cards and page headers
+- All subject pages, worksheets, flashcards, interactive tools, and Elevenstudents updated
+- Subject `theme-color` meta tags corrected per subject (bio/chem/phys/maths)
+- Version bumped to 2.0.0
+
 ### 2025-02-12 - Major Reorganization
 - ✅ Restructured into 4 main sections (worksheets, specifications, interactive, Flashcards)
 - ✅ Created new 2x2 hero grid index.html
@@ -180,7 +196,6 @@ Git is initialized; commit changes as needed.
 ## 📝 To-Do
 
 ### Immediate
-- [ ] Add link to Elevenstudents from main index.html
 - [ ] Create backup strategy for Firebase data
 
 ### Future Enhancements
@@ -201,4 +216,4 @@ Educational use only. All content aligned with IGCSE Edexcel curriculum specific
 
 This project is maintained as a personal educational resource collection.
 
-**Last Updated:** February 2026
+**Last Updated:** March 2026

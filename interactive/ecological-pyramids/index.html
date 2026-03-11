@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecological Pyramids [WIP]</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            min-height: 100vh;
+            padding: 30px 16px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            padding: 36px 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1a1a2e;
+            font-size: 2.1em;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #777;
+            margin-bottom: 28px;
+            font-size: 0.95em;
+        }
+
+        /* ── Controls ── */
+        .controls-section {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .button-group {
+            display: flex;
+            background: #f2f3f7;
+            border-radius: 30px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        button {
+            padding: 7px 16px;
+            font-size: 0.88em;
+            border: none;
+            background: transparent;
+            color: #666;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            font-family: inherit;
+        }
+
+        button.active {
+            background: #fff;
+            color: #1a1a2e;
+            font-weight: 700;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.14);
+        }
+
+        button:hover:not(.active) { color: #1a1a2e; }
+
+        /* ── Pyramid grid layout ── */
+        .pyramid-area {
+            display: grid;
+            grid-template-columns: 1fr 230px;
+            margin: 8px 0 6px;
+        }
+
+        /* Shape cells */
+        .shape-cell {
+            height: 72px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .shape-bg {
+            position: absolute;
+            inset: 0;
+            transition: filter 0.18s;
+        }
+
+        .shape-cell:hover .shape-bg { filter: brightness(1.12); }
+
+        .shape-cell.selected .shape-bg {
+            filter: brightness(1.18);
+            outline: 3px solid #1a1a2e;
+            outline-offset: -3px;
+        }
+
+        /* Energy transfer rows */
+        .transfer-cell {
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72em;
+            color: #999;
+            font-style: italic;
+        }
+
+        .spacer-cell { height: 24px; }
+
+        /* Label cells */
+        .label-cell {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            padding: 6px 8px 6px 14px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+            border-radius: 0 8px 8px 0;
+            transition: background 0.18s, border-color 0.18s;
+        }
+
+        .label-cell:hover,
+        .label-cell.selected {
+            background: #f0f4ff;
+            border-left-color: #1a1a2e;
+        }
+
+        .label-name {
+            font-weight: 700;
+            font-size: 0.82em;
+            color: #222;
+            margin-bottom: 1px;
+        }
+
+        .label-value {
+            font-size: 0.78em;
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+
+        .label-detail {
+            font-size: 0.73em;
+            color: #888;
+        }
+
+        /* ── Scale note ── */
+        .scale-note {
+            text-align: center;
+            font-size: 0.72em;
+            color: #aaa;
+            margin-bottom: 14px;
+            font-style: italic;
+        }
+
+        /* ── Inverted notice ── */
+        .inverted-notice {
+            text-align: center;
+            font-size: 0.82em;
+            color: #a93226;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding: 8px 14px;
+            background: #fdf0ed;
+            border-radius: 8px;
+            border: 1px solid #f5c6bc;
+            display: none;
+        }
+
+        /* ── Click hint ── */
+        .click-hint {
+            text-align: center;
+            font-size: 0.75em;
+            color: #bbb;
+            margin-bottom: 6px;
+        }
+
+        /* ── Detail panel ── */
+        .detail-panel {
+            background: #f8f9fa;
+            border-left: 4px solid #1a1a2e;
+            border-radius: 0 8px 8px 0;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            display: none;
+            animation: slideDown 0.2s ease;
+        }
+
+        .detail-panel.visible { display: block; }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-panel h4 {
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .detail-facts {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .detail-fact {
+            font-size: 0.82em;
+            color: #444;
+            padding-left: 14px;
+            position: relative;
+            line-height: 1.45;
+        }
+
+        .detail-fact::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #1a1a2e;
+        }
+
+        /* ── Info panel ── */
+        .info-panel {
+            background: linear-gradient(135deg, #f0f4ff, #f8f9fa);
+            border: 1px solid #d4ddf7;
+            border-radius: 10px;
+            padding: 18px 22px;
+        }
+
+        .info-panel h3 {
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .inverted-badge {
+            display: inline-block;
+            background: #a93226;
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .info-panel p {
+            font-size: 0.86em;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .key-points {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .key-point {
+            font-size: 0.83em;
+            color: #444;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .key-point::before {
+            content: '●';
+            position: absolute;
+            left: 0;
+            color: #1a1a2e;
+            font-size: 0.65em;
+            top: 4px;
+        }
+
+        /* ── WIP banner ── */
+        .wip-banner {
+            background: repeating-linear-gradient(
+                45deg,
+                #f39c12,
+                #f39c12 10px,
+                #e67e22 10px,
+                #e67e22 20px
+            );
+            color: white;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.82em;
+            letter-spacing: 0.08em;
+            padding: 7px 16px;
+            border-radius: 8px 8px 0 0;
+            margin: -36px -40px 28px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 620px) {
+            .wip-banner { margin: -20px -16px 20px; border-radius: 8px 8px 0 0; }
+            .container { padding: 20px 16px; }
+            h1 { font-size: 1.6em; }
+            .pyramid-area { grid-template-columns: 1fr 150px; }
+            .shape-cell, .label-cell { height: 60px; }
+            .transfer-cell, .spacer-cell { height: 20px; }
+            .label-value { display: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="wip-banner">⚠ WORK IN PROGRESS ⚠</div>
+    <h1>Ecological Pyramids</h1>
+    <p class="subtitle">Explore how numbers, biomass and energy change through food chains</p>
+
+    <div class="controls-section">
+        <div class="control-group">
+            <span class="control-label">Pyramid type</span>
+            <div class="button-group">
+                <button class="pyramid-btn active" data-pyramid="numbers">Numbers</button>
+                <button class="pyramid-btn" data-pyramid="biomass">Biomass</button>
+                <button class="pyramid-btn" data-pyramid="energy">Energy</button>
+            </div>
+        </div>
+        <div class="control-group">
+            <span class="control-label">Ecosystem</span>
+            <div class="button-group">
+                <button class="ecosystem-btn active" data-ecosystem="woodland">Woodland</button>
+                <button class="ecosystem-btn" data-ecosystem="sea">Sea</button>
+            </div>
+        </div>
+    </div>
+
+    <p class="click-hint">Click any level for more detail</p>
+    <div id="invertedNotice" class="inverted-notice"></div>
+    <div class="pyramid-area" id="pyramidGrid"></div>
+    <p class="scale-note" id="scaleNote"></p>
+    <div class="detail-panel" id="detailPanel"></div>
+    <div class="info-panel" id="infoPanel"></div>
+</div>
+
+<script>
+// Trophic level colours: index 0 = producers, 4 = top predators
+const COLORS = [
+    'linear-gradient(135deg, #27ae60, #1a7a43)',
+    'linear-gradient(135deg, #e67e22, #b9610b)',
+    'linear-gradient(135deg, #e74c3c, #a93226)',
+    'linear-gradient(135deg, #9b59b6, #6c3483)',
+    'linear-gradient(135deg, #2980b9, #1a5276)',
+];
+
+// Each level has a rawValue (number) used to draw bars to scale.
+// Bar widths use a square-root scale so all levels remain visible
+// even when values span many orders of magnitude.
+const pyramidData = {
+    woodland: {
+        numbers: {
+            title: "Bluebell Wood — Pyramid of Numbers",
+            description: "In Bluebell Wood, the number of individual organisms falls sharply at each trophic level. Tens of thousands of plants and trees support far fewer animals at every step up the food chain.",
+            keyPoints: [
+                "Each level has roughly 10× fewer individuals than the level below",
+                "Bar widths are drawn to scale — notice how dramatically numbers fall",
+                "10,000 plants are needed to support just 10 sparrowhawks at the top"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producers", value: "10,000", rawValue: 10000,
+                  detail: "Oak trees, grass & wildflowers",
+                  facts: [
+                    "Oak trees, ash, bramble, nettles and grasses form the plant layer of Bluebell Wood",
+                    "A mature oak tree can host over 280 species of insect alone",
+                    "Convert CO₂ + H₂O + sunlight → glucose via photosynthesis; only ~1–2% of solar energy is captured"
+                  ] },
+                { name: "Primary Consumers", value: "1,000", rawValue: 1000,
+                  detail: "Grey squirrels, rabbits & caterpillars",
+                  facts: [
+                    "Grey squirrels feed on acorns, bark and bird eggs — they are a key herbivore in Bluebell Wood",
+                    "Rabbits graze on grass and wildflowers at the woodland edge",
+                    "Caterpillars can strip entire branches of oak leaves during summer outbreaks"
+                  ] },
+                { name: "Secondary Consumers", value: "100", rawValue: 100,
+                  detail: "Red foxes, stoats & tawny owls",
+                  facts: [
+                    "Red foxes hunt rabbits and squirrels at dusk — a fox needs about 1 kg of food per day",
+                    "Stoats pursue rabbits at high speed and also take voles from underground tunnels",
+                    "Tawny owls hunt mice and voles at night using silent flight and exceptional hearing"
+                  ] },
+                { name: "Tertiary Consumers", value: "10", rawValue: 10,
+                  detail: "Sparrowhawks & kestrels",
+                  facts: [
+                    "Sparrowhawks pursue small birds and young squirrels through the woodland at speed",
+                    "Kestrels hover over the woodland edge, scanning for voles below",
+                    "Just 10 birds of prey can sit at the apex of this entire food chain"
+                  ] }
+            ]
+        },
+        biomass: {
+            title: "Bluebell Wood — Pyramid of Biomass",
+            description: "The total dry mass (biomass) of organisms in Bluebell Wood falls by about 90% at each trophic level. The enormous biomass locked in oak trunks and roots dwarfs everything above.",
+            keyPoints: [
+                "Biomass is measured as dry mass in kg per m²",
+                "~90% of biomass is lost at each trophic level — bar widths show this clearly",
+                "Most plant biomass is structural wood that animals cannot easily digest",
+                "Woodland pyramids of biomass are always upright"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producers", value: "8,000 kg/m²", rawValue: 8000,
+                  detail: "Oak trees, ash & bramble",
+                  facts: [
+                    "Huge biomass stored in tree trunks, roots, branches and leaves",
+                    "A mature oak can weigh over 10 tonnes — mostly indigestible heartwood",
+                    "Bluebell Wood locks up large amounts of carbon in its biomass — vital for climate regulation"
+                  ] },
+                { name: "Primary Consumers", value: "800 kg/m²", rawValue: 800,
+                  detail: "Grey squirrels, rabbits & roe deer",
+                  facts: [
+                    "Only ~10% of plant biomass is available to herbivores",
+                    "Losses include plant respiration, indigestible bark and fibre passed out as waste",
+                    "Roe deer and rabbits make up most of the herbivore biomass in this woodland"
+                  ] },
+                { name: "Secondary Consumers", value: "80 kg/m²", rawValue: 80,
+                  detail: "Red foxes, stoats & tawny owls",
+                  facts: [
+                    "A red fox weighs 5–7 kg; a tawny owl around 450 g",
+                    "Only 10% of herbivore biomass reaches this carnivore level",
+                    "Foxes use up much of their energy on movement and maintaining body temperature at 38°C"
+                  ] },
+                { name: "Tertiary Consumers", value: "8 kg/m²", rawValue: 8,
+                  detail: "Sparrowhawks & kestrels",
+                  facts: [
+                    "Very low population density — each bird of prey needs a large territory",
+                    "A female sparrowhawk weighs only 260–340 g",
+                    "Just 0.1% of the original plant biomass survives to this apex level"
+                  ] }
+            ]
+        },
+        energy: {
+            title: "Bluebell Wood — Pyramid of Energy",
+            description: "Energy in Bluebell Wood decreases at every trophic level. Around 90% is lost as heat through respiration at each step. The pyramid of energy is always upright — it can never be inverted.",
+            keyPoints: [
+                "Only ~10% of energy transfers to the next trophic level",
+                "90% is lost as heat — through respiration, movement and maintaining body temperature",
+                "The pyramid of energy is ALWAYS upright — it can never be inverted",
+                "Units: kJ/m²/year (energy per unit area per year)"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producers", value: "80,000 kJ/m²/yr", rawValue: 80000,
+                  detail: "Oak trees, grass & wildflowers",
+                  facts: [
+                    "Oak trees, grasses and wildflowers capture solar energy through photosynthesis",
+                    "Only 1–2% of incoming solar radiation is fixed as chemical energy",
+                    "This 80,000 kJ/m²/yr drives the entire Bluebell Wood food web"
+                  ] },
+                { name: "Primary Consumers", value: "8,000 kJ/m²/yr", rawValue: 8000,
+                  detail: "Grey squirrels, rabbits & caterpillars",
+                  facts: [
+                    "10% of producer energy reaches the herbivore level",
+                    "90% is lost as heat from plant respiration and indigestible plant material",
+                    "Grey squirrels cache acorns to store energy reserves for winter"
+                  ] },
+                { name: "Secondary Consumers", value: "800 kJ/m²/yr", rawValue: 800,
+                  detail: "Red foxes, stoats & tawny owls",
+                  facts: [
+                    "Only 1% of the original plant energy remains at this level",
+                    "Foxes burn large amounts of energy patrolling territories of up to 40 km²",
+                    "This explains why food chains rarely exceed 4–5 trophic levels"
+                  ] },
+                { name: "Tertiary Consumers", value: "80 kJ/m²/yr", rawValue: 80,
+                  detail: "Sparrowhawks & kestrels",
+                  facts: [
+                    "Just 0.1% of the original solar energy reaches apex predators",
+                    "Sparrowhawks use high-speed pursuit flight — one of the most energy-intensive hunting methods",
+                    "Explains why top predators are always rare and need large territories to survive"
+                  ] }
+            ]
+        }
+    },
+    sea: {
+        numbers: {
+            title: "North Sea — Pyramid of Numbers",
+            description: "In the North Sea, microscopic phytoplankton exist in staggering numbers, supporting a food web stretching all the way up to seals and porpoises. The range in numbers is far more extreme than any land ecosystem.",
+            keyPoints: [
+                "Phytoplankton are responsible for ~50% of all oxygen produced on Earth",
+                "Billions of phytoplankton cells exist per litre of seawater",
+                "Numbers span 10 orders of magnitude from base to apex"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producers", value: "10,000,000,000", rawValue: 10000000000,
+                  detail: "Diatoms & cyanobacteria",
+                  facts: [
+                    "Microscopic single-celled algae drifting in the sunlit surface layer of the North Sea",
+                    "Diatoms have intricate glass-like silica shells and can double in number every 1–2 days",
+                    "Form the invisible but essential foundation of all North Sea food webs"
+                  ] },
+                { name: "Primary Consumers", value: "100,000,000", rawValue: 100000000,
+                  detail: "Copepods & krill",
+                  facts: [
+                    "Copepods are tiny crustaceans just 1–2 mm long — the most abundant animals on Earth",
+                    "North Sea krill gather in dense swarms and are eaten by herring, cod and seabirds",
+                    "Many migrate hundreds of metres vertically each day to avoid predators in daylight"
+                  ] },
+                { name: "Secondary Consumers", value: "1,000,000", rawValue: 1000000,
+                  detail: "Herring & sand eels",
+                  facts: [
+                    "Herring school in shoals of millions — a key commercial fish of the North Sea",
+                    "Sand eels live in sandy seabed sediments and are critical food for puffins and seabirds",
+                    "A herring eats up to 500 copepods per hour during peak feeding"
+                  ] },
+                { name: "Tertiary Consumers", value: "10,000", rawValue: 10000,
+                  detail: "Atlantic cod & mackerel",
+                  facts: [
+                    "Atlantic cod can grow to 1.5 m and live for 25 years in North Sea waters",
+                    "Mackerel migrate in large shoals and are important both ecologically and commercially",
+                    "North Sea cod populations suffered severe overfishing from the 1970s onwards"
+                  ] },
+                { name: "Top Predators", value: "100", rawValue: 100,
+                  detail: "Grey seals & harbour porpoises",
+                  facts: [
+                    "Grey seals breed on North Sea coastlines and can dive to 70 m to chase fish",
+                    "Harbour porpoises are the most common cetacean in the North Sea",
+                    "Just 100 top predators sit at the apex of this vast marine food web"
+                  ] }
+            ]
+        },
+        biomass: {
+            title: "North Sea — Pyramid of Biomass",
+            description: "The North Sea pyramid of biomass is inverted. At any given moment the standing crop of phytoplankton is far smaller than the biomass of animals above. Phytoplankton divide so fast and are consumed so quickly that very little accumulates — it is high turnover, not high standing crop.",
+            keyPoints: [
+                "This is a classic example of an INVERTED pyramid of biomass",
+                "Phytoplankton reproduce very fast and are eaten almost immediately",
+                "The inversion reflects standing crop biomass, NOT total energy flow",
+                "Energy flow is always upright — the inverted shape is a snapshot in time"
+            ],
+            inverted: true,
+            levels: [
+                { name: "Producers", value: "5 kg/m³", rawValue: 5,
+                  detail: "Diatoms & cyanobacteria",
+                  facts: [
+                    "Tiny cells with a very high turnover rate — consumed almost as fast as they divide",
+                    "At any snapshot in time, very little phytoplankton biomass has accumulated",
+                    "Over a full year, phytoplankton produce far more total biomass than any other level"
+                  ] },
+                { name: "Primary Consumers", value: "50 kg/m³", rawValue: 50,
+                  detail: "Copepods & krill",
+                  facts: [
+                    "10× more biomass than phytoplankton at any given moment — the inversion begins here",
+                    "Zooplankton are longer-lived than phytoplankton, so their biomass builds up over time",
+                    "This does NOT violate the energy rule — biomass is a snapshot, energy flow is not"
+                  ] },
+                { name: "Secondary Consumers", value: "500 kg/m³", rawValue: 500,
+                  detail: "Herring & sand eels",
+                  facts: [
+                    "Herring form dense shoals — their combined biomass far exceeds their prey at any instant",
+                    "A herring lives for 10–20 years compared to a copepod's few weeks",
+                    "Long lifespan means biomass accumulates, even though energy flow is still downward"
+                  ] },
+                { name: "Tertiary Consumers", value: "4,000 kg/m³", rawValue: 4000,
+                  detail: "Atlantic cod & mackerel",
+                  facts: [
+                    "Cod can weigh up to 40 kg — they accumulate large individual biomass over their long lives",
+                    "A cod lives for 25 years, far outliving the herring it feeds upon",
+                    "Long lifespan means their standing crop biomass greatly outweighs their food sources at any moment"
+                  ] },
+                { name: "Top Predators", value: "24,000 kg/m³", rawValue: 24000,
+                  detail: "Grey seals & harbour porpoises",
+                  facts: [
+                    "A grey seal weighs 100–300 kg and lives for 35 years — enormous biomass per individual",
+                    "A harbour porpoise weighs 50–90 kg and lives for up to 24 years",
+                    "The huge standing crop at the apex is entirely due to the long lifespan of these animals"
+                  ] }
+            ]
+        },
+        energy: {
+            title: "North Sea — Pyramid of Energy",
+            description: "Even in the North Sea, the pyramid of energy is always upright. Although standing-crop biomass is inverted, total energy flow always decreases up the food chain — the 10% rule still applies across all ecosystems.",
+            keyPoints: [
+                "The pyramid of energy is ALWAYS upright — even in marine ecosystems",
+                "Phytoplankton fix far more total energy per year than zooplankton use",
+                "The standing-crop biomass inversion does not affect energy flow",
+                "The open ocean captures slightly less solar energy per m² than a dense woodland"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producers", value: "50,000 kJ/m²/yr", rawValue: 50000,
+                  detail: "Diatoms & cyanobacteria",
+                  facts: [
+                    "Phytoplankton capture solar energy via photosynthesis in the sunlit surface layer",
+                    "High energy production rate despite low standing biomass — rapid turnover is the key",
+                    "Much of the open North Sea is nutrient-limited in summer, reducing productivity"
+                  ] },
+                { name: "Primary Consumers", value: "5,000 kJ/m²/yr", rawValue: 5000,
+                  detail: "Copepods & krill",
+                  facts: [
+                    "10% of phytoplankton energy reaches the zooplankton level",
+                    "Copepods use energy quickly due to rapid reproduction and constant swimming",
+                    "Krill convert phytoplankton energy into a form accessible to larger fish and marine mammals"
+                  ] },
+                { name: "Secondary Consumers", value: "500 kJ/m²/yr", rawValue: 500,
+                  detail: "Herring & sand eels",
+                  facts: [
+                    "Only 500 kJ/m²/yr reaches this level — 1% of original phytoplankton energy",
+                    "Herring use energy for swimming, reproduction and maintaining body temperature",
+                    "This is why it takes many kilograms of copepods to grow one kilogram of herring"
+                  ] },
+                { name: "Tertiary Consumers", value: "50 kJ/m²/yr", rawValue: 50,
+                  detail: "Atlantic cod & mackerel",
+                  facts: [
+                    "A tiny fraction of the original energy remains at this level",
+                    "Cod must hunt constantly — they can eat up to 10% of their body weight per day",
+                    "Explains why fishing at the top of the food chain is so energetically costly for the ecosystem"
+                  ] },
+                { name: "Top Predators", value: "5 kJ/m²/yr", rawValue: 5,
+                  detail: "Grey seals & harbour porpoises",
+                  facts: [
+                    "Just 0.01% of the original solar energy fixed by phytoplankton reaches here",
+                    "A grey seal must eat 5 kg of fish per day to meet its energy demands",
+                    "Explains why seals and porpoises need vast ocean territories to find enough prey"
+                  ] }
+            ]
+        }
+    }
+};
+
+let currentPyramid = 'numbers';
+let currentEcosystem = 'woodland';
+let selectedIdx = null;
+
+/**
+ * Calculate a centred rectangle clip-path for a given width percentage.
+ * widthPct: 0–100 — how wide the bar should be as % of the container.
+ */
+function clipPath(widthPct) {
+    const margin = ((100 - widthPct) / 2).toFixed(2);
+    const outer  = (100 - parseFloat(margin)).toFixed(2);
+    return `polygon(${margin}% 100%, ${outer}% 100%, ${outer}% 0%, ${margin}% 0%)`;
+}
+
+/**
+ * Convert a raw value to a bar-width percentage using a square-root scale.
+ * Square-root scale keeps bars visually distinct even across many orders of magnitude
+ * while still reflecting the relative proportions of the data.
+ * minPct: minimum bar width so even the smallest value is visible.
+ */
+function toWidthPct(rawValue, maxRaw, minPct = 8) {
+    const ratio = Math.sqrt(rawValue / maxRaw);
+    return minPct + ratio * (100 - minPct);
+}
+
+function render() {
+    const data = pyramidData[currentEcosystem][currentPyramid];
+    const inverted = data.inverted || false;
+    const isEnergy = currentPyramid === 'energy';
+
+    selectedIdx = null;
+    document.getElementById('detailPanel').classList.remove('visible');
+
+    // Inverted notice
+    const notice = document.getElementById('invertedNotice');
+    if (inverted) {
+        notice.textContent = '⚠ This is an inverted pyramid — consumers have more standing-crop biomass than producers at any given moment.';
+        notice.style.display = 'block';
+    } else {
+        notice.style.display = 'none';
+    }
+
+    // Build display order: apex at top of screen, base at bottom
+    // Both normal and inverted: reverse data.levels so [top_predators, …, producers]
+    const displayLevels = [...data.levels].reverse();
+    const N = displayLevels.length;
+
+    // Find the maximum raw value across all levels (used to set the widest bar = 100%)
+    const maxRaw = Math.max(...displayLevels.map(l => l.rawValue));
+
+    const grid = document.getElementById('pyramidGrid');
+    grid.innerHTML = '';
+
+    displayLevels.forEach((level, i) => {
+        // Data index (0 = producers) for colour lookup
+        const dataIdx = N - 1 - i;
+
+        // Width of this bar as a percentage, based on its raw value
+        const wPct = toWidthPct(level.rawValue, maxRaw);
+
+        // ── Shape cell ──
+        const shapeCell = document.createElement('div');
+        shapeCell.className = 'shape-cell';
+        shapeCell.dataset.idx = i;
+
+        const bg = document.createElement('div');
+        bg.className = 'shape-bg';
+        bg.style.background = COLORS[dataIdx];
+        bg.style.clipPath = clipPath(wPct);
+        shapeCell.appendChild(bg);
+
+        // ── Label cell ──
+        const labelCell = document.createElement('div');
+        labelCell.className = 'label-cell';
+        labelCell.dataset.idx = i;
+        labelCell.innerHTML = `
+            <div>
+                <div class="label-name">${level.name}</div>
+                <div class="label-value">${level.value}</div>
+                <div class="label-detail">${level.detail}</div>
+            </div>`;
+
+        // Click handlers (both cells toggle the detail panel)
+        [shapeCell, labelCell].forEach(el => {
+            el.addEventListener('click', () => handleLevelClick(i, displayLevels));
+        });
+
+        grid.appendChild(shapeCell);
+        grid.appendChild(labelCell);
+
+        // ── Energy transfer row (between levels, not after the last) ──
+        if (isEnergy && i < N - 1) {
+            const tc = document.createElement('div');
+            tc.className = 'transfer-cell';
+            tc.textContent = '↓ ~90% energy lost as heat';
+            const sc = document.createElement('div');
+            sc.className = 'spacer-cell';
+            grid.appendChild(tc);
+            grid.appendChild(sc);
+        }
+    });
+
+    // Scale note
+    document.getElementById('scaleNote').textContent =
+        'Bar widths are drawn to scale using a square-root scale so all levels remain visible.';
+
+    // Info panel
+    const badge = inverted ? ' <span class="inverted-badge">INVERTED</span>' : '';
+    const kpHTML = data.keyPoints.map(p => `<div class="key-point">${p}</div>`).join('');
+    document.getElementById('infoPanel').innerHTML = `
+        <h3>${data.title}${badge}</h3>
+        <p>${data.description}</p>
+        <div class="key-points">${kpHTML}</div>`;
+}
+
+function handleLevelClick(displayIdx, displayLevels) {
+    const panel = document.getElementById('detailPanel');
+    const allCells = document.querySelectorAll('[data-idx]');
+
+    if (selectedIdx === displayIdx) {
+        // Deselect
+        selectedIdx = null;
+        allCells.forEach(el => el.classList.remove('selected'));
+        panel.classList.remove('visible');
+        return;
+    }
+
+    selectedIdx = displayIdx;
+    allCells.forEach(el => {
+        el.classList.toggle('selected', el.dataset.idx == displayIdx);
+    });
+
+    const level = displayLevels[displayIdx];
+    const factsHTML = level.facts.map(f => `<div class="detail-fact">${f}</div>`).join('');
+    panel.innerHTML = `
+        <h4>${level.name} — ${level.value} (${level.detail})</h4>
+        <div class="detail-facts">${factsHTML}</div>`;
+    panel.classList.add('visible');
+}
+
+document.querySelectorAll('.pyramid-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.pyramid-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentPyramid = this.dataset.pyramid;
+        render();
+    });
+});
+
+document.querySelectorAll('.ecosystem-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.ecosystem-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentEcosystem = this.dataset.ecosystem;
+        render();
+    });
+});
+
+render();
+</script>
+</body>
+</html>

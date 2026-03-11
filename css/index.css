@@ -1,165 +1,239 @@
-/* Main Index Page Styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Cakebread Science — Main Index Page — Lok Style */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Barlow', 'Arial Narrow', Arial, sans-serif;
+    background: #eeeae0;
     min-height: 100vh;
-    padding: 40px 20px;
 }
 
+/* ── Stripe bands ── */
+.top-stripes, .mid-stripes, .bottom-stripes { display: flex; flex-direction: column; }
+
+.top-stripes .s1 { height: 4px;  background: #005e22; }
+.top-stripes .s2 { height: 2px;  background: #111; }
+.top-stripes .s3 { height: 16px; background: #005e22; }
+.top-stripes .s4 { height: 3px;  background: #111; }
+.top-stripes .s5 { height: 2px;  background: #005e22; }
+
+.mid-stripes .s1 { height: 3px; background: #005e22; }
+.mid-stripes .s2 { height: 8px; background: #eeeae0; }
+.mid-stripes .s3 { height: 2px; background: #111; }
+
+.bottom-stripes .s1 { height: 3px; background: #111; }
+.bottom-stripes .s2 { height: 2px; background: #005e22; }
+.bottom-stripes .s3 { height: 9px; background: #111; }
+.bottom-stripes .s4 { height: 4px; background: #005e22; }
+
+/* ── Site header ── */
+.site-header {
+    background: #111;
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+.site-header h1 {
+    font-family: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+    font-size: 52px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    color: #eeeae0;
+    line-height: 1;
+}
+
+.site-header h1 span { color: #00a03a; }
+
+.site-header .sub {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #555;
+    font-weight: 400;
+}
+
+/* ── Layout ── */
 .container {
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
+    padding: 32px 24px 48px;
 }
 
-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 50px;
-}
-
-h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.subtitle {
-    font-size: 18px;
-    opacity: 0.95;
-}
-
-.resources {
+.hero-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
-    margin-bottom: 30px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    align-items: start;
 }
 
-.resource-section {
+@media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .site-header { padding: 20px 20px 18px; }
+    .site-header h1 { font-size: 38px; }
+    .container { padding: 20px 16px 40px; }
+}
+
+/* ── Cards ── */
+.hero-card {
     background: white;
-    border-radius: 10px;
+    padding: 0;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    transition: transform 0.3s ease;
-}
-
-.resource-section:hover {
-    transform: translateY(-5px);
-}
-
-.section-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.section-header.maths {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.section-header.physics {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-}
-
-.section-header.chemistry {
-    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-    color: #333;
-}
-
-.section-header.biology {
-    background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
-    color: #333;
-}
-
-.resource-list {
-    padding: 20px;
-}
-
-.resource-item {
-    padding: 12px 0;
-    border-bottom: 1px solid #ecf0f1;
-}
-
-.resource-item:last-child {
-    border-bottom: none;
-}
-
-.resource-item a {
-    color: #2c3e50;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 3px 3px 0 #111;
     text-decoration: none;
-    font-weight: normal;
-    transition: color 0.3s ease;
+    color: inherit;
+    display: block;
 }
 
-.resource-item a:hover {
-    color: #3498db;
+.hero-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 5px 5px 0 #005e22;
 }
 
-.topic-group {
-    margin-bottom: 15px;
-    padding-left: 20px;
-    border-left: 4px solid #bdc3c7;
+/* Card stripe bar */
+.card-stripe { display: flex; height: 8px; }
+.card-stripe .cs1 { flex: 4; background: #005e22; }
+.card-stripe .cs2 { flex: 1; background: #111; }
+.card-stripe .cs3 { flex: 6; background: #005e22; }
+.card-stripe .cs4 { flex: 2; background: #111; }
+
+.card-inner { padding: 20px 22px 22px; }
+
+/* ── Card content ── */
+.hero-icon { font-size: 28px; margin-bottom: 6px; }
+
+.hero-title {
+    font-family: 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+    font-size: 26px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #111;
+    margin-bottom: 16px;
 }
 
-.topic-group.maths {
-    border-left-color: #3498db;
+.spec-link, .tool-link {
+    display: block;
+    padding: 9px 12px 9px 16px;
+    color: #111;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    border-left: 4px solid #005e22;
+    background: #f2f0e8;
+    transition: all 0.15s ease;
 }
 
-.topic-group.physics {
-    border-left-color: #e74c3c;
+.spec-link:hover, .tool-link:hover {
+    background: #005e22;
+    color: white;
+    border-left-color: #111;
 }
 
-.topic-group.chemistry {
-    border-left-color: #9b59b6;
+.card-summary { margin-bottom: 14px; }
+
+.summary-item {
+    padding: 7px 12px 7px 16px;
+    border-left: 4px solid #ccc;
+    margin-bottom: 5px;
+    font-size: 13px;
+    color: #333;
+    background: #f2f0e8;
+}
+.summary-item.maths    { border-left-color: #2255cc; }
+.summary-item.physics  { border-left-color: #d08000; }
+.summary-item.chemistry{ border-left-color: #c8001e; }
+.summary-item.biology  { border-left-color: #005e22; }
+.summary-item.cross    { border-left-color: #555; }
+
+.card-cta {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    background: #111;
+    color: #eeeae0;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: background 0.2s;
 }
 
-.topic-group.biology {
-    border-left-color: #27ae60;
+.hero-card:hover .card-cta { background: #005e22; }
+
+.wip-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 7px;
+    background: #c8001e;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
-.topic-title {
-    font-weight: bold;
-    color: #2c3e50;
-    font-size: 11pt;
-    margin-bottom: 8px;
+.new-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 7px;
+    background: #007a3d;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
-.spec-text {
-    font-size: 9pt;
-    color: #7f8c8d;
-    font-style: italic;
-    margin-left: auto;
-    padding-left: 20px;
-    flex-shrink: 0;
+.updated-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 1px 7px;
+    background: #b06000;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.card-desc {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.5;
+}
+
+.right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.hero-card--compact .card-inner {
+    padding: 12px 22px 14px;
+}
+
+.hero-card--compact .hero-icon {
+    font-size: 22px;
+    margin-bottom: 4px;
+}
+
+.hero-card--compact .hero-title {
+    margin-bottom: 6px;
 }
 
 footer {
     text-align: center;
-    color: white;
-    margin-top: 60px;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-footer p {
-    margin: 5px 0;
-    font-size: 14px;
-}
-
-@media (max-width: 768px) {
-    .resources {
-        grid-template-columns: 1fr;
-    }
-    
-    h1 {
-        font-size: 36px;
-    }
+    padding: 24px;
+    color: #888;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
 }

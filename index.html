@@ -8,239 +8,109 @@
     <meta name="keywords" content="IGCSE, Edexcel, worksheets, revision, flashcards, science, maths, biology, chemistry, physics">
     <meta name="author" content="Cakebread Science">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#005e22">
     <link rel="canonical" href="https://cakebreadscience.com/">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/index.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 15px;
-            margin: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .site-header {
-            text-align: center;
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .site-header h1 {
-            font-size: 32px;
-            margin: 0;
-            font-weight: 600;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin: 0;
-        }
-
-        @media (max-width: 1024px) {
-            .hero-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .hero-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .hero-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-        }
-
-        .hero-icon {
-            font-size: 40px;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .hero-title {
-            text-align: center;
-            font-size: 22px;
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .card-summary {
-            margin-bottom: 15px;
-        }
-
-        .summary-item {
-            padding: 8px 12px;
-            border-left: 3px solid #bdc3c7;
-            margin-bottom: 6px;
-            font-size: 13px;
-            color: #2c3e50;
-        }
-
-        .summary-item.maths { border-left-color: #3498db; }
-        .summary-item.physics { border-left-color: #f39c12; }
-        .summary-item.chemistry { border-left-color: #e74c3c; }
-        .summary-item.biology { border-left-color: #27ae60; }
-        .summary-item.cross { border-left-color: #7f8c8d; }
-
-        .card-cta {
-            text-align: center;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            color: #3498db;
-            font-weight: bold;
-            font-size: 14px;
-            transition: background 0.3s ease;
-        }
-
-        .hero-card:hover .card-cta {
-            background: #ecf0f1;
-        }
-
-        .spec-link, .tool-link {
-            display: block;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            color: #2c3e50;
-            text-decoration: none;
-            font-size: 14px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-
-        .spec-link:hover, .tool-link:hover {
-            background: #ecf0f1;
-            transform: translateX(5px);
-        }
-
-        .spec-link.maths {
-            border-left-color: #3498db;
-        }
-
-        .spec-link.science {
-            border-left-color: #27ae60;
-        }
-
-        .tool-link {
-            border-left-color: #f39c12;
-        }
-
-        .wip-badge {
-            display: inline-block;
-            margin-left: 8px;
-            padding: 2px 8px;
-            border-radius: 999px;
-            background: #f59e0b;
-            color: #1f2937;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-    </style>
 </head>
 <body>
+
+    <div class="top-stripes">
+        <div class="s1"></div><div class="s2"></div>
+        <div class="s3"></div><div class="s4"></div><div class="s5"></div>
+    </div>
+
+    <header class="site-header">
+        <h1>Cakebread <span>Science</span></h1>
+        <span class="sub">IGCSE Edexcel Resources</span>
+    </header>
+
+    <div class="mid-stripes">
+        <div class="s1"></div><div class="s2"></div><div class="s3"></div>
+    </div>
+
     <div class="container">
-        <header class="site-header">
-            <h1>🍰 Cakebread Science</h1>
-        </header>
-
         <div class="hero-grid">
-            <!-- Card 0: Elevenstudents -->
+
+            <!-- Card 1: Interactive -->
             <div class="hero-card">
-                <div class="hero-icon">🎓</div>
-                <h2 class="hero-title">Elevenstudents</h2>
-
-                <a href="Elevenstudents/index.html#games" class="spec-link" style="border-left-color: #9b59b6;">
-                    🎮 Games
-                </a>
-                <a href="Elevenstudents/index.html#simulations" class="spec-link" style="border-left-color: #e67e22;">
-                    🔬 Simulations
-                </a>
-                <a href="Elevenstudents/index.html#maths" class="spec-link" style="border-left-color: #3498db;">
-                    🧮 Maths
-                </a>
-            </div>
-
-            <!-- Card 1: Revision -->
-            <div class="hero-card">
-                <div class="hero-icon">📚</div>
-                <h2 class="hero-title">Revision</h2>
-
-                <a href="https://notebooklm.google.com/notebook/64a15481-bc3b-42f9-93af-3eb82fe9918e" target="_blank" class="spec-link" style="border-left-color: #1abc9c;">
-                    🤖 AI Tutor
-                </a>
-
-                <a href="Flashcards/index.html" class="spec-link" style="border-left-color: #9b59b6;">
-                    🃏 Flashcards
-                </a>
-
-                <a href="specifications/maths.html" class="spec-link maths">
-                    📋 Maths Spec
-                </a>
-                <a href="specifications/science.html" class="spec-link science">
-                    📋 Science Spec
-                </a>
-            </div>
-
-            <!-- Card 2: Worksheets -->
-            <a href="worksheets/index.html" class="hero-card" style="text-decoration: none; color: inherit;">
-                <div class="hero-icon">📝</div>
-                <h2 class="hero-title">Worksheets</h2>
-
-                <div class="card-summary">
-                    <div class="summary-item maths">🧮 Mathematics &mdash; 18 worksheets</div>
-                    <div class="summary-item physics">⚡ Physics &mdash; 50 worksheets</div>
-                    <div class="summary-item chemistry">🧪 Chemistry &mdash; 49 worksheets</div>
-                    <div class="summary-item biology">🧬 Biology &mdash; 12 worksheets</div>
-                    <div class="summary-item cross">🧩 Cross-curricular &mdash; 1 worksheet</div>
+                <div class="card-stripe"><div class="cs1"></div><div class="cs2"></div><div class="cs3"></div><div class="cs4"></div></div>
+                <div class="card-inner">
+                    <div class="hero-icon">🎮</div>
+                    <h2 class="hero-title">Interactive</h2>
+                    <a href="interactive/angle-rules/index.html" class="tool-link">📐 Angle Rules</a>
+                    <a href="interactive/organisms/game.html" class="tool-link">🦁 Organisms Game</a>
+                    <a href="interactive/genetics-game/index.html" class="tool-link">🧬 Genetics Simulator <span class="new-badge">NEW</span></a>
+                    <a href="interactive/food-webs/index.html" class="tool-link">🕸️ Food Web Builder <span class="wip-badge">WIP</span></a>
                 </div>
+            </div>
 
+            <!-- Card 2: Revision -->
+            <div class="hero-card">
+                <div class="card-stripe"><div class="cs1"></div><div class="cs2"></div><div class="cs3"></div><div class="cs4"></div></div>
+                <div class="card-inner">
+                    <div class="hero-icon">📚</div>
+                    <h2 class="hero-title">Revision</h2>
+                    <a href="specifications/science.html" class="spec-link">📋 Science Specification Tracker <span class="updated-badge">UPDATED</span></a>
+                    <a href="https://notebooklm.google.com/notebook/64a15481-bc3b-42f9-93af-3eb82fe9918e" target="_blank" class="spec-link">🤖 AI Tutor</a>
+                    <a href="Flashcards/index.html" class="spec-link">🃏 Flashcards</a>
+                    <a href="specifications/maths.html" class="spec-link">📋 Maths Spec</a>
+                </div>
+            </div>
+
+            <!-- Card 3: Worksheets -->
+            <a href="worksheets/index.html" class="hero-card">
+                <div class="card-stripe"><div class="cs1"></div><div class="cs2"></div><div class="cs3"></div><div class="cs4"></div></div>
+                <div class="card-inner">
+                    <div class="hero-icon">📝</div>
+                    <h2 class="hero-title">Worksheets</h2>
+                    <div class="card-summary">
+                        <div class="summary-item maths">🧮 Mathematics &mdash; 18 worksheets</div>
+                        <div class="summary-item physics">⚡ Physics &mdash; 50 worksheets</div>
+                        <div class="summary-item chemistry">🧪 Chemistry &mdash; 49 worksheets</div>
+                        <div class="summary-item biology">🧬 Biology &mdash; 12 worksheets</div>
+                        <div class="summary-item cross">🧩 Cross-curricular &mdash; 1 worksheet</div>
+                    </div>
+                </div>
                 <div class="card-cta">Browse All Worksheets &rarr;</div>
             </a>
 
-            <!-- Card 3: Interactive Tools -->
-            <div class="hero-card">
-                <div class="hero-icon">🎮</div>
-                <h2 class="hero-title">Interactive</h2>
+            <!-- Right column: Elevenstudents + Useful Websites -->
+            <div class="right-col">
 
-                <a href="interactive/angle-rules/index.html" class="tool-link">
-                    📐 Angle Rules
+                <a href="Elevenstudents/index.html" class="hero-card hero-card--compact">
+                    <div class="card-stripe"><div class="cs1"></div><div class="cs2"></div><div class="cs3"></div><div class="cs4"></div></div>
+                    <div class="card-inner">
+                        <div class="hero-icon">🎓</div>
+                        <h2 class="hero-title">Elevenstudents</h2>
+                        <p class="card-desc">Games, simulations, and maths tools for students.</p>
+                    </div>
+                    <div class="card-cta">Go to Elevenstudents &rarr;</div>
                 </a>
 
-                <a href="interactive/organisms/game.html" class="tool-link">
-                    🦁 Organisms Game
-                </a>
+                <div class="hero-card hero-card--compact">
+                    <div class="card-stripe"><div class="cs1"></div><div class="cs2"></div><div class="cs3"></div><div class="cs4"></div></div>
+                    <div class="card-inner">
+                        <div class="hero-icon">🔗</div>
+                        <h2 class="hero-title">Useful Websites</h2>
+                        <a href="https://www.savemyexams.com/igcse/" target="_blank" class="spec-link">📝 Save My Exams</a>
+                        <a href="https://www.physicsandmathstutor.com/" target="_blank" class="spec-link">📐 Physics &amp; Maths Tutor</a>
+                    </div>
+                </div>
 
-                <a href="interactive/organisms/gallery.html" class="tool-link">
-                    🌿 Organisms Gallery
-                </a>
-
-                <a href="interactive/food-webs/index.html" class="tool-link">
-                    🕸️ Food Web Builder <span class="wip-badge">WIP</span>
-                </a>
             </div>
+
         </div>
     </div>
 
-    <footer style="text-align: center; padding: 20px; color: rgba(255,255,255,0.6); font-size: 0.85em; margin-top: 40px;">
-        Cakebread Science v1.1.0
-    </footer>
+    <div class="bottom-stripes">
+        <div class="s1"></div><div class="s2"></div>
+        <div class="s3"></div><div class="s4"></div>
+    </div>
+
+    <footer>Cakebread Science v2.0.0</footer>
+
 </body>
 </html>

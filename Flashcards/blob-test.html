@@ -9,7 +9,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #eeeae0;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -45,7 +45,7 @@
             font-size: 0.75em;
             color: #888;
         }
-        .pet-stats .stat-val { font-weight: 700; font-size: 1.3em; color: #667eea; display: block; }
+        .pet-stats .stat-val { font-weight: 700; font-size: 1.3em; color: #005e22; display: block; }
         .pet-stats .stat-val.streak-color { color: #f39c12; }
 
         .pet-room {
@@ -105,7 +105,7 @@
         .pet-house .pet-stage-name {
             font-size: 0.8em;
             font-weight: 700;
-            color: #667eea;
+            color: #005e22;
             margin-top: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -299,7 +299,7 @@
 
         .control-section h3 {
             font-size: 0.9em;
-            color: #667eea;
+            color: #005e22;
             margin-bottom: 10px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -331,8 +331,8 @@
             color: #555;
             transition: all 0.2s;
         }
-        .ctrl-btn:hover { border-color: #667eea; color: #667eea; }
-        .ctrl-btn.active { border-color: #667eea; background: #667eea; color: white; }
+        .ctrl-btn:hover { border-color: #005e22; color: #005e22; }
+        .ctrl-btn.active { border-color: #005e22; background: #667eea; color: white; }
 
         .ctrl-btn.tier-bronze.active { border-color: #cd7f32; background: #cd7f32; color: white; }
         .ctrl-btn.tier-silver.active { border-color: #a0a0a0; background: #a0a0a0; color: white; }
@@ -672,7 +672,7 @@
                     <div class="control-row">
                         <label>Points</label>
                         <input type="range" min="0" max="999" value="42" id="pointsSlider" oninput="setPoints(this.value)" style="flex:1;">
-                        <span id="pointsLabel" style="font-size:0.85em; font-weight:700; color:#667eea; min-width:35px; text-align:right;">42</span>
+                        <span id="pointsLabel" style="font-size:0.85em; font-weight:700; color:#005e22; min-width:35px; text-align:right;">42</span>
                     </div>
                     <div class="control-row">
                         <label>Streak</label>

@@ -4,7 +4,25 @@
       "Bash(dir:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#005e22\"\"|g' templates/BIOLOGY_TEMPLATE.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#c8001e\"\"|g' templates/CHEMISTRY_TEMPLATE.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#d08000\"\"|g' templates/PHYSICS_TEMPLATE.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#2255cc\"\"|g' templates/MATHS_TEMPLATE.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#005e22\"\"|g' worksheets/index.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#2255cc\"\"|g' interactive/angle-rules/index.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#005e22\"\"|g; s|linear-gradient\\(135deg, #667eea 0%, #764ba2 100%\\)|#eeeae0|g; s|#667eea|#005e22|g' interactive/organisms/gallery.html)",
+      "Bash(sed -i 's|color: white;|color: #111;|g; s|color: #f3f3f3;|color: #555;|g; s|text-shadow: 2px 2px 4px rgba\\(0,0,0,0.3\\);||g' interactive/organisms/gallery.html)",
+      "Bash(sed -i 's|content=\"\"#667eea\"\"|content=\"\"#005e22\"\"|g; s|linear-gradient\\(135deg, #667eea 0%, #764ba2 100%\\)|#eeeae0|g; s|#667eea|#005e22|g' interactive/organisms/game.html)",
+      "Bash(sed -i 's|color: white;|color: #111;|g; s|text-shadow: 2px 2px 4px rgba\\(0,0,0,0.3\\);||g' interactive/organisms/game.html)",
+      "Bash(sed -i 's|linear-gradient\\(135deg, #667eea 0%, #764ba2 100%\\)|#eeeae0|g; s|#667eea|#005e22|g; s|#764ba2|#005e22|g; s|#5568d3|#004d1a|g' Elevenstudents/Flashcards/index.html)",
+      "Bash(sed -i 's|rgba\\(255, 255, 255, 0.95\\)|white|g; s|border-radius: 16px;|border-radius: 0;|g; s|box-shadow: 0 20px 60px rgba\\(0, 0, 0, 0.3\\);|box-shadow: 4px 4px 0 #111;|g' Elevenstudents/Flashcards/index.html)",
+      "Bash(sed -i \"s|color: white;|color: #111;|g\" Elevenstudents/Flashcards/index.html)",
+      "Bash(sed -i 's|linear-gradient\\(135deg, #667eea 0%, #764ba2 100%\\)|#eeeae0|g' Flashcards/blob-test.html)",
+      "Bash(sed -i 's|color: #667eea;|color: #005e22;|g' Flashcards/blob-test.html)",
+      "Bash(sed -i 's|border-color: #667eea; color: #667eea;|border-color: #005e22; color: #005e22;|g' Flashcards/blob-test.html)",
+      "Bash(sed -i 's|border-color: #667eea; background: #667eea;|border-color: #005e22; background: #005e22;|g' Flashcards/blob-test.html)",
+      "Bash(sed -i 's|style=\"\"font-size:0.85em; font-weight:700; color:#667eea;|style=\"\"font-size:0.85em; font-weight:700; color:#005e22;|g' Flashcards/blob-test.html)"
     ]
   }
 }

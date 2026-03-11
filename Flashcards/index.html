@@ -8,7 +8,10 @@
     <meta name="keywords" content="IGCSE, Edexcel, flashcards, spaced repetition, biology, chemistry, physics">
     <meta name="author" content="Cakebread Science">
     <link rel="icon" type="image/png" href="/favicon.png">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#005e22">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
     <link rel="canonical" href="https://cakebreadscience.com/Flashcards/">
     <style>
         * {
@@ -18,13 +21,13 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Barlow', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #eeeae0;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #111;
         }
 
         .container {
@@ -34,10 +37,10 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 20px;
+            background: white;
+            border-radius: 0;
             padding: 36px;
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+            box-shadow: 4px 4px 0 #111;
             color: #333;
         }
 
@@ -45,7 +48,11 @@
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5em;
-            color: #667eea;
+            color: #005e22;
+            font-family: 'Barlow Condensed', 'Segoe UI', sans-serif;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
         }
 
         .login-screen, .deck-selector, .study-screen {
@@ -57,11 +64,11 @@
         }
 
         .btn {
-            background: #667eea;
+            background: #005e22;
             color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 8px;
+            border-radius: 0;
             font-size: 1.1em;
             cursor: pointer;
             transition: all 0.3s;
@@ -69,12 +76,16 @@
             width: 100%;
             margin: 10px 0;
             font-weight: bold;
+            font-family: 'Barlow Condensed', 'Segoe UI', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .btn:hover {
-            background: #5568d3;
+            background: #004d1a;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 94, 34, 0.4);
         }
 
         .btn-google {
@@ -107,14 +118,14 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         }
 
-        .deck-item.deck-biology { border-left-color: #27ae60; }
-        .deck-item.deck-biology:hover { border-color: #27ae60; border-left-color: #27ae60; }
-        .deck-item.deck-chemistry { border-left-color: #e74c3c; }
-        .deck-item.deck-chemistry:hover { border-color: #e74c3c; border-left-color: #e74c3c; }
-        .deck-item.deck-physics { border-left-color: #f39c12; }
-        .deck-item.deck-physics:hover { border-color: #f39c12; border-left-color: #f39c12; }
-        .deck-item.deck-physics-eqns { border-left-color: #f39c12; }
-        .deck-item.deck-physics-eqns:hover { border-color: #f39c12; border-left-color: #f39c12; }
+        .deck-item.deck-biology { border-left-color: #005e22; }
+        .deck-item.deck-biology:hover { border-color: #005e22; border-left-color: #005e22; }
+        .deck-item.deck-chemistry { border-left-color: #c8001e; }
+        .deck-item.deck-chemistry:hover { border-color: #c8001e; border-left-color: #c8001e; }
+        .deck-item.deck-physics { border-left-color: #d08000; }
+        .deck-item.deck-physics:hover { border-color: #d08000; border-left-color: #d08000; }
+        .deck-item.deck-physics-eqns { border-left-color: #d08000; }
+        .deck-item.deck-physics-eqns:hover { border-color: #d08000; border-left-color: #d08000; }
 
         .deck-item h3 {
             color: #444;
@@ -129,9 +140,9 @@
 
         .study-more-btn {
             font-size: 0.75em;
-            color: #667eea;
-            background: rgba(102, 126, 234, 0.08);
-            border: 1px solid rgba(102, 126, 234, 0.2);
+            color: #005e22;
+            background: rgba(0, 94, 34, 0.08);
+            border: 1px solid rgba(0, 94, 34, 0.2);
             border-radius: 10px;
             padding: 3px 10px;
             cursor: pointer;
@@ -141,9 +152,9 @@
         }
 
         .study-more-btn:hover {
-            background: #667eea;
+            background: #005e22;
             color: white;
-            border-color: #667eea;
+            border-color: #005e22;
         }
 
         .flashcard {
@@ -169,7 +180,7 @@
 
         .flashcard.flipped {
             background: #fafbfd;
-            border-color: #667eea;
+            border-color: #005e22;
         }
 
         .rating-buttons {
@@ -231,7 +242,7 @@
         .stat-value {
             font-size: 2em;
             font-weight: bold;
-            color: #667eea;
+            color: #005e22;
         }
 
         .stat-label {
@@ -263,7 +274,7 @@
 
         .back-btn {
             background: transparent;
-            color: #667eea;
+            color: #005e22;
             border: none;
             padding: 8px 0;
             font-size: 0.95em;
@@ -274,7 +285,7 @@
 
         .back-btn:hover {
             background: transparent;
-            color: #5568d3;
+            color: #004d1a;
             transform: none;
             box-shadow: none;
             text-decoration: underline;
@@ -327,9 +338,9 @@
         }
 
         .top-btn {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(0, 94, 34, 0.1);
             border: none;
-            color: #667eea;
+            color: #005e22;
             padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
@@ -339,7 +350,7 @@
         }
 
         .top-btn:hover {
-            background: #667eea;
+            background: #005e22;
             color: white;
         }
 
@@ -395,7 +406,7 @@
 
         .setting-item input[type="number"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #005e22;
         }
 
         .reset-button {
@@ -434,12 +445,12 @@
         }
 
         .save-settings {
-            background: #667eea;
+            background: #005e22;
             color: white;
         }
 
         .save-settings:hover {
-            background: #5568d3;
+            background: #004d1a;
         }
 
         .cancel-settings {
@@ -588,7 +599,7 @@
             font-size: 0.7em;
             color: #888;
         }
-        .pet-stats .stat-val { font-weight: 700; font-size: 1.3em; color: #667eea; display: block; }
+        .pet-stats .stat-val { font-weight: 700; font-size: 1.3em; color: #005e22; display: block; }
         .pet-stats .stat-val.streak-color { color: #f39c12; }
 
         .pet-room {
@@ -645,7 +656,7 @@
         .pet-house .pet-stage-name {
             font-size: 0.75em;
             font-weight: 700;
-            color: #667eea;
+            color: #005e22;
             margin-top: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -665,9 +676,9 @@
         }
 
         .pet-btn {
-            background: rgba(102, 126, 234, 0.1);
+            background: rgba(0, 94, 34, 0.1);
             border: none;
-            color: #667eea;
+            color: #005e22;
             padding: 5px 10px;
             border-radius: 12px;
             cursor: pointer;
@@ -675,11 +686,11 @@
             font-weight: 600;
             transition: all 0.2s;
         }
-        .pet-btn:hover { background: #667eea; color: white; }
+        .pet-btn:hover { background: #005e22; color: white; }
 
         .pet-btn.feed-btn { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
         .pet-btn.feed-btn:hover { background: #e74c3c; color: white; }
-        .pet-btn.feed-btn.fed { background: rgba(39, 174, 96, 0.1); color: #27ae60; pointer-events: none; }
+        .pet-btn.feed-btn.fed { background: rgba(0, 94, 34, 0.1); color: #005e22; pointer-events: none; }
 
         .hungry-indicator {
             display: none;
@@ -745,7 +756,7 @@
         /* Stage groups */
         .pet-stage { display: none; }
         .pet-stage.active { display: block; }
-        .pet-stage.stage-master.active { filter: drop-shadow(0 0 6px rgba(102, 126, 234, 0.5)); }
+        .pet-stage.stage-master.active { filter: drop-shadow(0 0 6px rgba(0, 94, 34, 0.5)); }
 
         /* House floor styles */
         .pet-room.floor-grass { background: linear-gradient(to top, #8bc97e 0%, #b5e4a8 20%, #d4f5d0 35%, transparent 55%); }
@@ -845,7 +856,7 @@
             transition: all 0.2s;
             text-align: center;
         }
-        .store-tab.active { border-color: #667eea; color: #667eea; background: rgba(102, 126, 234, 0.05); }
+        .store-tab.active { border-color: #005e22; color: #005e22; background: rgba(0, 94, 34, 0.05); }
 
         .store-grid {
             display: grid;
@@ -862,47 +873,47 @@
             text-align: center;
             transition: all 0.2s;
         }
-        .store-item:hover { border-color: #667eea; }
+        .store-item:hover { border-color: #005e22; }
         .store-item .item-emoji { font-size: 1.8em; }
         .store-item .item-name { font-size: 0.8em; font-weight: 600; color: #444; margin: 4px 0 2px; }
-        .store-item .item-cost { font-size: 0.75em; color: #667eea; font-weight: 700; }
+        .store-item .item-cost { font-size: 0.75em; color: #005e22; font-weight: 700; }
 
         .store-item .buy-btn {
             margin-top: 6px;
             padding: 4px 14px;
             border: none;
             border-radius: 8px;
-            background: #667eea;
+            background: #005e22;
             color: white;
             font-size: 0.75em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .store-item .buy-btn:hover { background: #5568d3; }
+        .store-item .buy-btn:hover { background: #004d1a; }
         .store-item .buy-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .store-item .buy-btn.owned { background: #27ae60; }
+        .store-item .buy-btn.owned { background: #005e22; }
 
         .store-item .equip-btn {
             margin-top: 6px;
             padding: 4px 14px;
-            border: 2px solid #667eea;
+            border: 2px solid #005e22;
             border-radius: 8px;
             background: white;
-            color: #667eea;
+            color: #005e22;
             font-size: 0.75em;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
         }
-        .store-item .equip-btn:hover { background: #667eea; color: white; }
-        .store-item .equip-btn.equipped { background: #667eea; color: white; }
+        .store-item .equip-btn:hover { background: #005e22; color: white; }
+        .store-item .equip-btn.equipped { background: #005e22; color: white; }
 
         .store-balance {
             text-align: center;
             margin-bottom: 14px;
             font-size: 1.1em;
-            color: #667eea;
+            color: #005e22;
             font-weight: 700;
         }
 
@@ -941,7 +952,7 @@
                 <div class="user-info" id="userInfo"></div>
                 <div class="badges-row" id="badgesRow"></div>
                 <div id="totalDueToday" style="text-align: center; margin-bottom: 20px; display: none;">
-                    <div style="font-size: 3em; font-weight: bold; color: #667eea; line-height: 1;" id="totalDueCount">0</div>
+                    <div style="font-size: 3em; font-weight: bold; color: #111; line-height: 1;" id="totalDueCount">0</div>
                     <div style="font-size: 0.95em; color: #888;">cards due today</div>
                     <div style="font-size: 0.85em; color: #aaa; margin-top: 4px;" id="totalDueTime"></div>
                 </div>
@@ -998,7 +1009,7 @@
                 <svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg">
                     <!-- Stage 1: Egg -->
                     <g class="pet-stage stage-egg">
-                        <ellipse cx="60" cy="80" rx="28" ry="36" fill="#667eea" />
+                        <ellipse cx="60" cy="80" rx="28" ry="36" fill="#005e22" />
                         <ellipse cx="60" cy="85" rx="22" ry="28" fill="#8b9ff5" />
                         <!-- Crack -->
                         <polyline points="42,68 48,58 55,66 60,54 66,64 72,56 78,68" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" />
@@ -1016,7 +1027,7 @@
                     <!-- Stage 2: Hatchling -->
                     <g class="pet-stage stage-hatchling">
                         <!-- Body -->
-                        <ellipse cx="60" cy="90" rx="26" ry="30" fill="#667eea" />
+                        <ellipse cx="60" cy="90" rx="26" ry="30" fill="#005e22" />
                         <ellipse cx="60" cy="94" rx="20" ry="22" fill="#8b9ff5" />
                         <!-- Eyes -->
                         <g class="eyes" style="transform-origin: 60px 80px;">
@@ -1035,11 +1046,11 @@
                     <!-- Stage 3: Junior -->
                     <g class="pet-stage stage-junior">
                         <!-- Body -->
-                        <ellipse cx="60" cy="88" rx="30" ry="34" fill="#667eea" />
+                        <ellipse cx="60" cy="88" rx="30" ry="34" fill="#005e22" />
                         <ellipse cx="60" cy="93" rx="23" ry="24" fill="#8b9ff5" />
                         <!-- Arm nubs -->
-                        <ellipse cx="32" cy="85" rx="8" ry="5" fill="#667eea" transform="rotate(-20,32,85)" />
-                        <ellipse cx="88" cy="85" rx="8" ry="5" fill="#667eea" transform="rotate(20,88,85)" />
+                        <ellipse cx="32" cy="85" rx="8" ry="5" fill="#005e22" transform="rotate(-20,32,85)" />
+                        <ellipse cx="88" cy="85" rx="8" ry="5" fill="#005e22" transform="rotate(20,88,85)" />
                         <!-- Eyes -->
                         <g class="eyes" style="transform-origin: 60px 76px;">
                             <circle cx="48" cy="76" r="7" fill="white" />
@@ -1060,15 +1071,15 @@
                     <!-- Stage 4: Teen -->
                     <g class="pet-stage stage-teen">
                         <!-- Body -->
-                        <ellipse cx="60" cy="85" rx="32" ry="38" fill="#667eea" />
+                        <ellipse cx="60" cy="85" rx="32" ry="38" fill="#005e22" />
                         <ellipse cx="60" cy="91" rx="24" ry="26" fill="#8b9ff5" />
                         <!-- Arms -->
-                        <ellipse cx="28" cy="80" rx="10" ry="6" fill="#667eea" transform="rotate(-15,28,80)" />
-                        <ellipse cx="92" cy="80" rx="10" ry="6" fill="#667eea" transform="rotate(15,92,80)" />
+                        <ellipse cx="28" cy="80" rx="10" ry="6" fill="#005e22" transform="rotate(-15,28,80)" />
+                        <ellipse cx="92" cy="80" rx="10" ry="6" fill="#005e22" transform="rotate(15,92,80)" />
                         <!-- Antennae -->
-                        <line x1="50" y1="50" x2="42" y2="36" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                        <line x1="50" y1="50" x2="42" y2="36" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
                         <circle cx="42" cy="34" r="4" fill="#8b9ff5" />
-                        <line x1="70" y1="50" x2="78" y2="36" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                        <line x1="70" y1="50" x2="78" y2="36" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
                         <circle cx="78" cy="34" r="4" fill="#8b9ff5" />
                         <!-- Eyes -->
                         <g class="eyes" style="transform-origin: 60px 72px;">
@@ -1083,22 +1094,22 @@
                         <path class="mouth-happy" d="M50,88 Q60,96 70,88" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
                         <path class="mouth-sad" d="M50,94 Q60,87 70,94" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
                         <!-- Feet nubs -->
-                        <ellipse cx="48" cy="120" rx="8" ry="4" fill="#5568d3" />
-                        <ellipse cx="72" cy="120" rx="8" ry="4" fill="#5568d3" />
+                        <ellipse cx="48" cy="120" rx="8" ry="4" fill="#004d1a" />
+                        <ellipse cx="72" cy="120" rx="8" ry="4" fill="#004d1a" />
                     </g>
 
                     <!-- Stage 5: Adult -->
                     <g class="pet-stage stage-adult">
                         <!-- Body -->
-                        <ellipse cx="60" cy="82" rx="34" ry="40" fill="#667eea" />
+                        <ellipse cx="60" cy="82" rx="34" ry="40" fill="#005e22" />
                         <ellipse cx="60" cy="89" rx="26" ry="28" fill="#8b9ff5" />
                         <!-- Arms -->
-                        <path d="M26,75 Q18,70 16,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
-                        <path d="M94,75 Q102,70 104,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
+                        <path d="M26,75 Q18,70 16,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
+                        <path d="M94,75 Q102,70 104,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
                         <!-- Antennae -->
-                        <line x1="48" y1="45" x2="38" y2="28" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                        <line x1="48" y1="45" x2="38" y2="28" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
                         <circle cx="38" cy="26" r="5" fill="#ffd93d" />
-                        <line x1="72" y1="45" x2="82" y2="28" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                        <line x1="72" y1="45" x2="82" y2="28" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
                         <circle cx="82" cy="26" r="5" fill="#ffd93d" />
                         <!-- Eyes -->
                         <g class="eyes" style="transform-origin: 60px 68px;">
@@ -1113,22 +1124,22 @@
                         <path class="mouth-happy" d="M48,86 Q60,97 72,86" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
                         <path class="mouth-sad" d="M48,94 Q60,85 72,94" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
                         <!-- Feet -->
-                        <ellipse cx="46" cy="120" rx="10" ry="5" fill="#5568d3" />
-                        <ellipse cx="74" cy="120" rx="10" ry="5" fill="#5568d3" />
+                        <ellipse cx="46" cy="120" rx="10" ry="5" fill="#004d1a" />
+                        <ellipse cx="74" cy="120" rx="10" ry="5" fill="#004d1a" />
                     </g>
 
                     <!-- Stage 6: Master -->
                     <g class="pet-stage stage-master">
                         <!-- Body -->
-                        <ellipse cx="60" cy="82" rx="34" ry="40" fill="#667eea" />
+                        <ellipse cx="60" cy="82" rx="34" ry="40" fill="#005e22" />
                         <ellipse cx="60" cy="89" rx="26" ry="28" fill="#a0b4ff" />
                         <!-- Arms -->
-                        <path d="M26,75 Q16,68 14,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
-                        <path d="M94,75 Q104,68 106,78" stroke="#667eea" stroke-width="8" fill="none" stroke-linecap="round" />
+                        <path d="M26,75 Q16,68 14,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
+                        <path d="M94,75 Q104,68 106,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
                         <!-- Crown-like antennae -->
-                        <line x1="48" y1="45" x2="36" y2="24" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                        <line x1="48" y1="45" x2="36" y2="24" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
                         <polygon points="36,24 31,14 36,18 36,10 40,18 41,14 36,24" fill="#ffd93d" />
-                        <line x1="72" y1="45" x2="84" y2="24" stroke="#667eea" stroke-width="3" stroke-linecap="round" />
+                        <line x1="72" y1="45" x2="84" y2="24" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
                         <polygon points="84,24 79,14 84,18 84,10 88,18 89,14 84,24" fill="#ffd93d" />
                         <!-- Sparkle star on top -->
                         <polygon points="60,8 62,14 68,14 63,18 65,24 60,20 55,24 57,18 52,14 58,14" fill="#ffd93d" />
@@ -1145,8 +1156,8 @@
                         <path class="mouth-happy" d="M46,86 Q60,100 74,86" fill="rgba(255,255,255,0.3)" stroke="#333" stroke-width="2" stroke-linecap="round" />
                         <path class="mouth-sad" d="M48,96 Q60,86 72,96" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
                         <!-- Feet -->
-                        <ellipse cx="46" cy="120" rx="10" ry="5" fill="#5568d3" />
-                        <ellipse cx="74" cy="120" rx="10" ry="5" fill="#5568d3" />
+                        <ellipse cx="46" cy="120" rx="10" ry="5" fill="#004d1a" />
+                        <ellipse cx="74" cy="120" rx="10" ry="5" fill="#004d1a" />
                     </g>
 
                     <!-- === ACCESSORIES === -->
@@ -1212,7 +1223,7 @@
             <div class="card">
                 <button class="btn back-btn" onclick="backToDecks()">← Back to Decks</button>
                 
-                <h2 id="deckTitle" style="text-align: center; color: #667eea; margin-bottom: 20px;"></h2>
+                <h2 id="deckTitle" style="text-align: center; color: #005e22; margin-bottom: 20px;"></h2>
                 
                 <div class="stats">
                     <div class="stat-item">
@@ -1241,10 +1252,10 @@
                 <h2>📖 How It Works</h2>
                 <button class="cancel-settings" onclick="closeGuide()" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 10px 20px;">Close</button>
                 <div style="margin-top: 20px; font-size: 0.92em; color: #444; line-height: 1.7;">
-                    <h3 style="color: #667eea; margin-bottom: 6px;">Spaced Repetition</h3>
+                    <h3 style="color: #005e22; margin-bottom: 6px;">Spaced Repetition</h3>
                     <p>Cards are shown at increasing intervals based on how well you know them. The better you rate a card, the longer before you see it again &mdash; so you spend more time on what you find hard and less on what you already know.</p>
 
-                    <h3 style="color: #667eea; margin-top: 18px; margin-bottom: 6px;">Studying a Card</h3>
+                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Studying a Card</h3>
                     <p>Tap a card to reveal the answer, then rate how well you knew it from 1&ndash;4:</p>
                     <ul style="margin: 6px 0 0 20px;">
                         <li><strong>Again (1)</strong> &ndash; Got it wrong, card resets</li>
@@ -1255,7 +1266,7 @@
                     <p style="margin-top: 8px;">Your rating decides when you&rsquo;ll next see the card. Rating Good or Easy pushes the card further into the future; rating Again or Hard brings it back quickly.</p>
 
                     <details style="margin-top: 10px; cursor: pointer;">
-                        <summary style="color: #667eea; font-weight: 600; font-size: 0.95em;">How the spacing algorithm works &rsaquo;</summary>
+                        <summary style="color: #005e22; font-weight: 600; font-size: 0.95em;">How the spacing algorithm works &rsaquo;</summary>
                         <div style="margin-top: 8px; padding: 12px; background: #f8f9fb; border-radius: 8px; font-size: 0.93em;">
                             <p>This app uses the <strong>SM-2 algorithm</strong>. Each card tracks an <em>interval</em> (days until next review) and an <em>easiness factor</em> that adapts to you.</p>
                             <ul style="margin: 6px 0 0 18px;">
@@ -1268,14 +1279,14 @@
                         </div>
                     </details>
 
-                    <h3 style="color: #667eea; margin-top: 18px; margin-bottom: 6px;">Card Stages</h3>
+                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Card Stages</h3>
                     <p style="margin: 6px 0 0;">
                         <span style="color: #95a5a6;">&#9679;</span> <strong>Unseen</strong> &ndash; Not yet studied<br>
                         <span style="color: #ffd93d;">&#9679;</span> <strong>Learning</strong> &ndash; Review interval under 21 days<br>
                         <span style="color: #6bcf7f;">&#9679;</span> <strong>Mastered</strong> &ndash; Review interval 21+ days
                     </p>
 
-                    <h3 style="color: #667eea; margin-top: 18px; margin-bottom: 6px;">Daily Study</h3>
+                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Daily Study</h3>
                     <p>Each day you&rsquo;ll see cards due for review plus a batch of new cards (default 5 per deck, adjustable in Settings). Once all due cards are done, you can optionally study 5 more.</p>
                 </div>
             </div>
@@ -1935,7 +1946,7 @@
 
             deckList.innerHTML = decks.map(deck => {
                 const dueCount = getDueCount(deck.id);
-                const deckColor = DECK_COLORS[deck.id] || '#667eea';
+                const deckColor = DECK_COLORS[deck.id] || '#005e22';
                 const dueHTML = dueCount > 0
                     ? `<div style="font-size: 2.2em; font-weight: bold; color: ${deckColor}; line-height: 1;">${dueCount}</div>
                        <div style="font-size: 0.75em; color: #888;">due today</div>`
@@ -2856,7 +2867,7 @@
             if (studyQueue.length === 0) {
                 document.getElementById('flashcardContainer').innerHTML = `
                     <div style="text-align: center; padding: 40px;">
-                        <h2 style="color: #667eea;">🎉 All done for today!</h2>
+                        <h2 style="color: #005e22;">🎉 All done for today!</h2>
                         <p style="color: #666; margin-top: 20px;">Great work! Come back tomorrow for more reviews.</p>
                         <button class="btn" onclick="backToDecks()">Back to Decks</button>
                     </div>

@@ -1,12 +1,18 @@
 # Cakebread Science - Version History
 
-## [1.1.0] - TBD
-### 🔄 In Development
+## [2.0.0] - 2026-03-10
+### Visual Design Overhaul — Lok
 
-#### Updates Coming
-- Clean up debug logging
-- Security audit for production release
-- Version tracking system implemented
+#### Changed
+- Complete restyle to "Lok" design system: cream `#eeeae0` background, jet black `#111` ink, forest green `#005e22` accent
+- Replaced purple gradient theme (`#667eea`/`#764ba2`) sitewide
+- Fonts: Barlow Condensed 900 for all headings, Barlow 400/600 for body
+- Zero border-radius throughout; flat offset box-shadows (`3px 3px 0 #111`)
+- Unequal-width stripe motif on hero cards and header bands
+- Subject accent colours corrected: Maths `#2255cc`, Biology `#005e22`, Chemistry `#c8001e`, Physics `#d08000`
+- All worksheet `theme-color` meta tags updated to match subject colour
+- Elevenstudents index, Flashcards app, interactive tools, specification pages all updated
+- Deleted style-test prototyping folder
 
 ---
 
