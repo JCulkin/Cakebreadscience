@@ -157,7 +157,7 @@ header h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0;
+    padding: 9px 0;
     color: #005e22;
     text-decoration: none;
     font-size: 13px;
@@ -171,7 +171,7 @@ header h1 {
 .resource-item a:hover { color: var(--ink); }
 
 .spec-text {
-    font-size: 10px;
+    font-size: 11px;
     color: #888;
     background: #eeeae0;
     padding: 2px 7px;

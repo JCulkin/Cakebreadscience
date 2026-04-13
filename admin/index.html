@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Console — Cakebread Science</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: #0f1117;
+            color: #e8e8e8;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 24px;
+            background: #1a1d26;
+            border-bottom: 2px solid #005e22;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .topbar-back {
+            color: #7ec898;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .topbar-back:hover { color: #b4e8c4; }
+
+        .topbar h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 1px;
+            flex: 1;
+        }
+
+        .topbar h1 span { color: #7ec898; }
+
+        #auth-status {
+            font-size: 13px;
+            color: #888;
+        }
+
+        /* Access denied screen */
+        #access-denied {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            gap: 16px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        #access-denied .icon { font-size: 64px; }
+        #access-denied h2 { font-size: 28px; color: #e74c3c; }
+        #access-denied p { color: #888; max-width: 400px; }
+
+        /* Loading screen */
+        #loading-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* Main console */
+        #console {
+            display: none;
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #2a2d36;
+        }
+
+        .tab-btn {
+            padding: 10px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            color: #888;
+            font-family: 'Barlow', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .tab-btn:hover { color: #ccc; }
+        .tab-btn.active { color: #7ec898; border-bottom-color: #7ec898; }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Toolbar for flashcard tab */
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: #2a2d36;
+            border: 1px solid #3a3d46;
+            border-radius: 6px;
+            color: #e8e8e8;
+            font-family: 'Barlow', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .action-btn:hover { background: #3a3d46; border-color: #4a4d56; }
+
+        /* Users table */
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: #1a1d26;
+            color: #7ec898;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #2a2d36;
+        }
+
+        .users-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #1e2030;
+        }
+
+        .users-table tr:hover td { background: #1a1d26; }
+
+        .user-name { font-weight: 600; color: #fff; }
+        .user-email { font-size: 12px; color: #666; }
+
+        .stat-studied { color: #7ec898; font-weight: 600; }
+        .stat-learning { color: #f0a500; font-weight: 600; }
+        .stat-mastered { color: #4ec9b0; font-weight: 600; }
+
+        .last-access { color: #888; font-size: 13px; }
+
+        /* Spec progress cards */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .spec-card {
+            background: #1a1d26;
+            border: 1px solid #2a2d36;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .spec-card-header { margin-bottom: 14px; }
+        .spec-card-name { font-size: 16px; font-weight: 600; color: #fff; }
+        .spec-card-email { font-size: 12px; color: #666; margin-top: 2px; }
+
+        .spec-subject { margin-bottom: 10px; }
+
+        .spec-subject-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #ccc;
+        }
+
+        .spec-bar {
+            height: 6px;
+            background: #2a2d36;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .spec-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
+
+        .bar-bio { background: #2f7d4b; }
+        .bar-chem { background: #2b5f8e; }
+        .bar-phys { background: #b06a19; }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .badge-count {
+            display: inline-block;
+            background: #005e22;
+            color: #7ec898;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        #restore-file-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <a href="../index.html" class="topbar-back">← Back to Site</a>
+        <h1>⚙️ Admin <span>Console</span></h1>
+        <span id="auth-status">Checking access...</span>
+    </div>
+
+    <div id="loading-screen">Checking authorisation...</div>
+
+    <div id="access-denied">
+        <div class="icon">🚫</div>
+        <h2>Access Denied</h2>
+        <p>This admin console is restricted to authorised accounts. Please sign in with an authorised email address via the Flashcards or Spec Tracker pages.</p>
+        <a href="../index.html" style="color:#7ec898; margin-top:8px;">← Return to site</a>
+    </div>
+
+    <div id="console">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('flashcard-users')">👥 Flashcard Users</button>
+            <button class="tab-btn" onclick="switchTab('spec-progress')">📋 Spec Progress</button>
+        </div>
+
+        <!-- Flashcard Users Tab -->
+        <div id="tab-flashcard-users" class="tab-panel active">
+            <div class="toolbar">
+                <button class="action-btn" onclick="loadFlashcardUsers()">🔄 Refresh</button>
+                <button class="action-btn" onclick="exportAllData()">💾 Export Backup</button>
+                <button class="action-btn" onclick="document.getElementById('restore-file-input').click()">📂 Restore Backup</button>
+                <input type="file" id="restore-file-input" accept=".json" onchange="restoreFromFile(this)">
+            </div>
+            <div id="flashcard-users-content">
+                <div class="empty-state">Click Refresh to load users.</div>
+            </div>
+        </div>
+
+        <!-- Spec Progress Tab -->
+        <div id="tab-spec-progress" class="tab-panel">
+            <div class="toolbar">
+                <button class="action-btn" onclick="loadSpecProgress()">🔄 Refresh</button>
+            </div>
+            <div id="spec-progress-content">
+                <div class="empty-state">Click Refresh to load spec progress.</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/admin-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+    <script>
+        const ADMIN_EMAILS = window.ADMIN_EMAILS;
+
+        let db = null;
+        let currentUser = null;
+
+        firebase.initializeApp(window.firebaseConfig);
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged((user) => {
+            document.getElementById('loading-screen').style.display = 'none';
+
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                currentUser = user;
+                db = firebase.firestore();
+                document.getElementById('auth-status').textContent = user.email;
+                document.getElementById('console').style.display = 'block';
+                loadFlashcardUsers();
+            } else if (user) {
+                document.getElementById('auth-status').textContent = user.email + ' (no access)';
+                document.getElementById('access-denied').style.display = 'flex';
+            } else {
+                document.getElementById('auth-status').textContent = 'Not signed in';
+                document.getElementById('access-denied').style.display = 'flex';
+            }
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', btn.getAttribute('onclick').includes(tabId));
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.toggle('active', panel.id === 'tab-' + tabId);
+            });
+        }
+
+        function formatLastAccess(data) {
+            // Spec tracker sets lastAccess as ISO string
+            if (data.lastAccess) {
+                const d = new Date(data.lastAccess);
+                if (!isNaN(d)) {
+                    const diffMs = Date.now() - d;
+                    const mins = Math.floor(diffMs / 60000);
+                    const hrs = Math.floor(diffMs / 3600000);
+                    const days = Math.floor(diffMs / 86400000);
+                    if (mins < 1) return 'Just now';
+                    if (mins < 60) return mins + 'm ago';
+                    if (hrs < 24) return hrs + 'h ago';
+                    if (days < 7) return days + 'd ago';
+                    return d.toLocaleDateString();
+                }
+            }
+            // Flashcard tracker sets settings.lastStudyDate as datestring e.g. "Wed Mar 11 2026"
+            if (data.settings && data.settings.lastStudyDate) {
+                const d = new Date(data.settings.lastStudyDate);
+                if (!isNaN(d)) {
+                    const diffMs = Date.now() - d;
+                    const days = Math.floor(diffMs / 86400000);
+                    if (days === 0) return 'Today';
+                    if (days === 1) return 'Yesterday';
+                    if (days < 7) return days + 'd ago';
+                    return d.toLocaleDateString();
+                }
+            }
+            return 'Never';
+        }
+
+        async function loadFlashcardUsers() {
+            const content = document.getElementById('flashcard-users-content');
+            content.innerHTML = '<div class="empty-state">Loading users...</div>';
+
+            try {
+                const usersSnap = await db.collection('users').get();
+                const users = [];
+
+                usersSnap.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const progress = data.progress || {};
+
+                    let totalStudied = 0, totalMastered = 0, totalLearning = 0;
+                    Object.values(progress).forEach(p => {
+                        if (!p || typeof p !== 'object') return;
+                        if ((p.repetitions || 0) > 0) {
+                            totalStudied++;
+                            if ((p.interval || 0) >= 21) totalMastered++;
+                            else totalLearning++;
+                        }
+                    });
+
+                    users.push({
+                        name: data.displayName || data.email || 'Unknown',
+                        email: data.email || '',
+                        totalStudied, totalMastered, totalLearning,
+                        lastAccess: formatLastAccess(data)
+                    });
+                });
+
+                users.sort((a, b) => b.totalStudied - a.totalStudied);
+
+                if (users.length === 0) {
+                    content.innerHTML = '<div class="empty-state">No users found.</div>';
+                    return;
+                }
+
+                let html = `<table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Studied</th>
+                            <th>Learning</th>
+                            <th>Mastered</th>
+                            <th>Last Access</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+                users.forEach(u => {
+                    html += `<tr>
+                        <td>
+                            <div class="user-name">${escHtml(u.name)}</div>
+                            <div class="user-email">${escHtml(u.email)}</div>
+                        </td>
+                        <td class="stat-studied">${u.totalStudied}</td>
+                        <td class="stat-learning">${u.totalLearning}</td>
+                        <td class="stat-mastered">${u.totalMastered}</td>
+                        <td class="last-access">${u.lastAccess}</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table>';
+                content.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                content.innerHTML = '<div class="empty-state" style="color:#e74c3c;">Error loading users. Check Firestore rules.</div>';
+            }
+        }
+
+        function calcProgress(subj) {
+            if (!subj) return null;
+            const items = subj.items || {};
+            const total = subj.total || Object.keys(items).length;
+            if (total === 0) return null;
+            const done = Object.values(items).filter(v => v && v.checkbox === true).length;
+            return { done, total, pct: Math.round((done / total) * 100) };
+        }
+
+        async function loadSpecProgress() {
+            const content = document.getElementById('spec-progress-content');
+            content.innerHTML = '<div class="empty-state">Loading spec progress...</div>';
+
+            try {
+                // Load all users first (for name/email)
+                const usersSnap = await db.collection('users').get();
+                const userMap = {};
+                usersSnap.forEach(d => { userMap[d.id] = d.data(); });
+
+                // Read specSubjects from the users collection
+                // (saved there by specifications.js alongside lastAccess)
+                const entries = [];
+                Object.entries(userMap).forEach(([uid, user]) => {
+                    const subjects = user.specSubjects || {};
+                    const bio = calcProgress(subjects.biology);
+                    const chem = calcProgress(subjects.chemistry);
+                    const phys = calcProgress(subjects.physics);
+                    if (!bio && !chem && !phys) return;
+                    entries.push({
+                        name: user.displayName || user.email || 'Unknown',
+                        email: user.email || uid,
+                        bio, chem, phys
+                    });
+                });
+
+                if (entries.length === 0) {
+                    content.innerHTML = '<div class="empty-state">No spec progress found.</div>';
+                    return;
+                }
+
+                entries.sort((a, b) => {
+                    const aTotal = (a.bio ? a.bio.pct : 0) + (a.chem ? a.chem.pct : 0) + (a.phys ? a.phys.pct : 0);
+                    const bTotal = (b.bio ? b.bio.pct : 0) + (b.chem ? b.chem.pct : 0) + (b.phys ? b.phys.pct : 0);
+                    return bTotal - aTotal;
+                });
+
+                const barRow = (label, prog, barClass) => {
+                    if (!prog) return '';
+                    return `<div class="spec-subject">
+                        <div class="spec-subject-label">
+                            <span>${label}</span>
+                            <span>${prog.done}/${prog.total} (${prog.pct}%)</span>
+                        </div>
+                        <div class="spec-bar">
+                            <div class="spec-bar-fill ${barClass}" style="width:${prog.pct}%"></div>
+                        </div>
+                    </div>`;
+                };
+
+                let html = '<div class="spec-grid">';
+                entries.forEach(e => {
+                    html += `<div class="spec-card">
+                        <div class="spec-card-header">
+                            <div class="spec-card-name">${escHtml(e.name)}</div>
+                            <div class="spec-card-email">${escHtml(e.email)}</div>
+                        </div>
+                        ${barRow('🧬 Biology', e.bio, 'bar-bio')}
+                        ${barRow('⚗️ Chemistry', e.chem, 'bar-chem')}
+                        ${barRow('⚛️ Physics', e.phys, 'bar-phys')}
+                    </div>`;
+                });
+                html += '</div>';
+                content.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                content.innerHTML = '<div class="empty-state" style="color:#e74c3c;">Error loading spec progress. Check Firestore rules.</div>';
+            }
+        }
+
+        async function exportAllData() {
+            try {
+                const usersSnap = await db.collection('users').get();
+                const backup = {
+                    exportedAt: new Date().toISOString(),
+                    version: 1,
+                    users: {}
+                };
+                usersSnap.forEach(docSnap => {
+                    backup.users[docSnap.id] = docSnap.data();
+                });
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `flashcards-backup-${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error(err);
+                alert('Export failed. Check browser console.');
+            }
+        }
+
+        function restoreFromFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const backup = JSON.parse(e.target.result);
+                    if (!backup.users || typeof backup.users !== 'object') {
+                        alert('Invalid backup file — no user data found.');
+                        return;
+                    }
+                    const userCount = Object.keys(backup.users).length;
+                    const exportDate = backup.exportedAt ? new Date(backup.exportedAt).toLocaleDateString() : 'unknown date';
+                    if (!confirm(`Restore backup from ${exportDate}?\n\nThis contains ${userCount} user(s) and will overwrite their current data in Firestore.\n\nThis cannot be undone.`)) {
+                        input.value = '';
+                        return;
+                    }
+                    let restored = 0;
+                    for (const [uid, userData] of Object.entries(backup.users)) {
+                        await db.collection('users').doc(uid).set(userData);
+                        restored++;
+                    }
+                    alert(`Restored ${restored} user(s) successfully.`);
+                    loadFlashcardUsers();
+                } catch (err) {
+                    console.error(err);
+                    alert('Restore failed: ' + err.message);
+                }
+                input.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+</html>

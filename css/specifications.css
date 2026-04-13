@@ -82,7 +82,7 @@ body[data-subject="science"] {
     color: var(--ink);
     background: white;
     border: 2px solid var(--ink);
-    padding: 5px 12px;
+    padding: 8px 12px;
     border-radius: 0;
     font-size: 12px;
     font-weight: 700;
@@ -727,9 +727,9 @@ body[data-subject="science"] {
 .progress-rag button {
     border: 1px solid rgba(15, 23, 42, 0.16);
     background: #ffffff;
-    padding: 2px 8px;
+    padding: 5px 10px;
     border-radius: 999px;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     cursor: pointer;
 }
@@ -873,6 +873,38 @@ footer {
         flex-direction: row;
         justify-content: flex-start;
         margin-top: 8px;
+    }
+}
+
+@media (max-width: 400px) {
+    .spec-hero h1 {
+        font-size: 22px;
+    }
+
+    .spec-hero p {
+        font-size: 13px;
+    }
+
+    .spec-shell {
+        padding: 8px 12px 28px;
+    }
+
+    .spec-hero {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hero-right {
+        align-items: flex-start;
+    }
+
+    .topbar-left,
+    .topbar-right {
+        width: 100%;
+    }
+
+    .subject-toc a {
+        padding: 8px 12px;
     }
 }
 

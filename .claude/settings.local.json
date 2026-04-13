@@ -22,7 +22,15 @@
       "Bash(sed -i 's|color: #667eea;|color: #005e22;|g' Flashcards/blob-test.html)",
       "Bash(sed -i 's|border-color: #667eea; color: #667eea;|border-color: #005e22; color: #005e22;|g' Flashcards/blob-test.html)",
       "Bash(sed -i 's|border-color: #667eea; background: #667eea;|border-color: #005e22; background: #005e22;|g' Flashcards/blob-test.html)",
-      "Bash(sed -i 's|style=\"\"font-size:0.85em; font-weight:700; color:#667eea;|style=\"\"font-size:0.85em; font-weight:700; color:#005e22;|g' Flashcards/blob-test.html)"
+      "Bash(sed -i 's|style=\"\"font-size:0.85em; font-weight:700; color:#667eea;|style=\"\"font-size:0.85em; font-weight:700; color:#005e22;|g' Flashcards/blob-test.html)",
+      "Bash(du -sh c:/Users/culki/Desktop/Cakebreadscience/*)",
+      "Bash(grep -r \"theme-color\" /c/Users/culki/Desktop/Cakebreadscience/Flashcards/index.html /c/Users/culki/Desktop/Cakebreadscience/specifications/*.html)",
+      "Bash(grep -h \"Total marks:\" worksheets/biology/*.html)",
+      "Read(//c/Users/culki/Desktop/Cakebreadscience/{sum+=$1; count++} END{print \"Files: \" count \"/**)",
+      "Bash(grep -h \"Total marks:\" worksheets/chemistry/*.html)",
+      "Bash(grep -h \"Total marks:\" worksheets/physics/*.html)",
+      "Bash(mv 2c_photosynthesis.html 2c_plant_nutrition.html)",
+      "Bash(mv 2f_gas_exchange.html 2f_human_gas_exchange.html)"
     ]
   }
 }

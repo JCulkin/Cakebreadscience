@@ -61,21 +61,16 @@
             </div>
 
             <!-- Card 3: Worksheets -->
-            <a href="worksheets/index.html" class="hero-card">
+            <div class="hero-card">
                 <div class="card-stripe"><div class="cs1"></div><div class="cs2"></div><div class="cs3"></div><div class="cs4"></div></div>
                 <div class="card-inner">
                     <div class="hero-icon">📝</div>
                     <h2 class="hero-title">Worksheets</h2>
-                    <div class="card-summary">
-                        <div class="summary-item maths">🧮 Mathematics &mdash; 18 worksheets</div>
-                        <div class="summary-item physics">⚡ Physics &mdash; 50 worksheets</div>
-                        <div class="summary-item chemistry">🧪 Chemistry &mdash; 49 worksheets</div>
-                        <div class="summary-item biology">🧬 Biology &mdash; 12 worksheets</div>
-                        <div class="summary-item cross">🧩 Cross-curricular &mdash; 1 worksheet</div>
-                    </div>
+                    <a href="worksheets/maths.html" class="spec-link">🧮 Maths</a>
+                    <a href="worksheets/science.html" class="spec-link">🔬 Science</a>
+                    <a href="worksheets/cross-curricular.html" class="spec-link">🔗 Cross-Curricular</a>
                 </div>
-                <div class="card-cta">Browse All Worksheets &rarr;</div>
-            </a>
+            </div>
 
             <!-- Right column: Elevenstudents + Useful Websites -->
             <div class="right-col">
@@ -97,6 +92,7 @@
                         <h2 class="hero-title">Useful Websites</h2>
                         <a href="https://www.savemyexams.com/igcse/" target="_blank" class="spec-link">📝 Save My Exams</a>
                         <a href="https://www.physicsandmathstutor.com/" target="_blank" class="spec-link">📐 Physics &amp; Maths Tutor</a>
+                        <a href="https://mathtrainer.ai/" target="_blank" class="spec-link">🧮 Math Trainer AI</a>
                     </div>
                 </div>
 
@@ -111,6 +107,24 @@
     </div>
 
     <footer>Cakebread Science v2.0.0</footer>
+
+    <!-- Admin Console Button (admin emails only) -->
+    <a href="admin/index.html" id="admin-console-btn" style="display:none; position:fixed; top:14px; right:18px; z-index:999; background:#1a1d26; color:#7ec898; border:1px solid #005e22; border-radius:8px; padding:8px 14px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; text-decoration:none; box-shadow:0 2px 10px rgba(0,0,0,0.4);">⚙️ Admin Console</a>
+
+    <script src="js/firebase-config.js"></script>
+    <script src="js/admin-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script>
+        (function() {
+            firebase.initializeApp(window.firebaseConfig);
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user && ADMIN_EMAILS.includes(user.email)) {
+                    document.getElementById('admin-console-btn').style.display = 'inline-block';
+                }
+            });
+        })();
+    </script>
 
 </body>
 </html>

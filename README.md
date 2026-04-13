@@ -9,19 +9,21 @@ A collection of educational websites for IGCSE Edexcel students, featuring works
 This repository contains **two separate educational sites**:
 
 ### 1. **Main Site** (Root Directory)
-The primary IGCSE Edexcel resources site with a focus on printable worksheets (50 total) and curriculum tools.
+The primary IGCSE Edexcel resources site with printable worksheets (172 total) and curriculum tools.
 
 **Homepage:** `index.html`
 
 #### Folders:
 - **`worksheets/`** - Subject-organized printable worksheets
-  - `biology/`, `chemistry/`, `physics/`, `maths/`
+  - `biology/` (50), `chemistry/` (51), `physics/` (50), `maths/` (19), cross-curricular (2)
   - Naming: `[section].[subsection]_[topic].html`
   - Print-optimized A4 layout
 
 - **`specifications/`** - Interactive curriculum browsers
   - `maths.html` - Mathematics specification navigator
-  - `science.html` - Biology, Chemistry, Physics specification navigator
+  - `science.html` - Integrated Biology/Chemistry/Physics navigator
+  - `biology.html`, `chemistry.html`, `physics.html` - Individual subject navigators
+  - All support per-user progress tracking synced to Firebase
 
 - **`Flashcards/`** - Spaced repetition flashcard app
   - Firebase authentication (Google sign-in)
@@ -33,12 +35,24 @@ The primary IGCSE Edexcel resources site with a focus on printable worksheets (5
 - **`interactive/`** - Games and interactive tools
   - `angle-rules/` - Geometry angle identification game
   - `organisms/` - Biology organisms classification tool
+  - `genetics-game/` - Genetics simulator (new)
+  - `food-webs/` - Food web builder (WIP)
+  - `ecological-pyramids/` - Ecological pyramids tool
+  - `quadrilaterals/` - Quadrilateral properties tool
+
+- **`admin/`** - Admin console (restricted access)
+  - Firebase-authenticated; visible only to authorized admin emails
+  - Flashcard Users tab: user stats (studied, learning, mastered, last access)
+  - Spec Progress tab: per-student specification tracking with progress bars
+  - Export/restore data backup tools
 
 - **`templates/`** - HTML/CSS templates for creating new worksheets
 
 - **`css/`** - Shared stylesheets
   - `worksheet.css` - Base worksheet styles
   - `maths.css`, `biology.css`, `chemistry.css`, `physics.css` - Subject-specific color overrides
+  - `index.css` - Homepage and navigation styles
+  - `specifications.css` - Specification tracker styles
 
 ### 2. **Elevenstudents** (Separate Site)
 A companion educational site with additional resources and games.
@@ -48,7 +62,7 @@ A companion educational site with additional resources and games.
 
 #### Folders:
 - **`Flashcards/`** - Additional flashcard decks
-- **`Games/`** - Educational games
+- **`Games/`** - Educational games with Firebase leaderboards
 - **`Maths/`** - Mathematics resources
 - **`Simulations/`** - Science simulations
 - **`Secret/`** - Hidden/bonus content
@@ -142,15 +156,29 @@ interactive/
 
 ### Tech Stack
 - **Auth:** Firebase Authentication (Google)
-- **Database:** Cloud Firestore
+- **Database:** Cloud Firestore + Realtime Database
 - **Libraries:** JSZip, sql.js (for .apkg parsing), Chart.js (for progress charts)
+
+---
+
+## 🔐 Admin Console (`admin/`)
+
+Access is restricted to authorized emails (configured in `admin/index.html`).
+
+**Features:**
+- View all registered flashcard users and their study statistics
+- Monitor specification progress per student/subject
+- Export Firebase data backups (JSON)
+- Restore data from backups
+
+**Access:** Admin button appears on homepage only for authorized Google accounts.
 
 ---
 
 ## 🔧 Development Notes
 
 ### Git
-Git is initialized; commit changes as needed.
+Git is initialized; commit changes as needed. Line endings may vary (Windows CRLF / Unix LF) — safe to ignore.
 
 ### Python Scripts
 - `interactive/organisms/download_organism_images.py` - Generates `organisms_data.js` from image files
@@ -160,12 +188,26 @@ Git is initialized; commit changes as needed.
 - Requires JavaScript enabled
 - Print stylesheets optimized for Chrome/Edge
 
+### Admin Emails
+Admin access is currently hardcoded in two places:
+- `index.html` (homepage admin button visibility)
+- `admin/index.html` (admin console auth gate)
+
+Keep these in sync when adding/removing admin users.
+
 ---
 
 ## 📊 Recent Updates
 
+### 2026-03-12 - v2.1.0 Admin Console & Refactor
+- Added `admin/` folder with full admin console
+- Moved user management out of Flashcards app into admin console
+- Admin button on homepage: only visible to authorized accounts
+- Specification tracker now syncs `specSubjects` progress summary to Firebase
+- Fixed duplicate DOCTYPE declaration in `specifications/science.html`
+
 ### 2026-03-10 - v2.0.0 Design Overhaul (Lok)
-- Complete visual restyle to "Lok" design system (retro East German constructivist aesthetic)
+- Complete visual restyle to "Lok" design system (retro constructivist aesthetic)
 - Cream background, jet black ink, forest green accent throughout
 - Barlow Condensed 900 headings, zero border-radius, flat offset box-shadows
 - Unequal-width stripe motif on hero cards and page headers
@@ -173,34 +215,29 @@ Git is initialized; commit changes as needed.
 - Subject `theme-color` meta tags corrected per subject (bio/chem/phys/maths)
 - Version bumped to 2.0.0
 
-### 2025-02-12 - Major Reorganization
-- ✅ Restructured into 4 main sections (worksheets, specifications, interactive, Flashcards)
-- ✅ Created new 2x2 hero grid index.html
-- ✅ Updated all CSS paths
-- ✅ Fixed color consistency across site
-
 ### 2025-02-16 - Pet Visual Overhaul
-- ✅ Replaced emoji decorations with hand-drawn SVG
-- ✅ Added animated backgrounds (clouds, stars, moon)
-- ✅ Enhanced floors with SVG textures
-- ✅ Added blob shadow and master stage sparkles
-- ✅ Improved book accessory SVG
+- Replaced emoji decorations with hand-drawn SVG
+- Added animated backgrounds (clouds, stars, moon)
+- Enhanced floors with SVG textures
+- Added blob shadow and master stage sparkles
 
-### 2025-02-16 - Elevenstudents Integration
-- ✅ Added Elevenstudents folder as separate site
-- ✅ Cleaned up legacy files (old_gallery.html)
-- ✅ Created comprehensive documentation
+### 2025-02-12 - Major Reorganization
+- Restructured into 4 main sections (worksheets, specifications, interactive, Flashcards)
+- Created new 2x2 hero grid index.html
+- Updated all CSS paths
 
 ---
 
 ## 📝 To-Do
 
 ### Immediate
-- [ ] Create backup strategy for Firebase data
+- [ ] Finish Food Web Builder (currently WIP/placeholder)
+- [ ] Decide whether to show/hide WIP tools in main nav
 
 ### Future Enhancements
+- [ ] Create backup strategy for Firebase data
 - [ ] Add more interactive tools
-- [ ] Expand flashcard decks (Math, Economics, etc.)
+- [ ] Expand flashcard decks (Maths, Economics, etc.)
 - [ ] Mobile app version of flashcard system
 - [ ] Collaborative study features
 

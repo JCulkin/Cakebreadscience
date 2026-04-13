@@ -945,8 +945,7 @@
                 <div class="top-buttons">
                     <a href="../index.html" class="top-btn" style="text-decoration: none; margin-right: auto;">← Home</a>
                     <button class="top-btn" onclick="openGuide()">📖 Guide</button>
-                    <button class="top-btn" onclick="openUsers()">👥 Users</button>
-                    <button class="top-btn" onclick="openProgress()">📊 Progress</button>
+<button class="top-btn" onclick="openProgress()">📊 Progress</button>
                     <button class="top-btn" onclick="openSettings()">⚙️ Settings</button>
                 </div>
                 <div class="user-info" id="userInfo"></div>
@@ -1335,23 +1334,7 @@
                 </div>
             </div>
         </div>
-        <!-- Users Screen -->
-        <div id="users-screen" class="settings-screen">
-            <div class="settings-panel" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-                <h2>👥 All Users</h2>
-                <button class="cancel-settings" onclick="closeUsers()" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 10px 20px;">Close</button>
-                <div style="display: flex; gap: 8px; margin-top: 10px;">
-                    <button class="top-btn" onclick="exportAllData()" style="font-size: 0.8em;">💾 Export Backup</button>
-                    <button class="top-btn" onclick="document.getElementById('restoreFileInput').click()" style="font-size: 0.8em;">📂 Restore Backup</button>
-                    <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="restoreFromFile(this)">
-                </div>
-                <div id="usersContent" style="margin-top: 20px;">
-                    <div class="loading">Loading users...</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Store Modal -->
+<!-- Store Modal -->
         <div id="store-screen" class="settings-screen">
             <div class="settings-panel" style="max-width: 520px; max-height: 90vh; overflow-y: auto;">
                 <h2>🏪 Store</h2>
@@ -2218,112 +2201,6 @@
             if (deckChart) deckChart.destroy();
         }
 
-        // Users page
-        window.openUsers = async function() {
-            // Restrict access to authorized user only
-            if (!currentUser || currentUser.email !== 'culkincakebread@gmail.com') {
-                alert('Access denied. This feature is only available to authorized users.');
-                return;
-            }
-
-            const screen = document.getElementById('users-screen');
-            const content = document.getElementById('usersContent');
-            screen.style.display = 'flex';
-            content.innerHTML = '<div class="loading">Loading users...</div>';
-
-            try {
-                const usersSnap = await getDocs(collection(db, 'users'));
-                const users = [];
-
-                usersSnap.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const progress = data.progress || {};
-
-                    // Compute stats from progress data
-                    let totalStudied = 0, totalMastered = 0, totalLearning = 0;
-                    const deckBreakdown = {};
-
-                    Object.keys(deckMetadata).forEach(deckId => {
-                        let mastered = 0, learning = 0;
-                        const cards = deckCards[deckId] || [];
-                        cards.forEach(card => {
-                            const cardKey = `${deckId}_${card.id}`;
-                            const p = progress[cardKey];
-                            if (!p || p.repetitions === 0) return;
-                            if (p.interval >= 21) mastered++;
-                            else learning++;
-                        });
-                        deckBreakdown[deckId] = { learning, mastered };
-                        totalLearning += learning;
-                        totalMastered += mastered;
-                    });
-
-                    totalStudied = totalLearning + totalMastered;
-
-                    // Compute badges for this user
-                    const { badges } = computeBadges(progress);
-
-                    users.push({
-                        name: data.displayName || data.email || 'Unknown',
-                        email: data.email || '',
-                        totalStudied,
-                        totalLearning,
-                        totalMastered,
-                        deckBreakdown,
-                        badges
-                    });
-                });
-
-                // Sort by most studied
-                users.sort((a, b) => b.totalStudied - a.totalStudied);
-
-                if (users.length === 0) {
-                    content.innerHTML = '<p style="color: #888; text-align: center;">No users found.</p>';
-                    return;
-                }
-
-                let html = `<table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Studied</th>
-                            <th>Learning</th>
-                            <th>Mastered</th>
-                            <th>Badges</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
-
-                users.forEach(u => {
-                    const badgesHTML = u.badges.map(b =>
-                        `<span class="mini-badge ${LEVEL_CLASSES[b.level - 1]}">${b.icon}</span>`
-                    ).join('') || '<span style="color:#ccc;">—</span>';
-
-                    html += `<tr>
-                        <td>
-                            <div style="font-weight: 600;">${u.name}</div>
-                            <div style="font-size: 0.8em; color: #aaa;">${u.email}</div>
-                        </td>
-                        <td>${u.totalStudied}</td>
-                        <td>${u.totalLearning}</td>
-                        <td>${u.totalMastered}</td>
-                        <td><div class="user-badges-cell">${badgesHTML}</div></td>
-                    </tr>`;
-                });
-
-                html += '</tbody></table>';
-                content.innerHTML = html;
-
-            } catch (error) {
-                console.error('Error loading users:', error);
-                content.innerHTML = `<p style="color: #e74c3c; text-align: center;">Could not load users. You may need to update Firestore rules to allow reading all user profiles.</p>`;
-            }
-        }
-
-        window.closeUsers = function() {
-            document.getElementById('users-screen').style.display = 'none';
-        }
-
         // === STORE, FEEDING & HOUSE SYSTEM ===
 
         const STORE_ITEMS = {
@@ -2688,83 +2565,6 @@
             }
         }
 
-        // Export all user data as JSON backup
-        window.exportAllData = async function() {
-            try {
-                const usersSnap = await getDocs(collection(db, 'users'));
-                const backup = {
-                    exportedAt: new Date().toISOString(),
-                    version: 1,
-                    users: {}
-                };
-
-                usersSnap.forEach(docSnap => {
-                    backup.users[docSnap.id] = docSnap.data();
-                });
-
-                const json = JSON.stringify(backup, null, 2);
-                const blob = new Blob([json], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                const date = new Date().toISOString().slice(0, 10);
-                a.download = `flashcards-backup-${date}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-            } catch (error) {
-                console.error('Export failed:', error);
-                alert('Export failed. Check browser console for details.');
-            }
-        }
-
-        // Restore user data from a JSON backup file
-        window.restoreFromFile = function(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const backup = JSON.parse(e.target.result);
-
-                    if (!backup.users || typeof backup.users !== 'object') {
-                        alert('Invalid backup file — no user data found.');
-                        return;
-                    }
-
-                    const userCount = Object.keys(backup.users).length;
-                    const exportDate = backup.exportedAt ? new Date(backup.exportedAt).toLocaleDateString() : 'unknown date';
-
-                    if (!confirm(`Restore backup from ${exportDate}?\n\nThis contains ${userCount} user(s) and will overwrite their current data in Firestore.\n\nThis cannot be undone.`)) {
-                        input.value = '';
-                        return;
-                    }
-
-                    let restored = 0;
-                    for (const [uid, userData] of Object.entries(backup.users)) {
-                        await setDoc(doc(db, 'users', uid), userData);
-                        restored++;
-                    }
-
-                    alert(`Restored ${restored} user(s) successfully.`);
-
-                    // Reload current user's data if they were in the backup
-                    if (currentUser && backup.users[currentUser.uid]) {
-                        const userData = backup.users[currentUser.uid];
-                        userProgress = userData.progress || {};
-                        settings = userData.settings || { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
-                        loadDecks();
-                    }
-
-                } catch (error) {
-                    console.error('Restore failed:', error);
-                    alert('Restore failed: ' + error.message);
-                }
-                input.value = '';
-            };
-            reader.readAsText(file);
-        }
-
         window.saveSettings = async function() {
             const newCardsInput = document.getElementById('newCardsPerDay');
             settings.newCardsPerDay = parseInt(newCardsInput.value) || 5;
@@ -3012,12 +2812,7 @@ updateDeckProgress(currentDeck);
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
-                // Show/hide Users button based on email authorization
-                const usersBtn = document.querySelector('button[onclick="openUsers()"]');
-                if (usersBtn) {
-                    usersBtn.style.display = user.email === 'culkincakebread@gmail.com' ? 'block' : 'none';
-                }
-                initializeUser().then(() => {
+initializeUser().then(() => {
                     showScreen('deck-selector');
                     loadDecks();
                 });

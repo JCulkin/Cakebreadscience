@@ -400,10 +400,11 @@
                 updatedAt
             }, { merge: true });
             
-            // Update last access timestamp in users collection
+            // Update last access + spec progress summary in users collection
             const userRef = db.collection("users").doc(currentUser.uid);
             await userRef.set({
-                lastAccess: new Date().toISOString()
+                lastAccess: new Date().toISOString(),
+                specSubjects: remoteSubjects
             }, { merge: true });
         } catch (error) {
             console.error("Failed to save remote progress", error);

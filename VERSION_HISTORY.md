@@ -1,5 +1,25 @@
 # Cakebread Science - Version History
 
+## [2.1.0] - 2026-03-12
+### Admin Console & Refactor
+
+#### Added
+- `admin/index.html` — full admin console restricted to authorized Google accounts
+  - Flashcard Users tab: study stats per user (studied, learning, mastered, last access)
+  - Spec Progress tab: per-student specification progress with subject breakdowns
+  - Export/restore JSON backup tools
+- Admin button on main homepage (visible only to admin emails)
+- Genetics simulator added to interactive tools
+
+#### Changed
+- Moved user management out of Flashcards app into admin console (separation of concerns)
+- Specification tracker now syncs `specSubjects` progress summary to Firebase on save
+
+#### Fixed
+- Duplicate `<!DOCTYPE html>` declaration in `specifications/science.html`
+
+---
+
 ## [2.0.0] - 2026-03-10
 ### Visual Design Overhaul — Lok
 

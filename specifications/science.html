@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -26,8 +25,7 @@
                 <a href="physics.html" class="topbar-link subject-phys">Physics</a>
             </div>
             <div class="topbar-right">
-                <button class="auth-button" id="users-button" style="display: none; margin-right: 10px;">👥 Users</button>
-                <span class="auth-status" data-auth-status>Not signed in</span>
+<span class="auth-status" data-auth-status>Not signed in</span>
                 <button class="auth-button" data-auth-login>Sign in with Google</button>
                 <button class="auth-button secondary hidden" data-auth-logout>Sign out</button>
             </div>
@@ -81,20 +79,7 @@
         </section>
     </div>
 
-    <!-- Users Modal -->
-    <div id="users-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; align-items: center; justify-content: center; padding: 20px;">
-        <div style="background: white; border-radius: 12px; padding: 30px; max-width: 1200px; width: 100%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <h2 style="margin: 0; color: #294f7a; font-size: 24px;">👥 User Progress Overview</h2>
-                <button id="close-users-modal" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666;">&times;</button>
-            </div>
-            <div id="users-content" style="color: #333;">
-                <div style="text-align: center; padding: 40px;">Loading users...</div>
-            </div>
-        </div>
-    </div>
-
-    <style>
+<style>
         .science-subjects {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -253,7 +238,6 @@
             const waitForFirebase = () => {
                 if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
                     initializeProgressCards();
-                    initializeUsers();
                 } else {
                     setTimeout(waitForFirebase, 100);
                 }
@@ -286,133 +270,6 @@
                 }
             }
 
-            function initializeUsers() {
-                const usersButton = document.getElementById('users-button');
-                const usersModal = document.getElementById('users-modal');
-                const usersContent = document.getElementById('users-content');
-                const closeButton = document.getElementById('close-users-modal');
-                const authorizedEmail = 'culkincakebread@gmail.com';
-
-                auth.onAuthStateChanged((user) => {
-                    if (user && user.email === authorizedEmail) {
-                        usersButton.style.display = 'inline-block';
-                    } else {
-                        usersButton.style.display = 'none';
-                    }
-                });
-
-                usersButton.addEventListener('click', async () => {
-                    if (!currentUser || currentUser.email !== authorizedEmail) {
-                        alert('Access denied.');
-                        return;
-                    }
-                    usersModal.style.display = 'flex';
-                    usersContent.innerHTML = '<div style="text-align: center; padding: 40px;">Loading users...</div>';
-
-                    try {
-                        const usersSnap = await db.collection('users').get();
-                        const users = [];
-
-                        usersSnap.forEach(doc => {
-                            const data = doc.data();
-                            
-                            // Count completion items from progress field
-                            const progress = data.progress || {};
-                            let totalItems = 0;
-                            let bioItems = 0;
-                            let chemItems = 0;
-                            let physItems = 0;
-
-                            Object.keys(progress).forEach(key => {
-                                if (progress[key] && typeof progress[key] === 'object' && progress[key].status === true) {
-                                    totalItems++;
-                                    // Try to categorize by key prefix
-                                    if (key.startsWith('flashcards_')) {
-                                        // Skip flashcard progress, focus on spec progress
-                                    }
-                                }
-                            });
-
-                            // Format last access date
-                            let lastAccessText = 'Never';
-                            if (data.lastAccess) {
-                                const lastAccessDate = new Date(data.lastAccess);
-                                const now = new Date();
-                                const diffMs = now - lastAccessDate;
-                                const diffMins = Math.floor(diffMs / 60000);
-                                const diffHours = Math.floor(diffMs / 3600000);
-                                const diffDays = Math.floor(diffMs / 86400000);
-
-                                if (diffMins < 1) {
-                                    lastAccessText = 'Just now';
-                                } else if (diffMins < 60) {
-                                    lastAccessText = `${diffMins}m ago`;
-                                } else if (diffHours < 24) {
-                                    lastAccessText = `${diffHours}h ago`;
-                                } else if (diffDays < 7) {
-                                    lastAccessText = `${diffDays}d ago`;
-                                } else {
-                                    lastAccessText = lastAccessDate.toLocaleDateString();
-                                }
-                            }
-
-                            users.push({
-                                name: data.displayName || data.email || 'Unknown',
-                                email: data.email || '',
-                                totalItems: totalItems,
-                                lastAccess: lastAccessText
-                            });
-                        });
-
-                        users.sort((a, b) => b.totalItems - a.totalItems);
-
-                        if (users.length === 0) {
-                            usersContent.innerHTML = '<p style="text-align: center; color: #888;">No users found.</p>';
-                            return;
-                        }
-
-                        let html = `<div style="display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">`;
-
-                        users.forEach(u => {
-                            html += `<div style="background: white; border: 1px solid #e0e0e0; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                <div style="margin-bottom: 16px;">
-                                    <h3 style="margin: 0 0 4px 0; font-size: 18px; color: #1f2937;">${u.name}</h3>
-                                    <p style="margin: 0; font-size: 12px; color: #6b7280;">${u.email}</p>
-                                </div>
-                                
-                                <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f0f0f0;">
-                                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-                                        <span style="font-weight: 600; color: #1f2937;">Total Progress</span>
-                                        <span style="font-size: 24px; font-weight: bold; color: #005e22;">${u.totalItems}</span>
-                                    </div>
-                                    <p style="margin: 0; font-size: 12px; color: #9ca3af;">items completed</p>
-                                </div>
-                                
-                                <div style="padding-top: 12px; border-top: 1px solid #f0f0f0;">
-                                    <p style="margin: 0; font-size: 11px; color: #9ca3af;">Last accessed: <strong>${u.lastAccess}</strong></p>
-                                </div>
-                            </div>`;
-                        });
-
-                        html += '</div>';
-                        usersContent.innerHTML = html;
-
-                    } catch (error) {
-                        console.error('Error loading users:', error);
-                        usersContent.innerHTML = `<p style="color: #e74c3c; text-align: center; padding: 40px;">Error loading users. Please try again.</p>`;
-                    }
-                });
-
-                closeButton.addEventListener('click', () => {
-                    usersModal.style.display = 'none';
-                });
-
-                usersModal.addEventListener('click', (e) => {
-                    if (e.target === usersModal) {
-                        usersModal.style.display = 'none';
-                    }
-                });
-            }
         })();
     </script>
 </body>
