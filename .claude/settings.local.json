@@ -30,7 +30,12 @@
       "Bash(grep -h \"Total marks:\" worksheets/chemistry/*.html)",
       "Bash(grep -h \"Total marks:\" worksheets/physics/*.html)",
       "Bash(mv 2c_photosynthesis.html 2c_plant_nutrition.html)",
-      "Bash(mv 2f_gas_exchange.html 2f_human_gas_exchange.html)"
+      "Bash(mv 2f_gas_exchange.html 2f_human_gas_exchange.html)",
+      "PowerShell($item = Get-Item \"c:\\\\Users\\\\culki\\\\Desktop\\\\Cakebreadscience\\\\interactive\\\\chemical-tests\"; $item.PSIsContainer)",
+      "PowerShell(New-Item -ItemType Directory -Path \"c:\\\\Users\\\\culki\\\\Desktop\\\\Cakebreadscience\\\\interactive\\\\chemical-tests-dir\" -Force)",
+      "PowerShell(Move-Item \"c:\\\\Users\\\\culki\\\\Desktop\\\\Cakebreadscience\\\\interactive\\\\chemical-tests\" \"c:\\\\Users\\\\culki\\\\Desktop\\\\Cakebreadscience\\\\interactive\\\\chemical-tests-dir\\\\index.html\")",
+      "PowerShell(Rename-Item \"c:\\\\Users\\\\culki\\\\Desktop\\\\Cakebreadscience\\\\interactive\\\\chemical-tests-dir\" \"chemical-tests\")",
+      "Bash(del \"c:\\\\Users\\\\culki\\\\Desktop\\\\Cakebreadscience\\\\Elevenstudents\\\\Games\\\\iggy-2.html\")"
     ]
   }
 }

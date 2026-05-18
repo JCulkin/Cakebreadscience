@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Mystery Solution</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eaf2f0;
+    --bg-deep: #d9e7e3;
+    --surface: #ffffff;
+    --surface-soft: #f4f7f6;
+    --surface-2: #e2eae7;
+    --border: #c8d4d0;
+    --border-strong: #93a7a1;
+    --ink: #15201d;
+    --ink-soft: #3a4a45;
+    --ink-faded: #6b7975;
+    --accent: #0e6e5a;
+    --accent-soft: #d4ebe4;
+    --accent-deep: #074a3c;
+    --success: #16a34a;
+    --success-soft: #dcfce7;
+    --danger: #b91c1c;
+    --danger-soft: #fee2e2;
+    --warning-soft: #fef3c7;
+    --gold: #b89339;
+    --gold-soft: #f5ecd0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--bg);
+    min-height: 100vh;
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    padding: 24px;
+    background-image:
+      radial-gradient(circle at 0% 0%, rgba(14, 110, 90, 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 100% 100%, rgba(14, 110, 90, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
+  }
+
+  .container { max-width: 1300px; margin: 0 auto; }
+
+  /* ------ HEADER ------ */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  h1 {
+    font-size: 34px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .header-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .mode-pill {
+    background: var(--ink);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .mode-pill.career {
+    background: var(--gold);
+  }
+
+  .career-inline {
+    display: none;
+    align-items: center;
+    gap: 14px;
+    background: var(--gold-soft);
+    border: 1.5px solid var(--gold);
+    border-radius: 999px;
+    padding: 6px 14px 6px 14px;
+  }
+
+  .career-inline-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+
+  .career-inline-rank {
+    font-size: 14px;
+    font-weight: 700;
+    color: #5e4a1c;
+  }
+
+  .career-inline-stage {
+    font-size: 11px;
+    color: #7a6634;
+    margin-top: 1px;
+  }
+
+  .career-inline-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 130px;
+  }
+
+  .career-inline-progress .career-progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(0,0,0,0.1);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .career-inline-progress .career-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), #d6b35e);
+    transition: width 0.4s ease;
+  }
+
+  .career-inline-progress .career-progress-label {
+    font-size: 10px;
+    color: #7a6634;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: right;
+  }
+
+  /* Toggle */
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+  .toggle input { display: none; }
+  .toggle-track {
+    width: 40px; height: 22px;
+    background: var(--surface-2);
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.2s;
+    border: 1.5px solid var(--border);
+  }
+  .toggle-track::after {
+    content: '';
+    position: absolute; top: 2px; left: 2px;
+    width: 15px; height: 15px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle input:checked + .toggle-track { background: var(--accent); border-color: var(--accent); }
+  .toggle input:checked + .toggle-track::after { transform: translateX(18px); }
+  .toggle.active { color: var(--ink); }
+
+  /* ------ MODE SELECT MODAL ------ */
+  .mode-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 30, 28, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+    backdrop-filter: blur(3px);
+  }
+
+  .mode-card {
+    background: white;
+    padding: 36px 36px 32px;
+    max-width: 560px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .mode-card h2 {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .mode-card .sub {
+    font-size: 14px;
+    color: var(--ink-faded);
+    margin-bottom: 22px;
+  }
+
+  .mode-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faded);
+    margin-top: 18px;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mode-section-title:first-child { margin-top: 0; }
+
+  .mode-options { display: flex; flex-direction: column; gap: 10px; }
+
+  .mode-btn {
+    font-family: inherit;
+    background: var(--surface-soft);
+    border: 2px solid var(--border);
+    padding: 16px 18px;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+
+  .mode-btn:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .mode-btn.career-btn {
+    border-color: var(--gold);
+    background: var(--gold-soft);
+  }
+  .mode-btn.career-btn:hover {
+    background: #efe1bd;
+    border-color: #8a6c1f;
+  }
+
+  .mode-btn .label {
+    font-size: 16px;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .mode-btn .desc {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  /* ------ NEW LAYOUT ------
+     Two columns:
+       LEFT  (top)  : Sample stage
+       LEFT  (bot)  : Verdict
+       RIGHT (top)  : Reagents
+       RIGHT (bot)  : Observations
+  */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .col { display: flex; flex-direction: column; gap: 22px; }
+
+  @media (max-width: 950px) {
+    .layout { grid-template-columns: 1fr; }
+    h1 { font-size: 26px; }
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faded);
+    margin-bottom: 12px;
+  }
+
+  /* ------ SAMPLE STAGE ------ */
+  .sample-stage {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 340px;
+    box-shadow: 0 2px 10px rgba(15, 30, 28, 0.05);
+  }
+
+  .stage-svg-wrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 270px;
+  }
+  .stage-svg-wrap svg { filter: drop-shadow(0 4px 12px rgba(0,0,0,0.12)); }
+
+  .sample-label {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  /* Animations */
+  .flame-flicker { animation: flicker 0.15s infinite alternate; transform-origin: center bottom; }
+  @keyframes flicker { 0% { transform: scaleY(1) scaleX(1); opacity: 0.92; } 100% { transform: scaleY(1.06) scaleX(0.96); opacity: 1; } }
+  .flame-flicker-slow { animation: flicker-slow 0.32s infinite alternate; transform-origin: center bottom; }
+  @keyframes flicker-slow { 0% { transform: scaleY(1) translateY(0); opacity: 0.85; } 100% { transform: scaleY(1.04) translateY(-1px); opacity: 1; } }
+  @keyframes bubble { 0% { transform: translateY(0) scale(0.6); opacity: 0; } 20% { opacity: 0.7; } 100% { transform: translateY(-100px) scale(1.2); opacity: 0; } }
+  .bubble { animation: bubble 1.4s ease-in infinite; }
+  .precipitate { animation: cloud-in 0.6s ease-out forwards; opacity: 0; }
+  @keyframes cloud-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+  @keyframes wisp { 0% { transform: translateY(0) translateX(0); opacity: 0; } 30% { opacity: 0.6; } 100% { transform: translateY(-80px) translateX(8px); opacity: 0; } }
+  .wisp { animation: wisp 2.2s ease-out infinite; }
+
+  /* ------ REAGENTS ------ */
+  .reagent-panel {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(15, 30, 28, 0.05);
+  }
+
+  .reagent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .reagent {
+    font-family: inherit;
+    background: var(--surface-soft);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s;
+    position: relative;
+  }
+
+  .reagent:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-1px);
+  }
+
+  .reagent:disabled { opacity: 0.4; cursor: not-allowed; }
+  .reagent.used { background: var(--surface-2); border-color: var(--border); }
+
+  .reagent .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--ink);
+    display: block;
+  }
+
+  .reagent .name {
+    font-size: 12px;
+    color: var(--ink-faded);
+    display: block;
+    margin-top: 3px;
+  }
+
+  .reagent .tick {
+    position: absolute;
+    top: 6px; right: 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--success);
+    opacity: 0;
+  }
+
+  .reagent.used .tick { opacity: 1; }
+
+  /* ------ OBSERVATIONS ------ */
+  .observations-panel {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 10px rgba(15, 30, 28, 0.05);
+  }
+
+  .observations {
+    min-height: 200px;
+    max-height: 340px;
+    overflow-y: auto;
+    padding: 2px 4px;
+  }
+
+  .obs-empty {
+    color: var(--ink-faded);
+    text-align: center;
+    margin-top: 70px;
+    font-size: 14px;
+    font-style: italic;
+  }
+
+  .obs-entry {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    animation: slidein 0.3s ease-out;
+  }
+  .obs-entry:first-child { padding-top: 0; }
+  .obs-entry:last-child { border-bottom: none; padding-bottom: 0; }
+
+  @keyframes slidein { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
+
+  .obs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 5px;
+  }
+
+  .obs-test {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+  }
+
+  .obs-step {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-faded);
+  }
+
+  .obs-body { font-size: 16px; line-height: 1.45; color: var(--ink); }
+  .obs-body b { font-weight: 700; }
+
+  .obs-tip {
+    margin-top: 7px;
+    padding: 7px 11px;
+    background: var(--warning-soft);
+    border-left: 3px solid #d97706;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #78350f;
+    border-radius: 4px;
+  }
+  .obs-tip::before {
+    content: 'Tip · ';
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
+  .obs-body .colour-swatch {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 1.5px solid var(--ink);
+    vertical-align: middle;
+    margin: 0 4px;
+    border-radius: 3px;
+  }
+
+  /* ------ VERDICT ------ */
+  .verdict {
+    background: white;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    padding: 20px 22px;
+    box-shadow: 0 2px 10px rgba(15, 30, 28, 0.05);
+  }
+
+  .verdict h3 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .guess-row {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .guess-row.two { grid-template-columns: 1fr 1fr; }
+  .guess-row.one { grid-template-columns: 1fr; }
+
+  .guess-row label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-faded);
+    margin-bottom: 5px;
+  }
+
+  select {
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 9px 11px;
+    background: white;
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .actions { display: flex; gap: 7px; flex-wrap: wrap; }
+
+  button.primary, button.secondary {
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.1s;
+    border: 1.5px solid var(--ink);
+  }
+  button.primary { background: var(--ink); color: white; }
+  button.primary:hover { background: #000; }
+  button.secondary { background: white; color: var(--ink); }
+  button.secondary:hover { background: var(--surface-soft); }
+
+  .result {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 2px solid;
+    display: none;
+  }
+  .result.show { display: block; animation: slidein 0.3s ease-out; }
+  .result.correct { border-color: var(--success); background: var(--success-soft); }
+  .result.wrong { border-color: var(--danger); background: var(--danger-soft); }
+
+  .result-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 5px;
+  }
+  .result.correct .result-title { color: var(--success); }
+  .result.wrong .result-title { color: var(--danger); }
+  .result-body { font-size: 15px; line-height: 1.45; }
+  .result-body .answer {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    background: white;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+
+  .score-strip {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--ink-faded);
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .score-strip span b { color: var(--ink); font-size: 13px; }
+
+  .flame-result {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: white;
+  }
+
+  /* Promotion modal */
+  .promo-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 30, 28, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .promo-overlay.show { display: flex; }
+
+  .promo-card {
+    background: white;
+    border: 3px solid var(--gold);
+    border-radius: 14px;
+    padding: 36px 40px;
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+    animation: promo-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes promo-pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .promo-eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .promo-title {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+    line-height: 1.1;
+  }
+  .promo-body {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+  .promo-body strong { color: var(--ink); font-weight: 600; }
+
+  .promo-final {
+    background: linear-gradient(135deg, var(--gold-soft), white);
+  }
+</style>
+</head>
+<body>
+
+<!-- MODE SELECT -->
+<div class="mode-overlay" id="mode-overlay">
+  <div class="mode-card">
+    <h2>The Mystery Solution</h2>
+    <div class="sub">Choose how you'd like to play</div>
+
+    <div class="mode-section-title">Career mode</div>
+    <div class="mode-options">
+      <button class="mode-btn career-btn" data-mode="career">
+        <span class="label">🎓 Career mode</span>
+        <span class="desc">Start as a graduate chemist. Solve cases to earn promotions: PhD researcher, senior chemist, principal investigator, professor. Each rank unlocks harder challenges.</span>
+      </button>
+    </div>
+
+    <div class="mode-section-title">Free play</div>
+    <div class="mode-options">
+      <button class="mode-btn" data-mode="cation">
+        <span class="label">Cation only</span>
+        <span class="desc">Identify one cation. Nitrate is the counter-ion. 8 possibilities.</span>
+      </button>
+      <button class="mode-btn" data-mode="anion">
+        <span class="label">Anion only</span>
+        <span class="desc">Identify one anion. Sodium is the counter-ion. 5 possibilities.</span>
+      </button>
+      <button class="mode-btn" data-mode="both">
+        <span class="label">Cation and anion</span>
+        <span class="desc">Both unknown. Identify both.</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PROMOTION MODAL -->
+<div class="promo-overlay" id="promo-overlay">
+  <div class="promo-card" id="promo-card">
+    <div class="promo-eyebrow" id="promo-eyebrow">Promotion</div>
+    <div class="promo-title" id="promo-title"></div>
+    <div class="promo-body" id="promo-body"></div>
+    <button class="primary" id="promo-continue">Continue</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <header>
+    <h1>The Mystery Solution</h1>
+    <div class="header-controls">
+      <span class="mode-pill" id="mode-badge">DOUBLE</span>
+
+      <!-- Career info: rank, stage, progress — all inline in the top bar -->
+      <div class="career-inline" id="career-inline" style="display:none;">
+        <div class="career-inline-text">
+          <span class="career-inline-rank" id="career-rank-line">🎓 Graduate Chemist</span>
+          <span class="career-inline-stage" id="career-stage-line">Stage 1 of 5 — anion identification</span>
+        </div>
+        <div class="career-inline-progress">
+          <div class="career-progress-track">
+            <div class="career-progress-fill" id="career-progress-fill" style="width: 0%"></div>
+          </div>
+          <div class="career-progress-label" id="career-progress-label">0 / 3 cases solved</div>
+        </div>
+      </div>
+
+      <label class="toggle" id="tips-toggle-label">
+        <input type="checkbox" id="tips-toggle">
+        <span class="toggle-track"></span>
+        <span>Tips</span>
+      </label>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- LEFT COLUMN: sample stage + verdict -->
+    <div class="col">
+      <section>
+        <div class="panel-title">Sample</div>
+        <div class="sample-stage">
+          <div class="stage-svg-wrap" id="stage"></div>
+          <div class="sample-label" id="sample-desc">A colourless aqueous solution.</div>
+        </div>
+      </section>
+
+      <section>
+        <div class="verdict">
+          <h3>Submit verdict</h3>
+          <div class="guess-row" id="guess-row"></div>
+          <div class="actions">
+            <button class="primary" id="submit-btn">Submit</button>
+            <button class="secondary" id="new-btn">New case</button>
+            <button class="secondary" id="change-mode-btn">Change mode</button>
+            <button class="secondary" id="reveal-btn">Reveal</button>
+          </div>
+          <div class="result" id="result">
+            <div class="result-title" id="result-title"></div>
+            <div class="result-body" id="result-body"></div>
+          </div>
+          <div class="score-strip">
+            <span>Solved: <b id="score-solved">0</b></span>
+            <span>Attempted: <b id="score-attempts">0</b></span>
+            <span>Tests this case: <b id="score-tests">0</b></span>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT COLUMN: reagents + observations -->
+    <div class="col">
+      <section>
+        <div class="panel-title">Tests</div>
+        <div class="reagent-panel">
+          <div class="reagent-grid" id="reagents"></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="panel-title">Observations</div>
+        <div class="observations-panel">
+          <div class="observations" id="observations">
+            <div class="obs-empty">No tests performed yet. Pick a reagent to begin.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // CHEMISTRY MODEL — Edexcel IGCSE Science (Double Award)
+  // ============================================================
+
+  const CATIONS = {
+    NH4:  { name: 'ammonium',     symbol: 'NH₄⁺',  flame: null,         flameHex: null,      solnTint: '#e8eef0' },
+    Cu2:  { name: 'copper(II)',   symbol: 'Cu²⁺',  flame: 'blue-green', flameHex: '#2dafa0', solnTint: '#a8d0e0' },
+    Fe2:  { name: 'iron(II)',     symbol: 'Fe²⁺',  flame: null,         flameHex: null,      solnTint: '#b8d8b0' },
+    Fe3:  { name: 'iron(III)',    symbol: 'Fe³⁺',  flame: null,         flameHex: null,      solnTint: '#d8b878' },
+    Li:   { name: 'lithium',      symbol: 'Li⁺',   flame: 'red',        flameHex: '#c8341b', solnTint: '#e8eef0' },
+    Na:   { name: 'sodium',       symbol: 'Na⁺',   flame: 'yellow',     flameHex: '#e8c12a', solnTint: '#e8eef0' },
+    K:    { name: 'potassium',    symbol: 'K⁺',    flame: 'lilac',      flameHex: '#a473c8', solnTint: '#e8eef0' },
+    Ca:   { name: 'calcium',      symbol: 'Ca²⁺',  flame: 'orange-red', flameHex: '#e0651c', solnTint: '#e8eef0' }
+  };
+
+  const ANIONS = {
+    Cl:   { name: 'chloride',  symbol: 'Cl⁻'  },
+    Br:   { name: 'bromide',   symbol: 'Br⁻'  },
+    I:    { name: 'iodide',    symbol: 'I⁻'   },
+    SO4:  { name: 'sulfate',   symbol: 'SO₄²⁻' },
+    CO3:  { name: 'carbonate', symbol: 'CO₃²⁻' }
+  };
+
+  function isSoluble(catKey, anKey) {
+    if (catKey === 'Na' || catKey === 'K' || catKey === 'NH4') return true;
+    if (anKey === 'CO3') return false;
+    if (anKey === 'SO4' && catKey === 'Ca') return false;
+    return true;
+  }
+
+  // 'tests' is which kind of ion this test informs on.
+  // Cation tests: NaOH precipitate, NaOH excess+warm for ammonium, flame test.
+  // Anion tests: AgNO₃ for halides, BaCl₂ for sulfate, HCl for carbonate.
+  const REAGENTS = [
+    { key: 'NaOH-little', formula: 'NaOH (a few drops)',  name: 'sodium hydroxide solution',  tests: 'cation' },
+    { key: 'NaOH-excess', formula: 'NaOH excess + warm',  name: 'excess NaOH, warmed',        tests: 'cation' },
+    { key: 'flame',       formula: 'flame test',          name: 'nichrome wire in blue flame', tests: 'cation' },
+    { key: 'AgNO3',       formula: 'HNO₃ then AgNO₃',     name: 'acidified silver nitrate',   tests: 'anion'  },
+    { key: 'BaCl2',       formula: 'HCl then BaCl₂',      name: 'acidified barium chloride',  tests: 'anion'  },
+    { key: 'HCl',         formula: 'dilute HCl',          name: 'dilute hydrochloric acid',   tests: 'anion'  }
+  ];
+
+  function performTest(reagent, cat, an) {
+    if (reagent === 'NaOH-little') {
+      switch (cat) {
+        case 'Cu2': return { test: 'NaOH (few drops)', obs: 'A <b>blue</b> precipitate forms.', tip: 'Blue precipitate with NaOH indicates Cu²⁺ (copper(II) hydroxide).', swatch: '#3a7ad6', visual: { kind: 'vial', tint: '#a8d0e0', precip: '#3a7ad6' } };
+        case 'Fe2': return { test: 'NaOH (few drops)', obs: 'A <b>green</b> precipitate forms.', tip: 'Dirty green precipitate with NaOH indicates Fe²⁺ (iron(II) hydroxide).', swatch: '#4a7a4a', visual: { kind: 'vial', tint: '#b8d8b0', precip: '#4a7a4a' } };
+        case 'Fe3': return { test: 'NaOH (few drops)', obs: 'A <b>red-brown</b> precipitate forms.', tip: 'Red-brown precipitate with NaOH indicates Fe³⁺ (iron(III) hydroxide).', swatch: '#8b3a1a', visual: { kind: 'vial', tint: '#d8b878', precip: '#8b3a1a' } };
+        case 'NH4': return { test: 'NaOH (few drops)', obs: 'No precipitate. Solution remains clear.', tip: 'No precipitate could mean NH₄⁺, Na⁺, K⁺, Li⁺ or Ca²⁺ — try warming with excess NaOH to test for ammonium.', swatch: null, visual: { kind: 'vial' } };
+        default:    return { test: 'NaOH (few drops)', obs: 'No precipitate. Solution remains clear.', tip: 'No precipitate with NaOH rules out Cu²⁺, Fe²⁺ and Fe³⁺.', swatch: null, visual: { kind: 'vial' } };
+      }
+    }
+
+    if (reagent === 'NaOH-excess') {
+      if (cat === 'NH4') {
+        return { test: 'NaOH excess, warmed', obs: 'A pungent gas is evolved. Damp red litmus paper turns <b>blue</b>.', tip: 'Gas that turns damp red litmus blue is ammonia (NH₃) — confirms NH₄⁺.', swatch: '#cfd6a8', visual: { kind: 'gas', vapour: '#cfd6a8' } };
+      }
+      switch (cat) {
+        case 'Cu2': return { test: 'NaOH excess, warmed', obs: 'Blue precipitate (as before). No gas evolved.', tip: null, swatch: '#3a7ad6', visual: { kind: 'vial', tint: '#a8d0e0', precip: '#3a7ad6' } };
+        case 'Fe2': return { test: 'NaOH excess, warmed', obs: 'Green precipitate (as before). No gas evolved.', tip: null, swatch: '#4a7a4a', visual: { kind: 'vial', tint: '#b8d8b0', precip: '#4a7a4a' } };
+        case 'Fe3': return { test: 'NaOH excess, warmed', obs: 'Red-brown precipitate (as before). No gas evolved.', tip: null, swatch: '#8b3a1a', visual: { kind: 'vial', tint: '#d8b878', precip: '#8b3a1a' } };
+        default:    return { test: 'NaOH excess, warmed', obs: 'No precipitate, no gas evolved.', tip: 'No ammonia gas rules out NH₄⁺.', swatch: null, visual: { kind: 'vial' } };
+      }
+    }
+
+    if (reagent === 'AgNO3') {
+      switch (an) {
+        case 'Cl': return { test: 'Acidified AgNO₃', obs: 'A <b>white</b> precipitate forms.', tip: 'White precipitate with silver nitrate is silver chloride — confirms Cl⁻.', swatch: '#ececec', visual: { kind: 'vial', precip: '#ffffff', precipStrong: true } };
+        case 'Br': return { test: 'Acidified AgNO₃', obs: 'A <b>cream</b> precipitate forms.', tip: 'Cream precipitate with silver nitrate is silver bromide — confirms Br⁻.', swatch: '#f0e3b8', visual: { kind: 'vial', precip: '#f0e3b8', precipStrong: true } };
+        case 'I':  return { test: 'Acidified AgNO₃', obs: 'A <b>yellow</b> precipitate forms.', tip: 'Yellow precipitate with silver nitrate is silver iodide — confirms I⁻.', swatch: '#f0d840', visual: { kind: 'vial', precip: '#f0d840', precipStrong: true } };
+        default:   return { test: 'Acidified AgNO₃', obs: 'No precipitate. Solution stays clear.', tip: 'No precipitate rules out Cl⁻, Br⁻ and I⁻.', swatch: null, visual: { kind: 'vial' } };
+      }
+    }
+
+    if (reagent === 'BaCl2') {
+      if (an === 'SO4') return { test: 'Acidified BaCl₂', obs: 'A <b>white</b> precipitate forms.', tip: 'White precipitate with barium chloride (insoluble in acid) is barium sulfate — confirms SO₄²⁻.', swatch: '#ececec', visual: { kind: 'vial', precip: '#ffffff', precipStrong: true } };
+      return { test: 'Acidified BaCl₂', obs: 'No precipitate forms.', tip: 'No precipitate rules out SO₄²⁻.', swatch: null, visual: { kind: 'vial' } };
+    }
+
+    if (reagent === 'HCl') {
+      if (an === 'CO3') return { test: 'Dilute HCl', obs: 'Fizzing. The gas evolved turns limewater <b>milky</b>.', tip: 'Gas that turns limewater milky is CO₂ — confirms CO₃²⁻.', swatch: '#dadada', visual: { kind: 'fizz' } };
+      return { test: 'Dilute HCl', obs: 'No fizzing. No reaction.', tip: 'No fizzing rules out CO₃²⁻.', swatch: null, visual: { kind: 'vial' } };
+    }
+
+    if (reagent === 'flame') {
+      const C = CATIONS[cat];
+      if (C.flame) {
+        const tips = {
+          'red': 'Red flame indicates Li⁺ (lithium).',
+          'yellow': 'Yellow flame indicates Na⁺ (sodium).',
+          'lilac': 'Lilac flame indicates K⁺ (potassium).',
+          'orange-red': 'Orange-red flame indicates Ca²⁺ (calcium).',
+          'blue-green': 'Blue-green flame indicates Cu²⁺ (copper(II)).'
+        };
+        return { test: 'Flame test', obs: `The flame burns <span class="flame-result" style="background:${C.flameHex};">${C.flame}</span>.`, tip: tips[C.flame], swatch: C.flameHex, visual: { kind: 'flame', colour: C.flameHex, label: C.flame } };
+      }
+      return { test: 'Flame test', obs: 'No distinctive flame colour observed.', tip: 'No colour rules out Li⁺, Na⁺, K⁺, Ca²⁺ and Cu²⁺. The cation is NH₄⁺, Fe²⁺ or Fe³⁺.', swatch: null, visual: { kind: 'flame', colour: '#5a7ad8', label: 'pale blue' } };
+    }
+
+    return { test: 'unknown', obs: 'Nothing happens.', tip: null, swatch: null, visual: { kind: 'vial' } };
+  }
+
+  // ============================================================
+  // CAREER MODE — rank ladder
+  // ============================================================
+  // Each rank has: kind (cation/anion/both), cases-to-clear,
+  // optional difficulty filter for the cation pool.
+  // Progression:
+  //   1. Graduate Chemist     — anions only (build confidence)
+  //   2. Research Chemist     — cations only (introduce flame test + NaOH)
+  //   3. PhD Researcher       — full double identification
+  //   4. Senior Chemist       — double, with "tricky" cation pool
+  //   5. Principal Investigator — double, no colour clue (all colourless cations)
+  //   6. Professor            — won (final rank)
+  const CAREER_RANKS = [
+    {
+      name: 'Graduate Chemist',
+      emoji: '🎓',
+      kind: 'anion',
+      target: 3,
+      blurb: 'Just out of the lab course. The technician hands you simple sodium salts — identify the anion.'
+    },
+    {
+      name: 'Research Chemist',
+      emoji: '🧪',
+      kind: 'cation',
+      target: 4,
+      blurb: 'You earn your bench. Now you face nitrate solutions — identify the cation. Time to dust off the flame test.'
+    },
+    {
+      name: 'PhD Researcher',
+      emoji: '📜',
+      kind: 'both',
+      target: 4,
+      blurb: 'Doctoral work begins. Both cation and anion are unknown. Use multiple tests and combine the evidence.'
+    },
+    {
+      name: 'Senior Chemist',
+      emoji: '🔬',
+      kind: 'both',
+      target: 5,
+      // Tricky: cations all give precipitates that look similar, or all need flame test to distinguish
+      catPool: ['NH4', 'Fe2', 'Fe3', 'Cu2'],
+      blurb: 'Trickier samples come across your bench — the kind that look similar at first glance. Precipitating cations only.'
+    },
+    {
+      name: 'Principal Investigator',
+      emoji: '⚗️',
+      kind: 'both',
+      target: 5,
+      // All colourless cations — no visual clue from sample
+      catPool: ['Li', 'Na', 'K', 'Ca', 'NH4'],
+      blurb: 'No more shortcuts. Every sample is colourless. You must rely entirely on the tests.'
+    },
+    {
+      name: 'Professor',
+      emoji: '🏆',
+      kind: null, // final — game complete
+      target: 0,
+      blurb: 'You have mastered qualitative analysis. Cases come to you from across the faculty.'
+    }
+  ];
+
+  // ============================================================
+  // STAGE RENDERING (unchanged)
+  // ============================================================
+
+  const stage = document.getElementById('stage');
+
+  function renderVial({ tint = '#e8eef0', precip = null, precipStrong = false } = {}) {
+    const W = 190, H = 260;
+    let precipLayer = '';
+    if (precip) {
+      const dispOpacity = precipStrong ? 0.7 : 0.55;
+      const settleOpacity = precipStrong ? 0.95 : 0.8;
+      precipLayer = `
+        <defs>
+          <pattern id="precipPattern" patternUnits="userSpaceOnUse" width="6" height="6">
+            <circle cx="3" cy="3" r="1.4" fill="${precip}" opacity="${dispOpacity}"/>
+          </pattern>
+        </defs>
+        <rect class="precipitate" x="58" y="88" width="74" height="${H-126}" fill="url(#precipPattern)" style="animation-delay:0.05s"/>
+        <path class="precipitate" d="M 58 ${H-32} Q 95 ${H-54} 132 ${H-32} L 132 ${H-14} Q 95 ${H-7} 58 ${H-14} Z" fill="${precip}" opacity="${settleOpacity}"/>
+      `;
+    }
+    stage.innerHTML = `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+        <line x1="10" y1="54" x2="58" y2="54" stroke="#18181b" stroke-width="2.5"/>
+        <rect x="0" y="46" width="10" height="16" fill="#18181b"/>
+        <rect x="58" y="22" width="74" height="14" fill="none" stroke="#18181b" stroke-width="2.5"/>
+        <path d="M 53 36 L 53 ${H-32} Q 53 ${H-5} 95 ${H-5} Q 137 ${H-5} 137 ${H-32} L 137 36 Z"
+              fill="rgba(220,230,235,0.5)" stroke="#18181b" stroke-width="2.5"/>
+        <path d="M 56 86 L 56 ${H-32} Q 56 ${H-8} 95 ${H-8} Q 134 ${H-8} 134 ${H-32} L 134 86 Z"
+              fill="${tint}" opacity="0.85"/>
+        <ellipse cx="95" cy="86" rx="39" ry="3" fill="rgba(0,0,0,0.12)"/>
+        <path d="M 61 96 L 61 ${H-52} Q 61 ${H-37} 68 ${H-32}" stroke="rgba(255,255,255,0.7)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        ${precipLayer}
+      </svg>
+    `;
+  }
+
+  function renderFlame({ colour = '#e8c12a', label = 'yellow' } = {}) {
+    const W = 230, H = 260;
+    function lighten(hex, amount) {
+      const n = parseInt(hex.slice(1), 16);
+      let r = (n >> 16) + amount, g = ((n >> 8) & 0xff) + amount, b = (n & 0xff) + amount;
+      r = Math.max(0, Math.min(255, r)); g = Math.max(0, Math.min(255, g)); b = Math.max(0, Math.min(255, b));
+      return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+    }
+    const inner = lighten(colour, 60);
+    stage.innerHTML = `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="115" cy="${H-10}" rx="65" ry="9" fill="#18181b"/>
+        <rect x="62" y="${H-52}" width="106" height="42" fill="#3f3f46" stroke="#18181b" stroke-width="2"/>
+        <rect x="103" y="64" width="24" height="${H-116}" fill="#52525b" stroke="#18181b" stroke-width="2"/>
+        <rect x="100" y="${H-94}" width="30" height="16" fill="#18181b" stroke="#18181b" stroke-width="2"/>
+        <circle cx="115" cy="${H-86}" r="3.5" fill="#52525b"/>
+        <g class="flame-flicker-slow">
+          <path d="M 115 64 Q 92 32 100 0 Q 115 14 130 0 Q 138 32 115 64 Z" fill="${colour}" opacity="0.88"/>
+        </g>
+        <g class="flame-flicker">
+          <path d="M 115 64 Q 104 44 108 22 Q 115 30 122 22 Q 126 44 115 64 Z" fill="${inner}" opacity="0.95"/>
+        </g>
+        <line x1="145" y1="84" x2="124" y2="52" stroke="#18181b" stroke-width="2"/>
+        <circle cx="124" cy="52" r="3" fill="#18181b"/>
+        <text x="115" y="${H-22}" text-anchor="middle" fill="white"
+              font-family="Inter, sans-serif" font-size="13" font-weight="700" letter-spacing="2">${label.toUpperCase()}</text>
+      </svg>
+    `;
+  }
+
+  function renderGas({ vapour = '#cfd6a8' } = {}) {
+    const W = 190, H = 260;
+    stage.innerHTML = `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+        <ellipse class="wisp" cx="95" cy="65" rx="15" ry="7" fill="${vapour}" opacity="0.55" style="animation-delay:0s"/>
+        <ellipse class="wisp" cx="80" cy="65" rx="11" ry="5" fill="${vapour}" opacity="0.55" style="animation-delay:0.6s"/>
+        <ellipse class="wisp" cx="110" cy="65" rx="13" ry="6" fill="${vapour}" opacity="0.55" style="animation-delay:1.2s"/>
+        <rect x="20" y="32" width="32" height="44" fill="#5a8ad6" stroke="#18181b" stroke-width="1.5"/>
+        <text x="36" y="92" text-anchor="middle" fill="#52525b" font-family="Inter, sans-serif" font-size="10" font-weight="600">LITMUS</text>
+        <line x1="10" y1="108" x2="58" y2="108" stroke="#18181b" stroke-width="2.5"/>
+        <rect x="0" y="100" width="10" height="16" fill="#18181b"/>
+        <rect x="58" y="86" width="74" height="14" fill="none" stroke="#18181b" stroke-width="2.5"/>
+        <path d="M 53 100 L 53 ${H-32} Q 53 ${H-5} 95 ${H-5} Q 137 ${H-5} 137 ${H-32} L 137 100 Z"
+              fill="rgba(220,230,235,0.5)" stroke="#18181b" stroke-width="2.5"/>
+        <path d="M 56 138 L 56 ${H-32} Q 56 ${H-8} 95 ${H-8} Q 134 ${H-8} 134 ${H-32} L 134 138 Z"
+              fill="#e8eef0" opacity="0.8"/>
+        <ellipse cx="95" cy="138" rx="39" ry="3" fill="rgba(0,0,0,0.12)"/>
+        <text x="95" y="${H-3}" text-anchor="middle" fill="#dc2626" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1.5">↑ WARM ↑</text>
+      </svg>
+    `;
+  }
+
+  function renderFizz() {
+    const W = 190, H = 260;
+    let bubbles = '';
+    for (let i = 0; i < 9; i++) {
+      const cx = 68 + Math.random() * 54;
+      const r  = 2 + Math.random() * 3.5;
+      const delay = (Math.random() * 1.4).toFixed(2);
+      bubbles += `<circle class="bubble" cx="${cx}" cy="${H-32}" r="${r}" fill="rgba(255,255,255,0.9)" stroke="rgba(24,24,27,0.5)" stroke-width="0.5" style="animation-delay:${delay}s"/>`;
+    }
+    stage.innerHTML = `
+      <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+        <text x="95" y="18" text-anchor="middle" fill="#18181b" font-family="Inter, sans-serif" font-size="11" font-weight="700" letter-spacing="1.5">CO₂ EVOLVED</text>
+        <line x1="10" y1="54" x2="58" y2="54" stroke="#18181b" stroke-width="2.5"/>
+        <rect x="0" y="46" width="10" height="16" fill="#18181b"/>
+        <rect x="58" y="36" width="74" height="14" fill="none" stroke="#18181b" stroke-width="2.5"/>
+        <path d="M 53 50 L 53 ${H-32} Q 53 ${H-5} 95 ${H-5} Q 137 ${H-5} 137 ${H-32} L 137 50 Z"
+              fill="rgba(220,230,235,0.5)" stroke="#18181b" stroke-width="2.5"/>
+        <path d="M 56 86 L 56 ${H-32} Q 56 ${H-8} 95 ${H-8} Q 134 ${H-8} 134 ${H-32} L 134 86 Z"
+              fill="#e8eef0" opacity="0.8"/>
+        <ellipse cx="95" cy="86" rx="39" ry="3" fill="rgba(0,0,0,0.12)"/>
+        ${bubbles}
+      </svg>
+    `;
+  }
+
+  function renderForVisual(v, cat) {
+    if (!v || v.kind === 'vial') {
+      const tint = v && v.tint ? v.tint : CATIONS[cat].solnTint;
+      renderVial({ tint, precip: v && v.precip, precipStrong: v && v.precipStrong });
+    } else if (v.kind === 'flame') {
+      renderFlame({ colour: v.colour, label: v.label });
+    } else if (v.kind === 'gas') {
+      renderGas({ vapour: v.vapour });
+    } else if (v.kind === 'fizz') {
+      renderFizz();
+    }
+  }
+
+  // ============================================================
+  // GAME STATE
+  // ============================================================
+
+  let mode = 'both';            // current effective puzzle mode: cation | anion | both
+  let careerMode = false;       // are we in career?
+  let careerRank = 0;           // index into CAREER_RANKS
+  let careerCleared = 0;        // cases solved at current rank
+  let mystery = null;
+  let testsUsed = new Set();
+  let solved = 0;
+  let attempts = 0;
+  let testsThisCase = 0;
+  let resolved = false;
+  let tipsOn = false;
+
+  function activeRank() { return CAREER_RANKS[careerRank]; }
+
+  function activeCatPool() {
+    if (careerMode) {
+      const r = activeRank();
+      if (r.catPool) return r.catPool;
+    }
+    return Object.keys(CATIONS);
+  }
+
+  function newMystery() {
+    const anKeys = Object.keys(ANIONS);
+    const catKeys = activeCatPool();
+
+    if (mode === 'cation') {
+      const cat = catKeys[Math.floor(Math.random() * catKeys.length)];
+      return { cat, an: 'NO3_filler' };
+    }
+    if (mode === 'anion') {
+      const an = anKeys[Math.floor(Math.random() * anKeys.length)];
+      return { cat: 'Na', an };
+    }
+    // 'both' — possibly with restricted cation pool
+    let cat, an, tries = 0;
+    do {
+      cat = catKeys[Math.floor(Math.random() * catKeys.length)];
+      an = anKeys[Math.floor(Math.random() * anKeys.length)];
+      tries++;
+      if (tries > 200) break; // safety
+    } while (!isSoluble(cat, an));
+    return { cat, an };
+  }
+
+  function applyCareerModeForRank() {
+    const r = activeRank();
+    mode = r.kind || 'both';
+    document.getElementById('mode-badge').textContent =
+      (r.kind === 'cation' ? 'CATION' : r.kind === 'anion' ? 'ANION' : 'DOUBLE');
+    document.getElementById('mode-badge').classList.add('career');
+  }
+
+  function refreshCareerUI() {
+    const inline = document.getElementById('career-inline');
+    if (!careerMode) {
+      inline.style.display = 'none';
+      document.getElementById('mode-badge').classList.remove('career');
+      return;
+    }
+    const r = activeRank();
+    inline.style.display = 'flex';
+
+    document.getElementById('career-rank-line').textContent = `${r.emoji} ${r.name}`;
+    let stageLabel;
+    if (r.kind === 'anion') stageLabel = 'anion identification';
+    else if (r.kind === 'cation') stageLabel = 'cation identification';
+    else if (r.kind === 'both') {
+      if (r.catPool && r.catPool.includes('Cu2') && !r.catPool.includes('Li')) stageLabel = 'cations that precipitate — tricky pairs';
+      else if (r.catPool && !r.catPool.includes('Cu2')) stageLabel = 'colourless solutions only';
+      else stageLabel = 'full double identification';
+    }
+    else stageLabel = 'mastery';
+    document.getElementById('career-stage-line').textContent =
+      r.kind === null ? 'Career complete' : `Stage ${careerRank + 1} of ${CAREER_RANKS.length - 1} — ${stageLabel}`;
+
+    const target = r.target || 1;
+    const pct = Math.min(100, Math.round((careerCleared / target) * 100));
+    document.getElementById('career-progress-fill').style.width = pct + '%';
+    document.getElementById('career-progress-label').textContent =
+      r.kind === null ? '∞ free-play' : `${careerCleared} / ${target} cases solved`;
+  }
+
+  function promote() {
+    careerRank++;
+    careerCleared = 0;
+    const r = activeRank();
+    const promo = document.getElementById('promo-overlay');
+    const card = document.getElementById('promo-card');
+    document.getElementById('promo-eyebrow').textContent = r.kind === null ? 'Career complete' : 'Promotion';
+    document.getElementById('promo-title').textContent = `${r.emoji} ${r.name}`;
+    document.getElementById('promo-body').innerHTML = r.blurb;
+    card.classList.toggle('promo-final', r.kind === null);
+    document.getElementById('promo-continue').textContent = r.kind === null ? 'Take a bow' : 'Continue';
+    promo.classList.add('show');
+  }
+
+  function startNewCase() {
+    if (careerMode) applyCareerModeForRank();
+    mystery = newMystery();
+    testsUsed.clear();
+    testsThisCase = 0;
+    resolved = false;
+
+    // Rebuild test buttons for current mode (cation/anion modes hide irrelevant tests)
+    buildReagentButtons();
+
+    const C = CATIONS[mystery.cat];
+    let desc = 'A colourless aqueous solution.';
+    if (C.solnTint === '#a8d0e0') desc = 'A pale blue aqueous solution.';
+    else if (C.solnTint === '#b8d8b0') desc = 'A pale green aqueous solution.';
+    else if (C.solnTint === '#d8b878') desc = 'A yellow-brown aqueous solution.';
+    document.getElementById('sample-desc').textContent = desc;
+
+    renderVial({ tint: C.solnTint });
+
+    rebuildGuessRow();
+
+    document.getElementById('observations').innerHTML =
+      '<div class="obs-empty">No tests performed yet. Pick a reagent to begin.</div>';
+    document.getElementById('result').classList.remove('show', 'correct', 'wrong');
+
+    if (!careerMode) {
+      document.getElementById('mode-badge').textContent =
+        mode === 'cation' ? 'CATION' : mode === 'anion' ? 'ANION' : 'DOUBLE';
+    }
+    refreshCareerUI();
+    updateScores();
+  }
+
+  function rebuildGuessRow() {
+    const row = document.getElementById('guess-row');
+    row.innerHTML = '';
+    row.classList.remove('one', 'two');
+
+    function catSelect() {
+      const opts = ['<option value="">— select cation —</option>']
+        .concat(Object.entries(CATIONS).map(([k,v]) => `<option value="${k}">${v.symbol} (${v.name})</option>`))
+        .join('');
+      return `<div><label>Cation</label><select id="guess-cation">${opts}</select></div>`;
+    }
+    function anSelect() {
+      const opts = ['<option value="">— select anion —</option>']
+        .concat(Object.entries(ANIONS).map(([k,v]) => `<option value="${k}">${v.symbol} (${v.name})</option>`))
+        .join('');
+      return `<div><label>Anion</label><select id="guess-anion">${opts}</select></div>`;
+    }
+
+    if (mode === 'cation') { row.classList.add('one'); row.innerHTML = catSelect(); }
+    else if (mode === 'anion') { row.classList.add('one'); row.innerHTML = anSelect(); }
+    else { row.classList.add('two'); row.innerHTML = catSelect() + anSelect(); }
+  }
+
+  function recordObservation(reagent) {
+    if (resolved) return;
+    if (testsUsed.has(reagent)) return;
+    testsUsed.add(reagent);
+    testsThisCase++;
+
+    const result = performTest(reagent, mystery.cat, mystery.an);
+    renderForVisual(result.visual, mystery.cat);
+
+    const obs = document.getElementById('observations');
+    if (obs.querySelector('.obs-empty')) obs.innerHTML = '';
+    const entry = document.createElement('div');
+    entry.className = 'obs-entry';
+    if (result.tip) entry.setAttribute('data-tip', result.tip);
+    const swatchHtml = result.swatch
+      ? ` <span class="colour-swatch" style="background:${result.swatch}"></span>`
+      : '';
+    const tipHtml = (tipsOn && result.tip) ? `<div class="obs-tip">${result.tip}</div>` : '';
+    entry.innerHTML = `
+      <div class="obs-header">
+        <span class="obs-test">${result.test}</span>
+        <span class="obs-step">step ${testsThisCase}</span>
+      </div>
+      <div class="obs-body">${result.obs}${swatchHtml}</div>
+      ${tipHtml}
+    `;
+    obs.appendChild(entry);
+    obs.scrollTop = obs.scrollHeight;
+
+    const btn = document.querySelector(`.reagent[data-key="${reagent}"]`);
+    if (btn) { btn.disabled = true; btn.classList.add('used'); }
+    updateScores();
+  }
+
+  function refreshTipsDisplay() {
+    document.querySelectorAll('.obs-entry').forEach(entry => {
+      const existing = entry.querySelector('.obs-tip');
+      const tip = entry.getAttribute('data-tip');
+      if (tipsOn && tip) {
+        if (!existing) {
+          const t = document.createElement('div');
+          t.className = 'obs-tip';
+          t.textContent = tip;
+          entry.appendChild(t);
+        }
+      } else {
+        if (existing) existing.remove();
+      }
+    });
+  }
+
+  function submitVerdict() {
+    if (resolved) return;
+    const gCatEl = document.getElementById('guess-cation');
+    const gAnEl  = document.getElementById('guess-anion');
+    const gCat = gCatEl ? gCatEl.value : null;
+    const gAn  = gAnEl  ? gAnEl.value  : null;
+
+    if (mode === 'cation' && !gCat) { showResult('wrong', 'Incomplete', 'Select a cation before submitting.'); return; }
+    if (mode === 'anion'  && !gAn)  { showResult('wrong', 'Incomplete', 'Select an anion before submitting.'); return; }
+    if (mode === 'both'   && (!gCat || !gAn)) { showResult('wrong', 'Incomplete', 'Select both a cation and an anion before submitting.'); return; }
+
+    attempts++;
+    const catOk = (mode === 'anion') || (gCat === mystery.cat);
+    const anOk  = (mode === 'cation') || (gAn === mystery.an);
+    const correct = catOk && anOk;
+
+    const C = CATIONS[mystery.cat];
+    const A = mystery.an === 'NO3_filler' ? null : ANIONS[mystery.an];
+
+    if (correct) {
+      solved++;
+      resolved = true;
+      let answer;
+      if (mode === 'cation') answer = `${C.symbol} — ${C.name}`;
+      else if (mode === 'anion') answer = `${A.symbol} — ${A.name}`;
+      else answer = `${C.symbol} + ${A.symbol} — ${C.name} ${A.name}`;
+      showResult('correct', 'Correct',
+        `<span class="answer">${answer}</span> · solved in ${testsThisCase} test${testsThisCase===1?'':'s'}.`);
+
+      // Career advancement
+      if (careerMode) {
+        careerCleared++;
+        const r = activeRank();
+        refreshCareerUI();
+        if (r.kind !== null && careerCleared >= r.target) {
+          // Promote on continue
+          setTimeout(() => promote(), 600);
+        }
+      }
+    } else {
+      let detail;
+      if (mode === 'both' && !catOk && !anOk) detail = 'Both wrong. Look back at your observations.';
+      else if (mode === 'both' && !catOk)     detail = 'Anion correct. The cation is something else.';
+      else if (mode === 'both' && !anOk)      detail = 'Cation correct. The anion is something else.';
+      else                                    detail = 'Not the right answer. Look back at your observations.';
+      showResult('wrong', 'Not quite', detail);
+    }
+    updateScores();
+  }
+
+  function reveal() {
+    if (resolved) return;
+    resolved = true;
+    attempts++;
+    const C = CATIONS[mystery.cat];
+    const A = mystery.an === 'NO3_filler' ? null : ANIONS[mystery.an];
+    let answer;
+    if (mode === 'cation') answer = `${C.symbol} — ${C.name}`;
+    else if (mode === 'anion') answer = `${A.symbol} — ${A.name}`;
+    else answer = `${C.symbol} + ${A.symbol} — ${C.name} ${A.name}`;
+    showResult('wrong', 'Revealed', `<span class="answer">${answer}</span>`);
+    updateScores();
+  }
+
+  function showResult(kind, title, body) {
+    const r = document.getElementById('result');
+    r.classList.remove('correct', 'wrong');
+    r.classList.add('show', kind);
+    document.getElementById('result-title').textContent = title;
+    document.getElementById('result-body').innerHTML = body;
+  }
+
+  function updateScores() {
+    document.getElementById('score-solved').textContent = solved;
+    document.getElementById('score-attempts').textContent = attempts;
+    document.getElementById('score-tests').textContent = testsThisCase;
+  }
+
+  function buildReagentButtons() {
+    const wrap = document.getElementById('reagents');
+    wrap.innerHTML = '';
+
+    // Filter tests by mode:
+    //   cation mode  → only cation tests
+    //   anion mode   → only anion tests
+    //   both mode    → all tests
+    const visible = REAGENTS.filter(r => {
+      if (mode === 'cation') return r.tests === 'cation';
+      if (mode === 'anion')  return r.tests === 'anion';
+      return true;
+    });
+
+    visible.forEach(r => {
+      const b = document.createElement('button');
+      b.className = 'reagent';
+      b.setAttribute('data-key', r.key);
+      b.innerHTML = `
+        <span class="tick">✓ used</span>
+        <span class="formula">${r.formula}</span>
+        <span class="name">${r.name}</span>
+      `;
+      b.addEventListener('click', () => recordObservation(r.key));
+      wrap.appendChild(b);
+    });
+  }
+
+  // ============================================================
+  // WIRING
+  // ============================================================
+
+  document.getElementById('submit-btn').addEventListener('click', submitVerdict);
+  document.getElementById('new-btn').addEventListener('click', startNewCase);
+  document.getElementById('reveal-btn').addEventListener('click', reveal);
+  document.getElementById('change-mode-btn').addEventListener('click', () => {
+    document.getElementById('mode-overlay').style.display = 'flex';
+  });
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const selected = btn.getAttribute('data-mode');
+      document.getElementById('mode-overlay').style.display = 'none';
+
+      if (selected === 'career') {
+        careerMode = true;
+        careerRank = 0;
+        careerCleared = 0;
+        solved = 0; attempts = 0;
+        startNewCase();
+      } else {
+        careerMode = false;
+        mode = selected;
+        solved = 0; attempts = 0;
+        startNewCase();
+      }
+    });
+  });
+
+  document.getElementById('promo-continue').addEventListener('click', () => {
+    document.getElementById('promo-overlay').classList.remove('show');
+    refreshCareerUI();
+    // If they've hit the final rank (Professor), start a free 'both' case
+    if (activeRank().kind === null) {
+      mode = 'both';
+    }
+    startNewCase();
+  });
+
+  const tipsCheckbox = document.getElementById('tips-toggle');
+  const tipsLabel = document.getElementById('tips-toggle-label');
+  tipsCheckbox.addEventListener('change', () => {
+    tipsOn = tipsCheckbox.checked;
+    tipsLabel.classList.toggle('active', tipsOn);
+    refreshTipsDisplay();
+  });
+
+  buildReagentButtons();
+</script>
+
+</body>
+</html>

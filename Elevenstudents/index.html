@@ -464,6 +464,39 @@
             transform: scale(1.05);
         }
 
+        /* Featured card — Iggy v2 */
+        .featured-card {
+            border: 2px solid transparent;
+            animation: featured-flash 1.4s ease-in-out infinite;
+            position: relative;
+        }
+
+        .featured-card .v2-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            color: white;
+            font-size: 0.7em;
+            font-weight: bold;
+            letter-spacing: 0.1em;
+            padding: 3px 10px;
+            border-radius: 999px;
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+        }
+
+        @keyframes featured-flash {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(168, 85, 247, 0.4), 0 0 20px rgba(236, 72, 153, 0.2);
+                border-color: rgba(168, 85, 247, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(168, 85, 247, 0.9), 0 0 50px rgba(236, 72, 153, 0.5);
+                border-color: rgba(236, 72, 153, 0.9);
+            }
+        }
+
         /* 80s style AI disclaimer */
         .ai-disclaimer {
             position: fixed;
@@ -594,16 +627,17 @@
             <section id="games" class="content-section active">
                 <h2 class="section-title">🎮 Games <a href="highscores.html" style="font-size: 0.6em; margin-left: 20px; color: #00ffff; text-decoration: none; opacity: 0.9;">🏆 High Scores</a></h2>
                 <div class="gallery">
-                    <div class="project-card" onclick="window.location.href='Games/iggy.html'">
+                    <div class="project-card featured-card" onclick="window.location.href='Games/iggy.html'">
+                        <div class="v2-badge">VERSION 2</div>
                         <div class="project-preview">
                             <div class="emoji-container">💡</div>
-                            <div class="line-count">351 lines</div>
+                            <div class="line-count">270 lines</div>
                         </div>
                         <div class="project-info">
                             <div class="project-title">Light Switch Puzzle</div>
                             <div class="project-author">by Iggy</div>
                             <div class="project-description">
-                                Can you turn on all the lights? Figure out how each switch affects the bulbs in this brain-teasing puzzle with 3 challenging levels!
+                                Now with 5 levels! Figure out how each switch affects the bulbs — from tutorial to the truly unreal. Can you beat them all?
                             </div>
                         </div>
                     </div>

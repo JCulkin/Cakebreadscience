@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Light Switch Puzzle</title>
+  <title>Light Switch Puzzle — Version 2</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
   <style>
     body {
@@ -13,7 +13,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: #1a1a2e;
+      background: #0d0d1a;
       font-family: sans-serif;
       color: white;
     }
@@ -22,9 +22,21 @@
       flex-direction: column;
       align-items: center;
     }
+    .version-badge {
+      font-size: 0.75em;
+      font-weight: bold;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #a855f7, #ec4899);
+      color: white;
+      border-radius: 999px;
+      padding: 4px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.6);
+    }
     canvas {
       border-radius: 10px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 60px rgba(138, 43, 226, 0.25);
     }
     .nav-links {
       text-align: center;
@@ -43,6 +55,7 @@
 </head>
 <body>
   <main>
+    <div class="version-badge">Version 2 — Now with 5 Levels</div>
     <div id="sketch-container"></div>
     <div class="nav-links">
       <a href="../index.html">← Back to Home</a>
@@ -50,7 +63,7 @@
   </main>
 
   <script>
-// Light Switch Puzzle Game
+// Light Switch Puzzle Game — Version 2
 // Level configurations
 const levels = [
   {
@@ -85,6 +98,33 @@ const levels = [
     },
     numBulbs: 5,
     numSwitches: 5
+  },
+  {
+    // Level 4 - Extreme challenge
+    switchToBulbs: {
+      0: [2, 4, 5],      // Switch 1 affects bulbs 3, 5, and 6
+      1: [0, 3],         // Switch 2 affects bulbs 1 and 4
+      2: [1, 3, 4],      // Switch 3 affects bulbs 2, 4, and 5
+      3: [0, 1, 5],      // Switch 4 affects bulbs 1, 2, and 6
+      4: [3, 5],         // Switch 5 affects bulbs 4 and 6
+      5: [0, 2, 4]       // Switch 6 affects bulbs 1, 3, and 5
+    },
+    numBulbs: 6,
+    numSwitches: 6
+  },
+  {
+    // Level 5 - Unreal challenge
+    switchToBulbs: {
+      0: [2, 5],         // Switch 1 affects bulbs 3 and 6
+      1: [1, 4, 5],      // Switch 2 affects bulbs 2, 5, and 6
+      2: [0, 3],         // Switch 3 affects bulbs 1 and 4
+      3: [0, 2, 6],      // Switch 4 affects bulbs 1, 3, and 7
+      4: [3, 5, 6],      // Switch 5 affects bulbs 4, 6, and 7
+      5: [5, 6],         // Switch 6 affects bulbs 6 and 7
+      6: [1, 3, 4]       // Switch 7 affects bulbs 2, 4, and 5
+    },
+    numBulbs: 7,
+    numSwitches: 7
   }
 ];
 
@@ -109,21 +149,15 @@ function initLevel() {
   switchStates = new Array(level.numSwitches).fill(false);
   moves = 0;
   showingVictory = false;
- 
-  // Create light switches
+
   switches = [];
   for (let i = 0; i < level.numSwitches; i++) {
     let spacing = 800 / (level.numSwitches + 1);
     let x = spacing * (i + 1);
     let y = 400;
-    switches.push({
-      x: x,
-      y: y,
-      index: i
-    });
+    switches.push({ x, y, index: i });
   }
- 
-  // Create reset button
+
   resetButton = {
     x: width / 2,
     y: 560,
@@ -134,43 +168,46 @@ function initLevel() {
 
 function draw() {
   let level = levels[currentLevel];
- 
-  // Background gradient
+
   setGradient(0, 0, width, height,
     color(75, 0, 130), color(138, 43, 226), color(219, 39, 119));
- 
-  // Title
+
+  // Title + version
   fill(255);
   textSize(36);
   textStyle(BOLD);
-  text("Light Switch Puzzle", width / 2, 40);
- 
-  textSize(18);
+  text("Light Switch Puzzle", width / 2, 35);
+
+  textSize(13);
   textStyle(NORMAL);
-  text(`Level ${currentLevel + 1}`, width / 2, 75);
- 
-  textSize(16);
-  if (currentLevel === 0) {
-    text("Figure out how the switches work!", width / 2, 100);
-  } else {
-    text("Turn on all the lightbulbs!", width / 2, 100);
-  }
- 
-  // Moves counter
-  fill(255, 255, 255, 40);
-  rect(width / 2 - 100, 125, 200, 40, 10);
+  fill(220, 180, 255);
+  text("VERSION 2", width / 2, 60);
+
   fill(255);
   textSize(18);
-  text(`Moves: ${moves}`, width / 2, 145);
- 
+  text(`Level ${currentLevel + 1} of ${levels.length}`, width / 2, 82);
+
+  textSize(15);
+  if (currentLevel === 0) {
+    text("Figure out how the switches work!", width / 2, 105);
+  } else {
+    text("Turn on all the lightbulbs!", width / 2, 105);
+  }
+
+  // Moves counter
+  fill(255, 255, 255, 40);
+  rect(width / 2 - 100, 120, 200, 40, 10);
+  fill(255);
+  textSize(18);
+  text(`Moves: ${moves}`, width / 2, 140);
+
   // Draw lightbulbs
   textSize(16);
   for (let i = 0; i < level.numBulbs; i++) {
     let spacing = 800 / (level.numBulbs + 1);
     let x = spacing * (i + 1);
     let y = 240;
-   
-    // Bulb glow effect
+
     if (bulbStates[i]) {
       fill(255, 215, 0, 100);
       noStroke();
@@ -178,109 +215,99 @@ function draw() {
       fill(255, 215, 0, 50);
       circle(x, y, 110);
     }
-   
-    // Bulb
+
     fill(bulbStates[i] ? color(255, 215, 0) : color(80, 80, 80));
     stroke(bulbStates[i] ? color(180, 140, 0) : color(60, 60, 60));
     strokeWeight(3);
     circle(x, y, 60);
-   
-    // Bulb base
+
     fill(bulbStates[i] ? color(200, 160, 0) : color(60, 60, 60));
     rect(x - 15, y + 25, 30, 15, 0, 0, 5, 5);
-   
-    // Label
+
     fill(255);
     noStroke();
     textStyle(BOLD);
     text(`Bulb ${i + 1}`, x, y + 60);
     textStyle(NORMAL);
   }
- 
+
   // Draw light switches
   textSize(16);
   for (let sw of switches) {
     let hover = mouseX > sw.x - 40 && mouseX < sw.x + 40 &&
                 mouseY > sw.y - 60 && mouseY < sw.y + 60;
-   
-    // Switch plate (wall plate)
+
     fill(hover ? color(220, 220, 220) : color(240, 240, 240));
     stroke(180);
     strokeWeight(2);
     rect(sw.x - 40, sw.y - 60, 80, 120, 5);
-   
-    // Switch plate screws
+
     fill(150);
     noStroke();
     circle(sw.x - 25, sw.y - 45, 6);
     circle(sw.x + 25, sw.y - 45, 6);
     circle(sw.x - 25, sw.y + 45, 6);
     circle(sw.x + 25, sw.y + 45, 6);
-   
-    // Switch toggle
+
     let toggleY = switchStates[sw.index] ? sw.y - 15 : sw.y + 15;
-   
-    // Toggle shadow
+
     fill(0, 0, 0, 50);
     rect(sw.x - 13, toggleY - 23, 26, 46, 3);
-   
-    // Toggle
+
     fill(switchStates[sw.index] ? color(100, 200, 100) : color(200, 100, 100));
     stroke(switchStates[sw.index] ? color(70, 150, 70) : color(150, 70, 70));
     strokeWeight(2);
     rect(sw.x - 15, toggleY - 25, 30, 50, 3);
-   
-    // Toggle highlight
+
     fill(255, 255, 255, 80);
     noStroke();
     rect(sw.x - 12, toggleY - 22, 10, 30, 2);
-   
-    // Label
+
     fill(255);
     textStyle(BOLD);
     textSize(16);
     text(`Switch ${sw.index + 1}`, sw.x, sw.y + 80);
     textStyle(NORMAL);
   }
- 
+
   // Victory message
   if (allLightsOn() && !showingVictory) {
     showingVictory = true;
   }
- 
+
   if (showingVictory) {
     fill(34, 197, 94, 230);
     rect(width / 2 - 250, height / 2 - 80, 500, 160, 15);
-   
+
     fill(255);
     textSize(32);
     textStyle(BOLD);
     text("🎉 Level Complete! 🎉", width / 2, height / 2 - 30);
-   
+
     textSize(20);
     textStyle(NORMAL);
     text(`You solved it in ${moves} moves!`, width / 2, height / 2 + 10);
-   
+
     if (currentLevel < levels.length - 1) {
       textSize(16);
       text("Click anywhere to continue to next level", width / 2, height / 2 + 45);
     } else {
       textSize(16);
-      text("You've completed all levels! Click Reset to play again", width / 2, height / 2 + 45);
+      text("You beat all 5 levels! Click Reset to play again", width / 2, height / 2 + 45);
     }
   }
- 
+
   // Reset button
   let hoverReset = mouseX > resetButton.x - resetButton.w/2 &&
                    mouseX < resetButton.x + resetButton.w/2 &&
                    mouseY > resetButton.y - resetButton.h/2 &&
                    mouseY < resetButton.y + resetButton.h/2;
- 
+
   fill(hoverReset ? color(255, 255, 255, 80) : color(255, 255, 255, 50));
   noStroke();
   rect(resetButton.x - resetButton.w/2, resetButton.y - resetButton.h/2,
        resetButton.w, resetButton.h, 10);
- 
+
   fill(255);
   textSize(16);
   textStyle(BOLD);
@@ -289,7 +316,6 @@ function draw() {
 }
 
 function mousePressed() {
-  // Check reset button first (highest priority)
   if (mouseX > resetButton.x - resetButton.w/2 &&
       mouseX < resetButton.x + resetButton.w/2 &&
       mouseY > resetButton.y - resetButton.h/2 &&
@@ -297,8 +323,7 @@ function mousePressed() {
     resetGame();
     return;
   }
- 
-  // If showing victory, advance to next level
+
   if (showingVictory) {
     if (currentLevel < levels.length - 1) {
       currentLevel++;
@@ -306,8 +331,7 @@ function mousePressed() {
     }
     return;
   }
- 
-  // Check light switches
+
   for (let sw of switches) {
     if (mouseX > sw.x - 40 && mouseX < sw.x + 40 &&
         mouseY > sw.y - 60 && mouseY < sw.y + 60) {
@@ -319,11 +343,7 @@ function mousePressed() {
 
 function toggleSwitch(switchIndex) {
   let level = levels[currentLevel];
- 
-  // Toggle the switch position
   switchStates[switchIndex] = !switchStates[switchIndex];
- 
-  // Toggle affected bulbs
   let affectedBulbs = level.switchToBulbs[switchIndex];
   for (let bulbIndex of affectedBulbs) {
     bulbStates[bulbIndex] = !bulbStates[bulbIndex];
@@ -340,7 +360,6 @@ function allLightsOn() {
   return bulbStates.every(state => state);
 }
 
-// Helper function for gradient background
 function setGradient(x, y, w, h, c1, c2, c3) {
   noFill();
   for (let i = y; i <= y + h; i++) {
