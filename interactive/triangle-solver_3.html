@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>IGCSE Triangle Solver</title>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #fbf9f4;
+    color: #111827;
+    padding: 24px;
+    box-sizing: border-box;
+  }
+  * { box-sizing: border-box; }
+  @keyframes pop { 0% { transform: scale(.96); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
+  .stepcard { animation: pop .28s ease-out; }
+  .bigbtn:active { transform: translateY(2px); }
+
+  .modebar { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 16px; }
+  .modebtn {
+    font-family: inherit; font-size: 1.05rem; font-weight: 600;
+    padding: 8px 18px; border-radius: 999px; cursor: pointer;
+    border: 2px solid #d6d3ca; background: #fff; color: #57534e;
+    transition: all .15s;
+  }
+  .modebtn.active { border-color: #b45309; background: #b45309; color: #fff; }
+
+  .layout {
+    display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr);
+    gap: 24px; max-width: 1500px; margin: 0 auto; align-items: stretch;
+  }
+  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+
+  .trianglebox {
+    background: #fff; border: 3px solid #1f2937; border-radius: 20px;
+    padding: 10px; box-shadow: 8px 8px 0 #e7e2d6;
+  }
+  .trianglebox svg { width: 100%; height: auto; display: block; }
+
+  .stepcol { display: flex; flex-direction: column; gap: 14px; }
+  .findbox {
+    background: #1f2937; color: #fbf9f4; border-radius: 16px;
+    padding: 18px 24px; text-align: center;
+  }
+  .findbox .small { font-size: 1.1rem; letter-spacing: 2px; text-transform: uppercase; opacity: .75; }
+  .findbox .x { font-size: 3rem; font-weight: 700; color: #fca5a5; line-height: 1; }
+
+  .step {
+    border-radius: 16px; padding: 18px 22px; min-height: 78px;
+    display: flex; flex-direction: column; justify-content: center;
+    background: #f4f0e6; border: 3px dashed #cbc6b8;
+  }
+  .step.open { background: #fff; border: 3px solid #b45309; }
+  .step .head {
+    font-size: .95rem; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: #a8a29e;
+  }
+  .step.open .head { color: #b45309; margin-bottom: 8px; }
+  .step .body { font-size: 1.7rem; font-weight: 600; line-height: 1.3; }
+  .step .body.rule { font-size: 1.5rem; }
+
+  .revealbtn {
+    width: 100%; font-family: inherit; font-size: 1.4rem; font-weight: 700;
+    padding: 20px; border-radius: 16px; border: none; color: #fff;
+    background: #1f2937; cursor: pointer; transition: transform .08s; margin-top: 6px;
+  }
+  .revealbtn:disabled { background: #d6d3ca; cursor: default; }
+
+  .newbtn {
+    font-family: inherit; font-size: 1.6rem; font-weight: 700;
+    padding: 26px; border-radius: 16px; border: none; color: #fff;
+    background: #b45309; cursor: pointer; box-shadow: 0 6px 0 #7c3a06;
+    transition: transform .08s; letter-spacing: .5px;
+  }
+</style>
+</head>
+<body>
+  <div class="modebar" id="modebar"></div>
+  <div class="layout">
+    <div class="trianglebox">
+      <svg id="svg" viewBox="0 0 760 540" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <div class="stepcol">
+      <div class="findbox">
+        <div class="small">Find the value of</div>
+        <div class="x">x</div>
+      </div>
+      <div class="step" id="step0"><div class="head">Step 1 — Which rule?</div><div class="body rule"></div></div>
+      <div class="step" id="step1"><div class="head">Step 2 — Substitute</div><div class="body"></div></div>
+      <div class="step" id="step2"><div class="head">Step 3 — Answer</div><div class="body"></div></div>
+      <button class="revealbtn" id="revealbtn"></button>
+      <button class="newbtn bigbtn" id="newbtn">⟳ New Example</button>
+    </div>
+  </div>
+
+<script>
+// ---------- helpers ----------
+const round = (n, dp = 1) => { const f = Math.pow(10, dp); return Math.round(n * f) / f; };
+const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const deg2rad = (d) => (d * Math.PI) / 180;
+const rad2deg = (r) => (r * 180) / Math.PI;
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const U = "cm";
+
+function fitToScreen(verts, W = 760, H = 540, pad = 170) {
+  const xs = verts.map(v => v.x), ys = verts.map(v => v.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const minY = Math.min(...ys), maxY = Math.max(...ys);
+  const spanX = maxX - minX || 1, spanY = maxY - minY || 1;
+  const scale = Math.min((W - 2*pad)/spanX, (H - 2*pad)/spanY);
+  const offX = (W - spanX*scale)/2 - minX*scale;
+  const offY = (H - spanY*scale)/2 - minY*scale;
+  return verts.map(v => ({ x: v.x*scale + offX, y: H - (v.y*scale + offY) }));
+}
+
+// ----- PLACEMENT ENGINE -----------------------------------------------------
+// Principles enacted:
+//  1. SIDE labels are centred on the edge midpoint and offset along the edge's
+//     PERPENDICULAR, on the side pointing away from the triangle's interior.
+//     -> a side label is always parallel-adjacent to its edge, never on it.
+//  2. ANGLE labels sit outside the corner along the bisector of that corner.
+//  3. The offset GAP scales with the label's font size, so big and small
+//     labels keep the same visual breathing room from the line.
+function uvec(dx, dy) { const l = Math.hypot(dx, dy) || 1; return { x: dx/l, y: dy/l }; }
+const midpoint = (p, q) => ({ x: (p.x+q.x)/2, y: (p.y+q.y)/2 });
+
+function placeSide(p, q, inner, gap) {
+  const mid = midpoint(p, q);
+  let n = uvec(-(q.y - p.y), q.x - p.x);
+  const toInner = { x: inner.x - mid.x, y: inner.y - mid.y };
+  if (n.x * toInner.x + n.y * toInner.y > 0) n = { x: -n.x, y: -n.y };
+  return { x: mid.x + n.x * gap, y: mid.y + n.y * gap };
+}
+function placeAngle(V, p, q, gap) {
+  const a = uvec(p.x - V.x, p.y - V.y), b = uvec(q.x - V.x, q.y - V.y);
+  let bis = uvec(a.x + b.x, a.y + b.y);
+  bis = { x: -bis.x, y: -bis.y };
+  return { x: V.x + bis.x * gap, y: V.y + bis.y * gap };
+}
+
+// Rotation (deg) so a side label runs PARALLEL to its edge, kept readable
+// (never upside-down): clamped to the range [-90, 90].
+function edgeAngleDeg(p, q) {
+  let deg = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+  if (deg > 90) deg -= 180;
+  if (deg < -90) deg += 180;
+  return deg;
+}
+
+// Given verts + a list of semantic labels, compute screen x,y for each.
+// A label is either { side:"AB", text, kind } or { angleAt:"A", text, kind }.
+function placeLabels(verts, rawLabels) {
+  const { A, B, C } = verts;
+  const third = { AB: C, BC: A, CA: B, BA: C, CB: A, AC: B };
+  return rawLabels.map((l) => {
+    if (l.side) {
+      const p = verts[l.side[0]], q = verts[l.side[1]];
+      const inner = third[l.side];
+      // Side labels rotate to run along the edge, so length runs ALONG the
+      // line, not across it. That lets the perpendicular gap stay small/fixed.
+      // The unknown "x" sits in a circle and stays upright (no rotation).
+      if (l.kind === "x") {
+        const pos = placeSide(p, q, inner, 46);
+        return { ...l, x: pos.x, y: pos.y, rot: 0 };
+      }
+      const gap = 34; // half text height (~19) + margin (~15)
+      const pos = placeSide(p, q, inner, gap);
+      return { ...l, x: pos.x, y: pos.y, rot: edgeAngleDeg(p, q) };
+    } else {
+      const V = verts[l.angleAt];
+      const others = ["A","B","C"].filter(k => k !== l.angleAt);
+      const big = (l.kind === "x");
+      const gap = big ? 58 : 52;
+      const pos = placeAngle(V, verts[others[0]], verts[others[1]], gap);
+      return { ...l, x: pos.x, y: pos.y, rot: 0 };
+    }
+  });
+}
+
+// ---------- generators ----------
+// Each generator returns semantic labels; placeLabels turns them into coords.
+
+function makePythagoras() {
+  const findHyp = Math.random() < 0.5;
+  const a = rand(3, 12), b = rand(3, 12);
+  const realC = {x:0,y:0}, realB = {x:a,y:0}, realA = {x:0,y:b};
+  const c = Math.hypot(a, b);
+  const [A,B,C] = fitToScreen([realA, realB, realC]);
+  const verts = { A, B, C };
+  // sides: BC = bottom leg a, AC = vertical leg b, AB = hypotenuse c
+  let labels, steps;
+
+  if (findHyp) {
+    labels = [
+      { side:"BC", text:`${a} ${U}`, kind:"side" },
+      { side:"AC", text:`${b} ${U}`, kind:"side" },
+      { side:"AB", text:"x", kind:"x" },
+    ];
+    steps = [
+      "Pythagoras' theorem — finding the hypotenuse.",
+      `x² = ${a}² + ${b}²  =  ${a*a} + ${b*b}  =  ${a*a+b*b}`,
+      `x = √${a*a+b*b}  =  ${round(c,1)} ${U}`,
+    ];
+  } else {
+    const knownLegIsA = Math.random() < 0.5;
+    if (knownLegIsA) {
+      labels = [
+        { side:"BC", text:`${a} ${U}`, kind:"side" },
+        { side:"AC", text:"x", kind:"x" },
+        { side:"AB", text:`${round(c,1)} ${U}`, kind:"side" },
+      ];
+      steps = [
+        "Pythagoras' theorem — finding a shorter side.",
+        `x² = ${round(c,1)}² − ${a}²  =  ${round(c*c,2)} − ${a*a}  =  ${round(c*c-a*a,2)}`,
+        `x = √${round(c*c-a*a,2)}  =  ${round(b,1)} ${U}`,
+      ];
+    } else {
+      labels = [
+        { side:"BC", text:"x", kind:"x" },
+        { side:"AC", text:`${b} ${U}`, kind:"side" },
+        { side:"AB", text:`${round(c,1)} ${U}`, kind:"side" },
+      ];
+      steps = [
+        "Pythagoras' theorem — finding a shorter side.",
+        `x² = ${round(c,1)}² − ${b}²  =  ${round(c*c,2)} − ${b*b}  =  ${round(c*c-b*b,2)}`,
+        `x = √${round(c*c-b*b,2)}  =  ${round(a,1)} ${U}`,
+      ];
+    }
+  }
+  return { verts, labels: placeLabels(verts, labels), rightAngleAt:"C", angleVerts:[], title:"Pythagoras", steps };
+}
+
+function makeSohcahtoa() {
+  const theta = rand(25, 65);
+  const a = rand(4, 11);
+  const b = round(a * Math.tan(deg2rad(theta)), 2);
+  const c = round(a / Math.cos(deg2rad(theta)), 2);
+  const realC = {x:0,y:0}, realB = {x:a,y:0}, realA = {x:0,y:b};
+  const [A,B,C] = fitToScreen([realA, realB, realC]);
+  const verts = { A, B, C };
+  // angle theta at B; relative to B: opp = AC, adj = BC, hyp = AB
+  let labels, steps;
+  const mode = pick(["side-opp","side-adj","side-hyp","angle"]);
+  const angleVerts = ["B"];
+
+  if (mode === "angle") {
+    const pair = pick(["opp-adj","opp-hyp","adj-hyp"]);
+    labels = [{ angleAt:"B", text:"x", kind:"x" }];
+    if (pair === "opp-adj") {
+      labels.push({ side:"AC", text:`${b} ${U}`, kind:"side" });
+      labels.push({ side:"BC", text:`${a} ${U}`, kind:"side" });
+      steps = [
+        "Trigonometry (SOHCAHTOA) — use tan (opposite & adjacent known, finding the angle).",
+        `tan x = opposite ÷ adjacent = ${b} ÷ ${a} = ${round(b/a,3)}`,
+        `x = tan⁻¹(${round(b/a,3)}) = ${round(theta,1)}°`,
+      ];
+    } else if (pair === "opp-hyp") {
+      labels.push({ side:"AC", text:`${b} ${U}`, kind:"side" });
+      labels.push({ side:"AB", text:`${c} ${U}`, kind:"side" });
+      steps = [
+        "Trigonometry (SOHCAHTOA) — use sin (opposite & hypotenuse known, finding the angle).",
+        `sin x = opposite ÷ hypotenuse = ${b} ÷ ${c} = ${round(b/c,3)}`,
+        `x = sin⁻¹(${round(b/c,3)}) = ${round(theta,1)}°`,
+      ];
+    } else {
+      labels.push({ side:"BC", text:`${a} ${U}`, kind:"side" });
+      labels.push({ side:"AB", text:`${c} ${U}`, kind:"side" });
+      steps = [
+        "Trigonometry (SOHCAHTOA) — use cos (adjacent & hypotenuse known, finding the angle).",
+        `cos x = adjacent ÷ hypotenuse = ${a} ÷ ${c} = ${round(a/c,3)}`,
+        `x = cos⁻¹(${round(a/c,3)}) = ${round(theta,1)}°`,
+      ];
+    }
+  } else {
+    labels = [{ angleAt:"B", text:`${theta}°`, kind:"angle" }];
+    if (mode === "side-opp") {
+      const give = pick(["adj","hyp"]);
+      labels.push({ side:"AC", text:"x", kind:"x" });
+      if (give === "adj") {
+        labels.push({ side:"BC", text:`${a} ${U}`, kind:"side" });
+        steps = [
+          "Trigonometry (SOHCAHTOA) — use tan (have adjacent, want opposite).",
+          `tan ${theta}° = x ÷ ${a}   →   x = ${a} × tan ${theta}°`,
+          `x = ${a} × ${round(Math.tan(deg2rad(theta)),3)} = ${round(b,1)} ${U}`,
+        ];
+      } else {
+        labels.push({ side:"AB", text:`${c} ${U}`, kind:"side" });
+        steps = [
+          "Trigonometry (SOHCAHTOA) — use sin (have hypotenuse, want opposite).",
+          `sin ${theta}° = x ÷ ${c}   →   x = ${c} × sin ${theta}°`,
+          `x = ${c} × ${round(Math.sin(deg2rad(theta)),3)} = ${round(b,1)} ${U}`,
+        ];
+      }
+    } else if (mode === "side-adj") {
+      const give = pick(["opp","hyp"]);
+      labels.push({ side:"BC", text:"x", kind:"x" });
+      if (give === "opp") {
+        labels.push({ side:"AC", text:`${b} ${U}`, kind:"side" });
+        steps = [
+          "Trigonometry (SOHCAHTOA) — use tan (have opposite, want adjacent).",
+          `tan ${theta}° = ${b} ÷ x   →   x = ${b} ÷ tan ${theta}°`,
+          `x = ${b} ÷ ${round(Math.tan(deg2rad(theta)),3)} = ${round(a,1)} ${U}`,
+        ];
+      } else {
+        labels.push({ side:"AB", text:`${c} ${U}`, kind:"side" });
+        steps = [
+          "Trigonometry (SOHCAHTOA) — use cos (have hypotenuse, want adjacent).",
+          `cos ${theta}° = x ÷ ${c}   →   x = ${c} × cos ${theta}°`,
+          `x = ${c} × ${round(Math.cos(deg2rad(theta)),3)} = ${round(a,1)} ${U}`,
+        ];
+      }
+    } else {
+      const give = pick(["opp","adj"]);
+      labels.push({ side:"AB", text:"x", kind:"x" });
+      if (give === "opp") {
+        labels.push({ side:"AC", text:`${b} ${U}`, kind:"side" });
+        steps = [
+          "Trigonometry (SOHCAHTOA) — use sin (have opposite, want hypotenuse).",
+          `sin ${theta}° = ${b} ÷ x   →   x = ${b} ÷ sin ${theta}°`,
+          `x = ${b} ÷ ${round(Math.sin(deg2rad(theta)),3)} = ${round(c,1)} ${U}`,
+        ];
+      } else {
+        labels.push({ side:"BC", text:`${a} ${U}`, kind:"side" });
+        steps = [
+          "Trigonometry (SOHCAHTOA) — use cos (have adjacent, want hypotenuse).",
+          `cos ${theta}° = ${a} ÷ x   →   x = ${a} ÷ cos ${theta}°`,
+          `x = ${a} ÷ ${round(Math.cos(deg2rad(theta)),3)} = ${round(c,1)} ${U}`,
+        ];
+      }
+    }
+  }
+  return { verts, labels: placeLabels(verts, labels), rightAngleAt:"C", angleVerts, title:"SOHCAHTOA", steps };
+}
+
+function triangleFromAngles(angA, angB, angC, scale) {
+  const a = scale * Math.sin(deg2rad(angA));
+  const b = scale * Math.sin(deg2rad(angB));
+  const c = scale * Math.sin(deg2rad(angC));
+  const Ax = (c*c - b*b + a*a) / (2*a);
+  const Ay = Math.sqrt(Math.max(0, c*c - Ax*Ax));
+  return {
+    real: { A:{x:Ax,y:Ay}, B:{x:0,y:0}, C:{x:a,y:0} },
+    sides: { a, b, c }, angles: { A:angA, B:angB, C:angC },
+  };
+}
+
+function makeSineRule() {
+  const A0 = rand(35, 80), B0 = rand(35, 80), C0 = 180 - A0 - B0;
+  if (C0 < 25 || C0 > 110) return makeSineRule();
+  const scale = rand(9, 16);
+  const t = triangleFromAngles(A0, B0, C0, scale);
+  const [A,B,C] = fitToScreen([t.real.A, t.real.B, t.real.C]);
+  const verts = { A, B, C };
+  let labels, steps; const angleVerts = [];
+  const findSide = Math.random() < 0.55;
+
+  if (findSide) {
+    const a = round(t.sides.a, 1), bAns = round(t.sides.b, 1);
+    labels = [
+      { angleAt:"A", text:`${A0}°`, kind:"angle" },
+      { angleAt:"B", text:`${B0}°`, kind:"angle" },
+      { side:"BC", text:`${a} ${U}`, kind:"side" },     // a opp A
+      { side:"CA", text:"x", kind:"x" },                // b opp B
+    ];
+    angleVerts.push("A","B");
+    steps = [
+      "Sine rule — finding a side (you know an angle–opposite-side pair, plus another angle).",
+      `x / sin ${B0}° = ${a} / sin ${A0}°   →   x = ${a} × sin ${B0}° / sin ${A0}°`,
+      `x = ${a} × ${round(Math.sin(deg2rad(B0)),3)} / ${round(Math.sin(deg2rad(A0)),3)} = ${bAns} ${U}`,
+    ];
+  } else {
+    const a = round(t.sides.a, 1), b = round(t.sides.b, 1);
+    labels = [
+      { angleAt:"A", text:`${A0}°`, kind:"angle" },
+      { angleAt:"B", text:"x", kind:"x" },
+      { side:"BC", text:`${a} ${U}`, kind:"side" },     // a opp A
+      { side:"CA", text:`${b} ${U}`, kind:"side" },     // b opp B
+    ];
+    angleVerts.push("A","B");
+    const sinB = (b * Math.sin(deg2rad(A0))) / a;
+    steps = [
+      "Sine rule — finding an angle (you know two sides and an angle opposite one of them).",
+      `sin x / ${b} = sin ${A0}° / ${a}   →   sin x = ${b} × sin ${A0}° / ${a}`,
+      `sin x = ${round(sinB,3)}   →   x = sin⁻¹(${round(sinB,3)}) = ${round(rad2deg(Math.asin(Math.min(1,sinB))),1)}°`,
+    ];
+  }
+  return { verts, labels: placeLabels(verts, labels), rightAngleAt:null, angleVerts, title:"Sine Rule", steps };
+}
+
+function makeCosineRule() {
+  const A0 = rand(35, 85), B0 = rand(35, 85), C0 = 180 - A0 - B0;
+  if (C0 < 30 || C0 > 100) return makeCosineRule();
+  const scale = rand(9, 15);
+  const t = triangleFromAngles(A0, B0, C0, scale);
+  const [A,B,C] = fitToScreen([t.real.A, t.real.B, t.real.C]);
+  const verts = { A, B, C };
+  let labels, steps; const angleVerts = [];
+  const findSide = Math.random() < 0.55;
+  const a = round(t.sides.a, 1), b = round(t.sides.b, 1), c = round(t.sides.c, 1);
+
+  if (findSide) {
+    labels = [
+      { angleAt:"A", text:`${A0}°`, kind:"angle" },
+      { side:"CA", text:`${b} ${U}`, kind:"side" },   // b = CA
+      { side:"AB", text:`${c} ${U}`, kind:"side" },   // c = AB
+      { side:"BC", text:"x", kind:"x" },              // a = BC opposite A
+    ];
+    angleVerts.push("A");
+    const a2 = b*b + c*c - 2*b*c*Math.cos(deg2rad(A0));
+    steps = [
+      "Cosine rule — finding a side (two sides and the angle between them are known).",
+      `x² = ${b}² + ${c}² − 2 × ${b} × ${c} × cos ${A0}°`,
+      `x² = ${round(a2,2)}   →   x = √${round(a2,2)} = ${round(Math.sqrt(a2),1)} ${U}`,
+    ];
+  } else {
+    labels = [
+      { angleAt:"A", text:"x", kind:"x" },
+      { side:"BC", text:`${a} ${U}`, kind:"side" },
+      { side:"CA", text:`${b} ${U}`, kind:"side" },
+      { side:"AB", text:`${c} ${U}`, kind:"side" },
+    ];
+    angleVerts.push("A");
+    const cosA = (b*b + c*c - a*a) / (2*b*c);
+    steps = [
+      "Cosine rule — finding an angle (all three sides are known).",
+      `cos x = (${b}² + ${c}² − ${a}²) / (2 × ${b} × ${c})`,
+      `cos x = ${round(cosA,3)}   →   x = cos⁻¹(${round(cosA,3)}) = ${round(rad2deg(Math.acos(Math.max(-1,Math.min(1,cosA)))),1)}°`,
+    ];
+  }
+  return { verts, labels: placeLabels(verts, labels), rightAngleAt:null, angleVerts, title:"Cosine Rule", steps };
+}
+
+const GENERATORS = {
+  "Pythagoras": makePythagoras,
+  "SOHCAHTOA": makeSohcahtoa,
+  "Sine Rule": makeSineRule,
+  "Cosine Rule": makeCosineRule,
+};
+function generate(mode) {
+  if (mode === "Mixed") return GENERATORS[pick(Object.keys(GENERATORS))]();
+  return GENERATORS[mode]();
+}
+
+// ---------- SVG drawing ----------
+const NS = "http://www.w3.org/2000/svg";
+function el(name, attrs) {
+  const e = document.createElementNS(NS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function rightAngleMark(verts, at) {
+  const corner = verts[at];
+  const others = ["A","B","C"].filter(k => k !== at).map(k => verts[k]);
+  const dirs = others.map(p => {
+    const dx = p.x-corner.x, dy = p.y-corner.y, len = Math.hypot(dx,dy)||1;
+    return { x: dx/len, y: dy/len };
+  });
+  const s = 26;
+  const p0 = { x: corner.x + dirs[0].x*s, y: corner.y + dirs[0].y*s };
+  const p2 = { x: corner.x + dirs[1].x*s, y: corner.y + dirs[1].y*s };
+  const p1 = { x: corner.x + (dirs[0].x+dirs[1].x)*s, y: corner.y + (dirs[0].y+dirs[1].y)*s };
+  return el("polyline", {
+    points: `${p0.x},${p0.y} ${p1.x},${p1.y} ${p2.x},${p2.y}`,
+    fill: "none", stroke: "#1f2937", "stroke-width": 3,
+  });
+}
+
+function angleArc(verts, at, color) {
+  const corner = verts[at];
+  const others = ["A","B","C"].filter(k => k !== at).map(k => verts[k]);
+  let a0 = Math.atan2(others[0].y - corner.y, others[0].x - corner.x);
+  let a1 = Math.atan2(others[1].y - corner.y, others[1].x - corner.x);
+  let diff = a1 - a0;
+  while (diff <= -Math.PI) diff += 2*Math.PI;
+  while (diff > Math.PI) diff -= 2*Math.PI;
+  const r = 34;
+  const start = { x: corner.x + r*Math.cos(a0), y: corner.y + r*Math.sin(a0) };
+  const end   = { x: corner.x + r*Math.cos(a0 + diff), y: corner.y + r*Math.sin(a0 + diff) };
+  const sweep = diff > 0 ? 1 : 0;
+  const path = `M ${start.x} ${start.y} A ${r} ${r} 0 0 ${sweep} ${end.x} ${end.y}`;
+  return el("path", { d: path, fill: "none", stroke: color, "stroke-width": 4 });
+}
+
+function colorFor(kind) {
+  return kind === "x" ? "#dc2626" : kind === "angle" ? "#1d4ed8" : "#111827";
+}
+
+// ---------- state + render ----------
+let mode = "Mixed";
+let problem = generate(mode);
+let revealed = 0;
+
+const svg = document.getElementById("svg");
+const modebar = document.getElementById("modebar");
+const stepHeads = ["Step 1 — Which rule?", "Step 2 — Substitute", "Step 3 — Answer"];
+
+["Mixed","Pythagoras","SOHCAHTOA","Sine Rule","Cosine Rule"].forEach(m => {
+  const b = document.createElement("button");
+  b.className = "modebtn" + (m === mode ? " active" : "");
+  b.textContent = m;
+  b.onclick = () => { mode = m; newProblem(); renderModeBar(); };
+  modebar.appendChild(b);
+});
+function renderModeBar() {
+  [...modebar.children].forEach((b) => {
+    b.className = "modebtn" + (b.textContent === mode ? " active" : "");
+  });
+}
+
+function drawTriangle() {
+  svg.innerHTML = "";
+  const { verts, labels, rightAngleAt, angleVerts } = problem;
+  const path = el("path", {
+    d: `M ${verts.A.x},${verts.A.y} L ${verts.B.x},${verts.B.y} L ${verts.C.x},${verts.C.y} Z`,
+    fill: "#fdf6e3", stroke: "#1f2937", "stroke-width": 5, "stroke-linejoin": "round",
+  });
+  svg.appendChild(path);
+
+  if (rightAngleAt) svg.appendChild(rightAngleMark(verts, rightAngleAt));
+
+  (angleVerts || []).forEach((v) => {
+    // is the unknown x at this vertex?
+    const lab = labels.find(l => l.angleAt === v);
+    const isUnknown = lab && lab.kind === "x";
+    svg.appendChild(angleArc(verts, v, isUnknown ? "#dc2626" : "#1d4ed8"));
+  });
+
+  labels.forEach((l) => {
+    if (l.kind === "x") {
+      svg.appendChild(el("circle", {
+        cx: l.x, cy: l.y, r: 34, fill: "#fee2e2", stroke: "#dc2626", "stroke-width": 3,
+      }));
+    }
+    const attrs = {
+      x: l.x, y: l.y, "text-anchor": "middle", "dominant-baseline": "central",
+      "font-size": l.kind === "x" ? 44 : 38, "font-weight": 700,
+      fill: colorFor(l.kind), "font-family": "'Georgia', serif",
+    };
+    if (l.rot) attrs.transform = `rotate(${l.rot} ${l.x} ${l.y})`;
+    const t = el("text", attrs);
+    t.textContent = l.text;
+    svg.appendChild(t);
+  });
+}
+
+function drawSteps() {
+  for (let i = 0; i < 3; i++) {
+    const card = document.getElementById("step" + i);
+    const body = card.querySelector(".body");
+    const head = card.querySelector(".head");
+    head.textContent = stepHeads[i];
+    if (revealed > i) {
+      card.classList.add("open", "stepcard");
+      body.textContent = problem.steps[i];
+      body.style.display = "block";
+    } else {
+      card.classList.remove("open", "stepcard");
+      body.textContent = "";
+      body.style.display = "none";
+    }
+  }
+  const rb = document.getElementById("revealbtn");
+  if (revealed >= 3) { rb.textContent = "All steps shown ✓"; rb.disabled = true; }
+  else { rb.disabled = false; rb.textContent = revealed === 0 ? "Reveal Step 1 →" : `Reveal Step ${revealed + 1} →`; }
+}
+
+function newProblem() {
+  problem = generate(mode);
+  revealed = 0;
+  drawTriangle();
+  drawSteps();
+}
+
+document.getElementById("revealbtn").onclick = () => { revealed = Math.min(3, revealed + 1); drawSteps(); };
+document.getElementById("newbtn").onclick = newProblem;
+
+drawTriangle();
+drawSteps();
+</script>
+</body>
+</html>

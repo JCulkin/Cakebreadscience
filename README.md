@@ -33,12 +33,14 @@ The primary IGCSE Edexcel resources site with printable worksheets (172 total) a
   - `blob-test.html` - Pet testing ground
 
 - **`interactive/`** - Games and interactive tools
+  - `chemical-tests/` - Chemical tests reference tool
   - `angle-rules/` - Geometry angle identification game
-  - `organisms/` - Biology organisms classification tool
-  - `genetics-game/` - Genetics simulator (new)
+  - `triangle-solver_3.html` - Triangle solver
+  - `organisms/` - Biology organisms classification tool (`game.html` + `gallery.html`)
+  - `genetics-game/` - Genetics simulator
   - `food-webs/` - Food web builder (WIP)
-  - `ecological-pyramids/` - Ecological pyramids tool
-  - `quadrilaterals/` - Quadrilateral properties tool
+  - `ecological-pyramids/` - Ecological pyramids tool (WIP)
+  - `quadrilaterals/` - Quadrilateral/polygon classification quiz (WIP)
 
 - **`admin/`** - Admin console (restricted access)
   - Firebase-authenticated; visible only to authorized admin emails
@@ -61,11 +63,10 @@ A companion educational site with additional resources and games.
 **Homepage:** `Elevenstudents/index.html`
 
 #### Folders:
-- **`Flashcards/`** - Additional flashcard decks
 - **`Games/`** - Educational games with Firebase leaderboards
 - **`Maths/`** - Mathematics resources
 - **`Simulations/`** - Science simulations
-- **`Secret/`** - Hidden/bonus content
+- **`Extras/`** - Hidden/bonus content (`bonus-arcade.html`, `bonus-lab.html`, `adventure.html`, `minigames/`)
 
 ---
 
@@ -198,6 +199,15 @@ Keep these in sync when adding/removing admin users.
 ---
 
 ## 📊 Recent Updates
+
+### 2026-05-26 - v2.3.0 Filter Compatibility & Cleanup
+- Renamed `Elevenstudents/Secret/` → `Elevenstudents/Extras/`; renamed all secret-* files to neutral names
+- Removed dead logo click-counter, cleaned Easter Egg / Konami references from HTML and JS
+- Deleted orphaned `Elevenstudents/Flashcards/` duplicate (root `Flashcards/` is the active app)
+
+### 2026-05-01 - v2.2.0 Chemical Tests Tool & Iggy v2
+- Added `interactive/chemical-tests/index.html` — interactive Chemical Tests reference tool
+- `Elevenstudents/Games/iggy.html` upgraded to Version 2 with 5 difficulty levels
 
 ### 2026-03-12 - v2.1.0 Admin Console & Refactor
 - Added `admin/` folder with full admin console

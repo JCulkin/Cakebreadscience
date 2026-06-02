@@ -446,22 +446,34 @@
             content.innerHTML = '<div class="empty-state">Loading spec progress...</div>';
 
             try {
-                // Load all users first (for name/email)
+                // Load user metadata (name/email)
                 const usersSnap = await db.collection('users').get();
                 const userMap = {};
                 usersSnap.forEach(d => { userMap[d.id] = d.data(); });
 
-                // Read specSubjects from the users collection
-                // (saved there by specifications.js alongside lastAccess)
+                // Load canonical spec data from specProgress collection
+                const specSnap = await db.collection('specProgress').get();
+                const specMap = {};
+                specSnap.forEach(d => { specMap[d.id] = d.data(); });
+
+                // Union of all UIDs that have any spec data
+                const allUids = new Set([
+                    ...Object.keys(specMap),
+                    ...Object.keys(userMap).filter(uid => userMap[uid].specSubjects)
+                ]);
+
                 const entries = [];
-                Object.entries(userMap).forEach(([uid, user]) => {
-                    const subjects = user.specSubjects || {};
+                allUids.forEach(uid => {
+                    const user = userMap[uid] || {};
+                    const specDoc = specMap[uid];
+                    // specProgress.subjects is canonical; fall back to users.specSubjects
+                    const subjects = (specDoc && specDoc.subjects) || user.specSubjects || {};
                     const bio = calcProgress(subjects.biology);
                     const chem = calcProgress(subjects.chemistry);
                     const phys = calcProgress(subjects.physics);
                     if (!bio && !chem && !phys) return;
                     entries.push({
-                        name: user.displayName || user.email || 'Unknown',
+                        name: user.displayName || user.email || uid,
                         email: user.email || uid,
                         bio, chem, phys
                     });

@@ -545,8 +545,7 @@
             padding: 4px;
         }
 
-        /* Easter egg 1: Hidden link in footer */
-        .easter-egg-1 {
+        .footer-link {
             position: absolute;
             bottom: 5px;
             right: 10px;
@@ -556,13 +555,12 @@
             transition: all 0.3s ease;
         }
 
-        .easter-egg-1:hover {
+        .footer-link:hover {
             opacity: 1;
             transform: scale(1.2);
         }
 
-        /* Easter egg 2: Konami code for hidden page */
-        .konami-notification {
+        .game-notification {
             position: fixed;
             bottom: 20px;
             left: 20px;
@@ -578,11 +576,10 @@
             border: 1px solid #00ff00;
         }
 
-        .konami-notification.show {
+        .game-notification.show {
             transform: translateY(0);
         }
-        /* Easter egg 2: second hidden link (left) */
-        .easter-egg-2 {
+        .footer-link-alt {
             position: absolute;
             bottom: 5px;
             left: 10px;
@@ -591,11 +588,11 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        .easter-egg-2:hover { opacity: 1; transform: scale(1.2); }
+        .footer-link-alt:hover { opacity: 1; transform: scale(1.2); }
     </style>
 </head>
 <body>
-    <div class="ai-disclaimer">ALL MADE WITH AI<a class="floppy" href="Secret/secret-aracde.html" title="Secret Arcade">💾</a></div>
+    <div class="ai-disclaimer">ALL MADE WITH AI<a class="floppy" href="Extras/bonus-arcade.html" title="Bonus Arcade">💾</a></div>
     
     <div class="container">
         <header>
@@ -712,13 +709,13 @@
                         </div>
                     </div>
 
-                    <div class="project-card" onclick="window.location.href='Secret/secret-adventure.html'">
+                    <div class="project-card" onclick="window.location.href='Extras/adventure.html'">
                         <div class="project-preview">
                             <div class="emoji-container">⛵</div>
                             <div class="line-count">1458 lines</div>
                         </div>
                         <div class="project-info">
-                            <div class="project-title">NOT SO SECRET ADVENTURE</div>
+                            <div class="project-title">The Big Adventure</div>
                             <div class="project-author">by Captain Baffin</div>
                             <div class="project-description">
                                 The voyage begins! Set sail on an epic adventure across digital seas.
@@ -1069,18 +1066,17 @@
         <div class="cta-section">
             <h2 style="margin-bottom: 15px;">Built with AI</h2>
             <p>This has been generated with minimal effort and understanding, just a test!</p>
-            <!-- Secret arcade CTA removed (access via easter egg only) -->
         </div>
 
         <footer>
             <p>Elevenstudents(best) • Built in seconds</p>
-            <div class="easter-egg-1" onclick="window.location.href='Secret/secret-aracde.html'">01001000 01101111 01110000 01100101 01110010 01110100 01100001 01110010 01110011 01101001</div>
-            <div class="easter-egg-2" onclick="window.location.href='Secret/secret-lab.html'">01001100 01000001 01000010</div>
-            <div class="easter-egg-1" title="The voyage begins..." style="opacity: 0.2; font-size: 0.5em; cursor: help;" onclick="window.location.href='Secret/secret-adventure.html'">🚢 captain baffin awaits</div>        </footer>
+            <div class="footer-link" onclick="window.location.href='Extras/bonus-arcade.html'">01001000 01101111 01110000 01100101 01110010 01110100 01100001 01110010 01110011 01101001</div>
+            <div class="footer-link-alt" onclick="window.location.href='Extras/bonus-lab.html'">01001100 01000001 01000010</div>
+            <div class="footer-link" title="The voyage begins..." style="opacity: 0.2; font-size: 0.5em; cursor: help;" onclick="window.location.href='Extras/adventure.html'">🚢 captain baffin awaits</div>        </footer>
     </div>
 
-    <div class="konami-notification" id="konami">
-        Konami Code Activated!
+    <div class="game-notification" id="game-notif">
+        Cheat Code Activated!
     </div>
 
     <script>
@@ -1105,38 +1101,22 @@
             event.target.closest('.nav-tab').classList.add('active');
         }
 
-        // Easter Egg 1: Logo click sequence
-        let logoClickCount = 0;
-        document.getElementById('logo').addEventListener('click', function() {
-            logoClickCount++;
-            if (logoClickCount === 5) {
-                window.location.href = 'admin-panel.html';
-                logoClickCount = 0;
-            }
-        });
+        let cheatCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+        let cheatIndex = 0;
 
-        // Easter Egg 2: Konami code
-        let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-        let konamiIndex = 0;
-        
         document.addEventListener('keydown', function(e) {
-            // Check if the pressed key matches the current key in the sequence
-            if (e.key === konamiCode[konamiIndex]) {
-                konamiIndex++;
-                
-                // If the entire sequence is entered
-                if (konamiIndex === konamiCode.length) {
-                    document.getElementById('konami').classList.add('show');
-                    konamiIndex = 0;
+            if (e.key === cheatCode[cheatIndex]) {
+                cheatIndex++;
+                if (cheatIndex === cheatCode.length) {
+                    document.getElementById('game-notif').classList.add('show');
+                    cheatIndex = 0;
                 }
             } else {
-                // Reset if wrong key
-                konamiIndex = 0;
+                cheatIndex = 0;
             }
         });
 
-        // Hide the Konami notification after 5 seconds
-        document.getElementById('konami').addEventListener('transitionend', function() {
+        document.getElementById('game-notif').addEventListener('transitionend', function() {
             if (this.classList.contains('show')) {
                 setTimeout(() => {
                     this.classList.remove('show');

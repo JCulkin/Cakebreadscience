@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 SECRET LAB | Elevenstudents(best)</title>
+    <title>🔬 Bonus Lab | Elevenstudents(best)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
     <style>
         * {
@@ -259,7 +259,7 @@
             }
         }
 
-        .secret-message {
+        .bonus-message {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -354,9 +354,8 @@
         </div>
     </div>
 
-    <!-- Secret message -->
-    <div class="secret-message" id="secret" style="display: none;">
-        🎉 YOU FOUND THE SECRET LAB! 🎉<br>
+    <div class="bonus-message" id="bonus-message" style="display: none;">
+        🎉 YOU FOUND THE BONUS LAB! 🎉<br>
         <small>Congratulations, researcher! You've unlocked the hidden experiments.</small>
     </div>
 
@@ -575,11 +574,10 @@
             });
         }
 
-        // Easter egg: Show secret message after 10 seconds
         setTimeout(() => {
-            document.getElementById('secret').style.display = 'block';
+            document.getElementById('bonus-message').style.display = 'block';
             setTimeout(() => {
-                document.getElementById('secret').style.display = 'none';
+                document.getElementById('bonus-message').style.display = 'none';
             }, 5000);
         }, 10000);
 

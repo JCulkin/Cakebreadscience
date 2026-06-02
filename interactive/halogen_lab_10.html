@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halogens Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #eef2f5;
+    --bg-deep:    #e2e8ed;
+    --panel:      #ffffff;
+    --ink:        #15191f;
+    --ink-soft:   #5b6470;
+    --rule:       #d4dae0;
+    --accent:     #1c6dd0;
+    --good:       #2f8f4f;
+    --bad:        #c63a3a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    min-height: 100vh;
+  }
+  .topbar {
+    background: var(--ink); color: #fff;
+    padding: 18px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .topbar .left { display: flex; align-items: center; gap: 16px; }
+  .topbar h1 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .topbar .spec { font-size: 12px; font-weight: 500; color: #b8c0cc; letter-spacing: 0.04em; }
+  .back-btn {
+    background: transparent; border: 1.5px solid #4a525e;
+    color: #fff; padding: 6px 14px; font-family: inherit;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    cursor: pointer; border-radius: 6px;
+    transition: all 0.15s;
+  }
+  .back-btn:hover { background: #fff; color: var(--ink); border-color: #fff; }
+  .back-btn.hidden { display: none; }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 28px 32px 48px; }
+
+  /* === Landing === */
+  .landing {
+    max-width: 920px;
+    margin: 40px auto;
+    padding: 0 32px;
+  }
+  .landing-intro {
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .landing-intro h2 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  .landing-intro p {
+    margin: 0;
+    font-size: 16px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .mode-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+  }
+  @media (max-width: 720px) {
+    .mode-cards { grid-template-columns: 1fr; }
+  }
+  .mode-card {
+    background: var(--panel);
+    border: 1.5px solid var(--rule);
+    border-radius: 14px;
+    padding: 28px;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mode-card:hover {
+    border-color: var(--ink);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
+  .mode-card-num {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+  .mode-card h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .mode-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+  }
+  .mode-card-spec {
+    margin-top: auto;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+  }
+  .mode-card-viz {
+    height: 100px;
+    background: var(--bg-deep);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .mode-card-viz svg { width: 100%; height: 100%; }
+
+  /* === Shared === */
+  .tally { display: flex; gap: 14px; margin-bottom: 22px; }
+  .pill {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 999px; padding: 9px 18px; font-size: 13px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pill .num { font-size: 16px; font-weight: 800; }
+  .pill.correct .num { color: var(--good); }
+  .pill.wrong .num   { color: var(--bad); }
+  .panel {
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 24px;
+  }
+  .panel h2 {
+    margin: 0 0 4px; font-size: 14px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
+  }
+
+  /* === Identification mode === */
+  .stage { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; }
+  @media (max-width: 900px) { .stage { grid-template-columns: 1fr; } }
+  .visual-stage {
+    display: grid; grid-template-columns: 1fr 140px;
+    gap: 24px; margin-top: 14px; align-items: start;
+  }
+  .jar-area {
+    position: relative; aspect-ratio: 4 / 5;
+    background: var(--bg-deep); border-radius: 10px; overflow: hidden;
+  }
+  .jar-area svg { width: 100%; height: 100%; display: block; }
+  .thermo-wrap {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 10px;
+  }
+  .thermo-readout {
+    font-size: 22px; font-weight: 800;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  }
+  .thermo {
+    position: relative; width: 90px; height: 460px;
+    cursor: ns-resize; touch-action: none; user-select: none;
+  }
+  .thermo svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+  .thermo-hint {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    color: var(--ink-soft); text-align: center; line-height: 1.4;
+    margin-top: 2px;
+  }
+  .thermo-hint strong { color: var(--ink); }
+
+  .samples { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 14px; }
+  .sample-btn {
+    background: #fff; border: 1.5px solid var(--rule); border-radius: 10px;
+    padding: 14px 12px; cursor: pointer; font-family: inherit;
+    font-size: 15px; font-weight: 600; color: var(--ink);
+    display: flex; align-items: center; gap: 12px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .sample-btn:hover:not(:disabled) { border-color: var(--accent); }
+  .sample-btn.active { border-color: var(--accent); background: #eaf2fc; }
+  .sample-btn.done { opacity: 0.55; cursor: default; }
+  .sample-btn.done.correct { border-color: var(--good); background: #effaf0; opacity: 1; }
+  .sample-btn.done.wrong   { border-color: var(--bad);  background: #fdf0f0; opacity: 1; }
+  .sample-dot {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #d0d6dd; border: 1.5px solid var(--ink); flex-shrink: 0;
+  }
+  .sample-btn .status { margin-left: auto; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; }
+  .sample-btn.done.correct .status { color: var(--good); }
+  .sample-btn.done.wrong   .status { color: var(--bad); }
+  .identify { margin-top: 24px; }
+  .id-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 12px; }
+  .id-btn {
+    background: #fff; border: 1.5px solid var(--rule); border-radius: 10px;
+    padding: 14px 14px; cursor: pointer; font-family: inherit;
+    font-size: 16px; font-weight: 600; color: var(--ink);
+    text-align: left; transition: all 0.15s;
+  }
+  .id-btn:hover:not(:disabled) {
+    border-color: var(--ink); background: var(--ink); color: #fff;
+  }
+  .id-btn:disabled { opacity: 0.4; cursor: default; }
+  .id-btn .formula { margin-left: 6px; font-weight: 500; color: var(--ink-soft); }
+  .id-btn:hover:not(:disabled) .formula { color: #b8c0cc; }
+  .verdict {
+    margin-top: 16px; padding: 14px 16px; border-radius: 10px;
+    border: 1.5px solid; display: none; font-size: 14px; line-height: 1.5;
+  }
+  .verdict.show { display: block; }
+  .verdict.correct { border-color: var(--good); background: #effaf0; }
+  .verdict.wrong   { border-color: var(--bad);  background: #fdf0f0; }
+  .verdict-head {
+    font-size: 13px; font-weight: 800; letter-spacing: 0.04em;
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .verdict.correct .verdict-head { color: var(--good); }
+  .verdict.wrong   .verdict-head { color: var(--bad); }
+  .reset {
+    margin-top: 22px; width: 100%; background: transparent;
+    border: 1.5px solid var(--rule); border-radius: 10px;
+    padding: 11px; font-family: inherit; font-size: 13px;
+    font-weight: 600; color: var(--ink-soft); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .reset:hover { border-color: var(--ink); color: var(--ink); }
+  .empty { text-align: center; padding: 60px 20px; color: var(--ink-soft); font-size: 15px; }
+
+  /* === Displacement mode === */
+  .mix-head {
+    display: flex; justify-content: space-between;
+    align-items: flex-start; gap: 16px;
+  }
+  .empty-btn {
+    flex-shrink: 0;
+    background: transparent; border: 1.5px solid var(--rule);
+    border-radius: 8px; padding: 8px 16px;
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    color: var(--ink-soft); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .empty-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  .disp-bench-title {
+    margin: 0 0 4px;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft);
+  }
+  .disp-bench-sub {
+    font-size: 13px; color: var(--ink-soft);
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  /* central mixing stage is the hero */
+  .mix-panel { margin-bottom: 24px; }
+  .mix-stage {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr;
+    gap: 18px;
+    align-items: center;
+    margin-top: 14px;
+  }
+  @media (max-width: 760px) {
+    .mix-stage { grid-template-columns: 1fr; }
+  }
+
+  /* a shelf of selectable beakers */
+  .shelf { display: flex; flex-direction: column; gap: 10px; }
+  .shelf-label {
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--ink-soft);
+    text-align: center; margin-bottom: 2px;
+  }
+  .shelf-items { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  @media (max-width: 760px) {
+    .shelf-items { flex-direction: row; }
+  }
+  .beaker-pick {
+    background: transparent; border: 2px solid transparent;
+    border-radius: 12px; padding: 6px 4px 4px;
+    cursor: grab; font-family: inherit;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    transition: all 0.15s; width: 84px;
+    -webkit-user-select: none; user-select: none;
+  }
+  .beaker-pick:active { cursor: grabbing; }
+  .beaker-pick.dragging { opacity: 0.4; }
+  .beaker-pick:hover { background: #fff; border-color: var(--rule); }
+  .beaker-pick.active { background: #eaf2fc; border-color: var(--accent); }
+  .beaker-pick svg { width: 56px; height: 64px; }
+  .beaker-pick .bp-name { font-size: 12px; font-weight: 700; color: var(--ink); text-align: center; line-height: 1.2; }
+  .beaker-pick .bp-formula { font-size: 11px; font-weight: 500; color: var(--ink-soft); }
+
+  /* the big mixing vessel in the centre */
+  .mix-centre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .added-icons {
+    display: flex;
+    gap: 18px;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 78px;
+  }
+  .added-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    animation: pop 0.2s ease-out;
+  }
+  .added-icon svg { width: 44px; height: 50px; }
+  .added-icon span {
+    font-size: 11px; font-weight: 600; color: var(--ink-soft);
+  }
+  @keyframes pop {
+    from { transform: translateY(-8px) scale(0.85); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+
+  .mix-vessel {
+    width: 100%;
+    background: var(--bg-deep);
+    border-radius: 14px;
+    aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+    border: 2px dashed transparent;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .mix-vessel.drop-hot {
+    border-color: var(--accent);
+    background: #e3edf9;
+  }
+  .mix-vessel svg { width: 100%; height: 100%; }
+  .mix-plus {
+    text-align: center; font-size: 28px; font-weight: 300;
+    color: var(--ink-soft);
+  }
+
+  .observation {
+    margin-top: 18px;
+    padding: 16px 18px;
+    background: var(--bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    min-height: 70px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .observation .obs-head {
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .word-eq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+  .eq-lhs { color: var(--ink); }
+  .eq-arrow { color: var(--ink-soft); font-weight: 400; }
+  .eq-rhs { color: var(--good); animation: pop 0.2s ease-out; }
+  .eq-rhs.eq-none { color: var(--ink-soft); font-style: italic; font-weight: 500; }
+  .eq-reveal {
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .eq-reveal:hover { background: #2a3340; }
+  .obs-note {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  /* results grid */
+  .results-grid {
+    margin-top: 16px;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .results-grid table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .results-grid th, .results-grid td {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid var(--rule);
+  }
+  .results-grid th {
+    background: var(--bg);
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  .results-grid .col-h {
+    background: var(--bg);
+    font-weight: 700;
+    text-align: left;
+    padding-left: 14px;
+  }
+  .results-grid .cell {
+    height: 48px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .results-grid .cell.empty { color: #b8bec5; }
+  .results-grid .cell.no-rxn { color: var(--ink-soft); font-weight: 500; }
+  .results-grid .cell .colour-bar {
+    display: inline-block;
+    width: 36px; height: 12px;
+    border-radius: 2px;
+    border: 1px solid var(--ink);
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .results-grid .cell.same { background: #f7f9fb; }
+
+  .conclusion {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--good);
+    background: #effaf0;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    display: none;
+  }
+  .conclusion.show { display: block; }
+  .conclusion-head {
+    font-size: 12px; font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--good);
+    margin-bottom: 6px;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="left">
+    <button class="back-btn hidden" id="back-btn">← Modes</button>
+    <h1 id="title">Halogens Lab</h1>
+  </div>
+  <div class="spec" id="spec-text">Group 7 · Edexcel iGCSE 2.5–2.7</div>
+</div>
+
+<!-- === Landing === -->
+<div class="landing" id="landing">
+  <div class="landing-intro">
+    <h2>Halogens</h2>
+    <p>Two practical activities covering Edexcel iGCSE Group 7. Pick a mode to begin.</p>
+  </div>
+  <div class="mode-cards">
+
+    <button class="mode-card" id="mode-id">
+      <div class="mode-card-viz">
+        <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+          <rect x="30" y="20" width="40" height="65" fill="#fff" stroke="#15191f" stroke-width="2" rx="4"/>
+          <rect x="32" y="55" width="36" height="28" fill="#b03a17"/>
+          <rect x="80" y="20" width="40" height="65" fill="#fff" stroke="#15191f" stroke-width="2" rx="4"/>
+          <rect x="82" y="22" width="36" height="61" fill="#5ea93a" opacity="0.55"/>
+          <rect x="130" y="20" width="40" height="65" fill="#fff" stroke="#15191f" stroke-width="2" rx="4"/>
+          <rect x="138" y="68" width="20" height="14" fill="#2d2236"/>
+          <rect x="146" y="60" width="16" height="10" fill="#2d2236"/>
+        </svg>
+      </div>
+      <div class="mode-card-num">MODE 1</div>
+      <h3>Identify the Halogen</h3>
+      <p>Four sealed samples of unknown halogens. Use a thermometer to change the temperature and identify each one from its colour and physical state.</p>
+      <div class="mode-card-spec">Spec 2.5 · 2.6 — Physical properties &amp; trends</div>
+    </button>
+
+    <button class="mode-card" id="mode-disp">
+      <div class="mode-card-viz">
+        <svg viewBox="0 0 200 100" preserveAspectRatio="xMidYMid meet">
+          <!-- 3 test tubes -->
+          <path d="M 38 18 L 38 75 Q 38 88 50 88 Q 62 88 62 75 L 62 18" fill="#fff" stroke="#15191f" stroke-width="2"/>
+          <path d="M 40 50 L 40 75 Q 40 86 50 86 Q 60 86 60 75 L 60 50 Z" fill="#5ea93a" opacity="0.5"/>
+          <path d="M 90 18 L 90 75 Q 90 88 102 88 Q 114 88 114 75 L 114 18" fill="#fff" stroke="#15191f" stroke-width="2"/>
+          <path d="M 92 50 L 92 75 Q 92 86 102 86 Q 112 86 112 75 L 112 50 Z" fill="#d9701f" opacity="0.7"/>
+          <path d="M 142 18 L 142 75 Q 142 88 154 88 Q 166 88 166 75 L 166 18" fill="#fff" stroke="#15191f" stroke-width="2"/>
+          <path d="M 144 50 L 144 75 Q 144 86 154 86 Q 164 86 164 75 L 164 50 Z" fill="#7a4a1c" opacity="0.7"/>
+        </svg>
+      </div>
+      <div class="mode-card-num">MODE 2</div>
+      <h3>Displacement Reactions</h3>
+      <p>Mix halogens with halide solutions. Observe which reactions go and which don't, then use the pattern to deduce the order of reactivity.</p>
+      <div class="mode-card-spec">Spec 2.7 — Reactivity trend in Group 7</div>
+    </button>
+
+  </div>
+</div>
+
+<!-- === Identification mode === -->
+<div class="wrap hidden" id="screen-id">
+  <div class="tally">
+    <div class="pill correct">Correct <span class="num" id="t-correct">0</span></div>
+    <div class="pill wrong">Wrong <span class="num" id="t-wrong">0</span></div>
+  </div>
+  <div class="stage">
+    <div class="panel">
+      <h2 id="sample-heading">Pick a sample to begin</h2>
+      <div class="visual-stage">
+        <div class="jar-area"><svg viewBox="0 0 300 380" id="jar-svg" preserveAspectRatio="xMidYMid meet"></svg></div>
+        <div class="thermo-wrap">
+          <div class="thermo-readout" id="thermo-readout">20 °C</div>
+          <div class="thermo" id="thermo">
+            <svg viewBox="0 0 90 460" id="thermo-svg" preserveAspectRatio="xMidYMid meet"></svg>
+          </div>
+          <div class="thermo-hint"><strong>Drag</strong> up or down<br>to change temperature</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Samples</h2>
+      <div class="samples" id="samples"></div>
+      <div class="identify">
+        <h2>Identify the sample</h2>
+        <div class="id-grid" id="id-grid"><div class="empty">Choose a sample first.</div></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+      <button class="reset" id="reset-id">↻ Re-shuffle samples</button>
+    </div>
+  </div>
+</div>
+
+<!-- === Displacement mode === -->
+<div class="wrap hidden" id="screen-disp">
+
+  <div class="panel mix-panel">
+    <div class="mix-head">
+      <div>
+        <div class="disp-bench-title">Mixing bench</div>
+        <p class="disp-bench-sub">Click or drag a halogen and a halide solution to add them to the flask. They mix straight away — watch the colour for evidence of a reaction.</p>
+      </div>
+      <button class="empty-btn" id="empty-flask">↺ Empty flask</button>
+    </div>
+
+    <div class="mix-stage">
+      <div class="shelf">
+        <div class="shelf-label">Halogen</div>
+        <div class="shelf-items" id="disp-halogens"></div>
+      </div>
+
+      <div class="mix-centre">
+        <div class="added-icons" id="added-icons"></div>
+        <div class="mix-vessel">
+          <svg viewBox="0 0 200 200" id="mix-svg" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+      </div>
+
+      <div class="shelf">
+        <div class="shelf-label">Halide solution</div>
+        <div class="shelf-items" id="disp-halides"></div>
+      </div>
+    </div>
+
+    <div class="observation" id="observation">
+      <div class="obs-head">Word equation</div>
+      <div id="obs-text">Add a halogen and a halide to the flask to begin.</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="disp-bench-title">Results so far</div>
+    <p class="disp-bench-sub">Every combination you mix is recorded below. Fill the grid in to see the pattern of reactivity.</p>
+
+    <div class="results-grid">
+      <table>
+        <thead>
+          <tr id="results-head"></tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <div class="conclusion" id="conclusion">
+      <div class="conclusion-head">Conclusion</div>
+      <div id="conclusion-text"></div>
+    </div>
+
+    <button class="reset" id="reset-disp">↻ Clear results</button>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ===========================================================
+     SHARED DATA
+     =========================================================== */
+  const HALOGENS = {
+    fluorine: {
+      name: "Fluorine", formula: "F₂",
+      gasColour:    "#e8d33b",
+      liquidColour: "#f0c800",
+      solidColour:  "#fff2a8",
+      vapourColour: "#e8d33b",
+      melt: -220, boil: -188,
+      desc: "A pale yellow gas at room temperature. Liquefies bright yellow at -188 °C and freezes to a pale solid at -220 °C."
+    },
+    chlorine: {
+      name: "Chlorine", formula: "Cl₂",
+      gasColour:    "#5ea93a",
+      liquidColour: "#d4a01a",
+      solidColour:  "#e8d870",
+      vapourColour: "#5ea93a",
+      melt: -101, boil: -34,
+      desc: "A green gas at room temperature. Condenses to an amber-yellow liquid at -34 °C and a pale yellow solid at -101 °C."
+    },
+    bromine: {
+      name: "Bromine", formula: "Br₂",
+      gasColour:    "#d9701f",
+      liquidColour: "#b03a17",
+      solidColour:  "#7a2410",
+      vapourColour: "#d9701f",
+      melt: -7, boil: 59,
+      desc: "A red-brown liquid at room temperature. Freezes to a dark reddish-brown solid below -7 °C and boils to an orange gas above 59 °C."
+    },
+    iodine: {
+      name: "Iodine", formula: "I₂",
+      gasColour:    "#7a3d9a",
+      liquidColour: "#3a2440",
+      solidColour:  "#2d2236",
+      vapourColour: "#7a3d9a",
+      melt: 114, boil: 184,
+      desc: "A grey-black solid at room temperature. Sublimes on warming to give a purple vapour, without melting first under normal conditions."
+    }
+  };
+
+  /* ===========================================================
+     SCREEN ROUTING
+     =========================================================== */
+  const $ = id => document.getElementById(id);
+
+  function showLanding() {
+    $("landing").classList.remove("hidden");
+    $("screen-id").classList.add("hidden");
+    $("screen-disp").classList.add("hidden");
+    $("back-btn").classList.add("hidden");
+    $("title").textContent = "Halogens Lab";
+    $("spec-text").textContent = "Group 7 · Edexcel iGCSE 2.5–2.7";
+  }
+  function showId() {
+    $("landing").classList.add("hidden");
+    $("screen-id").classList.remove("hidden");
+    $("screen-disp").classList.add("hidden");
+    $("back-btn").classList.remove("hidden");
+    $("title").textContent = "Identify the Halogen";
+    $("spec-text").textContent = "Spec 2.5–2.6 · Physical properties";
+    initId();
+  }
+  function showDisp() {
+    $("landing").classList.add("hidden");
+    $("screen-id").classList.add("hidden");
+    $("screen-disp").classList.remove("hidden");
+    $("back-btn").classList.remove("hidden");
+    $("title").textContent = "Displacement Reactions";
+    $("spec-text").textContent = "Spec 2.7 · Reactivity trend";
+    initDisp();
+  }
+
+  $("mode-id").onclick = showId;
+  $("mode-disp").onclick = showDisp;
+  $("back-btn").onclick = showLanding;
+
+  /* ===========================================================
+     MODE 1 — IDENTIFY THE HALOGEN
+     =========================================================== */
+  const ID_KEYS = ["fluorine", "chlorine", "bromine", "iodine"];
+  const ID_LABELS = ["A", "B", "C", "D"];
+  const TEMP_MIN = -250;
+  const TEMP_MAX = 113;
+  const TEMP_DEFAULT = 20;
+
+  let id_order = [], id_resolved = [], id_active = -1, id_temp = TEMP_DEFAULT;
+  let id_tally = { correct: 0, wrong: 0 };
+  let id_thermoBound = false;
+
+  function shuffle(a) {
+    const b = a.slice();
+    for (let i = b.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [b[i], b[j]] = [b[j], b[i]];
+    }
+    return b;
+  }
+
+  function initId() {
+    id_order = shuffle(ID_KEYS);
+    id_resolved = [null, null, null, null];
+    id_active = -1;
+    id_temp = TEMP_DEFAULT;
+    id_tally = { correct: 0, wrong: 0 };
+    if (!id_thermoBound) {
+      setupThermoDrag();
+      id_thermoBound = true;
+    }
+    renderIdAll();
+  }
+
+  function stateAt(h, t) {
+    if (t < h.melt) return "solid";
+    if (t < h.boil) return "liquid";
+    return "gas";
+  }
+
+  function vapourFraction(h, t) {
+    if (t >= h.boil) return 1.0;
+    if (h === HALOGENS.iodine) {
+      if (t < 40) return 0;
+      return Math.min(1, (t - 40) / (h.boil - 40));
+    }
+    if (h === HALOGENS.bromine) {
+      if (t < 0) return 0;
+      return Math.min(1, (t - 0) / (h.boil - 0)) * 0.85;
+    }
+    return 0;
+  }
+
+  function renderIdAll() {
+    renderIdTally();
+    renderIdSamples();
+    renderIdJar();
+    renderIdThermo();
+    renderIdIdentify();
+  }
+
+  function renderIdTally() {
+    $("t-correct").textContent = id_tally.correct;
+    $("t-wrong").textContent   = id_tally.wrong;
+  }
+
+  function renderIdSamples() {
+    const root = $("samples");
+    root.innerHTML = "";
+    for (let i = 0; i < 4; i++) {
+      const btn = document.createElement("button");
+      btn.className = "sample-btn";
+      if (i === id_active && id_resolved[i] === null) btn.classList.add("active");
+      if (id_resolved[i] !== null) btn.classList.add("done", id_resolved[i]);
+      const h = HALOGENS[id_order[i]];
+      const showColour = id_resolved[i] !== null;
+      const swatchColour = h.gasColour === h.liquidColour ? h.gasColour : h.liquidColour;
+      btn.innerHTML = `
+        <span class="sample-dot" style="${showColour ? `background:${swatchColour};` : ""}"></span>
+        <span>Sample ${ID_LABELS[i]}</span>
+        ${id_resolved[i] === "correct" ? '<span class="status">✓ DONE</span>' :
+          id_resolved[i] === "wrong"   ? '<span class="status">✗ WRONG</span>' : ''}
+      `;
+      btn.onclick = () => selectIdSample(i);
+      root.appendChild(btn);
+    }
+  }
+
+  function selectIdSample(i) {
+    if (id_resolved[i] !== null) return;
+    id_active = i;
+    id_temp = TEMP_DEFAULT;
+    renderIdAll();
+  }
+
+  function renderIdJar() {
+    const svg = $("jar-svg");
+    const heading = $("sample-heading");
+
+    if (id_active === -1) {
+      heading.textContent = "Pick a sample to begin";
+      svg.innerHTML = `<text x="150" y="190" text-anchor="middle" font-family="Inter" font-size="14" fill="#8892a0">No sample selected</text>`;
+      return;
+    }
+    heading.textContent = `Sample ${ID_LABELS[id_active]}`;
+
+    const h = HALOGENS[id_order[id_active]];
+    const state = stateAt(h, id_temp);
+    const vapFrac = vapourFraction(h, id_temp);
+    const jarLeft = 70, jarRight = 230, jarTop = 80, jarBot = 340;
+    const jarW = jarRight - jarLeft;
+    const jarH = jarBot - jarTop;
+    let contentSVG = "", vapourSVG = "";
+
+    if (state === "solid") {
+      const c = h.solidColour;
+      const isFluorineSolid = h === HALOGENS.fluorine;
+      const op = isFluorineSolid ? 0.5 : 1.0;
+      contentSVG = `
+        <rect x="${jarLeft+15}" y="${jarBot-50}" width="40" height="35" fill="${c}" opacity="${op}" transform="rotate(7 ${jarLeft+35} ${jarBot-32})"/>
+        <rect x="${jarLeft+60}" y="${jarBot-42}" width="50" height="28" fill="${c}" opacity="${op}" transform="rotate(-4 ${jarLeft+85} ${jarBot-28})"/>
+        <rect x="${jarLeft+115}" y="${jarBot-48}" width="35" height="32" fill="${c}" opacity="${op}" transform="rotate(12 ${jarLeft+132} ${jarBot-32})"/>
+        <rect x="${jarLeft+30}" y="${jarBot-22}" width="120" height="12" fill="${c}" opacity="${op}"/>
+      `;
+    } else if (state === "liquid") {
+      const fillFrac = 0.32;
+      const poolTop = jarBot - jarH * fillFrac;
+      contentSVG = `
+        <rect x="${jarLeft+2}" y="${poolTop}" width="${jarW-4}" height="${jarBot - poolTop - 2}" fill="${h.liquidColour}"/>
+        <ellipse cx="${(jarLeft+jarRight)/2}" cy="${poolTop}" rx="${(jarW-4)/2}" ry="6" fill="${h.liquidColour}" opacity="0.6"/>
+      `;
+    } else {
+      contentSVG = `<rect x="${jarLeft+2}" y="${jarTop+2}" width="${jarW-4}" height="${jarH-4}" fill="${h.gasColour}" opacity="0.55"/>`;
+    }
+
+    if (vapFrac > 0 && state !== "gas") {
+      const op = Math.min(0.7, vapFrac * 0.7);
+      const vapTop = state === "liquid" ? jarBot - jarH * 0.32 - 5 : jarBot - 60;
+      vapourSVG = `<rect x="${jarLeft+2}" y="${jarTop+2}" width="${jarW-4}" height="${vapTop - jarTop}" fill="${h.vapourColour}" opacity="${op}"/>`;
+    }
+
+    svg.innerHTML = `
+      <ellipse cx="150" cy="358" rx="85" ry="6" fill="#000" opacity="0.08"/>
+      <rect x="${jarLeft}" y="${jarTop}" width="${jarW}" height="${jarH}" fill="#f7f9fb" stroke="#9aa4b0" stroke-width="2" rx="6"/>
+      ${vapourSVG}
+      ${contentSVG}
+      <rect x="${jarLeft}" y="${jarTop}" width="${jarW}" height="${jarH}" fill="none" stroke="#15191f" stroke-width="2.5" rx="6"/>
+      <line x1="${jarLeft+10}" y1="${jarTop+15}" x2="${jarLeft+10}" y2="${jarBot-40}" stroke="rgba(255,255,255,0.5)" stroke-width="3"/>
+      <rect x="${jarLeft+30}" y="${jarTop-25}" width="${jarW-60}" height="25" fill="#f7f9fb" stroke="#15191f" stroke-width="2.5"/>
+      <rect x="${jarLeft+20}" y="${jarTop-42}" width="${jarW-40}" height="20" fill="#15191f" rx="3"/>
+      <text x="150" y="${jarTop-28}" text-anchor="middle" font-family="Inter" font-size="11" font-weight="700" fill="#fff" letter-spacing="2">${ID_LABELS[id_active]}</text>
+      <text x="150" y="${jarBot+25}" text-anchor="middle" font-family="Inter" font-size="13" font-weight="600" fill="#5b6470">${state.toUpperCase()}</text>
+    `;
+  }
+
+  const THERMO_YTOP = 30;
+  const THERMO_YBOT = 400;
+  const THERMO_BULB_Y = 430;
+  const THERMO_TUBE_X = 45;
+
+  function yForT(t) {
+    const f = (t - TEMP_MIN) / (TEMP_MAX - TEMP_MIN);
+    return THERMO_YBOT - f * (THERMO_YBOT - THERMO_YTOP);
+  }
+  function tForY(y) {
+    const f = (THERMO_YBOT - y) / (THERMO_YBOT - THERMO_YTOP);
+    return TEMP_MIN + f * (TEMP_MAX - TEMP_MIN);
+  }
+
+  function renderIdThermo() {
+    const svg = $("thermo-svg");
+    $("thermo-readout").textContent = `${Math.round(id_temp)} °C`;
+    const tCap = Math.max(TEMP_MIN, Math.min(TEMP_MAX, id_temp));
+    const mercTop = yForT(tCap);
+    let ticks = "";
+    for (let t = -250; t <= 100; t += 50) {
+      const y = yForT(t);
+      const isMajor = (t % 100 === 0);
+      const len = isMajor ? 9 : 5;
+      ticks += `<line x1="${THERMO_TUBE_X+8}" y1="${y}" x2="${THERMO_TUBE_X+8+len}" y2="${y}" stroke="#15191f" stroke-width="${isMajor ? 1.6 : 1}"/>`;
+      if (isMajor) {
+        ticks += `<text x="${THERMO_TUBE_X+22}" y="${y+3.5}" font-family="Inter" font-size="10" font-weight="700" fill="#15191f">${t}</text>`;
+      }
+    }
+    const mercColour = id_temp >= 100 ? "#c63a3a" : id_temp >= 0 ? "#e2701a" : id_temp >= -100 ? "#1c6dd0" : "#5a8edb";
+    const knobY = mercTop;
+    svg.innerHTML = `
+      <rect x="${THERMO_TUBE_X-5}" y="${THERMO_YTOP-8}" width="12" height="${THERMO_BULB_Y - THERMO_YTOP + 8}" fill="#f7f9fb" stroke="#15191f" stroke-width="1.8" rx="6"/>
+      <rect x="${THERMO_TUBE_X-3}" y="${mercTop}" width="8" height="${THERMO_BULB_Y - mercTop + 2}" fill="${mercColour}"/>
+      <circle cx="${THERMO_TUBE_X+1}" cy="${THERMO_BULB_Y}" r="16" fill="${mercColour}" stroke="#15191f" stroke-width="1.8"/>
+      ${ticks}
+      <circle cx="${THERMO_TUBE_X+1}" cy="${knobY}" r="9" fill="#fff" stroke="#15191f" stroke-width="2"/>
+      <circle cx="${THERMO_TUBE_X+1}" cy="${knobY}" r="3" fill="${mercColour}"/>
+    `;
+  }
+
+  function setupThermoDrag() {
+    const el = $("thermo");
+    let dragging = false;
+    function update(evt) {
+      const rect = el.getBoundingClientRect();
+      const ev = evt.touches ? evt.touches[0] : evt;
+      const yInRect = ev.clientY - rect.top;
+      const svgY = (yInRect / rect.height) * 460;
+      const clampedY = Math.max(THERMO_YTOP, Math.min(THERMO_YBOT, svgY));
+      id_temp = tForY(clampedY);
+      renderIdJar();
+      renderIdThermo();
+    }
+    el.addEventListener("mousedown", e => { dragging = true; update(e); e.preventDefault(); });
+    window.addEventListener("mousemove", e => { if (dragging) update(e); });
+    window.addEventListener("mouseup", () => { dragging = false; });
+    el.addEventListener("touchstart", e => { dragging = true; update(e); e.preventDefault(); }, { passive: false });
+    window.addEventListener("touchmove", e => { if (dragging) { update(e); e.preventDefault(); } }, { passive: false });
+    window.addEventListener("touchend", () => { dragging = false; });
+    el.addEventListener("wheel", e => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -5 : 5;
+      id_temp = Math.max(TEMP_MIN, Math.min(TEMP_MAX, id_temp + delta));
+      renderIdJar();
+      renderIdThermo();
+    }, { passive: false });
+  }
+
+  function renderIdIdentify() {
+    const grid = $("id-grid");
+    const verdict = $("verdict");
+    verdict.classList.remove("show");
+    if (id_active === -1 || id_resolved[id_active] !== null) {
+      if (id_active !== -1 && id_resolved[id_active] !== null) {
+        const h = HALOGENS[id_order[id_active]];
+        const isCorrect = id_resolved[id_active] === "correct";
+        verdict.className = "verdict show " + (isCorrect ? "correct" : "wrong");
+        verdict.innerHTML = `
+          <div class="verdict-head">${isCorrect ? "✓ Correct" : "✗ Not quite"}</div>
+          Sample ${ID_LABELS[id_active]} was <strong>${h.name} (${h.formula})</strong>. ${h.desc}
+        `;
+        grid.innerHTML = `<div class="empty">Pick another sample.</div>`;
+        return;
+      }
+      grid.innerHTML = `<div class="empty">Choose a sample first.</div>`;
+      return;
+    }
+    grid.innerHTML = "";
+    ID_KEYS.forEach(k => {
+      const h = HALOGENS[k];
+      const b = document.createElement("button");
+      b.className = "id-btn";
+      b.innerHTML = `${h.name}<span class="formula">${h.formula}</span>`;
+      b.onclick = () => commitIdGuess(k);
+      grid.appendChild(b);
+    });
+  }
+
+  function commitIdGuess(key) {
+    if (id_active === -1 || id_resolved[id_active] !== null) return;
+    const truth = id_order[id_active];
+    const isCorrect = key === truth;
+    id_resolved[id_active] = isCorrect ? "correct" : "wrong";
+    if (isCorrect) id_tally.correct++; else id_tally.wrong++;
+    renderIdAll();
+  }
+
+  $("reset-id").onclick = initId;
+
+  /* ===========================================================
+     MODE 2 — DISPLACEMENT
+     =========================================================== */
+  // Reactivity ladder, most reactive first: chlorine > bromine > iodine.
+  // Each halogen has the colour its aqueous solution takes and the word used
+  // to describe that colour in the observation.
+  const ALL_HALOGENS = {
+    Cl: { name: "Chlorine water",   formula: "Cl₂(aq)", colour: "#9aa84a", textColour: "pale yellow-green", element: "chlorine" },
+    Br: { name: "Bromine water",    formula: "Br₂(aq)", colour: "#c46a1f", textColour: "orange", element: "bromine" },
+    I:  { name: "Iodine solution",  formula: "I₂(aq)",  colour: "#7a4a1c", textColour: "brown", element: "iodine" }
+  };
+  const ALL_HALIDES = {
+    Cl: { name: "Potassium chloride",  formula: "KCl(aq)", element: "chloride", salt: "potassium chloride" },
+    Br: { name: "Potassium bromide",   formula: "KBr(aq)", element: "bromide", salt: "potassium bromide" },
+    I:  { name: "Potassium iodide",    formula: "KI(aq)",  element: "iodide", salt: "potassium iodide" }
+  };
+  // Reactivity ranking (higher = more reactive). Drives every outcome.
+  const REACTIVITY = { Cl: 3, Br: 2, I: 1 };
+
+  const DISP_KEYS = ["Cl", "Br", "I"];
+  let DISP_HALOGENS = [];
+  let DISP_HALIDES = [];
+
+  function buildReagentSets() {
+    DISP_HALOGENS = DISP_KEYS.map(k => ({ key: k, ...ALL_HALOGENS[k] }));
+    DISP_HALIDES  = DISP_KEYS.map(k => ({ key: k, ...ALL_HALIDES[k] }));
+  }
+
+  function outcomeFor(halogenKey, halideKey) {
+    const halogen = ALL_HALOGENS[halogenKey];
+    const halide  = ALL_HALIDES[halideKey];
+
+    // word-equation left-hand side is always halogen + halide salt
+    const wordLHS = `${halogen.element} + ${halide.salt}`;
+
+    if (halogenKey === halideKey) {
+      return {
+        reacts: false,
+        sameHalogen: true,
+        productColour: halogen.colour,
+        productText: `The solution stays the same colour — you have added ${halogen.name.toLowerCase()} to a solution of its own halide, so there is nothing to displace.`,
+        wordLHS,
+        wordRHS: "no reaction"
+      };
+    }
+
+    if (REACTIVITY[halogenKey] > REACTIVITY[halideKey]) {
+      const displaced = ALL_HALOGENS[halideKey];          // the freed halogen
+      const newSalt = `potassium ${halogen.element.replace(/ine$/, "ide")}`; // chlorine→chloride etc.
+      return {
+        reacts: true,
+        productColour: displaced.colour,
+        productText: `The solution turns ${displaced.textColour}. ${halogen.name} has displaced ${displaced.element} from the ${halide.salt}.`,
+        wordLHS,
+        wordRHS: `${newSalt} + ${displaced.element}`,
+        displacedKey: halideKey
+      };
+    }
+
+    // Less reactive halogen can't displace
+    return {
+      reacts: false,
+      productColour: halogen.colour,
+      productText: `No reaction. ${halogen.name} is not reactive enough to displace ${halide.element} from its salt, so the solution just takes on the colour of the added ${halogen.element}.`,
+      wordLHS,
+      wordRHS: "no reaction"
+    };
+  }
+
+  // State
+  let disp_selectedHalogen = null;
+  let disp_selectedHalide = null;
+  let disp_lastResult = null;
+  let disp_rhsRevealed = false;
+  let disp_results = {};  // key "Cl-Br" -> outcome cached
+  let touchDrag = null;
+
+  let disp_dropBound = false;
+  function initDisp() {
+    buildReagentSets();
+    disp_selectedHalogen = null;
+    disp_selectedHalide = null;
+    disp_lastResult = null;
+    disp_results = {};
+    if (!disp_dropBound) {
+      setupFlaskDrop();
+      disp_dropBound = true;
+    }
+    renderDispAll();
+  }
+
+  function renderDispAll() {
+    renderDispReagents();
+    renderDispVessel();
+    renderDispObs();
+    renderDispResults();
+  }
+
+  // A small beaker SVG with liquid of a given colour (or empty/clear for halides)
+  function beakerSVG(colour, opacity) {
+    const fill = colour
+      ? `<path d="M 10 32 L 10 52 Q 10 58 16 58 L 40 58 Q 46 58 46 52 L 46 32 Z" fill="${colour}" opacity="${opacity}"/>`
+      : `<path d="M 10 38 L 10 52 Q 10 58 16 58 L 40 58 Q 46 58 46 52 L 46 38 Z" fill="#dfe6ec" opacity="0.8"/>`;
+    return `
+      <svg viewBox="0 0 56 64" preserveAspectRatio="xMidYMid meet">
+        <path d="M 8 10 L 10 52 Q 10 58 16 58 L 40 58 Q 46 58 46 52 L 48 10"
+              fill="#fff" stroke="#15191f" stroke-width="2" stroke-linejoin="round"/>
+        ${fill}
+        <line x1="6" y1="10" x2="50" y2="10" stroke="#15191f" stroke-width="2" stroke-linecap="round"/>
+        <line x1="14" y1="20" x2="20" y2="20" stroke="#9aa4b0" stroke-width="1.2"/>
+        <line x1="14" y1="28" x2="20" y2="28" stroke="#9aa4b0" stroke-width="1.2"/>
+      </svg>`;
+  }
+
+  function renderDispReagents() {
+    const hRoot = $("disp-halogens");
+    const xRoot = $("disp-halides");
+    hRoot.innerHTML = "";
+    xRoot.innerHTML = "";
+
+    DISP_HALOGENS.forEach(h => {
+      hRoot.appendChild(makeBeaker(h, "halogen"));
+    });
+    DISP_HALIDES.forEach(x => {
+      xRoot.appendChild(makeBeaker(x, "halide"));
+    });
+  }
+
+  function makeBeaker(reagent, kind) {
+    const isHalogen = kind === "halogen";
+    const colour = isHalogen ? reagent.colour : null;
+    const selected = isHalogen
+      ? disp_selectedHalogen === reagent.key
+      : disp_selectedHalide === reagent.key;
+
+    const el = document.createElement("div");
+    el.className = "beaker-pick" + (selected ? " active" : "");
+    el.setAttribute("draggable", "true");
+    el.dataset.kind = kind;
+    el.dataset.key = reagent.key;
+    el.innerHTML = `
+      ${beakerSVG(colour, 0.85)}
+      <span class="bp-name">${reagent.name}</span>
+      <span class="bp-formula">${reagent.formula}</span>
+    `;
+
+    // Click to add
+    el.addEventListener("click", () => dropReagent(kind, reagent.key));
+
+    // Desktop drag
+    el.addEventListener("dragstart", e => {
+      e.dataTransfer.setData("text/plain", JSON.stringify({ kind, key: reagent.key }));
+      e.dataTransfer.effectAllowed = "copy";
+      el.classList.add("dragging");
+    });
+    el.addEventListener("dragend", () => el.classList.remove("dragging"));
+
+    // Touch drag — arm on touchstart, dropped if released over the flask
+    el.addEventListener("touchstart", () => {
+      touchDrag = { kind, key: reagent.key, el };
+      el.classList.add("dragging");
+    }, { passive: true });
+
+    return el;
+  }
+
+  // Drop a reagent into the flask
+  function dropReagent(kind, key) {
+    if (kind === "halogen") disp_selectedHalogen = key;
+    else disp_selectedHalide = key;
+    tryMix();
+  }
+
+  // Whenever both are selected, mix immediately and record the result.
+  function tryMix() {
+    if (disp_selectedHalogen && disp_selectedHalide) {
+      const out = outcomeFor(disp_selectedHalogen, disp_selectedHalide);
+      disp_lastResult = out;
+      disp_rhsRevealed = false;  // hide RHS until the student clicks
+      disp_results[`${disp_selectedHalogen}-${disp_selectedHalide}`] = out;
+    }
+    renderDispAll();
+  }
+
+  // The big central mixing vessel
+  function renderDispVessel() {
+    const svg = $("mix-svg");
+    const icons = $("added-icons");
+
+    // small icon for an added reagent
+    const iconHTML = (reagent, kind) => {
+      const colour = kind === "halogen" ? reagent.colour : null;
+      return `<div class="added-icon">
+        ${beakerSVG(colour, 0.85)}
+        <span>${reagent.formula}</span>
+      </div>`;
+    };
+
+    // populate the icon row above the flask
+    let iconRow = "";
+    if (disp_selectedHalogen) iconRow += iconHTML(ALL_HALOGENS[disp_selectedHalogen], "halogen");
+    if (disp_selectedHalide)  iconRow += iconHTML(ALL_HALIDES[disp_selectedHalide], "halide");
+    icons.innerHTML = iconRow;
+
+    // Before both are chosen, show a flask awaiting reagents
+    if (!disp_selectedHalogen || !disp_selectedHalide) {
+      const halogenCol = disp_selectedHalogen
+        ? ALL_HALOGENS[disp_selectedHalogen].colour : null;
+      const hint = !disp_selectedHalogen && !disp_selectedHalide
+        ? "Add a beaker here"
+        : !disp_selectedHalogen ? "Now add a halogen" : "Now add a halide";
+      svg.innerHTML = `
+        ${flaskSVG(halogenCol, halogenCol ? 0.6 : null)}
+        <text x="100" y="186" text-anchor="middle" font-family="Inter" font-size="12" font-weight="600" fill="#8892a0">${hint}</text>
+      `;
+      return;
+    }
+
+    const r = disp_lastResult;
+    svg.innerHTML = `${flaskSVG(r.productColour, 0.9)}`;
+  }
+
+  // Conical (Erlenmeyer) flask, 200x200 viewBox, optional liquid fill
+  function flaskSVG(colour, opacity) {
+    // flask outline: narrow neck at top widening to a base
+    const outline = `
+      M 85 28
+      L 85 70
+      L 48 150
+      Q 44 162 56 162
+      L 144 162
+      Q 156 162 152 150
+      L 115 70
+      L 115 28
+      Z`;
+    let liquid = "";
+    if (colour) {
+      // liquid fills the lower body region
+      liquid = `
+        <clipPath id="flaskclip">
+          <path d="${outline}"/>
+        </clipPath>
+        <g clip-path="url(#flaskclip)">
+          <rect x="40" y="${opacity > 0.8 ? 95 : 120}" width="120" height="80" fill="${colour}" opacity="${opacity}"/>
+          <ellipse cx="100" cy="${opacity > 0.8 ? 95 : 120}" rx="60" ry="5" fill="${colour}" opacity="${Math.min(1, opacity + 0.1)}"/>
+        </g>`;
+    }
+    return `
+      ${liquid}
+      <path d="${outline}" fill="none" stroke="#15191f" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="80" y1="28" x2="120" y2="28" stroke="#15191f" stroke-width="3" stroke-linecap="round"/>
+      <line x1="62" y1="120" x2="80" y2="120" stroke="rgba(255,255,255,0.55)" stroke-width="3" stroke-linecap="round"/>
+    `;
+  }
+
+  function renderDispObs() {
+    const box = $("obs-text");
+    if (!disp_lastResult) {
+      box.innerHTML = "Add a halogen and a halide to the flask to begin.";
+      return;
+    }
+    const r = disp_lastResult;
+
+    if (!disp_rhsRevealed) {
+      // show LHS + an arrow + a reveal prompt
+      box.innerHTML = `
+        <div class="word-eq">
+          <span class="eq-lhs">${r.wordLHS}</span>
+          <span class="eq-arrow">→</span>
+          <button class="eq-reveal" id="eq-reveal">reveal products</button>
+        </div>`;
+      $("eq-reveal").onclick = () => { disp_rhsRevealed = true; renderDispObs(); };
+    } else {
+      // show the full word equation, plus the observation sentence
+      box.innerHTML = `
+        <div class="word-eq">
+          <span class="eq-lhs">${r.wordLHS}</span>
+          <span class="eq-arrow">→</span>
+          <span class="eq-rhs ${r.reacts ? "" : "eq-none"}">${r.wordRHS}</span>
+        </div>
+        <div class="obs-note">${r.productText}</div>`;
+    }
+  }
+
+  function renderDispResults() {
+    // dynamic header
+    const head = $("results-head");
+    head.innerHTML = `<th></th>` + DISP_HALIDES.map(hx => `<th>+ ${hx.formula}</th>`).join("");
+
+    const tbody = $("results-body");
+    tbody.innerHTML = "";
+    DISP_HALOGENS.forEach(hg => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td class="col-h">${hg.formula} +</td>`;
+      DISP_HALIDES.forEach(hx => {
+        const key = `${hg.key}-${hx.key}`;
+        const cell = disp_results[key];
+        let td = "";
+        if (!cell) {
+          td = `<td class="cell empty">—</td>`;
+        } else if (cell.sameHalogen) {
+          td = `<td class="cell same no-rxn">same colour</td>`;
+        } else if (cell.reacts) {
+          td = `<td class="cell">
+            <span class="colour-bar" style="background:${cell.productColour};"></span>
+            ${ALL_HALOGENS[cell.displacedKey].textColour}
+          </td>`;
+        } else {
+          td = `<td class="cell no-rxn">no reaction</td>`;
+        }
+        tr.innerHTML += td;
+      });
+      tbody.appendChild(tr);
+    });
+
+    // Conclusion appears once every cell in the grid is filled
+    const total = DISP_HALOGENS.length * DISP_HALIDES.length;
+    const allDone = Object.keys(disp_results).length === total;
+    const concl = $("conclusion");
+    if (allDone) {
+      concl.classList.add("show");
+      const order = DISP_KEYS
+        .slice()
+        .sort((a, b) => REACTIVITY[b] - REACTIVITY[a])
+        .map(k => ALL_HALOGENS[k].element)
+        .join(" > ");
+      $("conclusion-text").innerHTML = `
+        A halogen only displaces a halide that sits <strong>below it</strong> in the group. The pattern of reactions gives the reactivity order:
+        <strong>${order}</strong>. Reactivity decreases down Group 7.
+      `;
+    } else {
+      concl.classList.remove("show");
+    }
+  }
+
+  // Empty the flask only (keep recorded results)
+  $("empty-flask").onclick = () => {
+    disp_selectedHalogen = null;
+    disp_selectedHalide = null;
+    disp_lastResult = null;
+    disp_rhsRevealed = false;
+    renderDispAll();
+  };
+
+  $("reset-disp").onclick = () => {
+    disp_results = {};
+    disp_selectedHalogen = null;
+    disp_selectedHalide = null;
+    disp_lastResult = null;
+    disp_rhsRevealed = false;
+    renderDispAll();
+  };
+
+  // Wire up the flask as a drop target (once)
+  function setupFlaskDrop() {
+    const vessel = document.querySelector(".mix-vessel");
+    if (!vessel) return;
+    vessel.addEventListener("dragover", e => { e.preventDefault(); vessel.classList.add("drop-hot"); });
+    vessel.addEventListener("dragleave", () => vessel.classList.remove("drop-hot"));
+    vessel.addEventListener("drop", e => {
+      e.preventDefault();
+      vessel.classList.remove("drop-hot");
+      try {
+        const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        dropReagent(data.kind, data.key);
+      } catch (_) {}
+    });
+
+    // touch end over the flask
+    window.addEventListener("touchend", e => {
+      if (!touchDrag) return;
+      const t = e.changedTouches[0];
+      const elUnder = document.elementFromPoint(t.clientX, t.clientY);
+      if (elUnder && elUnder.closest(".mix-vessel")) {
+        dropReagent(touchDrag.kind, touchDrag.key);
+      }
+      if (touchDrag.el) touchDrag.el.classList.remove("dragging");
+      touchDrag = null;
+    });
+  }
+
+  /* ===========================================================
+     BOOT
+     =========================================================== */
+  showLanding();
+})();
+</script>
+
+</body>
+</html>

@@ -210,6 +210,14 @@ body {
     text-transform: uppercase;
 }
 
+.tool-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 10px;
+}
+
+.tool-cols .tool-link { margin-bottom: 6px; }
+
 .card-desc {
     margin: 4px 0 0;
     font-size: 14px;
