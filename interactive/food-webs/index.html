@@ -1,1066 +1,969 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Food Web Builder - Cakebread Science</title>
-  <meta name="description" content="Drag and drop organisms to build food webs, then draw energy arrows and check your ecosystem." />
-  <meta name="keywords" content="IGCSE, biology, food webs, ecosystems, interactive" />
-  <meta name="author" content="Cakebread Science" />
-  <link rel="icon" type="image/png" href="/favicon.png" />
-  <meta name="theme-color" content="#0f766e" />
-  <link rel="canonical" href="https://cakebreadscience.com/interactive/food-webs/" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --ink: #0f172a;
-      --muted: #475569;
-      --bg: #f6f1e7;
-      --panel: #ffffff;
-      --accent: #0f766e;
-      --accent-2: #f59e0b;
-      --accent-3: #ef4444;
-      --soft: rgba(15, 118, 110, 0.12);
-      --ring: rgba(15, 118, 110, 0.3);
-      --grid: rgba(15, 23, 42, 0.08);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Food Webs — IGCSE Ecology</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* palette: savanna field-study */
+  --paper:#F6F3EA;
+  --paper-2:#EFEBDD;
+  --ink:#20281F;
+  --ink-soft:#5A6354;
+  --line:#CFC8B4;
+  --line-strong:#A9A189;
 
-    * {
-      box-sizing: border-box;
-    }
+  --producer:#4E7D3A;
+  --primary:#C58A24;
+  --secondary:#C2622C;
+  --tertiary:#9A3A2C;
+  --decomposer:#6E5A7A;
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: "Manrope", system-ui, sans-serif;
-      color: var(--ink);
-      background:
-        radial-gradient(circle at 15% 10%, rgba(15, 118, 110, 0.16), transparent 50%),
-        radial-gradient(circle at 80% 0%, rgba(245, 158, 11, 0.18), transparent 45%),
-        linear-gradient(135deg, #f7efe1 0%, #f2f7f6 55%, #eef3f2 100%);
-      padding: 18px;
-    }
+  --producer-tint:#E6EEDC;
+  --primary-tint:#F4E9CF;
+  --secondary-tint:#F3E0D2;
+  --tertiary-tint:#EFD8D2;
+  --decomposer-tint:#E9E2EE;
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+  --good:#3E7D46;
+  --bad:#B23A2C;
 
-    .shell {
-      max-width: 1300px;
-      margin: 0 auto;
-      display: grid;
-      gap: 18px;
-    }
+  --r:14px;
+  --shadow:0 1px 0 rgba(32,40,31,.04), 0 8px 24px -16px rgba(32,40,31,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Inter",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.45;
+}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;margin:0;line-height:1.05}
+.mono{font-family:"Space Mono",ui-monospace,monospace}
 
-    header {
-      display: grid;
-      gap: 10px;
-      padding: 12px 4px 0;
-      position: relative;
-    }
+/* ---------- top bar ---------- */
+header{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);
+}
+.bar{
+  max-width:1600px;margin:0 auto;padding:14px 20px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand .eyebrow{font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+.brand h1{font-size:28px;font-weight:800;letter-spacing:-.01em}
+.brand .biome{font-size:16px;color:var(--ink-soft)}
 
-    .wip-sticker {
-      position: absolute;
-      top: 0;
-      right: 0;
-      background: #f59e0b;
-      color: #1f2937;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.72rem;
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
-    }
+.modeswitch{display:flex;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
+.modeswitch button{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:16px;
+  border:0;background:transparent;color:var(--ink-soft);
+  padding:9px 18px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:8px;
+}
+.modeswitch button .dot{font-size:15px}
+.modeswitch button[aria-selected="true"]{background:var(--ink);color:var(--paper);box-shadow:var(--shadow)}
+.modeswitch button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.08);
-      color: var(--muted);
-      font-size: 0.85rem;
-      width: fit-content;
-      transition: background 0.2s ease, color 0.2s ease;
-    }
+main{max-width:1600px;margin:0 auto;padding:20px}
 
-    .back-link:hover {
-      background: rgba(15, 23, 42, 0.15);
-      color: var(--ink);
-    }
+/* ---------- ecosystem switcher ---------- */
+.ecobar{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.ecolabel{font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft)}
+.webswitch{display:inline-flex;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:4px;gap:4px}
+.webswitch button{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:16px;
+  border:0;background:transparent;color:var(--ink-soft);
+  padding:9px 18px;border-radius:999px;cursor:pointer;display:flex;align-items:center;gap:8px;
+}
+.webswitch button[aria-selected="true"]{background:var(--ink);color:var(--paper);box-shadow:var(--shadow)}
+.webswitch button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-    h1 {
-      font-family: "Fraunces", serif;
-      font-size: clamp(2.2rem, 4vw, 3.2rem);
-      margin: 0;
-      letter-spacing: -0.01em;
-    }
+/* ---------- shared toolbar ---------- */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tool{
+  font-family:"Inter",sans-serif;font-size:16px;font-weight:500;
+  background:var(--paper-2);border:1px solid var(--line);color:var(--ink);
+  padding:10px 17px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+}
+.tool:hover{border-color:var(--line-strong)}
+.tool[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tool:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.tool .k{font-family:"Space Mono",monospace;font-size:11px;opacity:.7}
+.toolbar .sep{flex:1}
+.hint{font-size:16px;color:var(--ink-soft)}
 
-    .lead {
-      margin: 0;
-      max-width: 780px;
-      color: var(--muted);
-    }
+/* ---------- demo layout ---------- */
+.stage-wrap{
+  display:grid;grid-template-columns:1fr 400px;gap:20px;align-items:start;
+}
+.stage{
+  background:
+    linear-gradient(0deg, var(--producer-tint) 0%, var(--producer-tint) 25%, var(--primary-tint) 25%, var(--primary-tint) 50%, var(--secondary-tint) 50%, var(--secondary-tint) 74%, var(--tertiary-tint) 74%, var(--tertiary-tint) 100%);
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;position:relative;box-shadow:var(--shadow);
+}
+.stage svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.bandlabel{font-family:"Space Mono",monospace;font-size:14px;letter-spacing:.14em;text-transform:uppercase;fill:var(--ink-soft)}
+.bandlabel .lvl{font-weight:700;fill:var(--ink)}
 
-    .layout {
-      display: grid;
-      gap: 18px;
-      grid-template-columns: minmax(260px, 0.9fr) minmax(0, 2.1fr);
-      align-items: start;
-    }
+/* nodes */
+.node{cursor:pointer}
+.node .ring{stroke-width:2.5;transition:opacity .15s, stroke-width .15s}
+.node .disc{fill:#fff}
+.node .ico{font-size:30px;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.node .nm{font-family:"Inter",sans-serif;font-size:15px;font-weight:600;text-anchor:middle;fill:var(--ink);pointer-events:none}
+.node .nmbg{fill:#fff;opacity:.86;stroke:var(--line);stroke-width:1;pointer-events:none}
+.node.dim{opacity:.28}
+.node.removed .disc{fill:#E7E3D6}
+.node.removed .ico{opacity:.35}
+.node.sel .ring{stroke-width:5}
+.node.affected .ring{stroke:var(--bad)}
+.node:focus-visible{outline:none}
+.node:focus-visible .ring{stroke:var(--ink);stroke-width:5}
 
-    @media (max-width: 980px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-    }
+.edge{fill:none;stroke:var(--line-strong);stroke-width:2;transition:opacity .15s, stroke .15s, stroke-width .15s}
+.edge.dim{opacity:.12}
+.edge.hot{stroke:var(--ink);stroke-width:3.5;opacity:1}
 
-    .panel {
-      background: var(--panel);
-      border-radius: 22px;
-      padding: 18px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
-      border: 1px solid rgba(15, 23, 42, 0.06);
-    }
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:16px;color:var(--ink-soft)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.legend i{width:16px;height:16px;border-radius:50%;border:2px solid;display:inline-block}
 
-    .panel h2 {
-      font-family: "Fraunces", serif;
-      margin: 0 0 10px;
-      font-size: 1.35rem;
-    }
+/* specimen card */
+.panel{
+  background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);
+  padding:24px;position:sticky;top:84px;box-shadow:var(--shadow);
+}
+.panel.empty{color:var(--ink-soft);font-size:16px}
+.panel .ptag{font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.panel .phead{display:flex;align-items:center;gap:14px;margin:8px 0 4px}
+.panel .phead .big{font-size:46px;line-height:1}
+.panel .phead h2{font-size:28px;font-weight:800}
+.role-pill{display:inline-flex;align-items:center;gap:6px;font-family:"Space Mono",monospace;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 11px;border-radius:6px;border:1.5px solid}
+.kv{margin-top:18px}
+.kv h3{font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:15px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;display:inline-flex;gap:7px;align-items:center}
+.chip.none{color:var(--ink-soft);font-style:italic;background:transparent;border-style:dashed}
+.note{margin-top:18px;font-size:15px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:14px}
 
-    .controls {
-      display: grid;
-      gap: 12px;
-    }
+/* pyramid */
+.pyr{padding:40px 30px 46px}
+.pyr-row{display:flex;align-items:center;gap:16px;margin:0 auto}
+.pyr-bar{height:88px;display:flex;align-items:center;justify-content:center;gap:10px;border-radius:8px;color:#fff;font-weight:600;font-size:19px;position:relative;margin:9px auto;transition:width .4s}
+.pyr-meta{font-family:"Space Mono",monospace;font-size:16px;color:var(--ink-soft);text-align:center;margin-top:4px}
+.pyr-ico{font-size:34px}
+.pyr-energy{position:absolute;right:-150px;font-family:"Space Mono",monospace;font-size:16px;color:var(--ink);white-space:nowrap}
+.pyr-loss{position:absolute;left:-190px;font-family:"Space Mono",monospace;font-size:14px;color:var(--secondary);white-space:nowrap}
 
-    .row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
+/* ---------- interactive ---------- */
+.quiz{max-width:680px;margin:0 auto}
+.qbar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.progress{flex:1;height:8px;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--ink);width:0;transition:width .35s}
+.qcount{font-family:"Space Mono",monospace;font-size:12px;color:var(--ink-soft)}
+.score{font-family:"Space Mono",monospace;font-size:12px;font-weight:700}
 
-    label {
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
+.card{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:var(--shadow)}
+.qtype{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px}
+.qtext{font-family:"Bricolage Grotesque",sans-serif;font-size:21px;font-weight:600;line-height:1.2;margin-bottom:4px}
+.qsub{font-size:13.5px;color:var(--ink-soft);margin-bottom:18px}
 
-    select, button {
-      font-family: inherit;
-      border-radius: 12px;
-      border: 1px solid rgba(15, 23, 42, 0.16);
-      padding: 8px 12px;
-      background: #ffffff;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.2s ease, border 0.2s ease;
-    }
+.chainline{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:18px}
+.chainline .org{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px}
+.chainline .org .e{font-size:20px}
+.chainline .ar{color:var(--ink-soft);font-weight:700}
+.chainline .org.focus{background:var(--primary-tint);border:1.5px solid var(--primary);border-radius:8px;padding:2px 8px}
 
-    button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
-      border-color: rgba(15, 118, 110, 0.5);
-    }
+.opts{display:grid;gap:10px}
+.opt{
+  text-align:left;width:100%;font-family:"Inter",sans-serif;font-size:15px;font-weight:500;
+  background:#fff;border:1.5px solid var(--line);border-radius:11px;padding:14px 16px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;transition:border-color .12s, background .12s;
+}
+.opt .e{font-size:20px}
+.opt:hover:not(:disabled){border-color:var(--line-strong)}
+.opt:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.opt.correct{border-color:var(--good);background:#EAF3EB}
+.opt.wrong{border-color:var(--bad);background:#F6E9E6}
+.opt:disabled{cursor:default}
+.opt .mark{margin-left:auto;font-weight:700}
 
-    button.primary {
-      background: var(--accent);
-      color: #ffffff;
-      border-color: transparent;
-    }
+/* build challenge */
+.builder{margin-bottom:18px}
+.slots{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:60px;background:#fff;border:1.5px dashed var(--line-strong);border-radius:11px;padding:12px;margin-bottom:12px}
+.slots:empty::after{content:"Tap organisms below in order: producer first";color:var(--ink-soft);font-size:13px}
+.bank{display:flex;gap:8px;flex-wrap:wrap}
+.tok{font-family:"Inter",sans-serif;font-size:14px;font-weight:600;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:9px 13px;cursor:pointer;display:inline-flex;gap:7px;align-items:center}
+.tok .e{font-size:19px}
+.tok:hover{border-color:var(--line-strong)}
+.tok:disabled{opacity:.4;cursor:default}
+.slots .tok{cursor:pointer}
+.slots .ar{color:var(--ink-soft);font-weight:700}
 
-    button.ghost {
-      background: transparent;
-    }
+.feedback{margin-top:16px;border-radius:11px;padding:14px 16px;font-size:14px;display:none}
+.feedback.show{display:block}
+.feedback.ok{background:#EAF3EB;border:1px solid var(--good)}
+.feedback.no{background:#F6E9E6;border:1px solid var(--bad)}
+.feedback b{font-family:"Bricolage Grotesque",sans-serif}
+.qactions{display:flex;gap:10px;margin-top:16px}
+.btn{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:15px;border:0;border-radius:10px;padding:12px 20px;cursor:pointer}
+.btn-primary{background:var(--ink);color:var(--paper)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
-    .status {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(15, 118, 110, 0.08);
-      border: 1px solid rgba(15, 118, 110, 0.15);
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
+/* results */
+.results{text-align:center;padding:40px 24px}
+.results .grade{font-family:"Bricolage Grotesque",sans-serif;font-size:64px;font-weight:800;line-height:1}
+.results .sub{font-size:16px;color:var(--ink-soft);margin:8px 0 22px}
+.breakdown{display:inline-grid;gap:8px;text-align:left;margin:0 auto 24px;font-size:14px}
+.breakdown div{display:flex;justify-content:space-between;gap:30px}
 
-    .legend {
-      display: grid;
-      gap: 8px;
-      margin-top: 8px;
-    }
+.hide{display:none !important}
 
-    .legend span {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-    }
-
-    .bank {
-      display: grid;
-      gap: 10px;
-      max-height: 520px;
-      overflow: auto;
-      padding-right: 4px;
-    }
-
-    .card {
-      display: grid;
-      grid-template-columns: 54px 1fr;
-      gap: 10px;
-      align-items: center;
-      padding: 10px;
-      border-radius: 16px;
-      background: #ffffff;
-      border: 1px solid rgba(15, 23, 42, 0.1);
-      cursor: grab;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
-    }
-
-    .thumb {
-      width: 54px;
-      height: 54px;
-      border-radius: 12px;
-      background: #eef2f7;
-      overflow: hidden;
-      border: 1px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .card h3 {
-      margin: 0 0 2px;
-      font-size: 0.98rem;
-    }
-
-    .card p {
-      margin: 0;
-      font-size: 0.78rem;
-      color: var(--muted);
-    }
-
-    .role-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .board-shell {
-      display: grid;
-      gap: 12px;
-    }
-
-    .board-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .board {
-      position: relative;
-      min-height: 560px;
-      border-radius: 24px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.86));
-      border: 1px solid rgba(15, 23, 42, 0.1);
-      overflow: hidden;
-    }
-
-    .board::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-      background-size: 40px 40px;
-      opacity: 0.7;
-      pointer-events: none;
-    }
-
-    .board-inner {
-      position: absolute;
-      inset: 0;
-    }
-
-    .node {
-      position: absolute;
-      display: grid;
-      grid-template-columns: 46px 1fr;
-      gap: 8px;
-      align-items: center;
-      padding: 8px 10px;
-      border-radius: 16px;
-      background: #ffffff;
-      border: 2px solid transparent;
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
-      cursor: grab;
-      user-select: none;
-      min-width: 170px;
-    }
-
-    .node.active {
-      border-color: var(--accent);
-      box-shadow: 0 16px 30px rgba(15, 118, 110, 0.25);
-    }
-
-    .node .thumb {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-    }
-
-    .node h4 {
-      margin: 0 0 2px;
-      font-size: 0.92rem;
-    }
-
-    .node small {
-      color: var(--muted);
-      font-size: 0.74rem;
-    }
-
-    .web-lines {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-    }
-
-    .web-lines line {
-      stroke: rgba(15, 23, 42, 0.5);
-      stroke-width: 2.2;
-    }
-
-    .web-lines line.invalid {
-      stroke: var(--accent-3);
-    }
-
-    .hint-lines line {
-      stroke: rgba(245, 158, 11, 0.45);
-      stroke-dasharray: 6 6;
-      stroke-width: 2;
-    }
-
-    .pill {
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(15, 118, 110, 0.1);
-      color: var(--muted);
-      font-size: 0.78rem;
-      border: 1px solid rgba(15, 118, 110, 0.2);
-    }
-
-    .coach {
-      display: grid;
-      gap: 10px;
-      font-size: 0.9rem;
-      color: var(--muted);
-    }
-
-    .coach strong {
-      color: var(--ink);
-    }
-
-
-    .footer-note {
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-  </style>
+@media (max-width:880px){
+  .stage-wrap{grid-template-columns:1fr}
+  .panel{position:static}
+  .stage{overflow-x:auto}
+  .stage svg{min-width:760px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important}
+}
+</style>
 </head>
 <body>
-  <div class="shell">
-    <header>
-      <a class="back-link" href="../../index.html">Back to home</a>
-      <span class="wip-sticker">Work in progress</span>
-      <h1>Food Web Builder</h1>
-      <p class="lead">Drag organisms from the bank onto the canvas, then click a food source and a consumer to draw energy arrows. Try to build a balanced web and check it for common mistakes.</p>
-    </header>
-
-    <section class="layout">
-      <aside class="panel">
-        <h2>Web setup</h2>
-        <div class="controls">
-          <div class="row">
-            <label for="preset">Preset web</label>
-            <select id="preset"></select>
-          </div>
-          <div class="row">
-            <button class="primary" id="load-preset">Load organisms</button>
-            <button class="ghost" id="auto-arrange">Auto arrange</button>
-          </div>
-          <div class="row">
-            <button id="clear-board">Clear board</button>
-            <button id="clear-links">Clear links</button>
-          </div>
-          <div class="row">
-            <button id="check-web">Check web</button>
-            <button id="show-hints">Show hints</button>
-          </div>
-          <div class="status" id="status">Choose a preset and load organisms to begin.</div>
-        </div>
-
-        <div class="legend">
-          <span><span class="dot" style="background:#16a34a"></span> Producer</span>
-          <span><span class="dot" style="background:#22c55e"></span> Primary consumer</span>
-          <span><span class="dot" style="background:#f59e0b"></span> Secondary consumer</span>
-          <span><span class="dot" style="background:#ef4444"></span> Tertiary consumer</span>
-          <span><span class="dot" style="background:#64748b"></span> Decomposer</span>
-        </div>
-
-        <h2 style="margin-top:16px;">Organism bank</h2>
-        <div class="bank" id="bank"></div>
-        <p class="footer-note">Tip: click a card to drop it quickly onto the board.</p>
-      </aside>
-
-      <section class="board-shell">
-        <div class="panel board-header">
-          <div class="row">
-            <span class="pill" id="active-preset">No preset loaded</span>
-            <span class="pill" id="node-count">0 organisms</span>
-            <span class="pill" id="link-count">0 links</span>
-          </div>
-          <div class="row">
-            <span class="pill" id="mode-pill">Mode: build</span>
-          </div>
-        </div>
-
-        <div class="board" id="board">
-          <svg class="web-lines" id="links">
-            <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(15, 23, 42, 0.6)"></path>
-              </marker>
-              <marker id="arrow-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="#ef4444"></path>
-              </marker>
-            </defs>
-          </svg>
-          <svg class="web-lines hint-lines" id="hint-lines">
-            <defs>
-              <marker id="arrow-hint" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(245, 158, 11, 0.7)"></path>
-              </marker>
-            </defs>
-          </svg>
-          <div class="board-inner" id="board-inner"></div>
-        </div>
-
-        <div class="panel coach" id="coach">
-          <strong>How to build:</strong>
-          <span>1. Drag organisms onto the board (or click them).</span>
-          <span>2. Click a food source, then a consumer to draw an arrow.</span>
-          <span>3. Use Check web to spot gaps or wrong directions.</span>
-        </div>
-
-      </section>
-    </section>
+<header>
+  <div class="bar">
+    <div class="brand">
+      <div>
+        <div class="eyebrow">IGCSE Biology · Ecology</div>
+        <h1>Food Webs</h1>
+      </div>
+      <span class="biome" id="biome">🌍 African savanna grassland</span>
+    </div>
+    <div class="modeswitch" role="tablist" aria-label="Mode">
+      <button id="tab-demo" role="tab" aria-selected="true"><span class="dot">▶</span>Demonstration</button>
+      <button id="tab-quiz" role="tab" aria-selected="false"><span class="dot">✎</span>Interactive</button>
+    </div>
   </div>
+</header>
 
-  <script src="../organisms/organisms_data.js"></script>
-  <script src="../organisms/organisms_images.js"></script>
-  <script>
-    const imageFolder = "../organisms/images";
-    const imageMap = window.organismImages || {};
+<main>
+  <!-- ============ DEMONSTRATION ============ -->
+  <section id="view-demo">
+    <div class="ecobar">
+      <span class="ecolabel">Ecosystem</span>
+      <div class="webswitch" id="webswitch" role="tablist" aria-label="Choose ecosystem"></div>
+    </div>
+    <div class="toolbar">
+      <button class="tool" id="t-view" aria-pressed="false">🔺 Energy pyramid</button>
+      <button class="tool" id="t-trace" aria-pressed="false">🔗 Trace food chains</button>
+      <button class="tool" id="t-remove" aria-pressed="false">✖ Remove a species</button>
+      <span class="sep"></span>
+      <button class="tool" id="t-reset">↺ Reset</button>
+    </div>
+    <p class="hint" id="demo-hint">Tap any organism to inspect it. Arrows point in the direction energy flows — from the food to the feeder.</p>
 
-    const roleMeta = {
-      producer: { label: "Producer", color: "#16a34a", level: 0 },
-      primary: { label: "Primary", color: "#22c55e", level: 1 },
-      secondary: { label: "Secondary", color: "#f59e0b", level: 2 },
-      tertiary: { label: "Tertiary", color: "#ef4444", level: 3 },
-      decomposer: { label: "Decomposer", color: "#64748b", level: 0 }
-    };
+    <div class="stage-wrap">
+      <div class="stage" id="stage"><!-- svg or pyramid injected --></div>
+      <aside class="panel empty" id="panel">
+        <div class="ptag">Specimen</div>
+        <p style="margin:12px 0 0">Select an organism in the web to see its role, trophic level, and feeding links.</p>
+        <div class="note">In demonstration mode this is meant for the board — pick an organism and talk through where its energy comes from and where it goes.</div>
+      </aside>
+    </div>
 
-    const webPresets = [
-      {
-        id: "pond",
-        name: "Pond web",
-        description: "Simple pond web with a few producers, herbivores, and a top predator.",
-        organisms: [
-          { common: "Duckweed", role: "producer" },
-          { common: "Elodea", role: "producer" },
-          { common: "Zooplankton", role: "primary" },
-          { common: "Snail", role: "primary" },
-          { common: "Goldfish", role: "secondary" },
-          { common: "Frog", role: "secondary" },
-          { common: "European Otter", role: "tertiary" },
-          { common: "Mucor", role: "decomposer" }
-        ],
-        edges: [
-          ["Duckweed", "Snail"],
-          ["Elodea", "Snail"],
-          ["Zooplankton", "Goldfish"],
-          ["Snail", "Goldfish"],
-          ["Frog", "European Otter"],
-          ["Goldfish", "European Otter"],
-          ["Goldfish", "Mucor"]
-        ]
-      },
-      {
-        id: "grassland",
-        name: "Grassland web",
-        description: "Small grassland web focused on crops, insects, and birds.",
-        organisms: [
-          { common: "Wheat", role: "producer" },
-          { common: "Dandelion", role: "producer" },
-          { common: "Grasshopper", role: "primary" },
-          { common: "European Rabbit", role: "primary" },
-          { common: "House Sparrow", role: "secondary" },
-          { common: "Barn Owl", role: "tertiary" },
-          { common: "Earthworm", role: "decomposer" }
-        ],
-        edges: [
-          ["Wheat", "Grasshopper"],
-          ["Dandelion", "European Rabbit"],
-          ["Grasshopper", "House Sparrow"],
-          ["European Rabbit", "Barn Owl"],
-          ["House Sparrow", "Barn Owl"],
-          ["European Rabbit", "Earthworm"]
-        ]
-      },
-      {
-        id: "marine",
-        name: "Marine web",
-        description: "Compact marine web with plankton, fish, and one top predator.",
-        organisms: [
-          { common: "Plankton", role: "producer" },
-          { common: "Sea Lettuce", role: "producer" },
-          { common: "Copepod", role: "primary" },
-          { common: "Anchovy", role: "secondary" },
-          { common: "Common Dolphin", role: "tertiary" },
-          { common: "Sea Cucumber", role: "decomposer" }
-        ],
-        edges: [
-          ["Plankton", "Copepod"],
-          ["Sea Lettuce", "Copepod"],
-          ["Copepod", "Anchovy"],
-          ["Anchovy", "Common Dolphin"],
-          ["Anchovy", "Sea Cucumber"]
-        ]
-      }
-    ];
+    <div class="legend" id="legend">
+      <span><i style="border-color:var(--producer)"></i>Producer</span>
+      <span><i style="border-color:var(--primary)"></i>Primary consumer</span>
+      <span><i style="border-color:var(--secondary)"></i>Secondary consumer</span>
+      <span><i style="border-color:var(--tertiary)"></i>Tertiary / apex</span>
+      <span><i style="border-color:var(--decomposer)"></i>Decomposer</span>
+    </div>
+  </section>
 
-    const presetSelect = document.getElementById("preset");
-    const bankEl = document.getElementById("bank");
-    const board = document.getElementById("board");
-    const boardInner = document.getElementById("board-inner");
-    const linksSvg = document.getElementById("links");
-    const hintSvg = document.getElementById("hint-lines");
-    const statusEl = document.getElementById("status");
-    const activePresetEl = document.getElementById("active-preset");
-    const nodeCountEl = document.getElementById("node-count");
-    const linkCountEl = document.getElementById("link-count");
-    const modePill = document.getElementById("mode-pill");
-    const coachEl = document.getElementById("coach");
+  <!-- ============ INTERACTIVE ============ -->
+  <section id="view-quiz" class="hide">
+    <div class="quiz">
+      <div class="qbar">
+        <span class="qcount" id="qcount">01 / 08</span>
+        <div class="progress"><i id="qprog"></i></div>
+        <span class="score" id="qscore">0 ✓</span>
+      </div>
+      <div id="quiz-body"></div>
+    </div>
+  </section>
+</main>
 
-    const state = {
-      preset: null,
-      organisms: [],
-      nodes: new Map(),
-      edges: [],
-      selectedNodeId: null,
-      draggingId: null,
-      showHints: false
-    };
+<script>
+"use strict";
 
-    function buildOrganismMap() {
-      const all = Object.values(window.sectionOrganisms || {}).flat();
-      const map = new Map();
-      for (const org of all) {
-        map.set(org.common.toLowerCase(), org);
-        map.set(org.scientific.toLowerCase(), org);
-      }
-      return map;
+/* ---------------- ecosystems ---------------- */
+const WEBS = [
+  {
+    id:'savanna',
+    name:'🌍 Savanna',
+    biome:'🌍 African savanna grassland',
+    org:[
+      {id:'grass',      name:'Grass',           icon:'🌾', role:'producer',   band:1, eats:[], fact:'A producer: it converts sunlight into chemical energy. Every chain here starts with grass or acacia.'},
+      {id:'acacia',     name:'Acacia tree',     icon:'🌳', role:'producer',   band:1, eats:[], fact:'A producer. Note its tall leaves are only reachable by the giraffe — structure shapes the web.'},
+      {id:'grasshopper',name:'Grasshopper',     icon:'🦗', role:'consumer',   band:2, eats:['grass'], fact:'Eats producers, so it is a primary consumer and a herbivore.'},
+      {id:'mouse',      name:'Mouse',           icon:'🐭', role:'consumer',   band:2, eats:['grass'], fact:'Fed on by three predators — a heavily-preyed-on link. Remove it and several chains break.'},
+      {id:'zebra',      name:'Zebra',           icon:'🦓', role:'consumer',   band:2, eats:['grass'], fact:'A primary consumer. Grass → zebra → lion is a classic three-step chain.'},
+      {id:'gazelle',    name:'Gazelle',         icon:'🦌', role:'consumer',   band:2, eats:['grass','acacia'], fact:'Eaten by both cheetah and lion. Many animals occupy more than one chain in a web.'},
+      {id:'giraffe',    name:'Giraffe',         icon:'🦒', role:'consumer',   band:2, eats:['acacia'], fact:'No predator shown here, yet still a primary consumer — apex does not mean carnivore.'},
+      {id:'lizard',     name:'Lizard',          icon:'🦎', role:'consumer',   band:3, eats:['grasshopper'], fact:'Eats a herbivore, so it sits at trophic level 3 in its chain.'},
+      {id:'hornbill',   name:'Hornbill',        icon:'🐦', role:'consumer',   band:3, eats:['grasshopper','mouse'], fact:'Feeds on insects and small mammals — a secondary consumer.'},
+      {id:'snake',      name:'Snake',           icon:'🐍', role:'consumer',   band:3, eats:['mouse','lizard'], fact:'Eats prey from two different levels (mouse and lizard), so its trophic level depends on the chain.'},
+      {id:'cheetah',    name:'Cheetah',         icon:'🐆', role:'consumer',   band:3, eats:['gazelle'], fact:'A secondary consumer here — fast but not the top of the web, since lions kill cheetahs.'},
+      {id:'eagle',      name:'Eagle',           icon:'🦅', role:'consumer',   band:4, eats:['snake','hornbill','mouse'], fact:'A top predator. Trace its chains down to see how few producers ultimately support it.'},
+      {id:'lion',       name:'Lion',            icon:'🦁', role:'consumer',   band:4, eats:['zebra','gazelle','cheetah'], fact:'Apex predator. Energy reaching the lion is a tiny fraction of what the grass captured.'},
+      {id:'fungi',      name:'Fungi & bacteria',icon:'🍄', role:'decomposer', band:0, eats:[], fact:'Decomposers break down dead organisms at every level and return minerals to the soil for producers.'},
+    ],
+    pos:{
+      grass:[360,572], acacia:[720,572],
+      grasshopper:[110,408], mouse:[300,408], zebra:[470,408], gazelle:[645,408], giraffe:[850,408],
+      lizard:[130,244], hornbill:[300,244], snake:[470,244], cheetah:[700,244],
+      eagle:[340,92], lion:[640,92],
+      fungi:[905,500],
+    },
+  },
+  {
+    id:'garden',
+    name:'🌳 Garden',
+    biome:'🌳 Temperate garden',
+    org:[
+      {id:'plant',     name:'Plants',          icon:'🌿', role:'producer',   band:1, eats:[], fact:'A producer — leaves and grass trap light energy by photosynthesis. Every chain in this garden starts here.'},
+      {id:'caterpillar',name:'Caterpillar',    icon:'🐛', role:'consumer',   band:2, eats:['plant'], fact:'Eats leaves, so it is a primary consumer and a herbivore.'},
+      {id:'rabbit',    name:'Rabbit',          icon:'🐰', role:'consumer',   band:2, eats:['plant'], fact:'A primary consumer. Plants → rabbit → fox is a simple three-step chain.'},
+      {id:'slug',      name:'Slug',            icon:'🐌', role:'consumer',   band:2, eats:['plant'], fact:'Eats plants directly, so it is a herbivore at trophic level 2.'},
+      {id:'robin',     name:'Robin',           icon:'🐦', role:'consumer',   band:3, eats:['caterpillar','slug'], fact:'Eats small invertebrates, so it is a secondary consumer at level 3.'},
+      {id:'hedgehog',  name:'Hedgehog',        icon:'🦔', role:'consumer',   band:3, eats:['slug','caterpillar'], fact:'Feeds on slugs and caterpillars — a secondary consumer that helps control garden pests.'},
+      {id:'fox',       name:'Fox',             icon:'🦊', role:'consumer',   band:4, eats:['rabbit','robin','hedgehog'], fact:'The top predator of this garden. Remove it and the animals it hunts would increase at first.'},
+      {id:'gfungi',    name:'Fungi & bacteria',icon:'🍄', role:'decomposer', band:0, eats:[], fact:'Decomposers break down dead leaves and animals, returning minerals to the soil for the plants.'},
+    ],
+    pos:{
+      plant:[500,572],
+      caterpillar:[250,408], rabbit:[500,408], slug:[750,408],
+      robin:[350,244], hedgehog:[650,244],
+      fox:[500,92],
+      gfungi:[905,500],
+    },
+  },
+];
+
+const ROLE_COLOR = {producer:'var(--producer)',primary:'var(--primary)',secondary:'var(--secondary)',tertiary:'var(--tertiary)',decomposer:'var(--decomposer)'};
+function bandColor(o){
+  if(o.role==='decomposer') return 'var(--decomposer)';
+  if(o.role==='producer')   return 'var(--producer)';
+  if(o.band===2) return 'var(--primary)';
+  if(o.band===3) return 'var(--secondary)';
+  return 'var(--tertiary)';
+}
+function roleLabel(o){
+  if(o.role==='producer')   return 'Producer';
+  if(o.role==='decomposer') return 'Decomposer';
+  if(o.band===2) return 'Primary consumer';
+  if(o.band===3) return 'Secondary consumer';
+  return 'Tertiary consumer';
+}
+const NODE_R = 31;
+
+/* active ecosystem — these are (re)built by loadWeb() */
+let activeWebId, ORG, BY, PREY, PRED, POS, CHAINS;
+function loadWeb(id){
+  const w = WEBS.find(x=>x.id===id) || WEBS[0];
+  activeWebId = w.id;
+  ORG = w.org;
+  POS = w.pos;
+  BY   = Object.fromEntries(ORG.map(o=>[o.id,o]));
+  PREY = Object.fromEntries(ORG.map(o=>[o.id,o.eats.slice()]));
+  PRED = Object.fromEntries(ORG.map(o=>[o.id,[]]));
+  ORG.forEach(o=>o.eats.forEach(p=>PRED[p].push(o.id)));
+  CHAINS = allChains();
+  const bEl=document.getElementById('biome'); if(bEl) bEl.textContent=w.biome;
+}
+
+/* enumerate every maximal food chain (producer -> apex) */
+function allChains(){
+  const out=[];
+  const apex = ORG.filter(o=>o.role==='consumer' && PRED[o.id].length===0).map(o=>o.id);
+  function up(path){
+    const last = path[path.length-1];
+    const preds = PRED[last];
+    if(preds.length===0){ out.push(path.slice()); return; }
+    preds.forEach(p=>up(path.concat(p)));
+  }
+  ORG.filter(o=>o.role==='producer').forEach(p=>up([p.id]));
+  return out.filter(c=>c.length>=3); // useful teaching chains
+}
+
+/* ===================================================================
+   DEMONSTRATION MODE
+   =================================================================== */
+const SVGNS='http://www.w3.org/2000/svg';
+const stage = document.getElementById('stage');
+const panel = document.getElementById('panel');
+const demoHint = document.getElementById('demo-hint');
+
+let demo = { selected:null, view:'web', trace:false, removeMode:false, removed:new Set() };
+
+function el(tag,attrs={},kids=[]){
+  const n=document.createElementNS(SVGNS,tag);
+  for(const k in attrs) n.setAttribute(k,attrs[k]);
+  kids.forEach(c=>n.appendChild(c));
+  return n;
+}
+
+function renderWeb(){
+  stage.classList.remove('pyr');
+  const svg = el('svg',{viewBox:'0 0 1000 640','aria-label':'Food web diagram'});
+
+  // band labels
+  const bands=[
+    {y:92,  t:'Tertiary / apex', l:'L4'},
+    {y:244, t:'Secondary consumers', l:'L3'},
+    {y:408, t:'Primary consumers', l:'L2'},
+    {y:572, t:'Producers', l:'L1'},
+  ];
+  bands.forEach(b=>{
+    const g=el('text',{class:'bandlabel',x:14,y:b.y-44});
+    const sp=el('tspan',{class:'lvl'}); sp.textContent=b.l+'  ';
+    g.appendChild(sp);
+    g.appendChild(document.createTextNode(b.t.toUpperCase()));
+    svg.appendChild(g);
+  });
+  // energy-flow note
+  const ef=el('text',{x:992,y:632,'text-anchor':'end',class:'bandlabel'});
+  ef.textContent='ENERGY FLOWS UPWARD ↑';
+  svg.appendChild(ef);
+
+  // edges
+  const edgeLayer=el('g');
+  const hot = highlightSet();
+  ORG.forEach(o=>{
+    o.eats.forEach(preyId=>{
+      const a=POS[preyId], b=POS[o.id];
+      if(!a||!b) return;
+      const dx=b[0]-a[0], dy=b[1]-a[1], len=Math.hypot(dx,dy);
+      const ux=dx/len, uy=dy/len;
+      const x1=a[0]+ux*NODE_R, y1=a[1]+uy*NODE_R;
+      const x2=b[0]-ux*(NODE_R+9), y2=b[1]-uy*(NODE_R+9);
+      const mx=(x1+x2)/2, my=(y1+y2)/2 - Math.min(40,len*0.12);
+      const path=el('path',{class:'edge',d:`M${x1},${y1} Q${mx},${my} ${x2},${y2}`,'marker-end':'url(#arrow)'});
+      const involved = hot.edges.has(o.id+'<'+preyId);
+      const removed = demo.removed.has(o.id)||demo.removed.has(preyId);
+      if(removed) path.classList.add('dim');
+      else if(hot.active){ path.classList.add(involved?'hot':'dim'); }
+      edgeLayer.appendChild(path);
+    });
+  });
+  // arrow marker
+  const defs=el('defs');
+  const marker=el('marker',{id:'arrow',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'});
+  marker.appendChild(el('path',{d:'M0,0 L10,5 L0,10 z',fill:'var(--ink)'}));
+  defs.appendChild(marker);
+  svg.appendChild(defs);
+  svg.appendChild(edgeLayer);
+
+  // nodes
+  const nameEls=[];
+  ORG.forEach(o=>{
+    const p=POS[o.id]; if(!p) return;
+    const g=el('g',{class:'node',tabindex:'0',role:'button','aria-label':o.name,transform:`translate(${p[0]},${p[1]})`});
+    g.appendChild(el('circle',{class:'disc',r:NODE_R,cx:0,cy:0}));
+    g.appendChild(el('circle',{class:'ring',r:NODE_R,cx:0,cy:0,stroke:bandColor(o),fill:'none'}));
+    const ico=el('text',{class:'ico',x:0,y:1}); ico.textContent=o.icon; g.appendChild(ico);
+    const nm=el('text',{class:'nm',x:0,y:NODE_R+18}); nm.textContent=o.name; g.appendChild(nm);
+    nameEls.push(nm);
+
+    if(demo.removed.has(o.id)) g.classList.add('removed');
+    if(demo.selected===o.id) g.classList.add('sel');
+    if(hot.active){
+      if(hot.nodes.has(o.id)) {} else g.classList.add('dim');
     }
+    if(hot.affected && hot.affected.has(o.id)) g.classList.add('affected');
 
-    const organismMap = buildOrganismMap();
+    const act=()=>onNode(o.id);
+    g.addEventListener('click',act);
+    g.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();act();} });
+    svg.appendChild(g);
+  });
 
-    function resolveOrganism(entry) {
-      const target = organismMap.get(entry.common.toLowerCase()) || organismMap.get(entry.scientific?.toLowerCase());
-      if (!target) {
-        return null;
-      }
-      const imageName = imageMap[target.scientific];
+  stage.innerHTML='';
+  stage.appendChild(svg);
+
+  // legibility: drop a rounded background behind each name (needs the SVG in the DOM to measure)
+  nameEls.forEach(t=>{
+    const bb=t.getBBox();
+    const padX=8, padY=3;
+    const rect=el('rect',{class:'nmbg',x:(bb.x-padX).toFixed(1),y:(bb.y-padY).toFixed(1),
+      width:(bb.width+padX*2).toFixed(1),height:(bb.height+padY*2).toFixed(1),rx:8});
+    t.parentNode.insertBefore(rect,t);
+  });
+}
+
+/* what to highlight given current state */
+function highlightSet(){
+  const res={active:false,nodes:new Set(),edges:new Set(),affected:null};
+  // remove-mode affected cascade
+  if(demo.removeMode && demo.removed.size){
+    const aff=new Set();
+    demo.removed.forEach(rid=>{
+      PRED[rid].forEach(pr=>{ if(!demo.removed.has(pr)) aff.add(pr); });
+    });
+    res.affected=aff;
+  }
+  if(!demo.selected) return res;
+  const sel=demo.selected;
+  if(demo.trace){
+    // every chain through sel
+    res.active=true; res.nodes.add(sel);
+    CHAINS.filter(c=>c.includes(sel)).forEach(c=>{
+      c.forEach(n=>res.nodes.add(n));
+      for(let i=0;i<c.length-1;i++) res.edges.add(c[i+1]+'<'+c[i]);
+    });
+    return res;
+  }
+  // default: direct neighbours
+  res.active=true; res.nodes.add(sel);
+  PREY[sel].forEach(p=>{ res.nodes.add(p); res.edges.add(sel+'<'+p); });
+  PRED[sel].forEach(p=>{ res.nodes.add(p); res.edges.add(p+'<'+sel); });
+  return res;
+}
+
+function onNode(id){
+  if(demo.removeMode){
+    if(demo.removed.has(id)) demo.removed.delete(id); else demo.removed.add(id);
+    demo.selected=id;
+    renderWeb(); renderPanel();
+    return;
+  }
+  demo.selected = (demo.selected===id && !demo.trace) ? null : id;
+  renderWeb(); renderPanel();
+}
+
+function renderPanel(){
+  const id=demo.selected;
+  if(!id){
+    panel.classList.add('empty');
+    panel.innerHTML='<div class="ptag">Specimen</div><p style="margin:12px 0 0">Select an organism in the web to see its role, trophic level, and feeding links.</p><div class="note">Pick an organism and talk through where its energy comes from and where it goes.</div>';
+    return;
+  }
+  const o=BY[id];
+  panel.classList.remove('empty');
+  const col=bandColor(o);
+  const eatsChips = o.eats.length
+    ? o.eats.map(p=>`<span class="chip">${BY[p].icon} ${BY[p].name}</span>`).join('')
+    : (o.role==='producer'
+        ? '<span class="chip none">Makes its own food (photosynthesis)</span>'
+        : '<span class="chip none">Breaks down dead matter</span>');
+  const eatenChips = PRED[id].length
+    ? PRED[id].map(p=>`<span class="chip">${BY[p].icon} ${BY[p].name}</span>`).join('')
+    : '<span class="chip none">Nothing — top of its chains</span>';
+
+  let removedBlock='';
+  if(demo.removeMode && demo.removed.has(id)){
+    const losers=PRED[id].filter(p=>!demo.removed.has(p));
+    removedBlock = `<div class="note" style="color:var(--bad)"><b>Removed.</b> ${
+      losers.length ? losers.map(l=>BY[l].name).join(', ')+' lose a food source.' : 'Nothing here fed on it directly.'
+    } Ask the class: what happens to its prey now, and on up the web?</div>`;
+  }
+
+  const trophic = o.role==='producer' ? 'Trophic level 1'
+                : o.role==='decomposer' ? 'Recycles nutrients'
+                : 'Trophic level '+o.band+(o.band>=3?' (varies by chain)':'');
+
+  panel.innerHTML = `
+    <div class="ptag">Specimen</div>
+    <div class="phead"><span class="big">${o.icon}</span><h2>${o.name}</h2></div>
+    <span class="role-pill" style="color:${col};border-color:${col}">${roleLabel(o)}</span>
+    <span class="role-pill mono" style="color:var(--ink-soft);border-color:var(--line);margin-left:6px">${trophic}</span>
+    <div class="kv"><h3>Eats →</h3><div class="chips">${eatsChips}</div></div>
+    <div class="kv"><h3>Eaten by →</h3><div class="chips">${eatenChips}</div></div>
+    ${removedBlock}
+    ${!removedBlock?`<div class="note">${factFor(o)}</div>`:''}
+  `;
+}
+
+function factFor(o){
+  return o.fact||'';
+}
+
+/* ---- pyramid view ---- */
+function renderPyramid(){
+  demo.selected=null; renderPanel();
+  stage.classList.add('pyr');
+  const tiers=[
+    {label:'Tertiary / apex', band:4, energy:'10 kJ',  col:'var(--tertiary)',  w:24},
+    {label:'Secondary consumers', band:3, energy:'100 kJ', col:'var(--secondary)', w:46},
+    {label:'Primary consumers', band:2, energy:'1 000 kJ', col:'var(--primary)', w:72},
+    {label:'Producers', band:1, energy:'10 000 kJ', col:'var(--producer)', w:100},
+  ];
+  let html='<div class="pyr">';
+  tiers.forEach((t,i)=>{
+    const members=ORG.filter(o=>o.band===t.band && o.role!=='decomposer');
+    const icos=members.map(m=>`<span class="pyr-ico" title="${m.name}">${m.icon}</span>`).join('');
+    const loss = i>0 ? `<span class="pyr-loss">≈90% lost as heat,<br>movement & waste ↓</span>`:'';
+    html+=`<div class="pyr-bar" style="width:${t.w}%;max-width:${t.w*7}px;background:${t.col}">
+        ${icos}
+        <span class="pyr-energy">${t.energy}</span>${loss}
+      </div>
+      <div class="pyr-meta">${t.label}</div>`;
+  });
+  html+='<p class="hint" style="text-align:center;margin-top:22px">Only about <b>10%</b> of the energy at each level passes to the next. That is why food chains rarely have more than four or five links — there is too little energy left to support another level.</p></div>';
+  stage.innerHTML=html;
+}
+
+function renderStage(){ demo.view==='pyramid' ? renderPyramid() : renderWeb(); }
+
+/* ---- demo toolbar ---- */
+document.getElementById('t-view').addEventListener('click',function(){
+  demo.view = demo.view==='web'?'pyramid':'web';
+  this.setAttribute('aria-pressed', demo.view==='pyramid');
+  this.textContent = demo.view==='pyramid' ? '🕸 Food web' : '🔺 Energy pyramid';
+  // disable web-only tools in pyramid
+  ['t-trace','t-remove'].forEach(id=>document.getElementById(id).disabled = demo.view==='pyramid');
+  renderStage(); renderPanel();
+});
+document.getElementById('t-trace').addEventListener('click',function(){
+  demo.trace=!demo.trace; demo.removeMode=false;
+  document.getElementById('t-remove').setAttribute('aria-pressed','false');
+  this.setAttribute('aria-pressed',demo.trace);
+  demoHint.textContent = demo.trace
+    ? 'Trace on: tap an organism to light up every food chain that runs through it.'
+    : 'Tap any organism to inspect it. Arrows point from the food to the feeder.';
+  renderStage(); renderPanel();
+});
+document.getElementById('t-remove').addEventListener('click',function(){
+  demo.removeMode=!demo.removeMode; demo.trace=false;
+  document.getElementById('t-trace').setAttribute('aria-pressed','false');
+  this.setAttribute('aria-pressed',demo.removeMode);
+  demoHint.textContent = demo.removeMode
+    ? 'Remove mode: tap organisms to remove them. Anything that fed on them is outlined in red — discuss the knock-on effects.'
+    : 'Tap any organism to inspect it. Arrows point from the food to the feeder.';
+  if(!demo.removeMode) demo.removed.clear();
+  renderStage(); renderPanel();
+});
+document.getElementById('t-reset').addEventListener('click',function(){
+  demo={selected:null,view:'web',trace:false,removeMode:false,removed:new Set()};
+  document.getElementById('t-view').setAttribute('aria-pressed','false');
+  document.getElementById('t-view').textContent='🔺 Energy pyramid';
+  document.getElementById('t-trace').setAttribute('aria-pressed','false');
+  document.getElementById('t-remove').setAttribute('aria-pressed','false');
+  ['t-trace','t-remove'].forEach(id=>document.getElementById(id).disabled=false);
+  demoHint.textContent='Tap any organism to inspect it. Arrows point from the food to the feeder.';
+  renderStage(); renderPanel();
+});
+
+/* ===================================================================
+   INTERACTIVE MODE
+   =================================================================== */
+const quizBody=document.getElementById('quiz-body');
+let quiz={ qs:[], i:0, score:0, answered:false };
+
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+
+/* question generators */
+function qRole(){
+  const o=pick(ORG);
+  const correct = o.role==='producer'?'Producer':o.role==='decomposer'?'Decomposer':'Consumer';
+  return {
+    type:'Classify the organism',
+    text:`What is the role of the ${o.name.toLowerCase()} in this ecosystem?`,
+    icon:o.icon,
+    opts:['Producer','Consumer','Decomposer'].map(t=>({label:t})),
+    correct, 
+    explain: o.role==='producer'
+      ? `${o.name} makes its own food by photosynthesis, so it is a <b>producer</b> — the start of every food chain.`
+      : o.role==='decomposer'
+      ? `${o.name} break down dead organisms and return minerals to the soil, so they are <b>decomposers</b>.`
+      : `${o.name} cannot make its own food — it eats other organisms, so it is a <b>consumer</b>.`
+  };
+}
+
+function qArrow(){
+  const pred = pick(ORG.filter(o=>o.eats.length));
+  const preyO = BY[pick(pred.eats)];
+  const right = `${preyO.icon} ${preyO.name} → ${pred.icon} ${pred.name}`;
+  const wrong = `${pred.icon} ${pred.name} → ${preyO.icon} ${preyO.name}`;
+  return {
+    type:'Direction of energy flow',
+    text:`The ${pred.name.toLowerCase()} eats the ${preyO.name.toLowerCase()}. Which way should the arrow point?`,
+    opts: shuffle([{label:right},{label:wrong}]),
+    correct: right,
+    explain:`Arrows always point in the direction <b>energy flows</b> — from the food to the feeder. So it runs ${preyO.name} → ${pred.name}, not the other way round. This is the most common mistake in the exam.`
+  };
+}
+
+function qTrophic(){
+  const chain = pick(CHAINS.filter(c=>c.length>=3));
+  const idx = 1 + Math.floor(Math.random()*Math.min(chain.length-1,3)); // not the producer
+  const o = BY[chain[idx]];
+  return {
+    type:'Trophic level in a chain',
+    chain,
+    focus:chain[idx],
+    text:`In this food chain, what trophic level is the ${o.name.toLowerCase()}?`,
+    opts:[1,2,3,4].map(n=>({label:'Level '+n})),
+    correct:'Level '+(idx+1),
+    explain:`Count the steps from the producer: the producer is level 1, and each arrow adds one. The ${o.name.toLowerCase()} is the ${ordinal(idx+1)} organism, so it is at <b>level ${idx+1}</b>.`
+  };
+}
+
+function qBuild(){
+  const chain = pick(CHAINS.filter(c=>c.length>=3 && c.length<=4));
+  return {
+    type:'Build a food chain',
+    build:true,
+    chainAnswer:chain,
+    text:`Put these organisms in order to make a correct food chain.`,
+    sub:`Tap them starting with the producer. Arrows show energy flow.`,
+    explain:`Correct order: ${chain.map(id=>BY[id].name).join(' → ')}. A chain always begins with a <b>producer</b> and follows the direction energy flows.`
+  };
+}
+
+function qConsequence(){
+  // predator removed -> prey rises
+  const variants=[
+    ()=>{ const pred=pick(ORG.filter(o=>o.band>=3 && o.eats.length)); const prey=BY[pick(pred.eats)];
       return {
-        ...target,
-        role: entry.role,
-        imageUrl: imageName ? `${imageFolder}/${imageName}` : ""
-      };
-    }
+        type:'Predict the effect',
+        text:`If all the ${pred.name.toLowerCase()}s were removed, what would most likely happen to the ${prey.name.toLowerCase()} population at first?`,
+        opts:shuffle([{label:'Increase'},{label:'Decrease'},{label:'Stay exactly the same'}]),
+        correct:'Increase',
+        explain:`With fewer ${pred.name.toLowerCase()}s hunting them, fewer ${prey.name.toLowerCase()}s are eaten, so their numbers <b>increase</b> — at least until they run short of their own food.`
+      };},
+    ()=>{ // producer destroyed -> direct grazer most affected
+      const prod=pick(ORG.filter(o=>o.role==='producer' && PRED[o.id].length));
+      const grazers=PRED[prod.id].map(id=>BY[id]);
+      const target=pick(grazers);
+      const distract=shuffle(ORG.filter(o=>o.role==='consumer'&&!o.eats.includes(prod.id)&&o.band<=3)).slice(0,2);
+      const opts=shuffle([{label:`${target.icon} ${target.name}`}].concat(distract.map(d=>({label:`${d.icon} ${d.name}`}))));
+      return {
+        type:'Predict the effect',
+        text:`A drought kills all the ${prod.name.toLowerCase()}. Which of these animals is affected most directly?`,
+        opts,
+        correct:`${target.icon} ${target.name}`,
+        explain:`The ${target.name.toLowerCase()} eats ${prod.name.toLowerCase()} directly, so it loses its food source immediately. The others are affected later, further up their chains.`
+      };}
+  ];
+  return pick(variants)();
+}
 
-    function populatePresetSelect() {
-      presetSelect.innerHTML = "";
-      for (const preset of webPresets) {
-        const option = document.createElement("option");
-        option.value = preset.id;
-        option.textContent = preset.name;
-        presetSelect.appendChild(option);
-      }
-      presetSelect.value = webPresets[0].id;
-    }
+function ordinal(n){return ['','first','second','third','fourth','fifth'][n]||n+'th';}
 
-    function renderBank() {
-      bankEl.innerHTML = "";
-      for (const org of state.organisms) {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.draggable = true;
-        card.dataset.common = org.common;
-        card.innerHTML = `
-          <div class="thumb"><img src="${org.imageUrl}" alt="${org.common}" onerror="this.src=''; this.parentElement.style.background='#e2e8f0';"></div>
-          <div>
-            <h3>${org.common}</h3>
-            <p>${org.scientific}</p>
-            <span class="role-badge" style="color:${roleMeta[org.role].color}">
-              <span class="dot" style="background:${roleMeta[org.role].color}"></span>
-              ${roleMeta[org.role].label}
-            </span>
-          </div>
-        `;
-        card.addEventListener("dragstart", (event) => {
-          event.dataTransfer.setData("text/plain", org.common);
-        });
-        card.addEventListener("click", () => {
-          addNode(org.common, 120 + Math.random() * 320, 120 + Math.random() * 260);
-        });
-        bankEl.appendChild(card);
-      }
-    }
+function buildSession(){
+  const qs=[ qRole(), qArrow(), qTrophic(), qConsequence(), qRole(), qArrow(), qBuild(), qConsequence() ];
+  return shuffle(qs);
+}
 
-    function updateStatus(message) {
-      statusEl.textContent = message;
-    }
+function startQuiz(){
+  quiz={ qs:buildSession(), i:0, score:0, answered:false };
+  renderQuestion();
+}
 
-    function clearBoard() {
-      state.nodes.clear();
-      state.edges = [];
-      boardInner.innerHTML = "";
-      renderEdges();
-      updateCounts();
-    }
+function renderQuestion(){
+  const q=quiz.qs[quiz.i];
+  quiz.answered=false;
+  document.getElementById('qcount').textContent=String(quiz.i+1).padStart(2,'0')+' / '+String(quiz.qs.length).padStart(2,'0');
+  document.getElementById('qprog').style.width=(quiz.i/quiz.qs.length*100)+'%';
+  document.getElementById('qscore').textContent=quiz.score+' ✓';
 
-    function clearLinks() {
-      state.edges = [];
-      renderEdges();
-      updateCounts();
-    }
+  if(q.build){ renderBuild(q); return; }
 
-    function updateCounts() {
-      nodeCountEl.textContent = `${state.nodes.size} organisms`;
-      linkCountEl.textContent = `${state.edges.length} links`;
-    }
+  let chainHTML='';
+  if(q.chain){
+    chainHTML='<div class="chainline">'+q.chain.map((id,k)=>{
+      const o=BY[id];
+      const cls = id===q.focus?'org focus':'org';
+      return (k>0?'<span class="ar">→</span>':'')+`<span class="${cls}"><span class="e">${o.icon}</span>${o.name}</span>`;
+    }).join('')+'</div>';
+  }
+  const iconHTML = q.icon?`<div style="font-size:46px;margin-bottom:8px">${q.icon}</div>`:'';
 
-    function addNode(commonName, x, y) {
-      const org = state.organisms.find((item) => item.common === commonName);
-      if (!org) {
-        return null;
-      }
-      const id = `${org.common}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const node = document.createElement("div");
-      node.className = "node";
-      node.dataset.id = id;
-      node.style.left = `${x}px`;
-      node.style.top = `${y}px`;
-      node.innerHTML = `
-        <div class="thumb"><img src="${org.imageUrl}" alt="${org.common}" onerror="this.src=''; this.parentElement.style.background='#e2e8f0';"></div>
-        <div>
-          <h4>${org.common}</h4>
-          <small>${roleMeta[org.role].label}</small>
+  quizBody.innerHTML=`
+    <div class="card">
+      <div class="qtype">${q.type}</div>
+      ${iconHTML}
+      <div class="qtext">${q.text}</div>
+      ${q.sub?`<div class="qsub">${q.sub}</div>`:''}
+      ${chainHTML}
+      <div class="opts" id="opts">
+        ${q.opts.map((o,k)=>`<button class="opt" data-k="${k}"><span>${o.label}</span></button>`).join('')}
+      </div>
+      <div class="feedback" id="fb"></div>
+      <div class="qactions"><button class="btn btn-primary hide" id="next">Next →</button></div>
+    </div>`;
+
+  document.querySelectorAll('#opts .opt').forEach(btn=>{
+    btn.addEventListener('click',()=>answer(q,btn,q.opts[+btn.dataset.k].label));
+  });
+  document.getElementById('next').addEventListener('click',nextQuestion);
+}
+
+function answer(q,btn,label){
+  if(quiz.answered) return;
+  quiz.answered=true;
+  const ok = label===q.correct;
+  if(ok) quiz.score++;
+  document.querySelectorAll('#opts .opt').forEach(b=>{
+    b.disabled=true;
+    const l=q.opts[+b.dataset.k].label;
+    if(l===q.correct){ b.classList.add('correct'); b.insertAdjacentHTML('beforeend','<span class="mark">✓</span>'); }
+    else if(b===btn){ b.classList.add('wrong'); b.insertAdjacentHTML('beforeend','<span class="mark">✕</span>'); }
+  });
+  showFeedback(ok,q.explain);
+}
+
+function showFeedback(ok,explain){
+  const fb=document.getElementById('fb');
+  fb.className='feedback show '+(ok?'ok':'no');
+  fb.innerHTML=`<b>${ok?'Correct.':'Not quite.'}</b> ${explain}`;
+  document.getElementById('qscore').textContent=quiz.score+' ✓';
+  document.getElementById('next').classList.remove('hide');
+  document.getElementById('next').focus();
+}
+
+/* build-a-chain interaction */
+function renderBuild(q){
+  const scrambled=shuffle(q.chainAnswer);
+  quizBody.innerHTML=`
+    <div class="card">
+      <div class="qtype">${q.type}</div>
+      <div class="qtext">${q.text}</div>
+      <div class="qsub">${q.sub}</div>
+      <div class="builder">
+        <div class="slots" id="slots"></div>
+        <div class="bank" id="bank">
+          ${scrambled.map(id=>`<button class="tok" data-id="${id}"><span class="e">${BY[id].icon}</span>${BY[id].name}</button>`).join('')}
         </div>
-      `;
-      node.addEventListener("pointerdown", (event) => startDrag(event, id));
-      node.addEventListener("click", (event) => handleNodeClick(event, id));
-      boardInner.appendChild(node);
-      state.nodes.set(id, { org, element: node });
-      updateCounts();
-      renderEdges();
-      return id;
-    }
+      </div>
+      <div class="qactions">
+        <button class="btn btn-primary" id="check" disabled>Check answer</button>
+        <button class="btn btn-ghost" id="clear">Clear</button>
+      </div>
+      <div class="feedback" id="fb"></div>
+      <div class="qactions"><button class="btn btn-primary hide" id="next">Next →</button></div>
+    </div>`;
 
-    function startDrag(event, id) {
-      const node = state.nodes.get(id);
-      if (!node) {
-        return;
-      }
-      state.draggingId = id;
-      const rect = boardInner.getBoundingClientRect();
-      const nodeRect = node.element.getBoundingClientRect();
-      const offsetX = event.clientX - nodeRect.left;
-      const offsetY = event.clientY - nodeRect.top;
-      node.element.setPointerCapture(event.pointerId);
+  const slots=document.getElementById('slots');
+  const bank=document.getElementById('bank');
+  const order=[];
 
-      function onMove(moveEvent) {
-        const x = moveEvent.clientX - rect.left - offsetX;
-        const y = moveEvent.clientY - rect.top - offsetY;
-        node.element.style.left = `${Math.max(10, Math.min(x, rect.width - 180))}px`;
-        node.element.style.top = `${Math.max(10, Math.min(y, rect.height - 80))}px`;
-        renderEdges();
-      }
+  function refresh(){
+    slots.innerHTML=order.map((id,k)=>(k>0?'<span class="ar">→</span>':'')+`<button class="tok" data-id="${id}"><span class="e">${BY[id].icon}</span>${BY[id].name}</button>`).join('');
+    slots.querySelectorAll('.tok').forEach(t=>t.addEventListener('click',()=>{
+      if(quiz.answered)return;
+      const idx=order.indexOf(t.dataset.id); order.splice(idx,1);
+      bank.querySelector(`[data-id="${t.dataset.id}"]`).disabled=false;
+      refresh();
+    }));
+    document.getElementById('check').disabled = order.length!==q.chainAnswer.length || quiz.answered;
+  }
+  bank.querySelectorAll('.tok').forEach(t=>t.addEventListener('click',()=>{
+    if(quiz.answered||t.disabled)return;
+    order.push(t.dataset.id); t.disabled=true; refresh();
+  }));
+  document.getElementById('clear').addEventListener('click',()=>{
+    if(quiz.answered)return;
+    order.length=0; bank.querySelectorAll('.tok').forEach(t=>t.disabled=false); refresh();
+  });
+  document.getElementById('check').addEventListener('click',()=>{
+    if(quiz.answered)return;
+    quiz.answered=true;
+    const ok = order.join(',')===q.chainAnswer.join(',');
+    if(ok) quiz.score++;
+    document.getElementById('check').disabled=true;
+    document.getElementById('clear').disabled=true;
+    slots.style.borderColor = ok?'var(--good)':'var(--bad)';
+    showFeedback(ok,q.explain);
+  });
+  document.getElementById('next').addEventListener('click',nextQuestion);
+}
 
-      function onUp(upEvent) {
-        node.element.releasePointerCapture(upEvent.pointerId);
-        state.draggingId = null;
-        node.element.removeEventListener("pointermove", onMove);
-        node.element.removeEventListener("pointerup", onUp);
-      }
+function nextQuestion(){
+  quiz.i++;
+  if(quiz.i>=quiz.qs.length){ renderResults(); return; }
+  renderQuestion();
+}
 
-      node.element.addEventListener("pointermove", onMove);
-      node.element.addEventListener("pointerup", onUp);
-    }
+function renderResults(){
+  document.getElementById('qprog').style.width='100%';
+  document.getElementById('qcount').textContent=quiz.qs.length+' / '+quiz.qs.length;
+  const n=quiz.qs.length, s=quiz.score, pct=Math.round(s/n*100);
+  const msg = pct===100?'Full marks — solid understanding.'
+            : pct>=75?'Strong. Review the ones you missed.'
+            : pct>=50?'Getting there. Worth another run.'
+            : 'Go back to demonstration mode and walk the web again, then retry.';
+  quizBody.innerHTML=`
+    <div class="card results">
+      <div class="grade">${s}/${n}</div>
+      <div class="sub">${pct}% · ${msg}</div>
+      <div class="qactions" style="justify-content:center">
+        <button class="btn btn-primary" id="again">New set of questions</button>
+        <button class="btn btn-ghost" id="todemo">Back to demonstration</button>
+      </div>
+    </div>`;
+  document.getElementById('again').addEventListener('click',startQuiz);
+  document.getElementById('todemo').addEventListener('click',()=>setMode('demo'));
+}
 
-    function handleNodeClick(event, id) {
-      if (state.draggingId) {
-        return;
-      }
-      if (!state.selectedNodeId) {
-        state.selectedNodeId = id;
-        highlightSelected();
-        modePill.textContent = "Mode: select target";
-        return;
-      }
-      if (state.selectedNodeId === id) {
-        state.selectedNodeId = null;
-        highlightSelected();
-        modePill.textContent = "Mode: build";
-        return;
-      }
-      createEdge(state.selectedNodeId, id);
-      state.selectedNodeId = null;
-      highlightSelected();
-      modePill.textContent = "Mode: build";
-    }
+/* ===================================================================
+   MODE SWITCH
+   =================================================================== */
+const tabDemo=document.getElementById('tab-demo');
+const tabQuiz=document.getElementById('tab-quiz');
+function setMode(m){
+  const isDemo=m==='demo';
+  tabDemo.setAttribute('aria-selected',isDemo);
+  tabQuiz.setAttribute('aria-selected',!isDemo);
+  document.getElementById('view-demo').classList.toggle('hide',!isDemo);
+  document.getElementById('view-quiz').classList.toggle('hide',isDemo);
+  if(isDemo) renderStage(); else startQuiz();
+}
+tabDemo.addEventListener('click',()=>setMode('demo'));
+tabQuiz.addEventListener('click',()=>setMode('quiz'));
 
-    function highlightSelected() {
-      for (const [nodeId, node] of state.nodes) {
-        node.element.classList.toggle("active", nodeId === state.selectedNodeId);
-      }
-    }
+/* ===================================================================
+   ECOSYSTEM SWITCH
+   =================================================================== */
+const webswitch=document.getElementById('webswitch');
+function renderWebSwitch(){
+  webswitch.innerHTML=WEBS.map(w=>
+    `<button role="tab" data-web="${w.id}" aria-selected="${w.id===activeWebId}">${w.name}</button>`
+  ).join('');
+  webswitch.querySelectorAll('button').forEach(b=>
+    b.addEventListener('click',()=>switchWeb(b.dataset.web)));
+}
+function switchWeb(id){
+  if(id===activeWebId) return;
+  loadWeb(id);
+  // keep the current view (web/pyramid) but clear any selection / sub-modes
+  demo={selected:null,view:demo.view,trace:false,removeMode:false,removed:new Set()};
+  document.getElementById('t-trace').setAttribute('aria-pressed','false');
+  document.getElementById('t-remove').setAttribute('aria-pressed','false');
+  demoHint.textContent='Tap any organism to inspect it. Arrows point from the food to the feeder.';
+  renderWebSwitch();
+  renderStage(); renderPanel();
+}
 
-    function createEdge(fromId, toId) {
-      if (fromId === toId) {
-        return;
-      }
-      if (state.edges.some((edge) => edge.from === fromId && edge.to === toId)) {
-        return;
-      }
-      state.edges.push({ from: fromId, to: toId });
-      updateCounts();
-      renderEdges();
-    }
-
-    function renderEdges() {
-      linksSvg.querySelectorAll("line").forEach((line) => line.remove());
-      for (const edge of state.edges) {
-        const fromNode = state.nodes.get(edge.from);
-        const toNode = state.nodes.get(edge.to);
-        if (!fromNode || !toNode) {
-          continue;
-        }
-        const points = getEdgePoints(fromNode.element, toNode.element, 34);
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        const isInvalid = !isEdgeValid(fromNode.org.role, toNode.org.role);
-        line.setAttribute("x1", points.x1);
-        line.setAttribute("y1", points.y1);
-        line.setAttribute("x2", points.x2);
-        line.setAttribute("y2", points.y2);
-        line.setAttribute("marker-end", isInvalid ? "url(#arrow-bad)" : "url(#arrow)");
-        if (isInvalid) {
-          line.classList.add("invalid");
-        }
-        linksSvg.appendChild(line);
-      }
-      renderHints();
-    }
-
-    function renderHints() {
-      hintSvg.querySelectorAll("line").forEach((line) => line.remove());
-      if (!state.showHints || !state.preset) {
-        return;
-      }
-      for (const [fromName, toName] of state.preset.edges) {
-        const fromNode = findNodeByCommon(fromName);
-        const toNode = findNodeByCommon(toName);
-        if (!fromNode || !toNode) {
-          continue;
-        }
-        const points = getEdgePoints(fromNode.element, toNode.element, 30);
-        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        line.setAttribute("x1", points.x1);
-        line.setAttribute("y1", points.y1);
-        line.setAttribute("x2", points.x2);
-        line.setAttribute("y2", points.y2);
-        line.setAttribute("marker-end", "url(#arrow-hint)");
-        hintSvg.appendChild(line);
-      }
-    }
-
-    function getEdgePoints(fromElement, toElement, padding) {
-      const boardRect = board.getBoundingClientRect();
-      const fromRect = fromElement.getBoundingClientRect();
-      const toRect = toElement.getBoundingClientRect();
-      const from = {
-        x: fromRect.left - boardRect.left + fromRect.width * 0.5,
-        y: fromRect.top - boardRect.top + fromRect.height * 0.5
-      };
-      const to = {
-        x: toRect.left - boardRect.left + toRect.width * 0.5,
-        y: toRect.top - boardRect.top + toRect.height * 0.5
-      };
-      const dx = to.x - from.x;
-      const dy = to.y - from.y;
-      const distance = Math.max(1, Math.hypot(dx, dy));
-      const offsetX = (dx / distance) * padding;
-      const offsetY = (dy / distance) * padding;
-      return {
-        x1: from.x + offsetX,
-        y1: from.y + offsetY,
-        x2: to.x - offsetX,
-        y2: to.y - offsetY
-      };
-    }
-
-    function getNodeCenter(element) {
-      const boardRect = board.getBoundingClientRect();
-      const rect = element.getBoundingClientRect();
-      return {
-        x: rect.left - boardRect.left + rect.width * 0.5,
-        y: rect.top - boardRect.top + rect.height * 0.5
-      };
-    }
-
-    function findNodeByCommon(commonName) {
-      for (const node of state.nodes.values()) {
-        if (node.org.common === commonName) {
-          return node;
-        }
-      }
-      return null;
-    }
-
-    function isEdgeValid(fromRole, toRole) {
-      if (fromRole === "decomposer") {
-        return false;
-      }
-      if (toRole === "producer") {
-        return false;
-      }
-      if (toRole === "decomposer") {
-        return true;
-      }
-      return roleMeta[fromRole].level <= roleMeta[toRole].level;
-    }
-
-    function checkWeb() {
-      if (!state.nodes.size) {
-        updateStatus("Add organisms before checking.");
-        return;
-      }
-      const issues = [];
-      const nodeStats = new Map();
-
-      for (const [id, node] of state.nodes) {
-        nodeStats.set(id, { incoming: 0, outgoing: 0, role: node.org.role, name: node.org.common });
-      }
-
-      for (const edge of state.edges) {
-        const from = nodeStats.get(edge.from);
-        const to = nodeStats.get(edge.to);
-        if (from) {
-          from.outgoing += 1;
-        }
-        if (to) {
-          to.incoming += 1;
-        }
-      }
-
-      let invalidLinks = 0;
-      for (const edge of state.edges) {
-        const from = state.nodes.get(edge.from);
-        const to = state.nodes.get(edge.to);
-        if (from && to && !isEdgeValid(from.org.role, to.org.role)) {
-          invalidLinks += 1;
-        }
-      }
-
-      for (const stats of nodeStats.values()) {
-        if (stats.role === "producer" && stats.outgoing === 0) {
-          issues.push(`${stats.name} has no consumers.`);
-        }
-        if (stats.role === "primary" && (stats.incoming === 0 || stats.outgoing === 0)) {
-          issues.push(`${stats.name} needs both food and a predator.`);
-        }
-        if (stats.role === "secondary" && stats.incoming === 0) {
-          issues.push(`${stats.name} needs a food source.`);
-        }
-        if (stats.role === "tertiary" && stats.incoming === 0) {
-          issues.push(`${stats.name} needs at least one prey.`);
-        }
-        if (stats.role === "decomposer" && stats.incoming === 0) {
-          issues.push(`${stats.name} needs a food source to decompose.`);
-        }
-      }
-
-      if (!issues.length && invalidLinks === 0) {
-        updateStatus("Nice work. Your web is balanced and directionally correct.");
-        coachEl.innerHTML = "<strong>Great job.</strong> Try adding more organisms or exploring another preset.";
-        return;
-      }
-
-      const issueText = issues.slice(0, 5).map((issue) => `<span>- ${issue}</span>`).join("");
-      const invalidText = invalidLinks ? `<span>- ${invalidLinks} link(s) point the wrong direction.</span>` : "";
-      coachEl.innerHTML = `<strong>Fix these:</strong>${invalidText}${issueText}`;
-      updateStatus("Keep going. You are close.");
-    }
-
-    function autoArrange() {
-      const rect = board.getBoundingClientRect();
-      const columns = 4;
-      const groups = {
-        producer: [],
-        primary: [],
-        secondary: [],
-        tertiary: [],
-        decomposer: []
-      };
-
-      for (const node of state.nodes.values()) {
-        groups[node.org.role].push(node);
-      }
-
-      const layoutOrder = ["producer", "primary", "secondary", "tertiary", "decomposer"];
-      layoutOrder.forEach((role, index) => {
-        const nodes = groups[role];
-        const y = 80 + index * (rect.height / layoutOrder.length);
-        nodes.forEach((node, i) => {
-          const x = 40 + (i % columns) * 220;
-          node.element.style.left = `${x}px`;
-          node.element.style.top = `${Math.min(y, rect.height - 90)}px`;
-        });
-      });
-      renderEdges();
-    }
-
-    function loadPreset() {
-      const presetId = presetSelect.value;
-      const preset = webPresets.find((item) => item.id === presetId);
-      if (!preset) {
-        return;
-      }
-      state.preset = preset;
-      state.organisms = preset.organisms
-        .map(resolveOrganism)
-        .filter(Boolean);
-      state.selectedNodeId = null;
-      state.showHints = false;
-      renderBank();
-      clearBoard();
-      loadPresetNodesAndEdges();
-      activePresetEl.textContent = preset.name;
-      updateStatus(preset.description);
-      modePill.textContent = "Mode: build";
-      document.getElementById("show-hints").textContent = "Show hints";
-    }
-
-    function loadPresetNodesAndEdges() {
-      const rect = board.getBoundingClientRect();
-      const roleOrder = ["producer", "primary", "secondary", "tertiary", "decomposer"];
-      const laneHeight = rect.height / roleOrder.length;
-      const laneOffsets = roleOrder.reduce((acc, role, index) => {
-        acc[role] = 40 + index * laneHeight;
-        return acc;
-      }, {});
-
-      const nodesByName = new Map();
-      const columns = 4;
-      const spacingX = 210;
-
-      const grouped = roleOrder.reduce((acc, role) => {
-        acc[role] = state.organisms.filter((org) => org.role === role);
-        return acc;
-      }, {});
-
-      for (const role of roleOrder) {
-        const items = grouped[role];
-        items.forEach((org, index) => {
-          const col = index % columns;
-          const row = Math.floor(index / columns);
-          const x = 40 + col * spacingX + (row % 2) * 20;
-          const y = laneOffsets[role] + row * 90;
-          const id = addNode(org.common, x, Math.min(y, rect.height - 80));
-          if (id) {
-            nodesByName.set(org.common, id);
-          }
-        });
-      }
-
-      state.edges = [];
-      for (const [fromName, toName] of state.preset.edges) {
-        const fromId = nodesByName.get(fromName);
-        const toId = nodesByName.get(toName);
-        if (fromId && toId) {
-          state.edges.push({ from: fromId, to: toId });
-        }
-      }
-      updateCounts();
-      renderEdges();
-    }
-
-    function toggleHints() {
-      state.showHints = !state.showHints;
-      renderEdges();
-      document.getElementById("show-hints").textContent = state.showHints ? "Hide hints" : "Show hints";
-    }
-
-    board.addEventListener("dragover", (event) => {
-      event.preventDefault();
-    });
-
-    board.addEventListener("drop", (event) => {
-      event.preventDefault();
-      const common = event.dataTransfer.getData("text/plain");
-      const rect = boardInner.getBoundingClientRect();
-      addNode(common, event.clientX - rect.left - 40, event.clientY - rect.top - 20);
-    });
-
-    document.getElementById("load-preset").addEventListener("click", loadPreset);
-    presetSelect.addEventListener("change", loadPreset);
-    document.getElementById("auto-arrange").addEventListener("click", autoArrange);
-    document.getElementById("clear-board").addEventListener("click", clearBoard);
-    document.getElementById("clear-links").addEventListener("click", clearLinks);
-    document.getElementById("check-web").addEventListener("click", checkWeb);
-    document.getElementById("show-hints").addEventListener("click", toggleHints);
-
-    populatePresetSelect();
-    loadPreset();
-  </script>
+/* init */
+loadWeb('savanna');
+renderWebSwitch();
+renderStage();
+renderPanel();
+</script>
 </body>
 </html>

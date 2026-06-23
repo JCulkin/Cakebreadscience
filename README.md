@@ -38,8 +38,8 @@ The primary IGCSE Edexcel resources site with printable worksheets (172 total) a
   - `triangle-solver_3.html` - Triangle solver
   - `organisms/` - Biology organisms classification tool (`game.html` + `gallery.html`)
   - `genetics-game/` - Genetics simulator
-  - `food-webs/` - Food web builder (WIP)
-  - `ecological-pyramids/` - Ecological pyramids tool (WIP)
+  - `food-webs/` - Food Webs tool: demonstration + interactive quiz modes, savanna & garden ecosystems
+  - `ecological-pyramids/` - Ecological pyramids tool: 4 ecosystems, numbers/biomass/energy, true linear scale
   - `quadrilaterals/` - Quadrilateral/polygon classification quiz (WIP)
 
 - **`admin/`** - Admin console (restricted access)
@@ -48,7 +48,7 @@ The primary IGCSE Edexcel resources site with printable worksheets (172 total) a
   - Spec Progress tab: per-student specification tracking with progress bars
   - Export/restore data backup tools
 
-- **`templates/`** - HTML/CSS templates for creating new worksheets
+- **`admin/templates/`** - HTML/CSS templates for creating new worksheets
 
 - **`css/`** - Shared stylesheets
   - `worksheet.css` - Base worksheet styles
@@ -124,7 +124,7 @@ interactive/
 ## 🚀 Quick Start
 
 ### Adding a New Worksheet
-1. Copy a template from `templates/`
+1. Copy a template from `admin/templates/`
 2. Save to `worksheets/{subject}/[section].[subsection]_[topic].html`
 3. Update CSS path: `../../css/{subject}.css`
 4. Add link to `worksheets/index.html`
@@ -200,6 +200,17 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-06-23 - v2.5.0 Ecology Tools (Food Webs & Ecological Pyramids)
+- **Food Webs** rebuilt from placeholder into a finished tool with Demonstration and Interactive (quiz) modes, savanna & garden ecosystems, energy-pyramid view, food-chain tracing, and a "remove a species" knock-on demo
+- **Ecological Pyramids** finished and expanded to 4 ecosystems (Grassland, Oak Tree, Sea, Desert), showing the oak's irregular pyramid of numbers and the sea's inverted pyramid of biomass
+- Switched pyramids to a true linear scale (~10% per level), single organism per level, kg/joule units, and added a food-chain box diagram under each pyramid
+- Removed WIP banners from both tools; homepage footer bumped to v2.5.0
+
+### 2026-06-02 - v2.4.0 Admin Fix, WIP Tools & Housekeeping
+- Admin spec progress now reads from the `specProgress` collection directly, falling back to `users.specSubjects`
+- Linked `ecological-pyramids` and `quadrilaterals` from the homepage Interactive card
+- Deleted orphaned `Elevenstudents/Flashcards/` duplicate and `Flashcards/blob-test.html`
+
 ### 2026-05-26 - v2.3.0 Filter Compatibility & Cleanup
 - Renamed `Elevenstudents/Secret/` → `Elevenstudents/Extras/`; renamed all secret-* files to neutral names
 - Removed dead logo click-counter, cleaned Easter Egg / Konami references from HTML and JS
@@ -241,8 +252,10 @@ Keep these in sync when adding/removing admin users.
 ## 📝 To-Do
 
 ### Immediate
-- [ ] Finish Food Web Builder (currently WIP/placeholder)
-- [ ] Decide whether to show/hide WIP tools in main nav
+- [x] Finish Food Web Builder — done in v2.5.0 (now the Food Webs tool)
+- [x] Finish Ecological Pyramids — done in v2.5.0
+- [ ] Finish Quadrilaterals quiz (still WIP)
+- [ ] Decide whether to show/hide remaining WIP tools in main nav
 
 ### Future Enhancements
 - [ ] Create backup strategy for Firebase data
@@ -263,4 +276,4 @@ Educational use only. All content aligned with IGCSE Edexcel curriculum specific
 
 This project is maintained as a personal educational resource collection.
 
-**Last Updated:** March 2026
+**Last Updated:** June 2026

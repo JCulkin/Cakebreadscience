@@ -2,6 +2,34 @@
 
 ---
 
+## [2.5.0] - 2026-06-23
+### Ecology Tools — Food Webs & Ecological Pyramids
+
+#### Food Webs (`interactive/food-webs/index.html`)
+- Rebuilt the old "Food Web Builder" placeholder into a finished **Food Webs — IGCSE Ecology** tool (WIP sticker removed)
+- Two modes: **Demonstration** (board-friendly) and **Interactive** (quiz)
+- Two ecosystems: **Savanna** and **Garden**, each a full web of producers, consumers and decomposers
+- Demonstration tools: **Energy pyramid** view, **Trace food chains**, **Remove a species** (shows knock-on effects), and **Reset**
+- Click any organism to inspect its role, trophic level and feeding links; arrows point in the direction energy flows; legend covers producer → apex plus decomposers
+- Interactive mode: 8-question session (identify role, arrow direction, trophic level, build-a-chain, predict-the-effect) with progress bar and score
+
+#### Ecological Pyramids (`interactive/ecological-pyramids/index.html`)
+- WIP banner removed; tool finished
+- Expanded from 2 to **4 ecosystems**: Grassland, Oak Tree, Sea, Desert
+  - **Oak Tree** demonstrates an irregular pyramid of numbers (one tree → tiny bottom row, bulging middle)
+  - **Sea** demonstrates an inverted pyramid of biomass
+- Switched from a square-root scale to a **true linear scale** (bars show the real ~10%-per-level drop) — appropriate for GCSE
+- **Single organism per trophic level** on every pyramid
+- Simplified units: **biomass in kg, energy in joules**
+- Energy pyramid kept as one continuous stack (no longer split apart by "90% lost" rows)
+- Added a **food-chain box diagram** in its own panel beneath each pyramid
+- Widened the layout so pyramids use the full screen width, making the linear scale read better
+
+#### Changed
+- Homepage footer version → v2.5.0
+
+---
+
 ## [2.4.0] - 2026-06-02
 ### Admin Fix, WIP Tools & Housekeeping
 

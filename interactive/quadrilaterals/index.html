@@ -1,862 +1,793 @@
 <!DOCTYPE html>
-<!-- WIP: Interactive quadrilateral classification tool — work in progress -->
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex">
-    <title>Polygon Classification Quiz</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quadrilateral Classifier - Cakebread Science</title>
+  <meta name="description" content="Interactive quadrilateral classification quiz for IGCSE geometry. Identify shapes or check every property that applies." />
+  <meta name="keywords" content="IGCSE, geometry, quadrilaterals, square, rectangle, rhombus, parallelogram, kite, trapezium, interactive, maths" />
+  <meta name="author" content="Cakebread Science" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta name="theme-color" content="#2255cc" />
+  <link rel="canonical" href="https://cakebreadscience.com/interactive/quadrilaterals/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #475569;
+      --bg: #f5f1ea;
+      --panel: #ffffff;
+      --line: rgba(15, 23, 42, 0.12);
+      --accent: #f97316;      /* equal-side ticks */
+      --accent-2: #0ea5e9;    /* shape fill */
+      --accent-3: #10b981;    /* parallel chevrons */
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #eeeae0;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+    * { box-sizing: border-box; }
 
-        /* WIP badge */
-        .wip-badge {
-            position: absolute;
-            left: 18px;
-            top: 18px;
-            background: #ffcc00;
-            color: #222;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-            font-size: 0.9em;
-            z-index: 60;
-        }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top left, #fef6e3, var(--bg) 55%, #efe9de 100%);
+    }
 
-        .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 900px;
-            width: 100%;
-            padding: 40px;
-        }
+    header {
+      padding: 28px 6vw 12px;
+    }
 
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 2em;
-        }
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .header-text { min-width: 0; }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 0.95em;
-        }
+    .back-link {
+      display: inline-block;
+      margin-bottom: 16px;
+      padding: 6px 14px;
+      background: rgba(15, 23, 42, 0.08);
+      color: var(--muted);
+      text-decoration: none;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      transition: background 0.2s ease;
+    }
+    .back-link:hover { background: rgba(15, 23, 42, 0.14); color: var(--ink); }
 
-        .quiz-container {
-            display: flex;
-            gap: 40px;
-            margin-bottom: 30px;
-        }
+    h1 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      margin: 0 0 12px;
+      letter-spacing: -0.02em;
+    }
 
-        .canvas-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
+    p.lead {
+      margin: 0 0 18px;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
 
-        canvas {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+    /* Mode switcher */
+    .mode-switcher {
+      display: inline-flex;
+      gap: 6px;
+      padding: 6px;
+      margin-top: 8px;
+      background: rgba(15, 23, 42, 0.06);
+      border-radius: 999px;
+      flex: none;
+    }
+    .mode-switcher button {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mode-switcher button[aria-pressed="true"] {
+      background: var(--ink);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+    }
 
-        .shape-info {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #2255cc;
-            font-size: 0.9em;
-            max-width: 400px;
-        }
+    main {
+      padding: 12px 6vw 64px;
+      display: grid;
+      gap: 28px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+    @media (max-width: 860px) {
+      main { grid-template-columns: 1fr; }
+    }
 
-        .shape-info h3 {
-            color: #333;
-            margin-bottom: 8px;
-        }
+    .card {
+      background: var(--panel);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.12);
+      display: grid;
+      gap: 18px;
+    }
 
-        .property-list {
-            list-style: none;
-            color: #555;
-        }
+    .stage {
+      background: linear-gradient(135deg, #fff4dd 0%, #f4fbff 60%, #ffffff 100%);
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+    }
+    canvas {
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+      display: block;
+    }
 
-        .property-list li {
-            margin: 5px 0;
-            padding-left: 20px;
-            position: relative;
-        }
+    /* Legend */
+    .legend {
+      display: grid;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .legend strong { color: var(--ink); }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .legend-item svg { flex: none; }
 
-        .property-list li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #2255cc;
-            font-weight: bold;
-        }
+    /* Score */
+    .score-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 14px 20px;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+      margin-bottom: 8px;
+    }
+    .score-value { font-size: 1.6rem; font-weight: 700; color: var(--ink); }
+    .score-label { color: var(--muted); font-size: 0.85rem; }
 
-        .legend {
-            background: #fafafa;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 0.85em;
-            margin-top: 10px;
-            border: 1px solid #e0e0e0;
-        }
+    .panel-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+    }
+    .panel-hint { color: var(--muted); font-size: 0.9rem; margin: -8px 0 0; }
+    .panel-note { color: var(--muted); font-size: 0.85rem; font-style: italic; margin: 6px 0 0; }
 
-        .legend-item {
-            margin: 5px 0;
-        }
+    /* Identify-mode name buttons */
+    .name-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .name-btn {
+      border: 1.5px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 14px 12px;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .name-btn:hover:not(:disabled) { border-color: var(--accent-2); transform: translateY(-1px); }
+    .name-btn[aria-pressed="true"] {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(14, 165, 233, 0.35);
+    }
+    .name-btn:disabled { opacity: 0.55; cursor: default; }
 
-        .legend-icon {
-            display: inline-block;
-            width: 30px;
-            height: 2px;
-            background: #333;
-            margin: 0 5px;
-            vertical-align: middle;
-        }
+    /* Properties-mode checklist */
+    .check-list { display: grid; gap: 8px; }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+    .check-item:hover { border-color: var(--accent-2); }
+    .check-item input { width: 19px; height: 19px; cursor: pointer; accent-color: var(--accent-2); flex: none; }
+    .check-item span { line-height: 1.3; }
+    .check-item .lab-main { font-weight: 600; }
+    .check-item .lab-def { font-weight: 400; color: #94a3b8; font-size: 0.82rem; }
+    .check-item .lab-def::before { content: "— "; }
+    .check-item input:disabled { cursor: default; }
 
-        .legend-item.parallel {
-            position: relative;
-        }
+    .button-row { display: flex; gap: 10px; margin-top: 6px; }
+    button.action {
+      flex: 1;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+    .btn-check { background: var(--ink); color: #fff; }
+    .btn-check:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(15, 23, 42, 0.25); }
+    .btn-check:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-next { background: var(--accent); color: #fff; }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(249, 115, 22, 0.35); }
 
-        .legend-item.parallel::after {
-            content: "=";
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-            color: #ff6b6b;
-            font-size: 1.2em;
-        }
+    /* Feedback + reveal */
+    .feedback {
+      border-radius: 14px;
+      padding: 16px;
+      display: none;
+      animation: slideIn 0.25s ease;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: #e7f7ee; border: 1px solid #b7e4c7; color: #14532d; }
+    .feedback.partial { background: #fff7e6; border: 1px solid #ffe0a3; color: #7a4f01; }
+    .feedback.incorrect { background: #fdecec; border: 1px solid #f7c4c4; color: #7a1f1f; }
+    .feedback-title { font-weight: 700; margin-bottom: 6px; font-size: 1.05rem; }
+    .feedback-body { font-size: 0.95rem; line-height: 1.5; }
+    .reveal-props {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(0,0,0,0.15);
+    }
+    .reveal-props ul { margin: 6px 0 0; padding-left: 20px; }
+    .reveal-props li { margin: 3px 0; }
 
-        .questions-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .question-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .question-group {
-            margin-bottom: 25px;
-        }
-
-        .question-label {
-            font-weight: 600;
-            color: #555;
-            margin-bottom: 10px;
-            font-size: 0.95em;
-        }
-
-        .checkbox-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            accent-color: #2255cc;
-        }
-
-        .checkbox-item label {
-            cursor: pointer;
-            flex: 1;
-            color: #555;
-            user-select: none;
-        }
-
-        .checkbox-item label:hover {
-            color: #333;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1em;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-submit {
-            background: #eeeae0;
-            color: white;
-            flex: 1;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-next {
-            background: #f0f0f0;
-            color: #333;
-            flex: 1;
-        }
-
-        .btn-next:hover {
-            background: #e0e0e0;
-        }
-
-        .feedback {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        .feedback.correct {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-
-        .feedback.incorrect {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-
-        .feedback.show {
-            display: block;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .feedback-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .feedback-content {
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
-
-        .score {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            border-left: 4px solid #2196f3;
-            margin-bottom: 20px;
-        }
-
-        .score-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #1565c0;
-        }
-
-        .score-label {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .responsive {
-            flex-direction: column;
-        }
-
-        @media (max-width: 768px) {
-            .quiz-container {
-                flex-direction: column;
-                gap: 30px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .container {
-                padding: 20px;
-            }
-
-            canvas {
-                width: 100%;
-            }
-        }
-
-        .definition-tooltip {
-            font-size: 0.85em;
-            color: #666;
-            margin-top: 5px;
-            padding: 8px;
-            background: #f9f9f9;
-            border-left: 2px solid #ccc;
-            border-radius: 4px;
-        }
-    </style>
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔶 Polygon Classification Quiz — WIP</h1>
-        <p class="subtitle">Test your knowledge on quadrilaterals and their properties</p>
-        <div class="wip-badge" role="status" aria-live="polite">WIP</div>
-
-                <div class="score">
-            <div class="score-value" id="scoreValue">0/0</div>
-            <div class="score-label">Questions Completed</div>
-        </div>
-
-                <div class="definition-tooltip" aria-hidden="false">Work In Progress — features and visuals may change.</div>
-
-        <div class="quiz-container">
-            <!-- Canvas Section -->
-            <div class="canvas-section">
-                <canvas id="shapeCanvas" width="350" height="350"></canvas>
-                
-                <div class="shape-info">
-                    <h3>Shape Properties:</h3>
-                    <ul class="property-list" id="propertyList"></ul>
-                </div>
-
-                <div class="legend">
-                    <strong style="color: #333; display: block; margin-bottom: 8px;">Legend:</strong>
-                    <div class="legend-item">
-                        <span class="legend-icon" style="width:18px;height:12px;display:inline-block;vertical-align:middle;">
-                            <svg width="18" height="12" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="3" y1="6" x2="15" y2="6" stroke="#1e90ff" stroke-width="3" stroke-linecap="round"/>
-                            </svg>
-                        </span>
-                        Blue single tick = All sides equal
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-icon" style="width:18px;height:12px;display:inline-block;vertical-align:middle;">
-                            <svg width="18" height="12" xmlns="http://www.w3.org/2000/svg">
-                                <line x1="2" y1="4" x2="10" y2="4" stroke="#1e90ff" stroke-width="3" stroke-linecap="round"/>
-                                <line x1="8" y1="8" x2="16" y2="8" stroke="#1e90ff" stroke-width="3" stroke-linecap="round"/>
-                            </svg>
-                        </span>
-                        Blue double ticks = Second pair of equal sides (not equal to first set)
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-icon" style="width:36px;height:14px;display:inline-block;vertical-align:middle;">
-                            <svg width="36" height="14" xmlns="http://www.w3.org/2000/svg">
-                                <polyline points="4,7 14,7" stroke="#2ecc71" stroke-width="3" stroke-linecap="round"/>
-                                <polygon points="14,7 10,4 10,10" fill="#2ecc71"/>
-                                <polyline points="20,7 30,7" stroke="#2ecc71" stroke-width="3" stroke-linecap="round"/>
-                                <polygon points="30,7 26,4 26,10" fill="#2ecc71"/>
-                            </svg>
-                        </span>
-                        Green arrows = Parallel sides (single = first set, double = second set)
-                    </div>
-                </div>
-            </div>
-
-            <!-- Questions Section -->
-            <div class="questions-section">
-                <div class="question-title">Select all that apply:</div>
-                
-                <div class="question-group">
-                    <div class="question-label">Shape Type:</div>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="regular" name="type">
-                            <label for="regular">Regular Polygon (all sides equal)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="polygon" name="type">
-                            <label for="polygon">Quadrilateral (exactly 4 sides)</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="question-group">
-                    <div class="question-label">Quadrilateral Classification:</div>
-                    <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="square" name="quad">
-                            <label for="square">Square (all sides equal, all angles 90°)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="rectangle" name="quad">
-                            <label for="rectangle">Rectangle (2 pairs of opposite equal sides, all angles 90°)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="rhombus" name="quad">
-                            <label for="rhombus">Rhombus (all sides equal, opposite sides parallel)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="parallelogram" name="quad">
-                            <label for="parallelogram">Parallelogram (opposite sides parallel and equal)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="kite" name="quad">
-                            <label for="kite">Kite (2 pairs of adjacent equal sides)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" id="trapezium" name="quad">
-                            <label for="trapezium">Trapezium (exactly 1 pair of parallel sides)</label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-submit" id="submitBtn">Check Answer</button>
-                    <button class="btn-next" id="nextBtn" style="display: none;">Next Shape</button>
-                </div>
-
-                <div class="feedback" id="feedback"></div>
-            </div>
-        </div>
+  <header>
+    <a href="../../index.html" class="back-link">&larr; Back to Main Menu</a>
+    <div class="header-row">
+      <div class="header-text">
+        <h1>Quadrilateral Classifier</h1>
+        <p class="lead">Look at the shape, read the markings, and classify it.</p>
+      </div>
+      <div class="mode-switcher" role="group" aria-label="Choose a mode">
+        <button type="button" data-mode="identify" aria-pressed="true">Level 1</button>
+        <button type="button" data-mode="properties" aria-pressed="false">Level 2</button>
+      </div>
     </div>
+  </header>
 
-    <script>
-        // Shape definitions with their properties
-        const shapeDefinitions = {
-            square: {
-                name: 'Square',
-                vertices: [[80, 80], [280, 80], [280, 280], [80, 280]],
-                properties: {
-                    regular: true,
-                    polygon: true,
-                    square: true,
-                    rectangle: true,
-                    rhombus: true,
-                    parallelogram: true,
-                    kite: false,
-                    trapezium: false
-                },
-                description: ['All sides equal', 'All angles 90°', 'Opposite sides parallel'],
-                equalSides: [[0, 1], [1, 2], [2, 3], [3, 0]],
-                parallelSides: [[0, 1, 2, 3], [1, 2, 3, 0]]
-            },
-            rectangle: {
-                name: 'Rectangle',
-                vertices: [[60, 100], [300, 100], [300, 260], [60, 260]],
-                properties: {
-                    regular: false,
-                    polygon: true,
-                    square: false,
-                    rectangle: true,
-                    rhombus: false,
-                    parallelogram: true,
-                    kite: false,
-                    trapezium: false
-                },
-                description: ['Opposite sides equal', 'All angles 90°', 'Opposite sides parallel'],
-                equalSides: [[0, 1, 2, 3], [1, 2, 3, 0]],
-                parallelSides: [[0, 1, 2, 3], [1, 2, 3, 0]]
-            },
-            rhombus: {
-                name: 'Rhombus',
-                vertices: [[170, 50], [290, 170], [170, 290], [50, 170]],
-                properties: {
-                    regular: false,
-                    polygon: true,
-                    square: false,
-                    rectangle: false,
-                    rhombus: true,
-                    parallelogram: true,
-                    kite: false,
-                    trapezium: false
-                },
-                description: ['All sides equal', 'Opposite sides parallel', 'Opposite angles equal'],
-                equalSides: [[0, 1], [1, 2], [2, 3], [3, 0]],
-                parallelSides: [[0, 1, 2, 3], [1, 2, 3, 0]]
-            },
-            parallelogram: {
-                name: 'Parallelogram',
-                vertices: [[70, 120], [280, 100], [260, 260], [50, 280]],
-                properties: {
-                    regular: false,
-                    polygon: true,
-                    square: false,
-                    rectangle: false,
-                    rhombus: false,
-                    parallelogram: true,
-                    kite: false,
-                    trapezium: false
-                },
-                description: ['Opposite sides equal', 'Opposite sides parallel', 'Opposite angles equal'],
-                equalSides: [[0, 1, 2, 3], [1, 2, 3, 0]],
-                parallelSides: [[0, 1, 2, 3], [1, 2, 3, 0]]
-            },
-            kite: {
-                name: 'Kite',
-                vertices: [[170, 40], [300, 170], [170, 280], [40, 170]],
-                properties: {
-                    regular: false,
-                    polygon: true,
-                    square: false,
-                    rectangle: false,
-                    rhombus: false,
-                    parallelogram: false,
-                    kite: true,
-                    trapezium: false
-                },
-                description: ['2 pairs of adjacent equal sides', 'One pair of opposite angles equal', 'No parallel sides'],
-                equalSides: [[0, 1], [0, 3], [1, 2], [2, 3]],
-                parallelSides: []
-            },
-            trapezium: {
-                name: 'Trapezium',
-                vertices: [[100, 80], [280, 100], [250, 280], [50, 260]],
-                properties: {
-                    regular: false,
-                    polygon: true,
-                    square: false,
-                    rectangle: false,
-                    rhombus: false,
-                    parallelogram: false,
-                    kite: false,
-                    trapezium: true
-                },
-                description: ['Exactly 1 pair of parallel sides', 'Other pair of sides non-parallel'],
-                equalSides: [],
-                parallelSides: [[0, 1, 2, 3]]
-            },
-            isoscelesTrapezium: {
-                name: 'Isosceles Trapezium',
-                vertices: [[80, 80], [280, 100], [260, 260], [60, 240]],
-                properties: {
-                    regular: false,
-                    polygon: true,
-                    square: false,
-                    rectangle: false,
-                    rhombus: false,
-                    parallelogram: false,
-                    kite: false,
-                    trapezium: true
-                },
-                description: ['Exactly 1 pair of parallel sides', 'Non-parallel sides equal'],
-                equalSides: [[0, 1, 2, 3]],
-                parallelSides: [[0, 1, 2, 3]]
-            }
-        };
+  <main>
+    <!-- Shape + legend -->
+    <section class="card" aria-label="Shape">
+      <div class="stage">
+        <canvas id="shapeCanvas" width="360" height="360" aria-label="Quadrilateral diagram"></canvas>
+      </div>
+      <div class="legend">
+        <strong>Key</strong>
+        <div class="legend-item">
+          <svg width="40" height="20" viewBox="0 0 40 20" aria-hidden="true">
+            <line x1="4" y1="10" x2="36" y2="10" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="20" y1="4" x2="20" y2="16" stroke="#f97316" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <span>This shows equal lengths.</span>
+        </div>
+        <div class="legend-item">
+          <svg width="40" height="20" viewBox="0 0 40 20" aria-hidden="true">
+            <line x1="4" y1="10" x2="36" y2="10" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round"/>
+            <polyline points="17,4 23,10 17,16" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>This shows parallel lines.</span>
+        </div>
+        <div class="legend-item">
+          <svg width="40" height="20" viewBox="0 0 40 20" aria-hidden="true">
+            <path d="M12 3 L12 15 L32 15" fill="none" stroke="#0f172a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 9 L18 9 L18 15" fill="none" stroke="#0f172a" stroke-width="2"/>
+          </svg>
+          <span>This shows a 90° angle.</span>
+        </div>
+      </div>
+    </section>
 
-        // Quiz state
-        let currentShapeKey = null;
-        let score = 0;
-        let totalQuestions = 0;
-        const canvas = document.getElementById('shapeCanvas');
-        const ctx = canvas.getContext('2d');
+    <!-- Questions -->
+    <section class="card" aria-label="Questions">
+      <div class="score-card">
+        <div>
+          <div class="score-value" id="scoreValue">0 / 0</div>
+          <div class="score-label">Correct so far</div>
+        </div>
+      </div>
 
-        // Get all shape keys
-        const shapeKeys = Object.keys(shapeDefinitions);
+      <!-- Mode 1: Identify -->
+      <div id="panel-identify">
+        <h2 class="panel-title">Pick the most specific name.</h2>
+        <p class="panel-note">A square is also a rectangle — but “square” is the best answer.</p>
+        <div class="name-grid" id="nameGrid">
+          <button type="button" class="name-btn" data-name="square" aria-pressed="false">Square</button>
+          <button type="button" class="name-btn" data-name="rectangle" aria-pressed="false">Rectangle</button>
+          <button type="button" class="name-btn" data-name="rhombus" aria-pressed="false">Rhombus</button>
+          <button type="button" class="name-btn" data-name="parallelogram" aria-pressed="false">Parallelogram</button>
+          <button type="button" class="name-btn" data-name="kite" aria-pressed="false">Kite</button>
+          <button type="button" class="name-btn" data-name="trapezium" aria-pressed="false">Trapezium</button>
+        </div>
+      </div>
 
-        function getRandomShape() {
-            return shapeKeys[Math.floor(Math.random() * shapeKeys.length)];
-        }
+      <!-- Mode 2: Properties -->
+      <div id="panel-properties" class="hidden">
+        <h2 class="panel-title">Tick every property that applies</h2>
+        <div class="check-list">
+          <label class="check-item">
+            <input type="checkbox" id="polygon" />
+            <span><span class="lab-main">Quadrilateral</span> <span class="lab-def">4 straight sides</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="regular" />
+            <span><span class="lab-main">Regular polygon</span> <span class="lab-def">all sides and angles equal</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="square" />
+            <span><span class="lab-main">Square</span> <span class="lab-def">all sides equal, all angles 90°</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="rectangle" />
+            <span><span class="lab-main">Rectangle</span> <span class="lab-def">opposite sides equal, all angles 90°</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="rhombus" />
+            <span><span class="lab-main">Rhombus</span> <span class="lab-def">all sides equal, opposite sides parallel</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="parallelogram" />
+            <span><span class="lab-main">Parallelogram</span> <span class="lab-def">opposite sides parallel and equal</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="kite" />
+            <span><span class="lab-main">Kite</span> <span class="lab-def">two pairs of adjacent sides equal</span></span>
+          </label>
+          <label class="check-item">
+            <input type="checkbox" id="trapezium" />
+            <span><span class="lab-main">Trapezium</span> <span class="lab-def">exactly one pair of parallel sides</span></span>
+          </label>
+        </div>
+      </div>
 
-        function drawShape() {
-            const shape = shapeDefinitions[currentShapeKey];
-            
-            // Clear canvas
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw the shape itself
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 3;
+      <div class="button-row">
+        <button type="button" class="action btn-check" id="checkBtn">Check answer</button>
+        <button type="button" class="action btn-next hidden" id="nextBtn">Next shape &rarr;</button>
+      </div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    /* ----------------------------------------------------------------
+       Shape data. Coordinates live on a 360x360 logical canvas.
+       - equalSides: groups of side indices that are equal to one
+         another. Group order -> number of ticks (1, then 2).
+       - parallelSides: groups of side indices that are parallel.
+         Group order -> number of chevrons (1, then 2).
+       - rightAngles: vertex indices that are 90°.
+       Side i runs from vertices[i] to vertices[(i+1) % n].
+    ---------------------------------------------------------------- */
+    const SHAPES = {
+      square: {
+        name: 'Square',
+        answer: 'square',
+        alsoAccept: ['rectangle', 'rhombus', 'parallelogram'],
+        vertices: [[80, 80], [280, 80], [280, 280], [80, 280]],
+        equalSides: [[0, 1, 2, 3]],
+        parallelSides: [[0, 2], [1, 3]],
+        rightAngles: [0, 1, 2, 3],
+        properties: { polygon: true, regular: true, square: true, rectangle: true, rhombus: true, parallelogram: true, kite: false, trapezium: false },
+        description: ['All four sides equal', 'All four angles 90°', 'Both pairs of opposite sides parallel']
+      },
+      rectangle: {
+        name: 'Rectangle',
+        answer: 'rectangle',
+        alsoAccept: ['parallelogram'],
+        vertices: [[60, 105], [300, 105], [300, 255], [60, 255]],
+        equalSides: [[0, 2], [1, 3]],
+        parallelSides: [[0, 2], [1, 3]],
+        rightAngles: [0, 1, 2, 3],
+        properties: { polygon: true, regular: false, square: false, rectangle: true, rhombus: false, parallelogram: true, kite: false, trapezium: false },
+        description: ['Opposite sides equal', 'All four angles 90°', 'Both pairs of opposite sides parallel']
+      },
+      rhombus: {
+        name: 'Rhombus',
+        answer: 'rhombus',
+        alsoAccept: ['parallelogram'],
+        vertices: [[180, 60], [290, 180], [180, 300], [70, 180]],
+        equalSides: [[0, 1, 2, 3]],
+        parallelSides: [[0, 2], [1, 3]],
+        rightAngles: [],
+        properties: { polygon: true, regular: false, square: false, rectangle: false, rhombus: true, parallelogram: true, kite: false, trapezium: false },
+        description: ['All four sides equal', 'Both pairs of opposite sides parallel', 'Opposite angles equal (but not 90°)']
+      },
+      parallelogram: {
+        name: 'Parallelogram',
+        answer: 'parallelogram',
+        alsoAccept: [],
+        vertices: [[80, 100], [290, 100], [250, 270], [40, 270]],
+        equalSides: [[0, 2], [1, 3]],
+        parallelSides: [[0, 2], [1, 3]],
+        rightAngles: [],
+        properties: { polygon: true, regular: false, square: false, rectangle: false, rhombus: false, parallelogram: true, kite: false, trapezium: false },
+        description: ['Opposite sides equal', 'Both pairs of opposite sides parallel', 'Opposite angles equal']
+      },
+      kite: {
+        name: 'Kite',
+        answer: 'kite',
+        alsoAccept: [],
+        vertices: [[180, 55], [295, 175], [180, 315], [65, 175]],
+        equalSides: [[0, 3], [1, 2]],
+        parallelSides: [],
+        rightAngles: [],
+        properties: { polygon: true, regular: false, square: false, rectangle: false, rhombus: false, parallelogram: false, kite: true, trapezium: false },
+        description: ['Two pairs of adjacent sides equal', 'One pair of opposite angles equal', 'No parallel sides']
+      },
+      trapezium: {
+        name: 'Trapezium',
+        answer: 'trapezium',
+        alsoAccept: [],
+        vertices: [[100, 90], [230, 90], [310, 270], [60, 270]],
+        equalSides: [],
+        parallelSides: [[0, 2]],
+        rightAngles: [],
+        properties: { polygon: true, regular: false, square: false, rectangle: false, rhombus: false, parallelogram: false, kite: false, trapezium: true },
+        description: ['Exactly one pair of parallel sides', 'The other pair of sides are not parallel', 'No sides need be equal']
+      },
+      isoscelesTrapezium: {
+        name: 'Isosceles Trapezium',
+        answer: 'trapezium',
+        alsoAccept: [],
+        isosceles: true,
+        vertices: [[120, 90], [240, 90], [290, 270], [70, 270]],
+        equalSides: [[1, 3]],
+        parallelSides: [[0, 2]],
+        rightAngles: [],
+        properties: { polygon: true, regular: false, square: false, rectangle: false, rhombus: false, parallelogram: false, kite: false, trapezium: true },
+        description: ['Exactly one pair of parallel sides', 'The two slanted sides are equal in length', 'Base angles are equal']
+      }
+    };
+
+    const SHAPE_KEYS = Object.keys(SHAPES);
+    const NAME_LABELS = {
+      square: 'Square', rectangle: 'Rectangle', rhombus: 'Rhombus',
+      parallelogram: 'Parallelogram', kite: 'Kite', trapezium: 'Trapezium'
+    };
+    const PROP_LABELS = {
+      polygon: 'Quadrilateral', regular: 'Regular polygon', square: 'Square',
+      rectangle: 'Rectangle', rhombus: 'Rhombus', parallelogram: 'Parallelogram',
+      kite: 'Kite', trapezium: 'Trapezium'
+    };
+
+    /* ---------------- State ---------------- */
+    let mode = 'identify';      // 'identify' | 'properties'
+    let currentKey = null;
+    let selectedName = null;    // mode 1 selection
+    let answered = false;
+    let score = 0;
+    let total = 0;
+
+    const canvas = document.getElementById('shapeCanvas');
+    const ctx = canvas.getContext('2d');
+    const LOGICAL = 360;
+
+    /* ---------------- Canvas setup (crisp on retina) ---------------- */
+    function setupCanvas() {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = LOGICAL * dpr;
+      canvas.height = LOGICAL * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    /* ---------------- Drawing ---------------- */
+    function unit(v) {
+      const m = Math.hypot(v[0], v[1]) || 1;
+      return [v[0] / m, v[1] / m];
+    }
+
+    function drawShape() {
+      const shape = SHAPES[currentKey];
+      const V = shape.vertices;
+      const n = V.length;
+
+      ctx.clearRect(0, 0, LOGICAL, LOGICAL);
+
+      // Filled body
+      ctx.beginPath();
+      ctx.moveTo(V[0][0], V[0][1]);
+      for (let i = 1; i < n; i++) ctx.lineTo(V[i][0], V[i][1]);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.10)';
+      ctx.fill();
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 3.5;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      drawRightAngles(shape);
+      drawEqualTicks(shape);
+      drawParallelChevrons(shape);
+      drawVertices(shape);
+    }
+
+    function drawVertices(shape) {
+      ctx.fillStyle = '#f97316';
+      shape.vertices.forEach(v => {
+        ctx.beginPath();
+        ctx.arc(v[0], v[1], 4.5, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+
+    function drawRightAngles(shape) {
+      const V = shape.vertices;
+      const n = V.length;
+      const size = 16;
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      shape.rightAngles.forEach(i => {
+        const cur = V[i];
+        const prev = V[(i - 1 + n) % n];
+        const next = V[(i + 1) % n];
+        const u1 = unit([prev[0] - cur[0], prev[1] - cur[1]]);
+        const u2 = unit([next[0] - cur[0], next[1] - cur[1]]);
+        const a = [cur[0] + u1[0] * size, cur[1] + u1[1] * size];
+        const b = [cur[0] + (u1[0] + u2[0]) * size, cur[1] + (u1[1] + u2[1]) * size];
+        const c = [cur[0] + u2[0] * size, cur[1] + u2[1] * size];
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        ctx.lineTo(b[0], b[1]);
+        ctx.lineTo(c[0], c[1]);
+        ctx.stroke();
+      });
+    }
+
+    function drawEqualTicks(shape) {
+      const V = shape.vertices;
+      const n = V.length;
+      const tickLen = 14;
+      const gap = 6;
+      ctx.strokeStyle = '#f97316';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+
+      shape.equalSides.forEach((group, gi) => {
+        const count = gi + 1; // group 0 -> 1 tick, group 1 -> 2 ticks
+        group.forEach(side => {
+          const p1 = V[side];
+          const p2 = V[(side + 1) % n];
+          const mx = (p1[0] + p2[0]) / 2;
+          const my = (p1[1] + p2[1]) / 2;
+          const d = unit([p2[0] - p1[0], p2[1] - p1[1]]);
+          const perp = [-d[1], d[0]];
+          // centre the (count) ticks along the side
+          for (let k = 0; k < count; k++) {
+            const off = (k - (count - 1) / 2) * gap;
+            const cx = mx + d[0] * off;
+            const cy = my + d[1] * off;
             ctx.beginPath();
-            ctx.moveTo(shape.vertices[0][0], shape.vertices[0][1]);
-            for (let i = 1; i < shape.vertices.length; i++) {
-                ctx.lineTo(shape.vertices[i][0], shape.vertices[i][1]);
-            }
-            ctx.closePath();
+            ctx.moveTo(cx + perp[0] * tickLen / 2, cy + perp[1] * tickLen / 2);
+            ctx.lineTo(cx - perp[0] * tickLen / 2, cy - perp[1] * tickLen / 2);
             ctx.stroke();
-            
-            // Draw vertices
-            ctx.fillStyle = '#2255cc';
-            shape.vertices.forEach(v => {
-                ctx.beginPath();
-                ctx.arc(v[0], v[1], 5, 0, 2 * Math.PI);
-                ctx.fill();
-            });
-            
-            // Draw equal side indicators and parallel markers on top of the shape
-            drawEqualSideMarkers(shape);
-            drawParallelSideMarkers(shape);
+          }
+        });
+      });
+    }
 
-            updatePropertyList(shape);
-        }
+    function drawParallelChevrons(shape) {
+      const V = shape.vertices;
+      const n = shape.vertices.length;
+      const size = 8;
+      const gap = 9;
+      const shift = 24; // slide chevrons off the midpoint so they clear the equal-length ticks
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
 
-        function drawEqualSideMarkers(shape) {
-            const tickMarkLength = 14;
-            const tickMarkWidth = 3;
-            const tickColor = '#1e90ff'; // blue for equal sides
+      shape.parallelSides.forEach((group, gi) => {
+        const count = gi + 1; // group 0 -> 1 chevron, group 1 -> 2 chevrons
+        let ref = null;       // keep chevrons in a group pointing the same way
+        group.forEach(side => {
+          const p1 = V[side];
+          const p2 = V[(side + 1) % n];
+          let d = unit([p2[0] - p1[0], p2[1] - p1[1]]);
+          if (ref === null) ref = d;
+          else if (d[0] * ref[0] + d[1] * ref[1] < 0) d = [-d[0], -d[1]];
+          const perp = [-d[1], d[0]];
+          const mx = (p1[0] + p2[0]) / 2 + d[0] * shift;
+          const my = (p1[1] + p2[1]) / 2 + d[1] * shift;
+          for (let k = 0; k < count; k++) {
+            const off = (k - (count - 1) / 2) * gap;
+            const cx = mx + d[0] * off;
+            const cy = my + d[1] * off;
+            // chevron ">" pointing along d
+            const tip = [cx + d[0] * size, cy + d[1] * size];
+            const back = [cx - d[0] * size, cy - d[1] * size];
+            ctx.beginPath();
+            ctx.moveTo(back[0] + perp[0] * size, back[1] + perp[1] * size);
+            ctx.lineTo(tip[0], tip[1]);
+            ctx.lineTo(back[0] - perp[0] * size, back[1] - perp[1] * size);
+            ctx.stroke();
+          }
+        });
+      });
+    }
 
-            // Each entry in shape.equalSides is a group (array) of side indices
-            shape.equalSides.forEach((sideGroup) => {
-                // If the group covers all sides -> single tick, otherwise double ticks
-                const n = shape.vertices.length;
-                const uniqueSides = Array.from(new Set(sideGroup));
-                const tickCount = (uniqueSides.length === n) ? 1 : 2;
+    /* ---------------- Quiz flow ---------------- */
+    function pickShape() {
+      let key;
+      do { key = SHAPE_KEYS[Math.floor(Math.random() * SHAPE_KEYS.length)]; }
+      while (key === currentKey && SHAPE_KEYS.length > 1);
+      currentKey = key;
+    }
 
-                ctx.strokeStyle = tickColor;
-                ctx.lineWidth = tickMarkWidth;
-                ctx.lineCap = 'round';
+    function buildRevealHTML(extraLine) {
+      const shape = SHAPES[currentKey];
+      const items = shape.description.map(d => `<li>${d}</li>`).join('');
+      return `<div class="reveal-props">
+          <strong>${shape.name}</strong>${extraLine ? ' — ' + extraLine : ''}
+          <ul>${items}</ul>
+        </div>`;
+    }
 
-                uniqueSides.forEach(sideIndex => {
-                    const p1 = shape.vertices[sideIndex];
-                    const p2 = shape.vertices[(sideIndex + 1) % n];
+    function showFeedback(kind, title, body) {
+      const fb = document.getElementById('feedback');
+      fb.className = 'feedback show ' + kind;
+      fb.innerHTML = `<div class="feedback-title">${title}</div><div class="feedback-body">${body}</div>`;
+    }
 
-                    // midpoint and perpendicular
-                    const mx = (p1[0] + p2[0]) / 2;
-                    const my = (p1[1] + p2[1]) / 2;
-                    const dx = p2[0] - p1[0];
-                    const dy = p2[1] - p1[1];
-                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                    const px = -dy / len;
-                    const py = dx / len;
+    function finishQuestion(gotPoint) {
+      answered = true;
+      total++;
+      if (gotPoint) score++;
+      document.getElementById('scoreValue').textContent = `${score} / ${total}`;
+      document.getElementById('checkBtn').classList.add('hidden');
+      document.getElementById('nextBtn').classList.remove('hidden');
+      // lock inputs
+      document.querySelectorAll('#nameGrid .name-btn').forEach(b => b.disabled = true);
+      document.querySelectorAll('#panel-properties input').forEach(c => c.disabled = true);
+    }
 
-                    if (tickCount === 1) {
-                        // single tick centered on side
-                        ctx.beginPath();
-                        ctx.moveTo(mx + px * tickMarkLength / 2, my + py * tickMarkLength / 2);
-                        ctx.lineTo(mx - px * tickMarkLength / 2, my - py * tickMarkLength / 2);
-                        ctx.stroke();
-                    } else {
-                        // double ticks: two small parallel ticks offset along the side
-                        const spacing = 8;
-                        for (let i = -1; i <= 1; i += 2) {
-                            const offsetAlong = i * spacing / 2;
-                            const markX = mx + offsetAlong * dx / len;
-                            const markY = my + offsetAlong * dy / len;
-                            ctx.beginPath();
-                            ctx.moveTo(markX + px * tickMarkLength / 2, markY + py * tickMarkLength / 2);
-                            ctx.lineTo(markX - px * tickMarkLength / 2, markY - py * tickMarkLength / 2);
-                            ctx.stroke();
-                        }
-                    }
-                });
-            });
-        }
+    /* ---- Mode 1: identify ---- */
+    function checkIdentify() {
+      if (selectedName === null) return;
+      const shape = SHAPES[currentKey];
+      if (selectedName === shape.answer) {
+        const note = shape.isosceles ? 'an isosceles trapezium, which is a special trapezium' : '';
+        finishQuestion(true);
+        showFeedback('correct', '✓ Correct!',
+          `This is a <strong>${shape.name}</strong>.` + buildRevealHTML(note));
+      } else if (shape.alsoAccept.includes(selectedName)) {
+        finishQuestion(true);
+        showFeedback('partial', '✓ True — but be more specific',
+          `Every ${shape.name.toLowerCase()} is also a ${NAME_LABELS[selectedName].toLowerCase()}, so that's not wrong. ` +
+          `The most specific IGCSE name is <strong>${NAME_LABELS[shape.answer]}</strong>.` + buildRevealHTML());
+      } else {
+        finishQuestion(false);
+        showFeedback('incorrect', '✗ Not quite',
+          `This shape is a <strong>${NAME_LABELS[shape.answer]}</strong>, not a ${NAME_LABELS[selectedName].toLowerCase()}.` +
+          buildRevealHTML());
+      }
+    }
 
-        function drawParallelSideMarkers(shape) {
-            const arrowColor = '#2ecc71'; // green for parallel markers
-            const n = shape.vertices.length;
+    /* ---- Mode 2: properties ---- */
+    function checkProperties() {
+      const shape = SHAPES[currentKey];
+      const correct = Object.keys(shape.properties).filter(k => shape.properties[k]);
+      const chosen = [];
+      document.querySelectorAll('#panel-properties input:checked').forEach(c => chosen.push(c.id));
 
-            function drawArrowAt(x, y, angle, color) {
-                const len = 10; // arrow length
-                const half = 5; // half width
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                // tip
-                const tx = x;
-                const ty = y;
-                // base center
-                const bx = x - Math.cos(angle) * len;
-                const by = y - Math.sin(angle) * len;
-                // perpendicular
-                const px = -Math.sin(angle) * half;
-                const py = Math.cos(angle) * half;
-                ctx.moveTo(tx, ty);
-                ctx.lineTo(bx + px, by + py);
-                ctx.lineTo(bx - px, by - py);
-                ctx.closePath();
-                ctx.fill();
-            }
+      const missed = correct.filter(c => !chosen.includes(c));
+      const extra = chosen.filter(c => !correct.includes(c));
+      const allRight = missed.length === 0 && extra.length === 0;
 
-            shape.parallelSides.forEach((sideGroup, groupIndex) => {
-                const uniqueSides = Array.from(new Set(sideGroup));
-                uniqueSides.forEach(sideIndex => {
-                    const p1 = shape.vertices[sideIndex];
-                    const p2 = shape.vertices[(sideIndex + 1) % n];
-                    const mx = (p1[0] + p2[0]) / 2;
-                    const my = (p1[1] + p2[1]) / 2;
-                    const dx = p2[0] - p1[0];
-                    const dy = p2[1] - p1[1];
-                    const len = Math.sqrt(dx * dx + dy * dy) || 1;
-                    const angle = Math.atan2(dy, dx);
+      if (allRight) {
+        finishQuestion(true);
+        showFeedback('correct', '✓ Perfect!',
+          `You found every property of this <strong>${shape.name}</strong>.` + buildRevealHTML());
+      } else {
+        finishQuestion(false);
+        let body = `This is a <strong>${shape.name}</strong>.`;
+        if (missed.length) body += `<br><strong>You missed:</strong> ${missed.map(m => PROP_LABELS[m]).join(', ')}.`;
+        if (extra.length) body += `<br><strong>Shouldn't be ticked:</strong> ${extra.map(e => PROP_LABELS[e]).join(', ')}.`;
+        showFeedback('incorrect', '✗ Not quite', body + buildRevealHTML());
+      }
+    }
 
-                    // positions: first set -> single arrow at center; second set -> two arrowheads
-                    if (groupIndex === 0) {
-                        drawArrowAt(mx, my, angle, arrowColor);
-                    } else {
-                        // two arrowheads slightly offset along the side
-                        const offset = 0.18; // fraction along side
-                        const ax1x = p1[0] + dx * (0.5 - offset);
-                        const ax1y = p1[1] + dy * (0.5 - offset);
-                        const ax2x = p1[0] + dx * (0.5 + offset);
-                        const ax2y = p1[1] + dy * (0.5 + offset);
-                        drawArrowAt(ax1x, ax1y, angle, arrowColor);
-                        drawArrowAt(ax2x, ax2y, angle, arrowColor);
-                    }
-                });
-            });
-        }
+    function checkAnswer() {
+      if (answered) return;
+      if (mode === 'identify') checkIdentify();
+      else checkProperties();
+    }
 
-        function updatePropertyList(shape) {
-            const list = document.getElementById('propertyList');
-            list.innerHTML = '';
-            shape.description.forEach(prop => {
-                const li = document.createElement('li');
-                li.textContent = prop;
-                list.appendChild(li);
-            });
-        }
+    function nextShape() {
+      answered = false;
+      selectedName = null;
+      pickShape();
+      // reset UI
+      document.getElementById('feedback').className = 'feedback';
+      document.getElementById('feedback').innerHTML = '';
+      // Identify mode auto-submits on selection, so it has no Check button.
+      document.getElementById('checkBtn').classList.toggle('hidden', mode === 'identify');
+      document.getElementById('nextBtn').classList.add('hidden');
+      document.querySelectorAll('#nameGrid .name-btn').forEach(b => {
+        b.disabled = false;
+        b.setAttribute('aria-pressed', 'false');
+      });
+      document.querySelectorAll('#panel-properties input').forEach(c => {
+        c.disabled = false;
+        c.checked = false;
+      });
+      drawShape();
+    }
 
-        function resetCheckboxes() {
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.checked = false;
-            });
-        }
+    function setMode(newMode) {
+      mode = newMode;
+      document.querySelectorAll('.mode-switcher button').forEach(b => {
+        b.setAttribute('aria-pressed', String(b.dataset.mode === newMode));
+      });
+      document.getElementById('panel-identify').classList.toggle('hidden', newMode !== 'identify');
+      document.getElementById('panel-properties').classList.toggle('hidden', newMode !== 'properties');
+      // Reset the round and the score when switching modes.
+      score = 0; total = 0;
+      document.getElementById('scoreValue').textContent = '0 / 0';
+      nextShape();
+    }
 
-        function getCorrectAnswers() {
-            const shape = shapeDefinitions[currentShapeKey];
-            const correct = [];
-            
-            for (const [key, value] of Object.entries(shape.properties)) {
-                if (value) {
-                    correct.push(key);
-                }
-            }
-            
-            return correct;
-        }
+    /* ---------------- Wiring ---------------- */
+    document.querySelectorAll('.mode-switcher button').forEach(b => {
+      b.addEventListener('click', () => setMode(b.dataset.mode));
+    });
 
-        function getUserAnswers() {
-            const answers = [];
-            document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                answers.push(cb.id);
-            });
-            return answers;
-        }
+    document.querySelectorAll('#nameGrid .name-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (answered) return;
+        selectedName = btn.dataset.name;
+        document.querySelectorAll('#nameGrid .name-btn').forEach(b =>
+          b.setAttribute('aria-pressed', String(b === btn)));
+        checkIdentify(); // picking a name submits it automatically
+      });
+    });
 
-        function checkAnswers() {
-            const correct = getCorrectAnswers();
-            const userAnswers = getUserAnswers();
-            
-            const isCorrect = correct.length === userAnswers.length &&
-                             correct.every(c => userAnswers.includes(c));
-            
-            const feedback = document.getElementById('feedback');
-            feedback.innerHTML = '';
-            
-            if (isCorrect) {
-                score++;
-                feedback.className = 'feedback correct show';
-                feedback.innerHTML = `
-                    <div class="feedback-title">✓ Correct!</div>
-                    <div class="feedback-content">
-                        This shape is a <strong>${shapeDefinitions[currentShapeKey].name}</strong>.
-                    </div>
-                `;
-            } else {
-                feedback.className = 'feedback incorrect show';
-                const missedAnswers = correct.filter(c => !userAnswers.includes(c));
-                const extraAnswers = userAnswers.filter(u => !correct.includes(u));
-                
-                let message = `<strong>${shapeDefinitions[currentShapeKey].name}</strong> is actually:<br>`;
-                
-                if (missedAnswers.length > 0) {
-                    message += `<br>You missed: ${missedAnswers.map(a => getLabelText(a)).join(', ')}`;
-                }
-                
-                if (extraAnswers.length > 0) {
-                    message += `<br>You incorrectly selected: ${extraAnswers.map(a => getLabelText(a)).join(', ')}`;
-                }
-                
-                feedback.innerHTML = `
-                    <div class="feedback-title">✗ Incorrect</div>
-                    <div class="feedback-content">${message}</div>
-                `;
-            }
-            
-            totalQuestions++;
-            document.getElementById('scoreValue').textContent = `${score}/${totalQuestions}`;
-            
-            document.getElementById('submitBtn').style.display = 'none';
-            document.getElementById('nextBtn').style.display = 'block';
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.disabled = true;
-            });
-        }
+    document.getElementById('checkBtn').addEventListener('click', checkAnswer);
+    document.getElementById('nextBtn').addEventListener('click', nextShape);
 
-        function getLabelText(id) {
-            const labels = {
-                'regular': 'Regular Polygon',
-                'polygon': 'Quadrilateral',
-                'square': 'Square',
-                'rectangle': 'Rectangle',
-                'rhombus': 'Rhombus',
-                'parallelogram': 'Parallelogram',
-                'kite': 'Kite',
-                'trapezium': 'Trapezium'
-            };
-            return labels[id] || id;
-        }
+    window.addEventListener('resize', () => { setupCanvas(); drawShape(); });
 
-        function nextShape() {
-            currentShapeKey = getRandomShape();
-            resetCheckboxes();
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.disabled = false;
-            });
-            document.getElementById('feedback').className = 'feedback';
-            document.getElementById('submitBtn').style.display = 'block';
-            document.getElementById('nextBtn').style.display = 'none';
-            drawShape();
-        }
-
-        // Event listeners
-        document.getElementById('submitBtn').addEventListener('click', checkAnswers);
-        document.getElementById('nextBtn').addEventListener('click', nextShape);
-
-        // Initialize
-        currentShapeKey = getRandomShape();
-        drawShape();
-    </script>
+    // Init
+    setupCanvas();
+    pickShape();
+    setMode('identify');
+  </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecological Pyramids [WIP]</title>
+    <title>Ecological Pyramids</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -15,12 +15,12 @@
         }
 
         .container {
-            max-width: 860px;
+            max-width: 1500px;
             margin: 0 auto;
             background: #fff;
             border-radius: 16px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-            padding: 36px 40px;
+            padding: 36px 48px;
         }
 
         h1 {
@@ -169,13 +169,59 @@
             color: #888;
         }
 
-        /* ── Scale note ── */
-        .scale-note {
+        /* ── Food chain diagram (distinct, separated section) ── */
+        .food-chain-section {
+            margin: 40px 0 18px;
+            padding: 20px 22px;
+            background: #fafbfc;
+            border: 1px dashed #cdd5e0;
+            border-radius: 12px;
+        }
+
+        .food-chain-title {
             text-align: center;
             font-size: 0.72em;
-            color: #aaa;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #99a2b3;
             margin-bottom: 14px;
-            font-style: italic;
+        }
+
+        .food-chain {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .fc-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-width: 110px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.85em;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .fc-arrow {
+            display: flex;
+            align-items: center;
+            color: #888;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        @media (max-width: 620px) {
+            .food-chain-section { margin: 28px 0 16px; padding: 16px 12px; }
+            .fc-box { min-width: 0; flex: 1 1 60px; font-size: 0.72em; padding: 8px 6px; }
+            .fc-arrow { font-size: 1em; }
         }
 
         /* ── Inverted notice ── */
@@ -184,11 +230,12 @@
             font-size: 0.82em;
             color: #a93226;
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: 14px;
             padding: 8px 14px;
             background: #fdf0ed;
             border-radius: 8px;
             border: 1px solid #f5c6bc;
+            max-width: 900px;
             display: none;
         }
 
@@ -207,6 +254,7 @@
             border-radius: 0 8px 8px 0;
             padding: 14px 18px;
             margin-bottom: 16px;
+            max-width: 900px;
             display: none;
             animation: slideDown 0.2s ease;
         }
@@ -252,6 +300,7 @@
             border: 1px solid #d4ddf7;
             border-radius: 10px;
             padding: 18px 22px;
+            max-width: 900px;
         }
 
         .info-panel h3 {
@@ -304,28 +353,7 @@
             top: 4px;
         }
 
-        /* ── WIP banner ── */
-        .wip-banner {
-            background: repeating-linear-gradient(
-                45deg,
-                #f39c12,
-                #f39c12 10px,
-                #e67e22 10px,
-                #e67e22 20px
-            );
-            color: white;
-            text-align: center;
-            font-weight: 700;
-            font-size: 0.82em;
-            letter-spacing: 0.08em;
-            padding: 7px 16px;
-            border-radius: 8px 8px 0 0;
-            margin: -36px -40px 28px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-
         @media (max-width: 620px) {
-            .wip-banner { margin: -20px -16px 20px; border-radius: 8px 8px 0 0; }
             .container { padding: 20px 16px; }
             h1 { font-size: 1.6em; }
             .pyramid-area { grid-template-columns: 1fr 150px; }
@@ -337,7 +365,6 @@
 </head>
 <body>
 <div class="container">
-    <div class="wip-banner">⚠ WORK IN PROGRESS ⚠</div>
     <h1>Ecological Pyramids</h1>
     <p class="subtitle">Explore how numbers, biomass and energy change through food chains</p>
 
@@ -353,16 +380,21 @@
         <div class="control-group">
             <span class="control-label">Ecosystem</span>
             <div class="button-group">
-                <button class="ecosystem-btn active" data-ecosystem="woodland">Woodland</button>
+                <button class="ecosystem-btn active" data-ecosystem="grassland">Grassland</button>
+                <button class="ecosystem-btn" data-ecosystem="oak">Oak Tree</button>
                 <button class="ecosystem-btn" data-ecosystem="sea">Sea</button>
+                <button class="ecosystem-btn" data-ecosystem="desert">Desert</button>
             </div>
         </div>
     </div>
 
     <p class="click-hint">Click any level for more detail</p>
-    <div id="invertedNotice" class="inverted-notice"></div>
     <div class="pyramid-area" id="pyramidGrid"></div>
-    <p class="scale-note" id="scaleNote"></p>
+    <div class="food-chain-section">
+        <p class="food-chain-title">The food chain</p>
+        <div class="food-chain" id="foodChain"></div>
+    </div>
+    <div id="invertedNotice" class="inverted-notice"></div>
     <div class="detail-panel" id="detailPanel"></div>
     <div class="info-panel" id="infoPanel"></div>
 </div>
@@ -377,275 +409,453 @@ const COLORS = [
     'linear-gradient(135deg, #2980b9, #1a5276)',
 ];
 
-// Each level has a rawValue (number) used to draw bars to scale.
-// Bar widths use a square-root scale so all levels remain visible
-// even when values span many orders of magnitude.
+// Each level has a rawValue (number) used to draw bars to a true linear scale,
+// so the bars show the real proportions between levels (no square-root tricks).
+// Each level names a single organism (single organism per row).
 const pyramidData = {
-    woodland: {
+    grassland: {
         numbers: {
-            title: "Bluebell Wood — Pyramid of Numbers",
-            description: "In Bluebell Wood, the number of individual organisms falls sharply at each trophic level. Tens of thousands of plants and trees support far fewer animals at every step up the food chain.",
+            title: "Grassland — Pyramid of Numbers",
+            description: "In a grassland, there are far more individual organisms at the bottom of the food chain than at the top. The number of organisms falls at each step up the chain.",
             keyPoints: [
-                "Each level has roughly 10× fewer individuals than the level below",
-                "Bar widths are drawn to scale — notice how dramatically numbers fall",
-                "10,000 plants are needed to support just 10 sparrowhawks at the top"
+                "There are fewer individual organisms at each level up the chain",
+                "Thousands of grass plants are needed to support a single kestrel",
+                "This is a normal, upright pyramid of numbers"
             ],
             inverted: false,
             levels: [
-                { name: "Producers", value: "10,000", rawValue: 10000,
-                  detail: "Oak trees, grass & wildflowers",
+                { name: "Producer", value: "10,000", rawValue: 10000,
+                  detail: "Grass",
                   facts: [
-                    "Oak trees, ash, bramble, nettles and grasses form the plant layer of Bluebell Wood",
-                    "A mature oak tree can host over 280 species of insect alone",
-                    "Convert CO₂ + H₂O + sunlight → glucose via photosynthesis; only ~1–2% of solar energy is captured"
+                    "Grass is the producer — it makes its own food by photosynthesis",
+                    "Grass uses sunlight, carbon dioxide and water to make glucose",
+                    "Huge numbers of grass plants are needed to support all the animals above"
                   ] },
-                { name: "Primary Consumers", value: "1,000", rawValue: 1000,
-                  detail: "Grey squirrels, rabbits & caterpillars",
+                { name: "Primary Consumer", value: "1,000", rawValue: 1000,
+                  detail: "Grasshopper",
                   facts: [
-                    "Grey squirrels feed on acorns, bark and bird eggs — they are a key herbivore in Bluebell Wood",
-                    "Rabbits graze on grass and wildflowers at the woodland edge",
-                    "Caterpillars can strip entire branches of oak leaves during summer outbreaks"
+                    "Grasshoppers are primary consumers (herbivores) that eat grass",
+                    "They are eaten by shrews, frogs and birds",
+                    "There are fewer grasshoppers than grass plants"
                   ] },
-                { name: "Secondary Consumers", value: "100", rawValue: 100,
-                  detail: "Red foxes, stoats & tawny owls",
+                { name: "Secondary Consumer", value: "100", rawValue: 100,
+                  detail: "Shrew",
                   facts: [
-                    "Red foxes hunt rabbits and squirrels at dusk — a fox needs about 1 kg of food per day",
-                    "Stoats pursue rabbits at high speed and also take voles from underground tunnels",
-                    "Tawny owls hunt mice and voles at night using silent flight and exceptional hearing"
+                    "Shrews are secondary consumers that eat insects like grasshoppers",
+                    "A shrew must eat almost its own body weight in food every day",
+                    "There are fewer shrews than grasshoppers"
                   ] },
-                { name: "Tertiary Consumers", value: "10", rawValue: 10,
-                  detail: "Sparrowhawks & kestrels",
+                { name: "Tertiary Consumer", value: "10", rawValue: 10,
+                  detail: "Kestrel",
                   facts: [
-                    "Sparrowhawks pursue small birds and young squirrels through the woodland at speed",
-                    "Kestrels hover over the woodland edge, scanning for voles below",
-                    "Just 10 birds of prey can sit at the apex of this entire food chain"
+                    "The kestrel is the top predator (tertiary consumer)",
+                    "It hovers above the grassland looking for shrews and mice",
+                    "Only a few kestrels can be supported at the top of the chain"
                   ] }
             ]
         },
         biomass: {
-            title: "Bluebell Wood — Pyramid of Biomass",
-            description: "The total dry mass (biomass) of organisms in Bluebell Wood falls by about 90% at each trophic level. The enormous biomass locked in oak trunks and roots dwarfs everything above.",
+            title: "Grassland — Pyramid of Biomass",
+            description: "The total mass of living things falls by about 90% at each step up the food chain. Most of the mass is held in the grass at the bottom.",
             keyPoints: [
-                "Biomass is measured as dry mass in kg per m²",
-                "~90% of biomass is lost at each trophic level — bar widths show this clearly",
-                "Most plant biomass is structural wood that animals cannot easily digest",
-                "Woodland pyramids of biomass are always upright"
+                "Biomass is the total mass of living material, measured in kg",
+                "About 90% of the biomass is lost at each level up the chain",
+                "This is a normal, upright pyramid of biomass"
             ],
             inverted: false,
             levels: [
-                { name: "Producers", value: "8,000 kg/m²", rawValue: 8000,
-                  detail: "Oak trees, ash & bramble",
+                { name: "Producer", value: "1,000 kg", rawValue: 1000,
+                  detail: "Grass",
                   facts: [
-                    "Huge biomass stored in tree trunks, roots, branches and leaves",
-                    "A mature oak can weigh over 10 tonnes — mostly indigestible heartwood",
-                    "Bluebell Wood locks up large amounts of carbon in its biomass — vital for climate regulation"
+                    "The grass holds the largest biomass in this food chain",
+                    "Most of this mass is stored in the leaves, stems and roots"
                   ] },
-                { name: "Primary Consumers", value: "800 kg/m²", rawValue: 800,
-                  detail: "Grey squirrels, rabbits & roe deer",
+                { name: "Primary Consumer", value: "100 kg", rawValue: 100,
+                  detail: "Grasshopper",
                   facts: [
-                    "Only ~10% of plant biomass is available to herbivores",
-                    "Losses include plant respiration, indigestible bark and fibre passed out as waste",
-                    "Roe deer and rabbits make up most of the herbivore biomass in this woodland"
+                    "Only about 10% of the grass biomass is passed on to grasshoppers",
+                    "The rest is lost as waste, in respiration, or is simply not eaten"
                   ] },
-                { name: "Secondary Consumers", value: "80 kg/m²", rawValue: 80,
-                  detail: "Red foxes, stoats & tawny owls",
+                { name: "Secondary Consumer", value: "10 kg", rawValue: 10,
+                  detail: "Shrew",
                   facts: [
-                    "A red fox weighs 5–7 kg; a tawny owl around 450 g",
-                    "Only 10% of herbivore biomass reaches this carnivore level",
-                    "Foxes use up much of their energy on movement and maintaining body temperature at 38°C"
+                    "Only about 10% of the grasshopper biomass passes on to shrews",
+                    "Shrews use lots of energy keeping warm, so little mass is gained"
                   ] },
-                { name: "Tertiary Consumers", value: "8 kg/m²", rawValue: 8,
-                  detail: "Sparrowhawks & kestrels",
+                { name: "Tertiary Consumer", value: "1 kg", rawValue: 1,
+                  detail: "Kestrel",
                   facts: [
-                    "Very low population density — each bird of prey needs a large territory",
-                    "A female sparrowhawk weighs only 260–340 g",
-                    "Just 0.1% of the original plant biomass survives to this apex level"
+                    "Only a tiny fraction of the original grass biomass reaches the kestrel",
+                    "This is why top predators are always rare"
                   ] }
             ]
         },
         energy: {
-            title: "Bluebell Wood — Pyramid of Energy",
-            description: "Energy in Bluebell Wood decreases at every trophic level. Around 90% is lost as heat through respiration at each step. The pyramid of energy is always upright — it can never be inverted.",
+            title: "Grassland — Pyramid of Energy",
+            description: "Energy falls by about 90% at each step up the food chain. Only about 10% of the energy is passed on to the next level. A pyramid of energy is always upright.",
             keyPoints: [
-                "Only ~10% of energy transfers to the next trophic level",
-                "90% is lost as heat — through respiration, movement and maintaining body temperature",
-                "The pyramid of energy is ALWAYS upright — it can never be inverted",
-                "Units: kJ/m²/year (energy per unit area per year)"
+                "Only about 10% of the energy is passed on to the next level",
+                "About 90% is lost as heat from respiration, movement and waste",
+                "A pyramid of energy is ALWAYS upright"
             ],
             inverted: false,
             levels: [
-                { name: "Producers", value: "80,000 kJ/m²/yr", rawValue: 80000,
-                  detail: "Oak trees, grass & wildflowers",
+                { name: "Producer", value: "1,000,000 J", rawValue: 1000000,
+                  detail: "Grass",
                   facts: [
-                    "Oak trees, grasses and wildflowers capture solar energy through photosynthesis",
-                    "Only 1–2% of incoming solar radiation is fixed as chemical energy",
-                    "This 80,000 kJ/m²/yr drives the entire Bluebell Wood food web"
+                    "Grass captures energy from sunlight by photosynthesis",
+                    "Only a small part of the sunlight hitting the grass is captured"
                   ] },
-                { name: "Primary Consumers", value: "8,000 kJ/m²/yr", rawValue: 8000,
-                  detail: "Grey squirrels, rabbits & caterpillars",
+                { name: "Primary Consumer", value: "100,000 J", rawValue: 100000,
+                  detail: "Grasshopper",
                   facts: [
-                    "10% of producer energy reaches the herbivore level",
-                    "90% is lost as heat from plant respiration and indigestible plant material",
-                    "Grey squirrels cache acorns to store energy reserves for winter"
+                    "About 10% of the grass's energy is passed on to grasshoppers",
+                    "About 90% is lost, mostly as heat from respiration"
                   ] },
-                { name: "Secondary Consumers", value: "800 kJ/m²/yr", rawValue: 800,
-                  detail: "Red foxes, stoats & tawny owls",
+                { name: "Secondary Consumer", value: "10,000 J", rawValue: 10000,
+                  detail: "Shrew",
                   facts: [
-                    "Only 1% of the original plant energy remains at this level",
-                    "Foxes burn large amounts of energy patrolling territories of up to 40 km²",
-                    "This explains why food chains rarely exceed 4–5 trophic levels"
+                    "Only about 1% of the original energy reaches the shrew",
+                    "Shrews lose lots of energy as heat to keep their bodies warm"
                   ] },
-                { name: "Tertiary Consumers", value: "80 kJ/m²/yr", rawValue: 80,
-                  detail: "Sparrowhawks & kestrels",
+                { name: "Tertiary Consumer", value: "1,000 J", rawValue: 1000,
+                  detail: "Kestrel",
                   facts: [
-                    "Just 0.1% of the original solar energy reaches apex predators",
-                    "Sparrowhawks use high-speed pursuit flight — one of the most energy-intensive hunting methods",
-                    "Explains why top predators are always rare and need large territories to survive"
+                    "Only about 0.1% of the original energy reaches the kestrel",
+                    "This is why food chains rarely have more than 4 or 5 levels"
+                  ] }
+            ]
+        }
+    },
+    oak: {
+        numbers: {
+            title: "Oak Tree — Pyramid of Numbers",
+            description: "A single oak tree is a whole habitat. One huge tree supports thousands of insects, so the pyramid of numbers has a tiny bottom row and bulges out in the middle.",
+            keyPoints: [
+                "Just one large oak tree supports thousands of insects",
+                "This makes the bottom row tiny — an unusual pyramid shape",
+                "It shows why pyramids of numbers can be misleading"
+            ],
+            inverted: true,
+            levels: [
+                { name: "Producer", value: "1", rawValue: 1,
+                  detail: "Oak tree",
+                  facts: [
+                    "One single oak tree is the producer for this whole food chain",
+                    "An oak tree can be home to over 280 different kinds of insect",
+                    "Because there is only one tree, the bottom row is tiny"
+                  ] },
+                { name: "Primary Consumer", value: "5,000", rawValue: 5000,
+                  detail: "Caterpillar",
+                  facts: [
+                    "Thousands of caterpillars feed on the leaves of one oak tree",
+                    "This is why the pyramid bulges out in the middle",
+                    "Caterpillars are primary consumers (herbivores)"
+                  ] },
+                { name: "Secondary Consumer", value: "100", rawValue: 100,
+                  detail: "Blue tit",
+                  facts: [
+                    "Blue tits are secondary consumers that eat caterpillars",
+                    "A pair of blue tits can collect hundreds of caterpillars a day for their chicks"
+                  ] },
+                { name: "Tertiary Consumer", value: "2", rawValue: 2,
+                  detail: "Sparrowhawk",
+                  facts: [
+                    "The sparrowhawk is the top predator and eats small birds like blue tits",
+                    "Only one or two sparrowhawks are supported by this food chain"
+                  ] }
+            ]
+        },
+        biomass: {
+            title: "Oak Tree — Pyramid of Biomass",
+            description: "Even though there is only one oak tree, it has a huge mass. So the pyramid of biomass is the normal upright shape, unlike the pyramid of numbers.",
+            keyPoints: [
+                "One oak tree weighs far more than all the insects and birds",
+                "Biomass is the total mass of living material, measured in kg",
+                "The pyramid of biomass is upright, even though the pyramid of numbers was not"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producer", value: "1,000 kg", rawValue: 1000,
+                  detail: "Oak tree",
+                  facts: [
+                    "The single oak tree has a huge mass — far more than all the insects and birds",
+                    "This is why the pyramid of biomass is upright, even though the numbers pyramid was not"
+                  ] },
+                { name: "Primary Consumer", value: "100 kg", rawValue: 100,
+                  detail: "Caterpillar",
+                  facts: [
+                    "Only about 10% of the tree's biomass is passed on to the caterpillars",
+                    "The rest is lost as waste, in respiration, or is simply not eaten"
+                  ] },
+                { name: "Secondary Consumer", value: "10 kg", rawValue: 10,
+                  detail: "Blue tit",
+                  facts: [
+                    "Only about 10% of the caterpillar biomass passes on to the blue tits"
+                  ] },
+                { name: "Tertiary Consumer", value: "1 kg", rawValue: 1,
+                  detail: "Sparrowhawk",
+                  facts: [
+                    "Only a tiny fraction of the original biomass reaches the sparrowhawk",
+                    "This is why top predators are always rare"
+                  ] }
+            ]
+        },
+        energy: {
+            title: "Oak Tree — Pyramid of Energy",
+            description: "Energy falls by about 90% at each step up the food chain. Only about 10% of the energy is passed on to the next level. A pyramid of energy is always upright.",
+            keyPoints: [
+                "Only about 10% of the energy is passed on to the next level",
+                "About 90% is lost as heat from respiration, movement and waste",
+                "A pyramid of energy is ALWAYS upright"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producer", value: "1,000,000 J", rawValue: 1000000,
+                  detail: "Oak tree",
+                  facts: [
+                    "The oak tree captures energy from sunlight by photosynthesis",
+                    "Only a small part of the sunlight hitting the leaves is captured"
+                  ] },
+                { name: "Primary Consumer", value: "100,000 J", rawValue: 100000,
+                  detail: "Caterpillar",
+                  facts: [
+                    "About 10% of the tree's energy is passed on to the caterpillars",
+                    "About 90% is lost, mostly as heat from respiration"
+                  ] },
+                { name: "Secondary Consumer", value: "10,000 J", rawValue: 10000,
+                  detail: "Blue tit",
+                  facts: [
+                    "Only about 1% of the original energy reaches the blue tits",
+                    "Birds lose lots of energy as heat to keep their bodies warm"
+                  ] },
+                { name: "Tertiary Consumer", value: "1,000 J", rawValue: 1000,
+                  detail: "Sparrowhawk",
+                  facts: [
+                    "Only about 0.1% of the original energy reaches the sparrowhawk",
+                    "This is why food chains rarely have more than 4 or 5 levels"
                   ] }
             ]
         }
     },
     sea: {
         numbers: {
-            title: "North Sea — Pyramid of Numbers",
-            description: "In the North Sea, microscopic phytoplankton exist in staggering numbers, supporting a food web stretching all the way up to seals and porpoises. The range in numbers is far more extreme than any land ecosystem.",
+            title: "Sea — Pyramid of Numbers",
+            description: "In the sea there are huge numbers of microscopic phytoplankton. Numbers fall at each step up to the top predator, so the pyramid of numbers is upright.",
             keyPoints: [
-                "Phytoplankton are responsible for ~50% of all oxygen produced on Earth",
-                "Billions of phytoplankton cells exist per litre of seawater",
-                "Numbers span 10 orders of magnitude from base to apex"
+                "There are huge numbers of tiny phytoplankton at the bottom",
+                "Numbers fall sharply at each level up the chain",
+                "This is a normal, upright pyramid of numbers"
             ],
             inverted: false,
             levels: [
-                { name: "Producers", value: "10,000,000,000", rawValue: 10000000000,
-                  detail: "Diatoms & cyanobacteria",
+                { name: "Producer", value: "1,000,000", rawValue: 1000000,
+                  detail: "Phytoplankton",
                   facts: [
-                    "Microscopic single-celled algae drifting in the sunlit surface layer of the North Sea",
-                    "Diatoms have intricate glass-like silica shells and can double in number every 1–2 days",
-                    "Form the invisible but essential foundation of all North Sea food webs"
+                    "Phytoplankton are tiny producers that float near the sea surface",
+                    "They make their own food by photosynthesis using sunlight",
+                    "There are huge numbers of them, so the bottom row is the widest"
                   ] },
-                { name: "Primary Consumers", value: "100,000,000", rawValue: 100000000,
-                  detail: "Copepods & krill",
+                { name: "Primary Consumer", value: "10,000", rawValue: 10000,
+                  detail: "Copepod",
                   facts: [
-                    "Copepods are tiny crustaceans just 1–2 mm long — the most abundant animals on Earth",
-                    "North Sea krill gather in dense swarms and are eaten by herring, cod and seabirds",
-                    "Many migrate hundreds of metres vertically each day to avoid predators in daylight"
+                    "Copepods are tiny animals (primary consumers) that eat phytoplankton",
+                    "They are some of the most common animals on Earth"
                   ] },
-                { name: "Secondary Consumers", value: "1,000,000", rawValue: 1000000,
-                  detail: "Herring & sand eels",
+                { name: "Secondary Consumer", value: "100", rawValue: 100,
+                  detail: "Herring",
                   facts: [
-                    "Herring school in shoals of millions — a key commercial fish of the North Sea",
-                    "Sand eels live in sandy seabed sediments and are critical food for puffins and seabirds",
-                    "A herring eats up to 500 copepods per hour during peak feeding"
+                    "Herring are fish that eat copepods and other tiny animals",
+                    "They swim together in huge shoals"
                   ] },
-                { name: "Tertiary Consumers", value: "10,000", rawValue: 10000,
-                  detail: "Atlantic cod & mackerel",
+                { name: "Tertiary Consumer", value: "1", rawValue: 1,
+                  detail: "Tuna",
                   facts: [
-                    "Atlantic cod can grow to 1.5 m and live for 25 years in North Sea waters",
-                    "Mackerel migrate in large shoals and are important both ecologically and commercially",
-                    "North Sea cod populations suffered severe overfishing from the 1970s onwards"
-                  ] },
-                { name: "Top Predators", value: "100", rawValue: 100,
-                  detail: "Grey seals & harbour porpoises",
-                  facts: [
-                    "Grey seals breed on North Sea coastlines and can dive to 70 m to chase fish",
-                    "Harbour porpoises are the most common cetacean in the North Sea",
-                    "Just 100 top predators sit at the apex of this vast marine food web"
+                    "The tuna is the top predator and eats fish like herring",
+                    "Only a few large tuna are supported by this food chain"
                   ] }
             ]
         },
         biomass: {
-            title: "North Sea — Pyramid of Biomass",
-            description: "The North Sea pyramid of biomass is inverted. At any given moment the standing crop of phytoplankton is far smaller than the biomass of animals above. Phytoplankton divide so fast and are consumed so quickly that very little accumulates — it is high turnover, not high standing crop.",
+            title: "Sea — Pyramid of Biomass",
+            description: "The sea has an inverted pyramid of biomass. At any one moment there is less phytoplankton than the animals above, because phytoplankton are eaten almost as fast as they grow.",
             keyPoints: [
-                "This is a classic example of an INVERTED pyramid of biomass",
-                "Phytoplankton reproduce very fast and are eaten almost immediately",
-                "The inversion reflects standing crop biomass, NOT total energy flow",
-                "Energy flow is always upright — the inverted shape is a snapshot in time"
+                "This is an INVERTED pyramid of biomass",
+                "Phytoplankton grow and are eaten very quickly, so little builds up",
+                "Biomass is a snapshot in time — energy flow is still upright"
             ],
             inverted: true,
             levels: [
-                { name: "Producers", value: "5 kg/m³", rawValue: 5,
-                  detail: "Diatoms & cyanobacteria",
+                { name: "Producer", value: "1 kg", rawValue: 1,
+                  detail: "Phytoplankton",
                   facts: [
-                    "Tiny cells with a very high turnover rate — consumed almost as fast as they divide",
-                    "At any snapshot in time, very little phytoplankton biomass has accumulated",
-                    "Over a full year, phytoplankton produce far more total biomass than any other level"
+                    "At any one moment there is only a small mass of phytoplankton",
+                    "They are eaten almost as fast as they grow, so little builds up",
+                    "This makes the bottom of the biomass pyramid very small"
                   ] },
-                { name: "Primary Consumers", value: "50 kg/m³", rawValue: 50,
-                  detail: "Copepods & krill",
+                { name: "Primary Consumer", value: "10 kg", rawValue: 10,
+                  detail: "Copepod",
                   facts: [
-                    "10× more biomass than phytoplankton at any given moment — the inversion begins here",
-                    "Zooplankton are longer-lived than phytoplankton, so their biomass builds up over time",
-                    "This does NOT violate the energy rule — biomass is a snapshot, energy flow is not"
+                    "Copepods live longer than phytoplankton, so more of their mass builds up",
+                    "This is where the inverted shape begins"
                   ] },
-                { name: "Secondary Consumers", value: "500 kg/m³", rawValue: 500,
-                  detail: "Herring & sand eels",
+                { name: "Secondary Consumer", value: "100 kg", rawValue: 100,
+                  detail: "Herring",
                   facts: [
-                    "Herring form dense shoals — their combined biomass far exceeds their prey at any instant",
-                    "A herring lives for 10–20 years compared to a copepod's few weeks",
-                    "Long lifespan means biomass accumulates, even though energy flow is still downward"
+                    "Herring live for years, so they build up a large mass",
+                    "Their biomass is greater than the phytoplankton they rely on"
                   ] },
-                { name: "Tertiary Consumers", value: "4,000 kg/m³", rawValue: 4000,
-                  detail: "Atlantic cod & mackerel",
+                { name: "Tertiary Consumer", value: "1,000 kg", rawValue: 1000,
+                  detail: "Tuna",
                   facts: [
-                    "Cod can weigh up to 40 kg — they accumulate large individual biomass over their long lives",
-                    "A cod lives for 25 years, far outliving the herring it feeds upon",
-                    "Long lifespan means their standing crop biomass greatly outweighs their food sources at any moment"
-                  ] },
-                { name: "Top Predators", value: "24,000 kg/m³", rawValue: 24000,
-                  detail: "Grey seals & harbour porpoises",
-                  facts: [
-                    "A grey seal weighs 100–300 kg and lives for 35 years — enormous biomass per individual",
-                    "A harbour porpoise weighs 50–90 kg and lives for up to 24 years",
-                    "The huge standing crop at the apex is entirely due to the long lifespan of these animals"
+                    "A tuna can weigh hundreds of kg and lives for a long time",
+                    "This gives the top of the pyramid the largest biomass — making it inverted"
                   ] }
             ]
         },
         energy: {
-            title: "North Sea — Pyramid of Energy",
-            description: "Even in the North Sea, the pyramid of energy is always upright. Although standing-crop biomass is inverted, total energy flow always decreases up the food chain — the 10% rule still applies across all ecosystems.",
+            title: "Sea — Pyramid of Energy",
+            description: "Even in the sea, the pyramid of energy is always upright. Phytoplankton capture far more energy than is passed up the chain, so energy still falls by about 90% at each step.",
             keyPoints: [
-                "The pyramid of energy is ALWAYS upright — even in marine ecosystems",
-                "Phytoplankton fix far more total energy per year than zooplankton use",
-                "The standing-crop biomass inversion does not affect energy flow",
-                "The open ocean captures slightly less solar energy per m² than a dense woodland"
+                "Only about 10% of the energy is passed on to the next level",
+                "A pyramid of energy is ALWAYS upright, even in the sea",
+                "The inverted biomass pyramid does not change the energy flow"
             ],
             inverted: false,
             levels: [
-                { name: "Producers", value: "50,000 kJ/m²/yr", rawValue: 50000,
-                  detail: "Diatoms & cyanobacteria",
+                { name: "Producer", value: "1,000,000 J", rawValue: 1000000,
+                  detail: "Phytoplankton",
                   facts: [
-                    "Phytoplankton capture solar energy via photosynthesis in the sunlit surface layer",
-                    "High energy production rate despite low standing biomass — rapid turnover is the key",
-                    "Much of the open North Sea is nutrient-limited in summer, reducing productivity"
+                    "Phytoplankton capture energy from sunlight by photosynthesis",
+                    "Over a year they capture far more energy than any level above them"
                   ] },
-                { name: "Primary Consumers", value: "5,000 kJ/m²/yr", rawValue: 5000,
-                  detail: "Copepods & krill",
+                { name: "Primary Consumer", value: "100,000 J", rawValue: 100000,
+                  detail: "Copepod",
                   facts: [
-                    "10% of phytoplankton energy reaches the zooplankton level",
-                    "Copepods use energy quickly due to rapid reproduction and constant swimming",
-                    "Krill convert phytoplankton energy into a form accessible to larger fish and marine mammals"
+                    "About 10% of the phytoplankton's energy is passed on to copepods",
+                    "About 90% is lost, mostly as heat from respiration"
                   ] },
-                { name: "Secondary Consumers", value: "500 kJ/m²/yr", rawValue: 500,
-                  detail: "Herring & sand eels",
+                { name: "Secondary Consumer", value: "10,000 J", rawValue: 10000,
+                  detail: "Herring",
                   facts: [
-                    "Only 500 kJ/m²/yr reaches this level — 1% of original phytoplankton energy",
-                    "Herring use energy for swimming, reproduction and maintaining body temperature",
-                    "This is why it takes many kilograms of copepods to grow one kilogram of herring"
+                    "Only about 1% of the original energy reaches the herring",
+                    "Herring use energy swimming and keeping their bodies working"
                   ] },
-                { name: "Tertiary Consumers", value: "50 kJ/m²/yr", rawValue: 50,
-                  detail: "Atlantic cod & mackerel",
+                { name: "Tertiary Consumer", value: "1,000 J", rawValue: 1000,
+                  detail: "Tuna",
                   facts: [
-                    "A tiny fraction of the original energy remains at this level",
-                    "Cod must hunt constantly — they can eat up to 10% of their body weight per day",
-                    "Explains why fishing at the top of the food chain is so energetically costly for the ecosystem"
+                    "Only about 0.1% of the original energy reaches the tuna",
+                    "This is why top predators in the sea are rare"
+                  ] }
+            ]
+        }
+    },
+    desert: {
+        numbers: {
+            title: "Desert — Pyramid of Numbers",
+            description: "Deserts have few organisms because water is scarce, but there are still more producers than consumers. The number of organisms falls at each step up the chain.",
+            keyPoints: [
+                "Deserts support fewer organisms than other ecosystems because water is scarce",
+                "There are still more cacti than the animals that feed on them",
+                "This is a normal, upright pyramid of numbers"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producer", value: "1,000", rawValue: 1000,
+                  detail: "Cactus",
+                  facts: [
+                    "The cactus is the producer — it makes food by photosynthesis and stores water",
+                    "Desert plants grow far apart because water is scarce",
+                    "There are still more cacti than the animals that feed on them"
                   ] },
-                { name: "Top Predators", value: "5 kJ/m²/yr", rawValue: 5,
-                  detail: "Grey seals & harbour porpoises",
+                { name: "Primary Consumer", value: "100", rawValue: 100,
+                  detail: "Locust",
                   facts: [
-                    "Just 0.01% of the original solar energy fixed by phytoplankton reaches here",
-                    "A grey seal must eat 5 kg of fish per day to meet its energy demands",
-                    "Explains why seals and porpoises need vast ocean territories to find enough prey"
+                    "Locusts are primary consumers (herbivores) that eat desert plants",
+                    "They can travel long distances to find enough food"
+                  ] },
+                { name: "Secondary Consumer", value: "10", rawValue: 10,
+                  detail: "Lizard",
+                  facts: [
+                    "Lizards are secondary consumers that eat insects like locusts",
+                    "They bask in the sun to warm up, which saves energy"
+                  ] },
+                { name: "Tertiary Consumer", value: "1", rawValue: 1,
+                  detail: "Snake",
+                  facts: [
+                    "The snake is the top predator and eats lizards",
+                    "Only a few snakes can be supported in the harsh desert"
+                  ] }
+            ]
+        },
+        biomass: {
+            title: "Desert — Pyramid of Biomass",
+            description: "The total mass of living things falls by about 90% at each step up the food chain. Most of the mass is held in the cacti at the bottom.",
+            keyPoints: [
+                "Biomass is the total mass of living material, measured in kg",
+                "About 90% of the biomass is lost at each level up the chain",
+                "This is a normal, upright pyramid of biomass"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producer", value: "1,000 kg", rawValue: 1000,
+                  detail: "Cactus",
+                  facts: [
+                    "The cacti hold the largest biomass in this food chain",
+                    "Much of this mass is water stored inside the cactus stems"
+                  ] },
+                { name: "Primary Consumer", value: "100 kg", rawValue: 100,
+                  detail: "Locust",
+                  facts: [
+                    "Only about 10% of the plant biomass is passed on to locusts",
+                    "The rest is lost as waste, in respiration, or is simply not eaten"
+                  ] },
+                { name: "Secondary Consumer", value: "10 kg", rawValue: 10,
+                  detail: "Lizard",
+                  facts: [
+                    "Only about 10% of the locust biomass passes on to lizards"
+                  ] },
+                { name: "Tertiary Consumer", value: "1 kg", rawValue: 1,
+                  detail: "Snake",
+                  facts: [
+                    "Only a tiny fraction of the original plant biomass reaches the snake",
+                    "This is why top predators are always rare"
+                  ] }
+            ]
+        },
+        energy: {
+            title: "Desert — Pyramid of Energy",
+            description: "Energy falls by about 90% at each step up the food chain. Only about 10% of the energy is passed on to the next level. A pyramid of energy is always upright.",
+            keyPoints: [
+                "Only about 10% of the energy is passed on to the next level",
+                "About 90% is lost as heat from respiration, movement and waste",
+                "A pyramid of energy is ALWAYS upright"
+            ],
+            inverted: false,
+            levels: [
+                { name: "Producer", value: "1,000,000 J", rawValue: 1000000,
+                  detail: "Cactus",
+                  facts: [
+                    "Cacti capture energy from sunlight by photosynthesis",
+                    "Deserts get plenty of sunlight, but a lack of water limits plant growth"
+                  ] },
+                { name: "Primary Consumer", value: "100,000 J", rawValue: 100000,
+                  detail: "Locust",
+                  facts: [
+                    "About 10% of the cactus's energy is passed on to locusts",
+                    "About 90% is lost, mostly as heat from respiration"
+                  ] },
+                { name: "Secondary Consumer", value: "10,000 J", rawValue: 10000,
+                  detail: "Lizard",
+                  facts: [
+                    "Only about 1% of the original energy reaches the lizard",
+                    "Lizards are cold-blooded, so they waste little energy keeping warm"
+                  ] },
+                { name: "Tertiary Consumer", value: "1,000 J", rawValue: 1000,
+                  detail: "Snake",
+                  facts: [
+                    "Only about 0.1% of the original energy reaches the snake",
+                    "This is why food chains rarely have more than 4 or 5 levels"
                   ] }
             ]
         }
@@ -653,7 +863,7 @@ const pyramidData = {
 };
 
 let currentPyramid = 'numbers';
-let currentEcosystem = 'woodland';
+let currentEcosystem = 'grassland';
 let selectedIdx = null;
 
 /**
@@ -667,28 +877,31 @@ function clipPath(widthPct) {
 }
 
 /**
- * Convert a raw value to a bar-width percentage using a square-root scale.
- * Square-root scale keeps bars visually distinct even across many orders of magnitude
- * while still reflecting the relative proportions of the data.
- * minPct: minimum bar width so even the smallest value is visible.
+ * Convert a raw value to a bar-width percentage using a TRUE linear scale,
+ * so each bar's width is directly proportional to its real value
+ * (the widest level = 100%). This shows the genuine 10%-per-level drop.
+ * minPct: a tiny minimum so even the thinnest bar leaves a faint sliver
+ *         rather than vanishing completely. It is deliberately small so the
+ *         top level shows its true thinness; the whole shape row stays
+ *         clickable regardless of how narrow the coloured bar is.
  */
-function toWidthPct(rawValue, maxRaw, minPct = 8) {
-    const ratio = Math.sqrt(rawValue / maxRaw);
-    return minPct + ratio * (100 - minPct);
+function toWidthPct(rawValue, maxRaw, minPct = 0.25) {
+    return Math.max(minPct, (rawValue / maxRaw) * 100);
 }
 
 function render() {
     const data = pyramidData[currentEcosystem][currentPyramid];
     const inverted = data.inverted || false;
-    const isEnergy = currentPyramid === 'energy';
 
     selectedIdx = null;
     document.getElementById('detailPanel').classList.remove('visible');
 
-    // Inverted notice
+    // Inverted notice (worded for the pyramid type being shown)
     const notice = document.getElementById('invertedNotice');
     if (inverted) {
-        notice.textContent = '⚠ This is an inverted pyramid — consumers have more standing-crop biomass than producers at any given moment.';
+        notice.textContent = currentPyramid === 'numbers'
+            ? '⚠ This is an unusual pyramid of numbers — one large producer (the tree) supports thousands of small consumers, so the bottom row is tiny.'
+            : '⚠ This is an inverted pyramid of biomass — the consumers have more mass than the producers at any one moment.';
         notice.style.display = 'block';
     } else {
         notice.style.display = 'none';
@@ -741,22 +954,24 @@ function render() {
 
         grid.appendChild(shapeCell);
         grid.appendChild(labelCell);
-
-        // ── Energy transfer row (between levels, not after the last) ──
-        if (isEnergy && i < N - 1) {
-            const tc = document.createElement('div');
-            tc.className = 'transfer-cell';
-            tc.textContent = '↓ ~90% energy lost as heat';
-            const sc = document.createElement('div');
-            sc.className = 'spacer-cell';
-            grid.appendChild(tc);
-            grid.appendChild(sc);
-        }
     });
 
-    // Scale note
-    document.getElementById('scaleNote').textContent =
-        'Bar widths are drawn to scale using a square-root scale so all levels remain visible.';
+    // ── Food chain diagram (boxes, producer → top predator) ──
+    const fc = document.getElementById('foodChain');
+    fc.innerHTML = '';
+    data.levels.forEach((level, idx) => {
+        const box = document.createElement('div');
+        box.className = 'fc-box';
+        box.style.background = COLORS[idx];
+        box.textContent = level.detail;
+        fc.appendChild(box);
+        if (idx < data.levels.length - 1) {
+            const arrow = document.createElement('div');
+            arrow.className = 'fc-arrow';
+            arrow.textContent = '→';
+            fc.appendChild(arrow);
+        }
+    });
 
     // Info panel
     const badge = inverted ? ' <span class="inverted-badge">INVERTED</span>' : '';
