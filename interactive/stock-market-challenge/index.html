@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock Market Challenge</title>
+<style>
+:root{
+  --bg:#f4f6fb; --panel:#ffffff; --ink:#14213d; --muted:#5b6478; --line:#e1e6f0; --grid:#e8ecf4;
+  --soft:#eef2fa; --accent:#e63946; --accent-ink:#ffffff; --up:#15803d; --down:#dc2626;
+  --upbg:#dcfce7; --downbg:#fee2e2; --shadow:0 1px 2px rgba(20,33,61,.06),0 4px 16px rgba(20,33,61,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e1320; --panel:#161d2d; --ink:#e8ecf5; --muted:#9aa4ba; --line:#263049; --grid:#212a3e;
+    --soft:#1d2537; --up:#4ade80; --down:#f87171; --upbg:#14361f; --downbg:#3b1717; --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e1320; --panel:#161d2d; --ink:#e8ecf5; --muted:#9aa4ba; --line:#263049; --grid:#212a3e;
+  --soft:#1d2537; --up:#4ade80; --down:#f87171; --upbg:#14361f; --downbg:#3b1717; --shadow:none;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+h1{font-size:clamp(24px,4vw,34px);line-height:1.15;margin:0 0 6px;letter-spacing:-.02em}
+h2{font-size:18px;margin:0 0 10px}
+h3{font-size:16px;margin:0 0 6px}
+.muted{color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.btn{background:var(--accent);color:var(--accent-ink);padding:12px 20px;font-weight:700}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:var(--soft);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.hidden{display:none!important}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;color:#fff;background:var(--c)}
+
+/* Intro */
+.hero{padding:12px 0 18px}
+.learn{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin:14px 0}
+.learn .card p{margin:0}
+.learn .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:14px;margin-bottom:8px}
+.howto{margin:0;padding-left:20px}
+.co-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+.co-list div{border-left:4px solid var(--c);padding:4px 10px;background:var(--soft);border-radius:8px}
+
+/* Game */
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;flex:1;min-width:280px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px}
+.stat small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.stat b{font-size:16px;font-variant-numeric:tabular-nums}
+.progress{height:8px;background:var(--soft);border-radius:99px;overflow:hidden;margin:4px 0 12px}
+.progress i{display:block;height:100%;background:var(--accent);transition:width .3s}
+.grid{display:grid;grid-template-columns:1.6fr 1fr;gap:12px}
+@media (max-width:820px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.tab{background:var(--soft);color:var(--ink);padding:6px 12px;font-size:13px;font-weight:600;border:2px solid transparent}
+.tab .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--c);margin-right:6px}
+.tab.on{border-color:var(--c,var(--ink));background:var(--panel)}
+.chartbox{position:relative;width:100%;height:300px}
+.chartbox canvas{width:100%;height:100%;display:block;touch-action:none}
+.legend{font-size:12px;color:var(--muted);margin-top:6px}
+.trade-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.price-big{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.chg{font-weight:700;font-size:13px;padding:2px 8px;border-radius:99px}
+.chg.up{color:var(--up);background:var(--upbg)} .chg.down{color:var(--down);background:var(--downbg)} .chg.flat{color:var(--muted);background:var(--soft)}
+.qty{display:flex;gap:6px;margin:12px 0 8px}
+.qty button{width:44px;background:var(--soft);color:var(--ink);font-size:20px;font-weight:700}
+.qty input{flex:1;min-width:0;text-align:center;font:inherit;font-size:18px;font-weight:700;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);padding:8px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.buy{background:var(--up);color:#fff;padding:12px;font-weight:800}
+.sell{background:var(--down);color:#fff;padding:12px;font-weight:800}
+.small-btn{background:var(--soft);color:var(--ink);padding:8px;font-size:13px;font-weight:600}
+.msg{min-height:22px;font-size:13px;margin:6px 0 0}
+.msg.err{color:var(--down)} .msg.ok{color:var(--up)}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.03em;padding:6px 4px;border-bottom:1px solid var(--line)}
+td{padding:8px 4px;border-bottom:1px solid var(--line)}
+tr.pick{cursor:pointer} tr.pick:hover td{background:var(--soft)}
+td.r,th.r{text-align:right}
+.next{width:100%;padding:16px;font-size:17px;margin-top:12px}
+.news{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow:auto}
+.news-item{border-left:4px solid var(--c);background:var(--soft);border-radius:8px;padding:8px 10px}
+.news-item.fresh{outline:2px solid var(--accent);outline-offset:1px}
+.news-item .h{font-weight:600}
+.news-item .why{font-size:12.5px;color:var(--muted);margin-top:2px}
+.news-item .meta{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.stack{display:flex;flex-direction:column;gap:12px}
+
+/* Modal */
+.modal{position:fixed;inset:0;background:rgba(5,10,20,.6);display:grid;place-items:center;padding:12px;z-index:10;overflow:auto}
+.modal .card{width:min(680px,100%);max-height:calc(100vh - 24px);overflow:auto}
+.skill{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:4px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+@media (max-width:480px){.opts{grid-template-columns:1fr}}
+.opt{background:var(--soft);color:var(--ink);padding:12px;font-weight:700;border:2px solid transparent;text-align:left}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.right{background:var(--upbg);border-color:var(--up);color:var(--up)}
+.opt.wrong{background:var(--downbg);border-color:var(--down);color:var(--down)}
+.opt:disabled{cursor:default}
+.feedback{margin-top:12px;padding:10px 12px;border-radius:10px;background:var(--soft)}
+.qchart{height:240px;margin-top:10px}
+
+/* End */
+.end-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.big{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.words{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+.words div{background:var(--soft);border-radius:10px;padding:8px 10px;font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="hero">
+    <h1>Stock Market Challenge</h1>
+    <p class="muted" style="margin:0">Trade shares, react to the news and read the graphs. Can you turn £1,000 into more?</p>
+  </div>
+
+  <div class="learn">
+    <div class="card"><span class="num">1</span><h3>What is a share?</h3>
+      <p>A company can be split into millions of small pieces called <b>shares</b>. Buy one and you own a tiny part of that company. If the company does well, your share is usually worth more.</p></div>
+    <div class="card"><span class="num">2</span><h3>What is the stock market?</h3>
+      <p>A marketplace where people buy and sell shares, like the London Stock Exchange. Prices are set by <b>supply and demand</b>: more buyers than sellers pushes the price up; more sellers pushes it down.</p></div>
+    <div class="card"><span class="num">3</span><h3>Why do prices change?</h3>
+      <p><b>News.</b> A new invention or a big contract makes people want the shares, so the price rises. Bad news makes people sell. Nobody can predict the future perfectly, so shares are a <b>risk</b>.</p></div>
+    <div class="card"><span class="num">4</span><h3>Reading the graph</h3>
+      <p><b>x-axis</b> = time (days). <b>y-axis</b> = share price (£). A line going up shows a <b>rising trend</b>. The steeper the line, the bigger the <b>gradient</b> and the faster the price is changing.</p></div>
+  </div>
+
+  <div class="card">
+    <h2>How to play</h2>
+    <ol class="howto">
+      <li>You start with <b>£1,000</b> and have <b>20 trading days</b>.</li>
+      <li>Pick a company, choose how many shares, then <b>Buy</b> or <b>Sell</b>.</li>
+      <li>Press <b>Next day</b>. Prices move and news breaks. Read why it changed.</li>
+      <li>Every 3 days you get a <b>graph question</b>. Each correct answer earns a <b>£50 bonus</b>.</li>
+      <li>Your score is your <b>total worth</b> at the end: cash + the value of your shares.</li>
+    </ol>
+    <div class="co-list" id="coList"></div>
+    <p class="muted" style="font-size:13px;margin:10px 0 0">All companies and news are made up.</p>
+    <div style="margin-top:14px"><button class="btn" id="startBtn">Start trading ▶</button></div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section id="game" class="hidden">
+  <div class="top">
+    <div>
+      <h2 style="margin:0">Day <span id="dayNum"></span> <span class="muted" style="font-weight:500">of 30</span></h2>
+    </div>
+    <div class="stats">
+      <div class="stat"><small>Cash</small><b id="sCash"></b></div>
+      <div class="stat"><small>Shares value</small><b id="sShares"></b></div>
+      <div class="stat"><small>Total worth</small><b id="sWorth"></b></div>
+      <div class="stat"><small>Profit / loss</small><b id="sPL"></b></div>
+    </div>
+  </div>
+  <div class="progress"><i id="prog"></i></div>
+
+  <div class="grid">
+    <div class="stack">
+      <div class="card">
+        <div class="tabs" id="tabs"></div>
+        <div class="chartbox"><canvas id="mainChart"></canvas></div>
+        <div class="legend">Tap or hover on the graph to read values. ● marks a day with news about that company.</div>
+      </div>
+      <div class="card">
+        <h2>News feed</h2>
+        <div class="news" id="news"></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="card">
+        <div class="trade-head">
+          <span class="chip" id="tChip"></span><b id="tName"></b>
+        </div>
+        <p class="muted" id="tBlurb" style="margin:4px 0 8px;font-size:13px"></p>
+        <div class="trade-head"><span class="price-big" id="tPrice"></span><span class="chg" id="tChg"></span></div>
+        <div class="qty">
+          <button data-q="-10">−10</button><button data-q="-1">−</button>
+          <input id="qty" type="number" min="1" step="1" value="1" inputmode="numeric" aria-label="Number of shares">
+          <button data-q="1">+</button><button data-q="10">+10</button>
+        </div>
+        <p class="muted" id="tPreview" style="margin:0 0 8px;font-size:13px"></p>
+        <div class="row2"><button class="buy" id="buyBtn">Buy</button><button class="sell" id="sellBtn">Sell</button></div>
+        <div class="row2"><button class="small-btn" id="maxBtn">Max I can buy</button><button class="small-btn" id="allBtn">Sell all of these</button></div>
+        <p class="msg" id="tMsg"></p>
+      </div>
+      <div class="card">
+        <h2>Your portfolio</h2>
+        <table>
+          <thead><tr><th>Company</th><th class="r">Price</th><th class="r">Today</th><th class="r">Owned</th><th class="r">Value</th></tr></thead>
+          <tbody id="port"></tbody>
+        </table>
+        <button class="btn next" id="nextBtn">Next day ▶</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- END -->
+<section id="end" class="hidden">
+  <div class="hero"><h1 id="endTitle"></h1><p class="muted" id="endSub" style="margin:0"></p></div>
+  <div class="end-grid">
+    <div class="card"><small class="muted">Final worth</small><div class="big" id="eWorth"></div></div>
+    <div class="card"><small class="muted">Return on £1,000</small><div class="big" id="eRet"></div></div>
+    <div class="card"><small class="muted">Graph questions</small><div class="big" id="eQ"></div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <h2>Your total worth over time</h2>
+    <div class="chartbox" style="height:260px"><canvas id="endChart"></canvas></div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <h2>What if you had just bought and held?</h2>
+    <p class="muted" style="margin-top:0">If you had put all £1,000 into one company on day 10 and never sold:</p>
+    <table><thead><tr><th>Company</th><th class="r">Day 10</th><th class="r">Day 30</th><th class="r">Change</th><th class="r">£1,000 became</th></tr></thead><tbody id="holdT"></tbody></table>
+    <p id="holdMsg" style="margin-bottom:0"></p>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <h2>Key words</h2>
+    <div class="words">
+      <div><b>Share</b> – a small part of a company that you can own.</div>
+      <div><b>Stock market</b> – where shares are bought and sold.</div>
+      <div><b>Investor</b> – someone who buys shares hoping they grow in value.</div>
+      <div><b>Dividend</b> – part of a company's profit paid to its shareholders.</div>
+      <div><b>Trend</b> – the general direction a graph is moving.</div>
+      <div><b>Gradient</b> – how steep a line is: change in y ÷ change in x.</div>
+      <div><b>Percentage change</b> – (new − old) ÷ old × 100.</div>
+      <div><b>Diversification</b> – spreading money across companies to reduce risk.</div>
+      <div><b>Volatile</b> – a share whose price jumps up and down a lot.</div>
+    </div>
+  </div>
+  <button class="btn" id="againBtn">Play again ↻</button>
+</section>
+</div>
+
+<!-- QUESTION MODAL -->
+<div class="modal hidden" id="modal" role="dialog" aria-modal="true">
+  <div class="card">
+    <span class="skill" id="qSkill"></span>
+    <h2 id="qText" style="font-weight:600"></h2>
+    <div class="chartbox qchart"><canvas id="qChart"></canvas></div>
+    <div class="opts" id="qOpts"></div>
+    <div class="feedback hidden" id="qFb"></div>
+    <div style="margin-top:12px;text-align:right"><button class="btn hidden" id="qNext">Continue ▶</button></div>
+  </div>
+</div>
+
+<script>
+const START_CASH=1000, HIST=10, END_DAY=30, Q_EVERY=3, Q_BONUS=50;
+const COMPANIES=[
+  {id:'SOL', name:'SolarSpark Energy', color:'#f59e0b', start:42, drift:0.005, vol:0.03, blurb:'Makes solar panels. Grows steadily but is affected by weather and government policy.'},
+  {id:'LEAF',name:'GreenLeaf Foods',   color:'#16a34a', start:65, drift:0.002, vol:0.013,blurb:'Grows and sells food. A steady, low-risk company that pays dividends.'},
+  {id:'BOT', name:'RoboRocket Tech',   color:'#6366f1', start:28, drift:0.004, vol:0.055,blurb:'Builds robots and rockets. Very volatile: big wins and big losses.'}
+];
+const CO=Object.fromEntries(COMPANIES.map(c=>[c.id,c]));
+const NEWS=[
+ {co:'SOL',fx:0.14,t:'SolarSpark wins a contract to put solar panels on 50 schools.',why:'More future profit is expected, so more people want the shares. Demand rises → price rises.'},
+ {co:'SOL',fx:-0.12,t:'A cloudy summer: SolarSpark panel sales miss their target.',why:'Lower sales mean lower profit. Some investors sell, so the price falls.'},
+ {co:'SOL',fx:0.08,t:'SolarSpark scientists raise solar cell efficiency from 22% to 26%.',why:'Better technology could win more customers, so investors buy in.'},
+ {co:'SOL',fx:-0.09,t:'Government cuts grants for home solar panels.',why:'Fewer people will buy panels without the grant, so future profit looks lower.'},
+ {co:'LEAF',fx:-0.11,t:'Heatwave and drought damage GreenLeaf\'s wheat harvest.',why:'Less crop to sell means less profit, so shares are sold.'},
+ {co:'LEAF',fx:0.07,t:'GreenLeaf\'s new high-protein bean snack becomes a bestseller.',why:'Strong sales mean more profit, so demand for the shares goes up.'},
+ {co:'LEAF',fx:0.05,t:'GreenLeaf raises its dividend.',why:'A dividend is a share of the profit paid to shareholders. A bigger dividend makes the shares more attractive.'},
+ {co:'LEAF',fx:-0.06,t:'Food inspectors recall one GreenLeaf product.',why:'A recall costs money and damages trust, so some investors sell.'},
+ {co:'BOT',fx:0.22,t:'RoboRocket lands its reusable rocket for the first time!',why:'A huge success could bring big future profits. Lots of people rush to buy.'},
+ {co:'BOT',fx:-0.25,t:'RoboRocket test rocket explodes on the launch pad. No one is hurt.',why:'Repairs are expensive and customers may lose confidence. Investors panic and sell.'},
+ {co:'BOT',fx:0.12,t:'RoboRocket signs a deal to build robots for warehouses.',why:'A new customer means new income, so the price rises.'},
+ {co:'BOT',fx:-0.14,t:'RoboRocket makes a loss for the third year in a row.',why:'Spending more than it earns makes the company riskier, so the price falls.'},
+ {co:'ALL',fx:-0.05,t:'Interest rates rise. Savings accounts now pay more.',why:'Some investors move money out of shares and into savings, so the whole market dips.'},
+ {co:'ALL',fx:0.05,t:'The economy grows faster than expected. People are spending more.',why:'Good news for most businesses, so nearly every share rises together.'}
+];
+
+let S=null;
+const $=id=>document.getElementById(id);
+const r2=n=>Math.round(n*100)/100;
+const money=n=>(n<0?'−£':'£')+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const pctS=n=>(n>0?'+':n<0?'−':'')+Math.abs(n).toFixed(1)+'%';
+const randInt=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function randn(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const P=(co,d)=>S.prices[co][d-1];
+function step(c,p,fx=0){return Math.max(1,r2(p*(1+c.drift+c.vol*randn())*(1+fx)));}
+function sharesValue(){return COMPANIES.reduce((s,c)=>s+S.own[c.id]*P(c.id,S.day),0);}
+function worth(){return S.cash+sharesValue();}
+
+function newGame(){
+  S={day:HIST,cash:START_CASH,own:{},prices:{},news:[],worth:[START_CASH],qOk:0,qN:0,sel:'SOL',view:'SOL',hover:null,used:new Set(),fresh:null};
+  COMPANIES.forEach(c=>{S.own[c.id]=0;const a=[c.start];for(let i=1;i<HIST;i++)a.push(step(c,a[i-1]));S.prices[c.id]=a;});
+}
+
+/* ---------- Chart ---------- */
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function niceStep(raw){const p=Math.pow(10,Math.floor(Math.log10(raw)));const f=raw/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p;}
+function drawChart(cv,opt){
+  const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(!w||!h)return;
+  cv.width=w*dpr;cv.height=h*dpr;
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);
+  const ink=cssVar('--ink'),muted=cssVar('--muted'),grid=cssVar('--grid'),panel=cssVar('--panel');
+  const pad={l:58,r:14,t:12,b:40};
+  const xs=[],ys=[];opt.series.forEach(s=>s.pts.forEach(p=>{xs.push(p[0]);ys.push(p[1]);}));
+  const x0=Math.min(...xs),x1=Math.max(...xs);
+  let y0=Math.min(...ys),y1=Math.max(...ys);if(y1-y0<2){y0-=1;y1+=1;}
+  const st=niceStep((y1-y0)/5);y0=Math.floor(y0/st)*st;y1=Math.ceil(y1/st)*st;
+  const pw=w-pad.l-pad.r,ph=h-pad.t-pad.b;
+  const X=x=>pad.l+(x-x0)/((x1-x0)||1)*pw, Y=y=>pad.t+ph-(y-y0)/(y1-y0)*ph;
+  const fmt=opt.yfmt||(v=>'£'+(Number.isInteger(st)?v.toFixed(0):v.toFixed(st<1?2:1)));
+  g.font='11px system-ui,sans-serif';g.lineWidth=1;
+  // horizontal grid
+  for(let v=y0;v<=y1+1e-9;v+=st){g.strokeStyle=grid;g.beginPath();g.moveTo(pad.l,Y(v)+.5);g.lineTo(w-pad.r,Y(v)+.5);g.stroke();
+    g.fillStyle=muted;g.textAlign='right';g.fillText(fmt(v),pad.l-6,Y(v)+4);}
+  // vertical grid + x labels
+  const maxT=Math.max(2,Math.floor(pw/34)),k=Math.max(1,Math.ceil((x1-x0)/maxT));
+  g.textAlign='center';
+  for(let d=x0;d<=x1;d++){g.strokeStyle=grid;g.globalAlpha=(d-x0)%k===0?1:.45;g.beginPath();g.moveTo(X(d)+.5,pad.t);g.lineTo(X(d)+.5,pad.t+ph);g.stroke();g.globalAlpha=1;
+    if((d-x0)%k===0){g.fillStyle=muted;g.fillText(d,X(d),pad.t+ph+15);}}
+  // axes
+  g.strokeStyle=muted;g.beginPath();g.moveTo(pad.l,pad.t);g.lineTo(pad.l,pad.t+ph);g.lineTo(w-pad.r,pad.t+ph);g.stroke();
+  g.fillStyle=ink;g.font='600 12px system-ui,sans-serif';g.fillText(opt.xTitle||'Day',pad.l+pw/2,h-6);
+  g.save();g.translate(13,pad.t+ph/2);g.rotate(-Math.PI/2);g.fillText(opt.yTitle||'Share price (£)',0,0);g.restore();
+  // guide line
+  if(opt.vline!=null){g.save();g.setLineDash([5,4]);g.strokeStyle=cssVar('--accent');g.lineWidth=1.5;g.beginPath();g.moveTo(X(opt.vline),pad.t);g.lineTo(X(opt.vline),pad.t+ph);g.stroke();g.restore();}
+  // series
+  opt.series.forEach(s=>{g.strokeStyle=s.color;g.lineWidth=s.width||2.5;g.lineJoin='round';g.beginPath();
+    s.pts.forEach((p,i)=>i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1])));g.stroke();
+    (s.dots||[]).forEach(d=>{const p=s.pts.find(q=>q[0]===d);if(!p)return;g.fillStyle=s.color;g.strokeStyle=panel;g.lineWidth=2;g.beginPath();g.arc(X(p[0]),Y(p[1]),4.5,0,7);g.fill();g.stroke();});});
+  // labelled marks
+  (opt.marks||[]).forEach(m=>{g.fillStyle=cssVar('--accent');g.strokeStyle=panel;g.lineWidth=2;g.beginPath();g.arc(X(m.x),Y(m.y),6,0,7);g.fill();g.stroke();
+    g.font='700 12px system-ui,sans-serif';const tw=g.measureText(m.label).width+10;let lx=Math.min(Math.max(X(m.x)-tw/2,pad.l),w-pad.r-tw);let ly=Y(m.y)-28;if(ly<pad.t)ly=Y(m.y)+10;
+    g.fillStyle=panel;g.strokeStyle=cssVar('--accent');g.lineWidth=1.5;g.beginPath();g.roundRect?g.roundRect(lx,ly,tw,20,6):g.rect(lx,ly,tw,20);g.fill();g.stroke();
+    g.fillStyle=ink;g.textAlign='left';g.fillText(m.label,lx+5,ly+14);});
+  // hover readout
+  if(opt.hover!=null){const d=opt.hover;g.strokeStyle=muted;g.lineWidth=1;g.beginPath();g.moveTo(X(d)+.5,pad.t);g.lineTo(X(d)+.5,pad.t+ph);g.stroke();
+    const lines=['Day '+d];opt.series.forEach(s=>{const p=s.pts.find(q=>q[0]===d);if(!p)return;g.fillStyle=s.color;g.beginPath();g.arc(X(d),Y(p[1]),5,0,7);g.fill();lines.push((s.label?s.label+': ':'')+money(p[1]));});
+    g.font='600 12px system-ui,sans-serif';const tw=Math.max(...lines.map(l=>g.measureText(l).width))+14,th=lines.length*16+8;
+    let bx=X(d)+10;if(bx+tw>w-pad.r)bx=X(d)-10-tw;const by=pad.t+4;
+    g.fillStyle=panel;g.strokeStyle=cssVar('--line');g.beginPath();g.roundRect?g.roundRect(bx,by,tw,th,8):g.rect(bx,by,tw,th);g.fill();g.stroke();
+    g.fillStyle=ink;g.textAlign='left';lines.forEach((l,i)=>g.fillText(l,bx+7,by+18+i*16));}
+  cv._geo={x0,x1,pad,w};
+}
+
+/* ---------- Rendering ---------- */
+function seriesFor(id,a=1,b=S.day){const pts=[];for(let d=a;d<=b;d++)pts.push([d,P(id,d)]);return pts;}
+function newsDays(id){return S.news.filter(n=>n.co===id||n.co==='ALL').map(n=>n.day);}
+function renderChart(){
+  const ids=S.view==='ALL'?COMPANIES.map(c=>c.id):[S.view];
+  drawChart($('mainChart'),{series:ids.map(id=>({pts:seriesFor(id),color:CO[id].color,label:ids.length>1?id:'',dots:newsDays(id),width:ids.length>1?2:3})),hover:S.hover});
+}
+function renderTabs(){
+  $('tabs').innerHTML=COMPANIES.map(c=>`<button class="tab ${S.view===c.id?'on':''}" style="--c:${c.color}" data-v="${c.id}"><span class="dot"></span>${c.name}</button>`).join('')+
+    `<button class="tab ${S.view==='ALL'?'on':''}" data-v="ALL">Compare all</button>`;
+}
+function chgOf(id){const t=P(id,S.day),y=P(id,S.day-1);return (t-y)/y*100;}
+function chgClass(v){return v>0.05?'up':v<-0.05?'down':'flat';}
+function renderTrade(){
+  const c=CO[S.sel],p=P(c.id,S.day),ch=chgOf(c.id);
+  $('tChip').textContent=c.id;$('tChip').style.setProperty('--c',c.color);$('tName').textContent=c.name;$('tBlurb').textContent=c.blurb;
+  $('tPrice').textContent=money(p);const e=$('tChg');e.className='chg '+chgClass(ch);e.textContent=(ch>0?'▲ ':ch<0?'▼ ':'')+pctS(ch)+' today';
+  const q=Math.max(0,Math.floor(+$('qty').value||0));
+  $('tPreview').innerHTML=`${q} × ${money(p)} = <b>${money(q*p)}</b> · You own <b>${S.own[c.id]}</b> share${S.own[c.id]===1?'':'s'}`;
+}
+function renderPort(){
+  $('port').innerHTML=COMPANIES.map(c=>{const p=P(c.id,S.day),ch=chgOf(c.id);
+    return `<tr class="pick" data-v="${c.id}"><td><span class="chip" style="--c:${c.color}">${c.id}</span></td><td class="r">${money(p)}</td><td class="r"><span class="chg ${chgClass(ch)}">${pctS(ch)}</span></td><td class="r">${S.own[c.id]}</td><td class="r">${money(S.own[c.id]*p)}</td></tr>`;}).join('');
+}
+function renderNews(){
+  if(!S.news.length){$('news').innerHTML='<p class="muted" style="margin:0">No news yet. Press <b>Next day</b> to start the market moving.</p>';return;}
+  $('news').innerHTML=S.news.slice().reverse().map(n=>{const col=n.co==='ALL'?cssVar('--muted'):CO[n.co].color,who=n.co==='ALL'?'Whole market':CO[n.co].name;
+    return `<div class="news-item ${n===S.fresh?'fresh':''}" style="--c:${col}"><div class="meta">Day ${n.day} · ${who} · ${n.fx>0?'▲ good news':'▼ bad news'}</div><div class="h">${n.t}</div><div class="why">Why? ${n.why}</div></div>`;}).join('');
+}
+function renderStats(){
+  const sv=sharesValue(),w=S.cash+sv,pl=w-START_CASH;
+  $('dayNum').textContent=S.day;$('sCash').textContent=money(S.cash);$('sShares').textContent=money(sv);$('sWorth').textContent=money(w);
+  $('sPL').textContent=(pl>=0?'+':'')+money(pl);$('sPL').style.color=pl>0?'var(--up)':pl<0?'var(--down)':'';
+  $('prog').style.width=((S.day-HIST)/(END_DAY-HIST)*100)+'%';
+}
+function renderAll(){renderStats();renderTabs();renderChart();renderTrade();renderPort();renderNews();}
+
+/* ---------- Trading ---------- */
+function msg(t,cls){const e=$('tMsg');e.textContent=t;e.className='msg '+(cls||'');}
+function qty(){return Math.floor(+$('qty').value||0);}
+function buy(){const c=S.sel,p=P(c,S.day),q=qty();
+  if(q<1)return msg('Choose at least 1 share.','err');
+  if(q*p>S.cash+1e-9)return msg(`Not enough cash. ${q} shares cost ${money(q*p)} but you have ${money(S.cash)}.`,'err');
+  S.cash=r2(S.cash-q*p);S.own[c]+=q;msg(`Bought ${q} ${c} share${q>1?'s':''} for ${money(q*p)}.`,'ok');renderAll();}
+function sell(){const c=S.sel,p=P(c,S.day),q=qty();
+  if(q<1)return msg('Choose at least 1 share.','err');
+  if(q>S.own[c])return msg(`You only own ${S.own[c]} ${c} share${S.own[c]===1?'':'s'}.`,'err');
+  S.cash=r2(S.cash+q*p);S.own[c]-=q;msg(`Sold ${q} ${c} share${q>1?'s':''} for ${money(q*p)}.`,'ok');renderAll();}
+
+/* ---------- Day advance ---------- */
+function nextDay(){
+  let ev=null;
+  if(Math.random()<0.55){const pool=NEWS.filter((n,i)=>!S.used.has(i));if(pool.length){ev=pick(pool);S.used.add(NEWS.indexOf(ev));}}
+  COMPANIES.forEach(c=>{const fx=ev&&(ev.co===c.id||ev.co==='ALL')?ev.fx:0;S.prices[c.id].push(step(c,P(c.id,S.day),fx));});
+  S.day++;
+  if(ev){S.fresh={...ev,day:S.day};S.news.push(S.fresh);}else S.fresh=null;
+  S.worth.push(r2(worth()));S.hover=null;msg('');
+  renderAll();
+  if(S.day>=END_DAY){setTimeout(showEnd,300);return;}
+  if((S.day-HIST)%Q_EVERY===0)setTimeout(askQuestion,250);
+}
+
+/* ---------- Graph questions ---------- */
+function mcq(correct,ds,fmt){const seen=new Set([fmt(correct)]),o=[{t:fmt(correct),ok:true}];
+  for(const d of ds){const t=fmt(d);if(!seen.has(t)&&o.length<4){seen.add(t);o.push({t,ok:false});}}return shuffle(o);}
+const sgn=n=>(n<0?'−':'')+Math.abs(n).toFixed(2);
+const GEN={
+  read(){const c=pick(COMPANIES),a=Math.max(1,S.day-9),b=S.day,d=randInt(a,b),v=P(c.id,d),pts=seriesFor(c.id,a,b);
+    const ys=pts.map(p=>p[1]),delta=Math.max(2,Math.round((Math.max(...ys)-Math.min(...ys))/4)),cor=Math.round(v);
+    return {skill:'Reading a value from a graph',text:`What was the share price of <b>${c.name}</b> on <b>day ${d}</b>? Pick the closest answer.`,
+      chart:{series:[{pts,color:c.color}],vline:d},opts:mcq(cor,shuffle([-2,-1,1,2]).map(k=>cor+k*delta).filter(x=>x>0),x=>'£'+x),
+      explain:`Go up from day ${d} on the x-axis to the line, then across to the y-axis. The price was ${money(v)}, closest to £${cor}.`};},
+  max(){const c=pick(COMPANIES),a=Math.max(1,S.day-9),pts=seriesFor(c.id,a,S.day),best=pts.reduce((m,p)=>p[1]>m[1]?p:m);
+    const others=shuffle(pts.filter(p=>p[1]<best[1]*0.97)).map(p=>p[0]);if(others.length<2)return null;
+    return {skill:'Finding the maximum',text:`On which day was <b>${c.name}</b>'s share price at its <b>highest</b>?`,chart:{series:[{pts,color:c.color}]},
+      opts:mcq(best[0],others,x=>'Day '+x),explain:`Find the highest point on the line, then read straight down to the x-axis: day ${best[0]}, at ${money(best[1])}.`};},
+  trend(){const c=pick(COMPANIES),a=S.day-6,b=S.day,p1=P(c.id,a),p2=P(c.id,b),ch=(p2-p1)/p1*100;
+    const ans=ch>3?'Rising':ch<-3?'Falling':'Roughly flat';
+    return {skill:'Describing a trend',text:`Describe the overall <b>trend</b> in <b>${c.name}</b>'s share price from day ${a} to day ${b}.`,chart:{series:[{pts:seriesFor(c.id,a,b),color:c.color}]},
+      opts:['Rising','Falling','Roughly flat'].map(t=>({t,ok:t===ans})),
+      explain:`Ignore the small wiggles and compare start and end: ${money(p1)} on day ${a} to ${money(p2)} on day ${b}, a change of ${pctS(ch)}. So the trend is <b>${ans.toLowerCase()}</b>.`};},
+  drop(){const c=pick(COMPANIES),a=Math.max(1,S.day-9),pts=seriesFor(c.id,a,S.day),ch=[];
+    for(let i=1;i<pts.length;i++)ch.push({d:pts[i-1][0],v:pts[i][1]-pts[i-1][1]});
+    const worst=ch.reduce((m,x)=>x.v<m.v?x:m);if(worst.v>=0)return null;
+    const others=shuffle(ch.filter(x=>x.d!==worst.d&&x.v>worst.v*0.7||x.v>0).filter(x=>x.d!==worst.d)).map(x=>x.d);
+    return {skill:'Spotting the steepest fall',text:`Between which two days did <b>${c.name}</b>'s price <b>fall the most</b>?`,chart:{series:[{pts,color:c.color}]},
+      opts:mcq(worst.d,others,d=>`Day ${d} → ${d+1}`),explain:`Look for the steepest downward section of the line. From day ${worst.d} to ${worst.d+1} it fell by ${money(-worst.v)}.`};},
+  pct(){const c=pick(COMPANIES),a=randInt(Math.max(1,S.day-9),S.day-3),b=randInt(a+2,S.day),p1=P(c.id,a),p2=P(c.id,b),d=p2-p1,cor=d/p1*100;if(Math.abs(cor)<1)return null;
+    return {skill:'Percentage change',text:`The price of <b>${c.name}</b> went from <b>${money(p1)}</b> on day ${a} to <b>${money(p2)}</b> on day ${b}. What is the <b>percentage change</b>?`,
+      chart:{series:[{pts:seriesFor(c.id,Math.max(1,S.day-9),S.day),color:c.color}],marks:[{x:a,y:p1,label:money(p1)},{x:b,y:p2,label:money(p2)}]},
+      opts:mcq(cor,[d/p2*100,-cor,d,cor*2],x=>pctS(x)),
+      explain:`% change = (new − old) ÷ old × 100 = (${p2.toFixed(2)} − ${p1.toFixed(2)}) ÷ ${p1.toFixed(2)} × 100 = <b>${pctS(cor)}</b>. Always divide by the <i>old</i> (starting) value.`};},
+  grad(){const c=pick(COMPANIES),a=randInt(Math.max(1,S.day-9),S.day-4),b=randInt(a+3,S.day),p1=P(c.id,a),p2=P(c.id,b),d=p2-p1,cor=d/(b-a);if(Math.abs(cor)<0.1)return null;
+    return {skill:'Gradient (rate of change)',text:`Find the <b>gradient</b> of the line between the two marked points. This is how many pounds per day the price changed by, on average.`,
+      chart:{series:[{pts:seriesFor(c.id,Math.max(1,S.day-9),S.day),color:c.color}],marks:[{x:a,y:p1,label:`Day ${a}: ${money(p1)}`},{x:b,y:p2,label:`Day ${b}: ${money(p2)}`}]},
+      opts:mcq(cor,[d,-cor,(b-a)/(d||1),cor*2],x=>'£'+sgn(x)+' per day'),
+      explain:`Gradient = change in y ÷ change in x = (${p2.toFixed(2)} − ${p1.toFixed(2)}) ÷ (${b} − ${a}) = ${sgn(d)} ÷ ${b-a} = <b>£${sgn(cor)} per day</b>. ${cor<0?'A negative gradient means the price is falling.':'A positive gradient means the price is rising.'}`};},
+  profit(){const c=pick(COMPANIES),n=pick([5,10,20,25]),a=randInt(Math.max(1,S.day-9),S.day-2),b=randInt(a+1,S.day),p1=P(c.id,a),p2=P(c.id,b),cor=n*(p2-p1);if(Math.abs(p2-p1)<0.2)return null;
+    return {skill:'Profit and loss',text:`Sam bought <b>${n}</b> shares of ${c.name} on day ${a} and sold them all on day ${b}. Using the marked prices, how much <b>profit or loss</b> did Sam make?`,
+      chart:{series:[{pts:seriesFor(c.id,Math.max(1,S.day-9),S.day),color:c.color}],marks:[{x:a,y:p1,label:'Buy '+money(p1)},{x:b,y:p2,label:'Sell '+money(p2)}]},
+      opts:mcq(cor,[p2-p1,-cor,n*p2,n*(p1+p2)],x=>(x>=0?'Profit ':'Loss ')+money(Math.abs(x))),
+      explain:`Profit = number of shares × (sell price − buy price) = ${n} × (${p2.toFixed(2)} − ${p1.toFixed(2)}) = <b>${cor>=0?'profit of':'loss of'} ${money(Math.abs(cor))}</b>.`};}
+};
+let curQ=null,lastType=null;
+function askQuestion(){
+  let q=null,t;
+  for(let i=0;i<20&&!q;i++){t=pick(Object.keys(GEN).filter(k=>k!==lastType));q=GEN[t]();}
+  lastType=t;curQ=q;
+  $('qSkill').textContent=q.skill+' · £'+Q_BONUS+' bonus';$('qText').innerHTML=q.text;
+  $('qOpts').innerHTML=q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o.t}</button>`).join('');
+  $('qFb').classList.add('hidden');$('qNext').classList.add('hidden');
+  $('modal').classList.remove('hidden');
+  requestAnimationFrame(()=>drawChart($('qChart'),q.chart));
+}
+function answer(i){
+  const q=curQ,ok=q.opts[i].ok;S.qN++;if(ok){S.qOk++;S.cash=r2(S.cash+Q_BONUS);}
+  [...$('qOpts').children].forEach((b,j)=>{b.disabled=true;if(q.opts[j].ok)b.classList.add('right');else if(j===i)b.classList.add('wrong');});
+  const fb=$('qFb');fb.innerHTML=(ok?`<b style="color:var(--up)">Correct! +£${Q_BONUS} added to your cash.</b><br>`:`<b style="color:var(--down)">Not quite.</b><br>`)+q.explain;
+  fb.classList.remove('hidden');$('qNext').classList.remove('hidden');$('qNext').focus();
+  S.worth[S.worth.length-1]=r2(worth());renderStats();
+}
+
+/* ---------- End ---------- */
+function showEnd(){
+  $('game').classList.add('hidden');$('end').classList.remove('hidden');window.scrollTo(0,0);
+  const w=worth(),ret=(w-START_CASH)/START_CASH*100;
+  $('endTitle').textContent=ret>15?'Brilliant trading!':ret>0?'You made a profit!':ret>-5?'Close to break-even':'A tough market';
+  $('endSub').textContent=`You finished with ${money(w)}, ${ret>=0?'up':'down'} ${Math.abs(ret).toFixed(1)}% on your starting £1,000. That includes ${money(S.qOk*Q_BONUS)} of question bonuses.`;
+  $('eWorth').textContent=money(w);$('eRet').textContent=pctS(ret);$('eRet').style.color=ret>=0?'var(--up)':'var(--down)';
+  $('eQ').textContent=`${S.qOk} / ${S.qN}`;
+  const rows=COMPANIES.map(c=>{const a=P(c.id,HIST),b=P(c.id,END_DAY),r=(b-a)/a*100;return {c,a,b,r,v:START_CASH*(1+r/100)};});
+  $('holdT').innerHTML=rows.map(x=>`<tr><td><span class="chip" style="--c:${x.c.color}">${x.c.id}</span> ${x.c.name}</td><td class="r">${money(x.a)}</td><td class="r">${money(x.b)}</td><td class="r"><span class="chg ${chgClass(x.r)}">${pctS(x.r)}</span></td><td class="r">${money(x.v)}</td></tr>`).join('');
+  const best=rows.reduce((m,x)=>x.r>m.r?x:m),split=rows.reduce((s,x)=>s+x.v/3,0),tradeOnly=w-S.qOk*Q_BONUS;
+  $('holdMsg').innerHTML=`Best single company: <b>${best.c.name}</b> (${pctS(best.r)}). Splitting £1,000 equally across all three would have given <b>${money(split)}</b>. That is <b>diversification</b>: spreading your money lowers the risk of one bad company ruining you. Your trading alone (without bonuses) reached <b>${money(tradeOnly)}</b>.`;
+  requestAnimationFrame(()=>drawChart($('endChart'),{series:[{pts:S.worth.map((v,i)=>[HIST+i,v]),color:cssVar('--accent')}],yTitle:'Total worth (£)',yfmt:v=>'£'+Math.round(v)}));
+}
+
+/* ---------- Events ---------- */
+$('coList').innerHTML=COMPANIES.map(c=>`<div style="--c:${c.color}"><b>${c.name}</b><br><span class="muted" style="font-size:13px">${c.blurb}</span></div>`).join('');
+$('startBtn').onclick=()=>{newGame();$('intro').classList.add('hidden');$('game').classList.remove('hidden');renderAll();window.scrollTo(0,0);};
+$('againBtn').onclick=()=>{newGame();$('end').classList.add('hidden');$('game').classList.remove('hidden');renderAll();window.scrollTo(0,0);};
+$('tabs').onclick=e=>{const b=e.target.closest('[data-v]');if(!b)return;S.view=b.dataset.v;if(S.view!=='ALL')S.sel=S.view;S.hover=null;renderAll();};
+$('port').onclick=e=>{const r=e.target.closest('[data-v]');if(!r)return;S.sel=S.view=r.dataset.v;renderAll();};
+document.querySelector('.qty').onclick=e=>{const b=e.target.closest('[data-q]');if(!b)return;$('qty').value=Math.max(1,qty()+ +b.dataset.q);renderTrade();};
+$('qty').oninput=renderTrade;
+$('buyBtn').onclick=buy;$('sellBtn').onclick=sell;
+$('maxBtn').onclick=()=>{$('qty').value=Math.max(1,Math.floor(S.cash/P(S.sel,S.day)));renderTrade();};
+$('allBtn').onclick=()=>{if(!S.own[S.sel])return msg(`You don't own any ${S.sel} shares.`,'err');$('qty').value=S.own[S.sel];sell();$('qty').value=1;renderTrade();};
+$('nextBtn').onclick=nextDay;
+$('qOpts').onclick=e=>{const b=e.target.closest('.opt');if(b&&!b.disabled)answer(+b.dataset.i);};
+$('qNext').onclick=()=>{$('modal').classList.add('hidden');renderAll();};
+const mc=$('mainChart');
+function hoverAt(clientX){const g=mc._geo;if(!g)return;const r=mc.getBoundingClientRect();
+  let d=Math.round(g.x0+(clientX-r.left-g.pad.l)/(g.w-g.pad.l-g.pad.r)*(g.x1-g.x0));d=Math.min(g.x1,Math.max(g.x0,d));
+  if(d!==S.hover){S.hover=d;renderChart();}}
+mc.addEventListener('pointermove',e=>hoverAt(e.clientX));
+mc.addEventListener('pointerdown',e=>hoverAt(e.clientX));
+mc.addEventListener('pointerleave',()=>{S.hover=null;renderChart();});
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{if(!S)return;
+  if(!$('game').classList.contains('hidden'))renderChart();
+  if(!$('modal').classList.contains('hidden'))drawChart($('qChart'),curQ.chart);
+  if(!$('end').classList.contains('hidden'))showEnd();},120);});
+</script>
+</body>
+</html>
