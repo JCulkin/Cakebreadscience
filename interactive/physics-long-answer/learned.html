@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>My Learning Bank – Physics Long Answers | Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+  :root {
+    --text: #1d1d1f; --muted: #6b6b70; --line: #e3e3e6; --soft: #f6f6f7;
+    --learn: #6b2fb3; --first: #1f8a4c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: var(--text); background: #fff; line-height: 1.55; font-size: 16px; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 36px 20px 80px; }
+  a { color: var(--learn); }
+  .back { font-size: .9rem; text-decoration: none; font-weight: 600; }
+  h1 { font-size: 1.9rem; margin: 14px 0 2px; color: var(--learn); }
+  .sub { margin: 0; color: var(--muted); }
+  .who { margin: 6px 0 0; font-weight: 600; }
+
+  .account { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 20px; padding: 10px 14px; border-radius: 8px; background: var(--soft); font-size: .9rem; }
+  .account #status { flex: 1 1 260px; }
+  .account button, .account select { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; font: inherit; cursor: pointer; }
+  .account button:hover { border-color: var(--text); }
+
+  .intro { margin: 22px 0 0; color: #3a3a3e; font-size: .95rem; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 24px 0 8px; }
+  .stat { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .stat b { display: block; font-size: 1.6rem; line-height: 1.1; }
+  .stat span { color: var(--muted); font-size: .85rem; }
+  .stat.learn b { color: var(--learn); }
+  .stat.first b { color: var(--first); }
+
+  .topic { margin-top: 44px; padding: 14px 18px; border-radius: 10px; border-left: 6px solid var(--c); background: color-mix(in srgb, var(--c) 9%, white); }
+  .topic p { margin: 0; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .topic h2 { margin: 2px 0 0; font-size: 1.3rem; color: var(--c); }
+
+  .card { border-bottom: 1px solid var(--line); padding: 22px 0 18px; }
+  .card h3 { margin: 0; font-size: 1.08rem; border-left: 3px solid var(--c); padding-left: 10px; }
+  .card h3 a { color: var(--text); text-decoration: none; }
+  .card h3 a:hover { text-decoration: underline; }
+  .scoreline { margin: 6px 0 0; font-size: .9rem; color: var(--muted); }
+  .scoreline .f { color: var(--first); font-weight: 700; }
+  .scoreline .l { color: var(--learn); font-weight: 700; }
+  .label { margin: 14px 0 6px; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--learn); }
+  ul.points { margin: 0; padding: 0; list-style: none; }
+  ul.points li { position: relative; padding: 6px 10px 6px 34px; margin: 4px 0; background: #f3edfb; border-radius: 6px; color: var(--learn); }
+  ul.points li::before { content: "+"; position: absolute; left: 10px; top: 6px; width: 16px; height: 16px; border-radius: 4px; background: var(--learn); color: #fff; font: 700 14px/16px sans-serif; text-align: center; }
+  .addtext { white-space: pre-wrap; color: var(--learn); border-left: 3px solid var(--learn); padding: 6px 12px; background: #faf7fe; border-radius: 0 6px 6px 0; }
+  details.firstans { margin-top: 12px; font-size: .92rem; }
+  details.firstans summary { cursor: pointer; color: var(--muted); }
+  details.firstans div { white-space: pre-wrap; margin-top: 6px; padding: 8px 12px; background: var(--soft); border-radius: 6px; }
+  .empty { margin-top: 30px; padding: 24px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); text-align: center; }
+
+  @page { size: A4; margin: 14mm; }
+  @media print {
+    body { font-size: 10.5pt; }
+    .wrap { max-width: none; padding: 0; }
+    .account, .back, details.firstans { display: none !important; }
+    .topic, ul.points li, ul.points li::before, .addtext { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card { break-inside: avoid; }
+    .topic { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="./">← Back to the questions</a>
+  <h1>My learning bank</h1>
+  <p class="sub">Physics long answers · Edexcel International GCSE Science (Double Award)</p>
+  <p class="who" id="who"></p>
+
+  <div class="account">
+    <span id="status"></span>
+    <select id="student" hidden></select>
+    <button id="signIn" type="button" hidden>Sign in with Google</button>
+    <button id="signOut" type="button" hidden>Sign out</button>
+    <button id="print" type="button">Print</button>
+  </div>
+
+  <p class="intro">Everything here is something you <b>didn't</b> have in your first answer but have now learned: the mark scheme points you ticked purple, and what you wrote in the “What I've learned” box. It grows as you work through the questions. Read it before a test — these are the exact points you're most likely to miss.</p>
+
+  <div class="stats" id="stats"></div>
+  <div id="bank"></div>
+</div>
+
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="questions-data.js"></script>
+<script src="tracker.js"></script>
+<script>
+const Store = window.LongAnswerStore;
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const totalQuestions = TOPICS.reduce((a, t) => a + t.questions.length, 0);
+
+let viewing = null;   // null = my own answers; otherwise { uid, name }
+let viewData = null;
+
+function render() {
+  const data = viewing ? (viewData || {}) : Store.all;
+  const u = Store.user;
+  document.getElementById("who").textContent = viewing
+    ? `Viewing: ${viewing.name}`
+    : (u ? (u.displayName || u.email) : "");
+
+  // Stats
+  let attempted = 0, firstMarks = 0, possible = 0, learnedPoints = 0, addCount = 0;
+  for (const id in data) {
+    const e = data[id];
+    if (!e.revealedAt) continue;
+    attempted++;
+    firstMarks += e.firstScore || 0;
+    possible += e.max || 0;
+    learnedPoints += Object.values(e.ticks || {}).filter(v => v === 2).length;
+    if ((e.add || "").trim()) addCount++;
+  }
+  const pct = possible ? Math.round(firstMarks / possible * 100) : 0;
+  document.getElementById("stats").innerHTML = `
+    <div class="stat"><b>${attempted}</b><span>of ${totalQuestions} questions attempted</span></div>
+    <div class="stat first"><b>${firstMarks} / ${possible}</b><span>first-answer marks${possible ? ` (${pct}%)` : ""}</span></div>
+    <div class="stat learn"><b>${learnedPoints}</b><span>mark scheme points learned</span></div>
+    <div class="stat learn"><b>${addCount}</b><span>additional answers written</span></div>`;
+
+  // Bank, by topic in spec order
+  let html = "";
+  TOPICS.forEach(t => {
+    const cards = t.questions.map(q => {
+      const e = data[q.id];
+      if (!e) return "";
+      const ticks = e.ticks || {};
+      const learned = q.scheme.filter(r => ticks[r[0]] === 2);
+      const addText = (e.add || "").trim();
+      if (!learned.length && !addText) return "";
+      const f = Store.score(q, ticks, false), l = Store.score(q, ticks, true);
+      return `<div class="card" style="--c:${t.color}">
+        <h3><a href="./#${q.id}">Q${q.n}. ${q.title}</a></h3>
+        <p class="scoreline">First answer <span class="f">${f} / ${q.max}</span> → with what you learned <span class="l">${l} / ${q.max}</span> · Spec ${q.spec}</p>
+        ${learned.length ? `<div class="label">Points I learned</div>
+          <ul class="points">${learned.map(r => `<li>${r[1]}</li>`).join("")}</ul>` : ""}
+        ${addText ? `<div class="label">What I wrote</div><div class="addtext">${esc(addText)}</div>` : ""}
+        ${(e.first || "").trim() ? `<details class="firstans"><summary>My first answer</summary><div>${esc(e.first)}</div></details>` : ""}
+      </div>`;
+    }).join("");
+    if (cards) html += `<div class="topic" style="--c:${t.color}"><p>Physics section ${t.num}</p><h2>${t.name}</h2></div>${cards}`;
+  });
+  document.getElementById("bank").innerHTML = html || `<div class="empty">
+    Nothing here yet. Answer a question, reveal the mark scheme, and tick any point you missed <b>twice</b> (purple) —
+    or write it in the “What I've learned” box. It will appear here.</div>`;
+}
+
+// Account bar
+const statusEl = document.getElementById("status");
+const studentSel = document.getElementById("student");
+const signInBtn = document.getElementById("signIn");
+const signOutBtn = document.getElementById("signOut");
+let studentsLoaded = false;
+
+async function loadStudentList() {
+  if (studentsLoaded || !Store.isAdmin) return;
+  studentsLoaded = true;
+  try {
+    const list = await Store.listStudents();
+    studentSel.innerHTML = `<option value="">My own learning bank</option>` +
+      list.map(s => `<option value="${esc(s.uid)}">${esc(s.name)}${s.email && s.email !== s.name ? " (" + esc(s.email) + ")" : ""}</option>`).join("");
+    studentSel.hidden = false;
+    const want = new URLSearchParams(location.search).get("uid");
+    if (want && list.some(s => s.uid === want)) { studentSel.value = want; studentSel.dispatchEvent(new Event("change")); }
+  } catch (e) {
+    console.error(e);
+    statusEl.textContent = "Couldn't load the student list (check Firestore rules).";
+  }
+}
+studentSel.addEventListener("change", async () => {
+  const uid = studentSel.value;
+  if (!uid) { viewing = null; viewData = null; render(); return; }
+  viewing = { uid, name: studentSel.options[studentSel.selectedIndex].text };
+  viewData = null;
+  render();
+  try { viewData = await Store.loadFor(uid); } catch (e) { console.error(e); viewData = {}; }
+  render();
+});
+
+function renderAccount() {
+  const u = Store.user;
+  if (!Store.available) statusEl.textContent = "Showing answers saved on this device.";
+  else if (!u) statusEl.textContent = "Showing answers saved on this device. Sign in to see your account's learning bank.";
+  else statusEl.textContent = Store.status === "loading" ? "Loading…" : `Signed in as ${u.displayName || u.email}.`;
+  signInBtn.hidden = !Store.available || !!u;
+  signOutBtn.hidden = !u;
+  if (!u) { studentSel.hidden = true; studentsLoaded = false; viewing = null; }
+  else loadStudentList();
+}
+
+Store.onChange(() => { renderAccount(); render(); });
+signInBtn.addEventListener("click", () => Store.signIn());
+signOutBtn.addEventListener("click", () => Store.signOut());
+document.getElementById("print").addEventListener("click", () => window.print());
+Store.init();
+renderAccount();
+render();
+</script>
+</body>
+</html>
