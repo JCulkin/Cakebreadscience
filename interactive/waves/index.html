@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Transverse and Longitudinal Waves - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--red:#d62828;--blue:#1d4ed8;--line:#d8d3c4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:16px}
+.stripes{display:flex;flex-direction:column}.stripes i{display:block}
+header{background:#111;padding:22px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:26px 40px 22px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,6vw,44px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 56px}
+.back{display:inline-block;margin-bottom:14px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(32px,6vw,48px);line-height:1;letter-spacing:-.5px}
+.lede{font-size:18px;max-width:720px;margin-top:10px}
+.spec{display:inline-block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;background:var(--green);color:var(--cream);padding:3px 8px;margin-top:12px}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;line-height:1.05;margin:40px 0 6px}
+h2 small{display:block;font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;letter-spacing:2px;color:var(--green)}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:20px;margin-bottom:6px}
+p+p{margin-top:8px}
+.card{background:var(--paper);border:2px solid var(--ink);margin-top:14px}
+.card .bar{display:flex;height:6px}.card .bar i{display:block}
+.card .in{padding:14px 16px}
+.sim{position:relative;width:100%}
+.sim canvas{display:block;width:100%;background:#fbfaf6;border:1px solid var(--line);touch-action:none}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px 18px;margin-top:12px}
+.ctl label{display:flex;justify-content:space-between;font-weight:600;font-size:14px}
+.ctl label b{font-variant-numeric:tabular-nums;color:var(--green)}
+input[type=range]{width:100%;accent-color:var(--green)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:7px 14px;font-weight:600;font-size:14px}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.on{background:var(--green);border-color:var(--green);color:var(--cream)}
+.readout{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.readout div{background:var(--cream);border:1px solid var(--line);padding:6px 10px;font-size:14px}
+.readout b{font-variant-numeric:tabular-nums}
+.eq{font-weight:700;font-size:15px;background:#e7f3ea;border:1px solid #b9dcc4;padding:8px 12px;margin-top:10px;font-variant-numeric:tabular-nums}
+.key{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.key{grid-template-columns:1fr}}
+.key .card{margin-top:0}
+.keyfact{font-size:17px;border-left:6px solid var(--green);padding:6px 12px;background:var(--paper);margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--ink);color:var(--cream);font-weight:600}
+td:first-child{font-weight:600;background:#f6f4ee;width:26%}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:14px}
+.def{background:var(--paper);border:2px solid var(--ink);padding:10px 12px}
+.def b{font-family:'Barlow Condensed',sans-serif;font-size:20px;text-transform:uppercase;display:block}
+.def span{font-size:13px;color:var(--muted)}
+.cap{font-size:14px;color:var(--muted);margin-top:8px}
+.tblwrap{overflow-x:auto;margin-top:14px}
+/* quiz */
+.q-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-weight:600;font-size:14px;color:var(--muted)}
+.q-text{font-size:20px;font-weight:600;margin:8px 0 12px;line-height:1.3}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){.opts{grid-template-columns:1fr}}
+.opt{background:var(--cream);border:2px solid var(--ink);padding:10px 12px;text-align:left;font-weight:600;font-size:16px}
+.opt:hover:not(:disabled){background:#fff}
+.opt.right{background:#d8f0de;border-color:var(--green)}
+.opt.wrong{background:#f8d7d7;border-color:var(--red)}
+.opt:disabled{cursor:default}
+.fb{margin-top:12px;padding:10px 12px;background:var(--cream);border-left:6px solid var(--green)}
+.fb.bad{border-left-color:var(--red)}
+.hidden{display:none!important}
+.score{font-family:'Barlow Condensed',sans-serif;font-size:56px;font-weight:900;line-height:1}
+</style>
+</head>
+<body>
+<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
+<header><a href="/test.html" class="brand">Cakebread <span>Science</span></a><span class="sub">Physics · Waves</span></header>
+<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
+
+<main class="wrap">
+  <a class="back" href="/test.html">← Testing area</a>
+  <h1>Transverse &amp; Longitudinal Waves</h1>
+  <p class="lede">A wave is a way of moving <b>energy</b> (and information) from one place to another. The particles wobble back and forth around a fixed point. They <b>do not</b> travel along with the wave.</p>
+  <span class="spec">IGCSE Edexcel 3.2 – 3.9, 3.14, 3.23</span>
+
+  <div class="keyfact">The only difference between the two types is the <b>direction the particles oscillate</b> compared with the <b>direction the energy travels</b>.</div>
+
+  <!-- TRANSVERSE -->
+  <h2><small>Applet 1</small>Transverse waves</h2>
+  <p>The particles move <b>up and down</b>, at <b>90° (perpendicular)</b> to the direction the energy travels. Watch the red particle: it never moves sideways.</p>
+  <div class="card">
+    <div class="bar"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div>
+    <div class="in">
+      <div class="sim"><canvas id="cvT" style="height:330px" aria-label="Animated transverse wave"></canvas></div>
+      <div class="controls">
+        <div class="ctl"><label>Frequency <b id="tfV"></b></label><input id="tf" type="range" min="0.2" max="2" step="0.1" value="0.5"></div>
+        <div class="ctl"><label>Wavelength <b id="tlV"></b></label><input id="tl" type="range" min="0.6" max="3" step="0.1" value="1.6"></div>
+        <div class="ctl"><label>Amplitude <b id="taV"></b></label><input id="ta" type="range" min="0.1" max="0.5" step="0.05" value="0.3"></div>
+      </div>
+      <div class="btns">
+        <button class="btn" id="tPlay">Pause</button>
+        <button class="btn alt" id="tSlow">Slow motion</button>
+        <button class="btn on" id="tLabels">Labels on</button>
+      </div>
+      <div class="eq" id="tEq"></div>
+      <h3 style="margin-top:16px">Watch one particle: displacement–time graph</h3>
+      <div class="sim"><canvas id="cvTg" style="height:160px" aria-label="Displacement-time graph of the red particle"></canvas></div>
+      <p class="cap">This graph shows the red particle's position over time. The time for one full wave is the <b>period, T</b>. Frequency is how many waves pass each second: <b>f = 1 ÷ T</b>.</p>
+    </div>
+  </div>
+
+  <!-- LONGITUDINAL -->
+  <h2><small>Applet 2</small>Longitudinal waves</h2>
+  <p>The particles move <b>backwards and forwards</b>, <b>parallel</b> to the direction the energy travels. This makes regions where the particles are squashed together (<b>compressions</b>) and spread apart (<b>rarefactions</b>).</p>
+  <div class="card">
+    <div class="bar"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div>
+    <div class="in">
+      <div class="sim"><canvas id="cvL" style="height:300px" aria-label="Animated longitudinal wave"></canvas></div>
+      <div class="controls">
+        <div class="ctl"><label>Frequency <b id="lfV"></b></label><input id="lf" type="range" min="0.2" max="2" step="0.1" value="0.5"></div>
+        <div class="ctl"><label>Wavelength <b id="llV"></b></label><input id="ll" type="range" min="0.8" max="3" step="0.1" value="1.6"></div>
+        <div class="ctl"><label>Amplitude <b id="laV"></b></label><input id="la" type="range" min="0.03" max="0.15" step="0.01" value="0.1"></div>
+      </div>
+      <div class="btns">
+        <button class="btn" id="lPlay">Pause</button>
+        <button class="btn alt" id="lSlow">Slow motion</button>
+        <button class="btn on" id="lLabels">Labels on</button>
+        <button class="btn alt" id="lGraph">Show displacement graph</button>
+      </div>
+      <p class="cap"><b>C</b> = compression (particles squashed together) &nbsp;·&nbsp; <b>R</b> = rarefaction (particles spread apart). The dashed red line is the red particles' rest position.</p>
+      <div class="eq" id="lEq"></div>
+      <div id="lGraphBox" class="hidden">
+        <div class="sim" style="margin-top:12px"><canvas id="cvLg" style="height:170px" aria-label="Displacement against position for the longitudinal wave"></canvas></div>
+        <p class="cap"><b>Exam trap:</b> a graph of a longitudinal wave looks like a transverse wave. It plots <i>how far each particle is pushed left or right</i> (up = right, down = left) against position. The particles themselves still only move left and right.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPARE -->
+  <h2><small>Summary</small>Spot the difference</h2>
+  <div class="tblwrap">
+  <table>
+    <tr><th></th><th>Transverse</th><th>Longitudinal</th></tr>
+    <tr><td>Oscillations are…</td><td><b>Perpendicular</b> (at 90°) to the direction of energy transfer</td><td><b>Parallel</b> to the direction of energy transfer</td></tr>
+    <tr><td>Features</td><td>Crests (peaks) and troughs</td><td>Compressions and rarefactions</td></tr>
+    <tr><td>Wavelength measured</td><td>Crest to next crest (or any point to the next identical point)</td><td>Compression to next compression</td></tr>
+    <tr><td>Examples</td><td>All electromagnetic waves (light, radio, X-rays…), ripples on water, a rope shaken up and down, seismic S-waves</td><td>Sound, ultrasound, a slinky pushed and pulled, seismic P-waves</td></tr>
+    <tr><td>Travels through a vacuum?</td><td>Electromagnetic waves can</td><td>No. Sound needs particles (a medium) to pass the vibration along</td></tr>
+  </table>
+  </div>
+
+  <!-- DEFINITIONS -->
+  <h2><small>Key words (3.3)</small>Describing any wave</h2>
+  <div class="defs">
+    <div class="def"><b>Amplitude</b>The maximum displacement of a point from its rest position. <span>Unit: m</span></div>
+    <div class="def"><b>Wavelength, λ</b>The distance from one point on a wave to the same point on the next wave. <span>Unit: m</span></div>
+    <div class="def"><b>Frequency, f</b>The number of waves passing a point each second. <span>Unit: hertz (Hz)</span></div>
+    <div class="def"><b>Period, T</b>The time taken for one complete wave to pass a point. <span>Unit: s · f = 1 ÷ T</span></div>
+    <div class="def"><b>Wavefront</b>A line joining points on a wave that are all at the same stage (for example, all the crests). <span>See Applet 3</span></div>
+    <div class="def"><b>Wave speed, v</b>How fast the energy moves. <span>v = f × λ · Unit: m/s</span></div>
+  </div>
+
+  <!-- DOPPLER -->
+  <h2><small>Applet 3</small>Wavefronts and the Doppler effect</h2>
+  <p>Seen from above, each circle is a <b>wavefront</b> (one crest). Make the source move: in front of it the wavefronts bunch up (shorter wavelength, higher frequency); behind it they spread out (longer wavelength, lower frequency). This is the <b>Doppler effect</b>. It's why an ambulance siren sounds higher as it comes towards you and lower as it drives away.</p>
+  <div class="card">
+    <div class="bar"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div>
+    <div class="in">
+      <div class="sim"><canvas id="cvD" style="height:320px" aria-label="Wavefronts spreading from a moving source"></canvas></div>
+      <div class="controls">
+        <div class="ctl"><label>Source speed <b id="dsV"></b></label><input id="ds" type="range" min="0" max="0.8" step="0.05" value="0"></div>
+        <div class="ctl"><label>Source frequency <b id="dfV"></b></label><input id="df" type="range" min="1" max="4" step="0.5" value="2"></div>
+      </div>
+      <div class="btns"><button class="btn" id="dPlay">Pause</button><button class="btn alt" id="dReset">Restart</button></div>
+      <div class="readout" id="dOut"></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <h2><small>Check yourself</small>Quick quiz</h2>
+  <div class="card">
+    <div class="bar"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div>
+    <div class="in" id="quiz"></div>
+  </div>
+</main>
+
+<div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const TAU=Math.PI*2;
+const C={ink:'#111',green:'#005e22',green2:'#00a03a',red:'#d62828',blue:'#1d4ed8',muted:'#777',grid:'#e6e2d6',bg:'#fbfaf6'};
+function prep(cv){
+  const dpr=window.devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;
+  if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);}
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,w,h);return {g,w,h};
+}
+function arrow(g,x1,y1,x2,y2,col,both=false,lw=2){
+  g.strokeStyle=col;g.fillStyle=col;g.lineWidth=lw;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+  const head=(xa,ya,xb,yb)=>{const a=Math.atan2(yb-ya,xb-xa),s=8;g.beginPath();g.moveTo(xb,yb);g.lineTo(xb-s*Math.cos(a-0.45),yb-s*Math.sin(a-0.45));g.lineTo(xb-s*Math.cos(a+0.45),yb-s*Math.sin(a+0.45));g.closePath();g.fill();};
+  head(x1,y1,x2,y2);if(both)head(x2,y2,x1,y1);
+}
+function label(g,txt,x,y,col=C.ink,align='center',font='600 13px Barlow, sans-serif',bg=true){
+  g.font=font;g.textAlign=align;g.textBaseline='middle';
+  if(bg){const w=g.measureText(txt).width+8;const lx=align==='center'?x-w/2:align==='left'?x-4:x-w+4;g.fillStyle='rgba(251,250,246,.9)';g.fillRect(lx,y-9,w,18);}
+  g.fillStyle=col;g.fillText(txt,x,y);
+}
+const fmt=(n,d=1)=>Number(n).toFixed(d);
+function bindSlider(id,outId,fn){const el=$(id);const u=()=>{$(outId).textContent=fn(+el.value);};el.addEventListener('input',u);u();return el;}
+function toggle(btn,state,on,off){btn.textContent=state?on:off;}
+
+/* -------- Shared sim state -------- */
+function makeSim(prefix){
+  const s={t:0,playing:true,slow:false,labels:true};
+  $(prefix+'Play').onclick=()=>{s.playing=!s.playing;toggle($(prefix+'Play'),s.playing,'Pause','Play');};
+  $(prefix+'Slow').onclick=()=>{s.slow=!s.slow;$(prefix+'Slow').classList.toggle('on',s.slow);$(prefix+'Slow').classList.toggle('alt',!s.slow);};
+  $(prefix+'Labels').onclick=()=>{s.labels=!s.labels;$(prefix+'Labels').classList.toggle('on',s.labels);$(prefix+'Labels').classList.toggle('alt',!s.labels);toggle($(prefix+'Labels'),s.labels,'Labels on','Labels off');};
+  return s;
+}
+const WORLD=4; // metres shown across the canvas
+
+/* -------- Applet 1: transverse -------- */
+const T=makeSim('t');T.hist=[];
+const tf=bindSlider('tf','tfV',v=>fmt(v)+' Hz'),tl=bindSlider('tl','tlV',v=>fmt(v)+' m'),ta=bindSlider('ta','taV',v=>fmt(v,2)+' m');
+function drawT(){
+  const {g,w,h}=prep($('cvT'));const f=+tf.value,lam=+tl.value,A=+ta.value,k=TAU/lam,om=TAU*f;
+  const mL=24,mR=24,sc=(w-mL-mR)/WORLD,midY=h/2-4,ys=(h/2-74)/0.5;
+  const X=x=>mL+x*sc,Y=y=>midY-y*ys,disp=x=>A*Math.sin(k*x-om*T.t);
+  // rest line
+  g.setLineDash([4,4]);g.strokeStyle=C.muted;g.lineWidth=1;g.beginPath();g.moveTo(X(0),midY);g.lineTo(X(WORLD),midY);g.stroke();g.setLineDash([]);
+  if(w>520)label(g,'rest position',X(WORLD)-2,midY+12,C.muted,'right','12px Barlow, sans-serif');
+  // rope
+  g.strokeStyle='#9aa69c';g.lineWidth=2;g.beginPath();for(let i=0;i<=200;i++){const x=WORLD*i/200;i?g.lineTo(X(x),Y(disp(x))):g.moveTo(X(x),Y(disp(x)));}g.stroke();
+  // particles
+  const N=40,hi=10;
+  for(let i=0;i<=N;i++){const x=WORLD*i/N;g.beginPath();g.arc(X(x),Y(disp(x)),i===hi?7:4.5,0,TAU);g.fillStyle=i===hi?C.red:C.green;g.fill();}
+  const hx=WORLD*hi/N;
+  // highlighted particle path
+  g.strokeStyle='rgba(214,40,40,.45)';g.lineWidth=2;g.setLineDash([3,3]);g.beginPath();g.moveTo(X(hx),Y(A));g.lineTo(X(hx),Y(-A));g.stroke();g.setLineDash([]);
+  arrow(g,X(hx)-16,Y(A*0.6),X(hx)-16,Y(-A*0.6),C.red,true,2);
+  // energy arrow
+  arrow(g,X(WORLD*0.35),18,X(WORLD*0.65),18,C.ink,false,3);label(g,'direction of energy transfer',X(WORLD*0.5),34,C.ink);
+  if(T.labels){
+    // crests: kx-ωt = π/2 + 2πn
+    const crests=[],troughs=[];
+    const ph=(om*T.t)%TAU;
+    for(let n=-2;n<20;n++){const xc=(Math.PI/2+TAU*n+ph)/k,xt=(3*Math.PI/2+TAU*n+ph)/k;if(xc>0.05&&xc<WORLD-0.05)crests.push(xc);if(xt>0.05&&xt<WORLD-0.05)troughs.push(xt);}
+    crests.forEach(x=>label(g,'crest',X(x),Y(A)-16,C.green));
+    troughs.forEach(x=>label(g,'trough',X(x),Y(-A)+16,C.green));
+    if(troughs.length>=2){const x1=troughs[0],x2=troughs[1],yy=Y(-A)+40;
+      if(x2!==undefined){g.strokeStyle=C.blue;g.lineWidth=1;g.setLineDash([2,3]);g.beginPath();g.moveTo(X(x1),Y(-A));g.lineTo(X(x1),yy);g.moveTo(X(x2),Y(-A));g.lineTo(X(x2),yy);g.stroke();g.setLineDash([]);
+      arrow(g,X(x1),yy,X(x2),yy,C.blue,true,2);label(g,'wavelength λ',(X(x1)+X(x2))/2,yy,C.blue);}}
+    const ac=crests.find(x=>Math.abs(x-hx)>0.3)??crests[0];
+    if(ac!==undefined){const ax=X(ac)+(X(ac)>w-110?-26:26);arrow(g,ax,midY,ax,Y(A),'#7c3aed',true,2);label(g,'amplitude',ax+(X(ac)>w-110?-6:6),(midY+Y(A))/2,'#7c3aed',X(ac)>w-110?'right':'left');}
+    label(g,'red particle: moves up and down only',8,h-12,C.red,'left');
+  }
+  $('tEq').innerHTML=`wave speed = frequency × wavelength &nbsp;→&nbsp; v = ${fmt(f)} Hz × ${fmt(lam)} m = <span style="color:var(--green)">${fmt(f*lam,2)} m/s</span> &nbsp;·&nbsp; period T = 1 ÷ f = ${fmt(1/f,2)} s`;
+  // history for d-t graph
+  T.hist.push([T.t,disp(hx)]);const span=6;while(T.hist.length&&T.hist[0][0]<T.t-span)T.hist.shift();
+  drawTg(A,f,span);
+}
+function drawTg(A,f,span){
+  const {g,w,h}=prep($('cvTg'));const mL=44,mR=12,mT=12,mB=28,pw=w-mL-mR,ph=h-mT-mB;
+  const t1=Math.max(T.t,span),t0=t1-span,X=t=>mL+(t-t0)/span*pw,Y=y=>mT+ph/2-y/0.5*(ph/2);
+  g.strokeStyle=C.grid;g.lineWidth=1;for(let s=Math.ceil(t0);s<=t1;s++){g.beginPath();g.moveTo(X(s),mT);g.lineTo(X(s),mT+ph);g.stroke();label(g,s+'',X(s),h-16,C.muted,'center','11px Barlow, sans-serif',false);}
+  g.strokeStyle=C.muted;g.beginPath();g.moveTo(mL,mT);g.lineTo(mL,mT+ph);g.moveTo(mL,Y(0));g.lineTo(mL+pw,Y(0));g.stroke();
+  label(g,'time (s)',mL+pw-2,h-6,C.ink,'right','600 11px Barlow, sans-serif',false);
+  g.save();g.translate(12,mT+ph/2);g.rotate(-Math.PI/2);label(g,'displacement',0,0,C.ink,'center','600 11px Barlow, sans-serif',false);g.restore();
+  [0.5,-0.5].forEach(v=>label(g,(v>0?'+':'−')+'0.5 m',mL-4,Y(v),C.muted,'right','10px Barlow, sans-serif',false));
+  g.strokeStyle=C.red;g.lineWidth=2.5;g.beginPath();T.hist.forEach((p,i)=>i?g.lineTo(X(p[0]),Y(p[1])):g.moveTo(X(p[0]),Y(p[1])));g.stroke();
+  // mark period between last two peaks
+  const per=1/f;if(per<span*0.9){const peaks=[];const ph0=Math.PI/2; // peaks where k*hx - ωt = π/2 - 2πn
+    const hx=WORLD*10/40,k=TAU/(+tl.value),om=TAU*f;
+    for(let n=-50;n<200;n++){const tt=(k*hx-ph0-TAU*n)/om;if(tt>=t0+0.05&&tt<=T.t)peaks.push(tt);}
+    peaks.sort((a,b)=>a-b);if(peaks.length>=2){const a=peaks[peaks.length-2],b=peaks[peaks.length-1],yy=Y(A)-8;
+      if(yy>mT+4){arrow(g,X(a),yy,X(b),yy,C.blue,true,1.5);label(g,'T = '+fmt(per,2)+' s',(X(a)+X(b))/2,yy-2>mT+12?yy-10:yy+12,C.blue);}}}
+}
+
+/* -------- Applet 2: longitudinal -------- */
+const L=makeSim('l');L.graph=false;
+const lf=bindSlider('lf','lfV',v=>fmt(v)+' Hz'),ll=bindSlider('ll','llV',v=>fmt(v)+' m'),la=bindSlider('la','laV',v=>fmt(v,2)+' m');
+$('lGraph').onclick=()=>{L.graph=!L.graph;$('lGraphBox').classList.toggle('hidden',!L.graph);$('lGraph').classList.toggle('on',L.graph);$('lGraph').classList.toggle('alt',!L.graph);$('lGraph').textContent=L.graph?'Hide displacement graph':'Show displacement graph';};
+function lParams(){const f=+lf.value,lam=+ll.value,k=TAU/lam;let A=+la.value;A=Math.min(A,0.6/k);return {f,lam,k,A,om:TAU*f};}
+function drawL(){
+  const {g,w,h}=prep($('cvL'));const {f,lam,k,A,om}=lParams();
+  const mL=24,mR=24,sc=(w-mL-mR)/WORLD,X=x=>mL+x*sc;
+  const top=86,bot=h-80,rows=7,cols=Math.round(w/11);
+  const s=x=>A*Math.sin(k*x-om*L.t);
+  // density shading strip
+  const stripY=top-22;
+  for(let i=0;i<w-mL-mR;i+=2){const x=i/sc;const dens=1-k*A*Math.cos(k*x-om*L.t);const a=Math.max(0,Math.min(1,(dens-0.4)/1.2));g.fillStyle=`rgba(0,94,34,${0.08+a*0.75})`;g.fillRect(mL+i,stripY,2,12);}
+  label(g,'particle density',mL,stripY-9,C.muted,'left','11px Barlow, sans-serif',false);
+  // particles
+  const hiCol=Math.round(cols*0.27);
+  for(let c=0;c<=cols;c++){const x0=WORLD*c/cols,xd=x0+s(x0);
+    for(let r=0;r<rows;r++){const y=top+(bot-top)*(r+0.5)/rows+((c*7+r*3)%5-2)*0.8;g.beginPath();g.arc(X(xd),y,c===hiCol?4.5:3,0,TAU);g.fillStyle=c===hiCol?C.red:C.green;g.fill();}}
+  // highlighted column rest marker
+  const hx0=WORLD*hiCol/cols;g.strokeStyle='rgba(214,40,40,.5)';g.lineWidth=1.5;g.setLineDash([3,3]);g.beginPath();g.moveTo(X(hx0),top-4);g.lineTo(X(hx0),bot+4);g.stroke();g.setLineDash([]);
+  arrow(g,X(hx0-A)-6,bot+14,X(hx0+A)+6,bot+14,C.red,true,2);
+  label(g,'red particles: move backwards and forwards only',8,bot+34,C.red,'left');
+  // energy arrow
+  arrow(g,X(WORLD*0.35),16,X(WORLD*0.65),16,C.ink,false,3);label(g,'direction of energy transfer',X(WORLD*0.5),32,C.ink);
+  if(L.labels){
+    const ph=(om*L.t)%TAU,comps=[],rars=[];
+    for(let n=-2;n<20;n++){const xc=(Math.PI+TAU*n+ph)/k,xr=(TAU*n+ph)/k;if(xc>0.08&&xc<WORLD-0.08)comps.push(xc);if(xr>0.08&&xr<WORLD-0.08)rars.push(xr);}
+    comps.forEach(x=>{g.fillStyle=C.ink;g.fillRect(X(x)-11,top+((bot-top)/2)-10,22,20);label(g,'C',X(x),top+(bot-top)/2,'#fff','center','700 13px Barlow, sans-serif',false);});
+    rars.forEach(x=>{g.fillStyle='#fff';g.strokeStyle=C.ink;g.lineWidth=1.5;g.fillRect(X(x)-11,top+((bot-top)/2)-10,22,20);g.strokeRect(X(x)-11,top+((bot-top)/2)-10,22,20);label(g,'R',X(x),top+(bot-top)/2,C.ink,'center','700 13px Barlow, sans-serif',false);});
+    if(comps.length>=2){const x1=comps[0],x2=comps[1],ya=h-16;
+      g.strokeStyle=C.blue;g.lineWidth=1;g.setLineDash([2,3]);g.beginPath();g.moveTo(X(x1),bot);g.lineTo(X(x1),ya);g.moveTo(X(x2),bot);g.lineTo(X(x2),ya);g.stroke();g.setLineDash([]);
+      arrow(g,X(x1),ya,X(x2),ya,C.blue,true,2);label(g,'wavelength λ',(X(x1)+X(x2))/2,ya,C.blue);}
+  }
+  $('lEq').innerHTML=`v = f × λ = ${fmt(f)} Hz × ${fmt(lam)} m = <span style="color:var(--green)">${fmt(f*lam,2)} m/s</span> &nbsp;·&nbsp; Sound works like this: a loudspeaker cone pushes and pulls the air particles.`;
+  if(L.graph)drawLg();
+}
+function drawLg(){
+  const {g,w,h}=prep($('cvLg'));const {k,A,om}=lParams();
+  const mL=24,mR=24,sc=(w-mL-mR)/WORLD,X=x=>mL+x*sc,mid=h/2,ys=(h/2-26)/0.15,Y=v=>mid-v*ys;
+  g.strokeStyle=C.muted;g.lineWidth=1;g.beginPath();g.moveTo(X(0),mid);g.lineTo(X(WORLD),mid);g.stroke();
+  label(g,'pushed right ↑',X(0),14,C.muted,'left','11px Barlow, sans-serif',false);label(g,'pushed left ↓',X(0),h-12,C.muted,'left','11px Barlow, sans-serif',false);
+  label(g,'position along the wave →',X(WORLD),h-12,C.muted,'right','11px Barlow, sans-serif',false);
+  const ph=(om*L.t)%TAU;
+  for(let n=-2;n<20;n++){const xc=(Math.PI+TAU*n+ph)/k;if(xc>0&&xc<WORLD){g.strokeStyle='rgba(17,17,17,.35)';g.setLineDash([3,3]);g.beginPath();g.moveTo(X(xc),20);g.lineTo(X(xc),h-24);g.stroke();g.setLineDash([]);label(g,'C',X(xc),mid-12,C.ink,'center','700 12px Barlow, sans-serif');}}
+  g.strokeStyle=C.red;g.lineWidth=2.5;g.beginPath();for(let i=0;i<=200;i++){const x=WORLD*i/200,v=A*Math.sin(k*x-om*L.t);i?g.lineTo(X(x),Y(v)):g.moveTo(X(x),Y(v));}g.stroke();
+}
+
+/* -------- Applet 3: Doppler -------- */
+const D={t:0,playing:true,fronts:[],sx:0,lastEmit:-1};
+const dsl=bindSlider('ds','dsV',v=>v===0?'stationary':Math.round(v*100)+'% of wave speed'),dfl=bindSlider('df','dfV',v=>fmt(v)+' Hz');
+$('dPlay').onclick=()=>{D.playing=!D.playing;toggle($('dPlay'),D.playing,'Pause','Play');};
+function resetD(){D.t=0;D.fronts=[];D.lastEmit=-1;D.started=false;}
+$('dReset').onclick=resetD;dsl.addEventListener('input',resetD);dfl.addEventListener('input',resetD);
+function drawD(){
+  const {g,w,h}=prep($('cvD'));const vw=Math.min(w,h*2)*0.18; // wave speed px/s
+  const vsF=+dsl.value,vs=vsF*vw,f=+dfl.value,per=1/f;
+  if(!D.started){D.started=true;D.x0=vsF>0?w*0.12:w/2;}
+  const sx=D.x0+vs*D.t,sy=h/2;
+  if(sx>w*0.9&&vsF>0){resetD();return drawD();}
+  const n=Math.floor(D.t/per);if(n>D.lastEmit){for(let i=D.lastEmit+1;i<=n;i++)D.fronts.push({x:D.x0+vs*i*per,t:i*per});D.lastEmit=n;}
+  D.fronts=D.fronts.filter(fr=>(D.t-fr.t)*vw<w*1.3);
+  g.lineWidth=2;
+  D.fronts.forEach(fr=>{const r=(D.t-fr.t)*vw;g.strokeStyle=`rgba(0,94,34,${Math.max(0.15,1-r/(w*0.9))})`;g.beginPath();g.arc(fr.x,sy,r,0,TAU);g.stroke();});
+  // source
+  g.fillStyle=C.red;g.beginPath();g.arc(sx,sy,8,0,TAU);g.fill();
+  if(vsF>0)arrow(g,sx+12,sy,sx+40,sy,C.red,false,2.5);
+  label(g,'source',sx,sy+22,C.red);
+  // observers
+  const obs=(x,name,col)=>{g.fillStyle=col;g.fillRect(x-8,sy-8,16,16);label(g,name,x,sy-22,col);};
+  obs(18,'A',C.blue);obs(w-18,'B',C.blue);
+  const fA=f/(1+vsF),fB=f/(1-vsF);
+  $('dOut').innerHTML=vsF===0?
+    `<div>Source not moving: both observers hear <b>${fmt(f)} Hz</b>. Wavelength is the same in every direction.</div>`:
+    `<div><b>Observer A (behind)</b>: wavefronts spread out → longer λ, lower frequency <b>${fmt(fA,2)} Hz</b> (lower pitch)</div>
+     <div><b>Observer B (in front)</b>: wavefronts bunched up → shorter λ, higher frequency <b>${fmt(fB,2)} Hz</b> (higher pitch)</div>`;
+}
+
+/* -------- Animation loop -------- */
+let last=performance.now();const vis={cvT:true,cvL:true,cvD:true};
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>vis[e.target.id]=e.isIntersecting),{rootMargin:'100px'});['cvT','cvL','cvD'].forEach(id=>io.observe($(id)));}
+function frame(now){
+  const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(T.playing)T.t+=dt*(T.slow?0.25:1);
+  if(L.playing)L.t+=dt*(L.slow?0.25:1);
+  if(D.playing)D.t+=dt;
+  if(vis.cvT)drawT();if(vis.cvL)drawL();if(vis.cvD)drawD();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* -------- Quiz -------- */
+const POOL=[
+ {q:'Sound travelling through air is…',o:['Transverse','Longitudinal'],a:1,e:'Sound is longitudinal: air particles vibrate backwards and forwards, parallel to the direction the sound travels.'},
+ {q:'Light is…',o:['Transverse','Longitudinal'],a:0,e:'All electromagnetic waves, including light, are transverse.'},
+ {q:'Ripples on the surface of a pond are…',o:['Transverse','Longitudinal'],a:0,e:'The water surface moves up and down while the ripple travels outwards.'},
+ {q:'Ultrasound used in a baby scan is…',o:['Transverse','Longitudinal'],a:1,e:'Ultrasound is just very high-frequency sound, so it is longitudinal.'},
+ {q:'A slinky is pushed and pulled along its length. The wave is…',o:['Transverse','Longitudinal'],a:1,e:'The coils move parallel to the direction the energy travels, making compressions and rarefactions.'},
+ {q:'Radio waves are…',o:['Transverse','Longitudinal'],a:0,e:'Radio waves are electromagnetic, so they are transverse.'},
+ {q:'Seismic P-waves (primary waves) are…',o:['Transverse','Longitudinal'],a:1,e:'P-waves are longitudinal: they push and pull the rock.'},
+ {q:'Seismic S-waves (secondary waves) are…',o:['Transverse','Longitudinal'],a:0,e:'S-waves are transverse: they shake the rock sideways.'},
+ {q:'In a transverse wave, the particles oscillate…',o:['parallel to the direction of energy transfer','perpendicular to the direction of energy transfer','in circles','they do not move'],a:1,e:'Perpendicular means at 90°. Think of a rope shaken up and down.'},
+ {q:'In a longitudinal wave, the particles oscillate…',o:['parallel to the direction of energy transfer','perpendicular to the direction of energy transfer','in the opposite direction to the wave only','they travel along with the wave'],a:0,e:'Parallel: the same line as the energy travels, backwards and forwards.'},
+ {q:'What do waves transfer?',o:['Matter only','Energy and information, but not matter','Particles from the source to you','Energy and matter'],a:1,e:'The particles oscillate about a fixed point. Only the energy (and information) moves along.'},
+ {q:'The distance from one compression to the next compression is the…',o:['amplitude','frequency','wavelength','period'],a:2,e:'Wavelength is the distance from one point to the same point on the next wave.'},
+ {q:'The number of waves passing a point each second is the…',o:['frequency','period','wavelength','speed'],a:0,e:'Frequency is measured in hertz (Hz). 1 Hz = 1 wave per second.'},
+ {q:'The time taken for one complete wave to pass a point is the…',o:['frequency','period','amplitude','wavelength'],a:1,e:'The period T, in seconds. f = 1 ÷ T.'},
+ {q:'Amplitude is…',o:['the distance from crest to trough','the maximum displacement from the rest position','the length of one wave','how fast the wave travels'],a:1,e:'Careful: crest to trough is TWICE the amplitude.'},
+ {q:'Which of these cannot travel through a vacuum (empty space)?',o:['Light','X-rays','Sound','Microwaves'],a:2,e:'Sound needs particles to pass the vibration along. Electromagnetic waves can cross a vacuum.'},
+ {q:'A wave has frequency 5 Hz and wavelength 2 m. What is its speed?',o:['2.5 m/s','7 m/s','10 m/s','0.4 m/s'],a:2,e:'v = f × λ = 5 × 2 = 10 m/s.'},
+ {q:'A wave has a period of 0.25 s. What is its frequency?',o:['0.25 Hz','4 Hz','25 Hz','2.5 Hz'],a:1,e:'f = 1 ÷ T = 1 ÷ 0.25 = 4 Hz.'},
+ {q:'An ambulance drives towards you. Compared with when it is still, the siren sounds…',o:['higher pitched (higher frequency)','lower pitched (lower frequency)','exactly the same','quieter only'],a:0,e:'Doppler effect: the wavefronts bunch up in front of a moving source, so the wavelength is shorter and the frequency higher.'},
+ {q:'Which statement about ALL waves is true?',o:['They can be reflected and refracted','They are all transverse','They all need a medium','They all travel at the speed of light'],a:0,e:'Spec 3.9: all waves can be reflected and refracted.'}
+];
+const QN=10;let Q={};
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function startQuiz(){Q={list:shuffle(POOL).slice(0,QN),i:0,score:0};showQ();}
+function showQ(){
+  const box=$('quiz');
+  if(Q.i>=Q.list.length){const pct=Q.score/QN;
+    box.innerHTML=`<div class="score">${Q.score} / ${QN}</div><p style="margin:8px 0 14px">${pct===1?'Perfect. You know your waves.':pct>=0.7?'Good work. Have another go to hit 10/10.':'Re-read the applets and the table, then try again.'}</p><button class="btn" id="again">New quiz</button>`;
+    $('again').onclick=startQuiz;return;}
+  const it=Q.list[Q.i],order=it.o.length===2?[0,1]:shuffle(it.o.map((_,i)=>i));
+  box.innerHTML=`<div class="q-top"><span>Question ${Q.i+1} of ${QN}</span><span>Score: ${Q.score}</span></div>
+    <div class="q-text">${it.q}</div><div class="opts">${order.map(i=>`<button class="opt" data-i="${i}">${it.o[i]}</button>`).join('')}</div>
+    <div class="fb hidden" id="fb"></div><div class="btns hidden" id="nextWrap"><button class="btn" id="next">${Q.i===QN-1?'See score':'Next question'} →</button></div>`;
+  box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const pickI=+b.dataset.i,ok=pickI===it.a;if(ok)Q.score++;
+    box.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.i===it.a)x.classList.add('right');else if(x===b)x.classList.add('wrong');});
+    const fb=$('fb');fb.classList.remove('hidden');fb.classList.toggle('bad',!ok);fb.innerHTML=`<b>${ok?'Correct!':'Not quite.'}</b> ${it.e}`;
+    $('nextWrap').classList.remove('hidden');$('next').onclick=()=>{Q.i++;showQ();};
+  });
+}
+startQuiz();
+</script>
+</body>
+</html>
