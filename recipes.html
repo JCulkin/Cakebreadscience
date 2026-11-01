@@ -15,18 +15,7 @@
 html{-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:16px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto}
 .stripes{display:flex;flex-direction:column}.stripes i{display:block}
-header{background:#111;padding:28px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:relative;overflow:hidden}
-@media(min-width:700px){header{padding:34px 44px 30px}}
-header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--green) 0%,var(--green) 60%,var(--green2) 60%,var(--green2) 72%,var(--green) 72%,var(--green) 100%)}
-header a{text-decoration:none}
-.brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(42px,10vw,80px);font-weight:900;text-transform:uppercase;letter-spacing:-2px;color:var(--cream);line-height:.9;display:flex;align-items:center;gap:0}
-.brand .accent{color:var(--green2)}
-.brand .dot{color:var(--green2);font-size:.6em;margin-left:.08em;line-height:1}
-.hb-right{display:flex;align-items:center;gap:14px;color:#888;font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:3px;font-size:13px}
-.hb-right .home{color:var(--cream);text-decoration:none;border:2px solid var(--cream);padding:6px 12px;line-height:1;transition:all .1s}
-.hb-right .home:hover{background:var(--cream);color:#111}
-@media(max-width:600px){.hb-right .label{display:none}}
-.wrap{max-width:1150px;margin:0 auto;padding:24px 16px 56px}
+.wrap{max-width:1150px;margin:0 auto;padding:18px 16px 56px}
 .back{display:inline-block;margin-bottom:14px;color:var(--green);font-weight:600;text-decoration:none}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(32px,6vw,48px);line-height:1;letter-spacing:-.5px}
 .lede{font-size:17px;max-width:760px;margin-top:10px;color:var(--muted)}
@@ -55,7 +44,11 @@ button{font:inherit;cursor:pointer}
 .grp{background:var(--ink);color:var(--cream);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;padding:6px 12px;position:sticky;top:0;z-index:1;font-family:'Barlow Condensed',sans-serif}
 .row{position:relative;display:flex;justify-content:flex-start;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 32px 10px 12px;color:inherit}
 .row .star{position:absolute;top:8px;right:10px;color:#f0a000;font-size:18px;line-height:1;text-shadow:0 0 1px #111}
-.hero .star{position:absolute;top:12px;right:14px;color:#f0a000;font-size:28px;line-height:1;text-shadow:0 0 2px #000}
+.hero .star{position:absolute;top:12px;right:14px;font-size:30px;line-height:1;background:none;border:0;padding:4px;cursor:pointer;color:rgba(255,255,255,.35);text-shadow:0 0 2px #000;transition:color .15s,transform .1s}
+.hero .star:hover{transform:scale(1.1)}
+.hero .star.on{color:#f0a000}
+.hero .tag.check{cursor:pointer;position:relative}
+.hero .tag.check:hover::after{content:"click to clear";position:absolute;top:100%;left:50%;transform:translateX(-50%);margin-top:4px;background:#111;color:var(--cream);font-size:10px;padding:3px 6px;letter-spacing:.5px;white-space:nowrap;z-index:5}
 .row:hover{background:var(--soft)}
 .row.on{background:#e3f1e6;box-shadow:inset 5px 0 0 var(--green)}
 .row .emo{flex:0 0 26px;font-size:20px;line-height:1;text-align:center}
@@ -116,13 +109,6 @@ ol.steps li.done strong{color:var(--strike)}
 </style>
 </head>
 <body>
-<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
-<header>
-  <h1 class="brand">Recip<span class="accent">es</span><span class="dot">.</span></h1>
-  <div class="hb-right"><a class="home" href="/" title="Cakebread Science">CS</a></div>
-</header>
-<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
-
 <main class="wrap">
   <div class="controls">
     <div class="search">
@@ -522,6 +508,35 @@ function fmtQty(n){
 }
 
 const CAT_ORDER = ["Breads","Mains","Bits","Dressings","Pickles","Preserves","Meat","Sweet"];
+
+// --- Per-recipe overrides, persisted locally ---
+const STORE_KEY = "cakebread-recipes-v1";
+let overrides = {};
+try { overrides = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; } catch(e) { overrides = {}; }
+function saveOverrides(){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(overrides)); } catch(e) {}
+}
+function isStarred(r){
+  const o = overrides[r.id];
+  if(o && typeof o.star === "boolean") return o.star;
+  return !!r.star;
+}
+function hasCheck(r){
+  const o = overrides[r.id];
+  if(o && typeof o.check === "boolean") return o.check;
+  return r.tags.includes("CHECK");
+}
+function toggleStar(id){
+  const r = RECIPES.find(x=>x.id===id);
+  if(!r) return;
+  overrides[id] = Object.assign({}, overrides[id], {star: !isStarred(r)});
+  saveOverrides();
+}
+function clearCheck(id){
+  overrides[id] = Object.assign({}, overrides[id], {check: false});
+  saveOverrides();
+}
+
 let activeId = RECIPES[0].id;
 let scale = {};
 let catFilter = "All";
@@ -557,7 +572,7 @@ function renderList(){
   listEl.innerHTML = "";
   const groups = {};
   RECIPES.forEach(r=>{
-    const show = (catFilter==="All" || r.cat===catFilter) && (!starsOnly || r.star) && matchQuery(r);
+    const show = (catFilter==="All" || r.cat===catFilter) && (!starsOnly || isStarred(r)) && matchQuery(r);
     if(!show) return;
     (groups[r.cat] = groups[r.cat] || []).push(r);
   });
@@ -574,8 +589,8 @@ function renderList(){
     groups[cat].forEach(r=>{
       const b = document.createElement("button");
       b.className = "row" + (r.id===activeId?" on":"");
-      const checkFlag = r.tags.includes("CHECK") ? '<span class="check-flag">CHECK</span>' : '';
-      const starMark = r.star ? '<span class="star" aria-label="favourite">★</span>' : '';
+      const checkFlag = hasCheck(r) ? '<span class="check-flag">CHECK</span>' : '';
+      const starMark = isStarred(r) ? '<span class="star" aria-label="favourite">★</span>' : '';
       b.innerHTML = `<span class="emo">${r.emo||""}</span><div class="meat"><div class="t">${r.title}${checkFlag}</div><div class="s">${r.tags.filter(t=>t!=="CHECK").slice(0,3).join(" · ")}</div></div>${starMark}`;
       b.onclick = ()=>{activeId = r.id; renderList(); renderPanel(); if(window.innerWidth<=820){document.getElementById("panel").scrollIntoView({behavior:"smooth",block:"start"});}};
       listEl.appendChild(b);
@@ -618,6 +633,10 @@ function renderPanel(){
   const label = servings===1 ? r.yieldLabel : r.yieldPlural;
   const origLabel = r.yield===1 ? r.yieldLabel : r.yieldPlural;
 
+  const starOn = isStarred(r);
+  const checkOn = hasCheck(r);
+  // Build tag list from the recipe tags, dropping CHECK if cleared, injecting it where appropriate
+  const tagsForDisplay = r.tags.filter(t => t !== "CHECK");
   el.innerHTML = `
     <div class="hero" style="position:relative">
       <div class="big">${r.emo||""}</div>
@@ -625,10 +644,11 @@ function renderPanel(){
         <h2>${r.title}</h2>
         <div class="tags">
           <span class="tag serv">${r.yield} ${origLabel}</span>
-          ${r.tags.map(t=>`<span class="tag${t==='CHECK'?' check':''}">${t}</span>`).join("")}
+          ${checkOn ? '<span class="tag check" id="checkTag" title="click to clear">CHECK ×</span>' : ''}
+          ${tagsForDisplay.map(t=>`<span class="tag">${t}</span>`).join("")}
         </div>
       </div>
-      ${r.star ? '<span class="star" aria-label="favourite">★</span>' : ''}
+      <button class="star${starOn?' on':''}" id="starBtn" title="${starOn?'remove star':'add star'}" aria-pressed="${starOn}">${starOn?'★':'☆'}</button>
     </div>
     <div class="body">
       <div class="scaler">
@@ -654,6 +674,17 @@ function renderPanel(){
   el.querySelectorAll("ol.steps li[data-s]").forEach(li=>{
     li.onclick = ()=>li.classList.toggle("done");
   });
+
+  // Star toggle on hero
+  const starBtn = el.querySelector("#starBtn");
+  if(starBtn){
+    starBtn.onclick = ()=>{ toggleStar(r.id); renderList(); renderPanel(); };
+  }
+  // Clear CHECK on hero
+  const checkTag = el.querySelector("#checkTag");
+  if(checkTag){
+    checkTag.onclick = ()=>{ clearCheck(r.id); renderList(); renderPanel(); };
+  }
 }
 
 document.getElementById("q").oninput = (e)=>{query = e.target.value.trim(); renderList();};
