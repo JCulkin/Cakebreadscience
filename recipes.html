@@ -106,10 +106,27 @@ ol.steps li.done strong{color:var(--strike)}
 .notes h3{font-size:14px;color:var(--green);margin-bottom:4px;border:0;padding:0}
 
 .empty{padding:40px 20px;text-align:center;color:var(--muted)}
+
+/* Account strip */
+.account{display:flex;justify-content:flex-end;align-items:center;gap:10px;font-size:13px;color:var(--muted);margin-bottom:8px;flex-wrap:wrap}
+.account .ab{background:var(--paper);border:2px solid var(--ink);padding:5px 10px;font-weight:600;font-size:13px;color:var(--ink);line-height:1.1;cursor:pointer;font-family:'Barlow','Arial Narrow',Arial,sans-serif}
+.account .ab:hover{background:var(--soft)}
+.account .status{font-size:12px;text-transform:uppercase;letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;font-weight:700;padding:3px 7px;border:1.5px solid var(--line);background:var(--paper)}
+.account .status.saved{color:var(--green);border-color:var(--green)}
+.account .status.saving{color:#c9a000;border-color:#c9a000}
+.account .status.error{color:#c62828;border-color:#c62828}
+.account .status.local{color:var(--muted)}
+.account .who{font-weight:600;color:var(--ink);font-size:13px}
 </style>
 </head>
 <body>
 <main class="wrap">
+  <div class="account" id="account">
+    <span class="status local" id="acctStatus">Local only</span>
+    <button class="ab" id="signInBtn" hidden>Sign in with Google</button>
+    <span class="who" id="acctWho" hidden></span>
+    <button class="ab" id="signOutBtn" hidden>Sign out</button>
+  </div>
   <div class="controls">
     <div class="search">
       <input id="q" type="search" placeholder="Search by name or ingredient…" autocomplete="off">
@@ -128,6 +145,11 @@ ol.steps li.done strong{color:var(--strike)}
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
 <script>
 const RECIPES = [
@@ -509,33 +531,157 @@ function fmtQty(n){
 
 const CAT_ORDER = ["Breads","Mains","Bits","Dressings","Pickles","Preserves","Meat","Sweet"];
 
-// --- Per-recipe overrides, persisted locally ---
-const STORE_KEY = "cakebread-recipes-v1";
-let overrides = {};
-try { overrides = JSON.parse(localStorage.getItem(STORE_KEY) || "{}") || {}; } catch(e) { overrides = {}; }
-function saveOverrides(){
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(overrides)); } catch(e) {}
-}
-function isStarred(r){
-  const o = overrides[r.id];
-  if(o && typeof o.star === "boolean") return o.star;
-  return !!r.star;
-}
-function hasCheck(r){
-  const o = overrides[r.id];
-  if(o && typeof o.check === "boolean") return o.check;
-  return r.tags.includes("CHECK");
-}
+// --- RecipeStore: localStorage cache + Firestore sync via Google sign-in ---
+// Follows the same pattern as /interactive/physics-long-answer/tracker.js.
+// Shape: data = { "recipe-id": {star?: bool, check?: bool, updatedAt: isoString} }
+// Firestore: users/{uid}.recipes (merged into the user doc, same convention as the other trackers).
+const RecipeStore = (() => {
+  const LOCAL_KEY = "cakebread-recipes-v1";
+  let data = {};
+  let auth = null, db = null, user = null;
+  let firebaseReady = false;
+  let status = "local"; // local | loading | saving | saved | error
+  let pending = new Set();
+  let saveTimer = null;
+  const listeners = [];
+  const emit = () => listeners.forEach(fn => { try { fn(); } catch(e){ console.error(e); } });
+  const setStatus = s => { status = s; emit(); };
+
+  const readLocal = () => {
+    try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}") || {}; }
+    catch(e){ return {}; }
+  };
+  const writeLocal = () => { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(data)); } catch(e){} };
+
+  const scheduleSave = () => {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(flush, 400);
+  };
+  const flush = async () => {
+    saveTimer = null;
+    if (!firebaseReady || !user || !db || pending.size === 0) return;
+    const ids = [...pending]; pending = new Set();
+    const patch = {};
+    ids.forEach(id => { patch[id] = data[id]; });
+    setStatus("saving");
+    try {
+      await db.collection("users").doc(user.uid).set({
+        email: user.email || null,
+        displayName: user.displayName || null,
+        lastAccess: new Date().toISOString(),
+        recipes: patch
+      }, { merge: true });
+      setStatus(pending.size ? "saving" : "saved");
+    } catch(e) {
+      console.error("Save failed", e);
+      setStatus("error");
+    }
+  };
+
+  const loadRemote = async () => {
+    if (!firebaseReady || !user || !db) return;
+    setStatus("loading");
+    try {
+      const snap = await db.collection("users").doc(user.uid).get();
+      const remote = snap.exists ? (snap.data().recipes || {}) : {};
+      // Merge: newest updatedAt wins per recipe. Local-only entries queue to save.
+      const merged = Object.assign({}, remote);
+      let localWon = false;
+      for (const id in data) {
+        const l = data[id];
+        const r = remote[id];
+        if (!r || (l.updatedAt && (!r.updatedAt || l.updatedAt > r.updatedAt))) {
+          merged[id] = l;
+          localWon = true;
+          pending.add(id);
+        }
+      }
+      data = merged;
+      writeLocal();
+      setStatus(localWon ? "saving" : "saved");
+      if (localWon) scheduleSave();
+      emit();
+    } catch(e) {
+      console.error("Load failed", e);
+      setStatus("error");
+    }
+  };
+
+  const onUser = async (u) => {
+    user = u || null;
+    if (user) await loadRemote();
+    else setStatus("local");
+    emit();
+  };
+
+  return {
+    get status(){ return status; },
+    get user(){ return user; },
+    get available(){ return firebaseReady; },
+    isStarred(r){
+      const o = data[r.id];
+      if (o && typeof o.star === "boolean") return o.star;
+      return !!r.star;
+    },
+    hasCheck(r){
+      const o = data[r.id];
+      if (o && typeof o.check === "boolean") return o.check;
+      return r.tags.includes("CHECK");
+    },
+    setStar(id, val){
+      data[id] = Object.assign({}, data[id] || {}, { star: val, updatedAt: new Date().toISOString() });
+      writeLocal();
+      pending.add(id);
+      scheduleSave();
+      emit();
+    },
+    setCheck(id, val){
+      data[id] = Object.assign({}, data[id] || {}, { check: val, updatedAt: new Date().toISOString() });
+      writeLocal();
+      pending.add(id);
+      scheduleSave();
+      emit();
+    },
+    onChange(fn){ listeners.push(fn); },
+    async signIn(){
+      if (!auth) return;
+      try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+      catch(e){ console.error("Sign-in failed", e); }
+    },
+    async signOut(){
+      if (!auth) return;
+      if (pending.size) await flush();
+      await auth.signOut();
+    },
+    init(){
+      data = readLocal();
+      const cfg = window.firebaseConfig;
+      if (!(cfg && cfg.apiKey && window.firebase && firebase.auth && firebase.firestore)) {
+        setStatus("local"); return;
+      }
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(cfg);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        firebaseReady = true;
+        auth.onAuthStateChanged(onUser);
+      } catch(e){
+        console.error("Firebase init failed", e);
+        setStatus("local");
+      }
+      window.addEventListener("beforeunload", () => { if (pending.size && user) flush(); });
+    }
+  };
+})();
+
+function isStarred(r){ return RecipeStore.isStarred(r); }
+function hasCheck(r){ return RecipeStore.hasCheck(r); }
 function toggleStar(id){
   const r = RECIPES.find(x=>x.id===id);
-  if(!r) return;
-  overrides[id] = Object.assign({}, overrides[id], {star: !isStarred(r)});
-  saveOverrides();
+  if (!r) return;
+  RecipeStore.setStar(id, !isStarred(r));
 }
-function clearCheck(id){
-  overrides[id] = Object.assign({}, overrides[id], {check: false});
-  saveOverrides();
-}
+function clearCheck(id){ RecipeStore.setCheck(id, false); }
 
 let activeId = RECIPES[0].id;
 let scale = {};
@@ -689,6 +835,43 @@ function renderPanel(){
 
 document.getElementById("q").oninput = (e)=>{query = e.target.value.trim(); renderList();};
 
+// Account UI
+const signInBtn = document.getElementById("signInBtn");
+const signOutBtn = document.getElementById("signOutBtn");
+const acctStatus = document.getElementById("acctStatus");
+const acctWho = document.getElementById("acctWho");
+const STATUS_LABEL = { local: "Local only", loading: "Loading…", saving: "Saving…", saved: "Synced", error: "Save error" };
+function renderAccount(){
+  const u = RecipeStore.user;
+  const s = RecipeStore.status;
+  if (!RecipeStore.available) {
+    acctStatus.textContent = "Local only";
+    acctStatus.className = "status local";
+    signInBtn.hidden = true;
+    signOutBtn.hidden = true;
+    acctWho.hidden = true;
+    return;
+  }
+  acctStatus.textContent = STATUS_LABEL[s] || s;
+  acctStatus.className = "status " + s;
+  if (u) {
+    signInBtn.hidden = true;
+    acctWho.hidden = false;
+    acctWho.textContent = u.email || u.displayName || "Signed in";
+    signOutBtn.hidden = false;
+  } else {
+    signInBtn.hidden = false;
+    signOutBtn.hidden = true;
+    acctWho.hidden = true;
+  }
+}
+signInBtn.onclick = ()=>RecipeStore.signIn();
+signOutBtn.onclick = ()=>RecipeStore.signOut();
+
+RecipeStore.onChange(()=>{ renderAccount(); renderList(); renderPanel(); });
+RecipeStore.init();
+
+renderAccount();
 renderList();
 renderPanel();
 </script>
