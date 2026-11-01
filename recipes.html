@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Recipes - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--strike:#aaa}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:16px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:auto}
+.stripes{display:flex;flex-direction:column}.stripes i{display:block}
+header{background:#111;padding:22px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:26px 40px 22px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,6vw,44px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1150px;margin:0 auto;padding:24px 16px 56px}
+.back{display:inline-block;margin-bottom:14px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(32px,6vw,48px);line-height:1;letter-spacing:-.5px}
+.lede{font-size:17px;max-width:760px;margin-top:10px;color:var(--muted)}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;line-height:1.05;margin-bottom:4px}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:21px}
+button{font:inherit;cursor:pointer}
+
+.controls{margin:22px 0 14px;display:grid;gap:10px}
+.search{display:flex;border:2px solid var(--ink);background:var(--paper)}
+.search input{flex:1;border:0;padding:11px 14px;font:inherit;font-size:16px;background:transparent;min-width:0}
+.search input:focus{outline:none}
+.search .count{padding:11px 14px;background:var(--ink);color:var(--cream);font-weight:600;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--soft);border:2px solid var(--ink);padding:5px 12px;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.5px;font-family:'Barlow Condensed',sans-serif;color:var(--ink);line-height:1.2}
+.chip:hover{background:var(--cream)}
+.chip.on{background:var(--ink);color:var(--cream)}
+
+.grid{display:grid;grid-template-columns:340px 1fr;gap:16px;margin-top:16px;align-items:start}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+
+.list{background:var(--paper);border:2px solid var(--ink);max-height:72vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+@media(max-width:820px){.list{max-height:50vh}}
+.grp{background:var(--ink);color:var(--cream);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1.5px;padding:6px 12px;position:sticky;top:0;z-index:1;font-family:'Barlow Condensed',sans-serif}
+.row{position:relative;display:flex;justify-content:flex-start;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 32px 10px 12px;color:inherit}
+.row .star{position:absolute;top:8px;right:10px;color:#f0a000;font-size:18px;line-height:1;text-shadow:0 0 1px #111}
+.hero .star{position:absolute;top:12px;right:14px;color:#f0a000;font-size:28px;line-height:1;text-shadow:0 0 2px #000}
+.row:hover{background:var(--soft)}
+.row.on{background:#e3f1e6;box-shadow:inset 5px 0 0 var(--green)}
+.row .emo{flex:0 0 26px;font-size:20px;line-height:1;text-align:center}
+.row .meat{flex:1;min-width:0}
+.row .t{font-weight:600;font-size:15px;line-height:1.2}
+.row .s{font-size:12px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.panel{background:var(--paper);border:2px solid var(--ink);min-height:300px}
+.panel .bar{display:flex;height:6px}.panel .bar i{display:block}
+.panel .in{padding:0}
+.hero{display:flex;align-items:center;gap:16px;padding:18px 20px;background:linear-gradient(90deg,var(--green) 0%,var(--green) 55%,var(--ink) 55%,var(--ink) 100%);color:var(--cream);position:relative;overflow:hidden}
+.hero .big{font-size:64px;line-height:1;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
+.hero .ht{flex:1;min-width:0}
+.hero h2{color:var(--cream)}
+.hero .tag.serv{background:var(--cream);color:var(--green);border-color:var(--cream)}
+.hero .tag{background:transparent;color:var(--cream);border-color:var(--cream)}
+.body{padding:16px 20px 24px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 8px;background:var(--cream);border:1px solid var(--ink);font-family:'Barlow Condensed',sans-serif}
+.tag.serv{background:var(--green);color:var(--cream);border-color:var(--green)}
+.tag.check{background:#c62828;color:var(--cream);border-color:#c62828}
+.row .check-flag{display:inline-block;background:#c62828;color:var(--cream);font-size:9px;font-weight:700;padding:1px 5px;letter-spacing:1px;margin-left:6px;vertical-align:middle;font-family:'Barlow Condensed',sans-serif}
+
+.scaler{display:flex;align-items:stretch;gap:0;margin:14px 0 6px;border:2px solid var(--ink);width:max-content;background:var(--paper)}
+.scaler .lbl{padding:8px 12px;background:var(--ink);color:var(--cream);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;display:flex;align-items:center}
+.scaler button{background:var(--soft);border:0;padding:0 16px;font-weight:700;font-size:22px;border-left:2px solid var(--ink);color:var(--ink);line-height:1;min-width:44px}
+.scaler button:hover{background:var(--cream)}
+.scaler button:active{background:var(--green);color:var(--cream)}
+.scaler .n{padding:8px 14px;font-weight:700;font-size:16px;min-width:100px;text-align:center;background:var(--paper);border-left:2px solid var(--ink);font-variant-numeric:tabular-nums;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px}
+.scale-hint{font-size:12px;color:var(--muted);margin-top:4px}
+
+.sect{margin-top:18px}
+.sect h3{margin-bottom:8px;color:var(--green);border-bottom:2px solid var(--ink);padding-bottom:4px}
+.subhead{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:15px;letter-spacing:1px;margin:12px 0 6px;color:var(--ink)}
+
+ul.ings,ol.steps{list-style:none}
+ul.ings li{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px dashed var(--line);cursor:pointer;line-height:1.4}
+ul.ings li:last-child{border-bottom:0}
+ul.ings .box{flex:0 0 18px;height:18px;border:2px solid var(--ink);background:var(--paper);margin-top:2px;position:relative}
+ul.ings li.done .box::after{content:"";position:absolute;inset:1px;background:var(--green)}
+ul.ings li.done{color:var(--strike);text-decoration:line-through}
+ul.ings .q{font-weight:700;font-variant-numeric:tabular-nums;min-width:80px}
+ul.ings .q.scaled{color:var(--green)}
+
+ol.steps{counter-reset:s;margin-top:4px}
+ol.steps li{counter-increment:s;display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px dashed var(--line);cursor:pointer;line-height:1.45}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(s);flex:0 0 28px;height:28px;border:2px solid var(--ink);background:var(--paper);font-weight:700;font-family:'Barlow Condensed',sans-serif;display:flex;align-items:center;justify-content:center;font-size:16px}
+ol.steps li.done::before{background:var(--green);color:var(--cream);border-color:var(--green)}
+ol.steps li.done{color:var(--strike)}
+ol.steps strong{color:var(--ink)}
+ol.steps li.done strong{color:var(--strike)}
+
+.notes{margin-top:14px;background:var(--soft);border-left:4px solid var(--green);padding:10px 14px;font-size:14.5px}
+.notes h3{font-size:14px;color:var(--green);margin-bottom:4px;border:0;padding:0}
+
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Recipes</span></header>
+<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
+
+<main class="wrap">
+  <a class="back" href="/test.html">← Back to testing</a>
+  <h1>Recipes</h1>
+  <p class="lede">A working kitchen notebook. Click a recipe, scale the servings, tick off ingredients as you weigh them and steps as you work.</p>
+
+  <div class="controls">
+    <div class="search">
+      <input id="q" type="search" placeholder="Search by name or ingredient…" autocomplete="off">
+      <span class="count" id="count">0</span>
+    </div>
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="grid">
+    <div class="list" id="list"></div>
+    <div class="panel" id="panel">
+      <div class="bar"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div>
+      <div class="in" id="panelIn"><div class="empty">Pick a recipe from the list.</div></div>
+    </div>
+  </div>
+</main>
+
+<div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+
+<script>
+const RECIPES = [
+  // ===== BREADS =====
+  {id:"sourdough-bread",title:"Sourdough bread",cat:"Breads",emo:"🍞",tags:["Sourdough","Overnight"],yield:1,yieldLabel:"loaf",yieldPlural:"loaves",
+    ings:[{q:500,u:"g",name:"strong bread flour"},{q:350,u:"g",name:"water (room temp)"},{q:100,u:"g",name:"active starter (bubbly, doubled)"},{q:10,u:"g",name:"salt"}],
+    steps:[{h:"Mix",t:"Combine flour, water and starter until no dry bits. Rest 30 min, add salt, mix or fold until smooth."},{h:"Strengthen",t:"3–4 stretch-and-folds over 2 hrs, every 30 min, then cover."},{h:"Bulk",t:"Leave 8–10 hrs at room temp until airy and roughly doubled."},{h:"Shape",t:"Turn out, shape gently, place seam-side up in floured banneton."},{h:"Proof",t:"Rest 1–2 hrs at room temp, or fridge 8–12 hrs for flavour."},{h:"Bake",t:"Preheat oven 230 °C with Dutch oven. Score top, bake 20 min lid on, 20–25 min lid off."},{h:"Cool",t:"Wire rack, at least 1 hr before slicing."}]},
+  {id:"sourdough-lazy-chia",title:"Sourdough - lazy chia bread",cat:"Breads",emo:"🥖",tags:["Sourdough","Easy","No knead"],yield:1,yieldLabel:"loaf",yieldPlural:"loaves",
+    ings:[{q:100,u:"g",name:"starter (100% hydration)"},{q:350,u:"g",name:"flour (bread flour best)"},{q:250,u:"g",name:"water (260 for wetter dough)"},{q:8,u:"g",name:"salt"}],
+    steps:[{t:"Mix everything in one bowl until no dry flour."},{t:"Cover and leave 6–8 hrs at room temp (cooler room → 8, warmer → 6)."},{t:"Preheat oven + pot to 220 °C fan (or 230 °C no-fan) for 20–30 min."},{t:"Scrape and pour dough into the hot pot (no shaping)."},{t:"Bake covered 25 min, uncovered 15–20 min."}],
+    notes:"If dough is very bubbly before 6 hrs, bake earlier. For less sour: 240 g water, cooler ferment. For undercooked centre: 200 °C fan + 5–10 min extra."},
+  {id:"sourdough-shortbread",title:"Sourdough shortbread biscuits",cat:"Breads",emo:"🍪",tags:["Sourdough","Discard","Biscuit"],yield:12,yieldLabel:"biscuit",yieldPlural:"biscuits",
+    ings:[{q:100,u:"g",name:"sourdough discard"},{q:100,u:"g",name:"butter (soft)"},{q:50,u:"g",name:"sugar (white or icing)"},{q:150,u:"g",name:"plain flour"},{q:null,u:"",name:"pinch salt"},{q:null,u:"",name:"optional: vanilla, lemon zest, or cinnamon"}],
+    steps:[{t:"Cream butter and sugar until smooth."},{t:"Stir in discard until fully mixed."},{t:"Add flour and salt, mix just until it forms a dough. Don't overwork."},{t:"Chill 30 min for easier handling."},{t:"Roll 0.5–1 cm thick, cut shapes."},{t:"Bake 170 °C no fan, 15–20 min, until pale gold at edges."},{t:"Cool on rack — crisps as it cools."}]},
+  {id:"sourdough-pancakes",title:"Sourdough pancakes",cat:"Breads",emo:"🥞",tags:["Sourdough","Breakfast"],yield:8,yieldLabel:"pancake",yieldPlural:"pancakes",
+    ings:[{q:300,u:"g",name:"sourdough starter or discard"},{q:150,u:"g",name:"flour (wheat, rye, or mix)"},{q:300,u:"g",name:"milk or water"},{q:2,u:"",name:"eggs"},{q:1,u:"tsp",name:"salt"},{q:1,u:"tsp",name:"baking powder (or ½ tsp soda + 2 tsp vinegar)"},{q:2,u:"tbsp",name:"olive oil or melted butter"}],
+    steps:[{t:"Whisk starter, milk, eggs and oil."},{t:"Add flour, salt and baking powder. Mix smooth."},{t:"Fold in any add-ins."},{t:"Rest 15–30 min."},{t:"Cook on lightly oiled medium pan, 1–2 min per side."}]},
+  {id:"sourdough-pizza",title:"Sourdough pizza",cat:"Breads",emo:"🍕",tags:["Sourdough","Pizza"],yield:2,yieldLabel:"pizza",yieldPlural:"pizzas",
+    ings:[{q:200,u:"g",name:"starter"},{q:250,u:"g",name:"flour (bread if you have it)"},{q:125,u:"g",name:"water"},{q:8,u:"g",name:"salt"},{q:10,u:"g",name:"olive oil"}],
+    steps:[{h:"Mix",t:"Combine starter, water, salt and olive oil. Add flour, mix shaggy. Rest 30 min, optional short knead or 2 stretch-and-folds."},{h:"Bulk",t:"Cover, leave 4–6 hrs at room temp (or overnight fridge) until puffy."},{h:"Divide & ball",t:"Divide into 2–3 balls, tuck edges under. Oil, cover, rest 1–2 hrs (or fridge up to 24 hrs)."},{h:"Shape",t:"Flour surface, press from centre out. Lift and stretch by hand to ~25 cm."},{h:"Oven",t:"Sauce, cheese, toppings — light touch. 250 °C+ for 7–10 min."},{h:"Pan option",t:"Stovetop 2 min (base browns), then grill 5 min."}],
+    notes:"Preheat stone/tray 30 min for crisp base. Add 1 tsp oil to dough and bake at 230 °C for softer chewier crust."},
+  {id:"sourdough-tortillas",title:"Sourdough tortillas",cat:"Breads",emo:"🫓",tags:["Sourdough","Discard","Flatbread"],yield:8,yieldLabel:"tortilla",yieldPlural:"tortillas",
+    ings:[{q:100,u:"g",name:"sourdough discard"},{q:33,u:"g",name:"olive oil"},{q:55,u:"g",name:"water"},{q:144,u:"g",name:"flour"},{q:2,u:"g",name:"salt"}],
+    steps:[{t:"Mix, knead 2–5 min until smooth."},{t:"Rest 30 min (or chill overnight)."},{t:"Divide into 6–8 for large, 10–12 for small."},{t:"Roll thin, cook dry skillet 30–60 sec per side."}]},
+  {id:"soda-bread",title:"Soda Bread",cat:"Breads",emo:"🍞",tags:["Quick","No yeast"],yield:1,yieldLabel:"loaf",yieldPlural:"loaves",
+    ings:[{q:360,u:"g",name:"all-purpose flour"},{q:1,u:"tsp",name:"baking soda"},{q:1,u:"tbsp",name:"baking powder"},{q:1,u:"tsp",name:"salt"},{q:65,u:"g",name:"sugar"},{q:480,u:"ml",name:"buttermilk"},{q:1,u:"",name:"egg"}],
+    steps:[{t:"Mix dry and wet ingredients separately. Gradually stir wet into dry."},{t:"Butter baking tray. Oven 160 °C. 70 min or until the top is golden."}]},
+
+  // ===== MAINS =====
+  {id:"beans-brazilian",title:"Beans - Brazilian",cat:"Mains",emo:"🫘",star:true,tags:["Beans","Pressure cooker","Vegan"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:380,u:"g",name:"pinto beans"},{q:2,u:"",name:"onions, chopped"},{q:3,u:"",name:"garlic cloves, minced"},{q:0.25,u:"tsp",name:"cayenne pepper"},{q:2,u:"tsp",name:"ground coriander"},{q:2,u:"tsp",name:"ground cumin"},{q:1.5,u:"tsp",name:"smoked paprika"},{q:2,u:"tsp",name:"oregano"},{q:0.5,u:"tsp",name:"pepper"},{q:3,u:"",name:"bay leaves"},{q:1,u:"",name:"vegetable stock cube"},{q:2,u:"tbsp",name:"soy sauce"},{q:1,u:"tbsp",name:"red or white wine vinegar"},{q:1,u:"tbsp",name:"balsamic vinegar"},{q:2,u:"tbsp",name:"parsley, chopped"},{q:1500,u:"ml",name:"water"}],
+    steps:[{t:"Soak beans overnight, covered. Change water once."},{t:"Sauté onion until transparent. Add spices and garlic, 1 min."},{t:"Add beans, stock and bay leaves. High pressure 35 min."},{t:"Open up, mash some beans against the side. Cook 15–20 min until thickened, stirring. Optional 5 min before end: add vinegars, marmite and soy."},{t:"Serve with parsley."}]},
+  {id:"beans-heinz",title:"Beans - Heinz style",cat:"Mains",emo:"🫘",tags:["Beans","Quick","British"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:250,u:"g",name:"cooked beans"},{q:1,u:"",name:"garlic clove"},{q:40,u:"g",name:"ketchup"},{q:20,u:"g",name:"tomato paste"},{q:12,u:"g",name:"brown sugar"},{q:3,u:"g",name:"soy sauce"},{q:3,u:"g",name:"balsamic vinegar"},{q:3,u:"g",name:"apple cider vinegar (optional)"},{q:120,u:"g",name:"water"},{q:6,u:"g",name:"cornflour (mix with 10 g cold water)"},{q:1,u:"g",name:"pinch salt"}],
+    steps:[{t:"Sauté garlic in tiny oil."},{t:"Add ketchup, paste, sugar, soy, balsamic, vinegars and water. Simmer 5–8 min."},{t:"Add beans, simmer 10–15 min."},{t:"Add cornflour slurry, cook 2–3 min till glossy. Adjust water/thickness."}]},
+  {id:"beans-spaghetti",title:"Beans with Spaghetti",cat:"Mains",emo:"🍝",tags:["Pasta","Beans","Comfort"],yield:3,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:350,u:"g",name:"cooked pinto beans"},{q:1,u:"",name:"medium onion, chopped"},{q:3,u:"",name:"garlic cloves, chopped"},{q:1,u:"",name:"carrot, diced (optional)"},{q:1,u:"",name:"celery stick (optional)"},{q:2,u:"tbsp",name:"olive oil"},{q:1,u:"tbsp",name:"tomato paste, heaped"},{q:1,u:"",name:"can chopped tomatoes (or 250 ml passata)"},{q:1,u:"tsp",name:"oregano"},{q:0.5,u:"tsp",name:"basil or thyme"},{q:null,u:"",name:"salt and black pepper"},{q:null,u:"",name:"splash vinegar or lemon (optional)"},{q:300,u:"g",name:"spaghetti"}],
+    steps:[{t:"Split the beans: blend half (≈175 g) with a splash of water/stock until smooth."},{t:"Sauté onion (and carrot + celery) in olive oil 8–10 min. Add garlic 1 min. Add tomato paste, cook 1–2 min."},{t:"Add tomatoes/passata, oregano, basil/thyme, salt and pepper. Simmer 5 min."},{t:"Stir in the blended beans to thicken. Simmer 10–15 min gently."},{t:"Adjust seasoning. Splash of vinegar/lemon if dull. Toss with spaghetti, finish with oil or cheese."}]},
+  {id:"broth-thai-coconut",title:"Broth - Thai coconut & veg",cat:"Mains",emo:"🍜",tags:["Thai","Soup","Noodles"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1.5,u:"tbsp",name:"Thai red curry paste"},{q:1,u:"tsp",name:"vegetable oil"},{q:1000,u:"ml",name:"vegetable stock"},{q:400,u:"ml",name:"half-fat coconut milk"},{q:2,u:"tsp",name:"brown sugar"},{q:175,u:"g",name:"medium egg noodles"},{q:2,u:"",name:"carrots, matchsticks"},{q:0.5,u:"",name:"head Chinese leaf, sliced"},{q:150,u:"g",name:"beansprouts"},{q:6,u:"",name:"cherry tomatoes, halved"},{q:1,u:"",name:"lime, juiced"},{q:3,u:"",name:"spring onions, finely sliced"},{q:null,u:"",name:"handful coriander, chopped"}],
+    steps:[{t:"Fry paste in oil 1 min until fragrant."},{t:"Add stock, coconut milk and brown sugar. Simmer 3 min."},{t:"Add noodles, carrots and Chinese leaf. Simmer 5 min until tender."},{t:"Mix in beansprouts and tomatoes."},{t:"Serve with lime, spring onions and coriander."}]},
+  {id:"broth-ramen",title:"Broth - OG ramen",cat:"Mains",emo:"🍜",tags:["Japanese","Soup","Quick"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:300,u:"ml",name:"water"},{q:700,u:"ml",name:"stock"},{q:3,u:"",name:"garlic cloves, roughly chopped"},{q:null,u:"",name:"ginger, roughly chopped"},{q:4,u:"tbsp",name:"soy sauce"},{q:1,u:"tsp",name:"Worcestershire sauce"},{q:0.5,u:"tsp",name:"Chinese five spice"},{q:null,u:"",name:"pinch chilli powder"},{q:null,u:"",name:"sesame oil"},{q:null,u:"",name:"optional sugar"}],
+    steps:[{t:"Mix all (except sugar) and simmer 5 min."},{t:"Add sugar or extra soy to taste."}]},
+  {id:"brussel-sprouts",title:"Brussel sprouts",cat:"Mains",emo:"🥬",tags:["Side","Quick"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"Brussels sprouts, halved"},{q:null,u:"",name:"oil"},{q:null,u:"",name:"vinegar"},{q:null,u:"",name:"pine nuts or almonds"}],
+    steps:[{t:"Heat pan first, then oil."},{t:"Add halved sprouts, shake to get flat-side down. Leave 5–8 min."},{t:"Add seasoning, stir 6–8 min."},{t:"Off heat, stir in vinegar then pine nuts or almonds."}]},
+  {id:"bubble-squeak",title:"Bubble and Squeak (Ruguessa)",cat:"Mains",emo:"🥔",tags:["British","Baked","Potato"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:5,u:"",name:"potatoes"},{q:0.5,u:"",name:"cabbage"},{q:4,u:"",name:"carrots"},{q:7,u:"",name:"garlic cloves"},{q:null,u:"",name:"butter, lots"},{q:null,u:"",name:"grated cheese"}],
+    steps:[{t:"Boil carrot a few min, add potato, boil 5 min, then cabbage."},{t:"Once potato soft, drain thoroughly."},{t:"Mash with butter, grated cheese, chopped garlic, salt and pepper."},{t:"Lay in a buttered casserole dish. Top with grated cheese."},{t:"Oven 200 °C, 40 min."},{t:"Cool 5 min to firm up before serving."}]},
+  {id:"cabbage-braised",title:"Cabbage - braised",cat:"Mains",emo:"🥬",tags:["Side","Asian"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"",name:"cabbage"},{q:null,u:"",name:"onion and garlic"},{q:200,u:"ml",name:"stock"},{q:2,u:"tbsp",name:"rice vinegar"},{q:2,u:"tbsp",name:"soy sauce"},{q:1,u:"tbsp",name:"honey"}],
+    steps:[{t:"Sauté onion then garlic, then cabbage."},{t:"Add liquids. Cover 20 min on medium."},{t:"Uncover last 5–10 min for evaporation."},{t:"Rest 5 min before serving."}]},
+  {id:"cauliflower-korean-bbq",title:"Cauliflower - Korean BBQ",cat:"Mains",emo:"🥦",tags:["Korean","Vegetarian","Spicy"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:3,u:"tbsp",name:"vegetable oil"},{q:2,u:"",name:"garlic cloves, minced"},{q:1300,u:"g",name:"cauliflower florets"},{q:2,u:"tbsp",name:"soy sauce"},{q:4,u:"tbsp",name:"brown sugar"},{q:2,u:"tbsp",name:"gochujang"},{q:null,u:"",name:"small piece ginger, grated"},{q:1,u:"tbsp",name:"rice vinegar"},{q:2,u:"tbsp",name:"cornstarch"},{q:null,u:"",name:"sesame seeds"}],
+    steps:[{t:"Cook scallions 2 min, add cauliflower 7 min, add garlic."},{t:"Mix other ingredients, add and stir constantly until thick, 3 min."},{t:"Finish with sesame seeds."}]},
+  {id:"chow-mein-prawn",title:"Chow mein - prawn",cat:"Mains",emo:"🦐",tags:["Chinese","Noodles","Quick"],yield:3,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:250,u:"g",name:"king prawns, peeled and deveined"},{q:1,u:"tsp",name:"rice cooking wine (optional)"},{q:300,u:"g",name:"fresh egg noodles"},{q:1,u:"tbsp",name:"garlic, finely chopped"},{q:0.5,u:"",name:"onion, thin slices"},{q:1,u:"",name:"carrot, julienne"},{q:1,u:"",name:"bell pepper, julienne"},{q:3,u:"",name:"spring onions, 2\" pieces"},{q:120,u:"g",name:"bean sprouts"},{q:1,u:"",name:"red chilli, thin slices (optional)"},{q:3,u:"tbsp",name:"vegetable oil"},{head:"Sauce"},{q:2,u:"tbsp",name:"light soy sauce"},{q:2,u:"tsp",name:"dark soy sauce"},{q:4,u:"tbsp",name:"oyster sauce"},{q:1,u:"tsp",name:"sesame oil"},{q:1,u:"tbsp",name:"sugar"}],
+    steps:[{t:"Mix sauce ingredients. Set aside."},{t:"Season prawns with salt, pepper and rice wine. Sauté 2–3 min, set aside."},{t:"Boil noodles per packet, or use fresh egg noodles."},{t:"Sauté garlic a few seconds, medium heat. Add onion, carrot and pepper, stir-fry 1 min."},{t:"Add noodles and sauce, toss and cook 2–3 min on medium-high. Add prawns, spring onions, beansprouts and chilli. Toss and cook 1–2 min more."}]},
+  {id:"chorizo-seitan",title:"Chorizo seitan",cat:"Mains",emo:"🌶️",tags:["Vegan","Marinade","Spicy"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:300,u:"g",name:"seitan"},{q:2,u:"tbsp",name:"cornstarch"},{q:1.5,u:"tbsp",name:"apple cider vinegar"},{q:1,u:"tbsp",name:"soy sauce"},{q:2,u:"tsp",name:"chilli powder"},{q:2,u:"tsp",name:"smoked paprika"},{q:1.5,u:"tsp",name:"cumin"},{q:1.5,u:"tsp",name:"garlic powder"},{q:1.5,u:"tsp",name:"salt"},{q:0.5,u:"tsp",name:"oregano"},{q:0.5,u:"tsp",name:"cayenne"}],
+    steps:[{t:"Marinate the seitan in the wet ingredients, then dust and cook with the dry spices."}]},
+  {id:"curry-katsu",title:"Curry - Katsu",cat:"Mains",emo:"🍛",tags:["Japanese","Curry","Vegan"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"",name:"onion, finely chopped"},{q:2,u:"",name:"garlic cloves, finely chopped"},{q:5,u:"cm",name:"ginger, finely chopped"},{q:1,u:"",name:"medium carrot, finely chopped"},{q:30,u:"g",name:"fresh coriander, stalks chopped and leaves reserved"},{q:1,u:"tsp",name:"garam masala"},{q:1,u:"tsp",name:"medium curry powder"},{q:1,u:"tsp",name:"ground turmeric"},{q:800,u:"ml",name:"boiling water"},{q:2,u:"tbsp",name:"plain flour (optional, to thicken)"}],
+    steps:[{t:"Fry onion, garlic, ginger, carrot and coriander stalks in 1 tbsp olive oil with the spices, medium-low 15 min until starting to caramelise."},{t:"Optional: stir in flour, cook 1 min before adding water."},{t:"Add 800 ml boiling water, simmer 15 min until sauce consistency."},{t:"Taste, season, finish with coriander leaves."}]},
+  {id:"chana-masala",title:"Curry - Chickpea (Chana Masala)",cat:"Mains",emo:"🍛",tags:["Indian","Curry","Vegan"],yield:5,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{head:"Garam masala"},{q:1,u:"tsp",name:"cumin seeds"},{q:0.5,u:"tsp",name:"coriander seeds"},{q:0.5,u:"tsp",name:"black peppercorns"},{q:0.5,u:"tsp",name:"mustard seeds"},{q:0.5,u:"tsp",name:"fenugreek seeds"},{q:1,u:"",name:"cinnamon stick"},{q:1,u:"",name:"black cardamom pod"},{head:"Curry"},{q:2,u:"",name:"cans chickpeas, drained"},{q:1,u:"",name:"can tomatoes"},{q:100,u:"g",name:"diced chillies (2–4 chillies)"},{q:1,u:"tbsp",name:"garam masala (from above)"},{q:0.5,u:"tsp",name:"turmeric"},{q:8,u:"",name:"green cardamom pods"},{q:2,u:"",name:"bay leaves"},{q:1,u:"tbsp",name:"tomato paste"},{q:4,u:"",name:"garlic cloves"},{q:1,u:"",name:"large thumb ginger"},{q:1,u:"",name:"large onion"},{q:1,u:"tbsp",name:"rice vinegar or lemon juice"},{q:null,u:"",name:"fresh coriander, to serve"}],
+    steps:[{h:"Masala powder",t:"Dry-fry seeds (cumin, coriander, mustard, fenugreek), peppercorns, black cardamom, cinnamon stick. Blend to powder."},{h:"Curry",t:"Medium heat: cook masala powder and turmeric in oil/ghee until fragrant."},{t:"Add ginger and garlic 2 min. Add onion and chilli, 5 min."},{t:"Add chickpeas, tomatoes and 1 can water. Simmer 30 min."},{t:"Second pan: oil, green cardamom and bay leaf, 1 min."},{t:"Add tomato paste, cook 2 min."},{t:"Combine with the chickpea mixture. Add sugar, salt and lemon/vinegar."},{t:"Finish with fresh coriander. Serve over basmati rice."}]},
+  {id:"curry-daal",title:"Curry - daal",cat:"Mains",emo:"🍛",tags:["Indian","Lentils","Vegan"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"red lentils"},{q:6,u:"",name:"garlic cloves, crushed"},{q:25,u:"g",name:"ginger, chopped"},{q:4,u:"",name:"green chillies (2 chopped, 2 whole)"},{q:2,u:"tbsp",name:"ghee or oil"},{q:2,u:"",name:"medium onions, sliced"},{q:1,u:"tbsp",name:"cumin seeds"},{q:1,u:"tbsp",name:"turmeric"},{q:1,u:"tsp",name:"mustard seeds"},{q:1,u:"tsp",name:"crushed chilli"},{q:null,u:"",name:"salt"},{q:null,u:"",name:"coriander"}],
+    steps:[{t:"Rinse lentils. In pot: 1.5 L water, garlic, ginger, turmeric, chopped chillies, salt."},{t:"Hard boil 5 min, then simmer 20–25 min till soft."},{t:"Add whole chillies, simmer 5 min."},{t:"Meanwhile fry onions in ghee to deep golden. Add cumin, mustard, crushed chilli. Fry 1–2 min till seeds pop."},{t:"Stir into daal. Adjust salt and water, finish with coriander."}]},
+  {id:"curry-mild-veg",title:"Curry - mild vegetable",cat:"Mains",emo:"🍛",tags:["Curry","Vegan","Batch"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:300,u:"g",name:"lentils"},{q:3,u:"",name:"medium onions, sliced"},{q:5,u:"",name:"garlic cloves, minced"},{q:2,u:"",name:"thumbs ginger, grated"},{q:1200,u:"g",name:"mixed veg (carrot, celery, courgette, aubergine, pepper, squash, beans, cauliflower)"},{q:4,u:"",name:"large handfuls spinach or greens"},{q:1000,u:"ml",name:"vegetable stock"},{q:2,u:"tsp",name:"turmeric"},{q:2,u:"tsp",name:"cumin"},{q:2,u:"tsp",name:"coriander"},{q:2,u:"tsp",name:"mild curry powder or paprika (optional)"},{q:200,u:"ml",name:"coconut milk or yoghurt (optional)"}],
+    steps:[{t:"Fry onions in oil 6–8 min until soft."},{t:"Add garlic and ginger, fry 2 min."},{t:"Stir in spices, fry 30 sec."},{t:"Add chopped veg and salt, stir well."},{t:"Pour in stock, boil, simmer 25–30 min until tender."},{t:"Add spinach/greens last 5 min."},{t:"Stir in coconut milk or yoghurt if using. Adjust salt. Serve with rice or flatbread."}]},
+  {id:"ensaladilla-rusa",title:"Ensaladilla Rusa",cat:"Mains",emo:"🥔",tags:["Spanish","Salad","Cold"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1000,u:"g",name:"potatoes"},{q:500,u:"g",name:"carrots"},{q:500,u:"g",name:"green beans"},{q:250,u:"g",name:"peas"},{q:250,u:"g",name:"beets (optional)"},{q:2,u:"",name:"eggs"},{q:1,u:"tbsp",name:"capers"},{q:160,u:"ml",name:"olive oil"},{q:null,u:"",name:"splash sherry vinegar"},{q:1,u:"",name:"can tuna"}],
+    steps:[{h:"Mayonnaise",t:"Separate yolk and white. Beat yolk with salt and vinegar."},{t:"Slowly add olive oil, beating quickly. Save ¼ for decoration."},{t:"Beat egg white to stiff peaks separately. Slowly fold into ¾ of the yolk mix."},{h:"Veg",t:"Boil potatoes and carrots from cold till tender. Cool and chunk."},{t:"Boil peas and green beans (dice). Hard-boil one egg."},{t:"Boil beets from cold with vinegar. Peel, cube."},{h:"Assemble",t:"Mix half the veg with mayonnaise. Mix rest with yolk-only mayonnaise, decorate top with coloured veg."},{t:"Decorate with capers, leftover beets, sliced hard-boiled egg. Optional shrimp."}]},
+  {id:"frittata",title:"Frittata",cat:"Mains",emo:"🍳",tags:["Eggs","Baked","Breakfast"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"yellow onion, thinly sliced"},{q:2.5,u:"tsp",name:"garlic, minced"},{q:1,u:"tbsp",name:"fresh thyme, finely chopped"},{q:250,u:"g",name:"red potatoes, thinly sliced"},{q:350,u:"g",name:"egg whites"}],
+    steps:[{t:"Sauté everything but the egg whites."},{t:"Cover and steam potatoes low until tender, 8–10 min. Season."},{t:"Remove half the mixture, add egg whites, return half mixture."},{t:"Cook until bottom is opaque, then reduce heat to lowest, cover 15 min until whites set."}]},
+  {id:"jambalaya",title:"Jambalaya - spicy vegan",cat:"Mains",emo:"🌶️",tags:["Cajun","Rice","Spicy"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:3,u:"tbsp",name:"extra virgin olive oil"},{q:1,u:"",name:"large yellow onion, diced"},{q:3,u:"",name:"garlic cloves, chopped"},{q:4,u:"",name:"large celery stalks, diced"},{q:1,u:"tbsp",name:"diced jalapeño, heaped"},{q:800,u:"g",name:"diced fresh tomatoes"},{q:400,u:"g",name:"uncooked rice"},{q:1000,u:"ml",name:"vegetable stock"},{q:2,u:"tsp",name:"worcestershire/tamari/soy"},{q:3,u:"",name:"bay leaves"},{q:0.5,u:"tsp",name:"thyme"},{q:0.5,u:"tsp",name:"oregano"},{q:1,u:"tsp",name:"smoked paprika"},{q:2,u:"tsp",name:"hot sauce (sriracha)"},{q:25,u:"g",name:"coriander, chopped, plus extra to garnish"}],
+    steps:[{t:"Heat oil in a lidded saucepan."},{t:"Sauté onion, celery and jalapeño until onions are translucent, about 3 min."},{t:"Add tomatoes and garlic, cook 1–2 min to soften."},{t:"Add rice, stock, worcestershire, bay, paprika, hot sauce, salt and pepper. Cover, bring to simmer. Cook 20–40 min until rice has absorbed liquid."},{t:"Add seafood 15 min before end if using."},{t:"Stir in fresh coriander. Garnish with extra."}]},
+  {id:"jackfruit-pulled",title:"Jackfruit - pulled",cat:"Mains",emo:"🌯",tags:["Vegan","BBQ","Low-cook"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"",name:"red onion, finely chopped"},{q:1,u:"tsp",name:"ground cinnamon"},{q:1,u:"tsp",name:"cumin seeds"},{q:2,u:"tsp",name:"smoked paprika"},{q:2,u:"tsp",name:"chipotle hot sauce"},{q:1,u:"tbsp",name:"apple cider vinegar"},{q:4,u:"tbsp",name:"BBQ sauce"},{q:200,u:"g",name:"can chopped tomato"},{q:2,u:"",name:"cans 400g young jackfruit in salted water, drained"},{q:1,u:"",name:"red bell pepper, sliced"}],
+    steps:[{t:"Soak jackfruit in water if in brine. Chop hard cores."},{t:"Heat onion in 1 tbsp veg oil 10–12 min."},{t:"Add cinnamon, cumin and paprika, 2–3 min."},{t:"Add hot sauce, vinegar and BBQ sauce, mix."},{t:"Add tomato, drained jackfruit and 200 ml water. Simmer covered 30 min, mashing with a potato masher every 10–15 min."},{t:"Lid off, add peppers, cook 10 min until sauce is thick and sticky."},{t:"Add another tbsp BBQ sauce / sriracha / soy to taste."}]},
+  {id:"kale-lentil-sweetpotato",title:"Kale and Lentil Stuffed Sweet Potato",cat:"Mains",emo:"🍠",tags:["GF","Vegetarian","Baked"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"",name:"small sweet potatoes"},{q:50,u:"g",name:"dried lentils"},{q:120,u:"ml",name:"water"},{q:1,u:"tsp",name:"olive oil"},{q:4,u:"",name:"garlic cloves, minced"},{q:4,u:"",name:"large kale leaves, sliced into ribbons"},{q:2,u:"tbsp",name:"plain Greek yoghurt"},{q:2,u:"tbsp",name:"parsley, chopped"},{q:null,u:"",name:"black pepper"}],
+    steps:[{t:"Bake pierced potatoes in foil 30 min, or until tender."},{t:"Simmer lentils 15–20 min, absorbing all water."},{t:"Fry garlic and kale in oil 2 min. Add lentils and stir."},{t:"Add to potatoes. Top with yoghurt, parsley and black pepper."}]},
+  {id:"lasagna-mushroom-spinach",title:"Lasagna - Mushroom & Spinach",cat:"Mains",emo:"🧀",tags:["Pasta","Baked","Vegetarian"],yield:3,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:3,u:"tbsp",name:"extra virgin olive oil"},{q:0.5,u:"",name:"large yellow onion, chopped"},{q:2,u:"",name:"garlic cloves, minced"},{q:350,u:"g",name:"lasagna sheets"},{q:250,u:"g",name:"mushrooms, sliced"},{q:3,u:"tbsp",name:"flour"},{q:500,u:"ml",name:"vegetable stock"},{q:180,u:"ml",name:"milk"},{q:90,u:"g",name:"spinach"},{q:300,u:"g",name:"parmesan, shredded"}],
+    steps:[{t:"If pasta needs boiling, do so until 5 min before al dente."},{t:"Olive oil medium heat. Add onion, garlic, salt, pepper, 1 min."},{t:"Add mushrooms, cook until onions translucent and mushrooms shrunk, 4 min."},{t:"Add flour, stir to roux. Cook 1 min."},{t:"Add 60 ml stock, stir to break roux. Thickens quickly. Add rest of stock, mix well."},{t:"Stir in milk, simmer 10–15 min until thick."},{t:"Add spinach, cook 5 min until wilted."},{t:"Off heat, stir in 150 g of the parmesan until melted."},{t:"Assemble: thin sauce on base, alternate pasta/sauce/cheese, finish with cheese."},{t:"Bake 190 °C for 30–35 min until bubbly."}]},
+  {id:"pasta-spicy-garlic-ginger",title:"Pasta - Spicy garlic and ginger",cat:"Mains",emo:"🌶️",tags:["Pasta","Spicy","Vegan","CHECK"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:225,u:"g",name:"pasta (fettuccine)"},{q:2,u:"tbsp",name:"sesame oil, plus more for serving"},{q:3,u:"",name:"garlic cloves, finely diced"},{q:1,u:"inch",name:"fresh ginger, finely diced"},{q:3,u:"",name:"green onions, finely diced, whites and greens separated"},{q:170,u:"g",name:"vegan beef crumbles (or cooked lentils)"},{q:2,u:"tbsp",name:"tomato paste"},{q:2,u:"tbsp",name:"low-sodium soy sauce"},{q:2,u:"tbsp",name:"dark soy sauce"},{q:1,u:"tsp",name:"red pepper flakes (1–2, to taste)"},{q:90,u:"g",name:"shredded cabbage"},{q:null,u:"",name:"cilantro, to serve"}],
+    steps:[{t:"Boil pasta per packet. Reserve some pasta water."},{t:"Heat sesame oil medium. Add garlic, ginger and green onion whites, 60 sec."},{t:"Add beef crumbles, tomato paste, both soy sauces, red pepper flakes and a splash of water. Stir, lower heat until pasta is done."},{t:"Transfer pasta to sauce with tongs, add cabbage, toss. Loosen with pasta water as needed."},{t:"Drizzle sesame oil to serve. Top with remaining green onions, cilantro and extra red pepper flakes."}],
+    notes:"Source: thissavoryvegan.com — not yet cooked and verified."},
+  {id:"pasta-one-pot",title:"Pasta, one pot",cat:"Mains",emo:"🍝",tags:["Pasta","Quick","One pot"],yield:3,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:250,u:"g",name:"pasta"},{q:250,u:"g",name:"tomatoes, halved"},{q:2,u:"",name:"garlic cloves, minced"},{q:0.5,u:"",name:"yellow onion, thinly sliced"},{q:1,u:"",name:"courgette"},{q:200,u:"g",name:"mushrooms, sliced"},{q:0.5,u:"tsp",name:"red pepper flakes (optional)"},{q:300,u:"g",name:"pasta sauce"},{q:600,u:"ml",name:"water"},{q:null,u:"",name:"fresh spinach, at end"}],
+    steps:[{t:"Fry the onion first, add everything else and cook about 15 min."}]},
+  {id:"pasta-bake-broccoli",title:"Pasta bake - Cheesy broccoli",cat:"Mains",emo:"🧀",tags:["Pasta","Baked","Quick"],yield:3,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:280,u:"g",name:"penne"},{q:280,u:"g",name:"broccoli, florets"},{q:25,u:"g",name:"butter"},{q:25,u:"g",name:"plain flour"},{q:300,u:"ml",name:"milk"},{q:1,u:"tbsp",name:"wholegrain mustard"},{q:140,u:"g",name:"mature cheddar, grated"}],
+    steps:[{t:"Cook pasta, adding broccoli for the final 4–5 min. Drain well. Heat the grill."},{t:"Melt butter, stir in flour, cook 1 min. Gradually add milk, stirring. Boil, then simmer 2 min. Stir in mustard, half the cheese, season."},{t:"Mix pasta and broccoli into sauce. Spoon into dish. Scatter remaining cheese. Grill 3–4 min until golden and bubbling."}]},
+  {id:"pasta-bake-mushroom-spinach",title:"Pasta bake - Mushroom and Spinach",cat:"Mains",emo:"🍄",tags:["Pasta","Baked","Vegetarian"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:350,u:"g",name:"short pasta (penne, fusilli, rigatoni)"},{q:250,u:"g",name:"mushrooms, sliced"},{q:90,u:"g",name:"spinach"},{q:0.5,u:"",name:"large onion, chopped"},{q:2,u:"",name:"garlic cloves, minced"},{q:3,u:"tbsp",name:"olive oil"},{q:3,u:"tbsp",name:"flour"},{q:720,u:"ml",name:"milk"},{q:250,u:"g",name:"parmesan (or mix mozzarella/cheddar)"},{q:null,u:"",name:"salt, pepper, nutmeg"}],
+    steps:[{t:"Boil pasta just under al dente. Drain."},{t:"Pan: olive oil, onion, garlic, salt/pepper 1 min. Add mushrooms, 4–5 min."},{t:"Stir in flour, cook 1 min. Whisk in milk. Simmer 10 min until thick."},{t:"Add spinach, stir until wilted. Off heat, mix in half the cheese."},{t:"Combine sauce and pasta. Top with remaining cheese (and breadcrumbs if you like)."},{t:"Bake 190 °C, 25–30 min, golden and bubbling."}]},
+  {id:"pasta-bake-cauli-kale-mushroom",title:"Pasta bake - Cauliflower, kale and mushroom",cat:"Mains",emo:"🥦",tags:["Pasta","Baked","Vegetarian"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"",name:"small head cauliflower, florets"},{q:80,u:"g",name:"small potato, thinly sliced"},{q:250,u:"g",name:"wholemeal penne"},{q:2,u:"tbsp",name:"plain white flour"},{q:200,u:"ml",name:"milk (or unsweetened non-dairy)"},{q:200,u:"ml",name:"vegetable stock"},{q:1,u:"tbsp",name:"Dijon mustard"},{q:250,u:"g",name:"chestnut mushrooms, sliced"},{q:5,u:"",name:"garlic cloves, finely chopped"},{q:6,u:"",name:"sprigs fresh thyme, stripped"},{q:100,u:"g",name:"curly kale, chopped"},{head:"Topping"},{q:4,u:"tbsp",name:"breadcrumbs"},{q:30,u:"g",name:"parmesan, grated"},{q:null,u:"",name:"more thyme and a drizzle of olive oil"}],
+    steps:[{t:"Boil cauliflower and potato in salted water 8 min until soft. Remove, keep the water."},{t:"Add pasta to the same water, 5 min to barely al dente. Drain and rinse cold."},{h:"Sauce",t:"Stir 2 tbsp olive oil with flour on medium 1 min. Whisk in milk+stock, cook 2 min. Add mustard and cooked veg, blend smooth."},{t:"Fry mushrooms in olive oil 5 min. Add garlic, thyme and salt, 1 min low."},{t:"Add kale, cover to steam 5–7 min."},{h:"Bake",t:"In a casserole dish mix pasta, mushrooms, kale and sauce. Scatter topping, drizzle oil. 190 °C for 20–30 min until lightly browned."}]},
+  {id:"pasta-brocolli-anchovy",title:"Pasta with mashed broccoli & anchovies",cat:"Mains",emo:"🐟",tags:["Pasta","Italian","Quick"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:750,u:"g",name:"broccoli"},{q:500,u:"g",name:"pasta"},{q:null,u:"",name:"extra virgin olive oil"},{q:2,u:"",name:"garlic cloves, minced"},{q:5,u:"",name:"anchovy fillets, rinsed and chopped"},{q:0.5,u:"tsp",name:"red pepper flakes"},{q:null,u:"",name:"parmesan or pecorino, grated"}],
+    steps:[{t:"Boil broccoli in salty water 5 min. Remove (keep water), dry and chop fine."},{t:"Boil pasta in same water."},{t:"Fry garlic, anchovies and flakes in 2 tbsp oil medium heat. Mash 1 min."},{t:"Stir in broccoli. Add 120 ml pasta water, stir 5 min."},{t:"Serve with oil, cheese and extra pasta water."}]},
+  {id:"patatas-bravas",title:"Patatas Bravas",cat:"Mains",emo:"🥔",tags:["Spanish","Potatoes","Tapas"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"potatoes"},{head:"Aioli"},{q:2,u:"",name:"garlic cloves, minced"},{q:110,u:"g",name:"mayonnaise"},{q:1,u:"tbsp",name:"lemon juice"},{head:"Bravas sauce"},{q:1,u:"",name:"small onion, chopped"},{q:2,u:"",name:"garlic cloves, minced"},{q:1,u:"tbsp",name:"all-purpose flour"},{q:2,u:"tsp",name:"sweet smoked paprika"},{q:1,u:"tsp",name:"hot smoked paprika"},{q:250,u:"ml",name:"stock"},{q:1,u:"",name:"bay leaf"}],
+    steps:[{h:"Aioli",t:"Mash garlic with ¼ tsp salt. Whisk in mayonnaise, lemon juice and 1 tbsp oil until smooth. Refrigerate."},{h:"Bravas",t:"Fry onion 2–3 min in 2 tbsp olive oil. Add garlic 1 min. Stir in flour and paprika until smooth; gradually stir in stock. Add bay leaf. Boil, then simmer 6–8 min until thickened."},{t:"Remove from heat, cool, remove bay leaf. Purée with an immersion blender."},{h:"Potatoes",t:"Cut 3 cm cubes; soak in cold water 30 min. Drain, pat dry. Deep-fry low 8–10 min. Drain, cool."},{t:"Deep-fry hot 4 min. Drain, salt generously."}]},
+  {id:"pommes-anna",title:"Pommes Anna",cat:"Mains",emo:"🥔",tags:["French","Potato","Side"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1500,u:"g",name:"potatoes"},{q:110,u:"g",name:"butter"},{q:2,u:"",name:"garlic cloves"},{q:null,u:"",name:"herbs"}],
+    steps:[{t:"Mandolin potatoes, rinse to remove starch and dry."},{t:"Melt butter with 2 garlic cloves and herbs."},{t:"Butter pan, layer potatoes (spiral from centre, larger outside). Pour melted butter, season."},{t:"Cover with buttered weighted foil. Oven 200 °C for 25 min."},{t:"Uncover, 20 min more. Finish with 5 min grill from above."}]},
+  {id:"potatoes-roast",title:"Potatoes, roast",cat:"Mains",emo:"🥔",tags:["Side","British","Roast"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:450,u:"g",name:"potatoes per person"},{q:null,u:"",name:"fat (goose, duck, oil)"},{q:null,u:"",name:"optional: garlic and herbs"}],
+    steps:[{h:"Parboil",t:"Salted, 10 min until soft but holding. Preheat oil in oven at 230 °C (200 fan)."},{h:"Rough up",t:"Drain and shake."},{h:"Preheat oil",t:"Fat in tray, 5 min in oven until hot."},{h:"Roast",t:"Add potatoes to the hot fat. Roast 40–50 min, flipping halfway, until golden."},{h:"Finish",t:"Add garlic and herbs for the last 10 min."}]},
+  {id:"pho",title:"Pho",cat:"Mains",emo:"🍜",tags:["Vietnamese","Soup","Noodles"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"",name:"onions"},{q:1,u:"",name:"bulb garlic"},{q:1,u:"",name:"4-inch cinnamon stick"},{q:3,u:"",name:"whole cloves"},{q:3,u:"",name:"star anise"},{q:1,u:"tbsp",name:"coriander seeds"},{q:1,u:"",name:"stock cube in 2 L water"},{q:200,u:"g",name:"rice noodles"},{q:300,u:"g",name:"pak choi or spinach"},{q:200,u:"g",name:"sugar snap peas"},{q:null,u:"",name:"large handful dried mushrooms"},{q:4,u:"",name:"carrots"},{q:3,u:"",name:"limes"},{head:"Garnishes"},{q:null,u:"",name:"mung bean sprouts, basil, mint"},{q:null,u:"",name:"sliced spring onion and jalapeño"},{q:null,u:"",name:"lime wedges"}],
+    steps:[{t:"Toast cinnamon, cloves, star anise, coriander seeds, garlic and onion until fragrant and charred, 5 min."},{t:"Simmer with stock, mushrooms and soy/tamari 30 min. Strain all."},{t:"Cook noodles and thin carrots separately."},{t:"Add lime juice, spinach/pak choi, peas. Extra soy. Could add egg. Simmer."},{t:"Serve with noodles and garnish."}]},
+  {id:"paella",title:"Paella",cat:"Mains",emo:"🥘",tags:["Spanish","Rice","Seafood"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1000,u:"ml",name:"vegetable broth"},{q:1,u:"tsp",name:"saffron threads"},{q:1,u:"",name:"medium onion, diced"},{q:1,u:"",name:"red bell pepper, strips"},{q:5,u:"",name:"garlic cloves"},{q:1,u:"",name:"large tomato, diced (or 120 g canned)"},{q:280,u:"g",name:"bomba rice (or arborio)"},{q:1,u:"tsp",name:"smoked paprika"},{q:0.5,u:"tsp",name:"sweet paprika"},{q:null,u:"",name:"thyme and fresh parsley"},{q:100,u:"g",name:"frozen peas, thawed"},{q:null,u:"",name:"lemon wedges"}],
+    steps:[{t:"Break saffron in broth, heat medium until simmering."},{t:"Sauté onion and peppers (2 tbsp oil) 3–5 min. Add garlic, 1 min."},{t:"Add tomato, paprikas, thyme (and cumin), 1–2 min."},{t:"Add rice and tbsp oil, stir 1 min."},{t:"Add broth and pepper. Stop stirring (releases starch → creamy). Add water if dry."},{t:"Medium-high 1–2 min. Medium-low 15–20 min, rotating pan every 7 min."},{t:"Add prawns 5 min before end."},{t:"Socarrat forms with crackling once broth is nearly cooked off, 2 min."},{t:"Off heat, peas on top, rest 6 min, finish with parsley and lemon."}]},
+  {id:"risotto-mushroom",title:"Risotto - Mushroom",cat:"Mains",emo:"🍚",tags:["Risotto","GF","Mushroom"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"tbsp",name:"extra virgin olive oil"},{q:1,u:"",name:"garlic clove, minced"},{q:0.5,u:"",name:"large yellow onion, diced"},{q:350,u:"g",name:"baby portobello mushrooms, sliced"},{q:8,u:"",name:"sprigs fresh thyme (or ½ tsp dried)"},{q:400,u:"g",name:"arborio rice"},{q:240,u:"ml",name:"red wine"},{q:1500,u:"ml",name:"stock (you may not need all)"},{q:60,u:"g",name:"unsalted butter"},{q:50,u:"g",name:"parmesan, grated"}],
+    steps:[{t:"Sauté garlic and onion until translucent, 2 min."},{t:"Add mushrooms, salt and pepper. Sauté until reduced, 5 min."},{t:"Add rice and thyme, toast 1 min."},{t:"Add red wine, deglaze. Cook stirring until absorbed, 10 min."},{t:"Add stock 250 ml at a time, stirring, until al dente."},{t:"Off heat, stir in butter and parmesan. Taste and adjust."}]},
+  {id:"risotto-squash",title:"Risotto - Roasted Squash",cat:"Mains",emo:"🎃",tags:["Risotto","GF","Autumn"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:0.5,u:"",name:"large yellow onion, diced"},{q:1,u:"",name:"large garlic clove, diced"},{q:2,u:"tbsp",name:"fresh sage, chopped"},{q:200,u:"g",name:"arborio rice"},{q:240,u:"ml",name:"dry white wine"},{q:720,u:"ml",name:"vegetable stock"},{q:240,u:"g",name:"roasted squash purée"},{q:60,u:"g",name:"cold unsalted butter"},{q:50,u:"g",name:"shredded parmesan"}],
+    steps:[{t:"Roast squash at 190 °C (170 fan) 1 hr, halved and seeded, skin up. Or cubes 30 min, flipped halfway."},{t:"Heat 2 tbsp olive oil medium. Sauté onion 2 min."},{t:"Add sage, salt, pepper."},{t:"Add rice, toast 2–3 min until translucent at edges."},{t:"Add wine, stir until absorbed, ~10 min."},{t:"Add stock 240 ml at a time until al dente."},{t:"Stir in squash purée."},{t:"Stir in butter and cheese until melted. Finish with sage."}]},
+  {id:"rice-black-hake",title:"Rice (black) with hake",cat:"Mains",emo:"🐟",tags:["Spanish","Rice","Fish"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"merluza (hake) fillets"},{q:500,u:"g",name:"black rice"},{q:1,u:"",name:"onion, diced"},{q:4,u:"",name:"garlic cloves, sliced"},{q:3,u:"",name:"tomatoes, grated (or 1 tin)"},{q:1,u:"tsp",name:"sweet pimentón"},{q:null,u:"",name:"splash white wine"},{q:1100,u:"ml",name:"stock or water"}],
+    steps:[{h:"Rice",t:"Soak 1–1.5 hrs, drain and rinse."},{t:"Toast dry in pan 2 min. Add stock, low simmer lid 25 min."},{t:"Off heat, lid on, rest 10 min."},{h:"Sofrito & fish",t:"Sweat onion in olive oil 10 min. Add garlic 2 min."},{t:"Off heat: add pimentón, 30 sec."},{t:"Splash white wine, reduce 1 min."},{t:"Add tomatoes, simmer 15 min until thick."},{t:"Loosen with water, add fillets into sauce, lid on, medium-low 10–12 min. Don't turn."},{t:"Lid off last 2 min if sauce needs tightening."}]},
+  {id:"salmon-steamed",title:"Salmon, steamed",cat:"Mains",emo:"🐟",tags:["Fish","Quick"],yield:2,yieldLabel:"fillet",yieldPlural:"fillets",
+    ings:[{q:2,u:"",name:"salmon fillets"},{q:null,u:"",name:"dill, lemon, ginger"}],
+    steps:[{t:"Steam 7 min."}]},
+  {id:"salmon-baked",title:"Salmon, baked",cat:"Mains",emo:"🐟",tags:["Fish","Quick"],yield:2,yieldLabel:"fillet",yieldPlural:"fillets",
+    ings:[{q:2,u:"",name:"salmon fillets"},{q:null,u:"",name:"oil or butter"}],
+    steps:[{t:"Brush salmon with oil or butter and season."},{t:"180 °C (160 fan) for 10–15 min, covered or uncovered."}]},
+  {id:"shepherd-pie-veggie",title:"Shepherd pie - Veggie",cat:"Mains",emo:"🥧",tags:["Baked","Lentils","Comfort"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"tbsp",name:"olive oil"},{q:1,u:"",name:"large onion, halved and sliced"},{q:500,u:"g",name:"carrots, cut small"},{q:2,u:"tbsp",name:"thyme, chopped"},{q:100,u:"ml",name:"red wine"},{q:400,u:"g",name:"can chopped tomatoes"},{q:2,u:"",name:"leeks (optional)"},{q:2,u:"",name:"vegetable stock cubes in 600 ml water"},{q:300,u:"g",name:"lentils"},{q:1200,u:"g",name:"sweet potatoes, peeled and chunked"},{q:25,u:"g",name:"butter"},{q:85,u:"g",name:"mature cheddar, grated (or 40 g nutritional yeast)"}],
+    steps:[{t:"Fry onion golden. Add carrot and half the thyme."},{t:"Add wine, tomatoes and stock. Simmer 10 min."},{t:"Add lentils, simmer 10 min."},{t:"Boil potatoes 15 min. Mash with butter and seasoning."},{h:"Assemble",t:"Pour mixture into dish. Optional 10 min butter-fried leek layer. Cover with mash, sprinkle cheese and remaining thyme."},{h:"Bake",t:"190 °C fan for 20 min (or 40 min from chilled)."}]},
+  {id:"soup-broccoli-cheddar",title:"Soup - Broccoli (and mushroom) cheddar",cat:"Mains",emo:"🥣",tags:["Soup","Vegetarian","Cheese"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:3,u:"tbsp",name:"extra virgin olive oil"},{q:0.333,u:"",name:"large yellow onion, chopped"},{q:2,u:"",name:"garlic cloves, chopped"},{q:3,u:"tbsp",name:"all-purpose flour"},{q:0.5,u:"",name:"veg stock cube in 600 ml water"},{q:180,u:"ml",name:"milk"},{q:135,u:"g",name:"broccoli florets"},{q:150,u:"g",name:"sharp white cheddar, shredded"},{q:100,u:"g",name:"mushrooms (optional)"}],
+    steps:[{t:"Oil medium, add onion (and half mushrooms), garlic, salt, pepper, 3 min until translucent."},{t:"Add flour, stir until flour soaks moisture. Cook 1 min."},{t:"Add stock (and remaining mushrooms) gradually. Dissolve lumps."},{t:"Add milk, stir."},{t:"Simmer and add broccoli. 10–15 min until thickened."},{t:"Masher through chunks. Simmer 5 min."},{t:"Off heat, stir in cheese until melted. Garnish extra cheddar."}]},
+  {id:"soup-potato",title:"Soup - potato",cat:"Mains",emo:"🥣",tags:["Soup","Potato","Easy"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"potatoes, chopped"},{q:1,u:"",name:"onion"},{q:2,u:"",name:"garlic cloves"},{q:1,u:"",name:"leek or celery (optional)"},{q:750,u:"ml",name:"vegetable stock"},{q:75,u:"ml",name:"coconut milk"},{q:1,u:"tbsp",name:"oil or butter"}],
+    steps:[{t:"Sauté onion (and leek/celery) in oil 5–7 min."},{t:"Add garlic 1 min."},{t:"Add potatoes and stock."},{t:"Simmer 15–20 min until soft."},{t:"Blend all or part."},{t:"Stir in coconut milk."},{t:"Season and warm gently — don't boil."}]},
+  {id:"soup-pumpkin",title:"Soup - pumpkin",cat:"Mains",emo:"🎃",tags:["Soup","Vegetarian","Autumn"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"",name:"pumpkin, chopped"},{q:2,u:"",name:"onions, chopped"},{q:2,u:"",name:"garlic cloves, chopped"},{q:1,u:"",name:"bay leaf"},{q:1,u:"tsp",name:"cumin"},{q:1000,u:"ml",name:"stock"},{q:null,u:"",name:"crème fraîche"},{q:null,u:"",name:"fresh thyme, to serve"}],
+    steps:[{t:"High heat, fry onions and pumpkin, 5 min."},{t:"Add garlic and cumin, keep frying, 5 min."},{t:"Add stock and bay leaf."},{t:"Simmer 30 min. Remove bay, blend, stir in crème fraîche."},{t:"Season. Top with thyme."}]},
+  {id:"stew-moroccan",title:"Stew - Moroccan vegetable",cat:"Mains",emo:"🥘",tags:["Moroccan","Stew","Vegan"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"tbsp",name:"veg oil"},{q:1,u:"",name:"medium onion"},{q:2,u:"",name:"garlic cloves, sliced"},{q:2,u:"",name:"leeks"},{q:2,u:"",name:"bell peppers"},{q:2,u:"tsp",name:"ground coriander"},{q:2,u:"tsp",name:"ground cumin"},{q:0.5,u:"tsp",name:"dried chilli flakes"},{q:0.25,u:"tsp",name:"ground cinnamon"},{q:400,u:"g",name:"can tomatoes"},{q:400,u:"g",name:"can chickpeas, drained"},{q:100,u:"g",name:"dried split red lentils"},{q:400,u:"g",name:"sweet potatoes, chunked"},{q:1,u:"",name:"large orange, juice plus peel in strips"},{q:50,u:"g",name:"mixed nuts, toasted and chopped"},{q:null,u:"",name:"½ pack coriander, chopped, to serve"},{q:null,u:"",name:"yogurt"}],
+    steps:[{t:"Fry onion and leeks 10–15 min. Add garlic 2 min."},{t:"Add pepper, coriander, cumin, chilli and cinnamon. Cook 2 min."},{t:"Add tomatoes, peppers, chickpeas, lentils, sweet potatoes, orange peel and juice, half the nuts and 400 ml water. Simmer 15 min."},{t:"Serve with coriander and remaining nuts, top with yogurt."}]},
+  {id:"stew-asturian",title:"Stew - Asturian (Fabes con almejas)",cat:"Mains",emo:"🫘",tags:["Spanish","Stew","Seafood"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{head:"Fabes"},{q:500,u:"g",name:"Granja Asturiana beans"},{q:1,u:"",name:"sweet onion"},{q:1,u:"",name:"leek"},{q:3,u:"",name:"carrots, peeled"},{q:4,u:"",name:"garlic cloves"},{q:4,u:"",name:"bay leaves"},{q:null,u:"",name:"fish/seafood broth or fumet"},{head:"Clams"},{q:700,u:"g",name:"clams"},{q:1,u:"",name:"sweet onion"},{q:3,u:"",name:"garlic cloves"},{q:1,u:"tsp",name:"sweet paprika (or 4–5 strands saffron)"},{q:1,u:"tbsp",name:"wheat flour"},{q:125,u:"g",name:"white wine"},{q:2,u:"",name:"cayenne peppers, chopped"},{q:null,u:"",name:"fresh parsley"}],
+    steps:[{t:"Soak beans 12–18 hrs, drain, boil in two fingers of water/stock."},{t:"Simmer. Add onion, carrot, garlic, leek, olive oil, bay, salt. Low heat 2 hrs (or 30 min pressure)."},{t:"Skim foam. Remove veg (optional: blend and add back)."},{t:"Reserve a few ladles of bean broth."},{t:"Wash clams, soak in cold salted water 2 hrs."},{t:"Sauté onion and garlic 5 min (no browning)."},{t:"Add clams, wine and salt. Shake and cover."},{t:"Cook 2–3 min till clams open. Discard any that don't."},{t:"Mix in saffron/paprika and crushed cayenne."},{t:"Add flour and parsley, cook medium heat while mixing."},{t:"Add clam mixture to beans carefully."},{t:"Low heat 3–4 min, no stirring, move pot."},{t:"Off heat, rest 15 min. Garnish parsley."}]},
+  {id:"stew-sevillan",title:"Stew - Sevillan",cat:"Mains",emo:"🫘",tags:["Spanish","Stew","Vegan"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"tbsp",name:"extra virgin olive oil"},{q:2,u:"",name:"slices baguette"},{q:4,u:"",name:"garlic cloves, peeled"},{q:1,u:"",name:"onion, roughly diced"},{q:1,u:"",name:"green bell pepper, finely chopped"},{q:1,u:"tsp",name:"sweet smoked paprika"},{q:115,u:"g",name:"tomato sauce"},{q:1,u:"",name:"large potato, 1.25 cm chunks"},{q:400,u:"g",name:"white beans"},{q:700,u:"ml",name:"vegetable broth"},{q:3,u:"tbsp",name:"parsley, finely chopped"},{q:1,u:"",name:"bay leaf"}],
+    steps:[{t:"Heat 2 tbsp oil 2 min, add bread and garlic 2 min until golden. Remove to cool."},{t:"Add parsley and salt. Mortar or blend into a paste."},{t:"Fry onion and garlic. Add beans and broth, pressure cook 30 min."},{t:"Once a bit thick, add pepper, paprika, tomato and potato. Lid, simmer 20 min."},{t:"Add paste, cook 2 min. Sprinkle fresh parsley."}]},
+  {id:"stew-ribollita",title:"Stew - Ribollita",cat:"Mains",emo:"🥣",tags:["Italian","Stew","Beans"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"dried cannellini beans"},{q:2,u:"",name:"bay leaves"},{q:4,u:"",name:"garlic cloves"},{q:1,u:"",name:"onion"},{q:4,u:"",name:"carrots"},{q:4,u:"",name:"celery sticks"},{q:2,u:"",name:"tins chopped tomatoes"},{q:1000,u:"ml",name:"vegetable stock"},{q:4,u:"",name:"handfuls kale or cabbage, chopped"},{q:250,u:"g",name:"stale bread, torn"},{q:2,u:"tsp",name:"thyme or rosemary"},{q:null,u:"",name:"optional: chilli flakes, lemon zest, parmesan"}],
+    steps:[{t:"Pressure cook beans with bay, 2 garlic cloves and ½ onion, 30–35 min."},{t:"Sauté the other ½ onion and veg 10 min."},{t:"Add remaining garlic, thyme or rosemary, optional chilli flakes."},{t:"Combine beans, veg and stock, simmer 15 min."},{t:"Add chopped kale or cabbage, cook 5–10 min."},{t:"Tear in stale bread and stir until the stew thickens."},{t:"Season, add olive oil."},{t:"Rest 10 min before serving."},{t:"Optional: top with lemon zest or parmesan."}]},
+  {id:"shakshuka",title:"Shakshuka",cat:"Mains",emo:"🍳",tags:["Middle Eastern","Eggs","Breakfast"],yield:3,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"",name:"medium onion, diced"},{q:1,u:"",name:"red bell pepper, diced"},{q:4,u:"",name:"garlic cloves, finely chopped"},{q:2,u:"tsp",name:"paprika"},{q:1,u:"tsp",name:"cumin"},{q:0.25,u:"tsp",name:"chili powder"},{q:750,u:"g",name:"tomatoes"},{q:6,u:"",name:"large eggs"},{q:null,u:"",name:"small bunch coriander, chopped"},{q:null,u:"",name:"small bunch parsley, chopped"}],
+    steps:[{t:"Sauté pepper and onion 5 min."},{t:"Add garlic and spices, 1 min."},{t:"Add tomatoes, bring to simmer."},{t:"Make wells with your spoon and crack eggs into them. Cover and cook 5–8 min, or until eggs done to your liking."}]},
+  {id:"sweet-potatoes-slow",title:"Sweet potatoes - Slow Roasted",cat:"Mains",emo:"🍠",tags:["Side","Easy","Baked"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"",name:"sweet potatoes"},{q:null,u:"",name:"oil"},{q:null,u:"",name:"salt"}],
+    steps:[{t:"Preheat oven to 160 °C (140 fan)."},{t:"Score the flesh in a crosshatch, rub with oil and salt."},{t:"Place cut-side down on a lined tray."},{t:"Roast 45–60 min until completely tender and caramelised underneath."},{t:"Flip cut-side up for the last 10 min if you want colour on top."}]},
+  {id:"tofu-fish",title:"Tofu fish",cat:"Mains",emo:"🐟",tags:["Vegan","Tofu","Marinade"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{head:"Marinade"},{q:27,u:"ml",name:"white vinegar"},{q:27,u:"ml",name:"extra virgin olive oil"},{q:2,u:"",name:"garlic cloves, crushed"},{q:2,u:"",name:"sheets nori, torn"},{q:7,u:"ml",name:"mirin"},{q:14,u:"ml",name:"soy sauce"},{q:0.25,u:"tsp",name:"capers"},{q:7,u:"ml",name:"caper juice"},{q:0.5,u:"",name:"lemon, juiced"},{q:54,u:"ml",name:"water"},{q:null,u:"",name:"pinch black pepper"},{head:"Tofu"},{q:180,u:"g",name:"extra-firm tofu, pressed"},{q:2,u:"tbsp",name:"olive oil"},{q:1,u:"tsp",name:"cornstarch for dusting"}],
+    steps:[{t:"Press tofu ~15 min to remove moisture."},{t:"Blend marinade ingredients until smooth."},{t:"Slice pressed block into 4 fillets. Score lightly diagonally to mimic flaky texture."},{t:"Marinate ≥1 hr (overnight best)."},{t:"Heat oil in pan, dust fillets with cornstarch. Pan-fry 7–10 min each side until golden."}]},
+  {id:"tofu-scrambled",title:"Tofu - scrambled",cat:"Mains",emo:"🍳",tags:["Vegan","Tofu","Breakfast"],yield:1,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:180,u:"g",name:"tofu"},{q:1,u:"tbsp",name:"olive oil"},{q:30,u:"g",name:"onion/shallot, very finely chopped"},{q:1,u:"",name:"small garlic clove"},{q:0.5,u:"tsp",name:"turmeric"},{q:0.25,u:"tsp",name:"cumin or smoked paprika"},{q:null,u:"",name:"salt, black pepper"},{q:null,u:"",name:"optional: soy sauce or lemon"}],
+    steps:[{t:"Pat tofu dry, crumble."},{t:"Fry onion in oil, medium, 3–4 min."},{t:"Add garlic and spices, 20–30 sec."},{t:"Add tofu, season. Cook 4–6 min till hot and lightly dry."},{t:"Finish with soy or lemon."}]},
+  {id:"tofu-sesame-garlic",title:"Tofu with Sesame and Garlic",cat:"Mains",emo:"🥢",tags:["Asian","Tofu","Spicy"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"tofu"},{q:60,u:"ml",name:"soy sauce"},{q:60,u:"ml",name:"water"},{q:2,u:"tsp",name:"hot sauce (sambal oelek)"},{q:0.5,u:"tsp",name:"rice vinegar"},{q:2,u:"tsp",name:"honey"},{q:1,u:"",name:"garlic clove, minced"},{q:3,u:"tbsp",name:"cornstarch (2 for coating + 1 for sauce)"},{q:1,u:"tbsp",name:"veg oil"},{q:0.5,u:"tbsp",name:"sesame oil"},{q:null,u:"",name:"sesame seeds"}],
+    steps:[{t:"Press tofu between tissues 30 min. Cut into 2 cm cubes."},{t:"Coat in cornstarch and fry in heated oil till golden, 3–4 min per side."},{t:"Mix sauce and add — should thicken quickly."}]},
+  {id:"tortilla",title:"Tortilla",cat:"Mains",emo:"🍳",tags:["Spanish","Eggs","Potato"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1000,u:"g",name:"potatoes, peeled, mandolined, salted"},{q:10,u:"",name:"large eggs, beaten"},{q:1,u:"",name:"large onion, julienne thin"}],
+    steps:[{t:"Heat enough oil to cover potatoes, cook 20 min low heat, drain and cool."},{t:"Fry onion 15 min to caramelise, drain and add to egg."},{t:"Add cooled potatoes to egg mixture, stir, sit 20 min."},{t:"Medium-low heat, cook 6–8 min per side."}],
+    notes:"Start in the wok, finish by flipping into a large frying pan."},
+  {id:"veg-roasted-asian",title:"Vegetables - Roasted Asian",cat:"Mains",emo:"🥦",tags:["Side","Asian","Roast"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"carrots"},{q:500,u:"g",name:"broccoli"},{q:3,u:"tbsp",name:"soy"},{q:1,u:"tbsp",name:"sugar"},{q:2,u:"tsp",name:"sesame oil"},{q:1,u:"tsp",name:"rice vinegar"},{q:1,u:"tsp",name:"sriracha"},{q:3,u:"",name:"garlic cloves, minced"},{q:null,u:"",name:"sesame seeds"}],
+    steps:[{t:"Carrots roast 20 min, broccoli last 7 min, oiled."},{t:"Mix other ingredients and cover at end."}]},
+
+  // ===== BITS =====
+  {id:"sauce-cauliflower-cream",title:"Sauce - cauliflower cream",cat:"Bits",emo:"🥛",tags:["GF","Sauce","Dairy-free"],yield:3,yieldLabel:"cup",yieldPlural:"cups",
+    ings:[{q:1,u:"",name:"large head cauliflower, chopped 1-inch pieces"},{q:360,u:"ml",name:"vegetable stock"},{q:null,u:"",name:"salt"}],
+    steps:[{t:"Everything together, medium-high heat 20 min."},{t:"Rest covered 10 min."},{t:"Blend."}]},
+  {id:"sauce-harissa",title:"Sauce/paste - Harissa",cat:"Bits",emo:"🌶️",tags:["North African","Paste","Spicy"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:10,u:"",name:"dried New Mexico chillies"},{q:7,u:"",name:"dried chiles de arbol"},{q:1,u:"tbsp",name:"cumin seeds, heaped"},{q:2,u:"tsp",name:"coriander seeds"},{q:1,u:"tsp",name:"caraway seeds"},{q:4,u:"",name:"garlic cloves, minced"},{q:1.5,u:"tsp",name:"smoked paprika"},{q:1,u:"tsp",name:"sea salt"},{q:2,u:"tbsp",name:"lemon juice"},{q:1,u:"tbsp",name:"white wine/apple cider vinegar"},{q:1,u:"tbsp",name:"tomato paste"},{q:60,u:"ml",name:"olive oil"}],
+    steps:[{t:"Submerge dried chillies in hot water 15 min, then chop."},{t:"Toast and ground coriander and cumin."},{t:"Blend everything together."}]},
+  {id:"peanut-rayu",title:"Sauce/paste - Peanut Rayu",cat:"Bits",emo:"🥜",tags:["Sauce","Chilli","Peanut"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:100,u:"g",name:"peanuts"},{q:10,u:"",name:"garlic cloves"},{q:200,u:"ml",name:"oil"},{q:2,u:"tbsp",name:"gochugaru (or 1 tbsp smoked paprika + 1 tbsp chilli)"},{q:1.5,u:"tbsp",name:"coconut sugar"},{q:2,u:"tsp",name:"salt"},{q:3,u:"tbsp",name:"sesame seeds"},{q:2,u:"tbsp",name:"tamari (or soy sauce)"}],
+    steps:[{h:"Roast peanuts",t:"Oven 180 °C, 15 min. Remove and roughly chop."},{h:"Fry garlic",t:"Peel and finely slice garlic. Add to cold oil, heat medium-high. Fry until lightly golden and crispy — stop just before fully golden or it turns bitter."},{h:"Mix spices",t:"In a bowl mix gochugaru, coconut sugar and salt."},{h:"Combine",t:"Sieve the garlic out while pouring hot oil over the spice mix. Stir. Chop crispy garlic."},{t:"Stir in peanuts, crispy garlic, sesame seeds and tamari. Season with salt and pepper."}]},
+  {id:"sauce-sweet-sour-hot",title:"Sauce - Sweet, Sour and Hot",cat:"Bits",emo:"🫙",tags:["Sauce","Asian","Quick"],yield:1,yieldLabel:"cup",yieldPlural:"cups",
+    ings:[{q:100,u:"g",name:"sugar"},{q:120,u:"ml",name:"vinegar"},{q:60,u:"g",name:"ketchup"},{q:1,u:"tbsp",name:"soy sauce"},{q:1,u:"tsp",name:"hot powder"}],
+    steps:[{t:"Combine everything, simmer briefly until the sugar dissolves and the sauce coats a spoon."}]},
+  {id:"paste-thai-red",title:"Paste - Thai red curry",cat:"Bits",emo:"🌶️",tags:["Thai","Paste","Spicy"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:1,u:"",name:"shallot, chopped (or ¼ red onion)"},{q:1,u:"",name:"stalk lemongrass, minced (or 3 tbsp paste)"},{q:2,u:"",name:"red chillies (or 1 tsp cayenne, or 2–3 tsp Thai chilli sauce)"},{q:4,u:"",name:"garlic cloves"},{q:null,u:"",name:"thumb-size galangal or ginger, sliced"},{q:2,u:"tbsp",name:"tomato ketchup"},{q:2,u:"tbsp",name:"fish sauce"},{q:1,u:"tbsp",name:"soy sauce"},{q:2,u:"tbsp",name:"lime juice"},{q:2,u:"tbsp",name:"chilli powder (or 1–2 tsp Asian chilli powder)"},{q:1,u:"tsp",name:"sugar"},{q:1,u:"tsp",name:"ground cumin"},{q:1,u:"tsp",name:"ground coriander"},{q:0.25,u:"tsp",name:"ground pepper"},{q:0.5,u:"tsp",name:"ground cinnamon"}],
+    steps:[{t:"Blend everything to a smooth paste."}]},
+
+  // ===== DRESSINGS =====
+  {id:"dressing-french",title:"Dressing - French",cat:"Dressings",emo:"🥗",tags:["Vinaigrette","Quick"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:1,u:"tsp",name:"Dijon mustard"},{q:2,u:"tbsp",name:"white wine vinegar"},{q:6,u:"tbsp",name:"extra virgin olive oil"},{q:null,u:"",name:"pinch sugar, salt, pepper"}],
+    steps:[{t:"Whisk mustard, vinegar, oil, sugar, salt and pepper to emulsion."}],
+    notes:"Goes with green salad with avocado — pineapple, nuts, spinach, peppers, cucumber."},
+  {id:"dressing-honey-mustard",title:"Dressing - Honey and mustard",cat:"Dressings",emo:"🍯",tags:["Sweet","Quick"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:2,u:"tsp",name:"wholegrain mustard"},{q:2,u:"tsp",name:"honey"},{q:1,u:"",name:"lemon, juiced"},{q:6,u:"tbsp",name:"extra virgin olive oil"},{q:null,u:"",name:"salt and pepper"}],
+    steps:[{t:"Whisk mustard, honey, lemon. Gradually stir in olive oil. Season."}],
+    notes:"Goes with chicken breast (or tofu) with avocado salad."},
+  {id:"dressing-sesame-soy",title:"Dressing - Sesame & soy",cat:"Dressings",emo:"🥢",tags:["Asian","Quick"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:2,u:"tbsp",name:"soy sauce"},{q:2,u:"tbsp",name:"toasted sesame oil"},{q:2,u:"tbsp",name:"groundnut oil"},{q:1,u:"",name:"lime, juiced"},{q:0.25,u:"tsp",name:"chilli flakes"},{q:1,u:"tsp",name:"honey"}],
+    steps:[{t:"Whisk together."}],
+    notes:"Goes with Asian pulled chicken or jackfruit salad."},
+  {id:"dressing-sherry-sultana",title:"Dressing - Sherry & sultana",cat:"Dressings",emo:"🍊",tags:["Sweet","Fruit"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:1,u:"",name:"orange, zest and juice"},{q:4,u:"tbsp",name:"sherry vinegar"},{q:6,u:"tbsp",name:"extra virgin olive oil"},{q:2,u:"tbsp",name:"sultanas"}],
+    steps:[{t:"Whisk zest, juice, vinegar and oil. Stir in sultanas."}],
+    notes:"Goes with smoky maple duck salad."},
+  {id:"dressing-parsley",title:"Dressing - Parsley",cat:"Dressings",emo:"🌿",tags:["Herb","Fresh"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:0.5,u:"",name:"small pack parsley"},{q:1,u:"tsp",name:"Dijon mustard"},{q:1,u:"tbsp",name:"sherry vinegar"},{q:0.5,u:"",name:"garlic clove, grated"},{q:3,u:"tbsp",name:"extra virgin olive oil"}],
+    steps:[{t:"Chop parsley fine. Whisk with mustard, vinegar, garlic and oil."}],
+    notes:"Goes with spring vegetable & cauliflower tabbouleh."},
+  {id:"dressing-caper-anchovy",title:"Dressing - Caper and anchovy",cat:"Dressings",emo:"🐟",tags:["Pungent","Salty"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:1,u:"",name:"garlic clove"},{q:null,u:"",name:"pinch salt"},{q:2,u:"",name:"anchovy fillets in oil"},{q:2,u:"tbsp",name:"red wine vinegar"},{q:6,u:"tbsp",name:"extra virgin olive oil"},{q:2,u:"tbsp",name:"capers"}],
+    steps:[{t:"Pestle garlic, salt, anchovies to a paste."},{t:"Whisk in vinegar and oil. Stir in capers."}],
+    notes:"Goes with courgette & spinach salad."},
+  {id:"dressing-ginger-wasabi",title:"Dressing - Ginger & wasabi",cat:"Dressings",emo:"🌶️",tags:["Japanese","Spicy"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:null,u:"",name:"thumb-size piece ginger, grated"},{q:2,u:"tsp",name:"wasabi paste"},{q:6,u:"tbsp",name:"rapeseed oil"},{q:1,u:"tbsp",name:"rice wine vinegar"}],
+    steps:[{t:"Whisk together."}],
+    notes:"Goes with Oriental duck salad."},
+  {id:"dressing-sweet-chilli",title:"Dressing - Sweet chilli",cat:"Dressings",emo:"🌶️",tags:["Asian","Sweet"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:2,u:"tbsp",name:"sweet chilli"},{q:2,u:"",name:"limes, zested"},{q:6,u:"tbsp",name:"rice wine vinegar"}],
+    steps:[{t:"Whisk together."}],
+    notes:"Goes with chilli chicken & bacon salad."},
+  {id:"dressing-tahini",title:"Dressing - Tahini",cat:"Dressings",emo:"🥣",tags:["Middle Eastern","Nut"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:2,u:"tbsp",name:"tahini"},{q:1,u:"",name:"lemon, juiced"},{q:null,u:"",name:"salt, pepper"},{q:6,u:"tbsp",name:"water"}],
+    steps:[{t:"Whisk tahini, lemon, salt, pepper. Thin with water to taste."}],
+    notes:"Goes with grilled aubergine tabbouleh, Middle Eastern salads or griddled halloumi."},
+  {id:"dressing-minty-yogurt",title:"Dressing - Minty yogurt",cat:"Dressings",emo:"🥒",tags:["Fresh","Cooling"],yield:1,yieldLabel:"batch",yieldPlural:"batches",
+    ings:[{q:0.5,u:"",name:"small pack mint, chopped"},{q:0.25,u:"",name:"cucumber, chopped"},{q:150,u:"g",name:"natural yogurt"},{q:1,u:"tbsp",name:"white wine vinegar"},{q:0.5,u:"",name:"lemon, zested"},{q:null,u:"",name:"salt and pepper"}],
+    steps:[{t:"Stir everything together."}]},
+
+  // ===== PICKLES =====
+  {id:"pickled-red-cabbage",title:"Pickled Red Cabbage",cat:"Pickles",emo:"🥬",tags:["Pickle","Red cabbage"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:500,u:"g",name:"red cabbage, shredded"},{q:250,u:"ml",name:"white wine or apple cider vinegar"},{q:250,u:"ml",name:"water"},{q:50,u:"g",name:"sugar"},{q:1,u:"tbsp",name:"salt"},{q:1,u:"tsp",name:"peppercorns (optional)"},{q:1,u:"tsp",name:"mustard seeds (optional)"},{q:1,u:"",name:"bay leaf (optional)"}],
+    steps:[{t:"Heat vinegar, water, sugar and salt until sugar dissolves. Cool."},{t:"Pack cabbage and optional spices in a jar."},{t:"Pour cooled vinegar mix over cabbage, fully submerging."},{t:"Seal and refrigerate. Ready in 24 hrs, keeps up to 2 weeks."}]},
+  {id:"shallot-pickle-quick",title:"Raguessa's quick shallot pickle",cat:"Pickles",emo:"🧅",tags:["Pickle","Quick","Mexican"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:1,u:"",name:"shallot"},{q:3,u:"",name:"limes"},{q:1,u:"tbsp",name:"sugar"},{q:null,u:"",name:"chilli"},{q:null,u:"",name:"fresh coriander"}],
+    steps:[{t:"Combine everything, including the zest. Leave 15 min."}]},
+
+  // ===== MEAT =====
+  {id:"meat-stew",title:"Meat stew",cat:"Meat",emo:"🥘",tags:["Beef","Slow","Stew"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1000,u:"g",name:"meat, cubed"},{q:2,u:"",name:"onions, chopped"},{q:5,u:"",name:"carrots, sliced"},{q:3,u:"",name:"zucchini, sliced"},{q:2,u:"",name:"celery stalks, chopped"},{q:2,u:"",name:"red bell peppers, chopped"},{q:2,u:"tsp",name:"salt"},{q:0.5,u:"tsp",name:"pepper"},{q:2,u:"tsp",name:"minced garlic"},{q:1,u:"",name:"can tomatoes"},{q:1,u:"",name:"can tomato sauce"}],
+    steps:[{t:"Combine everything in a pot and cook 4 hours."}]},
+  {id:"chicken-red-wine",title:"Marinated Red Wine Chicken",cat:"Meat",emo:"🍗",tags:["Chicken","Wine","Bake"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:1,u:"tbsp",name:"olive oil"},{q:1,u:"tbsp",name:"garlic, minced"},{q:1360,u:"g",name:"skinless boneless chicken breasts"},{q:0.5,u:"tbsp",name:"paprika"},{q:80,u:"g",name:"brown sugar"},{q:180,u:"ml",name:"red wine"},{q:null,u:"",name:"salt and pepper"}],
+    steps:[{t:"Heat oil medium-high. Cook garlic until tender. Add chicken, cook 10 min each side until no longer pink."},{t:"Drain oil. Sprinkle chicken with paprika and sugar. Pour wine around. Uncovered, simmer 15–20 min, basting."}]},
+  {id:"chicken-rosemary-onion",title:"Rosemary Onion Chicken (and mushroom)",cat:"Meat",emo:"🍗",tags:["Chicken","Bake","Mushroom"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"",name:"chicken breasts"},{q:1,u:"",name:"onion, chopped"},{q:1,u:"",name:"garlic clove, minced"},{q:4,u:"tsp",name:"flour"},{q:1,u:"tsp",name:"crushed rosemary"},{q:120,u:"ml",name:"chicken broth"},{q:120,u:"ml",name:"milk"},{q:null,u:"",name:"mushrooms (optional)"}],
+    steps:[{t:"Brown salted/peppered chicken in 1 tsp butter few mins. Place in oven dish."},{t:"In same pan, sauté onion and garlic in 2 tsp butter. Add mushrooms after partial sauté."},{t:"Stir in flour to make roux. Add rosemary. Preheat oven 180 °C."},{t:"Stir in broth then milk to turn roux into thick sauce."},{t:"Pour sauce on chicken. Bake 23 min."}]},
+  {id:"chicken-pesto-baked",title:"Pesto baked chicken and mushrooms",cat:"Meat",emo:"🌿",tags:["Chicken","Pesto","Quick"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"",name:"chicken breasts"},{q:0.5,u:"",name:"box mushrooms"},{q:120,u:"g",name:"pesto"}],
+    steps:[{t:"Brown chicken while preheating oven to 190 °C."},{t:"60 g pesto on the base of a baking dish. Add chicken and mushrooms, cover with the rest of the pesto, salt and pepper."},{t:"Bake 25 min at 190 °C."}]},
+  {id:"chicken-sweet-sour",title:"Sweet and Sour Chicken",cat:"Meat",emo:"🍗",tags:["Chinese","Chicken","Sweet"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:150,u:"g",name:"sugar"},{q:120,u:"ml",name:"vinegar"},{q:60,u:"ml",name:"ketchup"},{q:1,u:"tbsp",name:"soy sauce"},{q:0.5,u:"tsp",name:"garlic powder"},{q:500,u:"g",name:"chicken"},{q:120,u:"g",name:"flour (or 60 g cornstarch)"},{q:2,u:"",name:"eggs"},{q:60,u:"ml",name:"veg oil"}],
+    steps:[{t:"Combine chicken, salt, pepper and flour."},{t:"Dip chicken in beaten eggs. Throw in some of the loose flour."},{t:"Fry chicken in hot veg oil until golden brown, 1–3 min. Drain."},{t:"Sauce: whisk sugar, vinegar, ketchup, soy sauce and garlic."},{t:"Chicken and sauce together at 160 °C for 55 min, turn every 15 min."},{t:"Add chopped spring onion and sesame seed 5 min before end."},{t:"Serve with rice and broccoli."}]},
+
+  // ===== SWEET =====
+  {id:"cookies",title:"Cookies",cat:"Sweet",emo:"🍪",tags:["Baked","Simple"],yield:12,yieldLabel:"cookie",yieldPlural:"cookies",
+    ings:[{q:240,u:"g",name:"flour"},{q:100,u:"g",name:"sugar"},{q:225,u:"g",name:"butter"},{q:1,u:"tsp",name:"spice"}],
+    steps:[{t:"Cream butter until soft. Add sugar until fluffy."},{t:"Sift in flour (plus optionals), mix to a dough."},{t:"Place flattened lumps on tray. Bake 170 °C for 15 min."}]},
+  {id:"snickers-bars",title:"Snickers Bars",cat:"Sweet",emo:"🍫",tags:["Candy","No-bake","Layered"],yield:24,yieldLabel:"bar",yieldPlural:"bars",
+    ings:[{q:340,u:"g",name:"milk chocolate chips"},{q:90,u:"g",name:"butterscotch chips"},{q:190,u:"g",name:"creamy peanut butter"},{q:55,u:"g",name:"butter"},{q:200,u:"g",name:"sugar"},{q:60,u:"ml",name:"evaporated milk"},{q:270,u:"g",name:"marshmallow creme"},{q:1,u:"tsp",name:"vanilla"},{q:225,u:"g",name:"salted peanuts, chopped"},{q:400,u:"g",name:"caramels"},{q:60,u:"ml",name:"whipping cream"}],
+    steps:[{h:"Base",t:"Melt 170 g choc chips, 45 g butterscotch chips and 65 g PB. Spread on bottom of 9×13 pan. Freeze to set."},{h:"Nougat",t:"Boil 55 g butter, 200 g sugar, 60 ml evaporated milk for 5 min."},{t:"Off heat: add marshmallow creme, 65 g PB, vanilla, 225 g peanuts."},{t:"Pour over base, freeze."},{h:"Caramel",t:"Melt caramels with cream till smooth. Pour over nougat, freeze."},{h:"Top",t:"Melt 170 g choc chips, 45 g butterscotch chips, 65 g PB. Spread on top. Chill to set."}],
+    notes:"Store in the fridge to help cutting and serving."},
+  {id:"crumble",title:"Crumble",cat:"Sweet",emo:"🥧",tags:["Dessert","Baked","Fruit"],yield:6,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{head:"Filling"},{q:600,u:"g",name:"apples, quartered (cook 7 min first if cooking apples)"},{q:null,u:"",name:"ginger, frozen berries, etc."},{q:2,u:"tbsp",name:"golden caster sugar"},{head:"Crumble"},{q:175,u:"g",name:"plain flour"},{q:110,u:"g",name:"golden caster sugar"},{q:110,u:"g",name:"cold butter, sliced"},{q:1,u:"tbsp",name:"rolled oats"},{q:1,u:"tbsp",name:"demerara sugar"}],
+    steps:[{t:"Toss fruit with sugar in a baking dish."},{t:"Rub flour, sugar and a pinch of salt into cold butter with your fingers."},{t:"Pour crumbs over fruit. Pat down and even with a fork."},{t:"Sprinkle oats and demerara on top."},{h:"Bake",t:"190 °C fan for 35–40 min."}]},
+
+  // ===== From past chats, needs cooking & verification =====
+  {id:"carrot-top-pesto",title:"Carrot Top Pesto",cat:"Bits",emo:"🥕",tags:["Pesto","Zero-waste","CHECK"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:70,u:"g",name:"carrot tops, tough stems removed"},{q:40,u:"g",name:"nuts (pine, almonds, or walnuts), toasted"},{q:30,u:"g",name:"parmesan or pecorino, grated"},{q:1,u:"",name:"garlic clove"},{q:0.5,u:"",name:"lemon, juiced"},{q:90,u:"ml",name:"olive oil (80–100 ml)"},{q:null,u:"",name:"salt"},{q:null,u:"",name:"optional: handful basil or parsley"}],
+    steps:[{t:"Toast nuts in a dry pan until fragrant. Cool."},{t:"Optional: blanch tops 10 sec, ice bath, squeeze dry."},{t:"Blitz tops, nuts, garlic, cheese, lemon and salt to a rough paste."},{t:"Motor running, stream in oil to the texture you want. Season — likely more salt and lemon than you'd expect."}],
+    notes:"Bitterness varies by carrot. Loosen with pasta water when serving. Keeps 4–5 days under a film of oil, or freeze."},
+  {id:"gnocchi-summer-skillet",title:"Gnocchi - Summer garden skillet",cat:"Mains",emo:"🍅",tags:["Gnocchi","Quick","Summer","CHECK"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:2,u:"tbsp",name:"olive oil"},{q:0.5,u:"",name:"red onion, diced"},{q:300,u:"g",name:"cherry tomatoes, whole"},{q:1,u:"",name:"medium courgette, chopped"},{q:4,u:"",name:"garlic cloves, minced"},{q:450,u:"g",name:"potato gnocchi"},{q:240,u:"ml",name:"reserved starchy pasta water"},{q:100,u:"g",name:"parmesan, finely grated, plus extra to serve"},{q:15,u:"g",name:"fresh basil, chopped"},{q:3,u:"tbsp",name:"fresh chives, chopped"},{q:3,u:"tbsp",name:"fresh parsley, rosemary or thyme, chopped"},{q:null,u:"",name:"salt and pepper"}],
+    steps:[{t:"Heat oil in a large skillet medium-low. Add onion, tomatoes and a big pinch of salt and pepper. Cook 8–10 min, stirring, until tomatoes burst and break down."},{t:"Stir in courgette and garlic. Cook 5–6 min until softened."},{t:"Meanwhile boil gnocchi per packet. Reserve 240 ml water before draining."},{t:"Add gnocchi and pasta water to the skillet. Stir in parmesan. Cook a few min until sauce thickens and cheese melts. Season."},{t:"Stir in basil, chives and other herbs. Top with extra parmesan."}]},
+  {id:"pasta-creamy-white",title:"Pasta - Creamy white sauce",cat:"Mains",emo:"🍝",tags:["Pasta","Cream","Quick","CHECK"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:220,u:"g",name:"dried pasta"},{q:1,u:"tbsp",name:"butter (or olive oil)"},{q:3,u:"",name:"garlic cloves, minced"},{q:180,u:"ml",name:"cream"},{q:50,u:"g",name:"parmesan, finely grated"},{q:0.5,u:"tsp",name:"black pepper (¼–½ tsp)"},{q:null,u:"",name:"salt"},{q:1,u:"tbsp",name:"lemon juice (optional)"}],
+    steps:[{t:"Boil pasta in well-salted water, undercook by 1 min. Reserve a cup of pasta water before draining."},{t:"Melt butter in a large pan medium heat. Fry garlic 1 min — don't brown."},{t:"Pour in cream, bring to a very gentle simmer (never boiling)."},{t:"Add parmesan in 2–3 lots, mixing and letting it melt between additions."},{t:"Add pepper and 60 ml pasta water. Simmer gently 1–2 min to thicken."},{t:"Add pasta, toss, bubble 1–2 min. Season."},{t:"Stir in lemon juice if using — cuts the richness."},{t:"Serve with extra parmesan and pepper."}]},
+  {id:"potato-cheese-bake",title:"Potato & cheese bake",cat:"Mains",emo:"🧀",tags:["Potato","Baked","Vegetarian","CHECK"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:800,u:"g",name:"potatoes, peeled and chunked"},{q:2,u:"",name:"carrots, grated"},{q:1,u:"",name:"onion, finely chopped"},{q:3,u:"",name:"garlic cloves, minced"},{q:40,u:"g",name:"butter, plus extra for mash"},{q:150,u:"g",name:"cheddar, grated"},{q:0.25,u:"tsp",name:"nutmeg"},{q:1,u:"tsp",name:"dried thyme"},{q:1,u:"tsp",name:"Colman's mustard powder"},{q:null,u:"",name:"salt, pepper"}],
+    steps:[{t:"Boil potatoes in salted water 15–20 min until soft. Drain well, mash with butter."},{t:"Sauté onion in butter 5–6 min. Add carrot and thyme 4–5 min. Add garlic 1 min more."},{t:"Stir nutmeg and mustard powder into the hot mash. Fold in veg and two-thirds of the cheese. Season, taste."},{t:"Press into a buttered dish, top with remaining cheese."},{h:"Bake",t:"220 °C for 5–10 min until the top is set and golden."}],
+    notes:"Grill from above for more colour. Or fry the whole thing in a buttered pan for a proper crust instead of baking."},
+  {id:"pasta-courgette-olive-tofu",title:"Pasta - courgette, olive & smoked tofu",cat:"Mains",emo:"🫒",tags:["Pasta","One pot","Vegan","CHECK"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:250,u:"g",name:"short pasta"},{q:180,u:"g",name:"smoked tofu, crumbled"},{q:1,u:"",name:"onion, sliced"},{q:1,u:"",name:"courgette, halved and sliced"},{q:80,u:"g",name:"anchovy-stuffed olives, halved"},{q:2,u:"",name:"tomatoes, chopped"},{q:400,u:"g",name:"passata"},{q:300,u:"ml",name:"water"},{q:2,u:"",name:"garlic cloves, sliced"},{q:1,u:"tsp",name:"oregano"},{q:null,u:"",name:"chilli flakes (optional)"},{q:null,u:"",name:"olive oil, salt, pepper"}],
+    steps:[{h:"Tofu",t:"Hot pan, 1 tbsp oil, crumbled tofu in even layer. Leave 3 min, stir, another 3–4 min until browned. Tip onto a plate."},{h:"Base",t:"Same pan, oil, onion 4 min. Courgette 4 min high for colour. Garlic, oregano, chilli 1 min."},{h:"Sauce",t:"Add tomatoes, olives, passata, water, salt. Boil."},{h:"Pasta",t:"Stir in dry pasta, lid on, 10–12 min medium, stirring every 2–3 min. Splash more water if it tightens."},{t:"Off heat, stir through half the tofu, scatter the rest on top. Olive oil to finish."}],
+    notes:"Don't salt heavily until the end — olives and smoked tofu both bring salt."},
+  {id:"rice-round-hake",title:"Rice (round) with hake",cat:"Mains",emo:"🐟",tags:["Spanish","Rice","Fish","CHECK"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"merluza (hake) fillets"},{q:400,u:"g",name:"round grain rice (SOS, bomba or arborio)"},{q:1,u:"",name:"onion, diced"},{q:4,u:"",name:"garlic cloves, sliced"},{q:3,u:"",name:"tomatoes, grated (or 1 tin)"},{q:1,u:"tsp",name:"sweet pimentón"},{q:null,u:"",name:"splash white wine"},{q:1050,u:"ml",name:"hot stock"}],
+    steps:[{h:"Sofrito",t:"Sweat onion in olive oil 10 min. Add garlic 2 min. Off heat, add pimentón 30 sec."},{t:"Splash white wine, reduce 1 min. Add tomatoes, simmer 15 min until thick and jammy."},{h:"Rice",t:"Stir rice into sofrito, toast 1–2 min. Add hot stock, spread rice flat."},{t:"High 2 min, then medium-low 15 min. Don't stir."},{h:"Fish",t:"Lay fillets on top with 8 min to go, lid on. Don't turn."},{t:"Off heat, lid on, rest 5 min."}],
+    notes:"Liquid is ~2.5:1. Start at 1 L; add a splash of hot stock if drying. Adding cold stock mid-cook stalls it. No soak. For caldoso (soupy), go to 1.4 L and serve in bowls."},
+  {id:"chestnuts-roasted",title:"Chestnuts - roasted",cat:"Mains",emo:"🌰",tags:["Side","Autumn","Snack","CHECK"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"fresh chestnuts, in shell"}],
+    steps:[{t:"Score a deep X across the rounded side, through shell AND inner skin."},{t:"Soak in hot water 15–30 min (optional, helps peeling)."},{t:"Roast cut-side up at 220 °C (200 °C fan) for 20–25 min until cuts curl open and flesh is tender."},{t:"Wrap in a tea towel 5–10 min, then peel while still warm."}],
+    notes:"Peel them HOT — once cold, the inner skin sticks. Rewarm stubborn ones. Air fryer: 200 °C, 15–18 min, shake halfway. Score every one or they can explode."},
+  {id:"chestnuts-boiled",title:"Chestnuts - boiled",cat:"Mains",emo:"🌰",tags:["Side","Autumn","Foolproof","CHECK"],yield:4,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"fresh chestnuts, in shell"}],
+    steps:[{t:"Score deep, all the way through shell AND inner skin."},{t:"Simmer 20–25 min. Test one: should be soft like a cooked potato."},{t:"Off heat, leave them IN the hot water. Fish out 3–4 at a time and peel."},{t:"If one fights you, drop it back in the water for a minute."}],
+    notes:"Best for dishes, soups and purée. For roasted flavour, boil full 20 min then 10 min at 220 °C. Drop raw ones in water first — any that float are bad."},
+  {id:"brussels-sprouts-soy",title:"Brussels sprouts - soy and vinegar",cat:"Mains",emo:"🥬",tags:["Side","Quick","CHECK"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:500,u:"g",name:"Brussels sprouts, trimmed and halved"},{q:2,u:"tbsp",name:"olive oil"},{q:null,u:"",name:"black pepper"},{q:0.5,u:"tsp",name:"chilli flakes (optional)"},{q:1,u:"tbsp",name:"soy sauce"},{q:1,u:"tbsp",name:"balsamic, sherry or rice vinegar"},{q:30,u:"g",name:"pine nuts or flaked almonds"}],
+    steps:[{t:"Toast nuts in a dry pan 2–3 min until golden. Set aside."},{t:"Heat pan on high first, then add oil. Add sprouts, shake so they sit flat side down. Leave 5–8 min untouched until deeply browned."},{t:"Add pepper and chilli, stir 6–8 min until a knife goes in easily."},{t:"Off heat, stir in soy and vinegar, then nuts."}],
+    notes:"Skip salt — soy covers it. Rice vinegar pairs best with the soy."},
+  {id:"hake-al-ajillo",title:"Hake al ajillo",cat:"Mains",emo:"🐟",tags:["Spanish","Fish","Quick","CHECK"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"hake chunks"},{q:5,u:"",name:"garlic cloves, sliced thin"},{q:60,u:"ml",name:"olive oil"},{q:1,u:"",name:"dried chilli, crumbled (or ½ tsp flakes)"},{q:1,u:"tbsp",name:"water or white wine vinegar"},{q:null,u:"",name:"salt"},{q:null,u:"",name:"parsley, chopped"},{q:null,u:"",name:"lemon"}],
+    steps:[{t:"Salt hake, leave 10 min, pat dry. Bring toward room temp while pan heats."},{t:"Garlic in cold oil, medium-low. Cook 3–4 min to pale gold — pull it out when it colours, it burns fast."},{t:"Chilli in for 20 sec. Lay hake in oil in one layer, skin down."},{t:"Lid on, low, 6–8 min. Don't stir. Tilt and shake pan every minute."},{t:"Return garlic, add splash of water, shake 30 sec more. Parsley, lemon."}],
+    notes:"Judge by the thickest chunk: opaque through, flakes cleanly. If sauce splits, off heat and shake harder with a tsp of cold water. Cream variant: skip chilli, after fish is out add 80–100 ml cream, reduce 2 min, off heat add ½ tsp cider vinegar."},
+  {id:"hake-potatoes-oven",title:"Hake & potatoes, oven",cat:"Mains",emo:"🐟",tags:["Spanish","Fish","Baked","CHECK"],yield:2,yieldLabel:"serving",yieldPlural:"servings",
+    ings:[{q:400,u:"g",name:"hake chunks"},{q:600,u:"g",name:"potatoes, mandolined thin"},{q:1,u:"",name:"large onion, thinly sliced"},{q:4,u:"",name:"garlic cloves, sliced"},{q:1,u:"tsp",name:"sweet pimentón"},{q:100,u:"ml",name:"white wine (or stock)"},{q:4,u:"tbsp",name:"olive oil"},{q:null,u:"",name:"salt, black pepper"},{q:null,u:"",name:"parsley, chopped"},{q:null,u:"",name:"lemon wedges"}],
+    steps:[{t:"Oven 200 °C (180 fan). Toss potatoes and onion with 2 tbsp oil, salt, pepper. Spread in a tray, no more than 2 cm deep."},{t:"Roast 25 min until edges colour and potatoes are nearly tender."},{t:"Mix remaining 2 tbsp oil with garlic and pimentón. Pat hake dry, salt it."},{t:"Pour wine over potatoes, lay hake on top, spoon over garlic-pimentón oil."},{t:"Back in 10–12 min until hake is opaque and flakes. Don't overshoot."},{t:"Parsley, lemon."}],
+    notes:"Skinless chunks can be tucked INTO potatoes rather than on top — less drying, 12–14 min."},
+  {id:"sauerkraut",title:"Sauerkraut",cat:"Pickles",emo:"🥬",tags:["Fermented","Lacto","CHECK"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:1000,u:"g",name:"white cabbage"},{q:20,u:"g",name:"salt (2% of cabbage weight; non-iodised)"},{q:1,u:"tsp",name:"caraway seeds or juniper berries (optional)"}],
+    steps:[{h:"Prep",t:"Remove outer leaves and keep one clean. Quarter, core, shred 2–3 mm. Weigh and adjust salt to 2%."},{h:"Salt",t:"Toss with salt and massage hard 5–10 min until limp and sitting in its own brine. Leave 20 min if slow."},{h:"Pack",t:"Press into clean jar a handful at a time, pushing hard until brine rises above cabbage. Leave 3–4 cm headspace."},{h:"Weigh down",t:"Cover with saved leaf, then a weight (small jar, water-filled bag or fermentation weight)."},{h:"Ferment",t:"Close lid loosely or use airlock. 18–22 °C, out of sun, plate underneath. Press daily first week."},{h:"Taste",t:"From day 7. Usually 2–4 weeks. When as sour as you like, seal and refrigerate. Keeps months."}],
+    notes:"Not enough brine after 24h: top up with 2% brine (20 g salt per 1 L water). White flat film = kahm yeast, harmless, skim. Fuzzy/coloured mould: bin. Mushy/slimy: too warm or too little salt."},
+  {id:"pickled-cabbage-white",title:"Pickled Cabbage - white",cat:"Pickles",emo:"🥬",tags:["Pickle","Quick","CHECK"],yield:1,yieldLabel:"small jar",yieldPlural:"small jars",
+    ings:[{q:150,u:"g",name:"white cabbage, shredded"},{q:80,u:"ml",name:"white wine or apple cider vinegar"},{q:80,u:"ml",name:"water"},{q:15,u:"g",name:"sugar"},{q:5,u:"g",name:"salt"},{q:0.5,u:"tsp",name:"mustard seeds (optional)"},{q:0.5,u:"tsp",name:"peppercorns (optional)"},{q:1,u:"",name:"small bay leaf (optional)"}],
+    steps:[{h:"Brine",t:"Heat vinegar, water, sugar and salt until dissolved. Cool."},{h:"Pack",t:"Press cabbage and spices into jar firmly but not crushed. Pour brine to submerge."},{h:"Chill",t:"Seal and refrigerate. Ready in 24 h, keeps 2 weeks."}]},
+  {id:"branston-easy",title:"Branston-style pickle - easy",cat:"Pickles",emo:"🍎",tags:["Chutney","British","Apple","CHECK"],yield:1,yieldLabel:"jar",yieldPlural:"jars",
+    ings:[{q:null,u:"",name:"pickled cabbage, drained and chopped (keep brine)"},{q:300,u:"g",name:"apples (2–3), half grated, half diced small"},{q:1,u:"",name:"onion, finely diced"},{q:1,u:"",name:"carrot, diced small"},{q:80,u:"g",name:"dark brown sugar"},{q:100,u:"ml",name:"liquid: leftover brine topped up with any vinegar"},{q:1,u:"tbsp",name:"tomato paste"},{q:1,u:"tsp",name:"mustard (any)"},{q:0.5,u:"tsp",name:"cinnamon"},{q:null,u:"",name:"pinch ground cloves, pinch cayenne"},{q:0.5,u:"tsp",name:"salt"},{q:1,u:"tsp",name:"soy sauce (optional, for brown colour)"}],
+    steps:[{h:"Simmer",t:"Everything except the cabbage in a pan, uncovered, 25–30 min, stirring now and then, until apple breaks down and it's thick and jammy."},{h:"Finish",t:"Stir in cabbage, cook 5 min more."},{h:"Jar",t:"Into a clean jar, cool, refrigerate. Keeps about a month."}],
+    notes:"Use-ups: a handful of raisins/sultanas, dice of courgette or gherkins, Worcestershire or Marmite instead of soy, garam masala in place of cinnamon."},
+  {id:"chutney-tamarillo",title:"Chutney - Spicy Tamarillo",cat:"Pickles",emo:"🫙",tags:["Chutney","Tamarillo","Spicy","CHECK"],yield:1,yieldLabel:"L",yieldPlural:"L",
+    ings:[{q:1285,u:"g",name:"tamarillos (about 1 kg flesh)"},{q:300,u:"g",name:"onions, finely chopped"},{q:3,u:"",name:"garlic cloves, chopped"},{q:1,u:"",name:"thumb ginger, grated"},{q:3,u:"",name:"fresh chillies, chopped (or 1–2 tsp flakes)"},{q:250,u:"ml",name:"cider vinegar"},{q:275,u:"g",name:"brown sugar (250–300)"},{q:1,u:"tsp",name:"mustard seeds"},{q:1,u:"tsp",name:"cumin seeds"},{q:0.5,u:"tsp",name:"cinnamon"},{q:1.5,u:"tsp",name:"salt"}],
+    steps:[{h:"Prep",t:"Halve and scoop flesh with a spoon (take the easy middle AND the firm orange flesh — only the red skin goes). Roughly chop."},{h:"Fry",t:"Fry onion in a little oil 5 min. Add garlic, ginger, chilli and seeds, 1 min more until seeds pop."},{h:"Simmer",t:"Add tamarillo, vinegar, sugar, cinnamon and salt. Uncovered 45–60 min, stirring more often towards end, until thick — a spoon dragged across the pan leaves a clear trail."},{h:"Jar",t:"Ladle hot into sterilised jars, seal straight away."}],
+    notes:"Start at 250 g sugar, taste near the end. Sealed keeps months. Opened keeps a month in fridge. Flavour better after a week."},
+  {id:"aji-tamarillo",title:"Ají - Tamarillo",cat:"Bits",emo:"🌶️",star:true,tags:["Sauce","South American","Tamarillo","CHECK"],yield:1,yieldLabel:"small jar",yieldPlural:"small jars",
+    ings:[{q:285,u:"g",name:"tamarillos (about 4)"},{q:2,u:"",name:"fresh chillies (or ½ tsp flakes)"},{q:28,u:"g",name:"small onion (25–30 g)"},{q:null,u:"",name:"small handful coriander"},{q:null,u:"",name:"squeeze lime"},{q:null,u:"",name:"pinch salt"},{q:1,u:"tsp",name:"sugar (optional)"}],
+    steps:[{t:"Scoop out the flesh (middle + firm orange, discard red skin)."},{t:"Blend with chillies, onion, lime and salt. Splash of water if too thick."},{t:"Stir in chopped coriander. Taste, adjust heat and salt."}],
+    notes:"Rinse raw onion in cold water for milder. Keeps 5 days in fridge. For eggs, rice, tacos, grilled meat, empanadas."},
+  {id:"yoghurt",title:"Yoghurt",cat:"Preserves",emo:"🥛",tags:["Dairy","Fermented","Culture","CHECK"],yield:1,yieldLabel:"L",yieldPlural:"L",
+    ings:[{q:1000,u:"ml",name:"whole UHT milk"},{q:2,u:"tbsp",name:"live yoghurt (plain, 2–3 tbsp)"}],
+    steps:[{h:"Warm",t:"Heat milk to 42–45 °C. Finger test: hot but not painful for 10 sec. Over 50 °C kills the cultures."},{h:"Inoculate",t:"Mix yoghurt with a ladle of warm milk until smooth, then stir back into the rest. Pour into clean jar."},{h:"Incubate",t:"40–45 °C, undisturbed, 6–10 h. Options: oven preheated to 50 °C then switched off with light on; or wrap in towels in a cooler with a hot water bottle."},{h:"Check",t:"Tilt gently. When set, yoghurt pulls away from the side in one mass. Longer = tangier."},{h:"Chill",t:"Fridge at least 4 h. Firms up more cold."}],
+    notes:"UHT skips the usual 85 °C heat-and-cool step. Don't stir or move during incubation. Thin result = too cool, too short, or moved. Save 2–3 tbsp as next starter — weakens after 5–10 rounds."},
+  {id:"apple-sauce",title:"Apple sauce",cat:"Preserves",emo:"🍎",tags:["Apple","Freezer","Simple","CHECK"],yield:1500,yieldLabel:"g",yieldPlural:"g",
+    ings:[{q:2000,u:"g",name:"apples, peeled, cored and chopped (keep scraps for vinegar)"},{q:100,u:"ml",name:"water"},{q:0.5,u:"",name:"lemon, juiced"},{q:50,u:"g",name:"sugar, to taste (0–100 g, optional)"},{q:1,u:"tsp",name:"cinnamon (optional)"}],
+    steps:[{h:"Cook",t:"Simmer apples, water and lemon covered medium-low 15–20 min, stirring, until they collapse."},{h:"Finish",t:"Mash for chunky or blend for smooth. Add sugar and cinnamon to taste."},{h:"Freeze",t:"Cool, portion flat into bags or tubs. Keeps 6–12 months frozen, or a week in the fridge."}]},
+  {id:"apple-cider-vinegar",title:"Apple cider vinegar - scrap",cat:"Preserves",emo:"🍏",tags:["Fermented","Zero-waste","Apple","CHECK"],yield:1,yieldLabel:"L",yieldPlural:"L",
+    ings:[{q:null,u:"",name:"peels and cores from ~1 kg apples (or chopped bruised apples)"},{q:1000,u:"ml",name:"water (boiled & cooled if heavily chlorinated)"},{q:100,u:"g",name:"sugar (100 g/L — needed for ~5% acidity)"}],
+    steps:[{h:"Start",t:"Dissolve sugar in water. Fill jar ¾ with scraps, pour sugar water to cover. Weigh scraps down (zip bag of water). Cover with a cloth and rubber band — NOT a lid."},{h:"Ferment (stage 1)",t:"Room temp 2–3 weeks, stirring daily. Will bubble, then smell boozy."},{h:"Strain",t:"Strain out scraps. Return liquid to jar, cover with cloth."},{h:"Sour (stage 2)",t:"Leave 3–6 weeks more while alcohol turns to vinegar. Taste from week 3. When sharp enough, close with proper lid."}],
+    notes:"Homemade acidity varies — unknown without titration. NOT reliably safe for shelf-stable preserving. Keep the mother disc for a faster next batch. Fuzzy mould = bin, usually from scraps poking above liquid. Can test acidity by titration with 0.5 M NaOH + phenolphthalein: %acetic (w/v) = V_NaOH × 0.30."}
+];
+
+function fmtQty(n){
+  if(n==null) return "";
+  if(n===0) return "0";
+  const sign = n<0?"-":""; n = Math.abs(n);
+  const whole = Math.floor(n);
+  const frac = n - whole;
+  if(frac < 0.04){ return sign + (whole || "0"); }
+  if(frac > 0.96){ return sign + (whole+1); }
+  const marks = [[0.125,"⅛"],[0.25,"¼"],[1/3,"⅓"],[0.5,"½"],[2/3,"⅔"],[0.75,"¾"],[0.875,"⅞"]];
+  let best = null, bestDiff = 1;
+  for(const [v,s] of marks){
+    const d = Math.abs(frac - v);
+    if(d < bestDiff){ bestDiff = d; best = s; }
+  }
+  if(bestDiff < 0.05){
+    return sign + (whole>0 ? whole + best : best);
+  }
+  if(n >= 10) return sign + Math.round(n);
+  return sign + (Math.round(n*10)/10);
+}
+
+const CAT_ORDER = ["Breads","Mains","Bits","Dressings","Pickles","Preserves","Meat","Sweet"];
+let activeId = RECIPES[0].id;
+let scale = {};
+let catFilter = "All";
+let query = "";
+const presentCats = CAT_ORDER.filter(c => RECIPES.some(r => r.cat === c));
+const cats = ["All", ...presentCats];
+
+const chipsEl = document.getElementById("chips");
+cats.forEach(c=>{
+  const b = document.createElement("button");
+  b.className = "chip" + (c===catFilter?" on":"");
+  b.textContent = c;
+  b.onclick = ()=>{catFilter = c; renderChips(); renderList();};
+  chipsEl.appendChild(b);
+});
+function renderChips(){
+  [...chipsEl.children].forEach((b,i)=>b.classList.toggle("on", cats[i]===catFilter));
+}
+
+const listEl = document.getElementById("list");
+function renderList(){
+  listEl.innerHTML = "";
+  const groups = {};
+  RECIPES.forEach(r=>{
+    const show = (catFilter==="All" || r.cat===catFilter) && matchQuery(r);
+    if(!show) return;
+    (groups[r.cat] = groups[r.cat] || []).push(r);
+  });
+  const total = Object.values(groups).reduce((n,a)=>n+a.length,0);
+  document.getElementById("count").textContent = total;
+  if(total===0){
+    listEl.innerHTML = '<div class="empty">No matches.</div>';
+    return;
+  }
+  CAT_ORDER.forEach(cat=>{
+    if(!groups[cat]) return;
+    const g = document.createElement("div"); g.className="grp"; g.textContent=cat;
+    listEl.appendChild(g);
+    groups[cat].forEach(r=>{
+      const b = document.createElement("button");
+      b.className = "row" + (r.id===activeId?" on":"");
+      const checkFlag = r.tags.includes("CHECK") ? '<span class="check-flag">CHECK</span>' : '';
+      const starMark = r.star ? '<span class="star" aria-label="favourite">★</span>' : '';
+      b.innerHTML = `<span class="emo">${r.emo||""}</span><div class="meat"><div class="t">${r.title}${checkFlag}</div><div class="s">${r.tags.filter(t=>t!=="CHECK").slice(0,3).join(" · ")}</div></div>${starMark}`;
+      b.onclick = ()=>{activeId = r.id; renderList(); renderPanel(); if(window.innerWidth<=820){document.getElementById("panel").scrollIntoView({behavior:"smooth",block:"start"});}};
+      listEl.appendChild(b);
+    });
+  });
+}
+function matchQuery(r){
+  if(!query) return true;
+  const q = query.toLowerCase();
+  if(r.title.toLowerCase().includes(q)) return true;
+  if(r.tags.some(t=>t.toLowerCase().includes(q))) return true;
+  if(r.ings.some(i=>i.name && i.name.toLowerCase().includes(q))) return true;
+  return false;
+}
+
+function renderPanel(){
+  const r = RECIPES.find(x=>x.id===activeId);
+  const el = document.getElementById("panelIn");
+  if(!r){ el.innerHTML = '<div class="empty">Pick a recipe.</div>'; return; }
+  const servings = scale[r.id] ?? r.yield;
+  const factor = servings / r.yield;
+
+  let ingsHtml = '<ul class="ings">';
+  r.ings.forEach((i,idx)=>{
+    if(i.head){ ingsHtml += `<li style="cursor:default;border:0;padding:0"><div class="subhead" style="margin-top:${idx?10:0}px">${i.head}</div></li>`; return; }
+    const scaled = i.q==null ? "" : fmtQty(i.q * factor);
+    const qClass = factor===1 ? "q" : "q scaled";
+    const unit = i.u ? " " + i.u : "";
+    ingsHtml += `<li data-i="${idx}"><span class="box"></span><span class="${qClass}">${scaled}${unit}</span><span>${i.name}</span></li>`;
+  });
+  ingsHtml += "</ul>";
+
+  let stepsHtml = '<ol class="steps">';
+  r.steps.forEach((s,idx)=>{
+    const head = s.h ? `<strong>${s.h}:</strong> ` : "";
+    stepsHtml += `<li data-s="${idx}">${head}${s.t||""}</li>`;
+  });
+  stepsHtml += "</ol>";
+
+  const label = servings===1 ? r.yieldLabel : r.yieldPlural;
+  const origLabel = r.yield===1 ? r.yieldLabel : r.yieldPlural;
+
+  el.innerHTML = `
+    <div class="hero" style="position:relative">
+      <div class="big">${r.emo||""}</div>
+      <div class="ht">
+        <h2>${r.title}</h2>
+        <div class="tags">
+          <span class="tag serv">${r.yield} ${origLabel}</span>
+          ${r.tags.map(t=>`<span class="tag${t==='CHECK'?' check':''}">${t}</span>`).join("")}
+        </div>
+      </div>
+      ${r.star ? '<span class="star" aria-label="favourite">★</span>' : ''}
+    </div>
+    <div class="body">
+      <div class="scaler">
+        <span class="lbl">Scale</span>
+        <button id="dec" aria-label="less">−</button>
+        <span class="n" id="n">${servings} ${label}</span>
+        <button id="inc" aria-label="more">+</button>
+      </div>
+      ${factor!==1 ? `<div class="scale-hint">Scaled ×${(factor).toFixed(2).replace(/\.?0+$/,"")} from ${r.yield} ${origLabel}.</div>` : ""}
+      <div class="sect"><h3>Ingredients</h3>${ingsHtml}</div>
+      <div class="sect"><h3>Steps</h3>${stepsHtml}</div>
+      ${r.notes ? `<div class="notes"><h3>Notes</h3>${r.notes}</div>` : ""}
+    </div>
+  `;
+
+  const minY = 1, maxY = Math.max(r.yield*4, 24);
+  el.querySelector("#dec").onclick = ()=>{ if(servings>minY){ scale[r.id] = servings-1; renderPanel(); } };
+  el.querySelector("#inc").onclick = ()=>{ if(servings<maxY){ scale[r.id] = servings+1; renderPanel(); } };
+
+  el.querySelectorAll("ul.ings li[data-i]").forEach(li=>{
+    li.onclick = ()=>li.classList.toggle("done");
+  });
+  el.querySelectorAll("ol.steps li[data-s]").forEach(li=>{
+    li.onclick = ()=>li.classList.toggle("done");
+  });
+}
+
+document.getElementById("q").oninput = (e)=>{query = e.target.value.trim(); renderList();};
+
+renderList();
+renderPanel();
+</script>
+</body>
+</html>
