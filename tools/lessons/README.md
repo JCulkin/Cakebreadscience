@@ -80,6 +80,12 @@ Molecules/compounds available: see `MOL`/`SPEC` and `IONIC` in `chem.js` (add ne
   Skip only things with no teaching value: spec-table screenshots, bare arrows/decoration, screenshots of
   external websites. Still exclude anything watermarked by another publisher (e.g. Save My Exams) and past-paper scans.
   Images live in `<code>/draft/img/` (copied into each frozen version). Write original questions in exam style.
+- **Links (simulations, videos, demos): never drop them.** Extract every hyperlink from the deck (slide rels).
+  Keep the slide's screenshot as a visual reminder of what the link is: `<a class="linkcard" href target="_blank">`
+  with `<img>` (or `<span class="ic">` if there's no screenshot), a kind label (Simulation / Video) and a short title.
+  Put it on the page where the slide sits, and give it its own projector slide.
+- Fill-in / blank activities from the deck: rebuild them (e.g. slide image + `data-s` answer overlays), don't skip them.
+- Each lesson starts with `<details class="specbox">` listing the spec points word for word.
 - Run every page in a browser before pushing: no console errors, every projector slide fully revealed fits the stage.
 
 ## Converting a PowerPoint directly (approach B from the trial)
