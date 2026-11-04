@@ -1,123 +1,102 @@
-# Worksheets Expansion Plan
+# Worksheets: Standards and Plan
 
-This plan covers how we will expand worksheets to provide slow, in-depth coverage of the specification with consistent formatting, beautiful math, and easy-to-use mark schemes.
+How worksheets on cakebreadscience.com are built, named, styled and printed. Read this before making or changing a worksheet.
 
-## Goals
-- Create many more worksheets: about 50 per subject, flexible as needed to cover the spec.
-- Cover the specification slowly and in depth, with gentle progression.
-- Ensure every worksheet has:
-  - Beautiful math rendering (MathJax)
-  - Answer boxes sized to the task
-  - A clear, complete mark scheme
+## What exists (Nov 2026)
 
-## Guiding Principles
-- Scope control: each worksheet targets a small, explicit spec slice.
-- Gradual progression: recall -> simple application -> short interpretation.
-- Consistent formatting: sections, question numbering, and answer box sizes.
-- Mathematics should be readable and rendered, never raw symbols.
-- Mark schemes should be concise, aligned to question numbering, and easy to scan.
+| Folder | Count | Index page |
+|---|---|---|
+| `worksheets/physics/` | 31 topic sheets | `worksheets/science.html` |
+| `worksheets/chemistry/` | 14 topic sheets | `worksheets/science.html` |
+| `worksheets/biology/` | 18 topic sheets | `worksheets/science.html` |
+| `worksheets/maths/` | 19 sheets | `worksheets/maths.html` |
+| `worksheets/cross-curricular/` | 1 sheet | `worksheets/cross-curricular.html` |
 
-## Math Rendering Standard
-- Use MathJax for all worksheets.
-- Inline math uses $...$ with proper TeX (e.g., $v = d/t$, $m/s^2$).
-- No raw caret or dollar signs should appear to users after render.
-- The MathJax loader should be included in every worksheet or injected globally if we add a shared template later.
+There is no `worksheets/index.html`; the three pages above are the indexes.
+Spec coverage per sheet is tracked in `WORKSHEET_COVERAGE.md`.
 
-## Worksheet Structure Standard
-1. Header (title, subtitle, spec range)
-2. Definition box (1-3 short key ideas)
-3. Sections A/B/C... with 4-10 questions each
-4. Total marks
-5. Mark scheme with short, unambiguous answers
+## Two kinds of worksheet
 
-## Answer Box Sizing Rules
-- 1 line (fact/definition): use standard answer-space
-- 2-3 lines (short explanation): use large
-- Calculations: use standard unless multiple steps are required
-- Diagram/drawing: use large or custom diagram area
+### 1. Topic sheets (the existing bank)
+- One sheet per subtopic, covering the whole subtopic at an introductory level: definitions, calculations, a practical question.
+- Flowing web page that also prints. Uses `css/{subject}.css`, which imports `css/worksheet.css`.
+- Mark scheme sits at the bottom of the same file (class `mark-scheme`).
+- Equations use MathJax.
+- Templates: `admin/templates/{SUBJECT}_TEMPLATE.html`.
 
-## Scope and Volume Targets
-We will aim for about 50 worksheets per subject, flexing up or down to ensure full spec coverage and sensible pacing. That means:
-- Physics: about 50
-- Chemistry: about 50
-- Biology: about 50
-Total target: about 150 (plus cross-curricular if needed)
+### 2. Practice and Challenge sheets (new layer, from Nov 2026)
+- Sit on top of a topic sheet and drill one skill in depth (e.g. wave-speed calculations).
+  - **Practice**: reminders, worked examples, scaffolded sections building from single-step to multi-step.
+  - **Challenge**: fewer, harder multi-step questions with large working space, marks per question. Aimed at high-ability Year 11.
+- Built as fixed A4 pages (`<div class="page">` = one side of A4), so they always print on exactly the intended number of sides.
+- Shared stylesheet: `css/print-sheet.css`. It reads the subject colour variables, so pages link both `css/{subject}.css` and `css/print-sheet.css`.
+- Mark scheme is a **separate file** (`..._ms.html`), linked from the sheet but not printed with it.
+- Equations are plain Unicode text (v = f × λ, 6.5 × 10⁻⁷ m), not MathJax. They print instantly and reliably. Use MathJax only if a sheet needs real fractions, roots or stacked notation.
 
-## Coverage Strategy
-We will build a layered bank per subject:
-- Layer 1: Fundamentals (definitions, units, simple recall)
-- Layer 2: Straightforward calculations
-- Layer 3: Simple data interpretation
-- Layer 4: Mini practicals and method questions
-- Layer 5: Mixed-review mini checks
+## Naming
 
-Each spec point will appear across multiple layers to slow the pace and deepen mastery.
+Filenames follow the subtopic code used in `science.html`:
 
-## Naming Convention
-- Subject folder: worksheets/physics, worksheets/chemistry, worksheets/biology
-- Filename: topic.subtopic_short_title_level.html
-- Example: 1.1_speed_graphs_basics.html
+```
+worksheets/{subject}/{code}_{short_title}.html                 topic sheet
+worksheets/{subject}/{code}_{short_title}_practice.html        practice sheet
+worksheets/{subject}/{code}_{short_title}_practice_ms.html     its mark scheme
+worksheets/{subject}/{code}_{short_title}_challenge.html       challenge sheet
+worksheets/{subject}/{code}_{short_title}_challenge_ms.html    its mark scheme
+```
 
-## Index and Navigation
-- Update worksheets/index.html to group by subject -> topic -> level
-- Each worksheet should list the spec numbers it targets
-- Add a visual level tag in the title or subtitle
+Example: `physics/3b_wave_speed.html`, `physics/3b_wave_speed_practice.html`, `physics/3b_wave_speed_challenge.html`.
 
-## Quality Checklist (Per Worksheet)
-- Spec slice stated clearly
-- Questions strictly within spec
-- Math rendered correctly
-- Answer box size appropriate
-- Mark scheme complete and aligned
-- No spelling or unit errors
+Maths sheets use the older `1.1_topic_name.html` pattern; leave them as they are.
 
-## Implementation Plan
+## Subject identity
 
-### Phase 1: Foundations and Templates
-1. Create a worksheet template file with MathJax included.
-2. Create a mark scheme template section.
-3. Add a simple checklist to use for each worksheet.
+Every sheet must show which science it is at a glance:
 
-### Phase 2: Physics Rollout (Pilot)
-1. For physics, map spec points into small, explicit slices until coverage is complete.
-2. Generate worksheets in batches of 10.
-3. After each batch, review formatting and difficulty.
+| Subject | Main colour | Dark colour | Symbol |
+|---|---|---|---|
+| Physics | `#d08000` amber | `#7a4a00` | 🚀 |
+| Chemistry | `#c8001e` red | `#8c0013` | 🧪 |
+| Biology | `#005e22` green | `#004d1a` | 🌿 |
+| Maths | see `css/maths.css` | | 🧮 |
 
-### Phase 3: Chemistry Rollout
-1. Apply the same approach to chemistry.
-2. Maintain consistent style and math formatting.
+The colours live in `css/{subject}.css` as CSS variables. Never hard-code them in a sheet.
+On mark schemes, answers are highlighted green, except on biology sheets, where they are highlighted blue so they don't blend into the subject colour.
 
-### Phase 4: Biology Rollout
-1. Apply the same approach to biology.
-2. Maintain consistent style and math formatting.
+## Header (all sheets)
 
-### Phase 5: Index and QA
-1. Update worksheets/index.html in sync with new files.
-2. Run a final spec coverage check.
-3. Spot-check sample worksheets for math rendering and box sizes.
+Three lines, always:
+1. **Title**: the topic in plain words (e.g. "Waves: Using the Equations").
+2. **Subtitle**: `IGCSE Edexcel {Subject}`, plus `· Practice` or `· Challenge` for the new layer.
+3. **Spec line**: the exact spec points and a short description (e.g. "3.1, 3.5–3.7 · wave speed, frequency and period, units and conversions"). List every spec point a question relies on, including ones borrowed from another topic.
 
-## First Deliverables (Next Steps)
-- Create template worksheet file with MathJax, sections, and mark scheme.
-- Produce a physics spec slice map with coverage targets.
-- Generate the first batch of 10 physics worksheets.
+## Guiding principles
 
-## Biology Gap Plan (Current)
-The remaining Biology coverage focuses on coordination/response, practicals, and a few inheritance details. Planned worksheet slices:
-- 2.86-2.89 Nervous system, impulses, and synapses
-- 2.90 Reflex arc structure and function
-- 2.91-2.92 Eye structure, accommodation, and light response
-- 2.93 Temperature regulation by skin
-- 2.94 Hormones overview (adrenaline, insulin, testosterone, progesterone, oestrogen)
-- 2.67 Coronary heart disease risk factors
-- 2.18-2.22 Photosynthesis practicals (starch test; light/CO2/chlorophyll requirements)
-- 2.34-2.38 Respiration practical (CO2/heat from respiring seeds)
-- 3.3-3.4 Pollination and fertilisation in flowering plants
-- 3.5 Seed germination practical
-- 3.7 Asexual reproduction methods (natural and artificial)
-- 3.22 Polygenic inheritance and variation
-- 3.24 Pedigree diagrams
-- 3.26-3.27 Sex determination using genetic diagrams
+1. **Fill an even number of printed pages.** The questions part of a sheet (not the mark scheme) must end on the last line of an even page (2 or 4 sides), with no awkward half-empty last page. If a sheet runs onto a page it doesn't fill, grow the answer boxes on questions that need more room until it fills the page, or trim; don't leave the space blank. Check by printing to PDF before publishing.
+2. **Answer space matches the task.** One line for a fact, 2–3 lines for a short explanation, a working box for calculations, bigger boxes for multi-step, diagrams and dot-and-cross. Students should never run out of room on a question worth 3+ marks.
+3. **Stay inside the Double Award spec** (`specifications/science.html`) unless a sheet is explicitly labelled as extension.
+4. **Progression within a sheet**: recall → single-step → multi-step → unfamiliar context.
+5. **Every answer needs a unit**, and mark schemes say so.
+6. **Mark schemes**: aligned to question numbers, show working step by step, highlight the final answer, and add a short tip for the usual mistake where useful.
 
-## Open Decisions
-- Whether to introduce a shared template system later (to reduce repetition).
-- How to visually label difficulty levels in the index.
+## Quality checklist (per sheet)
+
+- [ ] Three-line header with correct spec points
+- [ ] Subject colour and symbol come from the subject CSS
+- [ ] Questions strictly within spec (or labelled extension)
+- [ ] Prints to an even number of A4 sides with no part-empty page (questions only)
+- [ ] Answer boxes sized to the task
+- [ ] Mark scheme complete, numbered to match, answers checked by calculation
+- [ ] No spelling or unit errors
+
+## Publishing
+
+- New sheets are added to the test area first (see the project's website workflow): files go in their real subject folder, but they are linked only from test pages (`test.html`, `worksheets/science-test.html`), not from the live `science.html`, until approved.
+- Test pages carry `<meta name="robots" content="noindex, nofollow">`.
+- Netlify deploys on every push to `main`. Batch changes into as few pushes as possible.
+
+## Open decisions
+
+- Whether to roll Practice/Challenge sheets out across other subtopics after the 3b pilot.
+- Whether to move topic-sheet mark schemes into separate files (would stop answers printing with the questions).
+- The ~50-sheets-per-subject target from the original plan: current bank is 31/14/18, but each topic sheet covers a wide spec range, so the number matters less than coverage depth. See `WORKSHEET_COVERAGE.md`.

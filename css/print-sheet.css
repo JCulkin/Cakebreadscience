@@ -1,0 +1,166 @@
+/* ==========================================================================
+   Print sheets: fixed-A4 Practice / Challenge worksheets and their mark schemes
+   --------------------------------------------------------------------------
+   Use AFTER the subject stylesheet, which supplies the colours and symbol:
+     <link rel="stylesheet" href="../../css/physics.css">
+     <link rel="stylesheet" href="../../css/print-sheet.css">
+     <body class="ps">            worksheet
+     <body class="ps ps-ms">      mark scheme (larger text, answer highlights)
+     <body class="ps ps-ms bio">  biology mark scheme (blue answer highlight)
+   Each <div class="page"> is exactly one side of A4. Everything is scoped
+   under .ps so the old worksheet.css rules never leak in.
+   See worksheets/worksheets.md for the rules these sheets follow.
+   ========================================================================== */
+
+@page { size: A4; margin: 0; }
+
+body.ps {
+    --ps-answer: #1a6b2a;
+    --ps-answer-bg: #dff3e2;
+    --ps-example: #1a4f8a;
+    --ps-warn: #8a1c1c;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: #e6e6e6;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #111;
+    font-size: 10pt;
+    line-height: 1.25;
+}
+body.ps.ps-ms { font-size: 11pt; line-height: 1.4; }
+body.ps.bio { --ps-answer: #1a4f8a; --ps-answer-bg: #dde9f7; }
+.ps * { box-sizing: border-box; }
+
+/* ---------- Page frame ---------- */
+.ps .page {
+    width: 210mm; height: 297mm;
+    padding: 9mm 12mm 7mm;
+    margin: 8mm auto;
+    background: #fff;
+    box-shadow: 0 1px 6px rgba(0,0,0,.2);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+}
+.ps .foot { font-size: 7.5pt; color: #777; text-align: center; margin-top: auto; padding-top: 1mm; }
+.ps .screen-links { width: 210mm; margin: 6mm auto -4mm; font-size: 10pt; display: flex; gap: 6mm; }
+.ps .screen-links a { color: var(--primary-color); font-weight: bold; }
+
+@media print {
+    body.ps { background: #fff; padding: 0; }
+    .ps .page { margin: 0; box-shadow: none; page-break-after: always; break-after: page; }
+    .ps .page:last-child { page-break-after: auto; break-after: auto; }
+    .ps .screen-links { display: none; }
+    .ps * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ---------- Header: symbol · title / subtitle / spec line · name ---------- */
+.ps .header {
+    display: flex; align-items: center; gap: 3mm;
+    text-align: left;
+    border-bottom: 2.5px solid var(--accent-color);
+    padding: 0 0 2mm; margin: 0 0 3mm;
+    position: static;
+}
+.ps .header::before { position: static; font-size: 22pt; line-height: 1; }
+.ps .header .titles { flex: 1; }
+.ps h1 { font-size: 16pt; margin: 0; color: var(--primary-color); }
+.ps .ps-sub { font-size: 9.5pt; color: var(--primary-light); font-weight: bold; margin-top: .3mm; }
+.ps .ps-spec { font-size: 8.5pt; color: #333; font-style: italic; }
+.ps .name { font-size: 9.5pt; align-self: flex-end; }
+.ps .name span { display: inline-block; border-bottom: 1px solid #111; width: 45mm; }
+
+/* ---------- Section bars and reminder boxes ---------- */
+.ps h2 {
+    font-size: 10.5pt;
+    margin: 2.2mm 0 1.2mm;
+    padding: 1mm 2mm;
+    background: var(--accent-light);
+    border-left: 4px solid var(--accent-color);
+    color: var(--primary-color);
+    display: flex; justify-content: space-between; align-items: baseline;
+}
+.ps.ps-ms h2 { font-size: 11pt; margin: 3.4mm 0 1.8mm; }
+.ps h2 small { font-weight: normal; font-size: 8.5pt; color: #333; }
+
+.ps .reminder {
+    border: 1.5px solid var(--accent-color);
+    background: var(--accent-lighter);
+    padding: 2mm 3mm;
+    border-radius: 2mm;
+}
+.ps .reminder .title {
+    font-weight: bold; font-size: 9.5pt; color: var(--primary-color);
+    text-transform: uppercase; letter-spacing: .5px; margin-bottom: 1mm;
+}
+.ps .eqgrid { display: grid; grid-template-columns: 1fr 1fr 34mm; gap: 3mm; align-items: center; }
+.ps .eq { font-size: 13pt; font-weight: bold; text-align: center; padding: 1mm; border: 1px solid var(--accent-border); background: #fff; }
+.ps .eq .tag { display: block; font-size: 7.5pt; font-weight: normal; color: #333; }
+.ps .units { font-size: 8.5pt; }
+.ps .steps { font-size: 9pt; margin-top: 1.5mm; }
+.ps .triangle { width: 34mm; }
+.ps .data { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 6mm; font-size: 9.5pt; }
+
+/* ---------- Tables ---------- */
+.ps table { border-collapse: collapse; width: 100%; border: none; margin: 0; }
+.ps .grid td, .ps .grid th,
+.ps .prefix td, .ps .prefix th,
+.ps .key td, .ps .key th { border: 1px solid #555; text-align: center; color: #111; }
+.ps .grid td, .ps .grid th { padding: .9mm 2mm; font-size: 10pt; }
+.ps .prefix td, .ps .prefix th { padding: .8mm 1.5mm; font-size: 9pt; }
+.ps .key td, .ps .key th { padding: 1.3mm 2mm; font-size: 10.5pt; }
+.ps .grid th, .ps .prefix th, .ps .key th { background: var(--accent-light); color: var(--primary-color); }
+.ps .grid td.blank { background: #fff; min-width: 25mm; }
+.ps .key td.ka { color: var(--ps-answer); font-weight: bold; background: var(--ps-answer-bg); }
+
+/* ---------- Questions and answer space ---------- */
+.ps ol { margin: 0; padding-left: 6mm; }
+.ps ol li { margin-bottom: 1.2mm; }
+.ps .two { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm 6mm; }
+.ps .three { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3mm; }
+.ps .row { display: flex; gap: 4mm; align-items: flex-start; }
+
+.ps .ans { display: block; border-bottom: 1px dotted #555; height: 6mm; }
+.ps .work { border: 1px dashed #888; border-radius: 1.5mm; margin-top: 1mm; position: relative; }
+.ps .work::before { content: "working"; position: absolute; top: .5mm; left: 1.5mm; font-size: 7pt; color: #999; }
+.ps .final { text-align: right; font-size: 9.5pt; margin-top: 1mm; }
+.ps .final span { display: inline-block; border-bottom: 1px solid #111; width: 32mm; }
+.ps .hint { font-size: 8.5pt; font-style: italic; color: #333; }
+
+/* Challenge-style numbered question blocks */
+.ps .q { margin-top: 3mm; }
+.ps .q .qh {
+    display: flex; justify-content: space-between;
+    font-weight: bold; color: var(--primary-color);
+    border-bottom: 1.5px solid var(--accent-color);
+    padding-bottom: .8mm; margin-bottom: 1.2mm;
+}
+.ps .q .qh span { font-weight: normal; font-size: 9pt; color: #333; }
+.ps .q ol.parts { list-style: lower-alpha; padding-left: 6mm; margin: 1mm 0 0; }
+.ps .q ol.parts li { margin-bottom: .6mm; }
+
+/* Conversion drill */
+.ps .conv { display: grid; grid-template-columns: 1fr 1fr; gap: 1mm 6mm; font-size: 10pt; }
+.ps .conv div { display: flex; align-items: flex-end; gap: 2mm; height: 6mm; }
+.ps .conv div span.line { flex: 1; border-bottom: 1px dotted #555; }
+.ps .conv div.ex { color: var(--ps-example); }
+.ps .conv span.line.ex { text-align: center; font-style: italic; }
+
+/* Spot the mistake */
+.ps .mistake { border: 1px solid #999; padding: 1.5mm 2.5mm; font-size: 9.5pt; }
+.ps .mistake .student { font-style: italic; color: var(--ps-warn); background: #fffbe6; padding: 1mm 2mm; margin: 1mm 0; }
+
+/* ---------- Mark scheme items ---------- */
+.ps .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm 5mm; }
+.ps .item { border-left: 3px solid var(--accent-color); padding: 1.2mm 0 1.2mm 2.5mm; margin-bottom: 2.5mm; }
+.ps .ms .item { margin-bottom: 0; }
+.ps .item .iq { font-weight: bold; color: var(--primary-color); }
+.ps .item .w { font-size: 10.5pt; color: #222; }
+.ps .item .a {
+    font-weight: bold; color: var(--ps-answer); background: var(--ps-answer-bg);
+    display: inline-block; padding: .3mm 2mm; border-radius: 1mm; margin-top: .5mm;
+}
+.ps .item .mk { color: var(--primary-light); font-weight: bold; font-size: 9.5pt; }
+.ps .tip { font-size: 8.8pt; color: var(--ps-warn); }
+.ps .tip::before { content: "⚠ "; }
+.ps .howto { font-size: 9pt; }
