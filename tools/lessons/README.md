@@ -73,8 +73,13 @@ Molecules/compounds available: see `MOL`/`SPEC` and `IONIC` in `chem.js` (add ne
 ## Content rules
 - Source: the teacher's decks in Google Drive `2. Science/<Subject>/<section>/` (connect via the desktop app).
   Follow their teaching order, wording and emphasis where sensible; fill spec gaps; skip Separate-only points.
-- Copyright: no images from the web, textbooks, Save My Exams or past papers. Use drawn components/SVG,
-  or the teacher's own PowerPoint drawings. Write original questions in exam style.
+- Images (teacher's decision, 5 Nov 2026): **include the images from the teacher's own decks**: diagrams,
+  mnemonic cartoons, photos, animations. Place each one where it sits in the deck, on both the page
+  (`<figure class="pic">`, `.sm`/`.lg` sizes) and the projector slide (`.fig > img`, `.imrow`). Extract with
+  python-pptx, convert to WebP (≤1400px); animated GIFs → looping MP4 (`<video autoplay muted loop playsinline>`).
+  Skip only things with no teaching value: spec-table screenshots, bare arrows/decoration, screenshots of
+  external websites. Still exclude anything watermarked by another publisher (e.g. Save My Exams) and past-paper scans.
+  Images live in `<code>/draft/img/` (copied into each frozen version). Write original questions in exam style.
 - Run every page in a browser before pushing: no console errors, every projector slide fully revealed fits the stage.
 
 ## Converting a PowerPoint directly (approach B from the trial)
