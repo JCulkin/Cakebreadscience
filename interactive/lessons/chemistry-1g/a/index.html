@@ -17,13 +17,13 @@ header button{font:600 13px 'Barlow';background:#00a03a;color:#fff;border:0;padd
 figcaption{font-size:13px;color:#555;margin-top:4px}
 .ph{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;color:#ccc;font-weight:600;font-size:20px;border:2px solid #111;background:repeating-linear-gradient(45deg,#2a2a2a 0 12px,#333 12px 24px)}
 body.present .wrap{max-width:none;padding:0;display:block}
-body.present .slide{display:none;height:calc(100vh - 54px);background:#000;align-items:center;justify-content:center}
+body.present .slide{display:none;height:100vh;background:#000;align-items:center;justify-content:center}
 body.present .slide.cur{display:flex}
-body.present .slide img,body.present .ph{width:auto;max-width:100vw;max-height:calc(100vh - 54px);border:0}
+body.present .slide img,body.present .ph{width:auto;max-width:100vw;max-height:100vh;border:0}
 body.present figcaption{display:none}
 </style></head><body>
 <header><h1>Chemistry 1g · Covalent bonding</h1><span class="sub">Approach A · slide images</span>
-<button id="pres">Present ▶</button><a href="../">← compare approaches</a></header>
+<button id="pres">Present ▶</button><span class="sub" style="letter-spacing:0;text-transform:none">or click any slide</span><a href="../">← compare approaches</a></header>
 <main class="wrap">
 <figure class="slide" data-n="1"><img src="img/01.webp" alt="Covalent bonding Chemistry 1g" loading="lazy" width="1600" height="900"><figcaption>Slide 1</figcaption></figure>
 <figure class="slide" data-n="2"><img src="img/02.webp" alt="1 Principles of chemistry" loading="lazy" width="1600" height="900"><figcaption>Slide 2</figcaption></figure>
@@ -54,12 +54,53 @@ body.present figcaption{display:none}
 <figure class="slide" data-n="27"><img src="img/27.webp" alt="Graphite is one of the only non-metal structures to conduct electricity. This is due to its delocalised electron which can carry charge." loading="lazy" width="1600" height="900"><figcaption>Slide 27</figcaption></figure>
 <figure class="slide" data-n="28"><img src="img/28.webp" alt="C60 Fullerene Fullerenes are hollow-shaped simple covalent molecules Many applications as lubricants, catalysts and as drug delivery systems. E.g. C60 fullerene is a hollow ball shape with 60 carbon atoms. Held together by intermolecular forces. They are soft and can slide over each other. do not conduct electricity (no delocalised electrons) huge surface area. A molecule of C60 fullerene, sometimes referred to as a buckyball." loading="lazy" width="1600" height="900"><figcaption>Slide 28</figcaption></figure>
 </main>
+<style>
+/* shared presenter navigation (A & B) */
+.slide{cursor:pointer}
+.pbar{display:none}
+body.present{overflow:hidden;background:#000}
+body.present header{display:none}
+body.present .pbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;justify-content:center;align-items:center;gap:6px;padding:6px;background:rgba(0,0,0,.6);opacity:.15;transition:opacity .2s}
+body.present .pbar:hover,body.present.mouse .pbar{opacity:1}
+.pbar button{font:600 16px Barlow,Arial,sans-serif;background:#222;color:#eee;border:1px solid #555;padding:6px 14px;cursor:pointer}
+.pbar span{color:#ccc;font:600 15px Barlow,Arial,sans-serif;min-width:70px;text-align:center}
+body.present .slide{height:100vh !important}
+</style>
+<div class="pbar"><button id="pPrev" title="Previous (←)">‹ Back</button><span id="pCount"></span><button id="pNext" title="Next (→, space, click)">Next ›</button><button id="pFull" title="Full screen (F)">⛶ Full screen</button><button id="pExit" title="Exit (Esc)">✕ Exit</button></div>
 <script>
-const s=[...document.querySelectorAll('.slide')];let c=0;
-function show(i){c=Math.max(0,Math.min(s.length-1,i));s.forEach((e,j)=>e.classList.toggle('cur',j==c));}
-document.getElementById('pres').onclick=()=>{document.body.classList.toggle('present');show(c);};
-addEventListener('keydown',e=>{if(!document.body.classList.contains('present'))return;
- if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();show(c+1);}
- if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(c-1);}
- if(e.key=='Escape')document.body.classList.remove('present');});
-</script></body></html>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')]; let cur=0;
+  const body=document.body, stepFn=window.step||(()=>false), refit=window.fit||(()=>{});
+  const isP=()=>body.classList.contains('present');
+  function show(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,j)=>s.classList.toggle('cur',j==cur));
+    document.getElementById('pCount').textContent=(cur+1)+' / '+slides.length; refit();}
+  function enter(i){body.classList.add('present');show(i);}
+  function exit(){body.classList.remove('present'); if(document.fullscreenElement) document.exitFullscreen(); refit(); slides[cur].scrollIntoView({block:'center'});}
+  function next(){ if(!stepFn(slides[cur],1)) show(cur+1); }
+  function prev(){ if(!stepFn(slides[cur],-1)) show(cur-1); }
+  window.presentNext=next; window.presentPrev=prev;
+  slides.forEach((s,i)=>s.addEventListener('click',e=>{
+    if(e.target.closest('details,a,video')) return;
+    if(!isP()){enter(i);return;}
+    const r=s.getBoundingClientRect(); (e.clientX<r.left+r.width/4)?prev():next();
+  }));
+  document.getElementById('pres').onclick=()=>isP()?exit():enter(cur);
+  document.getElementById('pPrev').onclick=prev; document.getElementById('pNext').onclick=next;
+  document.getElementById('pExit').onclick=exit;
+  const full=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});
+  document.getElementById('pFull').onclick=full;
+  addEventListener('keydown',e=>{
+    if(!isP()) return;
+    if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Escape') exit();
+    else if(e.key==='f'||e.key==='F') full();
+  });
+  let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',e=>{if(!isP()||tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?next():prev();}tx=null;});
+  let mt; addEventListener('mousemove',()=>{body.classList.add('mouse');clearTimeout(mt);mt=setTimeout(()=>body.classList.remove('mouse'),1500);});
+  addEventListener('resize',refit);
+})();
+</script>
+
+</body></html>

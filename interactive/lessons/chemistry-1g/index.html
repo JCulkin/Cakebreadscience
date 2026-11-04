@@ -16,9 +16,9 @@ header{background:#111;padding:24px 16px}
 h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(32px,6vw,48px);font-weight:900;text-transform:uppercase;color:#eeeae0;line-height:1}
 h1 span{color:#ff4d5e}
 .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888;margin-top:6px}
-.wrap{max-width:900px;margin:0 auto;padding:26px 16px 60px}
+.wrap{max-width:1100px;margin:0 auto;padding:26px 16px 60px}
 h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;margin:28px 0 10px}
-.cards{display:grid;gap:14px}@media(min-width:760px){.cards{grid-template-columns:repeat(3,1fr)}}
+.cards{display:grid;gap:14px}@media(min-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}@media(min-width:1000px){.cards{grid-template-columns:repeat(4,1fr)}}
 a.card{display:block;background:#fff;border:2px solid #111;text-decoration:none;color:#111;padding:14px;transition:transform .1s}
 a.card:hover{transform:translateY(-2px)}
 .card .l{font-family:'Barlow Condensed';font-weight:900;font-size:40px;color:#8c0013;line-height:1}
@@ -38,27 +38,30 @@ ul{margin-left:20px}li{margin:3px 0}
 <div class="stripes"><i style="height:4px;background:#8c0013"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#8c0013"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#8c0013"></i></div>
 <header><h1>PowerPoint → website <span>trial</span></h1><div class="sub">Chemistry 1g Covalent bonding · 3 approaches · 4 Nov 2026</div></header>
 <main class="wrap">
+<p style="margin-bottom:6px"><b>Presenting tips (all versions):</b> click or → to go forward, click the left quarter or ← to go back, F for full screen, Esc to exit. In D, B blanks the screen.</p>
 <p>Source: <i>Chemistry 1g - Covalent bonding.pptx</i>, 28 slides, 28.6 MB. The same deck was converted three ways. Try each on a phone as well as a laptop.</p>
 
 <div class="cards" style="margin-top:16px">
-  <a class="card" href="a/"><div class="l">A</div><h3>Slide images</h3><p>Each slide rendered as a picture, in a scrolling page with a Present mode.</p><span class="go">Open A →</span></a>
-  <a class="card" href="b/"><div class="l">B</div><h3>Auto-converted slides</h3><p>A script rebuilds every slide as real text and shapes. Click to step through builds.</p><span class="go">Open B →</span></a>
+  <a class="card" href="a/"><div class="l">A</div><h3>Slide images</h3><p>Each slide rendered as a picture. Click any slide to present; click to go forward.</p><span class="go">Open A →</span></a>
+  <a class="card" href="b/"><div class="l">B</div><h3>Auto-converted slides</h3><p>A script rebuilds every slide as real text and shapes. Click any slide to present; clicks step through your builds.</p><span class="go">Open B →</span></a>
   <a class="card" href="c/"><div class="l">C</div><h3>Rebuilt lesson page</h3><p>Content rewritten as a web lesson tagged to spec 1.44–1.51, with a dot-and-cross explorer and self-check questions.</p><span class="go">Open C →</span></a>
+  <a class="card" href="d/"><div class="l">D</div><h3>Lesson + projector mode</h3><p>C plus a Present button: a 32-slide projector deck with minimal text, “your turn” dot-and-cross slides and click-to-reveal quiz answers.</p><span class="go">Open D →</span></a>
 </div>
 
 <h2>How they compare</h2>
 <table>
-<thead><tr><th></th><th>A · Images</th><th>B · Converted</th><th>C · Lesson</th></tr></thead>
+<thead><tr><th></th><th>A · Images</th><th>B · Converted</th><th>C · Lesson</th><th>D · Lesson + projector</th></tr></thead>
 <tbody>
-<tr><th>Looks like your slides</th><td class="good">Exactly</td><td class="good">Very close</td><td>No, it's a new design</td></tr>
-<tr><th>Page weight</th><td>1.3 MB</td><td>2.2 MB (incl. 1.5 MB video)</td><td class="good">84 KB</td></tr>
-<tr><th>Readable on a phone</th><td class="bad">Poor (tiny text)</td><td class="bad">Poor (tiny text)</td><td class="good">Yes</td></tr>
-<tr><th>Searchable / accessible text</th><td class="bad">No (alt text only)</td><td class="good">Yes</td><td class="good">Yes</td></tr>
-<tr><th>Animations</th><td class="bad">Lost; the GIF becomes a still</td><td class="good">Click builds kept; GIF → looping video</td><td>Replaced by interactions</td></tr>
-<tr><th>Interactive / self-marking</th><td>No</td><td>No</td><td class="good">Yes</td></tr>
-<tr><th>Fills spec gaps</th><td>No</td><td>No</td><td class="good">Yes: CO₂ added (spec 1.46, missing from deck)</td></tr>
-<tr><th>Effort per deck</th><td class="good">~1 min, fully automatic</td><td class="good">~1 min automatic + spot check</td><td class="bad">Real writing; one chat per sub-topic</td></tr>
-<tr><th>Edit later</th><td>Re-export from PowerPoint</td><td>Re-run script on edited .pptx</td><td>Edit the page</td></tr>
+<tr><th>Looks like your slides</th><td class="good">Exactly</td><td class="good">Very close</td><td>No, it's a new design</td><td>No, it's a new design</td></tr>
+<tr><th>Page weight</th><td>1.3 MB</td><td>2.2 MB (incl. 1.5 MB video)</td><td class="good">84 KB</td><td class="good">~100 KB</td></tr>
+<tr><th>Readable on a phone</th><td class="bad">Poor (tiny text)</td><td class="bad">Poor (tiny text)</td><td class="good">Yes</td><td class="good">Yes</td></tr>
+<tr><th>Searchable / accessible text</th><td class="bad">No (alt text only)</td><td class="good">Yes</td><td class="good">Yes</td><td class="good">Yes</td></tr>
+<tr><th>Animations</th><td class="bad">Lost; the GIF becomes a still</td><td class="good">Click builds kept; GIF → looping video</td><td>Replaced by interactions</td><td class="good">Click-to-reveal throughout</td></tr>
+<tr><th>Interactive / self-marking</th><td>No</td><td>No</td><td class="good">Yes</td><td class="good">Yes</td></tr>
+<tr><th>Fills spec gaps</th><td>No</td><td>No</td><td class="good">Yes: CO₂ added (spec 1.46, missing from deck)</td><td class="good">Yes</td></tr>
+<tr><th>Effort per deck</th><td class="good">~1 min, fully automatic</td><td class="good">~1 min automatic + spot check</td><td class="bad">Real writing; one chat per sub-topic</td><td class="bad">As C, plus ~30% for the deck</td></tr>
+<tr><th>On a projector</th><td>Your slides as-is</td><td>Your slides as-is, builds kept</td><td class="bad">Not designed for it</td><td class="good">Purpose-built</td></tr>
+<tr><th>Edit later</th><td>Re-export from PowerPoint</td><td>Re-run script on edited .pptx</td><td>Edit the page</td><td>Edit the page</td></tr>
 </tbody>
 </table>
 
