@@ -448,7 +448,7 @@ C['state-predictor'] = el => {
 C['bromine-jar'] = el => {
   const W=300,H=420,deck=isDeck(el),r=6,mid=H/2;
   el.insertAdjacentHTML('beforeend',`<div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn go" style="${deck?'font-size:30px;padding:6px 16px;border-width:4px':''}">Remove the divider</button><button class="btn rs" style="${deck?'font-size:30px;padding:6px 16px;border-width:4px':''}">Reset</button></div>`);
-  const cv=canvasFor(el,W,H), ctx=cv.getContext('2d'); cv.style.border=deck?'5px solid #111':'2px solid #111'; if(!deck){cv.style.maxWidth='260px';}
+  const cv=canvasFor(el,W,H), ctx=cv.getContext('2d'); cv.style.border=deck?'5px solid #111':'2px solid #111'; if(!deck){cv.style.maxWidth='220px';cv.style.margin='0 auto';cv.style.display='block';}
   let P=[], open=false;
   const reset=()=>{ open=false; P=[]; for(let i=0;i<70;i++) P.push({br:true,x:20+Math.random()*(W-40),y:mid+15+Math.random()*(mid-30)}); for(let i=0;i<70;i++) P.push({br:false,x:20+Math.random()*(W-40),y:15+Math.random()*(mid-30)}); P.forEach(p=>{const a=Math.random()*7;p.vx=Math.cos(a)*2.2;p.vy=Math.sin(a)*2.2;}); $('.go',el).disabled=false; };
   $('.go',el).onclick=()=>{open=true;$('.go',el).disabled=true;}; $('.rs',el).onclick=reset; reset();
