@@ -107,10 +107,12 @@ const EL = { Li:{g:1,c:'#b04dd8',n:'lithium'}, Na:{g:1,c:'#b04dd8',n:'sodium'}, 
   F:{g:7,c:'#2a9d8f',n:'fluorine',ion:'fluoride'}, Cl:{g:7,c:'#2a9d8f',n:'chlorine',ion:'chloride'}, Br:{g:7,c:'#a0522d',n:'bromine',ion:'bromide'} };
 const IONIC = {
   NaCl:{f:'NaCl',name:'Sodium chloride',atoms:[['Na',0,0],['Cl',1,0]]},
+  NaF:{f:'NaF',name:'Sodium fluoride',atoms:[['Na',0,0],['F',1,0]]},
   LiF:{f:'LiF',name:'Lithium fluoride',atoms:[['Li',0,0],['F',1,0]]},
   KBr:{f:'KBr',name:'Potassium bromide',atoms:[['K',0,0],['Br',1,0]]},
   MgO:{f:'MgO',name:'Magnesium oxide',atoms:[['Mg',0,0],['O',1,0]]},
   CaS:{f:'CaS',name:'Calcium sulfide',atoms:[['Ca',0,0],['S',1,0]]},
+  CaCl2:{f:'CaCl<sub>2</sub>',name:'Calcium chloride',atoms:[['Cl',-1,0],['Ca',0,0],['Cl',1,0]]},
   MgCl2:{f:'MgCl<sub>2</sub>',name:'Magnesium chloride',atoms:[['Cl',-1,0],['Mg',0,0],['Cl',1,0]]},
   Na2O:{f:'Na<sub>2</sub>O',name:'Sodium oxide',atoms:[['Na',-1,0],['O',0,0],['Na',1,0]]},
   Li3N:{f:'Li<sub>3</sub>N',name:'Lithium nitride',atoms:[['Li',-1,0],['N',0,0],['Li',1,0],['Li',0,-1]]},
@@ -415,5 +417,60 @@ C['state-triangle'] = el => {
    ${arr('S','G',14,'sublimation',hot,3,212,185,'end')}${arr('G','S',14,'deposition',cold,3,212,212,'end')}
    ${node('S','SOLID')}${node('L','LIQUID')}${node('G','GAS')}
    <text x="12" y="24" font-size="17" font-weight="700" fill="${hot}" font-family="Barlow,Arial,sans-serif">red: heat energy in</text><text x="12" y="46" font-size="17" font-weight="700" fill="${cold}" font-family="Barlow,Arial,sans-serif">blue: heat energy out</text></svg>`;
+};
+/* ---- 1a: predict the state from melting and boiling points ---- */
+const SUBST = [['Hydrogen',-259,-253],['Mercury',-39,357],['Water',0,100],['Ethanol',-114,78],['Potassium',63,759],['Iron',1538,2862],['Oxygen',-218,-183],['Bromine',-7,59]];
+C['state-predictor'] = el => {
+  el.classList.add('tool'); const deck=isDeck(el), fs=deck?'font-size:30px':'';
+  el.innerHTML=`<div class="bar"><span class="lbl">Substance</span>${SUBST.map((x,i)=>`<button class="btn sb" data-i="${i}" style="${fs}">${x[0]}</button>`).join('')}</div>
+   <div style="padding:14px;${deck?'font-size:34px':''}"><div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+    <label>Melting point <input class="mp" type="number" style="width:90px;font:inherit;padding:2px 6px"> °C</label>
+    <label>Boiling point <input class="bp" type="number" style="width:90px;font:inherit;padding:2px 6px"> °C</label>
+    <label>Temperature <input class="tt" type="number" value="25" style="width:80px;font:inherit;padding:2px 6px"> °C</label></div>
+    <div class="sv" style="margin-top:12px"></div></div>`;
+  const mp=$('.mp',el), bp=$('.bp',el), tt=$('.tt',el), out=$('.sv',el);
+  const draw=()=>{ const m=+mp.value, b=+bp.value, t=+tt.value;
+    if(isNaN(m)||isNaN(b)||b<=m){ out.innerHTML='<b>Boiling point must be higher than melting point.</b>'; return; }
+    const st = t<m?'SOLID':t<b?'LIQUID':'GAS', at = (t===m)?' (exactly at the melting point: could be solid or liquid)':(t===b)?' (exactly at the boiling point: could be liquid or gas)':'';
+    const lo=Math.min(m,t)-Math.max(30,(b-m)*0.25), hi=Math.max(b,t)+Math.max(30,(b-m)*0.25), X=v=>20+(v-lo)/(hi-lo)*560;
+    out.innerHTML=`<svg viewBox="0 0 600 110" style="width:100%;max-width:${deck?'1400px':'600px'}${deck?';height:300px':''}" font-family="Barlow,Arial,sans-serif">
+      <rect x="20" y="30" width="${X(m)-20}" height="34" fill="#9cc9f0"/><rect x="${X(m)}" y="30" width="${X(b)-X(m)}" height="34" fill="#4aa3ff"/><rect x="${X(b)}" y="30" width="${580-X(b)}" height="34" fill="#ffd2d2"/>
+      <text x="${(20+X(m))/2}" y="52" text-anchor="middle" font-size="14" font-weight="700">solid</text><text x="${(X(m)+X(b))/2}" y="52" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">liquid</text><text x="${(X(b)+580)/2}" y="52" text-anchor="middle" font-size="14" font-weight="700">gas</text>
+      <text x="${X(m)}" y="82" text-anchor="middle" font-size="12">${m} °C</text><text x="${X(b)}" y="82" text-anchor="middle" font-size="12">${b} °C</text>
+      <path d="M${X(t)} 20 l-7 -12 h14z" fill="#8c0013"/><line x1="${X(t)}" x2="${X(t)}" y1="20" y2="70" stroke="#8c0013" stroke-width="3"/><text x="${X(t)}" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="#8c0013">${t} °C</text></svg>
+      <div style="font-weight:700;margin-top:6px">At ${t} °C it is a <span style="color:var(--acc)">${st}</span>${at}.</div>
+      <div style="font-size:${deck?'26px':'14px'};color:#555;margin-top:4px">Below the melting point → solid · between the melting and boiling points → liquid · above the boiling point → gas.</div>`; };
+  $$('.sb',el).forEach(b=>b.onclick=()=>{ const x=SUBST[+b.dataset.i]; mp.value=x[1]; bp.value=x[2]; $$('.sb',el).forEach(y=>y.classList.toggle('on',y===b)); draw(); });
+  [mp,bp,tt].forEach(i=>i.oninput=draw); $$('.sb',el)[2].click();
+};
+
+/* ---- 1a: bromine diffusing into air ---- */
+C['bromine-jar'] = el => {
+  const W=300,H=420,deck=isDeck(el),r=6,mid=H/2;
+  el.insertAdjacentHTML('beforeend',`<div style="display:flex;gap:8px;margin-bottom:8px"><button class="btn go" style="${deck?'font-size:30px;padding:6px 16px;border-width:4px':''}">Remove the divider</button><button class="btn rs" style="${deck?'font-size:30px;padding:6px 16px;border-width:4px':''}">Reset</button></div>`);
+  const cv=canvasFor(el,W,H), ctx=cv.getContext('2d'); cv.style.border=deck?'5px solid #111':'2px solid #111'; if(!deck){cv.style.maxWidth='260px';}
+  let P=[], open=false;
+  const reset=()=>{ open=false; P=[]; for(let i=0;i<70;i++) P.push({br:true,x:20+Math.random()*(W-40),y:mid+15+Math.random()*(mid-30)}); for(let i=0;i<70;i++) P.push({br:false,x:20+Math.random()*(W-40),y:15+Math.random()*(mid-30)}); P.forEach(p=>{const a=Math.random()*7;p.vx=Math.cos(a)*2.2;p.vy=Math.sin(a)*2.2;}); $('.go',el).disabled=false; };
+  $('.go',el).onclick=()=>{open=true;$('.go',el).disabled=true;}; $('.rs',el).onclick=reset; reset();
+  function step(){ P.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(Math.random()<0.08){const a=Math.random()*7;p.vx=Math.cos(a)*2.2;p.vy=Math.sin(a)*2.2;}
+      if(p.x<12||p.x>W-12) p.vx*=-1; if(p.y<12||p.y>H-12) p.vy*=-1;
+      if(!open){ if(p.br&&p.y<mid+8){p.y=mid+8;p.vy=Math.abs(p.vy);} if(!p.br&&p.y>mid-8){p.y=mid-8;p.vy=-Math.abs(p.vy);} }
+      p.x=Math.max(12,Math.min(W-12,p.x)); p.y=Math.max(12,Math.min(H-12,p.y)); }); }
+  function draw(){ ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H); ctx.strokeStyle='#111'; ctx.lineWidth=4; ctx.strokeRect(6,6,W-12,H-12);
+    if(!open){ ctx.fillStyle='#555'; ctx.fillRect(0,mid-3,W,6); }
+    P.forEach(p=>{ ctx.beginPath(); ctx.arc(p.x,p.y,r,0,7); ctx.fillStyle=p.br?'#a0522d':'#cfe3f5'; ctx.fill(); if(!p.br){ctx.lineWidth=1;ctx.strokeStyle='#7aa';ctx.stroke();} }); }
+  (function loop(){ if(cv.offsetParent!==null){ step(); draw(); } requestAnimationFrame(loop); })();
+};
+
+/* ---- 1a: particle boxes for dissolving ---- */
+C['solute-boxes'] = el => {
+  const box=(title, fill)=>{ let s=''; const Wb=200,Hb=170;
+    const water=[]; for(let j=0;j<6;j++) for(let i=0;i<8;i++) water.push([18+i*23+(j%2)*10, 28+j*23]);
+    s+=`<rect x="4" y="12" width="${Wb}" height="${Hb}" fill="#fff" stroke="#111" stroke-width="3"/>`;
+    fill(water).forEach(([x,y,c])=>{ s+=`<circle cx="${x}" cy="${y}" r="${c==='w'?9:7}" fill="${c==='w'?'#9cc9f0':c}" stroke="${c==='w'?'#4a88c0':'#111'}" stroke-width="1.2"/>`; });
+    return `<figure style="text-align:center"><svg viewBox="0 0 210 190" style="width:100%;max-width:${isDeck(el)?'430px':'240px'}">${s}</svg><figcaption${isDeck(el)?' style="font-size:34px"':''}><b>${title}</b></figcaption></figure>`; };
+  const mixed = w => { const idx=[3,9,14,20,27,33,38,44]; return w.map((p,i)=>[p[0],p[1],idx.includes(i)?'#e04848':'w']); };
+  const clump = w => { const out=w.map(p=>[p[0],p[1],'w']); [[95,150],[109,150],[123,150],[102,137],[116,137],[109,124],[88,163],[130,163]].forEach(([x,y],k)=>{ out[40+ (k%8)]=[x,y,'#d4a64a']; }); return out; };
+  el.innerHTML=`<div class="grid3" style="margin:0">${box('Water only', w=>w.map(p=>[p[0],p[1],'w']))}${box('Salt dissolved (soluble)', mixed)}${box('Flour (insoluble)', clump)}</div>`;
 };
 })();
