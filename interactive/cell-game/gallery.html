@@ -64,7 +64,7 @@ button{font:inherit;cursor:pointer}
   <a class="back" href="/test.html">← Testing area</a><a class="back" href="./">Play Cell Spotter →</a>
   <h1>Cell Spotter: every image</h1>
   <p class="lede">Everything the game can show, sorted by group. <b>Blue tags</b> are real photos (fixed files). <b>Green tags</b> are drawn by the game's code, and every drawing is different: organelles land in new random positions each time. Press <b>New random drawings</b> to see more variations.</p>
-  <div class="note">Photos were copied from the site's organisms collection (<code>interactive/organisms/images/</code>). Their licences and credits were never recorded, so check those before the game goes on the main site.</div>
+  <div class="note">The 108 Wikimedia photos are openly licensed and credited (see <a href="credits.html">photo credits</a>). The other 14 photos come from the site's organisms collection (<code>interactive/organisms/images/</code>); their licences were never recorded, so check those before the game goes on the main site.</div>
   <p class="count" id="count"></p>
 
   <div class="controls">
@@ -79,6 +79,7 @@ button{font:inherit;cursor:pointer}
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
 <script src="cells.js"></script>
+<script src="img/wiki/photos.js"></script>
 <script>
 const C=window.Cells,$=id=>document.getElementById(id);
 /* Keep in step with PHOTOS and MYSTERY in game.js */
@@ -98,6 +99,7 @@ const PHOTOS=[
  ['musca_domestica.jpeg','animal','Housefly (mystery answer reveal)',['Mystery']],
  ['agaricus_bisporus.jpg','fungus','Mushrooms (mystery answer reveal)',['Mystery']]
 ];
+(window.WIKI_PHOTOS||[]).forEach(w=>PHOTOS.push([w.src.replace('img/',''),w.group,w.cap,['Who am I','Zoom','Odd one out'],w]));
 const FIELDS={animal:['cheek'],plant:['onion','elodea'],fungus:['yeast','hyphae'],bacteria:['rods','cocci']};
 const CELLT={animal:['animal'],plant:['plant'],fungus:['yeast','hypha'],bacteria:['rod','coccus']};
 const TNAME={animal:'Animal cell',plant:'Plant cell',yeast:'Yeast cell',hypha:'Fungal hypha (Mucor)',rod:'Rod-shaped bacterium',coccus:'Spherical bacterium'};
@@ -109,7 +111,7 @@ function render(){const n=+$('n').value,showA=$('anchors').checked;let h='',coun
     const ph=PHOTOS.filter(p=>p[1]===g);
     h+=`<h2 id="${g}" style="--g:${G.col}">${G.name}<small>${ph.length} photo${ph.length===1?'':'s'} · ${FIELDS[g].length} microscope view${FIELDS[g].length===1?'':'s'} · ${CELLT[g].length} diagram type${CELLT[g].length===1?'':'s'}</small></h2>`;
     h+=`<h3>Real photos <span>fixed files in img/</span></h3>`;
-    h+= ph.length?`<div class="grid">${ph.map(p=>{counts.photo++;return `<div class="item"><div class="pic dark"><img src="img/${p[0]}" alt="${p[2]}" loading="lazy"></div><div class="txt"><span class="kind photo">Photo</span><b>${p[2]}</b><div class="src">img/${p[0]}</div>${used(p[3])}</div></div>`;}).join('')}</div>`
+    h+= ph.length?`<div class="grid">${ph.map(p=>{counts.photo++;return `<div class="item"><div class="pic dark"><img src="img/${p[0]}" alt="${p[2]}" loading="lazy"></div><div class="txt"><span class="kind photo">Photo</span><b>${p[2]}</b><div class="src">img/${p[0]}</div>${p[4]?`<div class="src">${p[4].artist} · <a href="${p[4].licUrl||p[4].page}" target="_blank" rel="noopener">${p[4].lic}</a> · <a href="${p[4].page}" target="_blank" rel="noopener">source</a></div>`:''}${used(p[3])}</div></div>`;}).join('')}</div>`
       :`<p class="count">No real ${G.name.toLowerCase()} cell photos yet: the game uses the drawn microscope views below instead.</p>`;
     h+=`<h3>Under the microscope <span>drawn, random every time</span></h3><div class="grid">`;
     for(const t of FIELDS[g])for(let i=0;i<Math.min(n,3);i++){const f=C.field(t,Math.floor(Math.random()*1e9));counts.field++;h+=`<div class="item"><div class="pic dark">${C.wrap(f.svg,f.w,f.h)}</div><div class="txt"><span class="kind drawn">Drawn</span><b>${f.caption}</b><div class="src">field "${t}" · version ${i+1}</div>${used(FIELD_USE)}</div></div>`;}

@@ -21,6 +21,28 @@ const PHOTOS=[
  {src:'img/bacillus_subtilis.jpg',group:'bacteria',cap:'Rod-shaped bacteria (stained). The scale bar is 10 µm.',clue:'Very small rod-shaped cells with no visible nucleus: bacteria.'},
  {src:'img/staphylococcus_aureus.jpg',group:'bacteria',cap:'Spherical bacteria in clusters (stained).',clue:'Masses of tiny round cells: spherical bacteria.'}
 ];
+/* Openly licensed Wikimedia photos (img/wiki/photos.js), with a GCSE clue per type */
+const WIKI_CLUE={
+ 'onion-epidermis':'Box-shaped cells fitted together like bricks, each with a cell wall and a nucleus. No chloroplasts, because onion bulbs grow underground, but it\u2019s still a plant.',
+ 'elodea-leaf':'Box-shaped cells with cell walls, full of green chloroplasts: plant leaf cells.',
+ 'moss-leaf':'Cells with walls, packed with green chloroplasts: plant cells.',
+ 'leaf-section':'Tightly packed cells with walls, including tall palisade cells near the top surface: plant tissue from a leaf.',
+ 'stomata':'Two guard cells around a pore (a stoma) in a leaf: plant cells.',
+ 'root-tip':'Box-shaped cells with walls and large nuclei, some dividing: plant root cells.',
+ 'cheek':'Irregular, flat cells with no cell wall, each with a nucleus: animal cells.',
+ 'blood':'Red blood cells (which have no nucleus) and a white blood cell: animal cells.',
+ 'neuron':'Nerve cells with long branches and no cell wall: animal cells.',
+ 'other':'No cell wall, no chloroplasts, and each cell has a nucleus (except mammal red blood cells): animal cells.',
+ 'yeast':'Small oval cells, some budding: yeast, a single-celled fungus.',
+ 'mould':'Thread-like hyphae carrying spores: a mould, which is a fungus.',
+ 'conidiophores':'Hyphae ending in round heads of spores: a mould, which is a fungus.',
+ 'hyphae':'A mesh of thin threads (hyphae): a fungus.',
+ 'rods':'Tiny rod-shaped cells, far smaller than plant or animal cells, with no nucleus: bacteria.',
+ 'cocci':'Tiny round cells in clusters or chains, only about 1 \u00b5m across: bacteria.',
+ 'lactobacillus':'Tiny rods: Lactobacillus, the type of bacteria used to make yoghurt.',
+ 'electron':'Cells only a micrometre or two long with no nucleus: bacteria. The colours are added.'
+};
+(window.WIKI_PHOTOS||[]).forEach(w=>PHOTOS.push({src:w.src,group:w.group,cap:w.cap+'. Photo: '+w.artist+', '+w.lic+'.',clue:WIKI_CLUE[w.type]||'',wiki:true}));
 const FIELD_CLUE={
  onion:'Box-shaped cells fitted together like bricks, each with a cell wall and a nucleus. No chloroplasts, because onion bulbs grow underground, but it’s still a plant.',
  elodea:'Box-shaped cells with walls, packed with green chloroplasts: plant leaf cells.',
@@ -44,7 +66,7 @@ function cellItem(type,style){const c=C.cell(type,style||pick(['colour','exam'])
 function photoItem(p){return {html:photoHTML(p),group:p.group,cap:p.cap,clue:p.clue,kind:'photo',key:p.src};}
 const FIELDS_BY={plant:['onion','elodea'],animal:['cheek'],fungus:['yeast','hyphae'],bacteria:['rods','cocci']};
 const CELLS_BY={plant:['plant'],animal:['animal'],fungus:['yeast','hypha'],bacteria:['rod','coccus']};
-function anyItem(group,kinds=['photo','field','cell'],avoid=new Set()){
+function anyItem(group,kinds=['photo','photo','field','cell'],avoid=new Set()){
   for(let t=0;t<30;t++){const k=pick(kinds);let it;
     if(k==='photo'){const ps=PHOTOS.filter(p=>p.group===group);if(!ps.length)continue;it=photoItem(pick(ps));}
     else if(k==='field')it=fieldItem(pick(FIELDS_BY[group]));
@@ -135,7 +157,7 @@ function bindGroups(root,correct,onAnswer){const bs=[...root.querySelectorAll('.
 /* Each round: make() -> list of question builders. A builder is run(done) where done(points, max, reviseTags[]). */
 const ROUNDS=[
 {id:'who',name:'Who am I?',desc:'One cell or a microscope view. Animal, plant, fungus or bacteria? Faster answers score more.',
- make(){const avoid=new Set();return groupsSeq(5).map(g=>()=>{const it=anyItem(g,['photo','field','cell','field','photo'],avoid);
+ make(){const avoid=new Set();return groupsSeq(5).map(g=>()=>{const it=anyItem(g,['photo','photo','photo','field','cell'],avoid);
   return done=>{const s=stage();s.innerHTML=`<div class="prompt">Which group does this come from?</div><div id="tm"></div>${mediaBox(it)}${groupButtons()}<div id="fb"></div>`;
    let answered=false;const T=timer(12,()=>{if(answered)return;answered=true;reveal();fin(false,0);});s.querySelector('#tm').appendChild(T.el);
    const reveal=bindGroups(s,g,(ok)=>{if(answered)return;answered=true;T.stop();fin(ok,ok?Math.round(50+50*T.left()/12):0);});
@@ -182,7 +204,7 @@ const ROUNDS=[
   };});}},
 
 {id:'zoom',name:'Zoom reveal',desc:'The picture starts zoomed in and blurry, then slowly pulls back. Answer early for more points.',
- make(){const avoid=new Set();return groupsSeq(5).map(g=>()=>{const it=anyItem(g,['photo','field','field'],avoid);
+ make(){const avoid=new Set();return groupsSeq(5).map(g=>()=>{const it=anyItem(g,['photo','photo','field'],avoid);
   return done=>{const s=stage();const ox=20+Math.random()*60,oy=20+Math.random()*60;
    s.innerHTML=`<div class="prompt">What is it? Answer as soon as you know.</div><div class="media zoombox" id="zb">${it.html}</div>${groupButtons()}<div id="fb"></div>`;
    const inner=s.querySelector('#zb').firstElementChild;inner.style.transformOrigin=`${ox}% ${oy}%`;inner.style.transition='none';inner.style.transform='scale(6)';inner.style.filter='blur(7px)';
