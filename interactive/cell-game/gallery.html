@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cell Spotter image check - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;
+  --animal:#c0392b;--plant:#2e7d32;--fungus:#8d5524;--bacteria:#6a1b9a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+.stripes{display:flex;flex-direction:column}.stripes i{display:block}
+header{background:#111;padding:20px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:24px 40px 20px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,6vw,44px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 56px}
+.back{display:inline-block;margin:0 16px 12px 0;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,6vw,50px);line-height:1}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:34px;line-height:1;color:#fff;background:var(--g);padding:10px 14px;margin-top:34px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;letter-spacing:.5px;text-transform:none;opacity:.9}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:20px;margin:18px 0 8px;border-bottom:2px solid var(--ink);padding-bottom:3px}
+h3 span{font-family:'Barlow',sans-serif;font-weight:400;text-transform:none;font-size:14px;color:var(--muted)}
+.lede{max-width:780px;margin-top:8px}
+.controls{position:sticky;top:0;z-index:5;background:var(--cream);border-bottom:2px solid var(--ink);padding:10px 0;margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:8px 16px;font-weight:700}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.toggle{display:flex;align-items:center;gap:6px;font-weight:600}
+.toggle input{width:18px;height:18px;accent-color:var(--green)}
+.jump a{color:var(--ink);font-weight:700;margin-right:10px;text-decoration:none;border-bottom:3px solid var(--g)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.item{background:var(--paper);border:2px solid var(--ink);display:flex;flex-direction:column}
+.item .pic{background:#fff;border-bottom:1px solid var(--line)}
+.item .pic.dark{background:#111}
+.item img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.item svg{display:block;width:100%;height:auto}
+.item .txt{padding:8px 10px;font-size:14px}
+.item .txt b{display:block;font-size:15px}
+.item .src{font-size:12px;color:var(--muted);margin-top:3px;word-break:break-word}
+.used{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.used span{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:1.5px solid var(--ink);padding:1px 5px}
+.kind{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;background:var(--ink);padding:1px 6px;margin-bottom:4px}
+.kind.photo{background:#1565c0}.kind.drawn{background:var(--green)}
+.note{background:#fff8d6;border-left:6px solid #c9a000;padding:10px 12px;margin-top:14px;max-width:880px;font-size:15px}
+.anchor-dot{fill:#e53935;stroke:#fff;stroke-width:1.5}
+.anchor-lbl{font:700 11px Barlow,sans-serif;fill:#e53935;paint-order:stroke;stroke:#fff;stroke-width:3px}
+.count{font-size:14px;color:var(--muted);margin-top:6px}
+</style>
+</head>
+<body>
+<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
+<header><a href="/test.html" class="brand">Cakebread <span>Science</span></a><span class="sub">Cell Spotter · Image check</span></header>
+<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
+
+<main class="wrap">
+  <a class="back" href="/test.html">← Testing area</a><a class="back" href="./">Play Cell Spotter →</a>
+  <h1>Cell Spotter: every image</h1>
+  <p class="lede">Everything the game can show, sorted by group. <b>Blue tags</b> are real photos (fixed files). <b>Green tags</b> are drawn by the game's code, and every drawing is different: organelles land in new random positions each time. Press <b>New random drawings</b> to see more variations.</p>
+  <div class="note">Photos were copied from the site's organisms collection (<code>interactive/organisms/images/</code>). Their licences and credits were never recorded, so check those before the game goes on the main site.</div>
+  <p class="count" id="count"></p>
+
+  <div class="controls">
+    <button class="btn" id="redraw">New random drawings</button>
+    <label class="toggle"><input type="checkbox" id="anchors"> Show label points (where Label it's lines point)</label>
+    <label class="toggle">Versions of each diagram: <select id="n"><option>1</option><option>2</option><option selected>3</option><option>6</option></select></label>
+    <span class="jump"><a href="#animal" style="--g:var(--animal)">Animal</a><a href="#plant" style="--g:var(--plant)">Plant</a><a href="#fungus" style="--g:var(--fungus)">Fungus</a><a href="#bacteria" style="--g:var(--bacteria)">Bacteria</a></span>
+  </div>
+
+  <div id="out"></div>
+</main>
+
+<div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="cells.js"></script>
+<script>
+const C=window.Cells,$=id=>document.getElementById(id);
+/* Keep in step with PHOTOS and MYSTERY in game.js */
+const PHOTOS=[
+ ['saccharomyces_cerevisiae.jpg','fungus','Yeast cells (scanning electron microscope), some budding',['Who am I','Zoom','Odd one out','Mystery']],
+ ['candida_albicans.jpg','fungus','Candida, a fungus, with hyphae and round spores',['Who am I','Zoom','Odd one out']],
+ ['rhizopus_stolonifer.jpeg','fungus','Bread mould: hyphae with black spore cases',['Who am I','Zoom','Odd one out']],
+ ['mucor_mucedo.jpg','fungus','Mucor mould growing as a fluffy mycelium',['Who am I','Zoom','Odd one out','Mystery']],
+ ['escherichia_coli.jpg','bacteria','E. coli, rod-shaped (scanning electron microscope)',['Who am I','Zoom','Odd one out','Mystery']],
+ ['lactobacillus_acidophilus.jpg','bacteria','Lactobacillus, rod-shaped bacteria',['Who am I','Zoom','Odd one out','Mystery']],
+ ['streptococcus_pneumoniae.jpg','bacteria','Pneumococcus, spherical bacteria (stained)',['Who am I','Zoom','Odd one out','Mystery']],
+ ['bacillus_subtilis.jpg','bacteria','Rod-shaped bacteria (stained)',['Who am I','Zoom','Odd one out']],
+ ['staphylococcus_aureus.jpg','bacteria','Spherical bacteria in clusters (stained)',['Who am I','Zoom','Odd one out']],
+ ['pisum_sativum.jpg','plant','Pea plant in flower (mystery answer reveal)',['Mystery']],
+ ['zea_mays.jpeg','plant','Maize (mystery answer reveal)',['Mystery']],
+ ['elodea_canadensis.jpg','plant','Pondweed, Elodea (mystery answer reveal)',['Mystery']],
+ ['musca_domestica.jpeg','animal','Housefly (mystery answer reveal)',['Mystery']],
+ ['agaricus_bisporus.jpg','fungus','Mushrooms (mystery answer reveal)',['Mystery']]
+];
+const FIELDS={animal:['cheek'],plant:['onion','elodea'],fungus:['yeast','hyphae'],bacteria:['rods','cocci']};
+const CELLT={animal:['animal'],plant:['plant'],fungus:['yeast','hypha'],bacteria:['rod','coccus']};
+const TNAME={animal:'Animal cell',plant:'Plant cell',yeast:'Yeast cell',hypha:'Fungal hypha (Mucor)',rod:'Rod-shaped bacterium',coccus:'Spherical bacterium'};
+const FIELD_USE=['Who am I','Zoom','Odd one out'],CELL_USE=['Who am I','Spot it','Label it','Job match','Odd one out'];
+const used=a=>`<div class="used">${a.map(x=>`<span>${x}</span>`).join('')}</div>`;
+function anchorsSVG(c){return Object.entries(c.parts).filter(([k,p])=>p&&c.has.includes(k)).map(([k,p])=>`<circle class="anchor-dot" cx="${p[0]}" cy="${p[1]}" r="4"/><text class="anchor-lbl" x="${p[0]+6}" y="${p[1]-5}">${C.PARTS[k].name}</text>`).join('');}
+function render(){const n=+$('n').value,showA=$('anchors').checked;let h='',counts={photo:0,field:0,cell:0};
+  for(const g of ['animal','plant','fungus','bacteria']){const G=C.GROUPS[g];
+    const ph=PHOTOS.filter(p=>p[1]===g);
+    h+=`<h2 id="${g}" style="--g:${G.col}">${G.name}<small>${ph.length} photo${ph.length===1?'':'s'} · ${FIELDS[g].length} microscope view${FIELDS[g].length===1?'':'s'} · ${CELLT[g].length} diagram type${CELLT[g].length===1?'':'s'}</small></h2>`;
+    h+=`<h3>Real photos <span>fixed files in img/</span></h3>`;
+    h+= ph.length?`<div class="grid">${ph.map(p=>{counts.photo++;return `<div class="item"><div class="pic dark"><img src="img/${p[0]}" alt="${p[2]}" loading="lazy"></div><div class="txt"><span class="kind photo">Photo</span><b>${p[2]}</b><div class="src">img/${p[0]}</div>${used(p[3])}</div></div>`;}).join('')}</div>`
+      :`<p class="count">No real ${G.name.toLowerCase()} cell photos yet: the game uses the drawn microscope views below instead.</p>`;
+    h+=`<h3>Under the microscope <span>drawn, random every time</span></h3><div class="grid">`;
+    for(const t of FIELDS[g])for(let i=0;i<Math.min(n,3);i++){const f=C.field(t,Math.floor(Math.random()*1e9));counts.field++;h+=`<div class="item"><div class="pic dark">${C.wrap(f.svg,f.w,f.h)}</div><div class="txt"><span class="kind drawn">Drawn</span><b>${f.caption}</b><div class="src">field "${t}" · version ${i+1}</div>${used(FIELD_USE)}</div></div>`;}
+    h+=`</div>`;
+    for(const t of CELLT[g])for(const st of ['colour','exam']){h+=`<h3>${TNAME[t]}: ${st==='colour'?'colour diagram':'exam-style line drawing'} <span>drawn, random every time</span></h3><div class="grid">`;
+      for(let i=0;i<n;i++){const c=C.cell(t,st,Math.floor(Math.random()*1e9));counts.cell++;
+        h+=`<div class="item"><div class="pic">${C.wrap(c.svg+(showA?anchorsSVG(c):''),c.w,c.h)}</div><div class="txt"><span class="kind drawn">Drawn</span><b>${c.kind}</b><div class="src">Parts: ${c.has.map(k=>C.PARTS[k].name).join(', ')}</div>${used(CELL_USE)}</div></div>`;}
+      h+=`</div>`;}
+  }
+  $('out').innerHTML=h;
+  $('count').textContent=`Showing ${counts.photo} photos, ${counts.field} microscope views and ${counts.cell} diagrams.`;
+}
+$('redraw').onclick=render;$('anchors').onchange=render;$('n').onchange=render;render();
+</script>
+</body>
+</html>
