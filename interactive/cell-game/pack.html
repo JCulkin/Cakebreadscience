@@ -33,16 +33,8 @@ document.getElementById('go').onclick=async function(){this.disabled=true;const 
   const q=PACK.slice();const workers=Array.from({length:4},async()=>{while(q.length){const p=q.shift();await one(p);done++;bar.style.width=(done/PACK.length*100)+'%';log.textContent='Fetched '+done+' of '+PACK.length+(failed.length?' ('+failed.length+' failed)':'');}});
   await Promise.all(workers);
   const enc=new TextEncoder();
-  const credits=PACK.filter(p=>!failed.includes(p.file)).map(p=>p.file+'
-  '+p.title+'
-  By: '+(p.artist||'unknown')+' | Licence: '+p.lic+(p.licUrl?' ('+p.licUrl+')':'')+'
-  Source: '+p.page).join('
-
-');
-  files.push({name:'cell-images/CREDITS.txt',data:enc.encode('Cell images from Wikimedia Commons
-
-'+credits+'
-')});
+  const credits=PACK.filter(p=>!failed.includes(p.file)).map(p=>p.file+'\n  '+p.title+'\n  By: '+(p.artist||'unknown')+' | Licence: '+p.lic+(p.licUrl?' ('+p.licUrl+')':'')+'\n  Source: '+p.page).join('\n\n');
+  files.push({name:'cell-images/CREDITS.txt',data:enc.encode('Cell images from Wikimedia Commons\n\n'+credits+'\n')});
   files.push({name:'cell-images/credits.json',data:enc.encode(JSON.stringify(PACK.filter(p=>!failed.includes(p.file)),null,1))});
   const a=document.createElement('a');a.href=URL.createObjectURL(zip(files));a.download='cell-images.zip';document.body.appendChild(a);a.click();
   log.insertAdjacentHTML('afterend','<div class="ok"><b>Done.</b> '+(PACK.length-failed.length)+' photos saved in cell-images.zip in your Downloads folder.'+(failed.length?' '+failed.length+' could not be fetched: '+failed.join(', '):'')+' Go back to Claude and say it’s downloaded.</div>');};
