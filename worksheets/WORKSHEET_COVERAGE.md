@@ -54,12 +54,13 @@ Outside every sheet's spec line: 3.9 (all waves can be reflected and refracted) 
 
 ---
 
-## Chemistry (14 topic sheets)
+## Chemistry (14 topic sheets, plus 1b bonding Practice)
 
 | Sheet | Spec line on sheet |
 |---|---|
 | `chemistry/1a_particles_separation.html` | 1.1–1.10 |
 | `chemistry/1b_atomic_structure_bonding.html` | 1.14–1.51 |
+| `chemistry/1b_ionic_covalent_bonding_practice.html` (+ `_ms`) | 1.37–1.51 · Practice |
 | `chemistry/1c_stoichiometry_moles.html` | 1.17, 1.25–1.33 |
 | `chemistry/2a_group1_alkali_metals.html` | 2.1–2.3 |
 | `chemistry/2b_halogens.html` | 2.5–2.7 |
