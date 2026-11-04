@@ -170,3 +170,14 @@ body.review.pm.rvopen #rvPanel{display:flex}
 #rvPop .a button.main{background:#c9a000}
 @media print{.pbtn,.rvbtn,#rvPanel,#deck{display:none!important}}
 @media(max-width:700px){.pbtn{display:none}.rvbtn{font-size:13px;padding:6px 10px;left:8px;bottom:8px;box-shadow:2px 2px 0 #111}}
+/* teacher images */
+figure.pic{background:#fff;border:2px solid var(--ink);padding:8px;text-align:center}
+figure.pic img,figure.pic video{display:block;margin:0 auto;max-width:100%;max-height:320px;width:auto;height:auto;border:0;background:transparent}
+figure.pic.sm img,figure.pic.sm video{max-height:200px}
+figure.pic.lg img,figure.pic.lg video{max-height:440px}
+.grid2>figure.pic,.grid3>figure.pic{margin:0}
+.ps .fig>img,.ps .fig>video,.ps .im{width:100%;height:100%;object-fit:contain;min-height:0}
+.ps .imrow{display:flex;gap:30px;flex:1;min-height:0;align-items:stretch}
+.ps .imrow>*{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column}
+.ps .imrow img,.ps .imrow video{flex:1;min-height:0;width:100%;object-fit:contain}
+.ps .imrow .cap{font:700 34px 'Barlow',Arial,sans-serif;color:#111;text-align:center;margin-top:8px}
