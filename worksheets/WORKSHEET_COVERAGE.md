@@ -82,12 +82,14 @@ Known issues:
 
 ---
 
-## Biology (18 sheets)
+## Biology (18 sheets, plus 1a Practice and Challenge)
 
 | Sheet | Spec line on sheet |
 |---|---|
 | `biology/practical_variables.html` | Scientific skills |
 | `biology/1a_characteristics_classification.html` | 1.1–1.4 |
+| `biology/1a_characteristics_classification_practice.html` (+ `_ms`) | 1.1–1.4 · Practice |
+| `biology/1a_characteristics_classification_challenge.html` (+ `_ms`) | 1.1–1.4 · Challenge |
 | `biology/2a_cells_organisation.html` | 2.1–2.16 |
 | `biology/2b_biological_molecules_enzymes.html` | 2.7–2.13 |
 | `biology/2c_plant_nutrition.html` | 2.18–2.22 |
