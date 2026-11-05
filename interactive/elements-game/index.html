@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Elements 1–20 - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--red:#c62828;--blue:#1d4ed8;
+  --metal:#fde2c4;--nonmetal:#d7ecff;--semi:#e9e0f7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+.stripes{display:flex;flex-direction:column}.stripes i{display:block}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1050px;margin:0 auto;padding:20px 16px 56px}
+body.proj .wrap{max-width:1400px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;line-height:1.05}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:20px;line-height:1.1;margin-top:16px}
+.lede{font-size:18px;max-width:720px;margin-top:8px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:10px 18px;font-weight:700;font-size:16px}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.big{padding:13px 22px;font-size:19px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px}
+.btn:disabled{opacity:.4;cursor:default}
+.hidden{display:none!important}
+.small{font-size:13px;color:var(--muted)}
+.bar6{display:flex;height:6px}.bar6 i{display:block}
+.card{background:var(--paper);border:2px solid var(--ink)}
+.card .in{padding:16px 18px}
+.modes{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--paper);border:2px solid var(--ink);padding:6px 14px;font-weight:600;font-size:15px}
+.chip.on{background:var(--ink);color:var(--cream)}
+.toggle{display:flex;align-items:center;gap:8px;margin-top:14px;font-weight:600}
+.toggle input{width:20px;height:20px;accent-color:var(--green)}
+/* menu */
+.bigmodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:18px}
+.bigmode{text-align:left;border:2px solid var(--ink);background:var(--paper);padding:14px 16px;border-top:8px solid var(--c)}
+.bigmode h3{margin:0;font-size:24px}
+.bigmode p{font-size:14px;color:var(--muted);margin-top:4px}
+.rounds{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:10px}
+.rcard{text-align:left;background:var(--paper);border:2px solid var(--ink);border-left:8px solid var(--s);padding:10px 12px}
+.rcard .st{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--s)}
+.rcard h3{margin:2px 0 0}
+.rcard p{font-size:13.5px;color:var(--muted);margin-top:2px}
+.rcard .best{font-size:12px;font-weight:700;color:var(--green)}
+/* hud */
+#hud{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;background:var(--ink);color:var(--cream);padding:10px 14px}
+#hud .rname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
+#hud .meta{font-size:13px;color:#aaa;text-transform:uppercase;letter-spacing:1.5px}
+#hud .score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:var(--green2);text-align:right;line-height:1}
+#hud .score small{display:block;font-family:'Barlow',sans-serif;font-size:11px;color:#aaa;letter-spacing:1.5px}
+.pips{display:flex;gap:4px;margin-top:6px}.pips i{width:22px;height:5px;background:#444;display:block}.pips i.done{background:var(--green2)}.pips i.miss{background:#e57373}.pips i.now{background:#fff}
+.teamturn{display:flex;flex-direction:column;border-left:10px solid var(--c);padding-left:12px}
+.teamturn .tname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;text-transform:uppercase;color:#fff;line-height:1.05}
+.board{display:flex;flex-wrap:wrap;gap:6px}
+.tscore{background:#222;border-bottom:5px solid var(--c);padding:4px 12px;min-width:90px;text-align:center}
+.tscore span{display:block;font-size:13px;font-weight:600;color:#ccc}
+.tscore b{font-family:'Barlow Condensed',sans-serif;font-size:26px;color:#fff}
+.tscore.now{background:var(--c)}
+.tscore.now span{color:#fff}
+.stage{background:var(--paper);border:2px solid var(--ink);border-top:0;padding:16px}
+.prompt{font-size:22px;font-weight:600;line-height:1.3;margin-bottom:12px}
+.prompt b{color:var(--green)}
+.prompt .sym,.prompt .cfg{font-family:'Barlow Condensed',sans-serif;font-size:1.5em;color:var(--blue)}
+.visual{margin:6px 0 12px;display:flex;flex-direction:column;align-items:center}
+.cap{font-size:14px;color:var(--muted);text-align:center}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+@media(max-width:600px){.opts{grid-template-columns:1fr}.opts.n2{grid-template-columns:1fr 1fr}}
+.opt{display:flex;align-items:center;gap:10px;background:var(--soft);border:2px solid var(--ink);padding:12px 14px;text-align:left;font-weight:700;font-size:19px}
+.opt .key{display:inline-grid;place-items:center;min-width:30px;height:30px;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:17px}
+.opts.big .opt{font-size:26px;justify-content:center;padding:18px}
+.opts.big .opt .key{display:none}
+.opt:hover:not(:disabled){background:#fff}
+.opt.right{background:#d8f0de;border-color:var(--green)}
+.opt.right .key{background:var(--green)}
+.opt.wrong{background:#f8d7d7;border-color:var(--red);text-decoration:line-through}
+.opt.wrong .key{background:var(--red)}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;background:var(--soft);border-left:6px solid var(--green);font-size:17px}
+.fb.bad{border-left-color:var(--red)}
+.fb .pts{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;color:var(--green);float:right;margin-left:10px}
+.fb.bad .pts{color:var(--red)}
+.nextrow{margin-top:12px;display:flex;justify-content:flex-end;gap:8px}
+.tbar{position:relative;height:30px;background:#e6e1d3;margin-bottom:12px}
+.tbar i{position:absolute;left:0;top:0;bottom:0;background:var(--green2);width:100%;transition:width .1s linear}
+.tbar.low i{background:var(--red)}
+.tbar span{position:absolute;right:8px;top:2px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px}
+/* periodic table */
+.ptable{display:grid;grid-template-columns:22px repeat(8,minmax(0,1fr));gap:4px;width:100%;max-width:620px}
+.ptable.small{max-width:440px}
+.ph{font-weight:700;font-size:13px;color:var(--muted);display:grid;place-items:center}
+.ph.pr{place-items:center end;padding-right:4px}
+.pfoot{grid-column:1/-1;display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.pcell{aspect-ratio:1/1.05;border:2px solid #555;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;padding:2px;line-height:1;min-width:0}
+.pcell.empty{border:0;background:transparent}
+.pcell .z{position:absolute;left:3px;top:2px;font-size:11px;font-weight:600;color:#555}
+.pcell b{font-family:'Barlow Condensed',sans-serif;font-size:clamp(16px,3.4vw,28px)}
+.ptable.small .pcell b{font-size:clamp(14px,2.6vw,22px)}
+.pcell .nm{font-size:clamp(7px,1.15vw,11px);margin-top:2px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcell.hydro{border-style:dashed}
+.pcell.k-metal{background:var(--metal)}.pcell.k-nonmetal{background:var(--nonmetal)}.pcell.k-semi{background:var(--semi)}
+.pcell.hl{background:#ffe082;border-color:#b45309;box-shadow:0 0 0 3px #f59e0b}
+.pcell.stepR{border-right:5px solid #111}.pcell.stepB{border-bottom:5px solid #111}
+.ptable.clickable .pcell:not(.empty){cursor:pointer}
+.ptable.clickable .pcell:not(.empty):hover{background:#fff8d6}
+.pcell.rightcell{background:#c8ecd1!important;border-color:var(--green);box-shadow:0 0 0 3px var(--green2)}
+.pcell.wrongcell{background:#f8d7d7!important;border-color:var(--red)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;margin-top:8px}
+.legend i{display:inline-block;width:14px;height:14px;border:1px solid #555;vertical-align:-2px;margin-right:4px}
+.legend i.k-metal{background:var(--metal)}.legend i.k-nonmetal{background:var(--nonmetal)}.legend i.k-semi{background:var(--semi)}
+/* bohr + builder */
+.bohrbox{display:flex;justify-content:center}
+.bohr{max-width:100%;height:auto}
+.ionwrap{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:80px;font-weight:300}
+.ionwrap sup{font-size:34px;align-self:flex-start}
+.builder{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center;border:2px solid var(--line);padding:12px}
+.buildwrap.withvis{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:14px;align-items:start}
+@media(max-width:900px){.buildwrap.withvis{grid-template-columns:1fr}}
+.buildwrap .visual{margin:0}
+@media(max-width:640px){.builder{grid-template-columns:1fr}}
+.builder.okb{border-color:var(--green);background:#eef8f0}.builder.badb{border-color:var(--red);background:#fdf0f0}
+.shells{display:flex;flex-direction:column;gap:8px}
+.shell{display:flex;align-items:center;gap:10px}
+.shell .sl{min-width:64px;font-weight:600}
+.shell b{min-width:30px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:28px}
+.pm{width:48px;height:44px;font-size:26px;font-weight:700;border:2px solid var(--ink);background:var(--paper)}
+.pm:active{background:#ffe082}
+.cfgline{font-size:18px}
+.cfgline b{font-family:'Barlow Condensed',sans-serif;font-size:28px;color:var(--blue)}
+.nuclide{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;align-items:center;font-family:'Barlow Condensed',sans-serif;line-height:1}
+.nuclide .ms{grid-column:1;grid-row:1;font-size:40px;text-align:right}
+.nuclide .zz{grid-column:1;grid-row:2;font-size:40px;text-align:right}
+.nuclide b{grid-column:2;grid-row:1/3;font-size:110px;padding-left:4px}
+.clues{display:flex;flex-direction:column;gap:6px}
+.clue{background:var(--soft);border-left:6px solid #b45309;padding:8px 12px;font-size:18px;font-weight:600}
+.clue small{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.clue.locked{color:#aaa;border-left-color:#ccc;font-weight:400}
+.cluebar{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+.worth{font-weight:700;color:#b45309}
+/* results */
+.bigscore{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:var(--green)}
+.rt{border-collapse:collapse;width:100%;margin-top:12px;font-size:15px}
+.rt th,.rt td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+.rt th{background:var(--soft)}
+.revise{columns:2;margin-top:6px}@media(max-width:600px){.revise{columns:1}}
+.revise li{margin:3px 0 3px 18px;break-inside:avoid}
+.podium h1{text-align:center}
+.pod{display:flex;justify-content:center;align-items:flex-end;gap:14px;height:340px;margin-top:20px}
+.pl{flex:1;max-width:170px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center}
+.pl .col{width:100%;height:var(--h);background:var(--c);border:2px solid var(--ink)}
+.pl b{font-family:'Barlow Condensed',sans-serif;font-size:36px}
+.pl span{font-weight:700;font-size:18px;margin-top:6px}
+/* team setup */
+.setup h3:first-child{margin-top:0}
+.teamnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:10px}
+.teamnames label{display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:#fff}
+.teamnames i{width:14px;align-self:stretch;background:var(--c)}
+.teamnames input{border:0;font:inherit;font-weight:700;font-size:17px;padding:8px;min-width:0;flex:1}
+/* explore */
+.exgrid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px;margin-top:14px;align-items:start}
+@media(max-width:820px){.exgrid{grid-template-columns:1fr}}
+.exgrid .ptable{max-width:none}
+.einfo .ebig{display:flex;align-items:baseline;gap:10px;font-family:'Barlow Condensed',sans-serif}
+.einfo .ebig b{font-size:60px;line-height:1}
+.einfo .ebig span{font-size:24px;font-weight:700}
+.einfo .ebig .z{font-size:22px;color:var(--muted)}
+/* projector (team mode / big explore) */
+body.proj .prompt{font-size:clamp(24px,2.6vw,40px)}
+body.proj .opt{font-size:clamp(20px,2.2vw,34px);padding:16px 18px}
+body.proj .opts.big .opt{font-size:clamp(28px,3.2vw,50px)}
+body.proj .opt .key{min-width:44px;height:44px;font-size:26px}
+body.proj .fb{font-size:clamp(18px,1.8vw,28px)}
+body.proj .ptable{max-width:min(1000px,100%)}
+body.proj .ptable.small{max-width:min(720px,100%)}
+body.proj .pcell b{font-size:clamp(20px,3vw,46px)}
+body.proj .pcell .z{font-size:clamp(11px,1vw,16px)}
+body.proj .pcell .nm{font-size:clamp(9px,1vw,15px)}
+body.proj .clue{font-size:clamp(18px,1.9vw,30px)}
+body.proj .cfgline,body.proj .shell{font-size:24px}
+body.proj .pm{width:64px;height:58px;font-size:34px}
+body.proj .bohr{width:clamp(220px,26vw,380px);height:auto}
+body.proj .nuclide b{font-size:150px}body.proj .nuclide .ms,body.proj .nuclide .zz{font-size:54px}
+body.proj .einfo,body.proj .rt{font-size:20px}
+</style>
+</head>
+<body>
+<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
+<header><a href="/test.html" class="brand">Cakebread <span>Science</span></a><span class="sub">Chemistry · The Periodic Table</span></header>
+<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
+
+<main class="wrap">
+  <section id="menu">
+    <a class="back" href="/test.html">← Testing area</a>
+    <h1>Elements 1–20</h1>
+    <p class="lede">Learn the first 20 elements: symbols, atomic numbers, groups and periods, metals and non-metals. Then move on to electrons: shells, configurations and ions.</p>
+    <div class="bigmodes">
+      <button class="bigmode" id="soloS1" style="--c:#005e22"><h3>Stage 1 · The table</h3><p>Solo: symbols, atomic numbers, placing elements, groups and periods, metals and non-metals.</p></button>
+      <button class="bigmode" id="soloS2" style="--c:#1d4ed8"><h3>Stage 2 · Electrons</h3><p>Solo: shell diagrams, electronic configurations, links to the table, ions, protons and neutrons.</p></button>
+      <button class="bigmode" id="soloMix" style="--c:#b45309"><h3>Mixed + boss round</h3><p>Solo: four random rounds, then a Mystery element boss round.</p></button>
+      <button class="bigmode" id="teamBtn" style="--c:#d62828"><h3>Team game (board)</h3><p>For the whole class on the projector: 2–6 teams, timer, steals, scoreboard.</p></button>
+      <button class="bigmode" id="exploreBtn" style="--c:#7b1fa2"><h3>Explore the table</h3><p>A clickable table for teaching: names, configurations, metal/non-metal colours, shell diagrams.</p></button>
+    </div>
+    <p class="small" id="bestLine" style="margin-top:10px"></p>
+    <h2 style="margin-top:24px">Practise one round</h2>
+    <div class="rounds" id="roundList"></div>
+    <p class="small" style="margin-top:20px">Edexcel International GCSE Science (Double Award) Chemistry 1.14–1.24 and 1.37–1.38. Configurations are written the Edexcel way, e.g. 2.8.1. Hydrogen is shown on its own, not as a Group 1 metal. Boron and silicon are semi-metals, so they are left out of the metal/non-metal sorting questions.</p>
+  </section>
+
+  <section id="play" class="hidden">
+    <div id="hud"></div>
+    <div class="stage" id="stage"></div>
+    <div style="margin-top:10px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px"><button class="btn alt" id="quit">✕ Quit to menu</button><span class="small">Keys: A–D to answer · Enter for next</span></div>
+  </section>
+
+  <section id="results" class="hidden"></section>
+  <section id="teamsetup" class="hidden"></section>
+  <section id="explore" class="hidden"></section>
+</main>
+
+<div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="data.js"></script>
+<script src="rounds.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
