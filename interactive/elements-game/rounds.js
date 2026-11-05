@@ -5,27 +5,28 @@ const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(M
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const KIND={metal:'metal',nonmetal:'non-metal',semi:'semi-metal (metalloid)'};
-const col=e=>e.group===null?1:e.group===0?8:e.group;
 const chg=n=>n>0?(n===1?'+':n+'+'):(n===-1?'−':(-n)+'−');
 const chgOpt=n=>n>0?'+'+n:'−'+(-n);
 
-/* ---------- periodic table (first 20, short form) ---------- */
-// opts: label 'full'|'sym'|'symz'|'blank'; colour 'kind'|null; hl {sym:'class'}; heads bool; click bool
-function table(o={}){const label=o.label||'symz',hl=o.hl||{};
-  let h=`<div class="ptable ${o.small?'small':''} ${o.click?'clickable':''}">`;
-  if(o.heads!==false){h+='<div class="ph corner"></div>';[1,2,3,4,5,6,7,0].forEach(g=>h+=`<div class="ph gh">${g}</div>`);}
-  for(let p=1;p<=4;p++){if(o.heads!==false)h+=`<div class="ph pr">${p}</div>`;
-    for(let c=1;c<=8;c++){const e=E.find(x=>x.period===p&&col(x)===c);
-      if(!e){h+='<div class="pcell empty"></div>';continue;}
-      const cls=['pcell',o.colour==='kind'?'k-'+e.kind:'',e.group===null?'hydro':'',hl[e.sym]||'',o.step&&['Be','Al'].includes(e.sym)?'stepR':'',o.step&&e.sym==='B'?'stepB':'',o.step&&e.sym==='Ca'?'stepR':''].join(' ');
-      let inner='';if(label==='full')inner=`<span class="z">${e.z}</span><b>${e.sym}</b><span class="nm">${e.name}</span>`;
-      else if(label==='symz')inner=`<span class="z">${e.z}</span><b>${e.sym}</b>`;
-      else if(label==='sym')inner=`<b>${e.sym}</b>`;
-      else if(label==='cfg')inner=`<b>${e.sym}</b><span class="nm">${D.cfg(e.config)}</span>`;
-      else inner='';
-      h+=`<button type="button" class="${cls}" data-sym="${e.sym}" ${o.click?'':'tabindex="-1"'} aria-label="${o.label==='blank'?'Period '+e.period+', column '+c:e.name}">${inner}</button>`;}}
-  if(o.heads!==false)h+=`<div class="pfoot"><span>↑ group</span><span>← period</span></div>`;
-  return h+'</div>';}
+/* ---------- periodic table (first 20): familiar layout, narrow labelled gap where the transition metals go ---------- */
+// opts: label 'full'|'sym'|'symz'|'cfg'|'blank'; colour 'kind'|null; hl {sym:'class'}; heads bool; click bool; small bool; step bool;
+//       names bool (group names alkali metals / halogens / noble gases + coloured strips; off in questions so they don't give answers away)
+const GCOL=e=>e.group===null||e.group===1?2:e.group===2?3:e.group===0?10:e.group+2;
+const GNAME={1:'alkali metals',7:'halo­gens',0:'noble gases'};
+function table(o={}){const label=o.label||'symz',hl=o.hl||{},heads=o.heads!==false;
+  let h=`<div class="ptwrap ${o.small?'small':''}"><div class="ptable ${o.click?'clickable':''} ${o.names?'acc':''}">`;
+  if(heads){[1,2,3,4,5,6,7,0].forEach(g=>{const c=g===1?2:g===2?3:g===0?10:g+2;
+      h+=`<div class="ph gh ${g===1?'g1':g===7?'g7':g===0?'g0':''}" style="grid-column:${c};grid-row:1"><b>${g}</b>${o.names&&GNAME[g]?`<small>${GNAME[g]}</small>`:''}</div>`;});
+    for(let p=1;p<=4;p++)h+=`<div class="ph pr" style="grid-column:1;grid-row:${p+1}">${p}</div>`;}
+  h+=`<div class="tmlabel" style="grid-row:${heads?'3/6':'2/5'}">transition metals</div>`;
+  E.forEach(e=>{const cls=['pcell',o.colour==='kind'?'k-'+e.kind:'',e.group===null?'hydro':'',e.group===1?'g1':e.group===7?'g7':e.group===0?'g0':'',hl[e.sym]||'',o.step&&['Be','Al','Ca'].includes(e.sym)?'stepR':'',o.step&&e.sym==='B'?'stepB':''].join(' ');
+    let inner='';if(label==='full')inner=`<span class="z">${e.z}</span><b>${e.sym}</b><span class="nm">${e.name}</span>`;
+    else if(label==='symz')inner=`<span class="z">${e.z}</span><b>${e.sym}</b>`;
+    else if(label==='sym')inner=`<b>${e.sym}</b>`;
+    else if(label==='cfg')inner=`<b>${e.sym}</b><span class="nm cf">${D.cfg(e.config)}</span>`;
+    h+=`<button type="button" class="${cls}" style="grid-column:${GCOL(e)};grid-row:${e.period+(heads?1:0)}" data-sym="${e.sym}" ${o.click?'':'tabindex="-1"'} aria-label="${label==='blank'?'Period '+e.period+', '+(e.group===null?'hydrogen position':'group '+e.group):e.name}">${inner}</button>`;});
+  if(heads)h+=`<div class="pfoot"><span>groups go down ↓</span><span>periods go across →</span></div>`;
+  return h+'</div></div>';}
 
 /* ---------- shell (Bohr) diagram ---------- */
 function bohr(config,o={}){const n=config.length,S=o.size||260,c=S/2,rs=[0,40,62,84,106].map(r=>r*S/260),nr=24*S/260;

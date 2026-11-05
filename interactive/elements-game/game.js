@@ -6,7 +6,7 @@ const store={get(k){try{return JSON.parse(localStorage.getItem('el20:'+k));}catc
 const STAGES={1:{name:'Stage 1 · The table',col:'#005e22'},2:{name:'Stage 2 · Electrons',col:'#1d4ed8'},3:{name:'Boss round',col:'#b45309'}};
 const TEAM_COLS=['#d62828','#1d4ed8','#2e7d32','#f59e0b','#7b1fa2','#0e7490'];
 const TEAM_NAMES=['Red','Blue','Green','Gold','Purple','Teal'];
-function show(id){['menu','play','results','teamsetup','explore'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.body.classList.toggle('proj',id==='play'&&!!TEAM||id==='explore'&&EXPLORE_BIG);window.scrollTo(0,0);}
+function show(id){['menu','solosetup','play','results','teamsetup','explore'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.body.classList.toggle('proj',id==='play'&&!!TEAM||id==='explore'&&EXPLORE_BIG);window.scrollTo(0,0);}
 
 /* ===================== Question renderer (shared by solo and team) ===================== */
 /* render(q, el, cb): cb.answer(ok, info) when the player commits an answer.
@@ -53,27 +53,60 @@ function render(q,el,cb){
 
 /* ===================== SOLO ===================== */
 let SOLO=null,TEAM=null,EXPLORE_BIG=false;
-const SOLO_MODES={stage1:{name:'Stage 1 challenge',rounds:['symbols','numbers','place','groups','metals']},stage2:{name:'Stage 2 challenge',rounds:['build','detective','links','ions','atoms']},mix:{name:'Mixed challenge',rounds:null}};
-function startSolo(mode,roundIds){const ids=roundIds||(mode==='mix'?shuffle(ROUNDS.filter(r=>r.id!=='mystery').map(r=>r.id)).slice(0,4).concat('mystery'):SOLO_MODES[mode].rounds);
-  SOLO={mode,ids,ri:-1,score:0,max:0,per:[],revise:{}};TEAM=null;nextSoloRound();show('play');}
-function nextSoloRound(){SOLO.ri++;if(SOLO.ri>=SOLO.ids.length)return soloResults();const id=SOLO.ids[SOLO.ri];SOLO.cur={R:ROUNDS.find(r=>r.id===id),qs:make(id,5),qi:-1,score:0,max:0,res:[]};SOLO.per.push(SOLO.cur);nextSoloQ();}
+const SOLO_MODES={s1:{name:'Stage 1 · The table',rounds:['symbols','numbers','place','groups','metals']},s2:{name:'Stage 2 · Electrons',rounds:['build','detective','links','ions','atoms']},all:{name:'Everything',rounds:['symbols','numbers','place','groups','metals','build','detective','links','ions','atoms','mystery']}};
+const RAND_N=20;
+// cfg: {round:id} for one round, or {content:'s1'|'s2'|'all', order:'rounds'|'random'}
+function startSolo(cfg){SOLO={cfg,ri:-1,score:0,max:0,per:[],revise:{}};TEAM=null;
+  if(cfg.round){SOLO.ids=[cfg.round];SOLO.key='round:'+cfg.round;}
+  else if(cfg.order==='random'){const ids=SOLO_MODES[cfg.content].rounds,pool=[];let order=shuffle(ids),k=0;
+    while(pool.length<RAND_N){if(k===order.length){order=shuffle(ids);k=0;}pool.push(make(order[k++],1)[0]);}
+    SOLO.ids=['random'];SOLO.pool=shuffle(pool);SOLO.key=cfg.content+':random';}
+  else{SOLO.ids=SOLO_MODES[cfg.content].rounds;SOLO.key=cfg.content;}
+  nextSoloRound();show('play');}
+function nextSoloRound(){SOLO.ri++;if(SOLO.ri>=SOLO.ids.length)return soloResults();const id=SOLO.ids[SOLO.ri];
+  SOLO.cur=id==='random'?{R:{name:'Random mix'},qs:SOLO.pool,qi:-1,score:0,max:0,res:[]}:{R:ROUNDS.find(r=>r.id===id),qs:make(id,5),qi:-1,score:0,max:0,res:[]};
+  SOLO.per.push(SOLO.cur);nextSoloQ();}
 function nextSoloQ(){const cur=SOLO.cur;cur.qi++;if(cur.qi>=cur.qs.length)return nextSoloRound();const q=cur.qs[cur.qi];
   hudSolo();const st=$('stage');st.innerHTML='<div id="qbox"></div><div id="fb"></div><div class="nextrow" id="nextrow"></div>';
   let done=false;
   const ctl=render(q,$('qbox'),{answer(ok,info){if(done)return;done=true;ctl.stop();if(!ok)ctl.reveal();
-    const pts=ok?(q.mystery?[100,75,50,25][(q.shown||1)-1]:100):0;cur.score+=pts;cur.max+=100;SOLO.score+=pts;SOLO.max+=100;cur.res.push(ok?'done':'miss');if(!ok)SOLO.revise[q.tag]=(SOLO.revise[q.tag]||0)+1;
+    const pts=ok?(q.mystery?[100,75,50,25][(q.shown||1)-1]:100):0;cur.score+=pts;cur.max+=100;q._pts=pts;SOLO.score+=pts;SOLO.max+=100;cur.res.push(ok?'done':'miss');if(!ok)SOLO.revise[q.tag]=(SOLO.revise[q.tag]||0)+1;
     $('fb').innerHTML=`<div class="fb ${ok?'':'bad'}"><span class="pts">+${pts}</span><b>${ok?R.pick(['Correct!','Yes!','Spot on.','Nice.']):'Not quite.'}</b> ${!ok&&q.kind==='build'&&info?'You built <b>'+esc(info.text)+'</b>. ':''}${q.explain}</div>`;hudSolo();
     const last=cur.qi===cur.qs.length-1,lastR=SOLO.ri===SOLO.ids.length-1;$('nextrow').innerHTML=`<button class="btn big green" id="nx">${last?(lastR?'See results':'Next round'):'Next'} →</button>`;$('nx').onclick=nextSoloQ;$('nx').focus({preventScroll:true});$('nextrow').scrollIntoView({block:'nearest',behavior:'smooth'});}});
   KEYCTL=ctl;}
-function hudSolo(){const cur=SOLO.cur;$('hud').innerHTML=`<div><div class="meta">${SOLO.ids.length>1?`Round ${SOLO.ri+1} of ${SOLO.ids.length} · `:''}Question ${Math.min(cur.qi+1,5)} of 5</div><div class="rname">${cur.R.name}</div><div class="pips">${cur.qs.map((_,i)=>`<i class="${cur.res[i]||(i===cur.qi?'now':'')}"></i>`).join('')}</div></div><div class="score"><small>Score</small><span>${SOLO.score}</span></div>`;}
-function soloResults(){const pct=SOLO.max?Math.round(SOLO.score/SOLO.max*100):0,key='best:'+SOLO.mode+(SOLO.mode==='round'?':'+SOLO.ids[0]:''),best=store.get(key)||0,nb=SOLO.score>best;if(nb)store.set(key,SOLO.score);
+function hudSolo(){const cur=SOLO.cur,n=cur.qs.length,q=cur.qs[Math.min(cur.qi,n-1)],rand=SOLO.ids[0]==='random';
+  const rn=rand?(ROUNDS.find(r=>r.id===q.round)||{name:''}).name:cur.R.name;
+  $('hud').innerHTML=`<div><div class="meta">${rand?'Random mix · ':SOLO.ids.length>1?`Round ${SOLO.ri+1} of ${SOLO.ids.length} · `:''}Question ${Math.min(cur.qi+1,n)} of ${n}</div><div class="rname">${rn}</div><div class="pips ${n>10?'many':''}">${cur.qs.map((_,i)=>`<i class="${cur.res[i]||(i===cur.qi?'now':'')}"></i>`).join('')}</div></div><div class="score"><small>Score</small><span>${SOLO.score}</span></div>`;}
+function soloResults(){const pct=SOLO.max?Math.round(SOLO.score/SOLO.max*100):0,key='best:'+SOLO.key,best=store.get(key)||0,nb=SOLO.score>best;if(nb)store.set(key,SOLO.score);
   const rev=Object.entries(SOLO.revise).sort((a,b)=>b[1]-a[1]);
   $('results').innerHTML=`<div class="card"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in">
    <h2>${pct>=90?'Element expert!':pct>=70?'Great work':pct>=50?'Good effort':'Keep practising'}</h2><div class="bigscore">${SOLO.score}</div><div class="small">out of ${SOLO.max} (${pct}%)${nb?' · New personal best!':best?` · Your best: ${best}`:''}</div>
-   <table class="rt"><tr><th>Round</th><th>Score</th></tr>${SOLO.per.map(p=>`<tr><td>${p.R.name}</td><td>${p.score} / ${p.max}</td></tr>`).join('')}</table>
+   <table class="rt"><tr><th>Round</th><th>Score</th></tr>${soloBreakdown().map(p=>`<tr><td>${p.name}</td><td>${p.score} / ${p.max}</td></tr>`).join('')}</table>
    ${rev.length?`<h3>Revise these</h3><ul class="revise">${rev.map(([t,n])=>`<li>${esc(t)}${n>1?` <span class="small">(×${n})</span>`:''}</li>`).join('')}</ul>`:'<p><b>Nothing to revise. Perfect!</b></p>'}
    <div class="modes"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="tomenu">Menu</button></div></div></div>`;
-  const m=SOLO.mode,ids=SOLO.ids;$('again').onclick=()=>startSolo(m,m==='round'?ids:null);$('tomenu').onclick=menu;show('results');}
+  const cfg=SOLO.cfg;$('again').onclick=()=>startSolo(cfg);$('tomenu').onclick=menu;show('results');}
+function soloBreakdown(){if(SOLO.ids[0]!=='random')return SOLO.per.map(p=>({name:p.R.name,score:p.score,max:p.max}));
+  const by={};SOLO.cur.qs.forEach((q,i)=>{if(i>SOLO.cur.qi)return;const r=ROUNDS.find(x=>x.id===q.round);const k=r?r.name:q.round;by[k]=by[k]||{name:k,score:0,max:0};by[k].max+=100;by[k].score+=q._pts||0;});
+  return Object.values(by);}
+
+/* ===================== SOLO SETUP ===================== */
+function soloSetup(){const s=store.get('solocfg')||{content:'s1',order:'rounds'};const box=$('solosetup');
+  const n=()=>s.order==='random'?RAND_N:SOLO_MODES[s.content].rounds.length*5;
+  const rc=r=>{const b=store.get('best:round:'+r.id);return `<button class="rcard" data-id="${r.id}" style="--s:${STAGES[r.stage].col}"><span class="st">${STAGES[r.stage].name}</span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<span class="best">Best: ${b} / 500</span>`:''}</button>`;};
+  const draw=()=>{const best=store.get('best:'+s.content+(s.order==='random'?':random':''));
+    box.innerHTML=`<a class="back" href="#" id="ssBack">← Menu</a><h1>Solo</h1>
+    <div class="card"><div class="in setup">
+     <h3>Questions from</h3><div class="chips">${[['s1','Stage 1 · The table'],['s2','Stage 2 · Electrons'],['all','Everything']].map(([k,v])=>`<button class="chip ${s.content===k?'on':''}" data-c="${k}">${v}</button>`).join('')}</div>
+     <h3>Order</h3><div class="chips">${[['rounds','Round by round'],['random','Randomise']].map(([k,v])=>`<button class="chip ${s.order===k?'on':''}" data-o="${k}">${v}</button>`).join('')}</div>
+     <p class="small" style="margin-top:6px">${s.order==='random'?`${RAND_N} questions, all mixed up.`:`5 questions from each round, one round at a time${s.content==='all'?', ending with the Mystery element boss round':''}.`}</p>
+     <div class="modes"><button class="btn big green" id="ssGo">Start: ${n()} questions</button>${best?`<span class="small" style="align-self:center">Your best: ${best}</span>`:''}</div></div></div>
+    <details class="oneround"><summary>Or practise just one round</summary><div class="rounds">${ROUNDS.map(rc).join('')}</div></details>`;
+    box.querySelector('#ssBack').onclick=ev=>{ev.preventDefault();menu();};
+    box.querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{s.content=b.dataset.c;draw();});
+    box.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{s.order=b.dataset.o;draw();});
+    box.querySelector('#ssGo').onclick=()=>{store.set('solocfg',s);startSolo({content:s.content,order:s.order});};
+    box.querySelectorAll('.rcard').forEach(b=>b.onclick=()=>startSolo({round:b.dataset.id}));};
+  draw();show('solosetup');}
 
 /* ===================== TEAM ===================== */
 let KEYCTL=null;
@@ -97,7 +130,7 @@ function teamSetup(){const s=store.get('teamcfg')||{n:4,names:TEAM_NAMES.slice()
     box.querySelector('#steal').onchange=ev=>{s.steal=ev.target.checked;};
     box.querySelector('#tsGo').onclick=()=>{store.set('teamcfg',s);startTeam(s);};};
   draw();show('teamsetup');}
-function startTeam(s){const ids=s.content==='s1'?SOLO_MODES.stage1.rounds:s.content==='s2'?SOLO_MODES.stage2.rounds:s.content==='mystery'?['mystery']:ROUNDS.map(r=>r.id);
+function startTeam(s){const ids=s.content==='s1'?SOLO_MODES.s1.rounds:s.content==='s2'?SOLO_MODES.s2.rounds:s.content==='mystery'?['mystery']:ROUNDS.map(r=>r.id);
   const total=s.n*s.per;const pool=[];let k=0;const order=shuffle(ids);
   while(pool.length<total){const id=order[k++%order.length];pool.push(make(id,1)[0]);}
   TEAM={cfg:s,teams:Array.from({length:s.n},(_,i)=>({name:(s.names[i]||TEAM_NAMES[i]).trim()||TEAM_NAMES[i],col:TEAM_COLS[i],score:0,right:0})),qs:pool,qi:-1};SOLO=null;
@@ -138,8 +171,8 @@ function explore(){const t=EXT;const box=$('explore');
   box.innerHTML=`<a class="back" href="#" id="exBack">← Menu</a><h1>Explore the first 20</h1>
     <div class="chips">${[['label','full','Names'],['label','symz','Symbols + numbers'],['label','cfg','Electron configurations'],['label','blank','Blank (test yourself)']].map(([k,v,txt])=>`<button class="chip ${t[k]===v?'on':''}" data-k="${k}" data-v="${v}">${txt}</button>`).join('')}
       <button class="chip ${t.kind?'on':''}" id="exKind">Metal / non-metal colours</button><button class="chip ${EXPLORE_BIG?'on':''}" id="exBig">Big (projector)</button></div>
-    <div class="exgrid"><div>${table({label:t.label,colour:t.kind?'kind':null,click:true,step:t.kind,hl:EXSEL?{[EXSEL]:'hl'}:{}})}
-      <div class="legend">${t.kind?'<span><i class="k-metal"></i>Metal</span><span><i class="k-nonmetal"></i>Non-metal</span><span><i class="k-semi"></i>Semi-metal</span>':''}<span>Group 1 = alkali metals · Group 7 = halogens · Group 0 = noble gases</span></div></div>
+    <div class="exgrid"><div>${table({label:t.label,colour:t.kind?'kind':null,click:true,step:t.kind,names:true,hl:EXSEL?{[EXSEL]:'hl'}:{}})}
+      <div class="legend">${t.kind?'<span><i class="k-metal"></i>Metal</span><span><i class="k-nonmetal"></i>Non-metal</span><span><i class="k-semi"></i>Semi-metal</span>':''}</div></div>
       <div class="card"><div class="in" id="exInfo">${info(EXSEL&&D.bySym[EXSEL])}</div></div></div>`;
   box.querySelector('#exBack').onclick=ev=>{ev.preventDefault();EXPLORE_BIG=false;menu();};
   box.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{t[b.dataset.k]=b.dataset.v;explore();});
@@ -149,14 +182,8 @@ function explore(){const t=EXT;const box=$('explore');
   show('explore');}
 
 /* ===================== MENU ===================== */
-function menu(){TEAM&&TEAM.stopTimer&&TEAM.stopTimer();TEAM=null;SOLO=null;KEYCTL=null;
-  const rc=r=>{const b=store.get('best:round:'+r.id);return `<button class="rcard" data-id="${r.id}" style="--s:${STAGES[r.stage].col}"><span class="st">${STAGES[r.stage].name}</span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<span class="best">Best: ${b} / 500</span>`:''}</button>`;};
-  $('roundList').innerHTML=ROUNDS.map(rc).join('');
-  $('roundList').querySelectorAll('.rcard').forEach(b=>b.onclick=()=>startSolo('round',[b.dataset.id]));
-  const bs=['stage1','stage2','mix'].map(k=>store.get('best:'+k)).map((v,i)=>v?`${['Stage 1','Stage 2','Mixed'][i]} best: ${v}`:'').filter(Boolean);$('bestLine').textContent=bs.join(' · ');
-  show('menu');}
-$('soloS1').onclick=()=>startSolo('stage1');$('soloS2').onclick=()=>startSolo('stage2');$('soloMix').onclick=()=>startSolo('mix');
-$('teamBtn').onclick=teamSetup;$('exploreBtn').onclick=explore;
+function menu(){TEAM&&TEAM.stopTimer&&TEAM.stopTimer();TEAM=null;SOLO=null;KEYCTL=null;show('menu');}
+$('soloBtn').onclick=soloSetup;$('teamBtn').onclick=teamSetup;$('exploreBtn').onclick=explore;
 $('quit').onclick=()=>{if(confirm('Quit this game?'))menu();};
 document.addEventListener('keydown',ev=>{if($('play').classList.contains('hidden'))return;if(ev.target.tagName==='INPUT')return;
   const nx=$('nx');if((ev.key==='Enter'||ev.key===' ')&&nx){ev.preventDefault();nx.click();return;}
