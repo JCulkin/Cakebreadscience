@@ -62,6 +62,24 @@ button{font:inherit;cursor:pointer;color:inherit}
 .oneround{margin-top:18px}.oneround summary{cursor:pointer;font-weight:700;font-size:17px}
 .pips.many{flex-wrap:wrap}.pips.many i{width:12px}
 #solosetup h1,#teamsetup h1{margin-bottom:12px}
+/* high scores */
+.hs{margin-top:14px}
+.hs h3{margin:0 0 6px}
+.hs ol{list-style:none;margin:0;padding:0;border:2px solid var(--ink);background:var(--paper)}
+.hs li{display:grid;grid-template-columns:38px 1fr auto;gap:8px;align-items:center;padding:7px 12px;border-top:1px solid var(--line);font-size:16px}
+.hs li:first-child{border-top:0}
+.hs li .rk{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:var(--muted)}
+.hs li:nth-child(1) .rk{color:#c9a227}.hs li:nth-child(2) .rk{color:#8a8f98}.hs li:nth-child(3) .rk{color:#b0703c}
+.hs li .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs li .sc{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--green)}
+.hs li.me{background:#fff3c4}
+.hs .empty{padding:10px 12px;color:var(--muted);border:2px dashed var(--line)}
+.hsform{margin-top:14px;padding:14px;background:#fff3c4;border:2px solid #b45309}
+.hsform b{font-size:19px}
+.hsform .row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.hsform input{flex:1;min-width:160px;font:inherit;font-size:18px;padding:9px 10px;border:2px solid var(--ink)}
+.hsform .msg{margin-top:6px;font-size:14px;color:var(--red)}
+.hsboards{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
 /* hud */
 #hud{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;background:var(--ink);color:var(--cream);padding:10px 14px}
 #hud .rname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
@@ -224,7 +242,7 @@ body.proj .einfo,body.proj .rt{font-size:20px}
       <button class="bigmode" id="soloBtn" style="--c:#005e22"><h3>Solo</h3><p>Play on your own. Pick Stage 1 (the table), Stage 2 (electrons) or everything, round by round or randomised.</p></button>
       <button class="bigmode" id="teamBtn" style="--c:#d62828"><h3>Team game</h3><p>For the whole class on the board: 2–6 teams, timer, steals, scoreboard.</p></button>
     </div>
-    <p style="margin-top:14px"><button class="linkbtn" id="exploreBtn">Explore the table →</button> <span class="small">a clickable table for teaching</span></p>
+    <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:6px 18px"><span><button class="linkbtn" id="hsBtn">🏆 High scores</button></span><span><button class="linkbtn" id="exploreBtn">Explore the table →</button> <span class="small">a clickable table for teaching</span></span></p>
     <p class="small" style="margin-top:20px">Edexcel International GCSE Science (Double Award) Chemistry 1.14–1.24 and 1.37–1.38. Configurations are written the Edexcel way, e.g. 2.8.1. Hydrogen is shown on its own, not as a Group 1 metal. Boron and silicon are semi-metals, so they are left out of the metal/non-metal sorting questions.</p>
   </section>
 
@@ -236,11 +254,16 @@ body.proj .einfo,body.proj .rt{font-size:20px}
 
   <section id="solosetup" class="hidden"></section>
   <section id="results" class="hidden"></section>
+  <section id="hiscores" class="hidden"></section>
   <section id="teamsetup" class="hidden"></section>
   <section id="explore" class="hidden"></section>
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="scores.js"></script>
 <script src="data.js"></script>
 <script src="rounds.js"></script>
 <script src="game.js"></script>
