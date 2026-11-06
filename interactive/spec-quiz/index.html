@@ -109,6 +109,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .stage{background:var(--paper);border:2px solid var(--ink);border-top:0;padding:16px}
 .qtag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;background:var(--soft);border-left:5px solid var(--sc);margin-bottom:10px}
 .qtag .tf{color:var(--muted);font-weight:600}
+.hardtag{margin-left:6px;background:#b45309;color:#fff;padding:1px 8px;letter-spacing:.5px}
 .prompt{font-size:23px;font-weight:600;line-height:1.3;margin-bottom:14px}
 .prompt b{color:var(--green)}
 .nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle}
@@ -152,6 +153,96 @@ button{font:inherit;cursor:pointer;color:inherit}
 .pl .col{width:100%;height:var(--h);background:var(--c);border:2px solid var(--ink)}
 .pl b{font-family:'Barlow Condensed',sans-serif;font-size:36px}
 .pl span{font-weight:700;font-size:18px;margin-top:6px}
+/* campaign */
+.campcard{display:flex;width:100%;align-items:stretch;margin-top:18px;border:2px solid var(--ink);background:var(--paper);text-align:left;padding:0;border-left:12px solid #b45309}
+.campcard:hover{background:#fff8d6}
+.cc-l{flex:1;padding:14px 18px;display:flex;flex-direction:column}
+.cc-l small{font-weight:700;letter-spacing:2px;color:#b45309}
+.cc-l b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:38px;line-height:1}
+.cc-l span{margin-top:4px;font-size:15px;color:var(--muted);max-width:640px}
+.cc-r{display:grid;place-items:center;padding:0 22px;background:var(--ink);color:var(--cream);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;text-transform:uppercase}
+@media(max-width:600px){.cc-r{padding:0 12px;font-size:18px}.cc-l b{font-size:30px}}
+.camphead .who{display:flex;gap:16px;align-items:center}
+.camphead .who small{font-size:12px;letter-spacing:2px;font-weight:700;color:var(--muted)}
+.camphead h1{font-size:clamp(30px,6vw,48px)}
+.xpbar{height:12px;background:#e6e1d3;border:2px solid var(--ink);margin:6px 0 2px;max-width:420px}.xpbar i{display:block;height:100%;background:#d4a017}
+.cstats{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.cstats div{flex:1;min-width:120px;background:var(--soft);border-left:5px solid var(--green);padding:6px 10px}
+.cstats div.rust{border-left-color:#b45309}
+.cstats b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:30px;line-height:1}
+.cstats b small{font-size:16px;color:var(--muted)}
+.cstats span{font-size:13px;color:var(--muted)}
+.campsync{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.sync{font-size:14px}.sync.warn{color:#9a3412}
+.camphead .go{margin-top:14px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.camphead .go .small{max-width:520px}
+.ctabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 4px}
+.ctabs .chip{font-size:16px;padding:8px 16px}
+.subjtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.subjtab{position:relative;text-align:left;border:2px solid var(--ink);background:var(--paper);padding:10px 12px 14px;border-top:8px solid var(--sc);overflow:hidden}
+.subjtab.on{background:#fff8d6;box-shadow:inset 0 0 0 2px var(--sc)}
+.subjtab b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:24px;text-transform:uppercase;color:var(--sc)}
+.subjtab span{font-size:13px;color:var(--muted)}
+.subjtab i{position:absolute;left:0;bottom:0;height:5px;background:var(--sc)}
+@media(max-width:600px){.subjtab b{font-size:18px}.subjtab span{font-size:11px}}
+.cmap{margin-top:10px;display:grid;gap:10px}
+.ctopic{background:var(--paper);border:2px solid var(--ink);padding:10px 14px}
+.ctopic h3{margin:0 0 6px;display:flex;align-items:center;gap:8px}
+.ctopic .tnum{display:inline-grid;place-items:center;width:28px;height:28px;background:var(--ink);color:#fff}
+.ctopic .soon{margin-top:4px;font-style:italic}
+.csub{border-top:1px solid var(--line);padding:8px 0}
+.csub.sug{background:#fff8d6;margin:0 -14px;padding:8px 14px;border-left:6px solid #d4a017}
+.csubhead{display:flex;align-items:center;gap:10px}
+.csubname{flex:1;min-width:0}
+.sugtag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:#d4a017;color:#fff;padding:1px 6px}
+.pbar{height:8px;background:#e6e1d3;margin:4px 0 2px;max-width:360px}.pbar i{display:block;height:100%;background:var(--green2)}
+.pdots{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 0 56px}
+.pdot{display:inline-block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;padding:1px 7px;border:1.5px solid #bbb;background:#f3f1ea;color:#777}
+.pdot small{font-size:11px;font-weight:600}
+.pdot.learning{background:#dbeafe;border-color:#1d4ed8;color:#1d4ed8}
+.pdot.secured{background:#d8f0de;border-color:var(--green);color:var(--green)}
+.pdot.rusty{background:#fde4c8;border-color:#b45309;color:#9a3412}
+@media(max-width:600px){.pdots{margin-left:0}}
+.bgrid,.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:8px}
+.bcell,.gcell{background:var(--paper);border:2px solid var(--ink);padding:10px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.bcell b,.gcell b{margin-top:4px;font-size:14px;line-height:1.2}
+.bcell span,.gcell span{font-size:12px;color:var(--muted);margin-top:2px}
+.bcell.off,.gcell.off{background:#f3f1ea;border-color:#c9c3b4}
+svg.gear.locked{filter:grayscale(1) brightness(.5) contrast(.4);opacity:.45}
+.legends{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:8px}
+.lcell{display:flex;gap:12px;align-items:center;background:#1a1a2e;color:#eee;border:2px solid var(--ink);border-top:6px solid var(--sc);padding:12px}
+.lcell svg{flex:none}
+.lcell.mine{box-shadow:0 0 0 4px #d4a017}
+.lcell small{letter-spacing:2px;font-weight:700;color:#aaa}
+.lcell b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:24px;text-transform:uppercase;color:#ffd166}
+.lcell span{display:block;font-size:13px;color:#ccc}
+.lcell em{display:block;margin-top:6px;font-style:normal;font-weight:700;color:#fff}
+svg.legend.locked{filter:grayscale(.7) brightness(.8)}
+.lbs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}@media(max-width:760px){.lbs{grid-template-columns:1fr}}
+.lb ol{list-style:none;border:2px solid var(--ink);background:var(--paper);margin-top:6px}
+.lb li{display:grid;grid-template-columns:32px 30px 1fr auto;gap:8px;align-items:center;padding:6px 10px;border-top:1px solid var(--line)}
+.lb li:first-child{border-top:0}
+.lb li .rk{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:var(--muted)}
+.lb li:nth-child(1) .rk{color:#c9a227}.lb li:nth-child(2) .rk{color:#8a8f98}.lb li:nth-child(3) .rk{color:#b0703c}
+.lb li .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb li .sc{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--green)}
+.lb li .sc small{font-family:'Barlow',sans-serif;font-size:12px;color:var(--muted);font-weight:600}
+.lb li.me{background:#fff3c4}
+.lb li.empty{display:block;color:var(--muted)}
+.note{background:#fff8d6;border-left:6px solid #c9a000;padding:10px 12px;margin-top:10px}
+.how h3:first-child{margin-top:0}.how p{margin-top:4px;max-width:760px}
+.campnote{margin-top:8px;font-size:.9em;color:#333}
+.hudrank{display:flex;align-items:center;gap:8px}
+.mstats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}@media(max-width:600px){.mstats{grid-template-columns:1fr 1fr}}
+.mstats div{background:var(--soft);padding:8px 10px;border-left:5px solid var(--green)}
+.mstats b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:34px;line-height:1}
+.mstats span{font-size:13px;color:var(--muted)}
+.promo{display:flex;align-items:center;gap:14px;margin-top:14px;padding:12px;background:#1a1a2e;color:#fff;border:2px solid var(--ink)}
+.promo small{letter-spacing:3px;color:#ffd166;font-weight:700}.promo b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:40px;text-transform:uppercase;line-height:1}
+.newrws{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.newrw{display:flex;flex-direction:column;align-items:center;text-align:center;width:150px;background:#fff8d6;border:2px solid #d4a017;padding:10px;animation:pop .5s ease-out both}
+.newrw b{font-size:14px;margin-top:4px}.newrw span{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#b45309;font-weight:700}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
 /* projector */
 body.proj .prompt{font-size:clamp(26px,2.8vw,44px)}
 body.proj .opt{font-size:clamp(20px,2.2vw,34px);padding:16px 18px}
@@ -171,9 +262,11 @@ body.proj .qtag{font-size:16px}
     <a class="back" href="/test.html">← Testing area</a>
     <h1>Spec Quiz</h1>
     <p class="lede">Multiple choice and true-or-false questions on the Edexcel International GCSE Science (Double Award) specification. Tick the parts of the spec you want, then play on your own or as a class in teams.</p>
+    <button class="campcard" id="campBtn"><span class="cc-l"><small>NEW</small><b>Campaign</b><span>Work through the whole spec on your own. Secure every question, earn scout badges, Italian gear and ranks, and climb the leaderboards. Progress is saved to your Google account.</span></span><span class="cc-r">Play →</span></button>
+    <h2 style="margin-top:26px">Or make a quiz</h2>
     <div class="card picker">
       <div class="pickhead">
-        <h2>1. Choose the content</h2>
+        <h2>Choose the content</h2>
         <div class="tools">
           <button class="chip" id="selAll">Tick everything with questions</button>
           <button class="chip" id="selNone">Clear</button>
@@ -200,11 +293,20 @@ body.proj .qtag{font-size:16px}
   </section>
 
   <section id="results" class="hidden"></section>
+  <section id="campaign" class="hidden"></section>
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="spec.js"></script>
 <script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="rewards.js"></script>
 <script src="quiz.js"></script>
+<script src="campaign.js"></script>
 </body>
 </html>
