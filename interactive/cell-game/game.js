@@ -271,9 +271,10 @@ const ROUNDS=[
 function bindOpts(s,attr,correct,cb){const bs=[...s.querySelectorAll('.opt')];bs.forEach(b=>b.onclick=()=>{const ok=b.dataset[attr]===correct;bs.forEach(x=>{x.disabled=true;if(x.dataset[attr]===correct)x.classList.add('right');});if(!ok)b.classList.add('wrong');cb(ok);});}
 
 /* ---------------- game flow ---------------- */
-let GAME=null;
-function show(id){['menu','play','results'].forEach(x=>$(x).classList.toggle('hidden',x!==id));window.scrollTo(0,0);}
-function startGame(mode,roundIds){GAME={mode,rounds:roundIds.map(id=>ROUNDS.find(r=>r.id===id)),ri:-1,score:0,max:0,per:[],revise:{}};nextRound();show('play');}
+let GAME=null,TEAM=null;
+function show(id){['menu','play','results','teamsetup'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.body.classList.toggle('proj',!!TEAM&&(id==='play'||id==='results'));
+  $('teamhud').classList.toggle('hidden',!TEAM);$('solohud').classList.toggle('hidden',!!TEAM);window.scrollTo(0,0);}
+function startGame(mode,roundIds){TEAM=null;GAME={mode,rounds:roundIds.map(id=>ROUNDS.find(r=>r.id===id)),ri:-1,score:0,max:0,per:[],revise:{}};nextRound();show('play');}
 function nextRound(){GAME.ri++;if(GAME.ri>=GAME.rounds.length)return finish();const R=GAME.rounds[GAME.ri];GAME.cur={R,qs:R.make(),qi:-1,score:0,max:0,res:[]};GAME.per.push(GAME.cur);nextQ();}
 function nextQ(){const cur=GAME.cur;cur.qi++;if(cur.qi>=cur.qs.length)return nextRound();hud();
   const run=cur.qs[cur.qi]();run((pts,max,tags)=>{cur.score+=pts;cur.max+=max;GAME.score+=pts;GAME.max+=max;cur.res.push(pts>=max*0.75?'done':'miss');(tags||[]).forEach(t=>GAME.revise[t]=(GAME.revise[t]||0)+1);hud();
@@ -294,12 +295,54 @@ function finish(){const pct=GAME.max?Math.round(GAME.score/GAME.max*100):0;const
     <div class="modes" style="margin-top:18px"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="toMenu">Menu</button></div></div></div>`;
   const again=GAME.rounds.map(r=>r.id),mode=GAME.mode;
   $('again').onclick=()=>startGame(mode,mode==='full'?shuffle(ROUNDS.map(r=>r.id)).slice(0,5):again);$('toMenu').onclick=menu;show('results');}
-function menu(){GAME=null;$('roundList').innerHTML=ROUNDS.map((r,i)=>{const b=store.get('best:round:'+r.id);return `<button class="rcard" data-id="${r.id}"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in"><span class="rnum">${i+1}</span><span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<div class="best">Best: ${b} / 500</div>`:''}</span></div></button>`;}).join('');
+function menu(){GAME=null;TEAM=null;$('roundList').innerHTML=ROUNDS.map((r,i)=>{const b=store.get('best:round:'+r.id);return `<button class="rcard" data-id="${r.id}"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in"><span class="rnum">${i+1}</span><span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<div class="best">Best: ${b} / 500</div>`:''}</span></div></button>`;}).join('');
   $('roundList').querySelectorAll('.rcard').forEach(b=>b.onclick=()=>startGame('round:'+b.dataset.id,[b.dataset.id]));
   const bf=store.get('best:full'),ba=store.get('best:all');$('bestLine').textContent=[bf?`Full game best: ${bf} / 2500`:'',ba?`Marathon best: ${ba} / 4500`:''].filter(Boolean).join(' · ');show('menu');}
 $('playFull').onclick=()=>startGame('full',shuffle(ROUNDS.map(r=>r.id)).slice(0,5));
 $('playAll').onclick=()=>startGame('all',ROUNDS.map(r=>r.id));
+/* ---------------- TEAM MODE (board / projector) ---------------- */
+const TEAM_COLS=['#d62828','#1d4ed8','#2e7d32','#f59e0b','#7b1fa2','#0e7490'];
+const TEAM_NAMES=['Red','Blue','Green','Gold','Purple','Teal'];
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function teamSetup(){const s=store.get('teamcfg')||{};s.n=s.n||4;s.names=s.names||TEAM_NAMES.slice();s.per=s.per||3;
+  s.rounds=(s.rounds||ROUNDS.map(r=>r.id)).filter(id=>ROUNDS.some(r=>r.id===id));if(!s.rounds.length)s.rounds=ROUNDS.map(r=>r.id);
+  const box=$('teamsetup');
+  const draw=()=>{box.innerHTML=`<a class="back" href="#" id="tsBack">← Menu</a><h1>Team game</h1><p class="lede">For the board: split the class into teams. Teams take turns, one question each. Tap the answer the team chooses. Fast answers still score more on the timed rounds.</p>
+    <div class="card" style="margin-top:14px"><div class="setup">
+     <h3>1. How many teams?</h3><div class="chips">${[2,3,4,5,6].map(n=>`<button class="chip ${s.n===n?'on':''}" data-n="${n}">${n}</button>`).join('')}</div>
+     <div class="teamnames">${Array.from({length:s.n},(_,i)=>`<label style="--c:${TEAM_COLS[i]}"><i></i><input value="${esc(s.names[i]||TEAM_NAMES[i])}" data-i="${i}" maxlength="18" aria-label="Team ${i+1} name"></label>`).join('')}</div>
+     <h3>2. Which rounds?</h3><div class="chips"><button class="chip ${s.rounds.length===ROUNDS.length?'on':''}" id="allR">All rounds</button>${ROUNDS.map(r=>`<button class="chip ${s.rounds.includes(r.id)&&s.rounds.length<ROUNDS.length?'on':''}" data-r="${r.id}">${r.name}</button>`).join('')}</div>
+     <p class="small" style="margin-top:6px">Mixed in a random order. Tap single rounds to choose just those.</p>
+     <h3>3. Questions per team</h3><div class="chips">${[2,3,5,8].map(n=>`<button class="chip ${s.per===n?'on':''}" data-p="${n}">${n}</button>`).join('')}</div>
+     <div class="modes"><button class="btn big green" id="tsGo">Start: ${s.n*s.per} questions</button></div></div></div>`;
+    box.querySelector('#tsBack').onclick=e=>{e.preventDefault();menu();};
+    box.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{s.n=+b.dataset.n;draw();});
+    box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{s.per=+b.dataset.p;draw();});
+    box.querySelector('#allR').onclick=()=>{s.rounds=ROUNDS.map(r=>r.id);draw();};
+    box.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const id=b.dataset.r;if(s.rounds.length===ROUNDS.length)s.rounds=[id];else if(s.rounds.includes(id)){s.rounds=s.rounds.filter(x=>x!==id);if(!s.rounds.length)s.rounds=ROUNDS.map(r=>r.id);}else s.rounds.push(id);draw();});
+    box.querySelectorAll('.teamnames input').forEach(i=>i.oninput=()=>{s.names[+i.dataset.i]=i.value;});
+    box.querySelector('#tsGo').onclick=()=>{store.set('teamcfg',s);startTeam(s);};};
+  draw();show('teamsetup');}
+function startTeam(s){const total=s.n*s.per,bank={},qs=[];let order=shuffle(s.rounds),k=0;
+  while(qs.length<total){if(k===order.length){order=shuffle(s.rounds);k=0;}const id=order[k++];const R=ROUNDS.find(r=>r.id===id);
+    if(!bank[id]||!bank[id].length)bank[id]=R.make();qs.push({R,q:bank[id].shift()});}
+  GAME=null;TEAM={cfg:s,teams:Array.from({length:s.n},(_,i)=>({name:(s.names[i]||TEAM_NAMES[i]).trim()||TEAM_NAMES[i],col:TEAM_COLS[i],score:0})),qs,qi:-1};
+  show('play');nextTeamQ();}
+function teamHud(turn,over,gain){const t=TEAM.teams[turn],q=TEAM.qs[TEAM.qi];
+  $('teamhud').innerHTML=`<div class="teamturn" style="--c:${t.col}"><span class="meta">Question ${TEAM.qi+1} of ${TEAM.qs.length} · ${q.R.name}</span><span class="tname">${over?`${esc(t.name)} ${gain?'+'+gain:'+0'}`:esc(t.name)+'’s turn'}</span></div>
+   <div class="board">${TEAM.teams.map((x,i)=>`<div class="tscore ${i===turn?'now':''} ${i===turn&&gain?'bump':''}" style="--c:${x.col}"><span>${esc(x.name)}</span><b>${x.score}</b></div>`).join('')}</div>`;}
+function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length)return podium();const turn=TEAM.qi%TEAM.teams.length,q=TEAM.qs[TEAM.qi];teamHud(turn,false,0);
+  const run=q.q();run(pts=>{if(!TEAM)return;TEAM.teams[turn].score+=pts;teamHud(turn,true,pts);
+    const last=TEAM.qi===TEAM.qs.length-1;stage().insertAdjacentHTML('beforeend',`<div class="nextrow"><button class="btn big green" id="nx">${last?'Final scores':'Next team'} →</button></div>`);
+    const nx=$('nx');nx.onclick=nextTeamQ;nx.focus({preventScroll:true});nx.scrollIntoView({behavior:'smooth',block:'nearest'});});}
+function podium(){const ranked=TEAM.teams.slice().sort((a,b)=>b.score-a.score),top=ranked[0].score,win=ranked.filter(t=>t.score===top);
+  $('results').innerHTML=`<div class="card podium"><div style="padding:18px"><h1>${win.length>1?'It’s a tie!':esc(win[0].name)+' win!'}</h1>
+   <div class="pod">${ranked.map((t,i)=>`<div class="pl" style="--c:${t.col};--h:${Math.max(12,top?t.score/top*100:12)}%"><b>${t.score}</b><div class="col"></div><span>${i+1}. ${esc(t.name)}</span></div>`).join('')}</div>
+   <div class="modes" style="justify-content:center"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="toMenu">Menu</button></div></div></div>`;
+  const cfg=TEAM.cfg;$('again').onclick=()=>startTeam(cfg);$('toMenu').onclick=menu;show('results');}
+document.addEventListener('keydown',e=>{const nx=$('nx');if(e.key==='Enter'&&nx&&document.activeElement!==nx&&!$('play').classList.contains('hidden')&&!/INPUT|SELECT/.test(e.target.tagName)){e.preventDefault();nx.click();}});
+$('playTeam').onclick=teamSetup;
 $('quit').onclick=()=>{if(confirm('Quit this game? Your score will be lost.'))menu();};
-window.CellGame={ROUNDS,SORT,TF,MYSTERY,HAS,NOT,startGame};
+window.CellGame={ROUNDS,SORT,TF,MYSTERY,HAS,NOT,startGame,startTeam,get TEAM(){return TEAM;}};
 menu();
 })();

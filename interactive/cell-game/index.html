@@ -131,6 +131,46 @@ path[data-part="cytoplasm"].hl{fill:#ffe082!important;stroke:none!important}
 .statement{font-size:26px;font-weight:700;line-height:1.25;padding:18px 4px;text-align:center}
 /* sort */
 .sortq{font-size:24px;font-weight:700;text-align:center;padding:10px 0 4px}
+/* team mode */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--paper);border:2px solid var(--ink);padding:6px 14px;font-weight:600;font-size:15px}
+.chip.on{background:var(--ink);color:var(--cream)}
+.setup{padding:16px 18px}.setup h3{margin-top:18px}.setup h3:first-child{margin-top:0}
+.teamnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:10px}
+.teamnames label{display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:#fff}
+.teamnames i{width:14px;align-self:stretch;background:var(--c)}
+.teamnames input{border:0;font:inherit;font-weight:700;font-size:17px;padding:8px;min-width:0;flex:1}
+.teamturn{display:flex;flex-direction:column;border-left:10px solid var(--c);padding-left:12px}
+.teamturn .tname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;text-transform:uppercase;color:#fff;line-height:1.05}
+.board{display:flex;flex-wrap:wrap;gap:6px}
+.tscore{background:#222;border-bottom:5px solid var(--c);padding:4px 12px;min-width:90px;text-align:center}
+.tscore span{display:block;font-size:13px;font-weight:600;color:#ccc}
+.tscore b{font-family:'Barlow Condensed',sans-serif;font-size:26px;color:#fff}
+.tscore.now{background:var(--c)}.tscore.now span{color:#fff}
+.tscore.bump b{animation:bump .5s}
+@keyframes bump{50%{transform:scale(1.5);color:#ffe082}}
+.podium{text-align:center}
+.pod{display:flex;justify-content:center;align-items:flex-end;gap:14px;height:340px;margin-top:20px}
+.pl{flex:1;max-width:170px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center}
+.pl .col{width:100%;height:var(--h);background:var(--c);border:2px solid var(--ink)}
+.pl b{font-family:'Barlow Condensed',sans-serif;font-size:36px}
+.pl span{font-weight:700;font-size:18px;margin-top:6px}
+.who{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+/* projector sizing (team mode) */
+body.proj .wrap{max-width:1400px}
+body.proj .prompt{font-size:clamp(24px,2.4vw,38px)}
+body.proj .media{max-width:min(860px,100%,calc((100vh - 400px)*4/3))}
+body.proj .quad{max-width:min(1000px,100%,calc((100vh - 330px)*4/3));margin:0 auto}
+body.proj .reveal{grid-template-columns:300px 1fr}
+.teamhud{position:sticky;top:0;z-index:10}
+body.proj .gbtn{font-size:clamp(24px,2.6vw,40px);padding:16px 6px}
+body.proj .opt{font-size:clamp(19px,1.9vw,30px);padding:14px 16px}
+body.proj .fb{font-size:clamp(18px,1.6vw,26px)}
+body.proj .statement{font-size:clamp(28px,3vw,46px)}
+body.proj .sortq{font-size:clamp(26px,2.6vw,40px)}
+body.proj .clue{font-size:clamp(19px,1.8vw,28px)}
+body.proj .labels select,body.proj .labels label{font-size:20px}
+body.proj .tfbtns .btn{font-size:34px}
 /* results */
 .bigscore{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:var(--green)}
 table{border-collapse:collapse;width:100%;margin-top:12px;font-size:15px}
@@ -161,6 +201,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
     <div class="modes">
       <button class="btn big green" id="playFull">Full game · 5 random rounds</button>
       <button class="btn big alt" id="playAll">Marathon · all 9 rounds</button>
+      <button class="btn big" id="playTeam" style="background:#d62828;border-color:#d62828">Team game · on the board</button>
     </div>
     <p class="small" id="bestLine"></p>
     <h2 style="margin-top:24px">Or pick a round</h2>
@@ -169,7 +210,8 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
   </section>
 
   <section id="play" class="hidden">
-    <div class="hud">
+    <div class="hud teamhud hidden" id="teamhud"></div>
+    <div class="hud" id="solohud">
       <div><div class="meta" id="hudMeta"></div><div class="rname" id="hudRound"></div><div class="pips" id="pips"></div></div>
       <div class="score"><small>Score</small><span id="hudScore">0</span></div>
     </div>
@@ -178,6 +220,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
   </section>
 
   <section id="results" class="hidden"></section>
+  <section id="teamsetup" class="hidden"></section>
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
