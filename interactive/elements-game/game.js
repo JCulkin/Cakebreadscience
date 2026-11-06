@@ -153,7 +153,8 @@ function teamSetup(){const s=store.get('teamcfg')||{n:4,names:TEAM_NAMES.slice()
      <div class="teamnames">${Array.from({length:s.n},(_,i)=>`<label style="--c:${TEAM_COLS[i]}"><i></i><input value="${esc(s.names[i]||TEAM_NAMES[i])}" data-i="${i}" maxlength="18" aria-label="Team ${i+1} name"></label>`).join('')}</div>
      <h3>2. Questions from</h3><div class="chips">${[['s1','Stage 1: the table'],['s2','Stage 2: electrons'],['both','Both stages'],['mystery','Mystery elements only']].map(([k,v])=>`<button class="chip ${s.content===k?'on':''}" data-c="${k}">${v}</button>`).join('')}</div>
      <h3>3. Questions per team</h3><div class="chips">${[2,3,5,8].map(n=>`<button class="chip ${s.per===n?'on':''}" data-p="${n}">${n}</button>`).join('')}</div>
-     <h3>4. Timer</h3><div class="chips">${[0,20,30,45,60].map(n=>`<button class="chip ${s.timer===n?'on':''}" data-t="${n}">${n?n+' s':'Off'}</button>`).join('')}</div>
+     <h3>4. Timer (optional)</h3><div class="chips">${[0,20,30,45,60].map(n=>`<button class="chip ${s.timer===n?'on':''}" data-t="${n}">${n?n+' s':'Off'}</button>`).join('')}</div>
+     <p class="small" style="margin-top:6px">${s.timer?`Each team has ${s.timer} seconds to answer, or it passes on.`:'No timer: teams take as long as they need.'}</p>
      <label class="toggle"><input type="checkbox" id="steal" ${s.steal?'checked':''}> Steals: a wrong answer passes to the next team for half points</label>
      <div class="modes"><button class="btn big green" id="tsGo">Start: ${s.n*s.per} questions</button></div></div></div>`;
     box.querySelector('#tsBack').onclick=ev=>{ev.preventDefault();menu();};
