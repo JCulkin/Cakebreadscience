@@ -75,6 +75,7 @@ function anyItem(group,kinds=['photo','photo','field','cell'],avoid=new Set()){
     else if(k==='field')it=fieldItem(pick(FIELDS_BY[group]));
     else it=cellItem(pick(CELLS_BY[group]));
     if(!avoid.has(it.key)||t>25){avoid.add(it.key);return it;}}
+  return Math.random()<0.5?fieldItem(pick(FIELDS_BY[group])):cellItem(pick(CELLS_BY[group]));
 }
 function groupsSeq(n){let out=[];while(out.length<n)out=out.concat(shuffle(GK));return out.slice(0,n);}
 
