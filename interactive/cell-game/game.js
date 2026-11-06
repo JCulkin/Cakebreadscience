@@ -155,7 +155,9 @@ let NOTIMER=false; // team games can switch the countdowns off
 function timer(sec,onEnd){if(NOTIMER){const el=document.createElement('div');return {el,left:()=>sec,stop:()=>{}};}const el=document.createElement('div');el.className='timer';el.innerHTML='<i></i>';const bar=el.firstChild;const t0=performance.now();let stop=false,raf;
   const tick=now=>{if(stop)return;const f=Math.max(0,1-(now-t0)/1000/sec);bar.style.width=(f*100)+'%';if(f<=0){stop=true;onEnd&&onEnd();return;}raf=requestAnimationFrame(tick);};raf=requestAnimationFrame(tick);
   return {el,left:()=>Math.max(0,sec-(performance.now()-t0)/1000),stop:()=>{stop=true;cancelAnimationFrame(raf);}};}
-function bindGroups(root,correct,onAnswer){const bs=[...root.querySelectorAll('.gbtn')];bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>{x.disabled=true;if(x.dataset.g===correct)x.classList.add('right');});if(b.dataset.g!==correct)b.classList.add('wrong');onAnswer(b.dataset.g===correct,b.dataset.g);});return ()=>{bs.forEach(x=>{x.disabled=true;if(x.dataset.g===correct)x.classList.add('right');});};}
+/* Team steals: on a wrong answer the round asks tryStealHook(); if it returns true, a random other team gets one more go (the answer isn't revealed). */
+let STEAL=null;const tryStealHook=()=>STEAL?STEAL():false;
+function bindGroups(root,correct,onAnswer,onSteal){const bs=[...root.querySelectorAll('.gbtn')];bs.forEach(b=>b.onclick=()=>{if(b.dataset.g!==correct&&tryStealHook()){b.disabled=true;b.classList.add('wrong');onSteal&&onSteal();return;}bs.forEach(x=>{x.disabled=true;if(x.dataset.g===correct)x.classList.add('right');});if(b.dataset.g!==correct)b.classList.add('wrong');onAnswer(b.dataset.g===correct,b.dataset.g);});return ()=>{bs.forEach(x=>{x.disabled=true;if(x.dataset.g===correct)x.classList.add('right');});};}
 
 /* ---------------- ROUNDS ---------------- */
 /* Each round: make() -> list of question builders. A builder is run(done) where done(points, max, reviseTags[]). */
@@ -163,8 +165,8 @@ const ROUNDS=[
 {id:'who',name:'Who am I?',desc:'One cell or a microscope view. Animal, plant, fungus or bacteria? Faster answers score more.',
  make(){const avoid=new Set();return groupsSeq(5).map(g=>()=>{const it=anyItem(g,['photo','photo','photo','field','cell'],avoid);
   return done=>{const s=stage();s.innerHTML=`<div class="prompt">Which group does this come from?</div><div id="tm"></div>${mediaBox(it)}${groupButtons()}<div id="fb"></div>`;
-   let answered=false;const T=timer(12,()=>{if(answered)return;answered=true;reveal();fin(false,0);});s.querySelector('#tm').appendChild(T.el);
-   const reveal=bindGroups(s,g,(ok)=>{if(answered)return;answered=true;T.stop();fin(ok,ok?Math.round(50+50*T.left()/12):0);});
+   let answered=false,T;const startT=()=>{T=timer(12,()=>{if(answered)return;if(tryStealHook()){s.querySelector('#fb').insertAdjacentHTML('afterbegin','<b>Out of time.</b> ');startT();return;}answered=true;reveal();fin(false,0);});const tm=s.querySelector('#tm');tm.innerHTML='';tm.appendChild(T.el);};startT();
+   const reveal=bindGroups(s,g,(ok)=>{if(answered)return;answered=true;T.stop();fin(ok,ok?Math.round(50+50*T.left()/12):0);},()=>{T.stop();startT();});
    function fin(ok,pts){s.querySelector('#fb').innerHTML=feedback(ok,pts,`<b>${gname(g)}.</b> ${it.clue}<div class="small" style="margin-top:4px">${it.cap}</div>`);done(pts,100,ok?[]:[gname(g)+' cells: how to recognise them']);}
   };});}},
 
@@ -174,16 +176,31 @@ const ROUNDS=[
    let tries=0,over=false;const svg=s.querySelector('svg');
    svg.addEventListener('click',ev=>{if(over)return;const el=ev.target.closest('[data-part]');if(!el)return;const got=el.dataset.part;tries++;
      if(got===target){over=true;hl();const pts=tries===1?100:50;s.querySelector('#fb').innerHTML=feedback(true,pts,`That’s the ${P[target].name.toLowerCase()}. ${P[target].fn}.`);done(pts,100,tries>1?[P[target].name]:[]);}
-     else if(tries<2){s.querySelector('#fb').innerHTML=`<div class="fb bad"><b>That’s the ${P[got].name.toLowerCase()}.</b> Try again: one more go.</div>`;}
+     else if(tries<2&&!STEAL){s.querySelector('#fb').innerHTML=`<div class="fb bad"><b>That’s the ${P[got].name.toLowerCase()}.</b> Try again: one more go.</div>`;}
+     else if(tryStealHook()){tries=0;s.querySelector('#fb').insertAdjacentHTML('afterbegin',`<div class="small">They tapped the ${P[got].name.toLowerCase()}.</div>`);}
      else{over=true;hl();s.querySelector('#fb').innerHTML=feedback(false,0,`You tapped the ${P[got].name.toLowerCase()}. The <b>${P[target].name.toLowerCase()}</b> is highlighted. ${P[target].fn}.`);done(0,100,[P[target].name]);}});
    function hl(){svg.querySelectorAll(`[data-part="${target}"]`).forEach(e=>e.classList.add('hl'));}
   };});}},
 
 {id:'label',name:'Label it',desc:'Name the four labelled parts, A to D, like an exam diagram.',
  make(){return shuffle(C.CELL_TYPES).slice(0,5).map(t=>()=>{const c=C.cell(t,pick(['exam','exam','colour']),seed());
-  let chosen;for(let tr=0;tr<200;tr++){chosen=shuffle(c.has.filter(k=>c.parts[k])).slice(0,4);
-   if(chosen.includes('ribo')&&chosen.includes('cytoplasm'))continue;
-   if(chosen.every((k,i)=>chosen.every((k2,j)=>j<=i||Math.hypot(c.parts[k][0]-c.parts[k2][0],c.parts[k][1]-c.parts[k2][1])>=45)))break;}
+  let ribs=[];
+  // point the ribosome arrow at a ribosome well clear of other organelles, so it can't be mistaken for anything else
+  {const ns='http://www.w3.org/2000/svg',tmp=document.createElementNS(ns,'svg');tmp.setAttribute('viewBox','0 0 400 280');tmp.setAttribute('width','400');tmp.setAttribute('height','280');tmp.style.cssText='position:absolute;left:-9999px;top:0';tmp.innerHTML=c.svg;document.body.appendChild(tmp);
+   const o=tmp.getBoundingClientRect(),boxes=[...tmp.querySelectorAll('[data-part]:not([data-part="ribo"]):not([data-part="cytoplasm"]):not([data-part="membrane"]):not([data-part="wall"]) *')].map(e=>e.getBoundingClientRect()).filter(r=>r.width>0).map(r=>[r.left-o.left,r.top-o.top,r.right-o.left,r.bottom-o.top]);
+   ribs=[...tmp.querySelectorAll('[data-part="ribo"] circle[r="2.3"]')].map(e=>{const r=e.getBoundingClientRect();return [(r.left+r.right)/2-o.left,(r.top+r.bottom)/2-o.top];});
+   tmp.remove();const dRect=([x,y],[l,t,r,b])=>Math.hypot(Math.max(l-x,0,x-r),Math.max(t-y,0,y-b));
+   const clear=p=>Math.min(99,...boxes.map(b=>dRect(p,b)),...ribs.filter(q=>q!==p).map(q=>Math.hypot(q[0]-p[0],q[1]-p[1])+3));
+   if(ribs.length){const best=ribs.slice().sort((a,b)=>clear(b)-clear(a))[0];c.parts.ribo=best;c.riboClear=clear(best);}}
+  // choose 4 parts whose arrow tips are well apart; ribosome and cytoplasm never together; if no perfect set, use the best one found
+  const dd=(k,k2)=>Math.hypot(c.parts[k][0]-c.parts[k2][0],c.parts[k][1]-c.parts[k2][1]);
+  let chosen=null,bestScore=-1e9;for(let tr=0;tr<400;tr++){const cand=shuffle(c.has.filter(k=>c.parts[k])).slice(0,4);
+   if(cand.includes('ribo')&&cand.includes('cytoplasm'))continue;
+   if(cand.includes('ribo')&&(c.riboClear||0)<7)continue;
+   if(cand.includes('cytoplasm')&&ribs.some(([x,y])=>Math.hypot(x-c.parts.cytoplasm[0],y-c.parts.cytoplasm[1])<16))continue;
+   let sc=1e9;cand.forEach((k,i)=>cand.forEach((k2,j)=>{if(j>i)sc=Math.min(sc,dd(k,k2)-(k==='ribo'||k2==='ribo'?60:45));}));
+   if(sc>bestScore){bestScore=sc;chosen=cand;}if(sc>=0)break;}
+  if(!chosen)chosen=shuffle(c.has.filter(k=>c.parts[k]&&k!=='ribo')).slice(0,4);
   return done=>{const OX=58,OY=8,W=516,H=296;const L=['A','B','C','D'];
    const pts=chosen.map(k=>({k,x:c.parts[k][0]+OX,y:c.parts[k][1]+OY}));
    let left=pts.filter(p=>p.x<W/2),right=pts.filter(p=>p.x>=W/2);
@@ -195,7 +212,9 @@ const ROUNDS=[
      for(let i=arr.length-1;i>=0;i--){const lim=H-20-(arr.length-1-i)*GAP;if(arr[i].ly>lim)arr[i].ly=lim;if(i<arr.length-1&&arr[i].ly>arr[i+1].ly-GAP)arr[i].ly=arr[i+1].ly-GAP;}};
    lay(left,20);lay(right,W-20);
    const order=shuffle(pts);order.forEach((p,i)=>p.L=L[i]);
-   let lines='';pts.forEach(p=>{const ex=p.lx<W/2?p.lx+14:p.lx-14;lines+=`<line x1="${ex}" y1="${p.ly}" x2="${p.x}" y2="${p.y}" stroke="#111" stroke-width="1.6"/><circle cx="${p.x}" cy="${p.y}" r="3" fill="#111"/><circle cx="${p.lx}" cy="${p.ly}" r="13" fill="#111"/><text x="${p.lx}" y="${p.ly+6}" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="18">${p.L}</text>`;});
+   // arrows: the tip stops just short of the point so small parts (ribosomes) stay visible
+   let lines='';pts.forEach(p=>{const ex=p.lx<W/2?p.lx+14:p.lx-14,dx=p.x-ex,dy=p.y-p.ly,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,gap=p.k==='ribo'?4:2,tx=p.x-ux*gap,ty=p.y-uy*gap,bx=tx-ux*10,by=ty-uy*10;
+     lines+=`<line x1="${ex}" y1="${p.ly}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="#111" stroke-width="1.6"/><polygon points="${tx.toFixed(1)},${ty.toFixed(1)} ${(bx-uy*4).toFixed(1)},${(by+ux*4).toFixed(1)} ${(bx+uy*4).toFixed(1)},${(by-ux*4).toFixed(1)}" fill="#111"/><circle cx="${p.lx}" cy="${p.ly}" r="13" fill="#111"/><text x="${p.lx}" y="${p.ly+6}" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="18">${p.L}</text>`;});
    const svg=`<svg class="cellsvg" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><g transform="translate(${OX} ${OY})">${c.svg}</g>${lines}</svg>`;
    const opts=shuffle(c.has);
    const s=stage();s.innerHTML=`<div class="prompt">Name the parts labelled <b>A</b> to <b>D</b>.</div><div class="media white">${svg}</div><div class="cap">${c.kind}</div>
@@ -223,8 +242,10 @@ const ROUNDS=[
  make(){return shuffle(SORT).slice(0,5).map(it=>()=>done=>{const s=stage();
    s.innerHTML=`<div class="prompt">Which types of cell have…</div><div class="sortq">${it.q}?</div><p class="small" style="text-align:center">Tick all that apply. Think of a typical cell from each group.</p>${groupButtons()}<div class="nextrow" style="justify-content:center"><button class="btn green" id="chk">Check</button></div><div id="fb"></div>`;
    const bs=[...s.querySelectorAll('.gbtn')];bs.forEach(b=>b.onclick=()=>b.classList.toggle('on'));
-   s.querySelector('#chk').onclick=function(){this.disabled=true;const chosen=bs.filter(b=>b.classList.contains('on')).map(b=>b.dataset.g);
+   s.querySelector('#chk').onclick=function(){const chosen=bs.filter(b=>b.classList.contains('on')).map(b=>b.dataset.g);
      const ok=GK.every(g=>chosen.includes(g)===it.a.includes(g));
+     if(!ok&&tryStealHook()){bs.forEach(b=>b.classList.remove('on'));return;}
+     this.disabled=true;
      bs.forEach(b=>{b.disabled=true;const should=it.a.includes(b.dataset.g),did=chosen.includes(b.dataset.g);b.classList.remove('on');if(should)b.classList.add('right');else if(did)b.classList.add('wrong');});
      s.querySelector('#fb').innerHTML=feedback(ok,ok?100:0,`<b>${it.a.length===4?'All four':it.a.map(gname).join(', ')}.</b> ${it.why}`);done(ok?100:0,100,ok?[]:[it.tag]);};
  });}},
@@ -254,7 +275,7 @@ const ROUNDS=[
  make(){return [0,1,2,3,4].map(i=>()=>done=>{const s=stage();
    if(i%2===0){const [gx,gy]=shuffle(GK);const avoid=new Set();const items=[anyItem(gx,undefined,avoid),anyItem(gx,undefined,avoid),anyItem(gx,undefined,avoid),anyItem(gy,undefined,avoid)];const order=shuffle([0,1,2,3]);
      s.innerHTML=`<div class="prompt">Three of these come from the same group. Tap the <b>odd one out</b>.</div><div class="quad">${order.map(j=>`<button class="tile" data-j="${j}">${items[j].html}<span class="tag hidden">${gname(items[j].group)}</span></button>`).join('')}</div><div id="fb"></div>`;
-     const ts=[...s.querySelectorAll('.tile')];ts.forEach(t=>t.onclick=()=>{if(t.disabled)return;const ok=t.dataset.j==='3';ts.forEach(x=>{x.disabled=true;x.querySelector('.tag').classList.remove('hidden');if(x.dataset.j==='3')x.classList.add('right');});if(!ok)t.classList.add('wrong');
+     const ts=[...s.querySelectorAll('.tile')];ts.forEach(t=>t.onclick=()=>{if(t.disabled)return;const ok=t.dataset.j==='3';if(!ok&&tryStealHook()){t.disabled=true;t.classList.add('wrong');return;}ts.forEach(x=>{x.disabled=true;x.querySelector('.tag').classList.remove('hidden');if(x.dataset.j==='3')x.classList.add('right');});if(!ok)t.classList.add('wrong');
        s.querySelector('#fb').innerHTML=feedback(ok,ok?100:0,`Three are <b>${gname(gx).toLowerCase()}</b>. The odd one out is <b>${gname(gy).toLowerCase()}</b>: ${items[3].clue}`);done(ok?100:0,100,ok?[]:[gname(gy)+' cells: how to recognise them']);});}
    else{const g=pick(GK),odd=pick(NOT[g]),ins=shuffle(HAS[g].filter(k=>k!=='cytoplasm'&&k!=='membrane')).slice(0,3);const opts=shuffle([odd,...ins]);
      s.innerHTML=`<div class="prompt">Which of these is <b>not</b> found in a typical <b>${gname(g).toLowerCase()}</b> cell?</div><div class="opts">${opts.map(o=>`<button class="opt" data-k="${o}">${P[o].name}</button>`).join('')}</div><div id="fb"></div>`;
@@ -272,13 +293,13 @@ const ROUNDS=[
      done(pts,100,ok?[]:['Named examples: '+m.name]);});
  });}}
 ];
-function bindOpts(s,attr,correct,cb){const bs=[...s.querySelectorAll('.opt')];bs.forEach(b=>b.onclick=()=>{const ok=b.dataset[attr]===correct;bs.forEach(x=>{x.disabled=true;if(x.dataset[attr]===correct)x.classList.add('right');});if(!ok)b.classList.add('wrong');cb(ok);});}
+function bindOpts(s,attr,correct,cb){const bs=[...s.querySelectorAll('.opt')];bs.forEach(b=>b.onclick=()=>{const ok=b.dataset[attr]===correct;if(!ok&&tryStealHook()){b.disabled=true;b.classList.add('wrong');return;}bs.forEach(x=>{x.disabled=true;if(x.dataset[attr]===correct)x.classList.add('right');});if(!ok)b.classList.add('wrong');cb(ok);});}
 
 /* ---------------- game flow ---------------- */
 let GAME=null,TEAM=null;
 function show(id){['menu','solo','play','results','teamsetup'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.body.classList.toggle('proj',!!TEAM&&(id==='play'||id==='results'));
   $('teamhud').classList.toggle('hidden',!TEAM);$('solohud').classList.toggle('hidden',!!TEAM);window.scrollTo(0,0);}
-function startGame(mode,roundIds){TEAM=null;NOTIMER=false;GAME={mode,rounds:roundIds.map(id=>ROUNDS.find(r=>r.id===id)),ri:-1,score:0,max:0,per:[],revise:{}};nextRound();show('play');}
+function startGame(mode,roundIds){TEAM=null;NOTIMER=false;STEAL=null;GAME={mode,rounds:roundIds.map(id=>ROUNDS.find(r=>r.id===id)),ri:-1,score:0,max:0,per:[],revise:{}};nextRound();show('play');}
 function nextRound(){GAME.ri++;if(GAME.ri>=GAME.rounds.length)return finish();const R=GAME.rounds[GAME.ri];GAME.cur={R,qs:R.make(),qi:-1,score:0,max:0,res:[]};GAME.per.push(GAME.cur);nextQ();}
 function nextQ(){const cur=GAME.cur;cur.qi++;if(cur.qi>=cur.qs.length)return nextRound();hud();
   const run=cur.qs[cur.qi]();run((pts,max,tags)=>{cur.score+=pts;cur.max+=max;GAME.score+=pts;GAME.max+=max;cur.res.push(pts>=max*0.75?'done':'miss');(tags||[]).forEach(t=>GAME.revise[t]=(GAME.revise[t]||0)+1);hud();
@@ -300,7 +321,7 @@ function finish(){if(GAME.mode.startsWith('round:'))GAME.mode='round:'+GAME.roun
   const again=GAME.rounds.map(r=>r.id),mode=GAME.mode;
   $('again').onclick=()=>startGame(mode,mode==='full'?shuffle(ROUNDS.map(r=>r.id)).slice(0,5):again);$('toMenu').onclick=soloMenu;show('results');}
 function dtag(){return `<span class="dtag ${DIFF}">${DIFF==='hard'?'Hard':'Normal'}</span>`;}
-function menu(){GAME=null;TEAM=null;document.querySelectorAll('.diff').forEach(b=>b.classList.toggle('on',b.dataset.d===DIFF));show('menu');}
+function menu(){GAME=null;TEAM=null;STEAL=null;document.querySelectorAll('.diff').forEach(b=>b.classList.toggle('on',b.dataset.d===DIFF));show('menu');}
 function soloMenu(){GAME=null;TEAM=null;$('soloDiff').outerHTML=`<span class="dtag ${DIFF}" id="soloDiff">${DIFF==='hard'?'Hard':'Normal'}</span>`;
   $('roundList').innerHTML=ROUNDS.map((r,i)=>{const b=store.get('best:'+DIFF+':round:'+r.id);return `<button class="rcard" data-id="${r.id}"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in"><span class="rnum">${i+1}</span><span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<div class="best">Best: ${b} / 500</div>`:''}</span></div></button>`;}).join('');
   $('roundList').querySelectorAll('.rcard').forEach(b=>b.onclick=()=>startGame('round:'+b.dataset.id,[b.dataset.id]));
@@ -314,7 +335,7 @@ const TEAM_COLS=['#d62828','#1d4ed8','#2e7d32','#f59e0b','#7b1fa2','#0e7490'];
 const TEAM_NAMES=['Red','Blue','Green','Gold','Purple','Teal'];
 const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function teamSetup(){const s=store.get('teamcfg')||{};s.n=s.n||4;s.names=s.names||TEAM_NAMES.slice();s.per=s.per||3;
-  if(s.timer===undefined)s.timer=true;s.rounds=(s.rounds||ROUNDS.map(r=>r.id)).filter(id=>ROUNDS.some(r=>r.id===id));if(!s.rounds.length)s.rounds=ROUNDS.map(r=>r.id);
+  if(s.timer===undefined)s.timer=true;if(s.steal===undefined)s.steal=true;s.rounds=(s.rounds||ROUNDS.map(r=>r.id)).filter(id=>ROUNDS.some(r=>r.id===id));if(!s.rounds.length)s.rounds=ROUNDS.map(r=>r.id);
   const box=$('teamsetup');
   const draw=()=>{box.innerHTML=`<a class="back" href="#" id="tsBack">← Menu</a><h1>Team game ${dtag()}</h1><p class="lede">For the board: split the class into teams. Teams take turns, one question each. Tap the answer the team chooses.</p>
     <div class="card" style="margin-top:14px"><div class="setup">
@@ -324,12 +345,15 @@ function teamSetup(){const s=store.get('teamcfg')||{};s.n=s.n||4;s.names=s.names
      <p class="small" style="margin-top:6px">Mixed in a random order. Tap single rounds to choose just those.</p>
      <h3>3. Timer</h3><div class="chips"><button class="chip ${s.timer?'on':''}" data-t="1">On</button><button class="chip ${!s.timer?'on':''}" data-t="0">Off</button></div>
      <p class="small" style="margin-top:6px">On: Who am I and True or false have a countdown, and fast answers score more on Who am I and Zoom reveal. Off: no countdowns, and every correct answer scores full points.</p>
-     <h3>4. Questions per team</h3><div class="chips">${[2,3,5,8].map(n=>`<button class="chip ${s.per===n?'on':''}" data-p="${n}">${n}</button>`).join('')}</div>
+     <h3>4. Steals</h3><div class="chips"><button class="chip ${s.steal?'on':''}" data-s="1">On</button><button class="chip ${!s.steal?'on':''}" data-s="0">Off</button></div>
+     <p class="small" style="margin-top:6px">A wrong answer passes to a random other team for half points. No steals on True or false (only two choices) or Label it (it already gives part marks).</p>
+     <h3>5. Questions per team</h3><div class="chips">${[2,3,5,8].map(n=>`<button class="chip ${s.per===n?'on':''}" data-p="${n}">${n}</button>`).join('')}</div>
      <div class="modes"><button class="btn big green" id="tsGo">Start: ${s.n*s.per} questions</button></div></div></div>`;
     box.querySelector('#tsBack').onclick=e=>{e.preventDefault();menu();};
     box.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{s.n=+b.dataset.n;draw();});
     box.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{s.per=+b.dataset.p;draw();});
     box.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{s.timer=b.dataset.t==='1';draw();});
+    box.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{s.steal=b.dataset.s==='1';draw();});
     box.querySelector('#allR').onclick=()=>{s.rounds=ROUNDS.map(r=>r.id);draw();};
     box.querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{const id=b.dataset.r;if(s.rounds.length===ROUNDS.length)s.rounds=[id];else if(s.rounds.includes(id)){s.rounds=s.rounds.filter(x=>x!==id);if(!s.rounds.length)s.rounds=ROUNDS.map(r=>r.id);}else s.rounds.push(id);draw();});
     box.querySelectorAll('.teamnames input').forEach(i=>i.oninput=()=>{s.names[+i.dataset.i]=i.value;});
@@ -340,11 +364,16 @@ function startTeam(s){const total=s.n*s.per,bank={},qs=[];let order=shuffle(s.ro
     if(!bank[id]||!bank[id].length)bank[id]=R.make();qs.push({R,q:bank[id].shift()});}
   GAME=null;NOTIMER=s.timer===false;TEAM={cfg:s,teams:Array.from({length:s.n},(_,i)=>({name:(s.names[i]||TEAM_NAMES[i]).trim()||TEAM_NAMES[i],col:TEAM_COLS[i],score:0})),qs,qi:-1};
   show('play');nextTeamQ();}
-function teamHud(turn,over,gain){const t=TEAM.teams[turn],q=TEAM.qs[TEAM.qi];
-  $('teamhud').innerHTML=`<div class="teamturn" style="--c:${t.col}"><span class="meta">${DIFF==='hard'?'Hard · ':''}Question ${TEAM.qi+1} of ${TEAM.qs.length} · ${q.R.name}</span><span class="tname">${over?`${esc(t.name)} ${gain?'+'+gain:'+0'}`:esc(t.name)+'’s turn'}</span></div>
+function teamHud(turn,over,gain,steal){const t=TEAM.teams[turn],q=TEAM.qs[TEAM.qi];
+  $('teamhud').innerHTML=`<div class="teamturn" style="--c:${t.col}"><span class="meta">${DIFF==='hard'?'Hard · ':''}Question ${TEAM.qi+1} of ${TEAM.qs.length} · ${q.R.name}</span><span class="tname">${over?`${esc(t.name)} ${gain?'+'+gain:'+0'}`:steal?'STEAL! '+esc(t.name)+' (half points)':esc(t.name)+'’s turn'}</span></div>
    <div class="board">${TEAM.teams.map((x,i)=>`<div class="tscore ${i===turn?'now':''} ${i===turn&&gain?'bump':''}" style="--c:${x.col}"><span>${esc(x.name)}</span><b>${x.score}</b></div>`).join('')}</div>`;}
-function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length)return podium();const turn=TEAM.qi%TEAM.teams.length,q=TEAM.qs[TEAM.qi];teamHud(turn,false,0);
-  const run=q.q();run(pts=>{if(!TEAM)return;TEAM.teams[turn].score+=pts;teamHud(turn,true,pts);
+const NO_STEAL=['tf','label'];
+function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length){STEAL=null;return podium();}let turn=TEAM.qi%TEAM.teams.length,stolen=false;const q=TEAM.qs[TEAM.qi];teamHud(turn,false,0);
+  STEAL=()=>{if(!TEAM||!TEAM.cfg.steal||stolen||TEAM.teams.length<2||NO_STEAL.includes(q.R.id))return false;stolen=true;
+    const others=TEAM.teams.map((_,i)=>i).filter(i=>i!==turn);turn=others[Math.floor(Math.random()*others.length)];teamHud(turn,false,0,true);
+    const fb=stage().querySelector('#fb');if(fb)fb.innerHTML=`<div class="fb bad"><b>Not quite.</b> ${esc(TEAM.teams[turn].name)}, can you steal it for half points?</div>`;return true;};
+  const run=q.q();run(pts=>{if(!TEAM)return;STEAL=null;if(stolen)pts=Math.round(pts/2);TEAM.teams[turn].score+=pts;teamHud(turn,true,pts);
+    const pe=stage().querySelector('#fb .pts');if(pe&&stolen)pe.textContent='+'+pts+' (steal)';
     const last=TEAM.qi===TEAM.qs.length-1;stage().insertAdjacentHTML('beforeend',`<div class="nextrow"><button class="btn big green" id="nx">${last?'Final scores':'Next team'} →</button></div>`);
     const nx=$('nx');nx.onclick=nextTeamQ;nx.focus({preventScroll:true});nx.scrollIntoView({behavior:'smooth',block:'nearest'});});}
 function podium(){const ranked=TEAM.teams.slice().sort((a,b)=>b.score-a.score),top=ranked[0].score,win=ranked.filter(t=>t.score===top);

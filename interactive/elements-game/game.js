@@ -155,7 +155,7 @@ function teamSetup(){const s=store.get('teamcfg')||{n:4,names:TEAM_NAMES.slice()
      <h3>3. Questions per team</h3><div class="chips">${[2,3,5,8].map(n=>`<button class="chip ${s.per===n?'on':''}" data-p="${n}">${n}</button>`).join('')}</div>
      <h3>4. Timer (optional)</h3><div class="chips">${[0,20,30,45,60].map(n=>`<button class="chip ${s.timer===n?'on':''}" data-t="${n}">${n?n+' s':'Off'}</button>`).join('')}</div>
      <p class="small" style="margin-top:6px">${s.timer?`Each team has ${s.timer} seconds to answer, or it passes on.`:'No timer: teams take as long as they need.'}</p>
-     <label class="toggle"><input type="checkbox" id="steal" ${s.steal?'checked':''}> Steals: a wrong answer passes to the next team for half points</label>
+     <label class="toggle"><input type="checkbox" id="steal" ${s.steal?'checked':''}> Steals: a wrong answer passes to a random other team for half points (not on two-choice questions)</label>
      <div class="modes"><button class="btn big green" id="tsGo">Start: ${s.n*s.per} questions</button></div></div></div>`;
     box.querySelector('#tsBack').onclick=ev=>{ev.preventDefault();menu();};
     box.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{s.n=+b.dataset.n;draw();});
@@ -181,7 +181,7 @@ function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length)return podium();const 
   const ctl=render(q,$('qbox'),{answer(ok){if(over)return;clearInterval(timer);ok?onRight():onWrong(false);}});KEYCTL=ctl;
   function onRight(){over=true;const base=q.mystery?[100,75,50,25][(q.shown||1)-1]:100,pts=steal?Math.round(base/2):base;TEAM.teams[turn].score+=pts;TEAM.teams[turn].right++;ctl.stop();
     $('fb').innerHTML=`<div class="fb"><span class="pts">+${pts}</span><b>${esc(TEAM.teams[turn].name)} ${steal?'steal it!':'got it!'}</b> ${q.explain}</div>`;finish();}
-  function onWrong(timeout){if(TEAM.cfg.steal&&!steal&&n>1){steal=true;{const others=TEAM.teams.map((_,i)=>i).filter(i=>i!==turn);turn=others[Math.floor(Math.random()*others.length)];}ctl.retry();hud();
+  function onWrong(timeout){if(TEAM.cfg.steal&&!steal&&n>1&&!(q.kind==='mcq'&&q.options.length<=2)){steal=true;{const others=TEAM.teams.map((_,i)=>i).filter(i=>i!==turn);turn=others[Math.floor(Math.random()*others.length)];}ctl.retry();hud();
       $('fb').innerHTML=`<div class="fb bad"><b>${timeout?'Time’s up!':'Not quite.'}</b> ${esc(TEAM.teams[turn].name)}, can you steal it?</div>`;startTimer();return;}
     over=true;ctl.stop();ctl.reveal();$('fb').innerHTML=`<div class="fb bad"><b>${timeout?'Time’s up.':'No points this time.'}</b> ${q.explain}</div>`;finish();}
   function finish(){clearInterval(timer);hud();$('nextrow').innerHTML=`<button class="btn big green" id="nx">${TEAM.qi===TEAM.qs.length-1?'Final scores':'Next question'} →</button>`;$('nx').onclick=nextTeamQ;$('nx').focus({preventScroll:true});}
