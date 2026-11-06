@@ -113,13 +113,76 @@ const ROUNDS=[
   return mcq(String(ans),wr,{prompt:`How many <b>${what}</b> are in this atom?`,visual:`<div class="nuclide"><span class="ms">${e.mass}</span><span class="zz">${e.z}</span><b>${e.sym}</b></div>`,explain:`Top number = mass number (${e.mass}), bottom = atomic number (${e.z}). Protons = ${e.z}, electrons = ${e.z}, neutrons = ${e.mass} − ${e.z} = ${nn}.`,tag:'Protons, neutrons, electrons'});}},
 
 {id:'mystery',stage:3,name:'Mystery element',desc:'Clues appear one by one. Tap the element on the table with as few clues as you can.',gen(){const e=pick(E);
-  const c=[];c.push(`I’m a ${KIND[e.kind]}${e.state==='gas'?' and a gas at room temperature':''}.`);
-  c.push(e.group===null?'I’m in period 1 and I sit on my own at the top of the table.':`I’m in period ${e.period}.`);
-  c.push(e.group===null?'I have just one electron.':D.GROUP_NAMES[e.group]?`I’m one of the ${D.GROUP_NAMES[e.group]}.`:`My atoms have ${e.group} electrons in their outer shell.`);
-  c.push(`My electronic configuration is ${D.cfg(e.config)}.`);
+  const ion=D.IONS[e.sym],o=e.config[e.config.length-1],lo=Math.max(1,e.z-3-Math.floor(Math.random()*3)),hi=Math.min(20,lo+5);
+  const c=[];
+  c.push(pick([`I’m a ${KIND[e.kind]}${e.state==='gas'?' and a gas at room temperature':''}.`,`I’m ${e.state==='gas'?'a gas':'a solid'} at room temperature, and I’m a ${KIND[e.kind]}.`,`My atomic number is somewhere between ${lo} and ${hi}.`]));
+  c.push(e.group===null?pick(['I’m in period 1 and I sit on my own at the top of the table.','My atoms have just one occupied shell, and I’m not a noble gas.']):pick([`I’m in period ${e.period}.`,`My atoms have ${e.config.length} occupied shell${e.config.length>1?'s':''}.`]));
+  c.push(e.group===null?'I have just one electron.':pick([D.GROUP_NAMES[e.group]?`I’m one of the ${D.GROUP_NAMES[e.group]}.`:`My atoms have ${o} electron${o>1?'s':''} in their outer shell.`,`My atoms have ${o} electron${o>1?'s':''} in their outer shell${e.group===0?' (a full shell)':''}.`,ion?`I form ions with a ${chg(ion)} charge.`:`I’m in ${D.groupLabel(e.group)}.`]));
+  c.push(pick([`My electronic configuration is ${D.cfg(e.config)}.`,`My nucleus contains ${e.z} proton${e.z>1?'s':''}.`,`My atoms have ${e.z} electron${e.z>1?'s':''}.`]));
   return {kind:'place',mystery:true,clues:c,target:e.sym,label:'blank',prompt:'Who am I? Tap me on the table.',explain:`I’m <b>${e.name}</b> (${e.sym}), element ${e.z}.`,tag:e.name+': position'};}}
 ];
-// Build a list of n questions for a round, avoiding immediate repeats
-function make(id,n){const R=ROUNDS.find(r=>r.id===id),out=[],seen=new Set();let g=0;while(out.length<n&&g++<200){const q=R.gen();const k=q.prompt+(q.target||'')+(q.el?q.el.sym:'')+(q.visual||'').length;if(seen.has(k)&&g<150)continue;seen.add(k);q.round=id;out.push(q);}return out;}
+/* ---------- extra question types (added 6 Nov 2026 for more variety) ---------- */
+const SYMS=E.map(e=>e.sym);
+const twoLetter=E.filter(e=>e.sym.length===2);
+const ionStr=s=>{const q=D.IONS[s];return s+'<sup>'+chg(q)+'</sup>';};
+const ionCfgOf=s=>{const e=bySym[s],q=D.IONS[s];return q>0?e.config.slice(0,-1):[...e.config.slice(0,-1),8];};
+const EXTRA={
+ symbols:[
+  ()=>{const e=pick(twoLetter),a=e.sym,b=a[0]+a[1].toUpperCase(),c=a.toLowerCase(),d=a[0].toLowerCase()+a[1].toUpperCase();
+    return fixedMcq(shuffle([a,b,c,d]),a,{prompt:`Which is the correct way to write the symbol for <b>${e.name}</b>?`,explain:`<b>${a}</b>: the first letter is always a capital, the second letter is always small.`,tag:'Writing symbols',big:true});},
+  ()=>{const fakes=[...new Set(Object.values(D.FAKE_SYMBOLS).flat())].filter(f=>!SYMS.includes(f)&&f.length===2),f=pick(fakes),real=shuffle(SYMS).slice(0,3);
+    return fixedMcq(shuffle([f,...real]),f,{prompt:`Three of these are symbols of the first 20 elements. Which one is <b>not</b>?`,explain:`<b>${f}</b> is not one of them. The others: ${real.map(x=>x+' = '+bySym[x].name).join(', ')}.`,tag:'Element symbols',big:true});},
+  ()=>{const e=pick(E.filter(x=>x.sym[0]!==x.name[0]||['Na','K','Mg','Cl','Ar','Ca','Si','Be','He','Ne','Al'].includes(x.sym)));
+    return mcq(e.sym,shuffle(SYMS.filter(x=>x!==e.sym&&(x[0]===e.sym[0]||x[0]===e.name[0]))).concat(shuffle(SYMS)),{prompt:`<b>${e.name}</b>: pick its symbol.`,explain:`${e.name} is <b>${e.sym}</b>.`,tag:e.name+' ('+e.sym+')',big:true});}],
+ numbers:[
+  ()=>{const e=pick(E);return mcq(String(e.z),[e.mass,e.z+1,e.z-1,e.mass-e.z,e.z*2].filter(x=>x>0&&x!==e.z).map(String),{prompt:`How many <b>protons</b> are in an atom of <b>${e.name}</b>?`,explain:`The atomic number tells you the number of protons. ${e.name} is element ${e.z}, so <b>${e.z}</b> protons.`,tag:e.name+' ('+e.z+')'});},
+  ()=>{const e=pick(E.filter(x=>x.z<20)),n=E[e.z];return mcq(n.name,nearEls(e,4).filter(x=>x!==n).map(x=>x.name),{prompt:`Which element comes straight <b>after ${e.name}</b> (element ${e.z})?`,explain:`Atomic numbers go up by one each time: after ${e.z} comes ${n.z}, <b>${n.name}</b>.`,tag:n.name+' ('+n.z+')'});},
+  ()=>{const four=shuffle(E).slice(0,4),best=four.slice().sort((a,b)=>b.z-a.z)[0],small=Math.random()<0.5;const t=small?four.slice().sort((a,b)=>a.z-b.z)[0]:best;
+    return fixedMcq(four.map(x=>x.name),t.name,{prompt:`Which of these has the <b>${small?'smallest':'largest'}</b> atomic number?`,explain:four.slice().sort((a,b)=>a.z-b.z).map(x=>`${x.name} ${x.z}`).join(', ')+`. So <b>${t.name}</b>.`,tag:'Atomic numbers'});}],
+ place:[
+  ()=>{const e=pick(E);return {kind:'place',target:e.sym,label:'blank',prompt:`Tap element number <b>${e.z}</b>.`,explain:`Element ${e.z} is <b>${e.name}</b> (${e.sym}), ${posText(e)}.`,tag:e.name+': position'};},
+  ()=>{const g=pick([2,3,4,5,6]),es=notH.filter(x=>x.group===g);return {kind:'place',target:es.map(x=>x.sym),label:'blank',prompt:`Tap <b>any</b> element in <b>Group ${g}</b>.`,explain:`Group ${g} is the ${['','','second','third','fourth','fifth','sixth'][g]} column you count: ${es.map(x=>x.name).join(', ')}.`,tag:'Groups and periods'};},
+  ()=>{const p=pick([2,3]),k=pick(['metal','nonmetal']),es=E.filter(x=>x.period===p&&x.kind===k);return {kind:'place',target:es.map(x=>x.sym),label:'symz',prompt:`Tap <b>any ${k==='metal'?'metal':'non-metal'}</b> in <b>period ${p}</b>.`,explain:`${k==='metal'?'Metals':'Non-metals'} in period ${p}: ${es.map(x=>x.name).join(', ')}.${p===2?' Boron':' Silicon'} is a semi-metal, so it doesn’t count.`,tag:'Metals and non-metals'};}],
+ groups:[
+  ()=>{const g=pick([1,2,3,4,5,6,7,0]),pair=shuffle(notH.filter(x=>x.group===g)).slice(0,2);const right=pair.map(x=>x.name).join(' and ');
+    const wrong=[];for(let t=0;t<40&&wrong.length<3;t++){const a=pick(notH),b=pick(notH.filter(x=>x.group!==a.group&&x!==a));const w=a.name+' and '+b.name;if(!wrong.includes(w))wrong.push(w);}
+    return mcq(right,wrong,{prompt:'Which two elements are in the <b>same group</b>?',explain:`<b>${right}</b> are both in ${D.groupLabel(g)}.`,tag:'Groups and periods'});},
+  ()=>{const e=pick(notH),same=E.filter(x=>x.period===e.period&&x!==e);if(!same.length)return EXTRA.groups[0]();const a=pick(same);
+    return mcq(a.name,shuffle(E.filter(x=>x.period!==e.period)).map(x=>x.name),{prompt:`Which element is in the <b>same period</b> as ${e.name}?`,explain:`${e.name} is in period ${e.period}, and so is <b>${a.name}</b>. A period is a row.`,tag:'Groups and periods'});},
+  ()=>{const g=pick([1,7,0]),e=pick(notH.filter(x=>x.group===g));return fixedMcq(['alkali metals','halogens','noble gases','transition metals'],D.GROUP_NAMES[g],{prompt:`${e.name} belongs to which family?`,explain:`${e.name} is in ${D.groupLabel(g)}: the <b>${D.GROUP_NAMES[g]}</b>.`,tag:'Group names'});}],
+ metals:[
+  ()=>{const want=pick(['nonmetal','metal']),odd=pick(E.filter(x=>x.kind===want)),rest=shuffle(E.filter(x=>x.kind===(want==='metal'?'nonmetal':'metal'))).slice(0,3);
+    return fixedMcq(shuffle([odd,...rest]).map(x=>x.name),odd.name,{prompt:`Which one of these is a <b>${want==='metal'?'metal':'non-metal'}</b>?`,explain:`<b>${odd.name}</b> is the ${want==='metal'?'metal':'non-metal'}. ${rest.map(x=>x.name).join(', ')} are ${want==='metal'?'non-metals':'metals'}.`,tag:'Metals and non-metals'});},
+  ()=>{const e=pick(E);const a=e.state==='gas'?'Gas':'Solid';return fixedMcq(['Solid','Liquid','Gas'],a,{prompt:`Is <b>${e.name}</b> a solid, liquid or gas at room temperature?`,explain:`${e.name} is a <b>${e.state}</b>.${e.state==='gas'?' The gases in the first 20 are H, He, N, O, F, Ne, Cl and Ar.':' None of the first 20 elements is a liquid at room temperature.'}`,tag:'States of the elements',big:true});},
+  ()=>{const k=pick(['metal','nonmetal']);const n=E.filter(x=>x.kind===k).length;return mcq(String(n),[n+1,n-1,n+2,n-2,20-n].filter(x=>x>0&&x!==n).map(String),{prompt:`How many of the first 20 elements are <b>${k==='metal'?'metals':'non-metals'}</b>? (B and Si are semi-metals.)`,visual:table({label:'sym',colour:'kind',small:true,step:true}),explain:`Count them on the table: <b>${n}</b>.`,tag:'Metals and non-metals'});}],
+ build:[],
+ detective:[
+  ()=>{const e=pick(notH);return mcq(D.groupLabel(e.group),[1,2,3,4,5,6,7,0].filter(g=>g!==e.group).map(D.groupLabel),{prompt:'Which <b>group</b> is this atom in?',visual:`<div class="bohrbox">${bohr(e.config)}</div>`,explain:`Count the outer shell: ${e.config[e.config.length-1]} electron${e.config[e.config.length-1]>1?'s':''}${e.group===0?' (full)':''} → <b>${D.groupLabel(e.group)}</b>. It’s ${e.name}.`,tag:'Reading shell diagrams'});},
+  ()=>{const e=pick(E);return mcq('Period '+e.period,['Period 1','Period 2','Period 3','Period 4'].filter(p=>p!=='Period '+e.period),{prompt:'Which <b>period</b> is this atom in?',visual:`<div class="bohrbox">${bohr(e.config)}</div>`,explain:`Count the shells: ${e.config.length} → <b>period ${e.period}</b>. It’s ${e.name}.`,tag:'Reading shell diagrams'});}],
+ links:[
+  ()=>{const e=pick(E),o=e.config[e.config.length-1];return mcq(String(o),[1,2,3,4,5,6,7,8].filter(x=>x!==o).map(String),{prompt:`How many electrons are in the <b>outer shell</b> of ${e.name} (${D.cfg(e.config)})?`,explain:`The last number is the outer shell: <b>${o}</b>.${e.group?` That matches ${D.groupLabel(e.group)}.`:''}`,tag:'Electrons and position'});},
+  ()=>{const e=pick(E),n=e.config.length;return mcq(String(n),['1','2','3','4','5'].filter(x=>x!==String(n)),{prompt:`How many <b>occupied shells</b> does an atom of ${e.name} have?`,explain:`${e.name} is in period ${e.period}, so <b>${n}</b> shell${n>1?'s':''} (${D.cfg(e.config)}).`,tag:'Electrons and position'});}],
+ ions:[
+  ()=>{const target=pick([[2,8],[2,8,8]]),t=D.cfg(target),gas=t==='2.8'?'neon':'argon';const right=Object.keys(D.IONS).filter(s=>D.cfg(ionCfgOf(s))===t),wrong=Object.keys(D.IONS).filter(s=>D.cfg(ionCfgOf(s))!==t);const a=pick(right);
+    return mcq(ionStr(a),shuffle(wrong).map(ionStr),{prompt:`Which ion has the same electronic configuration as <b>${gas}</b> (${t})?`,explain:`${bySym[a].name} ${D.IONS[a]>0?'loses':'gains'} ${Math.abs(D.IONS[a])} electron${Math.abs(D.IONS[a])>1?'s':''} to become <b>${ionStr(a)}</b>, ${t}.`,tag:'Ion configurations',html:true});},
+  ()=>{const s=pick(Object.keys(D.IONS)),e=bySym[s],q=D.IONS[s],n=e.z-q;return mcq(String(n),[e.z,e.z+q,n+1,n-1].filter(x=>x>0&&x!==n).map(String),{prompt:`How many <b>electrons</b> are in the ${ionStr(s)} ion?`,explain:`${e.name} has ${e.z} electrons as an atom. It ${q>0?'loses':'gains'} ${Math.abs(q)}, so the ion has <b>${n}</b>.`,tag:'Ion configurations'});}],
+ atoms:[
+  ()=>{const e=pick(E),nn=e.mass-e.z;return mcq(String(e.mass),[e.z,nn,e.mass+1,e.mass-1,e.z*2+1].filter(x=>x>0&&x!==e.mass).map(String),{prompt:`An atom has <b>${e.z} protons</b> and <b>${nn} neutrons</b>. What is its mass number?`,explain:`Mass number = protons + neutrons = ${e.z} + ${nn} = <b>${e.mass}</b>.`,tag:'Protons, neutrons, electrons'});},
+  ()=>{const e=pick(E),nn=e.mass-e.z;const f=E.find(x=>x.z===nn&&x!==e);return mcq(e.name,(f?[f.name]:[]).concat(nearEls(e,4).map(x=>x.name)),{prompt:`An atom has <b>${e.z} protons</b> and <b>${nn} neutrons</b>. Which element is it?`,explain:`The number of protons decides the element: ${e.z} protons is <b>${e.name}</b>. Neutrons don’t change which element it is.`,tag:'Protons, neutrons, electrons'});}],
+ mystery:[]};
+ROUNDS.forEach(R=>{const ex=EXTRA[R.id];if(!ex||!ex.length)return;const base=R.gen,k=ex.length,share=k/(k+3);R.gen=function(){return Math.random()<share?pick(ex)():base.call(R);};});
+
+/* ---------- no-repeat memory: avoid questions seen recently (kept in this browser) ---------- */
+const MEM_KEY='el20:recent';let MEM={};try{MEM=JSON.parse(localStorage.getItem(MEM_KEY))||{};}catch(e){MEM={};}
+const strip=x=>String(x||'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();
+const qkey=q=>strip(q.prompt)+'|'+(q.kind==='mcq'?strip(q.options[q.correct]):[].concat(q.target||'').join(',')+(q.el?q.el.sym:''))+'|'+(q.visual&&q.visual.includes('nuclide')?strip(q.visual):'');
+function remember(id,k){const a=MEM[id]=(MEM[id]||[]).filter(x=>x!==k);a.push(k);if(a.length>60)a.splice(0,a.length-60);try{localStorage.setItem(MEM_KEY,JSON.stringify(MEM));}catch(e){}}
+// one fresh question from a round: tries hard to avoid anything in the recent memory or this game
+function fresh(id,game){const R=ROUNDS.find(r=>r.id===id),recent=new Set(MEM[id]||[]);let best=null;
+  for(let t=0;t<80;t++){const q=R.gen(),k=qkey(q);if(game&&game.has(k))continue;if(!best)best={q,k};if(!recent.has(k)){best={q,k};break;}}
+  if(!best){const q=R.gen();best={q,k:qkey(q)};}
+  if(game)game.add(best.k);remember(id,best.k);best.q.round=id;return best.q;}
+// Build a list of n questions for a round
+function make(id,n,game){game=game||new Set();const out=[];for(let i=0;i<n;i++)out.push(fresh(id,game));return out;}
 window.ER={ROUNDS,make,table,bohr,shuffle,pick,esc,chg};
 })();

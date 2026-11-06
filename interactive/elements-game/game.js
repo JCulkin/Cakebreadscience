@@ -58,8 +58,8 @@ const RAND_N=20;
 // cfg: {round:id} for one round, or {content:'s1'|'s2'|'all', order:'rounds'|'random'}
 function startSolo(cfg){SOLO={cfg,ri:-1,score:0,max:0,per:[],revise:{}};TEAM=null;
   if(cfg.round){SOLO.ids=[cfg.round];SOLO.key='round:'+cfg.round;}
-  else if(cfg.order==='random'){const ids=SOLO_MODES[cfg.content].rounds,pool=[];let order=shuffle(ids),k=0;
-    while(pool.length<RAND_N){if(k===order.length){order=shuffle(ids);k=0;}pool.push(make(order[k++],1)[0]);}
+  else if(cfg.order==='random'){const ids=SOLO_MODES[cfg.content].rounds,pool=[],used=new Set();let order=shuffle(ids),k=0;
+    while(pool.length<RAND_N){if(k===order.length){order=shuffle(ids);k=0;}pool.push(make(order[k++],1,used)[0]);}
     SOLO.ids=['random'];SOLO.pool=shuffle(pool);SOLO.key=cfg.content+':random';SOLO.board=cfg.content+'_random';}
   else{SOLO.ids=SOLO_MODES[cfg.content].rounds;SOLO.key=cfg.content;SOLO.board=cfg.content+'_rounds';}
   nextSoloRound();show('play');}
@@ -167,7 +167,7 @@ function teamSetup(){const s=store.get('teamcfg')||{n:4,names:TEAM_NAMES.slice()
   draw();show('teamsetup');}
 function startTeam(s){const ids=s.content==='s1'?SOLO_MODES.s1.rounds:s.content==='s2'?SOLO_MODES.s2.rounds:s.content==='mystery'?['mystery']:ROUNDS.map(r=>r.id);
   const total=s.n*s.per;const pool=[];let k=0;const order=shuffle(ids);
-  while(pool.length<total){const id=order[k++%order.length];pool.push(make(id,1)[0]);}
+  const used=new Set();while(pool.length<total){const id=order[k++%order.length];pool.push(make(id,1,used)[0]);}
   TEAM={cfg:s,teams:Array.from({length:s.n},(_,i)=>({name:(s.names[i]||TEAM_NAMES[i]).trim()||TEAM_NAMES[i],col:TEAM_COLS[i],score:0,right:0})),qs:pool,qi:-1};SOLO=null;
   nextTeamQ();show('play');}
 function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length)return podium();const q=TEAM.qs[TEAM.qi],n=TEAM.teams.length;let turn=TEAM.qi%n,steal=false,over=false,timer=null;
@@ -180,7 +180,7 @@ function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length)return podium();const 
   const ctl=render(q,$('qbox'),{answer(ok){if(over)return;clearInterval(timer);ok?onRight():onWrong(false);}});KEYCTL=ctl;
   function onRight(){over=true;const base=q.mystery?[100,75,50,25][(q.shown||1)-1]:100,pts=steal?Math.round(base/2):base;TEAM.teams[turn].score+=pts;TEAM.teams[turn].right++;ctl.stop();
     $('fb').innerHTML=`<div class="fb"><span class="pts">+${pts}</span><b>${esc(TEAM.teams[turn].name)} ${steal?'steal it!':'got it!'}</b> ${q.explain}</div>`;finish();}
-  function onWrong(timeout){if(TEAM.cfg.steal&&!steal&&n>1){steal=true;turn=(turn+1)%n;ctl.retry();hud();
+  function onWrong(timeout){if(TEAM.cfg.steal&&!steal&&n>1){steal=true;{const others=TEAM.teams.map((_,i)=>i).filter(i=>i!==turn);turn=others[Math.floor(Math.random()*others.length)];}ctl.retry();hud();
       $('fb').innerHTML=`<div class="fb bad"><b>${timeout?'Time’s up!':'Not quite.'}</b> ${esc(TEAM.teams[turn].name)}, can you steal it?</div>`;startTimer();return;}
     over=true;ctl.stop();ctl.reveal();$('fb').innerHTML=`<div class="fb bad"><b>${timeout?'Time’s up.':'No points this time.'}</b> ${q.explain}</div>`;finish();}
   function finish(){clearInterval(timer);hud();$('nextrow').innerHTML=`<button class="btn big green" id="nx">${TEAM.qi===TEAM.qs.length-1?'Final scores':'Next question'} →</button>`;$('nx').onclick=nextTeamQ;$('nx').focus({preventScroll:true});}
