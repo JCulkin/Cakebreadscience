@@ -1,4 +1,4 @@
-/* Type Fast or Perish: Sixty-Second Sprint (normal) and The Improbable Storm (really hard). Needs words.js and scores.js. */
+/* Type Fast or Perish: Sixty-Second Sprint (normal) and Hard mode. Needs words.js and scores.js. */
 (function(){
 const $=id=>document.getElementById(id);
 const W=window.TW,S=window.TScores;
@@ -23,30 +23,35 @@ function countdown(then){show('play');$('hud').innerHTML='';$('hint').textConten
 
 /* ===================== SPRINT ===================== */
 const SPRINT_T=60;
-function startSprint(){G={mode:'sprint',next:deck(),queue:[],score:0,streak:0,chars:0,keys:0,errors:0,done:0,missed:{},dirty:false,prev:'',best:0};
-  for(let i=0;i<4;i++)G.queue.push(G.next());
-  countdown(runSprint);}
+const LINE=5;
+function startSprint(){G={mode:'sprint',next:deck(),line:[],pos:0,score:0,streak:0,chars:0,keys:0,errors:0,done:0,missed:{},dirty:false,prev:'',best:0};
+  newLine();countdown(runSprint);}
+function newLine(){G.line=[];G.pos=0;for(let i=0;i<LINE;i++)G.line.push(G.next(x=>G.line.some(y=>y.w===x.w)));}
 function runSprint(){const st=$('stage');
-  st.innerHTML=`<div class="timebar" id="tb"><i></i></div><div class="combo" id="combo"></div><div class="tagrow" id="tag"></div><div class="word" id="word"></div><div class="queue" id="queue"></div>
-    <input class="typebox" id="tb_in" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type the word">`;
-  $('hint').textContent='Type the word exactly. Backspace to fix mistakes.';
+  st.innerHTML=`<div class="timebar" id="tb"><i></i></div><div class="combo" id="combo"></div><div class="tagrow" id="tag"></div><div class="line" id="line"></div>
+    <input class="typebox" id="tb_in" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type the highlighted word">`;
+  $('hint').textContent='Type the highlighted word. Backspace to fix mistakes. A new line of 5 comes when you finish.';
   const inp=$('tb_in');inp.focus();G.t0=performance.now();
-  const draw=()=>{const w=G.queue[0],v=inp.value.toLowerCase(),t=w.w;let h='';
-    for(let i=0;i<t.length;i++){const ch=esc(t[i]===' '?' ':t[i]);if(i<v.length)h+=`<span class="${v[i]===t[i].toLowerCase()?'ok':'bad'}">${ch}</span>`;else h+=`<span class="${i===v.length?'cur':''}">${ch}</span>`;}
-    if(v.length>t.length)h+=`<span class="bad">${esc(v.slice(t.length))}</span>`;
-    $('word').innerHTML=h;$('tag').innerHTML=`<span class="tag" style="--k:${KCOL[w.t]}">${KNAME[w.t]}</span>`;
-    $('queue').innerHTML=G.queue.slice(1).map(x=>`<span>${esc(x.w)}</span>`).join('');
+  const draw=()=>{const v=inp.value.toLowerCase();
+    $('line').innerHTML=G.line.map((w,k)=>{const t=w.w;
+      if(k<G.pos)return `<span class="lw done" style="--k:${KCOL[w.t]}">${esc(t)}</span>`;
+      if(k>G.pos)return `<span class="lw" style="--k:${KCOL[w.t]}">${esc(t)}</span>`;
+      let h='';for(let i=0;i<t.length;i++){const ch=esc(t[i]===' '?' ':t[i]);if(i<v.length)h+=`<span class="${v[i]===t[i].toLowerCase()?'ok':'bad'}">${ch}</span>`;else h+=`<span class="${i===v.length?'cur':''}">${ch}</span>`;}
+      if(v.length>t.length)h+=`<span class="bad">${esc(v.slice(t.length))}</span>`;
+      return `<span class="lw now" style="--k:${KCOL[w.t]}">${h}</span>`;}).join('');
+    const w=G.line[G.pos];$('tag').innerHTML=`<span class="tag" style="--k:${KCOL[w.t]}">${KNAME[w.t]}</span>`;
     const m=multOf(G.streak);$('combo').textContent=m>1?'×'+m:'';};
   const hud=()=>{const el=(performance.now()-G.t0)/60000;$('hud').innerHTML=`<div class="stat score"><small>Score</small><b>${G.score}</b></div><div class="stat"><small>Words</small><b>${G.done}</b></div><div class="stat"><small>Speed</small><b>${el>0.05?Math.round(G.chars/5/el):0} wpm</b></div><div class="stat"><small>Streak</small><b>${G.streak}</b></div>`;};
   inp.addEventListener('input',()=>{if(!G||G.over)return;let v=inp.value.replace(/^\s+/,'');if(v!==inp.value)inp.value=v;
-    const t=G.queue[0].w.toLowerCase(),lv=v.toLowerCase();
+    const t=G.line[G.pos].w.toLowerCase(),lv=v.toLowerCase();
     if(v.length>G.prev.length){G.keys+=v.length-G.prev.length;if(!t.startsWith(lv)){G.errors++;G.dirty=true;inp.classList.remove('err');void inp.offsetWidth;inp.classList.add('err');}}
     G.prev=v;
-    if(lv===t){const w=G.queue.shift();const clean=!G.dirty;G.streak=clean?G.streak+1:0;const m=multOf(G.streak),pts=w.w.length*10*m;
+    if(lv===t){const w=G.line[G.pos];const clean=!G.dirty;G.streak=clean?G.streak+1:0;const m=multOf(G.streak),pts=w.w.length*10*m;
       G.score+=pts;G.chars+=w.w.length;G.done++;if(!clean&&w.t!=='s')G.missed[w.w]=w.t;
       const old=multOf(G.streak-1);if(clean&&m>old){toast($('stage'),'Combo ×'+m+'!','var(--green)',1);const c=$('combo');c.classList.add('pop');setTimeout(()=>c.classList.remove('pop'),200);}
       else if(w.t==='s')toast($('stage'),pick(QUIPS),null,1);
-      G.queue.push(G.next());G.dirty=false;inp.value='';G.prev='';hud();}
+      G.pos++;if(G.pos>=G.line.length){newLine();const L=$('line');L.classList.remove('fresh');void L.offsetWidth;L.classList.add('fresh');}
+      G.dirty=false;inp.value='';G.prev='';hud();}
     draw();});
   inp.addEventListener('keydown',e=>{if(e.key==='Enter')e.preventDefault();});
   draw();hud();
@@ -122,7 +127,7 @@ function endGame(){if(!G)return;clearInterval(G.timer);cancelAnimationFrame(G.ra
   const key='best:'+g.mode,best=store.get(key)||0,nb=g.score>best;if(nb)store.set(key,g.score);
   const missed=Object.entries(g.missed);
   $('results').innerHTML=`<div class="card"><div class="in">
-    <h2>${g.mode==='sprint'?'Sixty-Second Sprint':'The Improbable Storm'}${g.mode==='storm'?' · game over':''}</h2>
+    <h2>${g.mode==='sprint'?'Sixty-Second Sprint':'Hard mode'}${g.mode==='storm'?' · game over':''}</h2>
     <div class="bigscore">${g.score}</div><div class="small">${nb?'New personal best!':best?'Your best: '+best:''}</div><p class="verdict">${verdict(g.mode,g.score)}</p>
     <div class="statgrid"><div><small>Words</small><b>${g.done}</b></div><div><small>Speed</small><b>${wpm} wpm</b></div><div><small>Accuracy</small><b>${acc}%</b></div>${g.mode==='storm'?`<div><small>Level reached</small><b>${g.level}</b></div><div><small>Survived</small><b>${Math.round(g.clock)} s</b></div>`:''}</div>
     ${missed.length?`<h3>Practise spelling these</h3><div class="missed">${missed.map(([w,t])=>`<span style="--k:${KCOL[t]}">${esc(w)}</span>`).join('')}</div>`:''}
@@ -151,7 +156,7 @@ function resultsBoard(board,score){const el=$('hsArea');if(!el||!S||!S.online())
     btn.onclick=go;inp.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();go();}};})
    .catch(()=>{el.innerHTML='<div class="hs small">Couldn’t reach the high scores (no connection?).</div>';});}
 function hiscores(){const box=$('hiscores');box.innerHTML=`<a class="back" href="#" id="hsBack">← Menu</a><h1>High scores</h1><div class="boards"><div id="hb1"></div><div id="hb2"></div></div>`;
-  $('hsBack').onclick=e=>{e.preventDefault();menu();};showBoard($('hb1'),'sprint','Sixty-Second Sprint');showBoard($('hb2'),'storm','The Improbable Storm');show('hiscores');}
+  $('hsBack').onclick=e=>{e.preventDefault();menu();};showBoard($('hb1'),'sprint','Sixty-Second Sprint');showBoard($('hb2'),'storm','Hard mode');show('hiscores');}
 
 /* ===================== MENU ===================== */
 function stop(){if(G){clearInterval(G.timer);clearTimeout(G.cd);cancelAnimationFrame(G.raf);G.over=true;}G=null;}

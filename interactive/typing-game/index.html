@@ -64,6 +64,13 @@ button{font:inherit;cursor:pointer;color:inherit}
 .word .ok{color:var(--green2)}.word .bad{color:#fff;background:var(--red);border-radius:3px}.word .cur{border-bottom:4px solid var(--ink)}
 .tag{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#fff;padding:2px 8px;background:var(--k)}
 .tagrow{text-align:center}
+.line{display:flex;flex-wrap:wrap;justify-content:center;align-items:baseline;gap:10px 26px;margin:22px 0 4px;min-height:2.6em;font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:700;font-size:clamp(20px,3.4vw,34px);line-height:1.2}
+.line .lw{color:#5f5a4e;border-bottom:4px solid transparent;padding-bottom:2px;box-shadow:inset 0 -3px 0 color-mix(in srgb,var(--k) 35%,transparent)}
+.line .lw.done{color:var(--green2);opacity:.45;text-decoration:line-through;text-decoration-thickness:2px}
+.line .lw.now{color:var(--ink);box-shadow:none;border-bottom-color:var(--k);background:#fff8d6;border-radius:4px 4px 0 0}
+.line .lw.now .ok{color:var(--green2)}.line .lw.now .bad{color:#fff;background:var(--red);border-radius:3px}.line .lw.now .cur{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:4px}
+.line.fresh{animation:fresh .35s}
+@keyframes fresh{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .queue{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-family:'JetBrains Mono',monospace;color:#999;font-size:clamp(15px,2.4vw,20px)}
 .queue span:first-child{color:#555}
 .typebox{display:block;width:100%;max-width:560px;margin:18px auto 0;font-family:'JetBrains Mono',monospace;font-size:22px;padding:12px 14px;border:3px solid var(--ink);background:var(--soft);outline:none;text-align:center}
@@ -141,8 +148,8 @@ button{font:inherit;cursor:pointer;color:inherit}
     <h1>Type Fast or Perish</h1>
     <p class="lede">Type GCSE science key words as fast as you can, spelt properly (yes, <i>haemoglobin</i> has an <i>a</i>). Watch out for the occasional wombat, existential teapot or slightly damp parrot.</p>
     <div class="bigmodes">
-      <button class="bigmode" id="sprintBtn" style="--c:#005e22"><span class="diff">Normal</span><h3>Sixty-Second Sprint</h3><p>One word at a time, 60 seconds. Clean words build a combo multiplier up to ×4. Long words score more.</p><span class="best" id="bestSprint"></span></button>
-      <button class="bigmode" id="stormBtn" style="--c:#c2185b"><span class="diff">Really hard</span><h3>The Improbable Storm</h3><p>Words fall from the sky and speed up. Start typing any word to lock onto it. Three lives. Improbability events flip, shrink, hide and reverse the words. Type the golden <b>towel</b> to clear the sky.</p><span class="best" id="bestStorm"></span></button>
+      <button class="bigmode" id="sprintBtn" style="--c:#005e22"><span class="diff">Normal</span><h3>Sixty-Second Sprint</h3><p>60 seconds. Type a line of 5 words in order; they stay put so you can see what’s coming, then a fresh line appears. Clean words build a combo up to ×4. Long words score more.</p><span class="best" id="bestSprint"></span></button>
+      <button class="bigmode" id="stormBtn" style="--c:#c2185b"><span class="diff">Really hard</span><h3>Hard mode</h3><p>Words fall from the sky and speed up. Start typing any word to lock onto it. Three lives. Improbability events flip, shrink, hide and reverse the words. Type the golden <b>towel</b> to clear the sky.</p><span class="best" id="bestStorm"></span></button>
     </div>
     <div class="key"><span style="--k:var(--bio)">Biology</span><span style="--k:var(--chem)">Chemistry</span><span style="--k:var(--phys)">Physics</span><span style="--k:var(--silly)">Nonsense</span></div>
     <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 High scores</button></p>

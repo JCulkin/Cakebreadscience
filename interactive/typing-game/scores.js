@@ -4,7 +4,7 @@
 let db=null;
 try{if(window.firebase&&window.firebaseConfig){if(!firebase.apps.length)firebase.initializeApp(window.firebaseConfig);db=firebase.database();}}catch(e){console.warn('Scores offline',e);db=null;}
 const ROOT='typingHighScores';
-const NAMES={sprint:'Sixty-Second Sprint',storm:'The Improbable Storm'};
+const NAMES={sprint:'Sixty-Second Sprint',storm:'Hard mode'};
 const boardName=b=>NAMES[b]||b;
 // rude-name filter: a short list is enough to stop the obvious ones; anything else can be deleted in the Firebase console
 const BAD=['fuck','shit','cunt','wank','twat','bitch','bastard','slut','whore','nigg','faggot','retard','penis','vagina','porn','asshole','arsehole','puta','mierda','coño','polla','joder','gilipollas'];
