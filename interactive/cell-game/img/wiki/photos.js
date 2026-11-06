@@ -1,4 +1,4 @@
-/* Openly licensed photos from Wikimedia Commons, checked for Cell Spotter. Credits: credits.html */
+/* Openly licensed photos from Wikimedia Commons, checked for What The Cell. Credits: credits.html */
 window.WIKI_PHOTOS=[
 {
 "src": "img/wiki/plant__onion-epidermis__01.jpg",

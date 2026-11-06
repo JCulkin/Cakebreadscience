@@ -1,4 +1,4 @@
-/* Cell Spotter: game logic. Needs cells.js. */
+/* What The Cell: game logic. Needs cells.js. */
 (function(){
 const $=id=>document.getElementById(id);
 const C=window.Cells,P=C.PARTS,G=C.GROUPS;
@@ -66,9 +66,12 @@ function cellItem(type,style){const c=C.cell(type,style||pick(['colour','exam'])
 function photoItem(p){return {html:photoHTML(p),group:p.group,cap:p.cap,clue:p.clue,kind:'photo',key:p.src};}
 const FIELDS_BY={plant:['onion','elodea'],animal:['cheek'],fungus:['yeast','hyphae'],bacteria:['rods','cocci']};
 const CELLS_BY={plant:['plant'],animal:['animal'],fungus:['yeast','hypha'],bacteria:['rod','coccus']};
+/* Difficulty: normal = drawings + drawn microscope views + the few clear photos; hard = mostly the real Wikimedia lab photos */
+let DIFF=store.get('diff')==='hard'?'hard':'normal';
 function anyItem(group,kinds=['photo','photo','field','cell'],avoid=new Set()){
+  if(DIFF==='hard')kinds=['photo','photo','photo','photo','photo','field'];
   for(let t=0;t<30;t++){const k=pick(kinds);let it;
-    if(k==='photo'){const ps=PHOTOS.filter(p=>p.group===group);if(!ps.length)continue;it=photoItem(pick(ps));}
+    if(k==='photo'){const ps=PHOTOS.filter(p=>p.group===group&&(DIFF==='hard'?p.wiki:!p.wiki));if(!ps.length)continue;it=photoItem(pick(ps));}
     else if(k==='field')it=fieldItem(pick(FIELDS_BY[group]));
     else it=cellItem(pick(CELLS_BY[group]));
     if(!avoid.has(it.key)||t>25){avoid.add(it.key);return it;}}
@@ -272,7 +275,7 @@ function bindOpts(s,attr,correct,cb){const bs=[...s.querySelectorAll('.opt')];bs
 
 /* ---------------- game flow ---------------- */
 let GAME=null,TEAM=null;
-function show(id){['menu','play','results','teamsetup'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.body.classList.toggle('proj',!!TEAM&&(id==='play'||id==='results'));
+function show(id){['menu','solo','play','results','teamsetup'].forEach(x=>$(x).classList.toggle('hidden',x!==id));document.body.classList.toggle('proj',!!TEAM&&(id==='play'||id==='results'));
   $('teamhud').classList.toggle('hidden',!TEAM);$('solohud').classList.toggle('hidden',!!TEAM);window.scrollTo(0,0);}
 function startGame(mode,roundIds){TEAM=null;GAME={mode,rounds:roundIds.map(id=>ROUNDS.find(r=>r.id===id)),ri:-1,score:0,max:0,per:[],revise:{}};nextRound();show('play');}
 function nextRound(){GAME.ri++;if(GAME.ri>=GAME.rounds.length)return finish();const R=GAME.rounds[GAME.ri];GAME.cur={R,qs:R.make(),qi:-1,score:0,max:0,res:[]};GAME.per.push(GAME.cur);nextQ();}
@@ -282,10 +285,10 @@ function nextQ(){const cur=GAME.cur;cur.qi++;if(cur.qi>=cur.qs.length)return nex
     stage().insertAdjacentHTML('beforeend',`<div class="nextrow"><button class="btn big green" id="nx">${last?(lastRound?'See results':'Next round'):'Next'} →</button></div>`);
     const nx=$('nx');nx.onclick=nextQ;nx.focus({preventScroll:true});nx.scrollIntoView({behavior:'smooth',block:'nearest'});});}
 function hud(){const cur=GAME.cur;$('hudMeta').textContent=GAME.rounds.length>1?`Round ${GAME.ri+1} of ${GAME.rounds.length} · Question ${Math.min(cur.qi+1,5)} of 5`:`Question ${Math.min(cur.qi+1,5)} of 5`;
-  $('hudRound').textContent=cur.R.name;$('hudScore').textContent=GAME.score;
+  $('hudRound').innerHTML=cur.R.name+' '+dtag();$('hudScore').textContent=GAME.score;
   $('pips').innerHTML=cur.qs.map((_,i)=>`<i class="${cur.res[i]||(i===cur.qi?'now':'')}"></i>`).join('');}
-function finish(){const pct=GAME.max?Math.round(GAME.score/GAME.max*100):0;const key='best:'+GAME.mode;const best=store.get(key)||0;const isBest=GAME.score>best;if(isBest)store.set(key,GAME.score);
-  if(GAME.rounds.length===1){const rk='best:round:'+GAME.rounds[0].id;if(GAME.score>(store.get(rk)||0))store.set(rk,GAME.score);}
+function finish(){if(GAME.mode.startsWith('round:'))GAME.mode='round:'+GAME.rounds[0].id;const pct=GAME.max?Math.round(GAME.score/GAME.max*100):0;const key='best:'+DIFF+':'+GAME.mode;const best=store.get(key)||0;const isBest=GAME.score>best;if(isBest)store.set(key,GAME.score);
+  if(GAME.rounds.length===1){const rk='best:'+DIFF+':round:'+GAME.rounds[0].id;if(GAME.score>(store.get(rk)||0))store.set(rk,GAME.score);}
   const rev=Object.entries(GAME.revise).sort((a,b)=>b[1]-a[1]);
   $('results').innerHTML=`<div class="card"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div style="padding:18px">
     <h2>${pct>=90?'Cell expert!':pct>=70?'Great spotting':pct>=50?'Good effort':'Keep practising'}</h2>
@@ -294,10 +297,15 @@ function finish(){const pct=GAME.max?Math.round(GAME.score/GAME.max*100):0;const
     ${rev.length?`<h3 style="margin-top:18px">Revise these</h3><ul class="revise">${rev.map(([t,n])=>`<li>${t}${n>1?` <span class="small">(×${n})</span>`:''}</li>`).join('')}</ul>`:'<p style="margin-top:14px"><b>No mistakes to revise.</b></p>'}
     <div class="modes" style="margin-top:18px"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="toMenu">Menu</button></div></div></div>`;
   const again=GAME.rounds.map(r=>r.id),mode=GAME.mode;
-  $('again').onclick=()=>startGame(mode,mode==='full'?shuffle(ROUNDS.map(r=>r.id)).slice(0,5):again);$('toMenu').onclick=menu;show('results');}
-function menu(){GAME=null;TEAM=null;$('roundList').innerHTML=ROUNDS.map((r,i)=>{const b=store.get('best:round:'+r.id);return `<button class="rcard" data-id="${r.id}"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in"><span class="rnum">${i+1}</span><span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<div class="best">Best: ${b} / 500</div>`:''}</span></div></button>`;}).join('');
+  $('again').onclick=()=>startGame(mode,mode==='full'?shuffle(ROUNDS.map(r=>r.id)).slice(0,5):again);$('toMenu').onclick=soloMenu;show('results');}
+function dtag(){return `<span class="dtag ${DIFF}">${DIFF==='hard'?'Hard':'Normal'}</span>`;}
+function menu(){GAME=null;TEAM=null;document.querySelectorAll('.diff').forEach(b=>b.classList.toggle('on',b.dataset.d===DIFF));show('menu');}
+function soloMenu(){GAME=null;TEAM=null;$('soloDiff').outerHTML=`<span class="dtag ${DIFF}" id="soloDiff">${DIFF==='hard'?'Hard':'Normal'}</span>`;
+  $('roundList').innerHTML=ROUNDS.map((r,i)=>{const b=store.get('best:'+DIFF+':round:'+r.id);return `<button class="rcard" data-id="${r.id}"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in"><span class="rnum">${i+1}</span><span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<div class="best">Best: ${b} / 500</div>`:''}</span></div></button>`;}).join('');
   $('roundList').querySelectorAll('.rcard').forEach(b=>b.onclick=()=>startGame('round:'+b.dataset.id,[b.dataset.id]));
-  const bf=store.get('best:full'),ba=store.get('best:all');$('bestLine').textContent=[bf?`Full game best: ${bf} / 2500`:'',ba?`Marathon best: ${ba} / 4500`:''].filter(Boolean).join(' · ');show('menu');}
+  const bf=store.get('best:'+DIFF+':full'),ba=store.get('best:'+DIFF+':all');$('bestLine').textContent=[bf?`Full game best: ${bf} / 2500`:'',ba?`Marathon best: ${ba} / 4500`:''].filter(Boolean).join(' · ');show('solo');}
+document.querySelectorAll('.diff').forEach(b=>b.onclick=()=>{DIFF=b.dataset.d;store.set('diff',DIFF);menu();});
+$('soloBtn').onclick=soloMenu;$('soloBack').onclick=e=>{e.preventDefault();menu();};
 $('playFull').onclick=()=>startGame('full',shuffle(ROUNDS.map(r=>r.id)).slice(0,5));
 $('playAll').onclick=()=>startGame('all',ROUNDS.map(r=>r.id));
 /* ---------------- TEAM MODE (board / projector) ---------------- */
@@ -307,7 +315,7 @@ const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function teamSetup(){const s=store.get('teamcfg')||{};s.n=s.n||4;s.names=s.names||TEAM_NAMES.slice();s.per=s.per||3;
   s.rounds=(s.rounds||ROUNDS.map(r=>r.id)).filter(id=>ROUNDS.some(r=>r.id===id));if(!s.rounds.length)s.rounds=ROUNDS.map(r=>r.id);
   const box=$('teamsetup');
-  const draw=()=>{box.innerHTML=`<a class="back" href="#" id="tsBack">← Menu</a><h1>Team game</h1><p class="lede">For the board: split the class into teams. Teams take turns, one question each. Tap the answer the team chooses. Fast answers still score more on the timed rounds.</p>
+  const draw=()=>{box.innerHTML=`<a class="back" href="#" id="tsBack">← Menu</a><h1>Team game ${dtag()}</h1><p class="lede">For the board: split the class into teams. Teams take turns, one question each. Tap the answer the team chooses. Fast answers still score more on the timed rounds.</p>
     <div class="card" style="margin-top:14px"><div class="setup">
      <h3>1. How many teams?</h3><div class="chips">${[2,3,4,5,6].map(n=>`<button class="chip ${s.n===n?'on':''}" data-n="${n}">${n}</button>`).join('')}</div>
      <div class="teamnames">${Array.from({length:s.n},(_,i)=>`<label style="--c:${TEAM_COLS[i]}"><i></i><input value="${esc(s.names[i]||TEAM_NAMES[i])}" data-i="${i}" maxlength="18" aria-label="Team ${i+1} name"></label>`).join('')}</div>
@@ -329,7 +337,7 @@ function startTeam(s){const total=s.n*s.per,bank={},qs=[];let order=shuffle(s.ro
   GAME=null;TEAM={cfg:s,teams:Array.from({length:s.n},(_,i)=>({name:(s.names[i]||TEAM_NAMES[i]).trim()||TEAM_NAMES[i],col:TEAM_COLS[i],score:0})),qs,qi:-1};
   show('play');nextTeamQ();}
 function teamHud(turn,over,gain){const t=TEAM.teams[turn],q=TEAM.qs[TEAM.qi];
-  $('teamhud').innerHTML=`<div class="teamturn" style="--c:${t.col}"><span class="meta">Question ${TEAM.qi+1} of ${TEAM.qs.length} · ${q.R.name}</span><span class="tname">${over?`${esc(t.name)} ${gain?'+'+gain:'+0'}`:esc(t.name)+'’s turn'}</span></div>
+  $('teamhud').innerHTML=`<div class="teamturn" style="--c:${t.col}"><span class="meta">${DIFF==='hard'?'Hard · ':''}Question ${TEAM.qi+1} of ${TEAM.qs.length} · ${q.R.name}</span><span class="tname">${over?`${esc(t.name)} ${gain?'+'+gain:'+0'}`:esc(t.name)+'’s turn'}</span></div>
    <div class="board">${TEAM.teams.map((x,i)=>`<div class="tscore ${i===turn?'now':''} ${i===turn&&gain?'bump':''}" style="--c:${x.col}"><span>${esc(x.name)}</span><b>${x.score}</b></div>`).join('')}</div>`;}
 function nextTeamQ(){TEAM.qi++;if(TEAM.qi>=TEAM.qs.length)return podium();const turn=TEAM.qi%TEAM.teams.length,q=TEAM.qs[TEAM.qi];teamHud(turn,false,0);
   const run=q.q();run(pts=>{if(!TEAM)return;TEAM.teams[turn].score+=pts;teamHud(turn,true,pts);

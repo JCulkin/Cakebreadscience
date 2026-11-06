@@ -1,4 +1,4 @@
-/* Cell diagram engine for the Cell Spotter game.
+/* Cell diagram engine for the What The Cell game.
    Draws plant, animal, fungal (yeast + hypha) and bacterial (rod + coccus) cells as SVG
    in two styles, "colour" (textbook, several colour themes) and "exam" (black line drawing),
    plus circular fields of cells "under the microscope". Every drawing is randomised:
