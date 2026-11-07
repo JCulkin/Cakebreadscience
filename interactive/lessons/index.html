@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Lessons · Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/interactive/lessons/assets/lesson.css">
+<style>
+.tabs{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
+.tabs button{font:700 15px 'Barlow',Arial,sans-serif;text-transform:uppercase;letter-spacing:1px;padding:7px 14px;border:2px solid #555;background:transparent;color:#eeeae0;cursor:pointer}
+.tabs button.on{background:var(--acc);border-color:var(--acc)}
+.tabs button:disabled{opacity:.45;cursor:default}
+.prog{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 20px;font-weight:600}
+.prog .bar{flex:1 1 240px;height:16px;border:2px solid #111;background:#fff;display:flex;align-self:center}
+.prog .bar i{display:block}
+.sec{margin-bottom:30px}
+.sec h2{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;border-bottom:4px solid var(--acc);margin-bottom:10px}
+.topic{display:grid;grid-template-columns:52px 1fr auto;gap:4px 14px;align-items:center;background:#fff;border:2px solid #111;padding:10px 12px;margin-bottom:8px}
+.topic.none{background:transparent;border-style:dashed;border-color:#aaa;color:#888}
+.topic .code{font:900 28px 'Barlow Condensed',Arial Narrow,sans-serif;color:var(--acc)}
+.topic.none .code{color:#aaa}
+.topic .t{font-weight:700;font-size:18px;line-height:1.2}
+.topic .t small{display:block;font-weight:600;font-size:13px;color:#666;margin-top:2px}
+.topic .links{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.topic .links a{font:700 14px 'Barlow',Arial,sans-serif;text-decoration:none;border:2px solid #111;padding:4px 10px;color:#111;background:#fff;white-space:nowrap}
+.topic .links a.main{background:var(--acc);border-color:var(--acc);color:#fff}
+.topic .links a.dr{background:#fff3b8}
+.topic details{grid-column:2 / -1;font-size:14px}
+.topic details a{color:var(--green);margin-right:10px}
+@media(max-width:620px){.topic{grid-template-columns:44px 1fr}.topic .links{grid-column:1 / -1;justify-content:flex-start}}
+.how{background:#fff;border:2px solid #111;padding:14px 16px;margin-bottom:26px}
+.how h3{margin-top:0}
+.how ol{margin:6px 0 0 22px}.how li{margin:4px 0}
+</style>
+</head>
+<body class="subj-chemistry">
+<div class="stripes"><i style="height:4px;background:var(--acc)"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:var(--acc)"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:var(--acc)"></i></div>
+<header class="lhead">
+  <div class="kick">IGCSE Science (Double Award) · interactive lessons</div>
+  <h1>Cakebread <span>Lessons</span></h1>
+  <div class="navrow"><a href="/">← Home</a></div>
+  <div class="tabs" id="tabs"><button class="on" data-s="chemistry">Chemistry</button><button disabled>Biology · coming</button><button disabled>Physics · coming</button></div>
+</header>
+<div class="stripes"><i style="height:3px;background:var(--acc)"></i><i style="height:8px;background:var(--paper)"></i><i style="height:2px;background:#111"></i></div>
+
+<main class="wrap" style="max-width:900px">
+  <details class="how">
+    <summary style="cursor:pointer;font-weight:700;font-size:17px">How drafts, reviews and checked versions work</summary>
+    <ol>
+      <li><span class="status draft">Draft</span> Claude builds the lesson as a draft. Drafts can change at any time.</li>
+      <li>Open the draft and press <b>✎ Review</b> (bottom left). Click any paragraph, diagram, question or projector slide and type what should change. Notes save in your browser.</li>
+      <li>Press <b>Copy all notes</b> and paste them into a chat with Claude. Claude updates the draft, and you review again.</li>
+      <li>When you're happy, tell Claude <i>"approve 1f"</i>. The draft is frozen as a <span class="status checked">Checked · date</span> version with its own permanent link. The topic's main link always opens the newest checked version.</li>
+      <li>Later changes start a new draft. Older checked versions stay available.</li>
+    </ol>
+  </details>
+  <div class="prog" id="prog"></div>
+  <div id="list"><p>Loading…</p></div>
+  <p class="cap" style="margin-top:20px">Earlier format trial for 1g: <a href="/interactive/lessons/chemistry-1g/">PowerPoint → website approaches A–D</a>.</p>
+</main>
+
+<script>
+(async function(){
+  const fmt = d => { const [y,m,dd] = d.split('-'); return `${+dd} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${y}`; };
+  let data; try { data = await (await fetch('/interactive/lessons/lessons.json', {cache:'no-store'})).json(); }
+  catch(e){ document.getElementById('list').innerHTML = '<p>Could not load the lesson list.</p>'; return; }
+  const subj = data.subjects[0], base = `/interactive/lessons/${subj.id}/`;
+  let nDraft = 0, nChecked = 0, n = 0;
+  const html = subj.sections.map(sec => `<div class="sec"><h2>${sec.code} · ${sec.name}</h2>` + sec.topics.map(t => {
+    n++; const v = (t.versions||[]).slice().sort().reverse(), latest = v[0], url = base + t.code + '/';
+    if(!t.status) return `<div class="topic none"><div class="code">${t.code}</div><div class="t">${t.title}<small>Spec ${t.spec} · not started</small></div></div>`;
+    if(latest) nChecked++; else nDraft++;
+    const badge = latest ? `<span class="status checked">Checked · ${fmt(latest)}</span>` : '';
+    const draftNote = t.status === 'draft' ? `<span class="status draft">Draft${t.draftUpdated?' · '+fmt(t.draftUpdated):''}</span>` : '';
+    const links = (latest ? `<a class="main" href="${url}v${latest}/">Open</a><a href="${url}v${latest}/#present">▶ Present</a>` : `<a class="main dr" href="${url}draft/" style="color:#111">Open draft</a><a href="${url}draft/#present">▶ Present</a>`)
+      + (latest && t.status === 'draft' ? `<a class="dr" href="${url}draft/">Draft</a>` : '')
+      + (t.status === 'draft' ? `<a class="dr" href="${url}draft/?review">✎ Review</a>` : '');
+    const older = v.length > 1 ? `<details><summary>Older checked versions</summary>${v.slice(1).map(d=>`<a href="${url}v${d}/">${fmt(d)}</a>`).join('')}</details>` : '';
+    return `<div class="topic"><div class="code">${t.code}</div><div class="t">${t.title}<small>Spec ${t.spec} &nbsp;${badge} ${draftNote}</small></div><div class="links">${links}</div>${older}</div>`;
+  }).join('') + '</div>').join('');
+  document.getElementById('list').innerHTML = html;
+  const pc = x => (100*x/n).toFixed(1)+'%';
+  document.getElementById('prog').innerHTML = `<span>${subj.name}: ${nChecked} checked · ${nDraft} in draft · ${n-nChecked-nDraft} to do</span><span class="bar"><i style="width:${pc(nChecked)};background:#00a03a"></i><i style="width:${pc(nDraft)};background:#c9a000"></i></span>`;
+})();
+</script>
+</body>
+</html>

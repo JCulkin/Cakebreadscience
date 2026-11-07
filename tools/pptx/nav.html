@@ -1,0 +1,48 @@
+<style>
+/* shared presenter navigation (A & B) */
+.slide{cursor:pointer}
+.pbar{display:none}
+body.present{overflow:hidden;background:#000}
+body.present header{display:none}
+body.present .pbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:20;justify-content:center;align-items:center;gap:6px;padding:6px;background:rgba(0,0,0,.6);opacity:.15;transition:opacity .2s}
+body.present .pbar:hover,body.present.mouse .pbar{opacity:1}
+.pbar button{font:600 16px Barlow,Arial,sans-serif;background:#222;color:#eee;border:1px solid #555;padding:6px 14px;cursor:pointer}
+.pbar span{color:#ccc;font:600 15px Barlow,Arial,sans-serif;min-width:70px;text-align:center}
+body.present .slide{height:100vh !important}
+</style>
+<div class="pbar"><button id="pPrev" title="Previous (←)">‹ Back</button><span id="pCount"></span><button id="pNext" title="Next (→, space, click)">Next ›</button><button id="pFull" title="Full screen (F)">⛶ Full screen</button><button id="pExit" title="Exit (Esc)">✕ Exit</button></div>
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')]; let cur=0;
+  const body=document.body, stepFn=window.step||(()=>false), refit=window.fit||(()=>{});
+  const isP=()=>body.classList.contains('present');
+  function show(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,j)=>s.classList.toggle('cur',j==cur));
+    document.getElementById('pCount').textContent=(cur+1)+' / '+slides.length; refit();}
+  function enter(i){body.classList.add('present');show(i);}
+  function exit(){body.classList.remove('present'); if(document.fullscreenElement) document.exitFullscreen(); refit(); slides[cur].scrollIntoView({block:'center'});}
+  function next(){ if(!stepFn(slides[cur],1)) show(cur+1); }
+  function prev(){ if(!stepFn(slides[cur],-1)) show(cur-1); }
+  window.presentNext=next; window.presentPrev=prev;
+  slides.forEach((s,i)=>s.addEventListener('click',e=>{
+    if(e.target.closest('details,a,video')) return;
+    if(!isP()){enter(i);return;}
+    const r=s.getBoundingClientRect(); (e.clientX<r.left+r.width/4)?prev():next();
+  }));
+  document.getElementById('pres').onclick=()=>isP()?exit():enter(cur);
+  document.getElementById('pPrev').onclick=prev; document.getElementById('pNext').onclick=next;
+  document.getElementById('pExit').onclick=exit;
+  const full=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{});
+  document.getElementById('pFull').onclick=full;
+  addEventListener('keydown',e=>{
+    if(!isP()) return;
+    if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}
+    else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev();}
+    else if(e.key==='Escape') exit();
+    else if(e.key==='f'||e.key==='F') full();
+  });
+  let tx=null; addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  addEventListener('touchend',e=>{if(!isP()||tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?next():prev();}tx=null;});
+  let mt; addEventListener('mousemove',()=>{body.classList.add('mouse');clearTimeout(mt);mt=setTimeout(()=>body.classList.remove('mouse'),1500);});
+  addEventListener('resize',refit);
+})();
+</script>
