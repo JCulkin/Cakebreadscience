@@ -2,6 +2,35 @@
 
 ---
 
+## [3.0.0] - 2026-11-07
+### New Homepage, Spec Quiz & Classroom Games
+
+#### Homepage (`index.html`)
+- New design: jump links; three featured games; interactives grouped by subject (Biology, Chemistry, Physics, Maths); Resources (Lessons, Spec Quiz, Physics Long Answers, Spec Tracker, Flashcards, AI Tutor, Maths Spec); Worksheets; More (Elevenstudents + useful websites)
+- Footer → v3.0.0
+
+#### Added
+- **Spec Quiz** (`interactive/spec-quiz/`): 1,805 multiple-choice and true/false questions covering every point of the Edexcel IGCSE Double Award spec, 46 randomised calculation generators, ★ harder questions
+  - Make a quiz: tick spec points, play solo or as a team game (2–6 teams, timer, steals, podium, projector sizing)
+  - **Campaign**: work through the whole spec; questions are secured on two different days, points go rusty after 21 days; XP, 15 ranks, scout badges, Italian gear, legendary trophies; weekly and all-time leaderboards; progress saved to the student's Google account
+  - "⚑ Report this question" on every question + admin reports page (`reports.html`)
+- **Elements 1–20** (`interactive/elements-game/`): 11 rounds on the first 20 elements (symbols, groups, electron configurations, ions, p/n/e), solo, team/projector and Explore modes, online Top 10
+- **What The Cell** (`interactive/cell-game/`): 9 rounds on cell structures with drawn cells and 108 openly licensed micrographs (credits page, student Gallery), Normal/Hard, solo and team modes
+- **Type Fast or Perish** (`interactive/typing-game/`): science key-word typing game, Sprint and Hard modes, online Top 10
+- Physics Long Answer Practice, Physics Equations Trainer and Transverse & Longitudinal Waves linked from the homepage
+- Sitemap: new games and quiz added
+
+#### Testing page only (not linked from the homepage)
+- Interactive lessons (drafts): Chemistry 1a States of matter, 1f Ionic bonding, 1g Covalent bonding, with projector mode and review notes
+- Practice & Challenge worksheets: Physics 3b wave speed, Biology 1a, Chemistry 1b bonding
+- Stock Market Challenge
+
+#### Fixed
+- Sitemap listed 31 worksheet pages that no longer exist; now lists the real worksheet pages
+- Elevenstudents: broken High Scores links in Ian Pong and Pasha Jumpy, and the Solar System play button on the High Scores page
+
+---
+
 ## [2.5.0] - 2026-06-23
 ### Ecology Tools — Food Webs & Ecological Pyramids
 

@@ -205,6 +205,12 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-11-07 - v3.0.0 New Homepage, Spec Quiz & Classroom Games
+- New homepage with featured games, interactives by subject and a Resources section
+- **Spec Quiz**: 1,805 questions on the whole Double Award spec; solo, team (projector) and Campaign modes with ranks, badges and leaderboards; report-a-question button
+- **Elements 1–20**, **What The Cell** and **Type Fast or Perish** games, each with team/projector or online Top 10 modes
+- Physics Long Answers, Equations Trainer and Waves linked from the homepage; sitemap fixed
+
 ### 2026-06-23 - v2.5.0 Ecology Tools (Food Webs & Ecological Pyramids)
 - **Food Webs** rebuilt from placeholder into a finished tool with Demonstration and Interactive (quiz) modes, savanna & garden ecosystems, energy-pyramid view, food-chain tracing, and a "remove a species" knock-on demo
 - **Ecological Pyramids** finished and expanded to 4 ecosystems (Grassland, Oak Tree, Sea, Desert), showing the oak's irregular pyramid of numbers and the sea's inverted pyramid of biomass
