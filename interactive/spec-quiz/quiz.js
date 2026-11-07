@@ -157,6 +157,63 @@ function buildQuiz(n, hard = true, calc = true) {
   return shuffle(out).map(inst);
 }
 
+/* ---------- "Report this question" ----------
+   Reports go to Realtime Database specQuizReports/{pushId}; only admins can read them (reports.html).
+   One report per question per page visit, max 10 per visit. If sending fails they wait in localStorage and are retried. */
+const REPORT_REASONS = ['The marked answer is wrong', 'More than one answer is right', 'The wording is confusing', 'Spelling or typing mistake', 'Not on the spec / too hard', 'Something else'];
+const REPORTED = new Set();
+function reportPayload(q, opts, pickedIdx, reason, comment) {
+  const u = (typeof FB !== 'undefined' && FB.user) ? FB.user : null;
+  const n = u && u.displayName ? u.displayName.trim().split(/\s+/) : null;
+  return {
+    qid: q.id, reason, comment: (comment || '').slice(0, 400),
+    shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400),
+    options: opts.map(o => (o.t || '').replace(/<[^>]+>/g, '').slice(0, 120)),
+    correct: opts.findIndex(o => o.ok), picked: pickedIdx === null ? -1 : pickedIdx,
+    mode: (typeof CAMP !== 'undefined' && CAMP.mission) ? 'campaign' : TEAM ? 'team' : 'solo',
+    name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '',
+    t: Date.now()
+  };
+}
+function pushReport(rep) {
+  try {
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length || !firebase.database) return Promise.reject(new Error('offline'));
+    return firebase.database().ref('specQuizReports').push(rep);
+  } catch (e) { return Promise.reject(e); }
+}
+function queueReport(rep) { const q = store.get('reportQueue') || []; q.push(rep); store.set('reportQueue', q.slice(-30)); }
+function flushReports() {
+  const q = store.get('reportQueue') || []; if (!q.length) return;
+  store.set('reportQueue', []);
+  q.forEach(rep => pushReport(rep).catch(() => queueReport(rep)));
+}
+setTimeout(flushReports, 4000);
+function reportUI(box, q, opts, getPicked) {
+  const link = box.querySelector('.replink'), panel = box.querySelector('.repbox');
+  if (REPORTED.has(q.id)) { link.textContent = '⚑ Reported, thank you'; link.disabled = true; }
+  link.onclick = () => {
+    if (link.disabled) return;
+    panel.classList.toggle('hidden');
+    if (panel.innerHTML) return;
+    panel.innerHTML = `<b>What’s wrong with this question?</b>
+      <div class="chips">${REPORT_REASONS.map((r, i) => `<button type="button" class="chip" data-r="${i}">${esc(r)}</button>`).join('')}</div>
+      <textarea maxlength="400" placeholder="Optional: tell us more (e.g. what you think the answer should be)"></textarea>
+      <div class="reprow"><button type="button" class="btn green repsend" disabled>Send report</button><button type="button" class="btn alt repcancel">Cancel</button><span class="repmsg"></span></div>`;
+    let reason = null;
+    panel.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { reason = REPORT_REASONS[+b.dataset.r]; panel.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', x === b)); panel.querySelector('.repsend').disabled = false; });
+    panel.querySelector('.repcancel').onclick = () => panel.classList.add('hidden');
+    panel.querySelector('.repsend').onclick = () => {
+      if (!reason) return;
+      if (REPORTED.size >= 10) { panel.querySelector('.repmsg').textContent = 'That’s the limit for this visit. Thank you!'; return; }
+      const rep = reportPayload(q, opts, getPicked(), reason, panel.querySelector('textarea').value);
+      REPORTED.add(q.id);
+      const done = (ok) => { panel.innerHTML = ok ? '<b>Thank you!</b> Your teacher will check this question.' : '<b>Saved.</b> It couldn’t be sent right now, so it will be sent next time you open the quiz.'; link.textContent = '⚑ Reported, thank you'; link.disabled = true; };
+      panel.querySelector('.repsend').disabled = true;
+      pushReport(rep).then(() => done(true)).catch(() => { queueReport(rep); done(false); });
+    };
+  };
+}
+
 /* a question ready to show: generators make fresh numbers each time */
 function inst(q) { return q.gen ? { ...q, ...q.gen(R) } : q; }
 const QBYID = {}; QUESTIONS.forEach(q => { QBYID[q.id] = q; });
@@ -169,12 +226,14 @@ function renderQ(q, box, onAnswer) {
   const keys = isTF ? ['T', 'F'] : ['A', 'B', 'C', 'D'];
   box.innerHTML = `<span class="qtag" style="--sc:${SUBJ_COL[p.subject]}">${p.subject} ${p.id} <span class="tf">· ${isTF ? 'True or false?' : 'Multiple choice'}</span>${q.hard ? '<span class="hardtag">★ Harder</span>' : ''}</span>
     <div class="prompt">${nuc(q.q)}</div>
-    <div class="opts ${isTF ? 'n2' : ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="key">${keys[i]}</span><span>${nuc(o.t)}</span></button>`).join('')}</div>`;
+    <div class="opts ${isTF ? 'n2' : ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="key">${keys[i]}</span><span>${nuc(o.t)}</span></button>`).join('')}</div>
+    <div class="qfoot"><button class="replink" type="button">⚑ Report this question</button><div class="repbox hidden"></div></div>`;
   const btns = [...box.querySelectorAll('.opt')];
-  let locked = false;
+  let locked = false, picked = null;
+  reportUI(box, q, opts, () => picked);
   const ctl = {
     keys, isTF, answer: opts.findIndex(o => o.ok),
-    pick(i) { if (locked || !btns[i] || btns[i].disabled) return; const ok = opts[i].ok; btns[i].classList.add(ok ? 'right' : 'wrong'); if (!ok) btns[i].disabled = true; onAnswer(ok, i); },
+    pick(i) { if (locked || !btns[i] || btns[i].disabled) return; const ok = opts[i].ok; if (picked === null) picked = i; btns[i].classList.add(ok ? 'right' : 'wrong'); if (!ok) btns[i].disabled = true; onAnswer(ok, i); },
     stop() { locked = true; btns.forEach(b => b.disabled = true); },
     reveal() { btns.forEach((b, i) => { if (opts[i].ok) b.classList.add('right'); else b.classList.add('dead'); }); },
     retry() { /* wrong buttons stay crossed out; others stay live */ }
@@ -184,7 +243,7 @@ function renderQ(q, box, onAnswer) {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === 'Enter') { const nx = $('nx'); if (nx && !$('play').classList.contains('hidden')) { e.preventDefault(); nx.click(); } return; }
   if (!KEYS) return;
   const i = KEYS.keys.indexOf(e.key.toUpperCase());

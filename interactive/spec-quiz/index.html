@@ -152,6 +152,16 @@ button{font:inherit;cursor:pointer;color:inherit}
 .pl .col{width:100%;height:var(--h);background:var(--c);border:2px solid var(--ink)}
 .pl b{font-family:'Barlow Condensed',sans-serif;font-size:36px}
 .pl span{font-weight:700;font-size:18px;margin-top:6px}
+/* report a question */
+.qfoot{margin-top:10px}
+.replink{background:none;border:0;padding:0;font:inherit;font-size:13px;color:var(--muted);text-decoration:underline;cursor:pointer}
+.replink:disabled{text-decoration:none;cursor:default;color:var(--green)}
+.repbox{margin-top:8px;padding:12px;background:#fff8d6;border:2px solid #c9a000;font-size:15px}
+.repbox .chip{font-size:13px;padding:4px 10px}
+.repbox textarea{display:block;width:100%;margin-top:8px;font:inherit;font-size:15px;padding:8px;border:2px solid var(--ink);min-height:60px}
+.reprow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
+.repmsg{font-size:13px;color:var(--red)}
+body.proj .replink{font-size:15px}
 /* campaign */
 .campcard{display:flex;width:100%;align-items:stretch;margin-top:18px;border:2px solid var(--ink);background:var(--paper);text-align:left;padding:0;border-left:12px solid #b45309}
 .campcard:hover{background:#fff8d6}
@@ -276,6 +286,7 @@ body.proj .qtag{font-size:16px}
       <ul class="tree" id="tree"></ul>
     </div>
     <p class="small" style="margin-top:8px">Click a name to open it and see what's inside. Tick a box to include it. Spec points marked <span class="pill none">no questions yet</span> are there so you can see the whole spec; they don't add anything to the quiz yet.</p>
+    <p class="small" style="margin-top:6px">Teachers: <a href="reports.html">questions students have reported</a> (admins only).</p>
     <div class="selbar">
       <div class="count" id="selCount"></div>
       <div class="go"><button class="btn big green" id="soloBtn">Solo →</button><button class="btn big alt" id="teamBtn">Team game →</button></div>
