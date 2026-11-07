@@ -7,7 +7,7 @@ const R = {
   int: (a, b) => a + Math.floor(Math.random() * (b - a + 1)),
   pick: a => a[Math.floor(Math.random() * a.length)],
   // tidy number for display: up to 3 significant figures, no trailing zeros
-  n(v) { if (!isFinite(v)) return '—'; const a = Math.abs(v); if (a !== 0 && (a >= 1e6 || a < 1e-3)) return R.sci(v); return String(+v.toPrecision(3)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); },
+  n(v) { if (!isFinite(v)) return '—'; const a = Math.abs(v); if (a !== 0 && (a >= 1e6 || a < 1e-3)) return R.sci(v); const [i, d] = String(+v.toPrecision(3)).split('.'); return i.replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + (d ? '.' + d : ''); },
   sci(v) { const e = Math.floor(Math.log10(Math.abs(v))); const m = +(v / 10 ** e).toPrecision(3); const sup = String(e).replace(/-/g, '⁻').replace(/\d/g, d => '⁰¹²³⁴⁵⁶⁷⁸⁹'[d]); return `${m} × 10${sup}`; },
   // make 4 distinct options from the correct value and candidate wrong values (all numbers, with a unit)
   opts(correct, wrongs, unit) {
@@ -250,6 +250,12 @@ eqGen('P5.22-g1', r => { const p1 = r.pick([50, 80, 100, 120, 150, 200]), V1 = r
   return r.int(0, 1) ? { q: `A gas has a volume of ${V1} cm³ at ${p1} kPa. At constant temperature its pressure changes to ${R.n(p2)} kPa. What is its new volume?`, ans: V2, wrong: [V1 * f, V1, V2 * 2, V2 / 2], unit: 'cm³', x: `V₂ = p₁ × V₁ ÷ p₂ = ${p1} × ${V1} ÷ ${R.n(p2)} = <b>${R.n(V2)} cm³</b>.` }
     : { q: `A gas at ${p1} kPa has a volume of ${V1} cm³. It is ${f > 1 ? 'compressed' : 'allowed to expand'} to ${R.n(V2)} cm³ at constant temperature. What is the new pressure?`, ans: p2, wrong: [p1 / f, p1, p2 * 2, p2 / 2], unit: 'kPa', x: `p₂ = p₁ × V₁ ÷ V₂ = ${p1} × ${V1} ÷ ${R.n(V2)} = <b>${R.n(p2)} kPa</b>.` }; });
 
+eqGen('P8.3-g1', r => { const B = r.pick([['the Moon', 1.6], ['Mars', 3.7], ['Jupiter', 25], ['Mercury', 3.7], ['Earth', 10]]), m = r.pick([2, 5, 10, 20, 50, 60, 70, 80]), W = m * B[1];
+  return r.int(0, 1) ? { q: `What is the weight of a ${m} kg object on ${B[0]}? (g = ${B[1]} N/kg)`, ans: W, wrong: [m, m / B[1], W * 10, m * 10 === W ? W / 2 : m * 10], unit: 'N', x: `W = m × g = ${m} × ${B[1]} = <b>${R.n(W)} N</b>. Its mass is still ${m} kg.` }
+    : { q: `An object weighs ${R.n(W)} N on ${B[0]} (g = ${B[1]} N/kg). What is its mass?`, ans: m, wrong: [W * B[1], W, m * 10, m / 10], unit: 'kg', x: `m = W ÷ g = ${R.n(W)} ÷ ${B[1]} = <b>${m} kg</b>.` }; });
+eqGen('P8.6-g1', r => { const O = r.pick([['The International Space Station', 'the Earth', 6.8e6, 5600], ['A GPS satellite', 'the Earth', 2.66e7, 43000], ['A geostationary satellite', 'the Earth', 4.22e7, 86400], ['The Moon', 'the Earth', 3.84e8, 2.36e6], ['The Earth', 'the Sun', 1.5e11, 3.16e7], ['Mars', 'the Sun', 2.28e11, 5.94e7]]), rr = O[2], T = O[3], v = 2 * Math.PI * rr / T;
+  return { q: `${O[0]} orbits ${O[1]} at a radius of ${R.n(rr)} m with a time period of ${R.n(T)} s. What is its orbital speed?`, ans: v, wrong: [rr / T, Math.PI * rr / T, v * 10, v / 10], unit: 'm/s', x: `v = 2πr ÷ T = 2 × π × ${R.n(rr)} ÷ ${R.n(T)} = <b>${R.n(v)} m/s</b>.` }; }, true);
+
 const CALC_IDS = new Set(['P3.5-01', 'P3.5-02', 'P3.5-03', 'P3.6-01', 'P3.6-02', 'P3.6-03', 'P3.6-04', 'P3.7-01', 'P3.7-02', 'P3.7-03', 'P3.7-04',
   'P7.11-03', 'P7.13-01', 'P7.13-02', 'P7.13-03', 'P3.18-01', 'P3.19-02', 'P3.22-01', 'P3.22-02',
   'C1.12-01', 'C1.17-01', 'C1.17-03', 'C1.26-01', 'C1.26-02', 'C1.26-03', 'C1.26-04', 'C1.28-01', 'C1.28-02', 'C1.28-04',
@@ -257,6 +263,6 @@ const CALC_IDS = new Set(['P3.5-01', 'P3.5-02', 'P3.5-03', 'P3.6-01', 'P3.6-02',
   'P3.5-g1', 'P3.6-g1', 'P3.7-g1', 'P3.18-g1', 'P3.22-g1', 'P7.13-g1', 'P7.11-g1', 'C1.17-g1', 'C1.12-g1', 'C1.26-g1', 'C1.28-g1', 'C1.29-g1', 'C1.30-g1', 'C1.33-g1',
   'C3.3-g1', 'C3.4-g1', 'P4.4-g1', 'P4.11-g1', 'P4.13-g1', 'P4.14-g1', 'P4.17-g1', 'P5.3-g1', 'P5.5-g1', 'P5.7-g1', 'P5.17-g1', 'P5.21-g1', 'P5.22-g1',
   'P1.4-g1', 'P1.6-g1', 'P1.10-g1', 'P1.15-g1', 'P1.17-g1', 'P1.18-g1', 'P2.4-g1', 'P2.5-g1', 'P2.13-g1', 'P2.15-g1', 'P2.19-g1', 'P2.21-g1',
-  'P1.4-01', 'P1.4-02', 'P1.6-01', 'P1.6-03', 'P1.6-04', 'P1.8-02', 'P1.9-02', 'P1.9-03', 'P1.10-02', 'P1.10-03', 'P1.17-01', 'P1.17-02', 'P1.18-01', 'P1.18-03', 'P2.4-01', 'P2.4-02', 'P2.4-03', 'P2.5-01', 'P2.5-03', 'P2.13-01', 'P2.13-02', 'P2.13-04', 'P2.15-01', 'P2.15-03', 'P2.19-02', 'P2.19-03', 'P2.21-01', 'P2.21-03', 'C2.14-02',
+  'P1.4-01', 'P1.4-02', 'P1.6-01', 'P1.6-03', 'P1.6-04', 'P1.8-02', 'P1.9-02', 'P1.9-03', 'P1.10-02', 'P1.10-03', 'P1.17-01', 'P1.17-02', 'P1.18-01', 'P1.18-03', 'P2.4-01', 'P2.4-02', 'P2.4-03', 'P2.5-01', 'P2.5-03', 'P2.13-01', 'P2.13-02', 'P2.13-04', 'P2.15-01', 'P2.15-03', 'P2.19-02', 'P2.19-03', 'P2.21-01', 'P2.21-03', 'C2.14-02', 'P8.3-g1', 'P8.6-g1', 'P8.3-02', 'P8.6-02', 'B4.2-03', 'B4.9-04',
   'C3.3-01', 'C3.4-03', 'P4.3-02', 'P4.4-01', 'P4.4-04', 'P4.5-03', 'P4.11-01', 'P4.11-04', 'P4.12-04', 'P4.13-01', 'P4.14-02', 'P4.15-02', 'P4.17-01', 'P4.17-02', 'P4.17-03', 'P5.3-02', 'P5.3-04', 'P5.5-02', 'P5.7-02', 'P5.7-04', 'P5.17-01', 'P5.17-02', 'P5.17-04', 'P5.21-02', 'P5.22-02', 'P5.22-03']);
 QUESTIONS.forEach(q => { if (CALC_IDS.has(q.id)) q.calc = true; });

@@ -3685,3 +3685,1303 @@ T('P5.22-04', 'For a fixed mass of gas at constant temperature, pressure ÷ volu
 M('C3.17-04', 'In a reversible reaction, what is true of the energy change in the two directions?',
   ['If one direction is exothermic, the other is endothermic by the same amount', 'Both directions are always exothermic by the same amount', 'Both directions are always endothermic by the same amount', 'The reverse reaction has no energy change at all'],
   'The same amount of energy is transferred, in opposite directions.');
+
+/* ===================== PHYSICS 6 Magnetism and electromagnetism (added 7 Nov 2026) ===================== */
+M('P6.2-01', 'Which of these is a magnetic material?',
+  ['Nickel', 'Copper', 'Aluminium', 'Brass'],
+  'Iron, steel, nickel and cobalt are magnetic.');
+M('P6.2-02', 'Two north poles are brought close together. What happens?',
+  ['They repel', 'They attract', 'Nothing happens', 'They attract, then repel'],
+  'Like poles repel; unlike poles attract.');
+T('P6.2-03', 'A magnet will attract a piece of copper.', false,
+  'False. Copper is not a magnetic material.');
+MH('P6.2-04', 'A bar of metal is attracted to both ends of a magnet. What does this show?',
+  ['It is a magnetic material, but not a magnet', 'It must be a permanent magnet, with two poles', 'It is not a magnetic material of any kind', 'It is a north pole, attracted by both ends'],
+  'Only repulsion proves something is a magnet.');
+M('P6.3-01', 'Why is soft iron used for the core of an electromagnet?',
+  ['It magnetises and demagnetises easily', 'It stays magnetised permanently', 'It is a very good insulator', 'It cannot be magnetised at all'],
+  'The magnet can be switched off.');
+M('P6.3-02', 'Which material is magnetically <b>hard</b>?',
+  ['Steel', 'Soft iron', 'Copper', 'Plastic'],
+  'Hard materials keep their magnetism, so they make permanent magnets.');
+T('P6.3-03', 'Magnetically hard materials are good for making permanent magnets.', true,
+  'True. They are hard to magnetise but keep their magnetism.');
+MH('P6.3-04', 'A scrapyard crane uses an electromagnet. Why would a steel core be a poor choice?',
+  ['Steel stays magnetised, so the scrap would not drop when the current is off', 'Steel cannot be magnetised by an electric current flowing round it', 'Steel is far too light to lift the heavy scrap off the ground', 'Steel conducts heat too well and would melt the coil of the crane'],
+  'A soft iron core loses its magnetism when the current is switched off.');
+M('P6.4-01', 'Which way do magnetic field lines point outside a magnet?',
+  ['From north to south', 'From south to north', 'Round in circles', 'Away from both poles'],
+  'They show the direction a north pole would be pushed.');
+M('P6.4-02', 'What does it mean when magnetic field lines are close together?',
+  ['The field is stronger there', 'The field is weaker there', 'There is no field there', 'The field has changed direction'],
+  'Field lines are most crowded at the poles.');
+T('P6.4-03', 'Magnetic field lines can cross each other.', false,
+  'False. They never cross, because the field can only have one direction at each point.');
+MH('P6.4-04', 'What does a magnetic field line show?',
+  ['The direction of the force on a north pole placed at that point', 'The path that an electron always follows near a magnet', 'The direction of the force on a south pole at that point', 'The places where the magnet is hottest and most active'],
+  'Arrows go from N to S.');
+M('P6.5-01', 'A steel paperclip hangs from a magnet and attracts another paperclip. Why?',
+  ['The first paperclip has become an induced magnet', 'The paperclips are permanent magnets', 'Static charge holds them together', 'The magnet repels the second paperclip'],
+  'Magnetism is induced in magnetic materials in a field.');
+T('P6.5-02', 'An induced magnet always attracts the permanent magnet that induced it.', true,
+  'True. The near end of the induced magnet becomes the opposite pole.');
+M('P6.5-03', 'What happens to an induced magnet made of soft iron when it is taken out of the field?',
+  ['It loses most of its magnetism', 'It becomes a stronger magnet', 'It becomes a permanent magnet', 'It reverses its poles'],
+  'Soft iron is magnetically soft.');
+MH('P6.5-04', 'The north pole of a magnet touches one end of an iron nail. What pole forms at that end of the nail?',
+  ['A south pole', 'A north pole', 'No pole', 'Both poles'],
+  'Opposite poles form, so the nail is attracted.');
+M('P6.6-01', 'How can you show the field pattern around a bar magnet?',
+  ['Use a plotting compass and mark the direction at many points', 'Measure the mass of the magnet on an electronic balance', 'Hold a thermometer near each pole and record the readings', 'Connect a voltmeter across the two poles of the magnet'],
+  'Iron filings sprinkled on paper also show the pattern.');
+M('P6.6-02', 'Two bar magnets are placed with their north poles facing. What is found midway between them?',
+  ['A neutral point where the fields cancel', 'The strongest part of the field', 'A uniform field', 'A new south pole'],
+  'The two fields point in opposite directions there.');
+T('P6.6-03', 'Iron filings show both the shape and the direction of a magnetic field.', false,
+  'False. They show the shape only; a plotting compass is needed for the direction.');
+MH('P6.6-04', 'Why does a plotting compass point along a field line?',
+  ['It is a small magnet, so its north pole is pushed along the field direction', 'It is attracted to the iron filings that lie along each field line', 'It always points to the Earth\'s north pole, whatever is nearby', 'It is made of copper, which lines up with any electric current'],
+  'Away from strong magnets, it lines up with the Earth\'s field.');
+M('P6.7-01', 'How can two bar magnets produce a uniform field?',
+  ['Place a north pole facing a south pole, close and parallel', 'Place two north poles facing each other, close together', 'Place the magnets end to end so that they are touching', 'Place the magnets at right angles to each other, apart'],
+  'The field lines between them are parallel and equally spaced.');
+M('P6.7-02', 'What do the field lines in a uniform field look like?',
+  ['Parallel and equally spaced', 'Circles around a point', 'Curved and crowded at one end', 'Crossing in the middle'],
+  'The strength and direction are the same everywhere.');
+T('P6.7-03', 'In a uniform magnetic field, the field is strongest in the middle.', false,
+  'False. A uniform field has the same strength and direction at every point.');
+MH('P6.7-04', 'Where is a uniform magnetic field found with two flat magnets?',
+  ['In the gap between opposite poles facing each other', 'Around the outside of the two magnets, near the ends', 'In the gap between two like poles facing each other', 'At the two ends of the magnets that are furthest apart'],
+  'The lines run straight across the gap from N to S.');
+M('P6.8-01', 'What is produced around a wire carrying an electric current?',
+  ['A magnetic field', 'A gravitational field only', 'A uniform electric current', 'Nothing'],
+  'The field lines are circles around the wire.');
+M('P6.8-02', 'What shape is the magnetic field around a long straight wire carrying a current?',
+  ['Concentric circles around the wire', 'Straight lines parallel to the wire', 'Like a bar magnet\'s field', 'Uniform parallel lines'],
+  'The field gets weaker further from the wire.');
+T('P6.8-03', 'Reversing the current in a wire does not change the direction of its magnetic field.', false,
+  'False. Reversing the current reverses the field.');
+MH('P6.8-04', 'How can the magnetic field of a coil of wire (solenoid) be made stronger?',
+  ['More turns, more current, or a soft iron core', 'Fewer turns and less current', 'Using a plastic core', 'Making the wire shorter and thinner'],
+  'This is how an electromagnet works.');
+M('P6.12-01', 'Why is there a force on a current-carrying wire in a magnetic field?',
+  ['The wire\'s own magnetic field interacts with the magnet\'s field', 'The magnet attracts the copper atoms inside the wire', 'The current in the wire heats the magnet and it expands', 'The electrons are repelled by the north pole of the magnet'],
+  'This is the motor effect.');
+M('P6.12-02', 'In a loudspeaker, what makes the cone vibrate?',
+  ['An alternating current in a coil in a magnetic field', 'A direct current heating the paper cone unevenly', 'A spinning magnet fixed to the middle of the cone', 'Air pressure from a small fan inside the speaker'],
+  'The force on the coil keeps changing direction.');
+M('P6.12-03', 'What does the split-ring commutator in a d.c. motor do?',
+  ['Reverses the current every half turn so the coil keeps spinning', 'Increases the voltage of the supply as the coil turns faster', 'Stops the coil from spinning too fast by adding resistance', 'Makes the magnetic field stronger each time the coil turns'],
+  'Without it the coil would just rock back and forth.');
+T('P6.12-04', 'A wire carrying a current parallel to a magnetic field feels the maximum force.', false,
+  'False. The force is greatest when the current is perpendicular to the field, and zero when parallel.');
+MH('P6.12-05', 'How could you make a d.c. motor spin faster?',
+  ['Increase the current or use a stronger magnet', 'Reverse the direction of the current', 'Use fewer turns on the coil', 'Remove the commutator'],
+  'Reversing the current only changes the direction.');
+M('P6.13-01', 'In the left-hand rule, what does the first finger represent?',
+  ['The magnetic field (N to S)', 'The conventional current', 'The force (the motion)', 'The voltage of the supply'],
+  'thuMb = Motion, First = Field, seCond = Current.');
+M('P6.13-02', 'In the left-hand rule, what does the thumb represent?',
+  ['The force (motion)', 'The magnetic field', 'The current', 'The resistance'],
+  'All three are at right angles.');
+T('P6.13-03', 'In the left-hand rule, the second finger shows the direction of the conventional current.', true,
+  'True. Current flows from + to −.');
+MH('P6.13-04', 'A wire carries current into the page in a field pointing left to right. Using the left-hand rule, which way is the force?',
+  ['Upwards (towards the top of the page)', 'Downwards (towards the bottom of the page)', 'To the left, against the direction of the field', 'Out of the page, opposite to the current'],
+  'First finger right, second finger into the page → thumb points up.');
+M('P6.14-01', 'What happens to the force on a wire if the current is doubled?',
+  ['It doubles', 'It halves', 'It stays the same', 'It reverses'],
+  'Force increases with current.');
+M('P6.14-02', 'What happens to the force on a wire if the direction of the magnetic field is reversed?',
+  ['The force reverses direction', 'The force becomes twice as big', 'The force disappears', 'Nothing changes'],
+  'Reversing both field and current gives the original direction.');
+T('P6.14-03', 'Using a stronger magnet decreases the force on a current-carrying wire.', false,
+  'False. A stronger field gives a bigger force.');
+MH('P6.14-04', 'Both the current and the magnetic field direction are reversed. What happens to the force?',
+  ['It stays in the same direction', 'It reverses its direction', 'It becomes zero straight away', 'It doubles in size but not direction'],
+  'Two reversals cancel out.');
+M('P6.15-01', 'When is a voltage induced in a wire?',
+  ['When it moves through a magnetic field, cutting field lines', 'When it is held still right next to a strong magnet', 'When it is heated strongly with a Bunsen burner', 'When it is placed in a beaker of salty water'],
+  'A changing field through a coil also induces a voltage.');
+M('P6.15-02', 'A magnet is pushed into a coil connected to a meter. Which change gives a <b>bigger</b> induced voltage?',
+  ['Pushing the magnet in faster', 'Pushing it in more slowly', 'Using fewer turns on the coil', 'Holding the magnet still inside'],
+  'More turns or a stronger magnet also help.');
+T('P6.15-03', 'Pulling a magnet out of a coil induces a voltage in the opposite direction to pushing it in.', true,
+  'True.');
+MH('P6.15-04', 'A magnet rests inside a coil. Why does the meter read zero?',
+  ['The magnetic field through the coil is not changing', 'The magnet has lost its magnetism', 'The coil has too many turns', 'The meter is in parallel with the coil'],
+  'Induction needs movement or a changing field.');
+M('P6.16-01', 'In a simple generator, what is rotated to produce electricity?',
+  ['A coil in a magnetic field (or a magnet in a coil)', 'A battery connected in a closed circuit', 'A resistor placed between two magnets', 'A plastic disc spinning close to a magnet'],
+  'This induces an alternating voltage.');
+M('P6.16-02', 'Which would increase the output voltage of a generator?',
+  ['Rotating the coil faster', 'Using a weaker magnet', 'Using fewer turns of wire', 'Rotating the coil more slowly'],
+  'Faster rotation, more turns or a stronger field.');
+T('P6.16-03', 'A simple a.c. generator produces a current that changes direction.', true,
+  'True. Each half turn reverses the induced voltage.');
+MH('P6.16-04', 'A generator is turned twice as fast. What happens to its output?',
+  ['The peak voltage and the frequency both increase', 'Only the frequency increases; the peak voltage stays the same', 'Only the peak voltage increases; the frequency stays the same', 'Neither changes, because the same coil and magnet are used'],
+  'Faster cutting of field lines → bigger voltage, more cycles per second.');
+
+/* ===================== PHYSICS 8 Astrophysics (added 7 Nov 2026) ===================== */
+M('P8.2-01', 'What is a galaxy?',
+  ['A large collection of billions of stars', 'A star with its planets', 'A large collection of billions of galaxies', 'A cloud of dust where stars form'],
+  'The universe contains billions of galaxies.');
+M('P8.2-02', 'Which galaxy is our solar system in?',
+  ['The Milky Way', 'Andromeda', 'The Large Magellanic Cloud', 'Orion'],
+  'The Sun is one of billions of stars in it.');
+T('P8.2-03', 'A galaxy is a large collection of billions of universes.', false,
+  'False. The universe is a collection of billions of galaxies; a galaxy is billions of stars.');
+MH('P8.2-04', 'Which list is in order of size, smallest first?',
+  ['Planet, solar system, galaxy, universe', 'Solar system, planet, galaxy, universe', 'Galaxy, solar system, planet, universe', 'Planet, galaxy, solar system, universe'],
+  'Galaxies contain billions of stars, many with their own planets.');
+M('P8.3-01', 'Why does an astronaut weigh less on the Moon than on Earth?',
+  ['The Moon\'s gravitational field strength is lower', 'The astronaut\'s mass is smaller there', 'There is no air on the Moon', 'The Moon is further from the Sun'],
+  'Mass stays the same; weight = m × g changes.');
+M('P8.3-02', 'A 60 kg astronaut is on the Moon (g = 1.6 N/kg). What is their weight?',
+  ['96 N', '60 N', '600 N', '37.5 N'],
+  'W = m × g = 60 × 1.6 = <b>96 N</b>.');
+T('P8.3-03', 'Gravitational field strength is the same on every planet.', false,
+  'False. It depends on the planet\'s mass and radius.');
+MH('P8.3-04', 'Why is g bigger on Jupiter than on Earth?',
+  ['Jupiter has a much greater mass', 'Jupiter is further from the Sun', 'Jupiter spins more slowly', 'Jupiter has more moons'],
+  'More mass → stronger gravitational field (at its surface).');
+M('P8.4-01', 'What force keeps the planets in orbit around the Sun?',
+  ['Gravity', 'Magnetism', 'Friction', 'Air resistance'],
+  'It also keeps moons, satellites and comets in orbit.');
+M('P8.4-02', 'What keeps an artificial satellite in orbit around the Earth?',
+  ['The Earth\'s gravitational pull', 'Its rocket engines running all the time', 'The Sun\'s magnetic field', 'There is no force; it just floats'],
+  'Gravity provides the force towards the centre.');
+T('P8.4-03', 'The Moon orbits the Earth because of gravitational force.', true,
+  'True.');
+MH('P8.4-04', 'In which direction does gravity act on a satellite in a circular orbit?',
+  ['Towards the centre of the Earth', 'In the direction it is moving', 'Away from the Earth', 'Backwards, opposite to its motion'],
+  'This changes its direction, not its speed.');
+M('P8.5-01', 'What shape is the orbit of a comet?',
+  ['Highly elliptical (a stretched oval)', 'Almost circular', 'A straight line', 'A perfect circle around a planet'],
+  'Comets pass close to the Sun, then travel far out.');
+M('P8.5-02', 'Where does a comet travel fastest?',
+  ['When it is closest to the Sun', 'When it is furthest from the Sun', 'It travels at the same speed all the time', 'Halfway between'],
+  'The pull of gravity is strongest close to the Sun.');
+T('P8.5-03', 'Comets orbit planets, while moons orbit the Sun.', false,
+  'False. Moons orbit planets; planets and comets orbit the Sun.');
+MH('P8.5-04', 'How does a planet\'s orbit differ from a comet\'s?',
+  ['A planet\'s orbit is nearly circular; a comet\'s is very elliptical', 'A planet orbits the Earth; a comet orbits the Sun', 'A planet\'s orbit is elliptical; a comet\'s is circular', 'They are exactly the same shape'],
+  'A comet\'s distance from the Sun changes greatly.');
+M('P8.6-01', 'Which equation links orbital speed, orbital radius and time period?',
+  ['v = 2πr ÷ T', 'v = T ÷ 2πr', 'v = 2πT ÷ r', 'v = r ÷ T'],
+  '2πr is the circumference of the orbit.');
+MH('P8.6-02', 'A satellite orbits at radius 7 000 000 m with a period of 6000 s. What is its orbital speed? (π ≈ 3.14)',
+  ['About 7300 m/s', 'About 1170 m/s', 'About 3700 m/s', 'About 44 000 m/s'],
+  'v = 2πr ÷ T = 2 × 3.14 × 7 000 000 ÷ 6000 ≈ <b>7300 m/s</b>.');
+T('P8.6-03', 'In the equation v = 2πr ÷ T, T is the time for one complete orbit.', true,
+  'True. T is the time period.');
+M('P8.6-04', 'What does 2πr represent for a circular orbit?',
+  ['The distance travelled in one orbit', 'The time taken for one orbit', 'The speed of the orbiting object', 'The area inside the orbit'],
+  'The circumference of the circle.');
+M('P8.7-01', 'Which colour star is the hottest?',
+  ['Blue', 'Red', 'Orange', 'Yellow'],
+  'Order, hottest first: blue, white, yellow, orange, red.');
+M('P8.7-02', 'Which colour star is the coolest?',
+  ['Red', 'Blue', 'White', 'Yellow'],
+  'Red stars are about 3000 K at the surface.');
+T('P8.7-03', 'Stars can be classified by their colour.', true,
+  'True. Colour gives the surface temperature.');
+MH('P8.7-04', 'Which list puts stars in order from hottest to coolest?',
+  ['Blue, white, yellow, red', 'Red, yellow, white, blue', 'Yellow, blue, red, white', 'White, blue, red, yellow'],
+  'Our Sun is a yellow star.');
+M('P8.8-01', 'What does the colour of a star tell us?',
+  ['Its surface temperature', 'Its distance from Earth', 'Its age only', 'Its number of planets'],
+  'Hotter stars emit more blue light.');
+T('P8.8-02', 'A red star is hotter than a blue star.', false,
+  'False. Blue stars are the hottest; red stars are the coolest.');
+M('P8.8-03', 'The Sun is yellow. How does its temperature compare with a blue star?',
+  ['The Sun is cooler', 'The Sun is hotter', 'They are the same temperature', 'The Sun has no temperature'],
+  'Blue stars are hotter than yellow stars.');
+MH('P8.8-04', 'Why does a hotter star look bluer?',
+  ['It emits more of its light at shorter wavelengths', 'It is much closer to the Earth than other stars', 'It contains far more blue-coloured gas than others', 'It is moving away from us faster than other stars'],
+  'Hotter objects emit radiation with a peak at shorter wavelengths.');
+M('P8.9-01', 'What is the first stage in the life of a star like the Sun?',
+  ['Nebula', 'Red giant', 'White dwarf', 'Main sequence star'],
+  'A cloud of dust and gas collapses under gravity.');
+M('P8.9-02', 'What will the Sun become after the red giant stage?',
+  ['A white dwarf', 'A black hole', 'A neutron star', 'A supernova'],
+  'Only much more massive stars explode as supernovae.');
+T('P8.9-03', 'The order of stages for a Sun-sized star is: nebula, main sequence, red giant, white dwarf.', true,
+  'True.');
+MH('P8.9-04', 'Why does a main sequence star stay stable for billions of years?',
+  ['The outward pressure from fusion balances the inward pull of gravity', 'It has no gravity, so nothing pulls its outer layers inwards', 'It is not hot enough for its gases to expand outwards at all', 'Its fusion has stopped, so it no longer changes in any way'],
+  'When the hydrogen runs out, the balance changes and it becomes a red giant.');
+M('P8.10-01', 'What happens at the end of the life of a star much more massive than the Sun?',
+  ['It explodes as a supernova', 'It quietly becomes a white dwarf', 'It turns back into a nebula', 'It becomes a planet'],
+  'After the red supergiant stage.');
+M('P8.10-02', 'What can be left behind after a supernova?',
+  ['A neutron star or a black hole', 'A white dwarf and nothing else', 'A red giant like the Sun\'s', 'A new main sequence star'],
+  'The most massive stars leave black holes.');
+T('P8.10-03', 'A massive star becomes a white dwarf before it explodes as a supernova.', false,
+  'False. It becomes a red supergiant, then a supernova.');
+MH('P8.10-04', 'Which sequence is for a star much more massive than the Sun?',
+  ['Nebula → main sequence → red supergiant → supernova → neutron star or black hole', 'Nebula → main sequence → red giant → white dwarf, with no supernova at the end', 'Nebula → red supergiant → main sequence → white dwarf → nebula again', 'Main sequence → nebula → supernova → red giant → white dwarf → black hole'],
+  'Sun-sized stars end as white dwarfs instead.');
+
+/* ===================== CHEMISTRY 4 Organic chemistry (added 7 Nov 2026) ===================== */
+M('C4.1-01', 'What is a hydrocarbon?',
+  ['A compound of hydrogen and carbon only', 'A compound containing hydrogen, carbon and oxygen', 'A mixture of hydrogen and carbon elements', 'Any compound that contains carbon'],
+  'Alkanes and alkenes are hydrocarbons.');
+M('C4.1-02', 'Which of these is a hydrocarbon?',
+  ['C₃H₈', 'C₂H₅OH', 'CO₂', 'CH₃Cl'],
+  'Only C and H atoms.');
+T('C4.1-03', 'Ethanol, C₂H₅OH, is a hydrocarbon.', false,
+  'False. It contains oxygen as well as carbon and hydrogen.');
+MH('C4.1-04', 'Which statement about hydrocarbons is correct?',
+  ['They are compounds that contain only C and H atoms, bonded together', 'They are mixtures of hydrogen gas and carbon powder', 'They always contain at least one C=C double bond', 'They always contain oxygen as well as C and H'],
+  'Hydrocarbons can be saturated (alkanes) or unsaturated (alkenes).');
+M('C4.2-01', 'What is the empirical formula of ethane, C₂H₆?',
+  ['CH₃', 'C₂H₆', 'CH₂', 'C₂H₄'],
+  'Simplest whole-number ratio: 2 : 6 = 1 : 3.');
+M('C4.2-02', 'What does a <b>displayed</b> formula show?',
+  ['Every atom and every bond in the molecule', 'Only the number of each type of atom', 'The simplest ratio of atoms', 'The general formula for the series'],
+  'Each bond is drawn as a line.');
+M('C4.2-03', 'Which is the structural formula of propane?',
+  ['CH₃CH₂CH₃', 'C₃H₈', 'CₙH₂ₙ₊₂', 'CH₄'],
+  'A structural formula shows the atoms on each carbon without drawing every bond.');
+T('C4.2-04', 'The molecular formula shows the actual number of atoms of each element in a molecule.', true,
+  'True. For butane, C₄H₁₀.');
+MH('C4.2-05', 'Butene has the molecular formula C₄H₈. What is its empirical formula?',
+  ['CH₂', 'C₄H₈', 'C₂H₄', 'CH₄'],
+  '4 : 8 = 1 : 2. All alkenes have the empirical formula CH₂.');
+M('C4.3-01', 'What is a <b>homologous series</b>?',
+  ['A family of compounds with the same general formula and similar chemical properties', 'A set of compounds with the same molecular formula but different structures', 'A mixture of hydrocarbons with similar boiling points', 'A series of reactions that produce polymers'],
+  'Each member differs from the next by CH₂.');
+M('C4.3-02', 'What is a <b>functional group</b>?',
+  ['The atom or group of atoms that decides how a compound reacts', 'The longest carbon chain in a molecule', 'The number of hydrogen atoms in a molecule', 'The fraction of crude oil a compound comes from'],
+  'For alkenes it is C=C.');
+M('C4.3-03', 'What are <b>isomers</b>?',
+  ['Compounds with the same molecular formula but different structures', 'Compounds with the same structure but different molecular formulae', 'Atoms of the same element with different numbers of neutrons', 'Compounds in the same fraction of crude oil'],
+  'Butane and methylpropane are isomers of C₄H₁₀.');
+T('C4.3-04', 'Members of a homologous series show a gradual trend in physical properties, such as boiling point.', true,
+  'True. Boiling point rises as the chain gets longer.');
+MH('C4.3-05', 'Consecutive members of a homologous series differ by what?',
+  ['A CH₂ group', 'A CH₃ group', 'One carbon atom only', 'A C=C double bond'],
+  'Methane CH₄, ethane C₂H₆, propane C₃H₈…');
+M('C4.4-01', 'What does the prefix <b>prop-</b> tell you about a molecule?',
+  ['It has 3 carbon atoms in its main chain', 'It has 3 hydrogen atoms in total', 'It has a C=C double bond in its chain', 'It has 4 carbon atoms in its main chain'],
+  'meth- 1, eth- 2, prop- 3, but- 4, pent- 5.');
+M('C4.4-02', 'What does the ending <b>-ene</b> tell you?',
+  ['The compound is an alkene, with a C=C double bond', 'The compound is an alkane with only single bonds', 'The compound contains oxygen', 'The compound is a polymer'],
+  'The ending names the homologous series.');
+M('C4.4-03', 'What is the name of CH₃CH₂CH₂CH₃?',
+  ['Butane', 'Propane', 'Butene', 'Pentane'],
+  'Four carbons, all single bonds.');
+T('C4.4-04', 'Ethene contains two carbon atoms.', true,
+  'True. eth- means 2 carbons; -ene means a C=C bond.');
+MH('C4.4-05', 'What is the name of CH₂=CHCH₂CH₃?',
+  ['But-1-ene', 'But-2-ene', 'Propene', 'Butane'],
+  'Four carbons, with the double bond starting at carbon 1.');
+M('C4.5-01', 'How many different unbranched structures are there for C₄H₈ alkenes?',
+  ['Two: but-1-ene and but-2-ene', 'One: butene only', 'Three: but-1-, -2- and -3-ene', 'Four, one for each carbon'],
+  'The C=C can be at the end or in the middle of the chain.');
+M('C4.5-02', 'C₄H₁₀ has two structures. What are they?',
+  ['Butane and methylpropane', 'Butane and butene', 'Propane and methylpropane', 'Butane and pentane'],
+  'One straight chain, one branched.');
+T('C4.5-03', 'Isomers have the same structural formula but different molecular formulae.', false,
+  'False. Isomers have the same molecular formula but different structures.');
+MH('C4.5-04', 'Which pair are isomers?',
+  ['But-1-ene and but-2-ene', 'Ethane and ethene', 'Propane and butane', 'Methane and methanol'],
+  'Both are C₄H₈.');
+M('C4.6-01', 'Ethene reacts with bromine to form 1,2-dibromoethane. What type of reaction is this?',
+  ['Addition', 'Substitution', 'Combustion', 'Neutralisation'],
+  'Two molecules join to make one product.');
+M('C4.6-02', 'Methane reacts with chlorine in UV light to form chloromethane and HCl. What type of reaction is this?',
+  ['Substitution', 'Addition', 'Combustion', 'Thermal decomposition'],
+  'A hydrogen atom is swapped for a chlorine atom.');
+T('C4.6-03', 'Burning propane in oxygen is a combustion reaction.', true,
+  'True.');
+MH('C4.6-04', 'Why do alkanes react with halogens by substitution, not addition?',
+  ['Alkanes are saturated, so there is no double bond to add across', 'Alkanes contain a C=C double bond, which halogens cannot reach', 'Halogens never react with any hydrocarbon, alkane or alkene', 'Alkanes contain oxygen atoms that are swapped for halogen atoms'],
+  'An atom must be replaced instead.');
+M('C4.7-01', 'What is crude oil?',
+  ['A mixture of hydrocarbons', 'A single pure compound', 'A mixture of alcohols', 'A pure element'],
+  'Most of them are alkanes.');
+T('C4.7-02', 'Crude oil is a pure substance.', false,
+  'False. It is a mixture of many hydrocarbons.');
+M('C4.7-03', 'Why must crude oil be separated before use?',
+  ['It is a mixture whose hydrocarbons have different uses', 'It is too pure to burn without first being mixed', 'It is a solid at room temperature and cannot flow', 'It contains only one compound, which is not useful'],
+  'Fractional distillation separates it.');
+MH('C4.7-04', 'Crude oil is a mixture, not a compound. What evidence supports this?',
+  ['It boils over a wide range of temperatures', 'It has a single fixed boiling point', 'It cannot be separated by physical methods', 'It always has the same formula'],
+  'A pure substance has a fixed boiling point.');
+M('C4.8-01', 'Where in a fractionating column is it hottest?',
+  ['At the bottom', 'At the top', 'In the middle', 'It is the same temperature throughout'],
+  'The column has a temperature gradient: hot at the bottom, cool at the top.');
+M('C4.8-02', 'How does fractional distillation separate crude oil?',
+  ['Hydrocarbons condense at different heights because they have different boiling points', 'Hydrocarbons react with each other at different temperatures to form new fractions', 'The heaviest molecules float up to the top while the lightest sink to the bottom', 'A catalyst in the column splits the long molecules into much shorter molecules'],
+  'It is a physical process; no chemical reaction happens.');
+T('C4.8-03', 'In a fractionating column, fractions with low boiling points are collected at the top.', true,
+  'True. They stay as gases until they reach the cool top.');
+MH('C4.8-04', 'Where does a hydrocarbon with a boiling point of 250 °C condense?',
+  ['Where the column temperature falls just below 250 °C', 'At the very top of the column, with the gases', 'At the very bottom, left behind as a residue', 'Nowhere, because it stays as a gas throughout'],
+  'Each fraction condenses at the level just cooler than its boiling point.');
+M('C4.9-01', 'What is kerosene used for?',
+  ['Aircraft fuel', 'Road surfaces', 'Bottled gas for cooking', 'Ship fuel'],
+  'Bitumen is used for roads; refinery gases for bottled gas.');
+M('C4.9-02', 'What is bitumen used for?',
+  ['Surfacing roads and roofs', 'Fuel for cars', 'Fuel for aircraft', 'Bottled gas for heating'],
+  'It is the thickest fraction, from the bottom of the column.');
+M('C4.9-03', 'Which fraction is used as fuel for petrol cars?',
+  ['Gasoline', 'Diesel', 'Fuel oil', 'Bitumen'],
+  'Diesel is used in diesel engines, lorries and trains.');
+T('C4.9-04', 'Fuel oil is used as fuel for ships and some power stations.', true,
+  'True.');
+MH('C4.9-05', 'Which list gives the fractions in order from the top of the column to the bottom?',
+  ['Refinery gases, gasoline, kerosene, diesel, fuel oil, bitumen', 'Bitumen, fuel oil, diesel, kerosene, gasoline, refinery gases', 'Gasoline, refinery gases, diesel, kerosene, bitumen, fuel oil', 'Refinery gases, kerosene, gasoline, fuel oil, diesel, bitumen'],
+  'Smallest, lowest-boiling molecules at the top.');
+M('C4.10-01', 'How does viscosity change from refinery gases to bitumen?',
+  ['It increases (they get thicker)', 'It decreases (they get runnier)', 'It stays the same', 'It increases, then decreases'],
+  'Longer molecules have stronger forces between them.');
+M('C4.10-02', 'What colour is bitumen compared with gasoline?',
+  ['Much darker (black)', 'Lighter (colourless)', 'The same colour', 'Bright yellow'],
+  'Fractions get darker as chains get longer.');
+T('C4.10-03', 'Fractions with longer molecules have higher boiling points.', true,
+  'True. There are stronger forces between the molecules.');
+MH('C4.10-04', 'Why do fractions with longer chains have higher boiling points?',
+  ['There are stronger intermolecular forces between larger molecules', 'Their covalent bonds are weaker, so the molecules hold on longer', 'They contain more oxygen atoms, which raises the boiling point', 'Their molecules are lighter, so they need more heat to escape'],
+  'More energy is needed to separate the molecules. The covalent bonds do not break when boiling.');
+M('C4.11-01', 'What is a fuel?',
+  ['A substance that releases heat energy when it is burned', 'A substance that absorbs heat when it is burned', 'Any substance found in crude oil', 'A substance that cannot be burned'],
+  'Combustion of fuels is exothermic.');
+T('C4.11-02', 'A fuel takes in heat energy from the surroundings when it burns.', false,
+  'False. A fuel releases heat energy when it burns.');
+M('C4.11-03', 'Which of these is <b>not</b> a fuel?',
+  ['Bitumen', 'Diesel', 'Kerosene', 'Gasoline'],
+  'Bitumen is used to make roads, not burned for energy.');
+MH('C4.11-04', 'Why is methane a good fuel for a gas cooker?',
+  ['It burns easily and releases a lot of heat energy', 'It absorbs heat when it burns', 'It does not produce any carbon dioxide', 'It is a liquid at room temperature'],
+  'Its complete combustion still releases CO₂.');
+M('C4.12-01', 'What are the products of the complete combustion of a hydrocarbon?',
+  ['Carbon dioxide and water', 'Carbon monoxide and water', 'Carbon and hydrogen', 'Carbon dioxide and hydrogen'],
+  'There is plenty of oxygen.');
+M('C4.12-02', 'Which product forms during <b>incomplete</b> combustion but not complete combustion?',
+  ['Carbon monoxide', 'Water', 'Carbon dioxide', 'Oxygen'],
+  'Soot (carbon) can also form.');
+T('C4.12-03', 'Incomplete combustion happens when there is not enough oxygen.', true,
+  'True.');
+MH('C4.12-04', 'Which is the balanced equation for the complete combustion of methane?',
+  ['CH₄ + 2O₂ → CO₂ + 2H₂O', 'CH₄ + O₂ → CO₂ + H₂O', '2CH₄ + 3O₂ → 2CO + 4H₂O', 'CH₄ + 2O₂ → C + 2H₂O'],
+  'Count the O atoms: 4 on each side.');
+M('C4.13-01', 'Why is carbon monoxide poisonous?',
+  ['It reduces the capacity of the blood to carry oxygen', 'It makes the blood much more acidic than usual', 'It burns the lining of the lungs when breathed in', 'It stops the heart muscle from contracting at all'],
+  'It combines with the blood instead of oxygen.');
+T('C4.13-02', 'Carbon monoxide can be detected easily by its strong smell.', false,
+  'False. It is colourless and odourless, which is why detectors are needed.');
+M('C4.13-03', 'Why are carbon monoxide detectors fitted in homes with gas boilers?',
+  ['A faulty boiler may burn gas incompletely and make CO, which cannot be seen or smelt', 'Gas boilers always produce carbon monoxide, even when they are working correctly', 'Carbon monoxide has a strong smell that people find unpleasant and want to avoid', 'They are needed to detect leaks of carbon dioxide gas from the main gas supply pipe'],
+  'A poor air supply leads to incomplete combustion.');
+MH('C4.13-04', 'What symptom would carbon monoxide poisoning most likely cause?',
+  ['Drowsiness and headaches, due to less oxygen reaching the cells', 'A red rash spreading over the skin of the arms', 'A large increase in the sugar level of the blood', 'Better concentration and a faster reaction time'],
+  'It can lead to unconsciousness and death.');
+M('C4.14-01', 'How are oxides of nitrogen formed in car engines?',
+  ['Nitrogen and oxygen from the air react at the high temperature', 'Nitrogen compounds in the petrol react with water vapour', 'They are released from the petrol unchanged as it burns', 'Carbon dioxide from burning reacts with nitrogen in petrol'],
+  'Petrol does not contain nitrogen.');
+T('C4.14-02', 'The nitrogen in oxides of nitrogen from car engines comes from the air.', true,
+  'True.');
+M('C4.14-03', 'Why do oxides of nitrogen form in engines but not when nitrogen and oxygen just mix in air?',
+  ['The engine reaches a very high temperature', 'The engine contains a catalyst for it', 'Petrol contains lots of nitrogen', 'Air contains no oxygen'],
+  'Nitrogen is unreactive at normal temperatures.');
+MH('C4.14-04', 'Which gas is formed when nitrogen reacts with oxygen in an engine?',
+  ['Nitrogen dioxide (NO₂)', 'Ammonia (NH₃)', 'Nitric acid (HNO₃)', 'Carbon monoxide (CO)'],
+  'NO and NO₂ are both formed.');
+M('C4.15-01', 'Why does burning some fuels produce sulfur dioxide?',
+  ['The fuel contains sulfur impurities which burn', 'Sulfur in the air reacts with oxygen', 'Carbon dioxide reacts with water', 'Nitrogen reacts with oxygen'],
+  'Sulfur + oxygen → sulfur dioxide.');
+T('C4.15-02', 'Sulfur dioxide comes from sulfur in the air reacting in engines.', false,
+  'False. It comes from sulfur impurities in the fuel.');
+M('C4.15-03', 'Which equation shows sulfur burning?',
+  ['S + O₂ → SO₂', 'S + H₂O → SO₂', 'S + CO₂ → SO₂', 'S + N₂ → SO₂'],
+  'Fuels can have sulfur removed before use.');
+MH('C4.15-04', 'How can the amount of sulfur dioxide from burning fuels be reduced?',
+  ['Remove sulfur from the fuel before it is burned', 'Burn the fuel at a higher temperature', 'Burn the fuel with less oxygen', 'Add more sulfur to the fuel'],
+  'Power stations also remove SO₂ from waste gases.');
+M('C4.16-01', 'How does sulfur dioxide cause acid rain?',
+  ['It dissolves in rainwater to form an acidic solution', 'It makes clouds alkaline', 'It reacts with carbon dioxide to make rain', 'It removes oxygen from rain'],
+  'Oxides of nitrogen also dissolve to make acid rain.');
+M('C4.16-02', 'Which is a problem caused by acid rain?',
+  ['It damages buildings, statues and trees and makes lakes acidic', 'It traps heat in the atmosphere and causes global warming', 'It breaks down the ozone layer high in the atmosphere', 'It makes rivers and lakes more alkaline than normal'],
+  'Limestone buildings react with the acid.');
+T('C4.16-03', 'Oxides of nitrogen contribute to acid rain.', true,
+  'True. They dissolve in water to form acidic solutions.');
+MH('C4.16-04', 'Why does acid rain damage limestone statues?',
+  ['The acid reacts with calcium carbonate in the limestone', 'The acid freezes in cracks and splits the stone apart', 'The acid makes the limestone magnetic, so dust sticks', 'Limestone dissolves quickly in pure water, even without acid'],
+  'Carbon dioxide is given off.');
+M('C4.17-01', 'What does catalytic cracking produce?',
+  ['Shorter-chain alkanes and alkenes', 'Longer-chain alkanes only', 'Carbon dioxide and water', 'Polymers'],
+  'A long-chain alkane is broken into smaller molecules.');
+M('C4.17-02', 'Which catalyst is used in catalytic cracking?',
+  ['Silica or alumina', 'Iron', 'Manganese(IV) oxide', 'Nickel'],
+  'At a temperature of about 600–700 °C.');
+M('C4.17-03', 'Which equation shows cracking?',
+  ['C₁₀H₂₂ → C₈H₁₈ + C₂H₄', 'C₂H₄ + Br₂ → C₂H₄Br₂', 'CH₄ + 2O₂ → CO₂ + 2H₂O', 'nC₂H₄ → (C₂H₄)ₙ'],
+  'An alkane is broken into a shorter alkane and an alkene.');
+T('C4.17-04', 'Cracking happens at room temperature without a catalyst.', false,
+  'False. It needs silica or alumina at about 600–700 °C.');
+MH('C4.17-05', 'C₁₂H₂₆ is cracked to give C₈H₁₈ and one other product. What is it?',
+  ['C₄H₈', 'C₄H₁₀', 'C₄H₆', 'C₂₀H₄₄'],
+  'Carbons: 12 − 8 = 4. Hydrogens: 26 − 18 = 8. C₄H₈ is an alkene.');
+M('C4.18-01', 'Why is cracking necessary?',
+  ['There is more demand for short-chain fractions than crude oil supplies', 'Long-chain fractions are always more useful than short-chain ones', 'Crude oil contains far too many short chains and not enough long', 'It removes sulfur from fuels so that they no longer cause acid rain'],
+  'Long-chain fractions are in surplus.');
+T('C4.18-02', 'Cracking turns less useful long-chain fractions into more useful ones.', true,
+  'True. It also makes alkenes for polymers.');
+M('C4.18-03', 'Which useful substance, made by cracking, is used to make polymers?',
+  ['Alkenes such as ethene', 'Bitumen from the bottom', 'Methane from natural gas', 'Fuel oil for ships'],
+  'Alkenes are unsaturated, so they can join up.');
+MH('C4.18-04', 'Crude oil contains 10% gasoline, but demand is 25%. How do refineries meet the demand?',
+  ['Crack excess long-chain fractions into gasoline-sized molecules', 'Distil the crude oil a second time to get more gasoline', 'Add water to the gasoline fraction to increase its volume', 'Burn the fuel oil fraction to turn it into gasoline'],
+  'Supply and demand are balanced by cracking.');
+M('C4.19-01', 'What is the general formula for alkanes?',
+  ['CₙH₂ₙ₊₂', 'CₙH₂ₙ', 'CₙH₂ₙ₋₂', 'CₙHₙ'],
+  'For example, propane C₃H₈.');
+M('C4.19-02', 'What is the formula of the alkane with 6 carbon atoms?',
+  ['C₆H₁₄', 'C₆H₁₂', 'C₆H₁₀', 'C₆H₆'],
+  '2 × 6 + 2 = 14.');
+T('C4.19-03', 'Ethane has the formula C₂H₄.', false,
+  'False. Ethane is C₂H₆; C₂H₄ is ethene.');
+MH('C4.19-04', 'An alkane has 20 hydrogen atoms. How many carbon atoms does it have?',
+  ['9', '10', '18', '11'],
+  '2n + 2 = 20, so n = 9.');
+M('C4.20-01', 'Why are alkanes called <b>saturated</b>?',
+  ['They contain only single C–C bonds', 'They contain a C=C double bond', 'They are dissolved in water', 'They contain oxygen atoms'],
+  'Each carbon has the maximum number of H atoms.');
+T('C4.20-02', 'Alkanes are saturated hydrocarbons.', true,
+  'True. They contain only single bonds.');
+M('C4.20-03', 'Which hydrocarbon is saturated?',
+  ['C₃H₈', 'C₃H₆', 'C₂H₄', 'C₄H₈'],
+  'It fits CₙH₂ₙ₊₂.');
+MH('C4.20-04', 'Why do saturated hydrocarbons not decolourise bromine water at room temperature?',
+  ['They have no C=C double bond for bromine to add across', 'They do not mix with bromine water at all, so cannot react', 'They react with the water instead of with the bromine', 'They contain too few carbon atoms to react with bromine'],
+  'Alkanes are relatively unreactive.');
+M('C4.21-01', 'How many bonds does each carbon atom form in an alkane?',
+  ['4', '2', '3', '1'],
+  'Each hydrogen forms 1.');
+M('C4.21-02', 'What is the name of the unbranched alkane with five carbon atoms?',
+  ['Pentane', 'Butane', 'Hexane', 'Pentene'],
+  'C₅H₁₂.');
+T('C4.21-03', 'In a displayed formula of methane, the carbon has four single bonds to hydrogen atoms.', true,
+  'True.');
+MH('C4.21-04', 'How many C–H bonds are in a propane molecule?',
+  ['8', '3', '6', '10'],
+  'C₃H₈ has 8 hydrogens, each bonded once to carbon. There are also 2 C–C bonds.');
+M('C4.22-01', 'What is needed for methane to react with bromine?',
+  ['Ultraviolet light', 'A nickel catalyst', 'Water', 'Darkness and cold'],
+  'UV light starts the substitution reaction.');
+M('C4.22-02', 'What are the products when methane reacts with bromine in UV light?',
+  ['Bromomethane and hydrogen bromide', 'Dibromomethane and hydrogen gas', 'Carbon dioxide and water vapour', 'Methene and hydrogen bromide'],
+  'CH₄ + Br₂ → CH₃Br + HBr.');
+T('C4.22-03', 'In a substitution reaction, one atom is replaced by another.', true,
+  'True. An H atom is replaced by a halogen atom.');
+MH('C4.22-04', 'Ethane reacts with chlorine in UV light (mono-substitution). What is the organic product?',
+  ['Chloroethane, C₂H₅Cl', 'Dichloroethane, C₂H₄Cl₂', 'Chloroethene, C₂H₃Cl', 'Ethene, C₂H₄'],
+  'C₂H₆ + Cl₂ → C₂H₅Cl + HCl.');
+M('C4.23-01', 'What is the functional group of the alkenes?',
+  ['C=C', 'C–C', 'C–H', 'O–H'],
+  'A carbon–carbon double bond.');
+T('C4.23-02', 'Alkenes contain only single carbon–carbon bonds.', false,
+  'False. Alkenes contain a C=C double bond.');
+M('C4.23-03', 'Which molecule has the functional group C=C?',
+  ['Propene', 'Propane', 'Methane', 'Ethane'],
+  'The -ene ending shows it.');
+MH('C4.23-04', 'Why is the C=C double bond called the functional group of alkenes?',
+  ['It is the part of the molecule that takes part in their typical reactions', 'It makes alkenes the heaviest hydrocarbons in each crude oil fraction', 'It is the only covalent bond in the whole molecule of every alkene', 'It stops alkenes from burning, unlike the alkanes which burn easily'],
+  'For example, addition of bromine.');
+M('C4.24-01', 'What is the general formula for alkenes?',
+  ['CₙH₂ₙ', 'CₙH₂ₙ₊₂', 'CₙH₂ₙ₋₂', 'CₙHₙ₊₂'],
+  'For example, ethene C₂H₄.');
+M('C4.24-02', 'What is the formula of propene?',
+  ['C₃H₆', 'C₃H₈', 'C₃H₄', 'C₂H₄'],
+  '2 × 3 = 6.');
+T('C4.24-03', 'Butene has the formula C₄H₁₀.', false,
+  'False. Butene is C₄H₈; C₄H₁₀ is butane.');
+MH('C4.24-04', 'Which formula could be an alkene?',
+  ['C₅H₁₀', 'C₅H₁₂', 'C₅H₈', 'C₅H₁₄'],
+  'Fits CₙH₂ₙ with n = 5.');
+M('C4.25-01', 'Why are alkenes called <b>unsaturated</b>?',
+  ['They contain a C=C double bond', 'They contain only single bonds', 'They contain oxygen', 'They do not dissolve in water'],
+  'More atoms can be added across the double bond.');
+T('C4.25-02', 'Alkenes are saturated hydrocarbons.', false,
+  'False. The C=C double bond makes them unsaturated.');
+M('C4.25-03', 'Which hydrocarbon is unsaturated?',
+  ['C₂H₄', 'C₂H₆', 'CH₄', 'C₃H₈'],
+  'Ethene has a C=C bond.');
+MH('C4.25-04', 'An unsaturated hydrocarbon reacts with hydrogen. What forms?',
+  ['A saturated alkane', 'A longer alkene', 'Carbon dioxide and water', 'A polymer'],
+  'H₂ adds across the C=C bond in an addition reaction.');
+M('C4.26-01', 'What is the name of the alkene with two carbon atoms?',
+  ['Ethene', 'Ethane', 'Methene', 'Propene'],
+  'C₂H₄, CH₂=CH₂.');
+M('C4.26-02', 'What is the structural formula of propene?',
+  ['CH₂=CHCH₃', 'CH₃CH₂CH₃', 'CH₂=CH₂', 'CH₃CH=CHCH₃'],
+  'Three carbons with one C=C.');
+T('C4.26-03', 'In ethene, each carbon atom forms a double bond to the other carbon and single bonds to two hydrogen atoms.', true,
+  'True. Each carbon still forms 4 bonds in total.');
+MH('C4.26-04', 'What is the name of CH₃CH=CHCH₃?',
+  ['But-2-ene', 'But-1-ene', 'Butane', 'Propene'],
+  'The double bond starts at carbon 2.');
+M('C4.27-01', 'What forms when ethene reacts with bromine?',
+  ['1,2-dibromoethane', 'Bromoethane and HBr', 'Bromoethene', 'Ethane and bromine water'],
+  'C₂H₄ + Br₂ → C₂H₄Br₂.');
+M('C4.27-02', 'What type of reaction happens when bromine reacts with an alkene?',
+  ['Addition', 'Substitution', 'Combustion', 'Cracking'],
+  'The two bromine atoms add across the double bond.');
+T('C4.27-03', 'When bromine reacts with propene, the product is 1,2-dibromopropane.', true,
+  'True. C₃H₆ + Br₂ → C₃H₆Br₂.');
+MH('C4.27-04', 'Why does the alkene\'s C=C bond become a single bond when bromine adds?',
+  ['One bond of the double bond breaks so each carbon can bond to a bromine atom', 'The bromine removes one carbon atom, leaving a shorter single-bonded chain', 'Hydrogen atoms are replaced by bromine atoms, so the bond type must change', 'The molecule splits into two halves, and each half bonds to a bromine atom'],
+  'Each carbon still forms four bonds.');
+M('C4.28-01', 'What colour change happens when bromine water is shaken with an alkene?',
+  ['Orange to colourless', 'Colourless to orange', 'Orange to purple', 'No change'],
+  'Alkanes leave it orange.');
+M('C4.28-02', 'Bromine water is shaken with an alkane. What is seen?',
+  ['It stays orange', 'It turns colourless', 'It turns blue', 'It turns milky'],
+  'Alkanes have no C=C bond.');
+T('C4.28-03', 'Both alkanes and alkenes decolourise bromine water.', false,
+  'False. Only alkenes decolourise it; alkanes leave it orange.');
+MH('C4.28-04', 'A hydrocarbon has formula C₆H₁₂ and decolourises bromine water. What can you conclude?',
+  ['It is an alkene: it contains a C=C bond', 'It is an alkane: only single bonds', 'It contains oxygen, which reacts', 'It is a polymer with a long chain'],
+  'C₆H₁₂ fits CₙH₂ₙ and reacts by addition.');
+M('C4.44-01', 'What is an addition polymer made from?',
+  ['Many small molecules called monomers joined together', 'Many large molecules split apart into small pieces', 'A single alkane molecule with a very long chain', 'Water and carbon dioxide joined up in long chains'],
+  'Alkenes are the monomers.');
+M('C4.44-02', 'Which monomer makes poly(ethene)?',
+  ['Ethene', 'Ethane', 'Propene', 'Chloroethene'],
+  'The double bonds open up and the molecules join.');
+T('C4.44-03', 'Alkanes can be used as monomers to make addition polymers.', false,
+  'False. Monomers need a C=C double bond, so alkenes are used.');
+MH('C4.44-04', 'What happens to the C=C bonds when ethene forms poly(ethene)?',
+  ['They open up into single bonds, joining the monomers in a long chain', 'They break apart completely, so every ethene turns into ethane', 'They stay as double bonds, linking the monomers side by side', 'They react with oxygen from the air to join the chains together'],
+  'Poly(ethene) is saturated.');
+M('C4.45-01', 'What is the repeat unit of poly(ethene)?',
+  ['–CH₂–CH₂–', '–CH=CH–', 'CH₂=CH₂', '–CH₂–CHCl–'],
+  'The repeat unit has single bonds and bonds sticking out at each end.');
+M('C4.45-02', 'Which polymer has the repeat unit –CF₂–CF₂–?',
+  ['Poly(tetrafluoroethene), PTFE', 'Poly(chloroethene), PVC', 'Poly(propene)', 'Poly(ethene)'],
+  'PTFE is used for non-stick pans.');
+T('C4.45-03', 'The repeat unit of an addition polymer contains a C=C double bond.', false,
+  'False. The double bond opens up, so the repeat unit has only single C–C bonds.');
+MH('C4.45-04', 'What is the repeat unit of poly(propene)?',
+  ['–CH₂–CH(CH₃)–', '–CH₂–CH₂–CH₂–', 'CH₂=CHCH₃', '–CH(CH₃)=CH₂–'],
+  'Propene is CH₂=CHCH₃; the CH₃ is a side group.');
+M('C4.46-01', 'A polymer has the repeat unit –CH₂–CHCl–. What is the monomer?',
+  ['Chloroethene, CH₂=CHCl', 'Chloroethane, CH₃CH₂Cl', 'Ethene, CH₂=CH₂', 'Dichloroethene'],
+  'Put the C=C back between the two carbons.');
+M('C4.46-02', 'How do you find the monomer from a repeat unit?',
+  ['Change the C–C in the main chain to C=C and remove the extension bonds', 'Add an oxygen atom to each carbon atom in the repeat unit', 'Double the number of hydrogen atoms shown in the repeat unit', 'Remove all the side groups and keep only the carbon atoms'],
+  'Side groups stay where they are.');
+T('C4.46-03', 'The monomer of poly(tetrafluoroethene) is CF₂=CF₂.', true,
+  'True.');
+MH('C4.46-04', 'What is the repeat unit of the polymer made from CH₂=CHCN?',
+  ['–CH₂–CH(CN)–', '–CH=CH(CN)–', 'CH₂=CHCN', '–CH₂–CH₂–CN–'],
+  'The double bond opens; the CN side group stays.');
+M('C4.47-01', 'Why do addition polymers cause problems in landfill?',
+  ['They are inert and do not biodegrade', 'They decompose very quickly', 'They dissolve in rainwater', 'They react with soil to form acids'],
+  'They can last for hundreds of years.');
+M('C4.47-02', 'What is a problem with burning addition polymers?',
+  ['Toxic gases can be produced', 'They release no energy at all', 'They do not burn at all', 'They only produce oxygen'],
+  'PVC releases hydrogen chloride; incomplete combustion releases CO.');
+T('C4.47-03', 'Addition polymers are easily broken down by bacteria.', false,
+  'False. Most are not biodegradable.');
+MH('C4.47-04', 'Why are most addition polymers so unreactive?',
+  ['Their long chains have only strong single C–C and C–H bonds, like alkanes', 'They contain many reactive C=C double bonds along every chain', 'They are ionic compounds held together by strong electrostatic forces', 'They are dissolved in water, which stops them from reacting with oxygen'],
+  'This is why they are hard to dispose of.');
+
+/* ===================== BIOLOGY 3 Reproduction and inheritance (added 7 Nov 2026) ===================== */
+M('B3.1-01', 'Which is a feature of <b>asexual</b> reproduction?',
+  ['One parent; offspring genetically identical', 'Two parents; offspring genetically varied', 'Gametes fuse to form a zygote', 'Meiosis produces the offspring'],
+  'Asexual reproduction uses mitosis.');
+M('B3.1-02', 'Which is an advantage of sexual reproduction?',
+  ['It produces variation, so a species can adapt to change', 'It is faster and needs only one parent to find a mate', 'All offspring are identical to the parent', 'No gametes need to be produced'],
+  'Variation helps a species survive changes in the environment.');
+T('B3.1-03', 'Asexual reproduction involves the fusion of gametes.', false,
+  'False. Sexual reproduction involves the fusion of gametes; asexual reproduction does not.');
+MH('B3.1-04', 'Why can asexual reproduction be an advantage for a plant in a stable environment?',
+  ['It is quick and copies a well-adapted parent exactly', 'It produces lots of variation in the offspring each year', 'It needs a partner, so genes are mixed', 'It lets the plant evolve faster than others'],
+  'A disadvantage: one disease could affect all the identical offspring.');
+M('B3.2-01', 'What is formed when a male and female gamete fuse?',
+  ['A zygote', 'An embryo', 'A gamete', 'A placenta'],
+  'The zygote divides by mitosis to form an embryo.');
+M('B3.2-02', 'What happens to the zygote after fertilisation?',
+  ['It divides by mitosis and develops into an embryo', 'It divides by meiosis to form four new gametes quickly', 'It fuses with another zygote', 'It stays as a single cell for months'],
+  'Cell division forms a ball of cells, then an embryo.');
+T('B3.2-03', 'Fertilisation is the fusion of a sperm nucleus with an egg nucleus.', true,
+  'True. In plants, a pollen nucleus fuses with an ovule nucleus.');
+MH('B3.2-04', 'A zygote contains how many sets of chromosomes?',
+  ['Two: one set from each parent', 'One: only from the mother', 'One: only from the father', 'Four: two from each parent'],
+  'Gametes are haploid, so the zygote is diploid.');
+M('B3.3-01', 'Which feature is typical of a wind-pollinated flower?',
+  ['Feathery stigmas hanging outside the flower', 'Large petals with bright colours and a scent', 'Sweet nectar produced deep inside the flower', 'Sticky, spiky pollen grains held on anthers'],
+  'Feathery stigmas catch pollen from the air.');
+M('B3.3-02', 'Why do insect-pollinated flowers have brightly coloured petals?',
+  ['To attract insects to the flower', 'To catch pollen blown in the wind', 'To make more pollen grains', 'To protect the ovary from rain'],
+  'Scent and nectar attract insects too.');
+M('B3.3-03', 'What is the job of the <b>anther</b>?',
+  ['To produce pollen', 'To catch pollen', 'To make nectar', 'To hold the ovules'],
+  'The anther is on the end of the filament (together, the stamen).');
+T('B3.3-04', 'Wind-pollinated flowers produce small amounts of sticky, spiky pollen.', false,
+  'False. They produce large amounts of light, smooth pollen; sticky, spiky pollen suits insects.');
+MH('B3.3-05', 'Grass flowers have anthers that hang outside the flower on long filaments. Why?',
+  ['So the wind can easily carry the pollen away', 'So insects can land on them and collect the nectar', 'So the anthers can make nectar', 'So the pollen stays inside the flower'],
+  'Insect-pollinated flowers keep anthers inside, where insects brush past.');
+M('B3.4-01', 'After pollination, what grows down through the style to the ovary?',
+  ['A pollen tube', 'A seed coat', 'The stigma', 'A root hair'],
+  'It carries the male nucleus to the ovule.');
+M('B3.4-02', 'After fertilisation, what does the ovule become?',
+  ['A seed', 'A fruit', 'A petal', 'A pollen grain'],
+  'The ovary becomes the fruit.');
+T('B3.4-03', 'After fertilisation, the ovary develops into the seed.', false,
+  'False. The ovary becomes the fruit; the ovules inside become the seeds.');
+MH('B3.4-04', 'What is the order of events from pollination to seed formation?',
+  ['Pollination → pollen tube grows → fertilisation → seed forms', 'Fertilisation → pollination → pollen tube grows → seed forms', 'Pollen tube grows → pollination → seed forms → fertilisation', 'Pollination → seed forms → fertilisation → pollen tube grows'],
+  'The pollen tube must reach the ovule before fertilisation.');
+M('B3.5-01', 'Which three conditions do seeds need to germinate?',
+  ['Water, oxygen and a suitable temperature', 'Light, water and carbon dioxide from the air', 'Soil, light and fertiliser', 'Oxygen, light and soil'],
+  'Light is not needed: the seed has its own food store.');
+M('B3.5-02', 'In a germination experiment, seeds are kept in boiled, cooled water with a layer of oil on top. Which condition is being tested?',
+  ['Oxygen', 'Light', 'Temperature', 'Water'],
+  'Boiling removes dissolved oxygen; the oil stops more dissolving.');
+T('B3.5-03', 'Seeds need light to germinate.', false,
+  'False. They need water, oxygen and warmth. Light is needed later, for photosynthesis.');
+MH('B3.5-04', 'Seeds on dry cotton wool do not germinate, but seeds on damp cotton wool do. What is the control variable that must be the same?',
+  ['Temperature (and oxygen)', 'The amount of water', 'Whether the seeds germinate', 'The number of seeds that grow'],
+  'Only the water is changed.');
+M('B3.6-01', 'Where does a germinating seed get its energy before it has leaves?',
+  ['From the food store in the seed', 'From photosynthesis in its leaves', 'From the soil, through its roots', 'From light absorbed by the seed coat'],
+  'Starch is broken down to glucose and respired.');
+M('B3.6-02', 'Why does the dry mass of a germinating seed decrease at first?',
+  ['The stored food is used up in respiration', 'Water is absorbed and replaces the food', 'The seed photosynthesises too slowly', 'Minerals are taken in from the soil'],
+  'Once leaves form, photosynthesis increases the dry mass.');
+T('B3.6-03', 'A seedling can only make its own food once it can carry out photosynthesis.', true,
+  'True. Until then it relies on its food reserves.');
+MH('B3.6-04', 'What do enzymes do to the starch in a germinating seed?',
+  ['Break it down to sugars for respiration and growth', 'Turn it into protein to build a thicker seed coat', 'Store it as fat in the leaves', 'Convert it to oxygen for the seedling'],
+  'Amylase digests starch to maltose, then glucose.');
+M('B3.7-01', 'Strawberry plants send out runners that grow into new plants. What type of reproduction is this?',
+  ['Natural asexual reproduction', 'Artificial asexual reproduction', 'Sexual reproduction', 'Pollination'],
+  'The new plants are clones.');
+M('B3.7-02', 'A gardener takes cuttings from a plant. What is true of the new plants?',
+  ['They are genetically identical to the parent', 'They are genetically different from the parent', 'They were produced by fertilisation', 'They each have two parent plants'],
+  'Cuttings are artificial asexual reproduction.');
+T('B3.7-03', 'Taking cuttings is a natural method of asexual reproduction.', false,
+  'False. Cuttings are artificial; runners are natural.');
+MH('B3.7-04', 'Why might a grower dip cuttings in rooting powder?',
+  ['It contains plant hormones that make roots grow quickly', 'It kills all of the bacteria in the soil near the stem', 'It makes the cutting produce flowers within a few days', 'It supplies the glucose the cutting needs to photosynthesise'],
+  'Roots let the cutting take up water and minerals.');
+M('B3.8-01', 'Where are sperm produced?',
+  ['In the testes', 'In the prostate gland', 'In the sperm duct', 'In the urethra'],
+  'The scrotum keeps the testes slightly cooler than the body.');
+M('B3.8-02', 'Where does fertilisation usually happen in a woman?',
+  ['In the oviduct', 'In the uterus', 'In the ovary', 'In the vagina'],
+  'The fertilised egg then moves to the uterus.');
+M('B3.8-03', 'Why does the uterus have a thick lining?',
+  ['So an embryo can implant and be nourished', 'So that eggs can be produced inside it', 'So that sperm can be made and stored there', 'So the oviduct can contract more strongly'],
+  'The lining is rich in blood vessels.');
+T('B3.8-04', 'The oviduct is lined with cilia that move the egg towards the uterus.', true,
+  'True.');
+MH('B3.8-05', 'Why do glands add fluid to sperm?',
+  ['To give nutrients and a liquid for the sperm to swim in', 'To produce many more sperm cells inside the glands', 'To make the sperm cells haploid before they are released', 'To stop the sperm moving until they reach the uterus'],
+  'The prostate gland and seminal vesicles produce semen.');
+M('B3.9-01', 'What is the role of <b>oestrogen</b> in the menstrual cycle?',
+  ['It makes the uterus lining thicken', 'It keeps the lining intact after ovulation', 'It makes the egg leave the ovary', 'It breaks down the uterus lining'],
+  'Progesterone then maintains the lining.');
+M('B3.9-02', 'What is the role of <b>progesterone</b> in the menstrual cycle?',
+  ['It maintains the thick lining of the uterus', 'It starts the growth of the lining after menstruation', 'It produces the egg cell', 'It causes the lining to break down'],
+  'When progesterone falls, menstruation starts.');
+T('B3.9-03', 'Oestrogen and progesterone are both produced by the testes.', false,
+  'False. They are produced by the ovaries.');
+MH('B3.9-04', 'Why does a fall in progesterone lead to menstruation?',
+  ['Progesterone is no longer maintaining the uterus lining, so it breaks down', 'Low progesterone causes a new egg to be released at once, which breaks the lining', 'Progesterone makes the lining thicker as it falls', 'It makes oestrogen rise sharply and destroy the egg'],
+  'If an embryo implants, progesterone stays high.');
+M('B3.11-01', 'What is the role of the placenta?',
+  ['To exchange food, oxygen and waste between mother and embryo', 'To protect the embryo from knocks and bumps inside the uterus', 'To produce new eggs ready for the next possible pregnancy', 'To mix the blood of the mother and the embryo together freely'],
+  'The two bloodstreams stay separate.');
+M('B3.11-02', 'Which substance passes from the embryo\'s blood to the mother\'s blood?',
+  ['Carbon dioxide', 'Glucose and amino acids', 'Oxygen', 'Amino acids'],
+  'Urea also passes from embryo to mother.');
+T('B3.11-03', 'In the placenta, the mother\'s blood mixes with the embryo\'s blood.', false,
+  'False. They are close but separate; substances diffuse across.');
+MH('B3.11-04', 'How is the placenta adapted for exchange?',
+  ['It has villi giving a large surface area and a thin barrier', 'It has a thick wall that stops diffusion of any harmful waste', 'It has a small surface area, so it uses less of the mother\'s energy', 'It joins the two bloodstreams so that blood flows directly across'],
+  'Short diffusion distance, large surface area, good blood supply.');
+M('B3.12-01', 'How is the developing embryo protected?',
+  ['By the amniotic fluid, which cushions it', 'By the placenta, which surrounds it completely', 'By the uterus lining breaking down', 'By the oviduct, which holds it'],
+  'The fluid is held in the amniotic sac.');
+T('B3.12-02', 'Amniotic fluid supplies the embryo with all of its food.', false,
+  'False. Food comes via the placenta; amniotic fluid protects the embryo from bumps.');
+M('B3.12-03', 'Where is the amniotic fluid found?',
+  ['In the amniotic sac around the embryo', 'Inside the placenta\'s blood vessels', 'Inside the umbilical cord\'s vessels', 'In the oviduct, above the uterus'],
+  'The membranes form a fluid-filled bag.');
+MH('B3.12-04', 'Why is amniotic fluid better than air at protecting the embryo?',
+  ['A liquid cannot be compressed, so it absorbs and spreads out shocks', 'It provides all of the food that the embryo needs to grow and develop', 'It carries oxygen straight to the embryo\'s lungs throughout pregnancy', 'It keeps the embryo completely dry so that infections cannot get in'],
+  'It also keeps the temperature steady.');
+M('B3.13-01', 'Which hormone causes the development of male secondary sexual characteristics?',
+  ['Testosterone', 'Oestrogen', 'Progesterone', 'Insulin'],
+  'It is produced in the testes.');
+M('B3.13-02', 'Which is a female secondary sexual characteristic caused by oestrogen?',
+  ['Breasts develop and hips widen', 'The voice breaks and deepens', 'Facial hair starts to grow', 'Muscles develop much more'],
+  'The others are caused by testosterone.');
+T('B3.13-03', 'Secondary sexual characteristics are fully developed at birth.', false,
+  'False. They develop at puberty.');
+MH('B3.13-04', 'Which change happens at puberty in both boys and girls?',
+  ['Pubic and underarm hair grows', 'The voice breaks and deepens', 'Breasts develop', 'Sperm production starts'],
+  'Both testosterone and oestrogen cause body hair growth.');
+M('B3.14-01', 'What is a gene?',
+  ['A section of DNA that codes for a specific protein', 'The whole of the DNA found inside an organism', 'A whole chromosome found inside the nucleus', 'A different form of an inherited characteristic'],
+  'The genome is the entire DNA.');
+M('B3.14-02', 'What is the <b>genome</b> of an organism?',
+  ['The entire DNA of the organism', 'One section of DNA coding for a protein', 'All of the proteins in a cell', 'The pair of sex chromosomes'],
+  'The human genome was fully sequenced in 2003.');
+T('B3.14-03', 'A gene codes for a specific carbohydrate.', false,
+  'False. A gene codes for a specific protein.');
+MH('B3.14-04', 'How can a gene affect a characteristic such as eye colour?',
+  ['It codes for a protein, such as an enzyme that makes a pigment', 'It travels to the eye and colours the iris directly itself', 'It is itself a coloured pigment molecule found in the eye', 'It changes the shape of the chromosome that is in the eye'],
+  'Proteins carry out the instructions in the gene.');
+M('B3.15-01', 'Where are genes found?',
+  ['On chromosomes in the nucleus', 'In the cytoplasm, around the nucleus', 'In the cell membrane', 'Inside the ribosomes'],
+  'Chromosomes are long molecules of DNA.');
+T('B3.15-02', 'Chromosomes are found in the cell membrane.', false,
+  'False. Chromosomes are in the nucleus.');
+M('B3.15-03', 'Which list is in order of size, largest first?',
+  ['Nucleus, chromosome, gene', 'Gene, chromosome, nucleus', 'Chromosome, nucleus, gene', 'Nucleus, gene, chromosome'],
+  'Each chromosome carries many genes.');
+MH('B3.15-04', 'Red blood cells have no nucleus. What does this mean?',
+  ['They contain no chromosomes, so no DNA', 'They contain more genes than other cells', 'Their genes are in the cell membrane', 'They make new chromosomes when needed'],
+  'This leaves more room for haemoglobin.');
+M('B3.19-01', 'What is an <b>allele</b>?',
+  ['A different form of a gene', 'A whole chromosome pair', 'A type of large protein', 'The entire DNA of a cell'],
+  'For example, the alleles for brown and blue eyes.');
+T('B3.19-02', 'Different alleles of a gene can give rise to different inherited characteristics.', true,
+  'True.');
+M('B3.19-03', 'How many alleles for each gene does a body cell normally have?',
+  ['Two', 'One', 'Four', '23'],
+  'One on each chromosome of a pair.');
+MH('B3.19-04', 'Why do brothers and sisters often look different?',
+  ['They inherit different combinations of alleles from their parents', 'They have completely different genes from each other and from their parents', 'Only one of them inherits genes from the father', 'They have different numbers of chromosomes'],
+  'Meiosis and random fertilisation shuffle alleles.');
+M('B3.20-01', 'What does <b>heterozygous</b> mean?',
+  ['Having two different alleles of a gene', 'Having two identical alleles of a gene', 'Having only one allele of a gene', 'Showing the recessive characteristic'],
+  'For example Bb.');
+M('B3.20-02', 'What is the <b>phenotype</b>?',
+  ['The characteristic that is shown', 'The alleles that are present', 'The number of chromosomes', 'The entire DNA of an organism'],
+  'The genotype is the alleles, e.g. Bb.');
+M('B3.20-03', 'A recessive allele is only expressed when…',
+  ['two copies are present', 'one copy is present', 'a dominant allele is present', 'the organism is heterozygous'],
+  'For example, bb.');
+T('B3.20-04', 'A homozygous dominant genotype could be written as BB.', true,
+  'True. Two identical, dominant alleles.');
+MH('B3.20-05', 'A plant is tall (T dominant). Which genotypes could it have?',
+  ['TT or Tt', 'Tt only, never TT', 'TT only', 'tt only'],
+  'A test cross with a tt plant would show which.');
+M('B3.22-01', 'What does <b>polygenic</b> inheritance mean?',
+  ['A characteristic is controlled by several genes', 'A characteristic is controlled by one gene', 'A gene has only one allele', 'A characteristic is only environmental'],
+  'Most features are polygenic.');
+M('B3.22-02', 'Which characteristic is most likely to be polygenic?',
+  ['Height', 'Blood group', 'Cystic fibrosis', 'Ability to roll the tongue'],
+  'Polygenic features show a continuous range.');
+T('B3.22-03', 'Most phenotypic features are controlled by a single gene.', false,
+  'False. Most result from polygenic inheritance.');
+MH('B3.22-04', 'Why do polygenic characteristics show continuous variation?',
+  ['Many genes each add a small effect, giving a range of values', 'One gene with two alleles gives a range of many different values', 'Only the environment controls them', 'They are always recessive'],
+  'For example, height or skin colour.');
+M('B3.23-01', 'Two heterozygous parents (Bb × Bb) are crossed. What is the expected ratio of dominant to recessive phenotypes?',
+  ['3 : 1', '1 : 1', '1 : 2 : 1', 'All dominant'],
+  'BB, Bb, Bb (dominant) : bb (recessive).');
+M('B3.23-02', 'What does a Punnett square show?',
+  ['The possible genotypes of offspring from a cross', 'The number of chromosomes inside each of the parents\' cells', 'The order of the bases along one gene', 'The stages of mitosis in a dividing cell'],
+  'Gametes go along the top and side.');
+M('B3.23-03', 'What gametes can a parent with genotype Aa produce?',
+  ['A and a', 'Aa only', 'AA and aa', 'A only'],
+  'Each gamete carries one allele.');
+T('B3.23-04', 'Crossing BB with bb gives all heterozygous offspring.', true,
+  'True. All offspring are Bb.');
+MH('B3.23-05', 'A cross between Bb and bb is carried out. What is the expected ratio of offspring genotypes?',
+  ['1 Bb : 1 bb', '3 Bb : 1 bb', '1 BB : 2 Bb : 1 bb', 'All Bb'],
+  'Half get B from the Bb parent, half get b.');
+M('B3.24-01', 'In a family pedigree chart, what does a square usually represent?',
+  ['A male', 'A female', 'An affected person only', 'A marriage'],
+  'Circles are females; shaded symbols are affected.');
+M('B3.24-02', 'Two unaffected parents have an affected child. What does this show about the condition?',
+  ['It is caused by a recessive allele', 'It is caused by a dominant allele', 'It is not inherited at all', 'It is caused by the environment only'],
+  'Both parents must be carriers (heterozygous).');
+T('B3.24-03', 'In a pedigree chart, shaded symbols usually show people with the condition.', true,
+  'True.');
+MH('B3.24-04', 'Two affected parents have an unaffected child. What does this show?',
+  ['The condition is dominant and both parents are heterozygous', 'The condition is recessive and both parents are carriers', 'Both parents are homozygous recessive for the condition', 'The condition cannot be inherited from parents at all'],
+  'If it were recessive, two affected (aa) parents could only have aa children.');
+M('B3.25-01', 'Two carriers of cystic fibrosis (Ff × Ff) have a child. What is the probability the child has cystic fibrosis?',
+  ['25% (1 in 4)', '50% (1 in 2)', '75% (3 in 4)', '0%'],
+  'Only ff has the condition.');
+M('B3.25-02', 'A heterozygous parent (Tt) and a homozygous recessive parent (tt) have a child. What is the probability the child shows the recessive phenotype?',
+  ['50%', '25%', '75%', '100%'],
+  'Tt × tt → Tt, Tt, tt, tt.');
+T('B3.25-03', 'If two carriers already have one affected child, the chance the next child is affected is still 1 in 4.', true,
+  'True. Each fertilisation is independent.');
+MH('B3.25-04', 'Two Bb parents have a child that shows the dominant phenotype. What is the probability that this child is heterozygous?',
+  ['2 in 3', '1 in 2', '1 in 4', '3 in 4'],
+  'Dominant offspring are BB, Bb, Bb: two of the three are Bb.');
+M('B3.26-01', 'What are the sex chromosomes of a human male?',
+  ['XY', 'XX', 'YY', 'XXY'],
+  'Females are XX.');
+T('B3.26-02', 'The sex of a person is controlled by all 23 pairs of chromosomes.', false,
+  'False. One pair controls it: XX in females, XY in males.');
+M('B3.26-03', 'Which sex chromosomes can be found in a woman\'s eggs?',
+  ['X only', 'Y only', 'X or Y', 'XX'],
+  'Every egg carries one X.');
+MH('B3.26-04', 'Which parent decides the sex of the baby?',
+  ['The father, because sperm carry X or Y', 'The mother, because eggs carry X or Y', 'Both parents equally decide it', 'Neither; it depends on the uterus'],
+  'All eggs carry X.');
+M('B3.27-01', 'What is the probability that a baby will be a boy?',
+  ['50%', '25%', '75%', '100%'],
+  'XX × XY → XX, XX, XY, XY.');
+M('B3.27-02', 'In a genetic diagram for sex determination, what are the gametes from the father?',
+  ['X and Y', 'X and X', 'Y and Y', 'XY only'],
+  'Half the sperm carry X, half carry Y.');
+T('B3.27-03', 'A couple with three daughters is more likely to have a son next time.', false,
+  'False. The chance is still 50% each time.');
+MH('B3.27-04', 'A sperm carrying an X chromosome fertilises an egg. What is the sex of the baby?',
+  ['Female (XX)', 'Male (XY)', 'Either, with equal chance', 'It depends on the egg'],
+  'The egg always gives an X.');
+M('B3.28-01', 'What does mitosis produce?',
+  ['Two genetically identical diploid cells', 'Four genetically different haploid cells', 'Two genetically different haploid cells', 'Four genetically identical diploid cells'],
+  'The chromosomes are copied first.');
+T('B3.28-02', 'Mitosis produces cells with the same number of chromosomes as the parent cell.', true,
+  'True.');
+M('B3.28-03', 'A cell with 46 chromosomes divides by mitosis. How many chromosomes are in each new cell?',
+  ['46', '23', '92', '12'],
+  'Mitosis keeps the number the same.');
+MH('B3.28-04', 'Why must DNA be copied before mitosis?',
+  ['So each new cell gets a full, identical set of chromosomes', 'So the new cells have twice as many chromosomes as the parent', 'So the new cells are genetically different', 'So the cell can become a gamete'],
+  'Copies are separated to opposite ends of the cell.');
+M('B3.29-01', 'Which of these uses mitosis?',
+  ['Repairing a cut in the skin', 'Making sperm cells in testes', 'Making egg cells in ovaries', 'Fertilisation of an egg cell'],
+  'Growth, repair, cloning and asexual reproduction use mitosis.');
+M('B3.29-02', 'Why is mitosis used in asexual reproduction?',
+  ['It makes identical copies of the parent\'s cells', 'It halves the number of chromosomes in each new cell', 'It mixes genes from two parents', 'It produces gametes'],
+  'The offspring are clones.');
+T('B3.29-03', 'Gametes are produced by mitosis.', false,
+  'False. Gametes are produced by meiosis.');
+MH('B3.29-04', 'A zygote grows into a baby. Which type of cell division is mainly involved?',
+  ['Mitosis', 'Meiosis', 'Fertilisation', 'Binary fission'],
+  'All body cells are genetically identical to the zygote.');
+M('B3.30-01', 'What does meiosis produce?',
+  ['Four genetically different haploid cells', 'Two genetically identical diploid cells', 'Four genetically identical diploid cells', 'Two genetically different diploid cells'],
+  'These cells are gametes.');
+M('B3.30-02', 'Where does meiosis happen in humans?',
+  ['In the testes and ovaries', 'In the skin, bones and muscles', 'In the stomach', 'In all body cells'],
+  'Meiosis makes gametes.');
+T('B3.30-03', 'Meiosis doubles the number of chromosomes.', false,
+  'False. It halves it, from 46 to 23 in humans.');
+MH('B3.30-04', 'Why must gametes be haploid?',
+  ['So the zygote has the normal diploid number after fertilisation', 'So the zygote has twice the normal number of chromosomes', 'So the gametes can go on to divide by mitosis after release', 'So that all of the gametes made are genetically identical'],
+  '23 + 23 = 46.');
+M('B3.31-01', 'Why does random fertilisation produce variation?',
+  ['Any one of many different sperm can fuse with any egg', 'Every sperm cell made by one man is genetically identical', 'The egg always chooses the best of the sperm', 'Fertilisation simply copies the mother\'s genes'],
+  'Each gamete has a different combination of alleles.');
+T('B3.31-02', 'Offspring from sexual reproduction are genetically identical to each other.', false,
+  'False. Except identical twins, they vary.');
+M('B3.31-03', 'Which two processes together produce genetic variation in offspring?',
+  ['Meiosis and random fertilisation', 'Mitosis and growth', 'Mitosis and repair', 'Respiration and photosynthesis'],
+  'Meiosis makes different gametes; fertilisation combines them at random.');
+MH('B3.31-04', 'Why are identical twins genetically identical, but non-identical twins not?',
+  ['Identical twins come from one zygote that splits; non-identical twins come from two different eggs and sperm', 'Identical twins have the same mother and father; non-identical twins have the same mother but different fathers', 'Identical twins are made by meiosis; non-identical twins by mitosis', 'Non-identical twins have more chromosomes than identical twins'],
+  'Any differences between identical twins are environmental.');
+M('B3.32-01', 'What is the diploid number of chromosomes in human cells?',
+  ['46', '23', '92', '44'],
+  '23 pairs.');
+M('B3.32-02', 'How many chromosomes are in a human sperm cell?',
+  ['23', '46', '22', '92'],
+  'Gametes are haploid.');
+T('B3.32-03', 'A human skin cell contains 23 chromosomes.', false,
+  'False. Body cells are diploid: 46 chromosomes.');
+MH('B3.32-04', 'How many pairs of chromosomes are in a human body cell?',
+  ['23', '46', '22', '11'],
+  '22 pairs of non-sex chromosomes and one pair of sex chromosomes.');
+M('B3.33-01', 'Which variation is caused only by the environment?',
+  ['A scar from an accident', 'Natural eye colour at birth', 'Blood group', 'Natural hair colour'],
+  'Genes had no effect on the scar.');
+M('B3.33-02', 'Which characteristic is affected by both genes and the environment?',
+  ['Body mass', 'Blood group', 'Eye colour', 'A scar'],
+  'Diet and exercise affect it too.');
+T('B3.33-03', 'All variation within a species is caused by genes alone.', false,
+  'False. Variation can be genetic, environmental, or a combination of both.');
+MH('B3.33-04', 'Identical twins raised apart have different body masses. What does this show?',
+  ['The environment affects body mass', 'Body mass is only genetic', 'The twins have different genes', 'Body mass is not affected by diet'],
+  'Their genes are identical, so differences must be environmental.');
+M('B3.34-01', 'What is a mutation?',
+  ['A rare, random change in genetic material', 'A planned change in the genes of an organism', 'A different form of a characteristic', 'A change caused by exercise'],
+  'Mutations can be inherited if they occur in gametes.');
+M('B3.34-02', 'What is the effect of most mutations?',
+  ['Little or no effect on the phenotype', 'They always give a big survival advantage', 'They always cause disease', 'They always kill the cell'],
+  'A few are harmful; very few are beneficial.');
+T('B3.34-03', 'Mutations are frequent and planned changes in DNA.', false,
+  'False. They are rare and random.');
+MH('B3.34-04', 'Which mutation could be passed on to offspring?',
+  ['One in a cell that divides to form gametes', 'One in a skin cell on the arm that divides', 'One in a muscle cell of the leg', 'One in a red blood cell'],
+  'Only changes in gamete-forming cells are inherited.');
+M('B3.38-01', 'In natural selection, which individuals are most likely to survive and reproduce?',
+  ['Those best adapted to their environment', 'The largest individuals in every case', 'Those that were born first', 'Those with the most mutations'],
+  'They pass their alleles on.');
+M('B3.38-02', 'What starts the process of natural selection?',
+  ['Variation within a population', 'All individuals being identical', 'Every individual surviving', 'A lack of competition'],
+  'Some variants are better adapted.');
+T('B3.38-03', 'Natural selection can lead to evolution over many generations.', true,
+  'True. Advantageous alleles become more common.');
+MH('B3.38-04', 'Which is the correct order for natural selection?',
+  ['Variation → competition → best adapted survive → reproduce → alleles passed on', 'Competition → reproduce → variation → best adapted survive → alleles passed on', 'Survive → variation → reproduce → competition → alleles passed on', 'Alleles passed on → variation → competition → reproduce → survive'],
+  'Over many generations the population changes.');
+M('B3.39-01', 'How do antibiotic-resistant bacteria become more common?',
+  ['Resistant bacteria survive the antibiotic and reproduce', 'Antibiotics cause bacteria to become resistant on purpose', 'Non-resistant bacteria reproduce faster', 'Resistant bacteria are made by vaccines'],
+  'This is natural selection.');
+M('B3.39-02', 'How does resistance first appear in a population of bacteria?',
+  ['A random mutation', 'The bacteria learn to resist', 'The antibiotic changes the bacteria on purpose', 'The patient becomes resistant'],
+  'The antibiotic then selects for it.');
+T('B3.39-03', 'Finishing a course of antibiotics helps to reduce the spread of resistant bacteria.', true,
+  'True. It kills more of the bacteria, so fewer partly resistant ones survive.');
+MH('B3.39-04', 'Why are infections with antibiotic-resistant bacteria hard to control?',
+  ['Antibiotics no longer kill them, so they spread from person to person', 'They are really viruses, so no antibiotic has ever worked on them', 'They cannot reproduce at all, so they stay inside the same person', 'They only infect plants, so doctors are unable to reach the bacteria'],
+  'MRSA is an example.');
+
+/* ===================== BIOLOGY 4 Ecology and the environment (added 7 Nov 2026) ===================== */
+M('B4.1-01', 'What is a <b>population</b>?',
+  ['All the organisms of one species in an area', 'All the organisms of every species in an area', 'The place where an organism lives', 'A community and its non-living surroundings'],
+  'A community is all the populations together.');
+M('B4.1-02', 'What is an <b>ecosystem</b>?',
+  ['A community and its physical environment', 'All the organisms of one species in an area', 'Only the plants in an area', 'The place where one species lives'],
+  'Living and non-living parts interact.');
+M('B4.1-03', 'What is a <b>habitat</b>?',
+  ['The place where an organism lives', 'All the organisms of one species', 'All the living things in an area', 'The food that an organism eats'],
+  'For example, a rock pool.');
+T('B4.1-04', 'A community is made up of one population of a single species.', false,
+  'False. A community is all the populations of different species in an area.');
+MH('B4.1-05', 'A pond contains frogs, fish, pondweed, water and mud. Which describes all of these together?',
+  ['An ecosystem', 'A community', 'A population', 'A habitat'],
+  'It includes non-living parts (water, mud).');
+M('B4.2-01', 'What is a quadrat used for?',
+  ['Sampling the number of organisms in an area', 'Measuring the temperature of the soil at each site', 'Catching flying insects', 'Measuring the pH of water'],
+  'A square frame, often 1 m × 1 m.');
+M('B4.2-02', 'Why should quadrats be placed randomly?',
+  ['To avoid bias in the results', 'To find the most organisms', 'To save time on the field trip', 'So all quadrats land in the same spot'],
+  'Random coordinates are often used.');
+MH('B4.2-03', 'A field is 100 m². Five 1 m² quadrats contain 4, 6, 2, 5 and 3 daisies. What is the estimated daisy population?',
+  ['400', '20', '4', '2000'],
+  'Mean = 20 ÷ 5 = 4 per m². 4 × 100 = <b>400</b>.');
+T('B4.2-04', 'Using more quadrats gives a more reliable estimate of population size.', true,
+  'True. It reduces the effect of unusual samples.');
+M('B4.5-01', 'Which is an <b>abiotic</b> factor?',
+  ['Temperature', 'Predators', 'Disease', 'Competition'],
+  'Abiotic = non-living.');
+M('B4.5-02', 'Which is a <b>biotic</b> factor?',
+  ['The number of predators', 'The amount of light', 'The pH of the soil', 'The water temperature'],
+  'Biotic = living.');
+T('B4.5-03', 'Competition for food is an abiotic factor.', false,
+  'False. Competition involves living organisms, so it is biotic.');
+MH('B4.5-04', 'Few plants grow under a dense tree. Which factor most likely explains this?',
+  ['Low light intensity under the tree', 'Too much carbon dioxide from the tree', 'A high soil temperature', 'A lack of any predators'],
+  'Light is an abiotic factor limiting photosynthesis.');
+M('B4.6-01', 'What is a <b>producer</b>?',
+  ['An organism that makes its own food by photosynthesis', 'An animal that eats plants and makes them into its food', 'An animal that eats other animals', 'An organism that breaks down dead material'],
+  'Producers start every food chain.');
+M('B4.6-02', 'In the food chain grass → rabbit → fox, what is the fox?',
+  ['Secondary consumer', 'Primary consumer', 'Producer', 'Tertiary consumer'],
+  'The rabbit is the primary consumer.');
+M('B4.6-03', 'What is the role of <b>decomposers</b>?',
+  ['To break down dead organisms and waste', 'To make food from carbon dioxide by photosynthesis', 'To eat living plants', 'To hunt other animals'],
+  'Bacteria and fungi; they recycle nutrients.');
+T('B4.6-04', 'A tertiary consumer eats secondary consumers.', true,
+  'True.');
+MH('B4.6-05', 'In seaweed → periwinkle → crab → seagull, which organism is the tertiary consumer?',
+  ['Seagull', 'Crab', 'Periwinkle', 'Seaweed'],
+  'Seaweed producer, periwinkle primary, crab secondary.');
+M('B4.7-01', 'What do the arrows in a food chain show?',
+  ['The direction of energy transfer', 'Which animal eats which plant', 'The direction animals move', 'The size of each population'],
+  'The arrow points to the organism that eats.');
+M('B4.7-02', 'What is a <b>food web</b>?',
+  ['Many interlinked food chains in an ecosystem', 'A single long food chain with many trophic levels', 'A diagram showing numbers of organisms', 'The place where decomposers live'],
+  'Most animals eat more than one thing.');
+M('B4.7-03', 'Why is a pyramid of biomass always a pyramid shape?',
+  ['Biomass is lost at each trophic level', 'There are always more animals than plants', 'Producers are smaller than consumers', 'Each level gains biomass from the next'],
+  'A pyramid of numbers can be inverted, e.g. one tree with many insects.');
+T('B4.7-04', 'A pyramid of numbers is always a true pyramid shape.', false,
+  'False. One large tree can feed many caterpillars, giving an inverted shape.');
+MH('B4.7-05', 'A pyramid of numbers for oak tree → caterpillars → birds is not a pyramid shape. Why?',
+  ['One large oak tree supports thousands of caterpillars', 'Birds are much more numerous than the caterpillars they eat', 'Oak trees are consumers', 'Caterpillars are producers'],
+  'A pyramid of biomass would still be a pyramid.');
+M('B4.8-01', 'Which substance is passed along a food chain when an animal eats a plant?',
+  ['Biomass, containing energy', 'Light energy from the Sun', 'Oxygen from the plant', 'Water only'],
+  'Carbon compounds and energy move up the chain.');
+T('B4.8-02', 'Energy is transferred from one trophic level to the next when organisms are eaten.', true,
+  'True.');
+M('B4.8-03', 'Where does the energy in almost all food chains originally come from?',
+  ['The Sun', 'The soil', 'Decomposers', 'Water'],
+  'Producers capture light energy in photosynthesis.');
+MH('B4.8-04', 'Why do food chains rarely have more than five trophic levels?',
+  ['So much energy is lost at each level that too little is left', 'Animals at the top of the chain are much too large to feed', 'Decomposers eat all the top consumers before they can breed', 'Producers cannot make enough oxygen for long food chains'],
+  'Roughly 90% is lost at each step.');
+M('B4.9-01', 'About what percentage of energy is passed from one trophic level to the next?',
+  ['10%', '50%', '90%', '1%'],
+  'About 90% is lost.');
+M('B4.9-02', 'Which is a way energy is lost between trophic levels?',
+  ['Heat from respiration', 'Energy used in photosynthesis', 'Absorbing sunlight', 'Taking in oxygen'],
+  'Also undigested food (faeces) and parts not eaten.');
+T('B4.9-03', 'Most of the energy in an organism is passed on to the next trophic level.', false,
+  'False. Only about 10% is passed on.');
+MH('B4.9-04', 'Grass contains 10 000 kJ. Roughly how much reaches the secondary consumer in grass → rabbit → fox?',
+  ['100 kJ', '1000 kJ', '10 kJ', '9000 kJ'],
+  '10% of 10 000 = 1000 kJ for the rabbit; 10% of that = <b>100 kJ</b>.');
+M('B4.10-01', 'Which process removes carbon dioxide from the atmosphere?',
+  ['Photosynthesis', 'Respiration', 'Combustion', 'Decomposition'],
+  'Plants turn CO₂ into glucose.');
+M('B4.10-02', 'How do decomposers return carbon to the atmosphere?',
+  ['By respiring as they break down dead material', 'By photosynthesising under the soil surface', 'By burning dead organisms in the ground', 'By storing all the carbon as fossil fuels'],
+  'Carbon dioxide is released.');
+M('B4.10-03', 'Which process releases carbon stored in fossil fuels?',
+  ['Combustion', 'Photosynthesis', 'Feeding', 'Fossilisation'],
+  'Burning fuels releases CO₂.');
+T('B4.10-04', 'Animals return carbon dioxide to the atmosphere by respiration.', true,
+  'True.');
+MH('B4.10-05', 'How does carbon in a plant become part of an animal?',
+  ['The animal eats the plant and digests its carbon compounds', 'The animal breathes in carbon from the plant', 'The plant releases carbon into the soil for the animal', 'The animal photosynthesises using the plant\'s leaves'],
+  'Feeding passes carbon compounds along the food chain.');
+M('B4.12-01', 'Why is carbon monoxide harmful?',
+  ['It combines with haemoglobin and reduces oxygen transport', 'It dissolves in rain and forms acid rain that harms lungs', 'It is a greenhouse gas that destroys the ozone layer above', 'It makes water in lakes and rivers very strongly alkaline'],
+  'It is produced by incomplete combustion.');
+M('B4.12-02', 'What is a biological effect of acid rain caused by sulfur dioxide?',
+  ['Trees are damaged and fish in lakes die', 'More fish survive in the more acidic lakes', 'Plants grow faster', 'Oxygen levels in the blood fall'],
+  'Acid rain lowers the pH of lakes and soil.');
+T('B4.12-03', 'Sulfur dioxide dissolves in rain to form acid rain.', true,
+  'True.');
+MH('B4.12-04', 'Why might lichens be absent from a city centre?',
+  ['Lichens are sensitive to sulfur dioxide pollution', 'There is far too much light in city centres', 'Cities have too few predators to feed lichens', 'Lichens need high levels of carbon monoxide'],
+  'Lichens can be used as indicators of air pollution.');
+M('B4.13-01', 'Which of these is a greenhouse gas?',
+  ['Methane', 'Oxygen', 'Nitrogen', 'Argon'],
+  'Others: water vapour, CO₂, nitrous oxide, CFCs.');
+T('B4.13-02', 'Oxygen is a greenhouse gas.', false,
+  'False. Water vapour, CO₂, methane, nitrous oxide and CFCs are greenhouse gases; oxygen is not.');
+M('B4.13-03', 'Which group contains only greenhouse gases?',
+  ['Carbon dioxide, methane, CFCs', 'Oxygen, nitrogen, methane', 'Carbon dioxide, oxygen, argon', 'Nitrogen, CFCs, helium'],
+  'Nitrous oxide and water vapour are too.');
+MH('B4.13-04', 'Which greenhouse gas is mainly made by human activity and also damages the ozone layer?',
+  ['CFCs', 'Water vapour', 'Methane', 'Carbon dioxide'],
+  'CFCs were used in fridges and aerosols.');
+M('B4.14-01', 'Which human activity releases large amounts of methane?',
+  ['Rearing cattle and growing rice', 'Planting new forests on farmland', 'Using solar panels', 'Recycling waste paper'],
+  'Landfill sites also release methane.');
+M('B4.14-02', 'How does deforestation increase carbon dioxide levels?',
+  ['Fewer trees remove CO₂, and burning trees releases more', 'Trees produce carbon dioxide, so removing them helps', 'It adds more oxygen to the air', 'It stops respiration in animals'],
+  'Trees store carbon.');
+T('B4.14-03', 'Burning fossil fuels increases the level of carbon dioxide in the air.', true,
+  'True.');
+MH('B4.14-04', 'Which human activity releases nitrous oxide?',
+  ['Using nitrogen fertilisers on fields', 'Cutting down large areas of forest', 'Fitting solar panels on roofs', 'Recycling plastic bottles'],
+  'Bacteria in soil convert some fertiliser into N₂O.');
+M('B4.15-01', 'How do greenhouse gases warm the Earth?',
+  ['They absorb heat radiated from the Earth and re-emit it', 'They let all the heat from the Earth escape into space', 'They reflect sunlight away from the Earth', 'They make the ozone layer thicker'],
+  'More gas means an enhanced greenhouse effect.');
+M('B4.15-02', 'Which is a possible consequence of global warming?',
+  ['Rising sea levels as ice melts', 'More ice at the poles', 'Lower sea levels everywhere', 'A cooler climate worldwide'],
+  'Also more extreme weather and changes in species distribution.');
+T('B4.15-03', 'Without any greenhouse effect, the Earth would be much colder.', true,
+  'True. The natural greenhouse effect keeps the Earth warm enough for life.');
+MH('B4.15-04', 'Why might global warming reduce biodiversity?',
+  ['Some species cannot adapt or move as their habitats change', 'Warmer weather always increases the number of species', 'It removes all predators from ecosystems', 'It stops plants from photosynthesising'],
+  'Coral bleaching is one example.');
+M('B4.16-01', 'Why does untreated sewage in a river cause fish to die?',
+  ['Bacteria decomposing the sewage use up the oxygen', 'The sewage is a poison that dissolves the fish\'s gills', 'The sewage adds too much oxygen', 'The sewage makes the water too cold'],
+  'Aerobic bacteria respire and lower the oxygen level.');
+T('B4.16-02', 'Sewage in rivers increases the number of bacteria.', true,
+  'True. They feed on the organic matter.');
+M('B4.16-03', 'Which organisms might increase in a river polluted by sewage?',
+  ['Bacteria and organisms that tolerate low oxygen', 'Fish that need lots of dissolved oxygen to survive', 'Mayfly larvae and stonefly larvae', 'Freshwater shrimps and water plants'],
+  'Sludgeworms and rat-tailed maggots are indicator species.');
+MH('B4.16-04', 'Why can sewage pollution spread disease?',
+  ['It can contain pathogens, such as cholera bacteria', 'It adds oxygen to the water, which helps viruses grow', 'It kills all bacteria in the water', 'It makes the water too clean'],
+  'Sewage must be treated before release.');
+M('B4.17-01', 'What starts eutrophication?',
+  ['Fertiliser minerals leaching into water', 'Too much dissolved oxygen in the water', 'A lack of nitrates in the water', 'Fish eating the algae'],
+  'Nitrates and phosphates cause algae to grow.');
+M('B4.17-02', 'In eutrophication, why do plants below the surface die?',
+  ['Algae on the surface block the light', 'They receive too much light from the Sun', 'They absorb too much oxygen', 'Fish eat all of them'],
+  'Without light, they cannot photosynthesise.');
+T('B4.17-03', 'In eutrophication, fish die because the water contains too much oxygen.', false,
+  'False. Bacteria decomposing dead plants use up the oxygen.');
+MH('B4.17-04', 'Which is the correct sequence of eutrophication?',
+  ['Minerals → algae grow → light blocked → plants die → bacteria use oxygen → fish die', 'Algae grow → minerals → fish die → light blocked → plants die → bacteria grow', 'Fish die → minerals → algae grow → bacteria use oxygen → plants die', 'Minerals → fish die → algae grow → plants die → light blocked'],
+  'Decomposition by aerobic bacteria removes the oxygen.');
+
+/* ===================== BIOLOGY 5 Use of biological resources (added 7 Nov 2026) ===================== */
+M('B5.1-01', 'How do glasshouses increase crop yield?',
+  ['They keep crops warm and protected, increasing photosynthesis', 'They block all of the light, so the crops grow more slowly', 'They keep the crops very cold, so they need less water', 'They remove carbon dioxide, so the crops need less food'],
+  'Conditions can be controlled.');
+M('B5.1-02', 'What is an advantage of a polythene tunnel?',
+  ['It is cheaper than a glasshouse but still warms the crops', 'It blocks out the sunlight completely from the crops', 'It lets in many more pests than an open field does', 'It lowers the temperature so the crops grow slower'],
+  'Crops can be grown out of season.');
+T('B5.1-03', 'Glasshouses let farmers grow some crops all year round.', true,
+  'True.');
+MH('B5.1-04', 'Why might a farmer use paraffin heaters in a glasshouse in winter?',
+  ['They raise the temperature and release CO₂, both increasing photosynthesis', 'They lower the carbon dioxide level so that insect pests are killed', 'They block out light so that the crops do not wilt in the winter', 'They release oxygen to help the crops respire faster in the cold'],
+  'Burning releases heat and carbon dioxide.');
+M('B5.2-01', 'Why does adding carbon dioxide in a glasshouse increase yield?',
+  ['CO₂ is a raw material for photosynthesis', 'CO₂ kills the insect pests that eat the crops', 'CO₂ provides minerals for the crops', 'CO₂ cools the glasshouse down'],
+  'If CO₂ is the limiting factor.');
+M('B5.2-02', 'Why does increasing temperature only increase yield up to a point?',
+  ['Above the optimum, enzymes are denatured', 'Plants stop needing any light when they are warm', 'Carbon dioxide runs out when warm', 'Water stops evaporating when warm'],
+  'Heating also costs money.');
+T('B5.2-03', 'Increasing carbon dioxide always increases the rate of photosynthesis, however much is added.', false,
+  'False. Once another factor (light or temperature) becomes limiting, more CO₂ has no effect.');
+MH('B5.2-04', 'A grower doubles the CO₂ in a glasshouse but the yield does not rise. Why?',
+  ['Another factor, such as light or temperature, is now limiting', 'Plants cannot use carbon dioxide for photosynthesis in a glasshouse', 'Too much oxygen is being produced', 'The crops have stopped respiring'],
+  'The limiting factor controls the rate.');
+M('B5.3-01', 'Why do farmers add fertiliser?',
+  ['To supply minerals such as nitrates for plant growth', 'To supply glucose for the crops to photosynthesise', 'To kill the insect pests that eat the crop leaves', 'To supply carbon dioxide directly to the crop roots'],
+  'Nitrates are needed to make proteins.');
+M('B5.3-02', 'Why do plants need nitrates?',
+  ['To make amino acids and proteins', 'To make glucose in photosynthesis', 'To make chlorophyll only', 'To absorb water'],
+  'Magnesium is needed for chlorophyll.');
+T('B5.3-03', 'Fertiliser increases crop yield by supplying minerals.', true,
+  'True. NPK fertilisers supply nitrogen, phosphorus and potassium.');
+MH('B5.3-04', 'Why do farmers need to add fertiliser to fields year after year?',
+  ['Harvesting removes the minerals taken up by the crops', 'Rain adds too many minerals to the soil each year', 'Plants make minerals and store them in the soil', 'Fertiliser kills the crops if not replaced'],
+  'The crops are taken away instead of decaying back into the soil.');
+M('B5.4-01', 'What is <b>biological control</b>?',
+  ['Using a natural predator to control a pest', 'Spraying a chemical made from plants to kill pests', 'Using fertiliser to grow bigger crops', 'Using a glasshouse to keep pests out'],
+  'For example, ladybirds eating aphids.');
+M('B5.4-02', 'What is a disadvantage of pesticides?',
+  ['They can kill helpful insects and build up in food chains', 'They take a very long time to act, so crops are eaten first', 'They never kill the pests', 'They are always more expensive than predators'],
+  'Pests can also become resistant.');
+T('B5.4-03', 'A disadvantage of biological control is that the predator may eat other useful species.', true,
+  'True. It can also be slower than pesticides.');
+MH('B5.4-04', 'Why might a farmer choose pesticides rather than biological control?',
+  ['Pesticides act quickly and kill most of the pests at once', 'Pesticides never harm any other species', 'Biological control always wipes out the pest completely', 'Pesticides help the pest population grow'],
+  'Biological control rarely removes the pest entirely.');
+M('B5.5-01', 'Why does bread dough rise when yeast is added?',
+  ['Yeast respires and produces carbon dioxide', 'Yeast produces oxygen by photosynthesis', 'Yeast absorbs water and swells', 'Yeast produces alcohol which expands'],
+  'The CO₂ bubbles are trapped in the dough.');
+M('B5.5-02', 'What happens to the ethanol made by yeast in bread?',
+  ['It evaporates during baking', 'It makes the bread rise', 'It stays in the bread', 'It turns into carbon dioxide'],
+  'Baking also kills the yeast.');
+T('B5.5-03', 'Yeast is a bacterium used in making bread.', false,
+  'False. Yeast is a single-celled fungus.');
+MH('B5.5-04', 'Why is dough left in a warm place before baking?',
+  ['Yeast enzymes work faster, so more CO₂ is produced', 'The heat kills the yeast before baking, so it rises', 'Warmth stops the yeast from respiring', 'Warmth produces more oxygen in the dough'],
+  'Too hot would denature the enzymes.');
+M('B5.6-01', 'How can you measure the rate of anaerobic respiration in yeast?',
+  ['Count the bubbles of CO₂ given off per minute', 'Measure the volume of oxygen given off per minute', 'Measure the mass of yeast at the end', 'Count the number of yeast cells added'],
+  'Or measure the volume of gas in a syringe.');
+M('B5.6-02', 'Why is a layer of oil put on top of the yeast and sugar solution?',
+  ['To stop oxygen getting in, so respiration is anaerobic', 'To feed the yeast with oil as an extra food source', 'To keep the solution warm so the yeast works faster', 'To let the carbon dioxide escape from the solution faster'],
+  'The water is often boiled first to remove dissolved oxygen.');
+T('B5.6-03', 'Yeast produces carbon dioxide during anaerobic respiration.', true,
+  'True. Glucose → ethanol + carbon dioxide.');
+MH('B5.6-04', 'Yeast is tested at 20, 30, 40 and 60 °C. Bubbling is fastest at 40 °C and stops at 60 °C. Why?',
+  ['Enzymes work best near 40 °C and are denatured at 60 °C', 'Yeast only respires at temperatures above 50 °C', 'The sugar is all used up at 40 °C, then it stops', 'The oil layer stops working at higher temperatures'],
+  'Enzymes control respiration.');
+M('B5.7-01', 'Which bacterium is used to make yoghurt?',
+  ['Lactobacillus', 'Salmonella bacteria', 'Yeast', 'E. coli'],
+  'It ferments lactose to lactic acid.');
+M('B5.7-02', 'Why does milk thicken when it is made into yoghurt?',
+  ['Lactic acid lowers the pH, which makes the milk proteins clot', 'The bacteria add extra water, which makes the milk go thicker', 'The milk is boiled for hours until most of the water has gone', 'Yeast produces bubbles of carbon dioxide that fill the milk'],
+  'The acid also gives the sour taste.');
+T('B5.7-03', 'The milk is pasteurised before Lactobacillus is added to make yoghurt.', true,
+  'True. This kills unwanted bacteria.');
+MH('B5.7-04', 'Why is the milk kept at about 40 °C while yoghurt is made?',
+  ['It is the optimum temperature for the Lactobacillus enzymes', 'It kills the Lactobacillus bacteria before they spread', 'It stops the milk from becoming acidic as it is stored', 'It removes all the lactose sugar from the milk quickly'],
+  'Then it is cooled to stop the reaction.');
+M('B5.8-01', 'Why is a fermenter fitted with a water jacket?',
+  ['To keep the temperature at the optimum', 'To add nutrients to the microorganisms', 'To stir the mixture', 'To remove the product'],
+  'Respiration produces heat, which must be removed.');
+M('B5.8-02', 'Why must a fermenter be sterilised before use (aseptic precautions)?',
+  ['To stop other microorganisms contaminating it', 'To make the product more acidic', 'To help the microorganisms photosynthesise', 'To increase the temperature quickly'],
+  'Contaminants would compete or make harmful products.');
+M('B5.8-03', 'Why is the mixture in a fermenter stirred?',
+  ['To keep the microorganisms, nutrients and temperature evenly mixed', 'To kill any unwanted microorganisms that get into the fermenter', 'To cool the mixture down rapidly once the product has been made', 'To stop any oxygen at all from getting into the fermenter mixture'],
+  'Paddles mix the contents.');
+T('B5.8-04', 'The pH inside a fermenter is monitored and kept at the optimum.', true,
+  'True. This keeps enzymes working well.');
+MH('B5.8-05', 'Why is sterile air bubbled into some fermenters?',
+  ['To supply oxygen for aerobic respiration without adding contaminants', 'To remove all of the nutrients from the mixture after the reaction', 'To lower the temperature of the mixture inside the fermenter to 0 °C', 'To make the microorganisms respire anaerobically and make ethanol'],
+  'The air is filtered first.');
+M('B5.10-01', 'What is <b>selective breeding</b>?',
+  ['Humans choosing parents with useful characteristics to breed', 'Inserting a gene from another species into the parents\' DNA', 'Organisms choosing their own mates in the wild', 'Making identical copies by cuttings'],
+  'Repeated over many generations.');
+M('B5.10-02', 'Which is an example of selective breeding in plants?',
+  ['Breeding wheat with a high yield', 'Putting a jellyfish gene into a plant', 'Taking a cutting of a geranium', 'Growing tomatoes in a glasshouse'],
+  'Also disease resistance, taste and size.');
+T('B5.10-03', 'Selective breeding can develop crops resistant to disease.', true,
+  'True.');
+MH('B5.10-04', 'What is a disadvantage of selective breeding?',
+  ['It reduces genetic variation, so a new disease could affect all of them', 'It always produces far more variation than breeding in the wild does', 'It is very fast, so the results appear after only one generation', 'It inserts genes from other species, which may spread to wild plants'],
+  'Inbreeding can also cause health problems.');
+M('B5.11-01', 'A farmer wants cows that produce more milk. What should the farmer do?',
+  ['Breed the cows that produce the most milk, over many generations', 'Feed all of the cows extra food for a year, then breed them', 'Insert a milk gene taken from a goat into every one of the cows', 'Breed the cows that produce the least milk, to balance the herd'],
+  'Bulls from high-yield mothers are used too.');
+T('B5.11-02', 'Selective breeding of animals produces results in a single generation.', false,
+  'False. It takes many generations.');
+M('B5.11-03', 'Which characteristic might be selected for in sheep?',
+  ['Thick, high-quality wool', 'Short life span', 'Low resistance to disease', 'Small amount of meat'],
+  'Farmers choose features that are useful to them.');
+MH('B5.11-04', 'Why do some selectively bred dog breeds have health problems?',
+  ['Inbreeding increases the chance of inheriting two harmful recessive alleles', 'Selective breeding removes all recessive alleles from the breed completely', 'Dogs are bred to have extra chromosomes, which causes health problems', 'The dogs carry genes from other species, which their bodies reject'],
+  'Breeding from close relatives reduces variation.');
+M('B5.12-01', 'What do <b>restriction enzymes</b> do?',
+  ['Cut DNA at specific sites', 'Join pieces of DNA together', 'Copy DNA in a fermenter', 'Digest proteins in the gut'],
+  'They leave sticky ends.');
+M('B5.12-02', 'What does <b>ligase</b> do?',
+  ['Joins pieces of DNA together', 'Cuts DNA at specific sites', 'Breaks down starch', 'Makes copies of plasmids'],
+  'It joins the gene into a plasmid.');
+T('B5.12-03', 'The same restriction enzyme is used to cut both the gene and the plasmid.', true,
+  'True. This gives matching sticky ends.');
+MH('B5.12-04', 'Why are "sticky ends" useful in genetic modification?',
+  ['Matching unpaired bases let the gene and plasmid join easily', 'They stop the two pieces of DNA from ever joining together', 'They make the DNA cut itself into many smaller pieces', 'They allow the gene to make a brand new type of protein'],
+  'Ligase then seals the join.');
+M('B5.13-01', 'What is a <b>vector</b> in genetic modification?',
+  ['Something that carries DNA into another cell', 'An enzyme that cuts DNA at set sites in a cell', 'A protein that is made from the gene', 'A bacterium that causes a disease'],
+  'Plasmids and viruses can act as vectors.');
+M('B5.13-02', 'What is a plasmid?',
+  ['A small ring of DNA found in bacteria', 'A protein that cuts DNA into pieces', 'A virus that only infects plant cells', 'The nucleus found inside a bacterium'],
+  'Bacteria do not have a nucleus.');
+T('B5.13-03', 'Viruses can be used as vectors to insert DNA into cells.', true,
+  'True. They naturally inject their DNA into cells.');
+MH('B5.13-04', 'What is <b>recombinant DNA</b>?',
+  ['DNA made by joining DNA from two different sources', 'DNA that has been copied many times in a fermenter', 'DNA that has been cut into pieces by an enzyme', 'DNA that is found only in viruses, not in bacteria'],
+  'For example, a plasmid containing the human insulin gene.');
+M('B5.14-01', 'How are bacteria used to make human insulin?',
+  ['The human insulin gene is inserted into bacteria, which make insulin', 'Bacteria take in insulin from human blood and then store it for later', 'Living bacteria are injected into people with diabetes to make insulin', 'The bacteria are bred selectively over many generations to make insulin'],
+  'They are then grown in a fermenter.');
+M('B5.14-02', 'Why are bacteria grown in a fermenter to make insulin?',
+  ['So they reproduce quickly and make large amounts', 'To kill them all before the insulin is made', 'To stop them making insulin', 'To mix them with human cells'],
+  'Conditions are kept at the optimum.');
+T('B5.14-03', 'Genetically modified bacteria make insulin that is identical to human insulin.', true,
+  'True. They have the human gene.');
+MH('B5.14-04', 'Which is the correct order for making insulin with bacteria?',
+  ['Cut out gene → insert into plasmid → put plasmid in bacteria → grow in fermenter', 'Grow in fermenter → cut out gene → insert into plasmid → put plasmid in bacteria', 'Insert into plasmid → cut out gene → grow in fermenter → put plasmid in bacteria', 'Put plasmid in bacteria → cut out gene → grow in fermenter → insert into plasmid'],
+  'Then extract and purify the insulin.');
+M('B5.15-01', 'How can genetically modified crops improve food production?',
+  ['They can be made resistant to pests or herbicides', 'They always grow well without any water at all', 'They need no light at all to grow quickly', 'They produce all of their own fertiliser'],
+  'Higher yields; Golden Rice has added vitamin A.');
+M('B5.15-02', 'What is an advantage of insect-resistant GM crops?',
+  ['Less pesticide needs to be sprayed', 'They need more pesticide than normal', 'They cannot be eaten by humans', 'They always grow more slowly'],
+  'The plant makes a toxin harmful to the insect.');
+T('B5.15-03', 'Some people worry that genes from GM crops could spread to wild plants.', true,
+  'True. This is one concern about GM crops.');
+MH('B5.15-04', 'Why might a farmer grow herbicide-resistant GM crops?',
+  ['The field can be sprayed to kill weeds without killing the crop', 'The crop makes its own herbicide, which kills the insects that eat it', 'Weeds are made resistant to the herbicide', 'The crop no longer needs any water'],
+  'Less competition from weeds increases yield.');
+M('B5.16-01', 'What does <b>transgenic</b> mean?',
+  ['Containing genetic material transferred from a different species', 'Produced by selective breeding of the same species over many generations', 'A clone of the parent organism made from a cutting', 'Having many more chromosomes than normal for its species'],
+  'For example, bacteria with a human gene.');
+T('B5.16-02', 'A transgenic organism has been produced by selective breeding.', false,
+  'False. A transgenic organism contains a gene from another species.');
+M('B5.16-03', 'Which is an example of a transgenic organism?',
+  ['A bacterium containing the human insulin gene', 'A cow selectively bred over many years for milk', 'A strawberry plant grown from a runner', 'A wheat plant grown in a glasshouse'],
+  'The gene came from a different species.');
+MH('B5.16-04', 'A plant has a gene from a bacterium that makes it resistant to insects. Why is it described as transgenic?',
+  ['Its genetic material includes DNA from a different species', 'It was produced by selective breeding of wheat plants', 'It is an exact clone of its parent, grown from a runner', 'It was grown in a polythene tunnel to protect it from pests'],
+  'Trans- = across (species).');
