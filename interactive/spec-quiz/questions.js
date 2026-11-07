@@ -1929,3 +1929,469 @@ M('P2.16-04', 'Why are copper wires used for electrical cables?',
 MH('P2.20-04', 'A 6 V battery and a 12 V battery each push 1 C of charge round a circuit. Which statement is correct?',
   ['The 12 V battery gives each coulomb twice as much energy', 'Both give the same energy to each coulomb', 'The 6 V battery gives more energy to each coulomb', 'Voltage has nothing to do with energy'],
   'Voltage = energy per unit charge: 12 J/C compared with 6 J/C.');
+
+/* ===================== CHEMISTRY 2(a) Group 1 (added 7 Nov 2026) ===================== */
+M('C2.1-01', 'What are the products when sodium reacts with water?',
+  ['Sodium hydroxide and hydrogen', 'Sodium oxide and hydrogen', 'Sodium hydroxide and oxygen', 'Sodium chloride and water'],
+  '2Na + 2H₂O → 2NaOH + H₂. The same type of reaction happens with lithium and potassium.');
+M('C2.1-02', 'Why are lithium, sodium and potassium called the <b>alkali</b> metals?',
+  ['They react with water to form alkaline solutions', 'They are mined from alkaline soils and rocks', 'They form neutral solutions when added to water', 'They react with alkalis to form acidic salts'],
+  'The metal hydroxide formed dissolves to give an alkaline solution.');
+T('C2.1-03', 'Lithium, sodium and potassium all float on water and fizz as they react.', true,
+  'True. They are less dense than water and give off hydrogen. These similar reactions show they are a family.');
+M('C2.1-04', 'Universal indicator is added to the water after sodium has reacted with it. What colour does it go?',
+  ['Purple', 'Red', 'Green', 'Yellow'],
+  'Sodium hydroxide is a strong alkali, so the indicator turns blue/purple.');
+MH('C2.1-05', 'Which balanced equation shows potassium reacting with water?',
+  ['2K + 2H₂O → 2KOH + H₂', 'K + H₂O → KOH + H₂', '2K + H₂O → K₂O + H₂', 'K + 2H₂O → KOH₂ + H₂'],
+  'Two K, four H and two O on each side.');
+M('C2.2-01', 'Which is the most reactive: lithium, sodium or potassium?',
+  ['Potassium', 'Lithium', 'Sodium', 'They are all equally reactive'],
+  'Reactivity increases down Group 1.');
+M('C2.2-02', 'Which observation shows that potassium is more reactive than sodium?',
+  ['Potassium bursts into a lilac flame; sodium does not catch fire', 'Potassium sinks in water, while sodium floats on the surface', 'Potassium makes an acidic solution; sodium makes an alkali', 'Potassium does not fizz in water, while sodium fizzes a lot'],
+  'Lithium fizzes steadily, sodium melts into a ball and whizzes around, potassium ignites.');
+MH('C2.2-03', 'Why does reactivity increase down Group 1?',
+  ['The outer electron is further from the nucleus, so it is lost more easily', 'The atoms have more outer electrons, so they lose more of them', 'The atoms get smaller, so the outer electron is easier to reach', 'The nucleus attracts the outer electron more strongly further down'],
+  'More shells → outer electron further away and more shielded → weaker attraction → lost more easily.');
+T('C2.2-04', 'Freshly cut sodium is shiny but quickly goes dull in air.', true,
+  'True. It reacts with oxygen in the air (tarnishes). Potassium tarnishes even faster.');
+M('C2.2-05', 'Why are Group 1 metals stored under oil?',
+  ['To stop them reacting with air and water', 'To keep them cool so they do not melt', 'To keep them shiny for displaying', 'To stop them dissolving in the air'],
+  'They react quickly with oxygen and moisture in air.');
+M('C2.3-01', 'Rubidium is below potassium in Group 1. Predict how it reacts with water.',
+  ['Even more violently than potassium', 'Less vigorously than lithium', 'It does not react', 'Exactly like lithium'],
+  'Reactivity increases down Group 1, so rubidium is more reactive than potassium.');
+M('C2.3-02', 'What would you predict about the melting point of caesium, near the bottom of Group 1?',
+  ['It is lower than potassium’s', 'It is higher than lithium’s', 'It is the same as sodium’s', 'Caesium cannot melt'],
+  'Melting points decrease down Group 1.');
+T('C2.3-03', 'Caesium hydroxide, formed when caesium reacts with water, is an alkali.', true,
+  'True. All Group 1 metals react with water to form an alkaline hydroxide and hydrogen.');
+MH('C2.3-04', 'Francium is at the bottom of Group 1. What is its likely charge as an ion?',
+  ['1+', '2+', '1−', '7+'],
+  'Like every Group 1 metal, it has one outer electron to lose.');
+
+/* ===================== CHEMISTRY 2(b) Group 7 (added 7 Nov 2026) ===================== */
+M('C2.5-01', 'What does bromine look like at room temperature?',
+  ['A red-brown liquid', 'A pale yellow-green gas', 'A grey-black solid', 'A colourless gas'],
+  'Chlorine: pale yellow-green gas. Bromine: red-brown liquid. Iodine: grey-black solid (purple vapour).');
+M('C2.5-02', 'What colour is chlorine gas?',
+  ['Pale yellow-green', 'Red-brown', 'Purple', 'Colourless'],
+  'Chlorine is a poisonous pale yellow-green gas.');
+M('C2.5-03', 'How do the melting and boiling points change down Group 7?',
+  ['They increase', 'They decrease', 'They stay the same', 'They go up and then down'],
+  'The molecules get bigger, so the intermolecular forces get stronger.');
+T('C2.5-04', 'Iodine is a grey-black solid that forms a purple vapour when warmed.', true,
+  'True.');
+MH('C2.5-05', 'How does the colour of the halogens change down the group?',
+  ['It gets darker', 'It gets lighter', 'It stays the same', 'They are all colourless'],
+  'Pale yellow-green (Cl₂) → red-brown (Br₂) → grey-black (I₂).');
+M('C2.6-01', 'Astatine is below iodine in Group 7. What would you predict it looks like?',
+  ['A dark solid', 'A pale gas', 'A colourless liquid', 'A yellow gas'],
+  'Following the trend: darker colour and higher melting point down the group.');
+M('C2.6-02', 'Fluorine is above chlorine in Group 7. What would you predict about its reactivity?',
+  ['It is more reactive than chlorine', 'It is less reactive than iodine', 'It is unreactive', 'It has the same reactivity as iodine'],
+  'Reactivity decreases down Group 7, so fluorine is the most reactive halogen.');
+T('C2.6-03', 'Astatine would be expected to be more reactive than iodine.', false,
+  'False. Reactivity decreases down Group 7, so astatine should be less reactive than iodine.');
+MH('C2.6-04', 'Fluorine is a gas at room temperature. Predict its state compared with chlorine’s boiling point.',
+  ['It has a lower boiling point than chlorine', 'It has a higher boiling point than chlorine', 'It has the same boiling point as bromine', 'It is a solid at room temperature'],
+  'Boiling points increase down the group, so fluorine (above chlorine) has a lower one.');
+M('C2.7-01', 'Chlorine water is added to potassium bromide solution. What happens?',
+  ['The solution turns orange as bromine is displaced', 'Nothing happens, as chlorine is less reactive', 'Chlorine is displaced and bubbles off as a gas', 'A white precipitate of potassium chloride forms'],
+  'Chlorine is more reactive than bromine: Cl₂ + 2KBr → 2KCl + Br₂.');
+M('C2.7-02', 'Which mixture will <b>not</b> react?',
+  ['Iodine + potassium chloride solution', 'Chlorine + potassium iodide solution', 'Bromine + potassium iodide solution', 'Chlorine + potassium bromide solution'],
+  'Iodine is less reactive than chlorine, so it cannot displace it.');
+MH('C2.7-03', 'Complete: Cl₂ + 2NaI → <b>?</b>',
+  ['2NaCl + I₂', 'NaCl₂ + I₂', '2NaI + Cl₂', 'Na₂Cl + I'],
+  'Chlorine displaces iodine from sodium iodide.');
+T('C2.7-04', 'Displacement reactions show that reactivity decreases down Group 7.', true,
+  'True. A halogen displaces any halide below it in the group, but not one above it.');
+M('C2.7-05', 'Bromine water is added to potassium iodide solution and the mixture turns brown. What does this show?',
+  ['Bromine is more reactive than iodine', 'Iodine is more reactive than bromine', 'Potassium is more reactive than bromine', 'No reaction has happened'],
+  'Bromine has displaced iodine, which colours the solution brown.');
+
+/* ===================== CHEMISTRY 2(c) Gases in the atmosphere (added 7 Nov 2026) ===================== */
+M('C2.9-01', 'Approximately what percentage of dry air is nitrogen?',
+  ['78%', '21%', '1%', '50%'],
+  'Nitrogen 78%, oxygen 21%, argon 0.9%, carbon dioxide 0.04%.');
+M('C2.9-02', 'Approximately what percentage of dry air is oxygen?',
+  ['21%', '78%', '0.04%', '1%'],
+  'About one fifth of the air is oxygen.');
+M('C2.9-03', 'Which gas makes up about 0.9% of dry air?',
+  ['Argon', 'Carbon dioxide', 'Nitrogen', 'Hydrogen'],
+  'Argon is the third most abundant gas in dry air.');
+T('C2.9-04', 'Carbon dioxide makes up about 4% of dry air.', false,
+  'False. Carbon dioxide is only about 0.04% of dry air.');
+M('C2.10-01', 'Damp iron wool is left in a measuring tube upside down over water for a week. The water rises. Why?',
+  ['The iron rusts and uses up the oxygen in the trapped air', 'The iron produces a gas that pushes the water up', 'Water evaporates into the tube', 'The nitrogen dissolves in the water'],
+  'Oxygen is removed, so the gas volume falls by about one fifth.');
+MH('C2.10-02', 'In an experiment, 100 cm³ of air is passed over hot copper until the volume stops changing. What final volume is expected?',
+  ['About 79 cm³', 'About 21 cm³', 'About 100 cm³', 'About 50 cm³'],
+  'The copper reacts with the oxygen (about 21%), leaving about 79 cm³.');
+T('C2.10-03', 'Phosphorus burning in a bell jar over water can be used to find the percentage of oxygen in air.', true,
+  'True. The phosphorus uses up the oxygen and the water level rises to replace it.');
+M('C2.10-04', 'Why must you wait for the apparatus to cool before reading the final gas volume?',
+  ['Hot gas expands, so the volume reading would be too big', 'The copper would melt and block the tube if moved', 'The water in the trough would boil and add steam', 'Oxygen is released again from the copper as it cools'],
+  'Gas volumes must be compared at the same temperature.');
+M('C2.11-01', 'What is seen when magnesium burns in oxygen?',
+  ['A bright white flame and a white powder forms', 'A blue flame and a choking gas forms', 'A squeaky pop and water forms', 'No visible change'],
+  '2Mg + O₂ → 2MgO.');
+M('C2.11-02', 'What is made when sulfur burns in oxygen?',
+  ['Sulfur dioxide, an acidic gas', 'Sulfur hydroxide, an alkali', 'Sulfuric acid, a liquid', 'Hydrogen sulfide'],
+  'S + O₂ → SO₂. Sulfur burns with a blue flame.');
+M('C2.11-03', 'What is the only product when hydrogen burns in oxygen?',
+  ['Water', 'Hydrogen peroxide', 'Carbon dioxide', 'Hydrogen oxide gas and heat only'],
+  '2H₂ + O₂ → 2H₂O.');
+MH('C2.11-04', 'The oxides of magnesium and sulfur are each added to water with universal indicator. What do you see?',
+  ['MgO: blue/purple (alkaline); SO₂: red (acidic)', 'Both solutions turn red (acidic)', 'Both solutions turn purple (alkaline)', 'MgO: red (acidic); SO₂: purple (alkaline)'],
+  'Metal oxides are basic; non-metal oxides are acidic.');
+M('C2.12-01', 'What gas is given off when copper(II) carbonate is heated?',
+  ['Carbon dioxide', 'Oxygen', 'Hydrogen', 'Carbon monoxide'],
+  'CuCO₃ → CuO + CO₂ (thermal decomposition).');
+M('C2.12-02', 'What colour change is seen when copper(II) carbonate is heated?',
+  ['Green to black', 'Blue to white', 'Black to green', 'White to yellow'],
+  'Green copper(II) carbonate decomposes to black copper(II) oxide.');
+T('C2.12-03', 'Thermal decomposition means breaking a substance down using heat.', true,
+  'True. For example, metal carbonates break down into a metal oxide and carbon dioxide.');
+MH('C2.12-04', 'How could you show that the gas from heating copper(II) carbonate is carbon dioxide?',
+  ['Bubble it through limewater, which turns milky', 'Hold a glowing splint in it, which relights', 'Hold a lighted splint in it, which pops', 'Hold damp red litmus in it, which turns blue'],
+  'Limewater turns milky (cloudy) with carbon dioxide.');
+M('C2.13-01', 'Why does increasing carbon dioxide in the atmosphere matter?',
+  ['It is a greenhouse gas and may contribute to climate change', 'It destroys the ozone layer, letting in more ultraviolet light', 'It is poisonous to breathe, even at the levels in normal air', 'It makes the air less dense, so aeroplanes cannot fly as well'],
+  'Greenhouse gases absorb heat radiated from the Earth.');
+T('C2.13-02', 'Carbon dioxide is a greenhouse gas.', true,
+  'True. Increasing amounts may contribute to climate change.');
+M('C2.13-03', 'Which human activity adds most carbon dioxide to the atmosphere?',
+  ['Burning fossil fuels', 'Planting trees', 'Using solar panels', 'Recycling paper'],
+  'Burning coal, oil and gas releases carbon dioxide.');
+M('C2.14-01', 'In the copper experiment to find the percentage of oxygen, why is the air pushed back and forth over the hot copper many times?',
+  ['So that all the oxygen reacts with the copper', 'To cool the copper so it does not melt', 'To add extra oxygen from outside the syringes', 'To stop the syringe plungers from sticking'],
+  'Repeat until the volume stops changing, so all the oxygen has been used up.');
+MH('C2.14-02', 'Starting volume of air: 50.0 cm³. Final volume after reaction with hot copper: 39.5 cm³. What percentage of the air was oxygen?',
+  ['21%', '79%', '10.5%', '26.6%'],
+  'Oxygen used = 50.0 − 39.5 = 10.5 cm³. 10.5 ÷ 50.0 × 100 = <b>21%</b>.');
+T('C2.14-03', 'In the iron wool experiment, the iron wool should be dry so it reacts faster.', false,
+  'False. Iron needs both oxygen and water to rust, so the iron wool must be damp.');
+
+/* ===================== CHEMISTRY 2(d) Reactivity series (added 7 Nov 2026) ===================== */
+M('C2.15-01', 'Which metal reacts most vigorously with cold water?',
+  ['Potassium', 'Magnesium', 'Zinc', 'Copper'],
+  'Potassium, sodium, lithium and calcium react with cold water; magnesium only very slowly.');
+M('C2.15-02', 'Which metal does <b>not</b> react with dilute hydrochloric acid?',
+  ['Copper', 'Magnesium', 'Zinc', 'Iron'],
+  'Copper, silver and gold are below hydrogen, so they do not react with dilute acids.');
+M('C2.15-03', 'Magnesium reacts very slowly with cold water but quickly with steam. What does steam give?',
+  ['Magnesium oxide and hydrogen', 'Magnesium hydroxide and oxygen', 'Magnesium oxide and oxygen', 'Magnesium hydride'],
+  'Mg + H₂O(g) → MgO + H₂.');
+T('C2.15-04', 'Metals that react with acids produce a salt and hydrogen.', true,
+  'True. For example, Zn + 2HCl → ZnCl₂ + H₂.');
+M('C2.16-01', 'Magnesium is added to copper(II) sulfate solution. What happens?',
+  ['Copper is displaced and the blue colour fades', 'Nothing happens, as magnesium is less reactive', 'Magnesium is displaced and coats the copper', 'The solution turns a darker shade of blue'],
+  'Mg + CuSO₄ → MgSO₄ + Cu. Magnesium is more reactive than copper.');
+M('C2.16-02', 'Which reaction would <b>not</b> happen?',
+  ['Copper + zinc sulfate solution', 'Zinc + copper(II) sulfate solution', 'Magnesium + iron(II) sulfate solution', 'Iron + copper(II) sulfate solution'],
+  'Copper is less reactive than zinc, so it cannot displace it.');
+MH('C2.16-03', 'Aluminium powder is heated with iron(III) oxide (the thermite reaction). What forms?',
+  ['Aluminium oxide and iron', 'Aluminium and iron oxide (no reaction)', 'Iron and oxygen gas', 'Aluminium iron alloy'],
+  '2Al + Fe₂O₃ → Al₂O₃ + 2Fe. Aluminium is more reactive, so it takes the oxygen.');
+T('C2.16-04', 'A more reactive metal can displace a less reactive metal from a solution of its salt.', true,
+  'True. Displacement reactions are used to place metals in a reactivity series.');
+M('C2.17-01', 'Which list is in order of decreasing reactivity?',
+  ['potassium, sodium, lithium, calcium, magnesium, aluminium, zinc, iron, copper, silver, gold', 'gold, silver, copper, iron, zinc, aluminium, magnesium, calcium, lithium, sodium, potassium', 'potassium, sodium, calcium, lithium, magnesium, zinc, aluminium, iron, copper, gold, silver', 'sodium, potassium, lithium, calcium, aluminium, magnesium, zinc, copper, iron, silver, gold'],
+  'The spec order: K, Na, Li, Ca, Mg, Al, Zn, Fe, Cu, Ag, Au.');
+M('C2.17-02', 'Which metal is the least reactive?',
+  ['Gold', 'Silver', 'Copper', 'Iron'],
+  'Gold is at the bottom of the reactivity series: it is found uncombined in nature.');
+M('C2.17-03', 'Which metal is between magnesium and zinc in the reactivity series?',
+  ['Aluminium', 'Calcium', 'Iron', 'Copper'],
+  '… calcium, magnesium, aluminium, zinc, iron …');
+MH('C2.17-04', 'Metal X displaces copper but not zinc from their salt solutions. Where is X in the reactivity series?',
+  ['Between zinc and copper', 'Above zinc, near magnesium', 'Below copper, near silver', 'Above potassium, at the top'],
+  'X is more reactive than copper but less reactive than zinc. Iron fits.');
+M('C2.18-01', 'What does iron need in order to rust?',
+  ['Both oxygen and water', 'Only oxygen from the air', 'Only water, with no air', 'Carbon dioxide and water'],
+  'Iron + oxygen + water → hydrated iron(III) oxide (rust).');
+MH('C2.18-02', 'Three nails are set up: A in dry air with drying agent, B in boiled water with oil on top, C in tap water open to air. Which rusts?',
+  ['Only C', 'Only A', 'A and B', 'All three'],
+  'A has no water; B has no oxygen (boiled water, oil layer). Only C has both.');
+T('C2.18-03', 'Iron rusts faster in salty water.', true,
+  'True. Salt speeds up rusting, which is why cars rust faster where roads are salted.');
+M('C2.18-04', 'What is rust?',
+  ['Hydrated iron(III) oxide', 'Iron carbonate', 'Iron chloride', 'Pure iron that has gone brown'],
+  'Rust is iron(III) oxide with water combined in it.');
+M('C2.19-01', 'How does painting a bicycle frame stop it rusting?',
+  ['It is a barrier that keeps out oxygen and water', 'It makes the iron more reactive', 'It sacrifices itself instead of the iron', 'It turns the iron into steel'],
+  'Paint, oil, grease and plastic coatings are barrier methods.');
+M('C2.19-02', 'What is <b>galvanising</b>?',
+  ['Coating iron with a layer of zinc', 'Coating iron with paint', 'Coating iron with copper', 'Heating iron to make it harder'],
+  'The zinc is a barrier, and it also protects sacrificially if scratched.');
+M('C2.19-03', 'Blocks of magnesium are attached to a ship’s steel hull. How does this stop rusting?',
+  ['Magnesium is more reactive, so it corrodes instead of the iron', 'Magnesium is less reactive, so it forms a barrier against water', 'Magnesium makes the steel waterproof by coating the whole hull', 'Magnesium reacts with any rust that forms and turns it back to iron'],
+  'This is sacrificial protection.');
+MH('C2.19-04', 'A galvanised bucket is scratched through to the iron. Why does the iron still not rust?',
+  ['Zinc is more reactive than iron, so the zinc corrodes instead', 'The zinc grows back over the scratch', 'Iron cannot rust once it has touched zinc', 'Zinc is less reactive and protects it as a barrier'],
+  'Zinc gives sacrificial protection as well as acting as a barrier.');
+T('C2.19-05', 'Using a less reactive metal, such as copper, attached to iron gives sacrificial protection.', false,
+  'False. The sacrificial metal must be more reactive than iron, such as zinc or magnesium.');
+M('C2.20-01', 'What is oxidation, in terms of electrons?',
+  ['Loss of electrons', 'Gain of electrons', 'Gain of protons', 'Loss of neutrons'],
+  'OIL RIG: Oxidation Is Loss, Reduction Is Gain (of electrons).');
+M('C2.20-02', 'CuO + H₂ → Cu + H₂O. Which substance is reduced?',
+  ['Copper(II) oxide', 'Hydrogen', 'Copper', 'Water'],
+  'Copper(II) oxide loses oxygen, so it is reduced. Hydrogen gains oxygen, so it is oxidised.');
+MH('C2.20-03', 'Mg + CuSO₄ → MgSO₄ + Cu. What is the reducing agent?',
+  ['Magnesium', 'Copper(II) ions', 'Sulfate ions', 'Copper'],
+  'Magnesium loses electrons (Mg → Mg²⁺ + 2e⁻), so it is oxidised and acts as the reducing agent.');
+M('C2.20-04', 'What is a <b>redox</b> reaction?',
+  ['A reaction in which oxidation and reduction both happen', 'A reaction that only involves the reduction of a metal', 'A reaction between an acid and an alkali to make a salt', 'A reaction that changes the colour of a solution to red'],
+  'When one substance loses electrons, another must gain them.');
+T('C2.20-05', 'Reduction is the gain of oxygen.', false,
+  'False. Reduction is the loss of oxygen (or gain of electrons). Oxidation is gain of oxygen.');
+M('C2.21-01', 'Equal pieces of magnesium, zinc and iron are added to the same acid. Which gives the fastest bubbling?',
+  ['Magnesium', 'Zinc', 'Iron', 'All the same'],
+  'Magnesium is highest in the reactivity series of the three.');
+M('C2.21-02', 'In the metals-and-acids practical, which variable must be kept the same for a fair test?',
+  ['The concentration and volume of acid', 'The type of metal used each time', 'The amount of bubbling produced', 'The colour of the final solution'],
+  'Also the size of the metal pieces and the starting temperature.');
+MH('C2.21-03', 'How else, besides bubbling, could you compare the reactivity of metals with acid?',
+  ['Measure the temperature rise', 'Measure the colour of the metal', 'Weigh the acid before adding the metal', 'Measure the pH of the metal'],
+  'More reactive metals release energy faster, giving a bigger temperature rise.');
+T('C2.21-04', 'Copper fizzes slowly in dilute hydrochloric acid.', false,
+  'False. Copper does not react with dilute hydrochloric acid at all.');
+
+/* ===================== CHEMISTRY 2(e) Acids, alkalis and titrations (added 7 Nov 2026) ===================== */
+M('C2.28-01', 'What colour is methyl orange in an <b>acid</b>?',
+  ['Red', 'Yellow', 'Pink', 'Blue'],
+  'Methyl orange: red in acid, yellow in alkali.');
+M('C2.28-02', 'What colour is phenolphthalein in an <b>alkali</b>?',
+  ['Pink', 'Colourless', 'Red', 'Yellow'],
+  'Phenolphthalein: colourless in acid, pink in alkali.');
+M('C2.28-03', 'What colour does blue litmus turn in an acid?',
+  ['Red', 'Blue (no change)', 'Green', 'Purple'],
+  'Litmus: red in acid, blue in alkali.');
+T('C2.28-04', 'Phenolphthalein is pink in acid.', false,
+  'False. Phenolphthalein is colourless in acid and pink in alkali.');
+M('C2.29-01', 'A solution has a pH of 2. How is it classified?',
+  ['Strongly acidic', 'Weakly acidic', 'Neutral', 'Strongly alkaline'],
+  '0–3 strongly acidic, 4–6 weakly acidic, 7 neutral, 8–10 weakly alkaline, 11–14 strongly alkaline.');
+M('C2.29-02', 'A solution has a pH of 9. How is it classified?',
+  ['Weakly alkaline', 'Strongly alkaline', 'Weakly acidic', 'Neutral'],
+  'pH 8–10 is weakly alkaline.');
+T('C2.29-03', 'A solution with pH 7 is neutral.', true,
+  'True. Pure water has a pH of 7.');
+MH('C2.29-04', 'Which pH is most likely for sodium hydroxide solution?',
+  ['14', '7', '9', '1'],
+  'Sodium hydroxide is a strong alkali (11–14).');
+M('C2.30-01', 'What colour is universal indicator in a neutral solution?',
+  ['Green', 'Red', 'Purple', 'Yellow'],
+  'Red (strong acid) → orange/yellow → green (neutral) → blue → purple (strong alkali).');
+M('C2.30-02', 'Why is universal indicator more useful than litmus?',
+  ['It shows an approximate pH, not just acid or alkali', 'It works in acids, while litmus only works in alkalis', 'It stays colourless, so the solution is easy to see', 'It changes the pH of the solution to make it neutral'],
+  'Universal indicator is a mixture of indicators giving a range of colours.');
+T('C2.30-03', 'Universal indicator turns purple in a strong alkali.', true,
+  'True.');
+MH('C2.30-04', 'A solution turns universal indicator orange-yellow. What is its approximate pH?',
+  ['5', '1', '7', '11'],
+  'Orange/yellow means weakly acidic (about 4–6).');
+M('C2.31-01', 'Which ions make a solution acidic?',
+  ['Hydrogen ions, H⁺', 'Hydroxide ions, OH⁻', 'Sodium ions, Na⁺', 'Chloride ions, Cl⁻'],
+  'Acids in aqueous solution are a source of H⁺ ions.');
+M('C2.31-02', 'Which ions make a solution alkaline?',
+  ['Hydroxide ions, OH⁻', 'Hydrogen ions, H⁺', 'Oxide ions, O²⁻', 'Sulfate ions, SO₄²⁻'],
+  'Alkalis in aqueous solution are a source of OH⁻ ions.');
+T('C2.31-03', 'Hydrochloric acid contains hydroxide ions.', false,
+  'False. Acids are a source of hydrogen ions (H⁺). Alkalis provide hydroxide ions.');
+M('C2.32-01', 'What forms when an alkali neutralises an acid?',
+  ['A salt and water', 'Hydrogen gas only', 'Carbon dioxide and water', 'A stronger acid'],
+  'For example, HCl + NaOH → NaCl + H₂O.');
+MH('C2.32-02', 'Which ionic equation shows neutralisation?',
+  ['H⁺ + OH⁻ → H₂O', 'Na⁺ + Cl⁻ → NaCl', 'H⁺ + Cl⁻ → HCl', '2H⁺ → H₂'],
+  'The hydrogen ions from the acid react with the hydroxide ions from the alkali.');
+T('C2.32-03', 'Adding enough alkali to an acid can make the solution neutral.', true,
+  'True. The alkali neutralises the acid.');
+
+/* ===================== CHEMISTRY 2(f) Acids, bases and salt preparations (added 7 Nov 2026) ===================== */
+M('C2.34-01', 'Which of these salts is <b>insoluble</b> in water?',
+  ['Silver chloride', 'Sodium chloride', 'Potassium nitrate', 'Ammonium sulfate'],
+  'Common chlorides are soluble, except silver and lead(II) chloride.');
+M('C2.34-02', 'Which of these is soluble in water?',
+  ['All nitrates', 'Barium sulfate', 'Calcium carbonate', 'Copper(II) hydroxide'],
+  'All nitrates are soluble.');
+M('C2.34-03', 'Which carbonate is soluble?',
+  ['Sodium carbonate', 'Calcium carbonate', 'Copper(II) carbonate', 'Zinc carbonate'],
+  'Carbonates are insoluble except sodium, potassium and ammonium carbonates.');
+T('C2.34-04', 'Barium sulfate is soluble in water.', false,
+  'False. Common sulfates are soluble except barium, calcium and lead(II) sulfate.');
+MH('C2.34-05', 'Which hydroxide is described as slightly soluble?',
+  ['Calcium hydroxide', 'Sodium hydroxide', 'Copper(II) hydroxide', 'Iron(III) hydroxide'],
+  'Sodium and potassium hydroxide are soluble; calcium hydroxide is slightly soluble; others are insoluble.');
+M('C2.35-01', 'In terms of protons, what does an acid do?',
+  ['It donates protons (H⁺ ions)', 'It accepts protons (H⁺ ions)', 'It donates electrons (e⁻)', 'It accepts hydroxide ions only'],
+  'Acid = proton donor. Base = proton acceptor.');
+M('C2.36-01', 'What is a <b>base</b>, in terms of proton transfer?',
+  ['A proton acceptor', 'A proton donor', 'An electron donor', 'A neutron acceptor'],
+  'For example, OH⁻ accepts an H⁺ to become H₂O.');
+T('C2.36-02', 'An acid is a proton donor.', true,
+  'True. A proton is an H⁺ ion.');
+MH('C2.35-02', 'In the reaction HCl + NH₃ → NH₄Cl, which substance acts as the base?',
+  ['Ammonia, because it accepts a proton to form NH₄⁺', 'Hydrogen chloride, because it donates a proton', 'Ammonium chloride, because it is a salt', 'Neither: no protons are transferred'],
+  'HCl donates H⁺ (acid); NH₃ accepts it (base).');
+MH('C2.36-03', 'When an acid reacts with a hydroxide, what happens to the protons?',
+  ['They are transferred from the acid to the hydroxide ions, forming water', 'They are destroyed in the reaction, which is why the acid is used up', 'They are transferred to the metal ions, forming the salt', 'They stay attached to the acid, which is why the solution stays acidic'],
+  'H⁺ + OH⁻ → H₂O.');
+M('C2.37-01', 'What is the salt made when zinc reacts with hydrochloric acid?',
+  ['Zinc chloride', 'Zinc sulfate', 'Zinc nitrate', 'Zinc hydroxide'],
+  'Hydrochloric acid makes chlorides, sulfuric acid makes sulfates, nitric acid makes nitrates.');
+M('C2.37-02', 'What are the products when an acid reacts with a metal carbonate?',
+  ['A salt, water and carbon dioxide', 'A salt and hydrogen gas only', 'A salt and water only', 'A base, water and carbon dioxide'],
+  'For example, CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂.');
+M('C2.37-03', 'What are the products when an acid reacts with a metal oxide?',
+  ['A salt and water', 'A salt and hydrogen', 'A salt, water and carbon dioxide', 'An alkali and hydrogen'],
+  'For example, CuO + H₂SO₄ → CuSO₄ + H₂O.');
+MH('C2.37-04', 'Which acid would you use to make magnesium nitrate?',
+  ['Nitric acid', 'Hydrochloric acid', 'Sulfuric acid', 'Carbonic acid'],
+  'Nitrates are made from nitric acid, e.g. with magnesium oxide or carbonate.');
+T('C2.37-05', 'Sulfuric acid reacts with magnesium to form magnesium sulfate and hydrogen.', true,
+  'True. Mg + H₂SO₄ → MgSO₄ + H₂.');
+M('C2.38-01', 'What is an <b>alkali</b>?',
+  ['A base that is soluble in water', 'Any acid that is weak', 'A metal that reacts with water', 'A salt that dissolves'],
+  'All alkalis are bases, but not all bases are alkalis.');
+M('C2.38-02', 'Which of these can act as a base?',
+  ['Copper(II) oxide', 'Hydrochloric acid', 'Sodium chloride', 'Carbon dioxide'],
+  'Metal oxides, metal hydroxides and ammonia can act as bases.');
+T('C2.38-03', 'All bases are alkalis.', false,
+  'False. Only bases that dissolve in water are alkalis. Copper(II) oxide is a base but not an alkali.');
+MH('C2.38-04', 'Ammonia solution turns red litmus blue. Why is ammonia classed as a base?',
+  ['It accepts protons and neutralises acids', 'It contains metal ions that make it basic', 'It donates protons to the water it dissolves in', 'It is a gas, and all gases are bases'],
+  'NH₃ + H⁺ → NH₄⁺.');
+M('C2.39-01', 'To make a pure, dry salt from an insoluble base and an acid, why is the base added in <b>excess</b>?',
+  ['To make sure all the acid is used up', 'To make the salt more colourful', 'To speed up evaporation', 'So the salt is wet'],
+  'The leftover solid base is then easily filtered off.');
+M('C2.39-02', 'After reacting excess insoluble base with acid, what is the next step?',
+  ['Filter to remove the unreacted base', 'Add more acid', 'Boil the mixture dry immediately', 'Add universal indicator'],
+  'Then heat the filtrate to concentrate it and leave it to crystallise.');
+MH('C2.39-03', 'Why is the salt solution only partly evaporated, then left to cool, instead of boiled dry?',
+  ['To get well-formed crystals that keep their water of crystallisation', 'To let the salt dissolve again so that the solution stays pure', 'Because boiling the solution would turn the salt back into an acid', 'To give the excess base time to react with the remaining acid'],
+  'Boiling dry can decompose hydrated salts and gives a powder instead of crystals.');
+T('C2.39-04', 'Filtration is used to remove the excess insoluble reactant.', true,
+  'True. The salt solution passes through as the filtrate.');
+M('C2.42-01', 'What is the colour of hydrated copper(II) sulfate crystals?',
+  ['Blue', 'White', 'Black', 'Green'],
+  'Blue CuSO₄·5H₂O. Anhydrous copper(II) sulfate is white.');
+M('C2.42-02', 'Which two reactants are used to make copper(II) sulfate crystals in the required practical?',
+  ['Copper(II) oxide and dilute sulfuric acid', 'Copper and dilute sulfuric acid', 'Copper(II) oxide and hydrochloric acid', 'Copper and sodium sulfate solution'],
+  'Copper does not react with dilute sulfuric acid, so its oxide is used.');
+MH('C2.42-03', 'How do you know when you have added excess copper(II) oxide to the warm sulfuric acid?',
+  ['Black solid remains and no more dissolves', 'The solution turns from blue to colourless', 'Bubbles of gas stop being given off', 'The solution turns from blue to green'],
+  'Unreacted black copper(II) oxide stays in the beaker.');
+T('C2.42-04', 'The sulfuric acid is warmed so that the copper(II) oxide reacts faster.', true,
+  'True. Do not boil it.');
+
+/* ===================== CHEMISTRY 2(g) Chemical tests (added 7 Nov 2026) ===================== */
+M('C2.44-01', 'What is the test for hydrogen?',
+  ['A lighted splint gives a squeaky pop', 'A glowing splint relights', 'Limewater turns milky', 'Damp litmus paper is bleached'],
+  'Hydrogen burns with a squeaky pop.');
+M('C2.44-02', 'What is the test for oxygen?',
+  ['A glowing splint relights', 'A lighted splint gives a squeaky pop', 'Limewater turns milky', 'Damp red litmus turns blue'],
+  'Oxygen relights a glowing splint.');
+M('C2.44-03', 'What is the test for carbon dioxide?',
+  ['Bubble it through limewater, which turns milky', 'Put a glowing splint in it, which relights', 'Put a lighted splint in it, which pops', 'Hold damp red litmus in it, which turns blue'],
+  'Limewater is calcium hydroxide solution.');
+M('C2.44-04', 'What is the test for ammonia?',
+  ['Damp red litmus paper turns blue', 'Damp blue litmus paper is bleached', 'Limewater turns milky', 'A glowing splint relights'],
+  'Ammonia is an alkaline gas.');
+M('C2.44-05', 'What is the test for chlorine?',
+  ['Damp litmus paper is bleached white', 'Damp red litmus paper turns blue', 'A lighted splint gives a squeaky pop', 'Limewater turns milky and cloudy'],
+  'Blue litmus may turn red first, then is bleached.');
+M('C2.45-01', 'In a flame test, what is the wire dipped in first to clean it?',
+  ['Concentrated hydrochloric acid', 'Distilled water from a wash bottle', 'Sodium hydroxide solution', 'Limewater solution'],
+  'A nichrome or platinum wire is cleaned in acid, then dipped in the sample and held in a blue (roaring) Bunsen flame.');
+MH('C2.45-02', 'Why must the flame test wire be cleaned before each test?',
+  ['Traces of other metal ions would colour the flame', 'The wire needs to be hot before the test starts', 'Cleaning stops the wire melting in the flame', 'The acid turns the Bunsen flame blue'],
+  'Even small amounts of sodium give a strong yellow flame.');
+T('C2.45-03', 'A flame test is done using a yellow (safety) Bunsen flame.', false,
+  'False. Use a blue flame so its colour does not hide the colour from the metal ion.');
+M('C2.46-01', 'Which ion gives a <b>lilac</b> flame?',
+  ['K⁺', 'Na⁺', 'Li⁺', 'Cu²⁺'],
+  'Li⁺ red, Na⁺ yellow, K⁺ lilac, Ca²⁺ orange-red, Cu²⁺ blue-green.');
+M('C2.46-02', 'What colour flame does sodium give?',
+  ['Yellow', 'Lilac', 'Red', 'Blue-green'],
+  'Sodium compounds give a strong yellow flame.');
+M('C2.46-03', 'A compound gives a blue-green flame. Which ion is present?',
+  ['Cu²⁺', 'Ca²⁺', 'Li⁺', 'K⁺'],
+  'Copper(II) ions give a blue-green flame.');
+MH('C2.46-04', 'Which two ions give flame colours that are easily confused, both being red-ish?',
+  ['Li⁺ (red) and Ca²⁺ (orange-red)', 'Na⁺ (yellow) and K⁺ (lilac)', 'Cu²⁺ (blue-green) and K⁺ (lilac)', 'Na⁺ (yellow) and Cu²⁺ (blue-green)'],
+  'Lithium is red; calcium is orange-red.');
+M('C2.47-01', 'Sodium hydroxide solution is added to a solution and a blue precipitate forms. Which ion is present?',
+  ['Cu²⁺', 'Fe²⁺', 'Fe³⁺', 'NH₄⁺'],
+  'Cu²⁺ blue, Fe²⁺ green, Fe³⁺ orange-brown precipitate.');
+M('C2.47-02', 'What colour precipitate does iron(III) give with sodium hydroxide solution?',
+  ['Orange-brown', 'Green', 'Blue', 'White'],
+  'Iron(II) gives a green precipitate.');
+M('C2.47-03', 'How do you test for ammonium ions (NH₄⁺)?',
+  ['Warm with sodium hydroxide; the gas turns damp red litmus blue', 'Add dilute acid; the gas given off turns limewater milky', 'Add silver nitrate solution; a white precipitate forms', 'Do a flame test with a clean wire; a lilac flame appears'],
+  'NH₄⁺ + OH⁻ → NH₃ + H₂O.');
+MH('C2.47-04', 'A green precipitate forms with sodium hydroxide, which slowly turns orange-brown at the surface. What was in the solution?',
+  ['Fe²⁺ ions', 'Cu²⁺ ions', 'Fe³⁺ ions', 'NH₄⁺ ions'],
+  'Iron(II) hydroxide is green; it is slowly oxidised by air to orange-brown iron(III) hydroxide.');
+M('C2.48-01', 'Dilute nitric acid and silver nitrate solution are added to a solution. A yellow precipitate forms. Which ion is present?',
+  ['Iodide, I⁻', 'Chloride, Cl⁻', 'Bromide, Br⁻', 'Sulfate, SO₄²⁻'],
+  'Cl⁻ white, Br⁻ cream, I⁻ yellow precipitate.');
+M('C2.48-02', 'How do you test for sulfate ions?',
+  ['Add dilute HCl then barium chloride solution: white precipitate', 'Add dilute nitric acid then silver nitrate: yellow precipitate', 'Add sodium hydroxide solution: blue precipitate forms', 'Do a flame test with a clean wire: yellow flame appears'],
+  'Barium sulfate is insoluble.');
+M('C2.48-03', 'How do you test for carbonate ions?',
+  ['Add dilute acid; the gas given off turns limewater milky', 'Add silver nitrate; a white precipitate forms', 'Add sodium hydroxide; a gas turns red litmus blue', 'Do a flame test; a red flame appears'],
+  'Carbonates react with acids to give carbon dioxide.');
+MH('C2.48-04', 'Why is the solution acidified with nitric acid before adding silver nitrate in the halide test?',
+  ['To remove carbonate ions, which would also give a precipitate', 'To make the precipitate a brighter, clearer colour to see', 'To provide the chloride ions needed to form the precipitate', 'To speed up the reaction so the precipitate forms quickly'],
+  'Hydrochloric acid cannot be used, because it contains chloride ions itself.');
+T('C2.48-05', 'Silver chloride is a white precipitate.', true,
+  'True. Silver bromide is cream and silver iodide is yellow.');
+M('C2.49-01', 'Anhydrous copper(II) sulfate is used to test for water. What is seen?',
+  ['It turns from white to blue', 'It turns from blue to white', 'It fizzes', 'It turns from green to black'],
+  'Water rehydrates the white powder to blue hydrated copper(II) sulfate.');
+T('C2.49-02', 'The anhydrous copper(II) sulfate test shows that a liquid is pure water.', false,
+  'False. It shows water is present, but not that the liquid is pure. Any solution containing water would turn it blue.');
+MH('C2.49-03', 'A colourless liquid turns anhydrous copper(II) sulfate blue. What can you conclude?',
+  ['The liquid contains water', 'The liquid is pure water', 'The liquid is an acid', 'The liquid contains copper'],
+  'To show it is pure water, test its boiling or freezing point.');
+M('C2.50-01', 'How can you show that a sample of water is pure?',
+  ['Check that it boils at exactly 100 °C', 'Add anhydrous copper(II) sulfate', 'Check that it is clear and colourless', 'Check that it has no smell'],
+  'Impurities change the boiling and freezing points.');
+MH('C2.50-02', 'A water sample boils at 102 °C. What does this show?',
+  ['It is impure: dissolved substances raise its boiling point', 'It is pure: all pure water boils between 100 and 105 °C', 'The thermometer must be broken, because water can’t do that', 'It contains no dissolved substances, so it boils higher'],
+  'Pure water boils at 100 °C (at normal atmospheric pressure).');
+T('C2.50-03', 'Pure water freezes at 0 °C.', true,
+  'True. A physical test for purity is to check its melting/freezing or boiling point.');
+M('C2.13-04', 'Which of these is a greenhouse gas?',
+  ['Carbon dioxide', 'Nitrogen', 'Argon', 'Oxygen'],
+  'Carbon dioxide absorbs heat radiated by the Earth.');
+MH('C2.14-04', 'Why does using too little iron wool in the oxygen experiment give a result below 21%?',
+  ['Not all the oxygen is used up', 'The iron wool adds extra oxygen', 'The water level falls too far', 'Nitrogen reacts with the iron'],
+  'There must be enough iron to react with all the oxygen in the trapped air.');
+M('C2.31-04', 'A solution contains more OH⁻ ions than H⁺ ions. What is it?',
+  ['Alkaline', 'Acidic', 'Neutral', 'A salt'],
+  'Hydroxide ions make a solution alkaline.');
+M('C2.32-04', 'Sodium hydroxide is added to hydrochloric acid until the solution is neutral. Which salt forms?',
+  ['Sodium chloride', 'Sodium hydroxide', 'Hydrogen chloride', 'Sodium sulfate'],
+  'NaOH + HCl → NaCl + H₂O.');
+T('C2.35-03', 'When an acid reacts with a base, protons are transferred from the acid to the base.', true,
+  'True. Acids are proton donors; bases are proton acceptors.');
+M('C2.35-04', 'Which ion is a proton?',
+  ['H⁺', 'OH⁻', 'H⁻', 'O²⁻'],
+  'A hydrogen atom that has lost its electron is just a proton.');
+T('C2.36-04', 'A base is a proton donor.', false,
+  'False. A base is a proton <b>acceptor</b>. An acid is a proton donor.');
+M('C2.45-04', 'Where in the Bunsen flame should the wire be held for a flame test?',
+  ['In the edge of a blue (roaring) flame', 'Inside the yellow safety flame', 'Below the flame, near the gas tap', 'Inside the cold blue cone at the base'],
+  'A hot, non-luminous flame shows the colour clearly.');
+M('C2.49-04', 'Which colour change shows that water is present when it is added to anhydrous copper(II) sulfate?',
+  ['White to blue', 'Blue to white', 'Blue to pink', 'Colourless to green'],
+  'Blue hydrated copper(II) sulfate forms.');
+M('C2.50-04', 'Which is a <b>physical</b> test for pure water?',
+  ['Measuring its boiling point', 'Adding anhydrous copper(II) sulfate', 'Adding universal indicator', 'Adding cobalt chloride paper'],
+  'The other tests are chemical and only show that water is present.');
