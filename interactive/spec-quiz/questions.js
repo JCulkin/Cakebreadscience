@@ -27,7 +27,7 @@ M('P3.3-01', 'What is the <b>amplitude</b> of a wave?',
   ['The maximum displacement of a point from its rest position', 'The distance from a peak to a trough', 'The number of waves passing a point each second', 'The time taken for one complete wave'],
   'Amplitude is measured from the rest (middle) position to a peak, not peak to trough.');
 M('P3.3-02', 'What is the <b>wavelength</b> of a wave?',
-  ['The distance from a point on one wave to the same point on the next wave', 'The distance from a peak to the next trough', 'The height of a peak above the rest position', 'The distance the wave travels in one second'],
+  ['The distance from a point on one wave to the same point on the next wave', 'The distance from a peak to the next trough, measured along the wave', 'The height of a peak measured from the middle (rest) position', 'The distance the wave travels in one second through the medium'],
   'Wavelength (λ) is one complete wave, e.g. peak to the next peak.');
 M('P3.3-03', 'What is the <b>frequency</b> of a wave?',
   ['The number of waves passing a point each second', 'The time taken for one complete wave', 'The distance travelled by the wave each second', 'The number of peaks on a diagram'],
@@ -36,14 +36,14 @@ M('P3.3-04', 'What is the <b>period</b> of a wave?',
   ['The time taken for one complete wave to pass a point', 'The number of waves passing a point each second', 'The length of one complete wave', 'The time for the wave to reach its maximum amplitude'],
   'The period (T) is measured in seconds.');
 M('P3.3-05', 'What is a <b>wavefront</b>?',
-  ['A line joining points on a wave that are in step, such as all the peaks', 'The first wave produced by a source', 'The highest point on a wave', 'The direction the wave travels in'],
+  ['A line joining points that are in step, such as all the peaks', 'The leading edge of the very first wave sent out by the source', 'The highest point reached by a wave above its rest position', 'An arrow showing the direction in which the wave is travelling'],
   'On a wavefront diagram each line is a wavefront; the gap between neighbouring wavefronts is one wavelength.');
 T('P3.3-06', 'The distance from a peak to the next trough is one wavelength.', false,
   'False. Peak to trough is only <b>half</b> a wavelength. Peak to the next peak is one wavelength.');
 T('P3.4-01', 'Waves transfer matter from one place to another.', false,
   'False. Waves transfer <b>energy and information</b> without transferring matter.');
 M('P3.4-02', 'A cork floating on a pond bobs up and down as ripples pass, but does not move along with them. What does this show?',
-  ['Waves transfer energy without transferring matter', 'Water waves are longitudinal', 'The waves have no energy', 'The cork is too heavy to move'],
+  ['Waves transfer energy without transferring matter', 'Water waves are longitudinal, so the cork moves sideways', 'The ripples have too little energy to move the cork along', 'The cork is too heavy to be carried along by the water'],
   'The water (and cork) only oscillates about a fixed position. The energy moves on; the matter does not.');
 M('P3.5-01', 'A wave has a frequency of 50 Hz and a wavelength of 2 m. What is its speed?',
   ['100 m/s', '25 m/s', '52 m/s', '0.04 m/s'],
@@ -79,7 +79,7 @@ T('P3.8-03', 'The Doppler effect only happens with sound waves.', false,
 T('P3.9-01', 'All waves can be reflected and refracted.', true,
   'True. This is true for sound, light, water waves and all electromagnetic waves.');
 M('P3.9-02', 'What is <b>refraction</b>?',
-  ['A change in direction when a wave changes speed as it passes into a different medium', 'A wave bouncing off a surface', 'A wave losing energy as it travels', 'A wave spreading out after passing through a gap'],
+  ['A change in direction when a wave changes speed entering a new medium', 'A wave bouncing back off a surface at the same angle it arrived', 'A wave gradually losing energy as it travels through a material', 'A wave spreading out after it passes through a narrow gap'],
   'Refraction happens because the wave changes speed at the boundary between two materials.');
 
 /* ===================== PHYSICS 3(c) The electromagnetic spectrum ===================== */
@@ -135,7 +135,7 @@ M('P3.13-01', 'Too much <b>ultraviolet</b> can cause…',
   ['damage to surface cells and blindness', 'internal heating of body tissue', 'skin burns from heat', 'no harm at all'],
   'UV damages surface cells (skin) and the eyes. Protect yourself with sunscreen and sunglasses.');
 M('P3.13-02', 'Excessive exposure to <b>microwaves</b> can cause…',
-  ['internal heating of body tissue', 'skin cancer', 'blindness', 'mutations in DNA'],
+  ['internal heating of body tissue', 'damage to surface skin cells', 'blindness and sunburn', 'mutations and cancer in DNA'],
   'Microwaves are absorbed by water in body tissue and heat it from the inside. The metal case of a microwave oven protects you.');
 M('P3.13-03', 'Which electromagnetic radiation can cause <b>skin burns</b>?',
   ['Infrared', 'Radio waves', 'Microwaves', 'Visible light'],
@@ -165,10 +165,10 @@ M('P7.4-02', 'Alpha, beta and gamma radiation are emitted from…',
   ['unstable nuclei', 'the electron shells of atoms', 'stable nuclei', 'any atom that is heated'],
   'They are ionising radiations emitted from unstable nuclei, in a random process.');
 M('P7.5-01', 'What is an <b>alpha particle</b>?',
-  ['2 protons and 2 neutrons (a helium nucleus)', 'A high-speed electron', 'An electromagnetic wave', 'A single neutron'],
+  ['2 protons and 2 neutrons (a helium nucleus)', 'A fast-moving electron from the nucleus', 'A high-frequency electromagnetic wave', 'A single neutron knocked out of the nucleus'],
   'α = ⁴₂He: 2 protons + 2 neutrons.');
 M('P7.5-02', 'What is a <b>beta (β⁻) particle</b>?',
-  ['A high-speed electron emitted from the nucleus', 'A helium nucleus', 'An electromagnetic wave', 'A proton'],
+  ['A high-speed electron emitted from the nucleus', 'A helium nucleus of 2 protons and 2 neutrons', 'An electromagnetic wave with no mass or charge', 'A proton that escapes from an unstable nucleus'],
   'A neutron in the nucleus turns into a proton and a fast electron, which is emitted.');
 M('P7.5-03', 'Which radiation is an <b>electromagnetic wave</b>?',
   ['Gamma', 'Alpha', 'Beta', 'Neutron'],
@@ -230,7 +230,7 @@ M('P7.14-01', 'A factory checks the thickness of paper by passing radiation thro
   ['Beta', 'Alpha', 'Gamma', 'Any of them'],
   'Alpha would be completely stopped and gamma would pass straight through. Beta is partly absorbed, so the count changes with thickness.');
 M('P7.14-02', 'Which is a medical use of radioactivity?',
-  ['Using gamma rays to kill cancer cells (radiotherapy)', 'Using alpha particles to see broken bones', 'Using beta particles to cook food', 'Using radon gas to sterilise equipment'],
+  ['Using gamma rays to kill cancer cells (radiotherapy)', 'Using alpha particles to take images of broken bones', 'Using beta particles to warm and cook hospital food', 'Using radon gas to clean and sterilise wounds'],
   'Others include tracers to see inside the body and gamma sterilisation of medical equipment.');
 M('P7.15-01', 'What is meant by <b>contamination</b>?',
   ['Radioactive material gets onto or into an object or person', 'An object is exposed to radiation from a source outside it', 'An object becomes radioactive after being irradiated', 'Radiation is blocked by a shield'],
@@ -238,10 +238,10 @@ M('P7.15-01', 'What is meant by <b>contamination</b>?',
 T('P7.15-02', 'An object that has been irradiated becomes radioactive.', false,
   'False. Irradiation does not make an object radioactive. That is why gamma-sterilised food is safe to eat.');
 M('P7.16-01', 'Why is ionising radiation dangerous to living organisms?',
-  ['It can damage cells and tissue and cause mutations', 'It makes the body radioactive forever', 'It only damages metals', 'It makes cells grow faster and stronger'],
+  ['It can damage cells and tissue and cause mutations', 'It makes the whole body permanently radioactive', 'It only harms metals and electronic equipment', 'It makes cells grow faster and become stronger'],
   'Ionising radiation can damage or kill cells and cause mutations in DNA, which may lead to cancer.');
 M('P7.16-02', 'Why is the disposal of radioactive waste a problem?',
-  ['Some of it stays radioactive for thousands of years', 'It is too heavy to move', 'It quickly turns into gamma rays', 'It is not dangerous once buried'],
+  ['Some of it stays radioactive for thousands of years', 'It is far too heavy to move to a safe storage site', 'It quickly turns into gamma rays once it is buried', 'It stops being dangerous as soon as it is put underground'],
   'Long half-life waste must be stored securely, often deep underground, so it cannot leak into the environment.');
 
 /* ===================== CHEMISTRY 1(d) The Periodic Table ===================== */
@@ -271,7 +271,7 @@ M('C1.21-01', 'Which of these elements is a <b>non-metal</b>?',
   ['Sulfur', 'Sodium', 'Magnesium', 'Aluminium'],
   'Non-metals are on the right of the Periodic Table. Sulfur is in Group 6.');
 M('C1.21-02', 'Where are the metals found in the Periodic Table?',
-  ['On the left and in the centre', 'Only in Group 0', 'On the top right', 'Only in Period 1'],
+  ['On the left and in the centre', 'On the right, next to Group 0', 'Only along the top row (Period 1)', 'Only in Groups 6 and 7'],
   'Metals are on the left and in the middle; non-metals are on the right.');
 M('C1.22-01', 'An element has the electronic configuration 2.8.6. Where is it in the Periodic Table?',
   ['Group 6, Period 3', 'Group 3, Period 6', 'Group 8, Period 2', 'Group 6, Period 2'],
@@ -282,7 +282,7 @@ M('C1.23-01', 'Why do elements in the same group have similar chemical propertie
   ['They have the same number of outer electrons', 'They have the same number of shells', 'They have the same atomic number', 'They have the same number of neutrons'],
   'Chemical reactions involve outer electrons, so the same number of outer electrons gives similar reactions.');
 M('C1.24-01', 'Why do the noble gases not readily react?',
-  ['They have a full outer shell of electrons', 'They have no electrons', 'They are gases', 'They have no neutrons'],
+  ['They have a full outer shell of electrons', 'They have no electrons in their outer shell', 'They are gases, so their atoms are far apart', 'They have no neutrons in their nucleus'],
   'A full outer shell is stable, so they do not need to lose, gain or share electrons.');
 
 /* ===================== CHEMISTRY 1(f) Ionic bonding ===================== */
@@ -343,10 +343,10 @@ M('C1.41-01', 'What is an <b>ionic bond</b>?',
   ['The electrostatic attraction between oppositely charged ions', 'A shared pair of electrons', 'The attraction between a nucleus and its own electrons', 'A force between neighbouring molecules'],
   'Positive and negative ions attract each other strongly in all directions.');
 M('C1.42-01', 'Why does sodium chloride have a high melting point?',
-  ['Lots of energy is needed to overcome the strong electrostatic attractions between ions', 'The covalent bonds inside its molecules are strong', 'It has weak forces between molecules', 'Its electrons are free to move'],
+  ['Lots of energy is needed to overcome the strong attractions between ions', 'Lots of energy is needed to break the covalent bonds inside its molecules', 'Its molecules are held together by strong intermolecular forces', 'Its delocalised electrons hold the lattice tightly together'],
   'A giant ionic lattice has many strong attractions between oppositely charged ions in all directions.');
 M('C1.42-02', 'Magnesium oxide (Mg²⁺ O²⁻) has a much higher melting point than sodium chloride (Na⁺ Cl⁻). Why?',
-  ['Its ions have higher charges, so the attractions are stronger', 'It contains covalent bonds', 'It has weaker attractions between ions', 'Its ions are free to move'],
+  ['Its ions have higher charges, so the attractions are stronger', 'It contains strong covalent bonds as well as ionic bonds', 'Its ions are larger, so they are held further apart', 'Its ions are free to move, which makes it more stable'],
   'Bigger charges give stronger electrostatic attractions, which need more energy to overcome.');
 T('C1.43-01', 'Solid sodium chloride conducts electricity because it contains ions.', false,
   'False. In the solid, the ions are held in fixed positions and cannot move.');
@@ -365,7 +365,7 @@ M('C1.44-02', 'Covalent bonds usually form between…',
   ['non-metal atoms', 'metal atoms', 'a metal and a non-metal', 'noble gas atoms'],
   'Metal + non-metal usually gives ionic bonding. Non-metal + non-metal gives covalent bonding.');
 M('C1.45-01', 'What holds the two atoms together in a covalent bond?',
-  ['The electrostatic attraction between the shared pair of electrons and both nuclei', 'The attraction between two positive ions', 'The repulsion between the two nuclei', 'Magnetic forces between the electrons'],
+  ['The attraction between the shared pair of electrons and both nuclei', 'The attraction between a positive ion and a negative ion', 'The attraction between the two positively charged nuclei', 'Magnetic forces between the electrons in each atom'],
   'Both positive nuclei are attracted to the negative shared pair between them.');
 M('C1.46-01', 'How many electrons are shared between the two atoms in a nitrogen molecule (N₂)?',
   ['6', '2', '3', '4'],
@@ -385,7 +385,7 @@ M('C1.46-05', 'How many covalent bonds are in a molecule of ethane (C₂H₆)?',
 T('C1.46-06', 'A carbon dioxide molecule contains two double bonds.', true,
   'True. O=C=O: carbon shares two pairs of electrons with each oxygen.');
 M('C1.47-01', 'Why do substances with simple molecular structures have low melting and boiling points?',
-  ['The intermolecular forces are weak and need little energy to overcome', 'The covalent bonds are weak', 'The ions are held loosely', 'The molecules are very large'],
+  ['The intermolecular forces are weak and need little energy to overcome', 'The covalent bonds inside the molecules are weak and break easily', 'The ions in the structure are only loosely held in place', 'The molecules are very large, so they slide past each other'],
   'Melting and boiling only overcome the forces <b>between</b> molecules, not the strong covalent bonds inside them.');
 T('C1.47-02', 'When water boils, the covalent bonds inside the water molecules break.', false,
   'False. Only the weak intermolecular forces are overcome. The H₂O molecules stay whole.');
@@ -399,13 +399,13 @@ M('C1.49-01', 'Why do substances with giant covalent structures have very high m
   ['Many strong covalent bonds must be broken', 'They have strong intermolecular forces', 'They contain ions in a lattice', 'They have delocalised electrons'],
   'In a giant covalent structure every atom is joined by covalent bonds, and melting means breaking lots of them.');
 M('C1.50-01', 'Why is <b>diamond</b> very hard?',
-  ['Each carbon atom is covalently bonded to four others in a rigid giant structure', 'It has layers that slide over each other', 'It is made of small C₆₀ molecules', 'It has delocalised electrons'],
+  ['Each carbon atom is covalently bonded to four others in a rigid structure', 'It has layers of carbon atoms held together by weak forces', 'It is made of small, tightly packed C₆₀ molecules', 'It has delocalised electrons holding the atoms in place'],
   'Four strong covalent bonds per atom in a 3D network make diamond extremely hard.');
 M('C1.50-02', 'Why does <b>graphite</b> conduct electricity?',
-  ['Each carbon atom is bonded to only three others, leaving delocalised electrons that can move', 'It contains ions that can move', 'Its layers slide over each other', 'It has weak intermolecular forces'],
+  ['Each carbon is bonded to only three others, leaving delocalised electrons', 'It contains carbon ions that are free to move between the layers', 'Its layers can slide over each other, carrying charge with them', 'It has weak intermolecular forces that let electricity through'],
   'The delocalised electrons move between and along the layers.');
 M('C1.50-03', 'Why is graphite soft and slippery?',
-  ['Its layers are held together by weak forces, so they slide over each other', 'Its covalent bonds are weak', 'It is made of small molecules', 'It contains ions'],
+  ['Its layers are held together by weak forces, so they slide over each other', 'Its covalent bonds are weak, so the atoms slide apart easily', 'It is made of small molecules that roll over each other', 'It contains ions that repel each other when it is rubbed'],
   'Bonds within each layer are strong, but the forces between layers are weak.');
 M('C1.50-04', 'Which form of carbon is made of simple molecules?',
   ['C₆₀ fullerene', 'Diamond', 'Graphite', 'All of them'],
@@ -438,10 +438,10 @@ MH('P3.11-08', 'Which electromagnetic wave could have a wavelength of about 10�
   ['Gamma rays', 'Radio waves', 'Infrared', 'Microwaves'],
   'That is far shorter than an atom. Only gamma rays (and the shortest x-rays) have wavelengths that small.');
 MH('P3.12-08', 'Why are gamma rays, not ultraviolet, used to sterilise food that is already sealed in packets?',
-  ['Gamma rays can pass through the packaging and kill bacteria inside', 'Ultraviolet would cook the food', 'Gamma rays make the food radioactive so bacteria die', 'Ultraviolet cannot kill bacteria'],
+  ['Gamma rays pass through the packaging and kill the bacteria inside', 'Ultraviolet would heat and partly cook the food inside the packet', 'Gamma rays make the food radioactive, so the bacteria then die', 'Ultraviolet cannot kill bacteria, even on an open surface'],
   'Gamma is very penetrating. UV is absorbed at the surface. (Irradiated food does not become radioactive.)');
 MH('P3.13-06', 'Why do radiographers stand behind a lead screen when taking X-ray images?',
-  ['They are exposed many times a day, so they must reduce their total dose', 'X-rays only harm adults', 'The lead makes the X-ray image clearer', 'X-rays cannot pass through air'],
+  ['They are exposed many times a day, so must reduce their total dose', 'X-rays only harm adults, not the children who are being scanned', 'The lead screen makes the X-ray image sharper and clearer', 'X-rays cannot travel through air, so the screen stops reflections'],
   'One X-ray is a small dose, but repeated exposure every day would add up. Lead absorbs X-rays.');
 MH('P7.2-03', 'How many more neutrons does a uranium-238 nucleus have than a uranium-235 nucleus?',
   ['3', '0', '235', '92'],
@@ -460,10 +460,10 @@ T('P7.6-03', 'In the penetration practical, you should measure the background co
 T('P7.9-02', 'Photographic film darkens when it is exposed to ionising radiation.', true,
   'True. That is how film badges measure how much radiation a worker has received.');
 M('P7.9-03', 'Why do some workers wear film badges?',
-  ['To monitor how much ionising radiation they have been exposed to', 'To stop radiation reaching them', 'To make radiation harmless', 'To detect sound'],
+  ['To monitor how much ionising radiation they have received', 'To block the radiation before it reaches their body', 'To turn the radiation into harmless visible light', 'To show their name and job in the radiation area'],
   'The film darkens more the more radiation it receives. It detects; it does not protect.');
 M('P7.10-03', 'In many places, which natural source gives the largest share of background radiation?',
-  ['Radon gas from rocks and the ground', 'Cosmic rays', 'Nuclear power stations', 'Mobile phones'],
+  ['Radon gas from rocks and the ground', 'Cosmic rays from the Sun and space', 'Nuclear power stations and their waste', 'Mobile phones and wi-fi routers'],
   'Radon is a radioactive gas that seeps out of rocks such as granite. Mobile phones do not emit ionising radiation.');
 MH('P7.11-03', 'A source has an activity of 300 Bq. How many nuclei decay in one minute?',
   ['18 000', '300', '5', '3000'],
@@ -477,16 +477,16 @@ M('P7.14-03', 'Which radiation is used in smoke detectors?',
   ['Alpha', 'Beta', 'Gamma', 'Neutron'],
   'Alpha ionises the air so a small current flows. Smoke absorbs the alpha particles, the current drops and the alarm sounds.');
 MH('P7.14-04', 'Why is a gamma emitter with a short half-life chosen as a medical tracer?',
-  ['Gamma escapes the body to be detected, and the short half-life means the patient is not exposed for long', 'Gamma is the most ionising, so it shows up best', 'A short half-life means it never decays inside the body', 'Gamma makes the organ glow'],
+  ['Gamma escapes the body to be detected; a short half-life limits the dose', 'Gamma is the most ionising, so it shows up most clearly on the image', 'A short half-life means it never decays while inside the body', 'Gamma makes the organ glow, so doctors can see it with their eyes'],
   'It must be detectable outside the body (penetrating) and not stay active in the body for long.');
 M('P7.15-03', 'Why is contamination usually more dangerous than irradiation?',
-  ['The radioactive material stays on or in you, so the exposure continues', 'Contamination only happens with gamma', 'Irradiation makes you radioactive', 'Contamination is always from space'],
+  ['The radioactive material stays on or in you, so exposure continues', 'Contamination only happens with gamma, the most penetrating type', 'Irradiation makes you radioactive, but contamination does not', 'Contamination always comes from space, so it can’t be blocked'],
   'Once you are contaminated, you keep being exposed until the material is removed or decays.');
 M('P7.16-03', 'Which is a sensible way to reduce the risk when using a radioactive source in the lab?',
-  ['Hold it with long tongs, point it away from people and keep exposure time short', 'Hold it in your hand so you do not drop it', 'Keep it in your pocket between experiments', 'Taste a small amount to check it'],
+  ['Hold it with tongs, point it away from people and keep exposure short', 'Hold it in your hand so you have a firm grip and do not drop it', 'Keep it in your pocket between experiments so it does not get lost', 'Stand close to it so you can read the Geiger counter accurately'],
   'Distance, short time and shielding all reduce the dose.');
 MH('P7.5-07', 'Why are alpha particles the most ionising radiation?',
-  ['They have a large charge and mass, so they collide strongly with atoms and lose energy quickly', 'They travel faster than light', 'They have no charge', 'They are electromagnetic waves'],
+  ['They have a large charge and mass, so they collide with many atoms', 'They travel faster than any other radiation, so they hit harder', 'They have no charge, so nothing slows them down as they travel', 'They are electromagnetic waves with a very high frequency'],
   'Strong ionisation means they use up their energy fast, which is also why they are the least penetrating.');
 MH('P7.7-05', 'A nucleus emits one alpha particle and then two beta particles. What is the overall change?',
   ['Atomic number unchanged, mass number falls by 4', 'Atomic number falls by 2, mass number falls by 4', 'Atomic number rises by 2, mass number unchanged', 'Both unchanged'],
@@ -496,7 +496,7 @@ MH('P7.8-03', 'Radium-226 (<span class="nuc"><sup>226</sup><sub>88</sub>Ra</span
   'Mass number 226 − 4 = 222. Atomic number 88 − 2 = 86 (radon).');
 
 MH('C1.18-04', 'Argon (Ar 39.9) is placed before potassium (Ar 39.1) even though argon atoms are heavier on average. Why?',
-  ['The table is in order of atomic number, and argon has fewer protons', 'Argon was discovered first', 'Potassium is a metal so it goes later', 'It is a mistake in the table'],
+  ['The table is in order of atomic number, and argon has fewer protons', 'The table is in order of discovery, and argon was discovered first', 'Metals always go after non-metals, so potassium has to come later', 'Argon has more neutrons, so it is placed earlier in the table'],
   'Argon has 18 protons, potassium 19. Ordering by atomic number puts elements with similar properties in the same group.');
 MH('C1.20-03', 'Element X conducts electricity, and its oxide reacts with acids to form a salt and water. X is…',
   ['a metal', 'a non-metal', 'a noble gas', 'impossible to tell'],
@@ -514,7 +514,7 @@ T('C1.23-03', 'Elements in the same period have similar chemical properties.', f
 T('C1.24-02', 'Noble gases readily gain electrons to form negative ions.', false,
   'False. Their outer shells are already full, so they do not need to gain, lose or share electrons.');
 MH('C1.24-03', 'Argon has the configuration 2.8.8. Why is it used inside some light bulbs instead of air?',
-  ['It is unreactive, so the hot filament does not react with it', 'It glows brightly when cold', 'It conducts electricity well', 'It is a metal'],
+  ['It is unreactive, so the hot filament does not react with it', 'It glows brightly as soon as electricity passes through it', 'It conducts electricity well, so the bulb uses less energy', 'It reacts with the filament to make a protective coating'],
   'A full outer shell makes argon unreactive. Oxygen in air would react with the hot filament.');
 MH('C1.37-05', 'A particle has 16 protons and 18 electrons. What is it?',
   ['A sulfide ion, S²⁻', 'A sulfur atom', 'An argon atom', 'A sulfur ion, S²⁺'],
@@ -558,13 +558,13 @@ M('C1.49-02', 'Which of these has a giant covalent structure?',
   ['Diamond', 'Water', 'Carbon dioxide', 'Sodium chloride'],
   'Water and carbon dioxide are simple molecules. Sodium chloride is ionic.');
 MH('C1.49-03', 'Why does diamond have a much higher melting point than C₆₀ fullerene?',
-  ['Melting diamond breaks strong covalent bonds; melting C₆₀ only overcomes weak intermolecular forces', 'Diamond has more carbon atoms per molecule', 'C₆₀ contains ions', 'Diamond has delocalised electrons'],
+  ['Melting diamond breaks covalent bonds; melting C₆₀ only overcomes weak forces', 'Diamond has far more carbon atoms in each molecule than C₆₀ has', 'C₆₀ contains ions, and ionic attractions are weaker than covalent bonds', 'Diamond has delocalised electrons that hold its atoms more tightly'],
   'Diamond is a giant covalent structure. C₆₀ is made of separate molecules.');
 MH('C1.50-05', 'Graphite conducts electricity but diamond does not. Why?',
-  ['In graphite each carbon uses only 3 electrons in bonds, leaving delocalised electrons; in diamond all 4 are used', 'Graphite contains ions', 'Diamond is too hard for electrons to move', 'Graphite is a metal'],
+  ['In graphite each carbon bonds to 3 others, leaving free electrons; in diamond all 4 are used', 'Graphite contains carbon ions that are free to move, but diamond does not', 'Diamond is too hard and dense for any electrons to move through it', 'Graphite is a metal, while diamond is a non-metal form of carbon'],
   'Diamond has no free electrons because each carbon bonds to four others.');
 M('C1.51-02', 'Why do simple covalent substances not conduct electricity?',
-  ['They have no ions or free electrons to carry charge', 'Their molecules are too large', 'Their covalent bonds are too strong', 'They are always gases'],
+  ['They have no ions or free electrons to carry charge', 'Their molecules are too large to move through the substance', 'Their covalent bonds are too strong to let electrons pass', 'They are always gases, and gases cannot conduct'],
   'Charge can only flow if there are charged particles that can move.');
 T('C1.51-03', 'A solution of sugar (a covalent compound) in pure water conducts electricity.', false,
   'False. Sugar dissolves as molecules, not ions, so there is nothing to carry the charge.');
@@ -574,7 +574,7 @@ M('B2.1-01', 'Which list is in order from smallest to largest?',
   ['organelle, cell, tissue, organ, organ system', 'cell, organelle, tissue, organ, organ system', 'organelle, tissue, cell, organ, organ system', 'cell, tissue, organelle, organ system, organ'],
   'Organelles make up cells, cells make up tissues, tissues make up organs, organs make up organ systems.');
 M('B2.1-02', 'What is a <b>tissue</b>?',
-  ['A group of similar cells working together to do a particular job', 'A structure inside a cell', 'Several organs working together', 'A single cell with a special shape'],
+  ['A group of similar cells working together to do a job', 'A structure inside a cell with a particular job', 'Several organs working together to do a job', 'A single cell with a special shape for its job'],
   'Example: muscle tissue is made of muscle cells.');
 M('B2.1-03', 'Which of these is an <b>organ</b>?',
   ['The heart', 'A red blood cell', 'A mitochondrion', 'Muscle tissue'],
@@ -596,19 +596,19 @@ M('B2.2-03', 'Which structure is a large space in a plant cell filled with cell 
 T('B2.2-04', 'All plant cells contain chloroplasts.', false,
   'False. Cells that get no light, such as root cells, have no chloroplasts.');
 MH('B2.2-05', 'A cell has a cell wall, chloroplasts and a large permanent vacuole. Which cell could it be?',
-  ['A palisade cell from a leaf', 'A cheek cell', 'A red blood cell', 'A root hair cell'],
+  ['A palisade cell from a leaf', 'A cheek cell from the mouth', 'A red blood cell', 'A root hair cell'],
   'Chloroplasts + cell wall + vacuole = a plant cell that photosynthesises. Root hair cells have no chloroplasts.');
 M('B2.3-01', 'What is the function of the <b>nucleus</b>?',
-  ['It contains genetic material and controls the activities of the cell', 'It is where aerobic respiration happens', 'It makes proteins', 'It controls what enters and leaves the cell'],
+  ['It contains genetic material and controls the cell’s activities', 'It is where aerobic respiration releases energy from glucose', 'It is where proteins are made from amino acids', 'It controls which substances enter and leave the cell'],
   'The nucleus contains the chromosomes (DNA).');
 M('B2.3-02', 'Where does aerobic respiration happen?',
   ['Mitochondria', 'Ribosomes', 'Nucleus', 'Vacuole'],
   'Mitochondria release energy from glucose in aerobic respiration.');
 M('B2.3-03', 'What is the function of <b>ribosomes</b>?',
-  ['Making proteins (protein synthesis)', 'Photosynthesis', 'Storing cell sap', 'Supporting the cell'],
+  ['Making proteins (protein synthesis)', 'Absorbing light for photosynthesis', 'Storing cell sap to keep the cell firm', 'Releasing energy in aerobic respiration'],
   'Ribosomes are tiny structures in the cytoplasm where proteins are made.');
 M('B2.3-04', 'What does the <b>cell membrane</b> do?',
-  ['Controls which substances enter and leave the cell', 'Makes the cell rigid', 'Absorbs light for photosynthesis', 'Contains the genetic material'],
+  ['Controls which substances enter and leave the cell', 'Makes the cell rigid and stops it bursting', 'Absorbs light energy for photosynthesis', 'Contains the genetic material of the cell'],
   'The membrane is partially permeable. The cell wall is what makes plant cells rigid.');
 M('B2.3-05', 'What is the function of <b>chloroplasts</b>?',
   ['They absorb light for photosynthesis', 'They release energy in respiration', 'They make proteins', 'They control the cell'],
@@ -616,28 +616,28 @@ M('B2.3-05', 'What is the function of <b>chloroplasts</b>?',
 T('B2.3-06', 'Most of the cell’s chemical reactions happen in the cytoplasm.', true,
   'True. The cytoplasm is a jelly where many reactions take place.');
 MH('B2.3-07', 'Muscle cells contain many more mitochondria than most cells. Why?',
-  ['Muscles need a lot of energy, which is released by aerobic respiration in mitochondria', 'Mitochondria make muscle proteins', 'Mitochondria make muscles contract by themselves', 'Mitochondria store glucose'],
+  ['Muscles need a lot of energy, released by aerobic respiration in mitochondria', 'Mitochondria make the proteins that muscle fibres are built from', 'Mitochondria contract and relax, which makes the whole muscle move', 'Mitochondria store the glucose and oxygen that muscles need'],
   'More mitochondria → more aerobic respiration → more energy for contraction.');
 MH('B2.3-08', 'A plant that has lost a lot of water wilts. Which structure’s job is most affected?',
-  ['The vacuole, which keeps the cell firm when full of cell sap', 'The nucleus, which controls growth', 'The chloroplasts, which make the leaf green', 'The ribosomes, which make proteins'],
+  ['The vacuole, which keeps the cell firm when full of cell sap', 'The nucleus, which controls how fast the plant grows', 'The chloroplasts, which make food and keep the leaf green', 'The cell membrane, which lets water out of the cell'],
   'Full vacuoles push against the cell wall and keep cells firm. When they lose water, the plant wilts.');
 M('B2.4-01', 'Which structures are found in <b>both</b> plant and animal cells?',
-  ['Nucleus, cytoplasm, cell membrane, mitochondria and ribosomes', 'Cell wall, chloroplasts and vacuole', 'Only the nucleus', 'Cell wall and cell membrane'],
+  ['Nucleus, cytoplasm, cell membrane, mitochondria and ribosomes', 'Cell wall, chloroplasts, permanent vacuole and nucleus', 'Nucleus, cell wall, cell membrane, cytoplasm and ribosomes', 'Chloroplasts, mitochondria, ribosomes, nucleus and cytoplasm'],
   'Plant cells also have a cell wall, chloroplasts and a large permanent vacuole.');
 T('B2.4-02', 'Animal cells have a cell wall.', false,
   'False. Animal cells have a cell membrane but no cell wall.');
 T('B2.4-03', 'Both plant and animal cells contain mitochondria.', true,
   'True. Plants respire all the time, just like animals.');
 MH('B2.4-04', 'Which three structures could you use to tell a leaf cell from an animal cell under a microscope?',
-  ['Cell wall, chloroplasts and large permanent vacuole', 'Nucleus, cytoplasm and membrane', 'Ribosomes, mitochondria and nucleus', 'Cell membrane, ribosomes and cytoplasm'],
+  ['Cell wall, chloroplasts and large permanent vacuole', 'Nucleus, cytoplasm and cell membrane', 'Ribosomes, mitochondria and nucleus', 'Cell membrane, chloroplasts and ribosomes'],
   'Only plant cells have these three. (Ribosomes are too small to see with a light microscope anyway.)');
 
 /* ===================== CHEMISTRY 1(c) Atomic structure (added 6 Nov 2026) ===================== */
 M('C1.14-01', 'What is an <b>atom</b>?',
-  ['The smallest particle of an element that can take part in a chemical reaction', 'Two or more atoms bonded together', 'A charged particle', 'A mixture of elements'],
+  ['The smallest particle of an element that can take part in a reaction', 'Two or more particles of an element chemically bonded together', 'A particle with a charge, formed by losing or gaining electrons', 'A mixture of protons, neutrons and electrons from different elements'],
   'Everything is made of atoms.');
 M('C1.14-02', 'What is a <b>molecule</b>?',
-  ['Two or more atoms chemically bonded together', 'A single atom of a noble gas', 'A charged particle', 'A mixture of two elements'],
+  ['Two or more atoms chemically bonded together', 'A single atom of a noble gas such as neon', 'A charged particle made by losing electrons', 'A mixture of two elements that are not bonded'],
   'Examples: O₂, H₂O, CO₂.');
 T('C1.14-03', 'A molecule can contain atoms of only one element.', true,
   'True. O₂ and N₂ are molecules of elements. H₂O is a molecule of a compound.');
@@ -656,10 +656,10 @@ M('C1.15-03', 'Where is almost all the mass of an atom?',
 T('C1.15-04', 'An electron has about the same mass as a proton.', false,
   'False. An electron is about 1/1836 of the mass of a proton.');
 MH('C1.15-05', 'Why does an atom have no overall charge?',
-  ['It has the same number of protons (+) as electrons (−)', 'Neutrons cancel out the protons', 'Electrons have no charge', 'The nucleus has no charge'],
+  ['It has the same number of protons as electrons', 'Its neutrons cancel out the charge of its protons', 'Its electrons have no charge, so nothing to balance', 'Its nucleus has no charge, so the atom has none'],
   'Each +1 from a proton is balanced by a −1 from an electron.');
 M('C1.16-01', 'What is the <b>mass number</b> of an atom?',
-  ['The total number of protons and neutrons', 'The number of protons', 'The number of electrons', 'The number of neutrons'],
+  ['The total number of protons and neutrons', 'The total number of protons and electrons', 'The number of protons in the nucleus', 'The number of neutrons in the nucleus'],
   'Atomic number = protons. Mass number = protons + neutrons.');
 M('C1.16-02', 'What are <b>isotopes</b>?',
   ['Atoms of the same element with different numbers of neutrons', 'Atoms of different elements with the same mass number', 'Atoms with different numbers of protons', 'Ions of the same element'],
@@ -667,10 +667,10 @@ M('C1.16-02', 'What are <b>isotopes</b>?',
 T('C1.16-03', 'Isotopes of an element have different numbers of protons.', false,
   'False. Changing the number of protons makes a different element. Isotopes differ in neutrons.');
 MH('C1.16-04', 'Why do isotopes of an element have the same chemical properties?',
-  ['They have the same number of electrons, arranged the same way', 'They have the same number of neutrons', 'They have the same mass', 'They have no electrons'],
+  ['They have the same number of electrons, arranged the same way', 'They have the same number of neutrons in the nucleus', 'They have exactly the same mass as each other', 'They have the same mass number but different protons'],
   'Chemical reactions depend on electrons, and isotopes have identical electronic configurations.');
 M('C1.16-05', 'What is the <b>relative atomic mass</b> (Ar) of an element?',
-  ['The average mass of its atoms compared with 1/12 of the mass of a carbon-12 atom', 'The mass number of its most common isotope', 'The number of protons', 'The mass of one atom in grams'],
+  ['The average mass of its atoms compared with 1/12 of a carbon-12 atom', 'The mass number of the most common isotope of that element', 'The total number of protons and electrons in one atom', 'The actual mass of one atom of the element, in grams'],
   'It is an average that takes account of all the isotopes and how common they are.');
 M('C1.17-01', 'Chlorine is 75% chlorine-35 and 25% chlorine-37. What is its relative atomic mass?',
   ['35.5', '36', '35', '37'],
@@ -704,13 +704,13 @@ M('P3.16-02', 'Light leaves a glass block into air at an angle. Which way does i
   ['Away from the normal', 'Towards the normal', 'It does not bend', 'Back into the glass every time'],
   'Light speeds up entering air and bends away from the normal.');
 MH('P3.16-03', 'A ray enters a glass block along the normal (at 90° to the surface). What happens?',
-  ['It carries straight on without changing direction, but slows down', 'It bends towards the normal', 'It bends away from the normal', 'It is totally internally reflected'],
+  ['It carries straight on without changing direction, but slows down', 'It bends towards the normal, because it slows down in the glass', 'It bends away from the normal, because it speeds up in the glass', 'It is totally internally reflected back out of the block'],
   'An angle of incidence of 0° gives an angle of refraction of 0°. The speed still changes.');
 M('P3.17-01', 'In the refraction practical, why do you mark the path of each ray with small crosses?',
-  ['So you can join them up afterwards and measure the angles accurately', 'To make the ray brighter', 'To stop the ray reflecting', 'To find the speed of light'],
+  ['So you can join them up and measure the angles accurately', 'So the light ray shows up more brightly on the paper', 'So the ray does not reflect off the edge of the block', 'So you can work out the speed of light in the glass'],
   'You remove the block, draw the rays with a ruler and measure angles with a protractor.');
 MH('P3.17-02', 'Why is a semi-circular block useful for investigating refraction?',
-  ['A ray aimed at the centre enters the curved face along the normal, so it only refracts at the flat face', 'It stops all reflection', 'It splits light into colours', 'It makes the ray travel faster'],
+  ['A ray aimed at the centre meets the curved face along the normal', 'Its curved face stops any of the light being reflected', 'Its curved shape splits white light into a spectrum', 'Light travels faster through a semi-circular block'],
   'Only one surface bends the ray, which makes the angles easy to measure.');
 T('P3.17-03', 'A triangular prism can split white light into a spectrum of colours.', true,
   'True. Each colour refracts by a slightly different amount (dispersion).');
@@ -729,12 +729,12 @@ M('P3.20-01', 'How do optical fibres carry light along a curved path?',
   ['Total internal reflection', 'Refraction out of the fibre', 'Diffraction', 'Absorption and re-emission'],
   'The light keeps hitting the inside surface at more than the critical angle, so it is totally reflected.');
 M('P3.20-02', 'Why are prisms used in periscopes and binoculars instead of mirrors?',
-  ['Total internal reflection in the prism reflects almost all the light', 'Prisms are lighter than mirrors', 'Prisms split the light into colours', 'Mirrors cannot reflect light'],
+  ['Total internal reflection in a prism reflects almost all the light', 'Prisms are much lighter and cheaper to make than mirrors', 'Prisms split the light into colours, which looks clearer', 'Mirrors cannot reflect light around a 90° corner'],
   'A 45° prism turns light through 90° by total internal reflection, giving a bright, clear image.');
 T('P3.20-03', 'Total internal reflection can happen when light travels from air into glass.', false,
   'False. It only happens when light goes from a denser material (glass) towards a less dense one (air).');
 M('P3.21-01', 'What is the <b>critical angle</b>?',
-  ['The angle of incidence in the denser material at which the angle of refraction is 90°', 'The angle at which light enters the glass', 'The angle of a prism', 'The angle at which light is absorbed'],
+  ['The angle of incidence in the denser material that gives refraction at 90°', 'The angle of incidence at which light first enters the glass block', 'The angle between the two faces of a triangular prism', 'The angle at which all of the light is absorbed by the glass'],
   'Above the critical angle, all the light is reflected back inside.');
 MH('P3.21-02', 'Light in glass hits the surface with an angle of incidence bigger than the critical angle. What happens?',
   ['It is totally internally reflected', 'It refracts out along the surface', 'It passes straight out without bending', 'It stops'],
@@ -751,15 +751,717 @@ M('P3.23-02', 'What is an <b>echo</b>?',
   ['A reflected sound wave', 'A refracted sound wave', 'A sound that is too high to hear', 'A sound in a vacuum'],
   'Sound reflects off hard surfaces like walls and cliffs.');
 MH('P3.23-03', 'Why can sound not travel through a vacuum (e.g. space)?',
-  ['Sound needs particles to vibrate and pass the wave on', 'Sound is an electromagnetic wave', 'Sound is too slow', 'The vacuum absorbs it'],
+  ['Sound needs particles to vibrate and pass the wave on', 'Sound is an electromagnetic wave, which needs air', 'Sound travels too slowly to cross empty space', 'A vacuum absorbs all of the energy in sound'],
   'Sound is a longitudinal mechanical wave. Light can cross a vacuum; sound cannot.');
 M('P3.23-04', 'Sound changes speed when it passes into a different medium. What can this cause?',
   ['Refraction: a change of direction', 'Total internal reflection every time', 'A change of frequency', 'The sound becoming transverse'],
   'Like light, sound refracts when its speed changes, e.g. between warm and cold air.');
 M('P3.14-03', 'Which of these shows that light can be refracted?',
-  ['A straw looks bent where it goes into a glass of water', 'You can see your face in a mirror', 'An echo in a large hall', 'A shadow forms behind an object'],
+  ['A straw looks bent where it goes into a glass of water', 'You can see your face clearly in a flat mirror', 'You hear an echo when you shout in a large hall', 'A dark shadow forms behind an object in sunlight'],
   'The light changes speed and direction as it leaves the water, so the straw appears bent.');
 T('P3.19-03', 'To measure the refractive index of a glass block reliably, you should use several rays with different angles of incidence.', true,
   'True. Several readings (or a graph of sin i against sin r) give a more reliable value than one ray.');
 T('P3.21-03', 'At the critical angle, the refracted ray travels along the boundary between the two materials.', true,
   'True. The angle of refraction is 90°. Any bigger angle of incidence gives total internal reflection.');
+
+/* ===================== BIOLOGY 1(a) Characteristics, 1(b) Variety of living organisms (added 7 Nov 2026) ===================== */
+M('B1.1-01', 'Which of these is <b>not</b> one of the characteristics shared by all living organisms?',
+  ['They all photosynthesise', 'They all respire', 'They all excrete waste', 'They all respond to their surroundings'],
+  'Only plants (and some protoctists and bacteria) photosynthesise. All living things need nutrition, respire, excrete, respond, move, control internal conditions, reproduce, grow and develop.');
+M('B1.1-02', 'What is <b>excretion</b>?',
+  ['Removing waste products made by the body’s chemical reactions', 'Getting rid of undigested food from the end of the gut', 'Taking in food and breaking it down into small molecules', 'Releasing energy from glucose inside every living cell'],
+  'Excretion removes metabolic waste such as carbon dioxide and urea. Getting rid of undigested food is egestion, not excretion.');
+T('B1.1-03', 'Plants are not living because they cannot move from place to place.', false,
+  'False. Plants move parts of themselves, e.g. leaves turn towards light and flowers open and close. Movement is still a characteristic of life.');
+M('B1.1-04', 'Keeping body temperature steady is an example of which characteristic of living things?',
+  ['Controlling internal conditions', 'Nutrition and feeding', 'Growth and development', 'Excretion of waste heat'],
+  'Living things control their internal conditions (homeostasis).');
+MH('B1.1-05', 'A car uses fuel, releases waste gases, moves and responds to the driver. Why is it still not alive?',
+  ['It cannot reproduce, grow or develop by itself', 'It is made of metal instead of living cells', 'It cannot get rid of the waste that it makes', 'It does not need any energy to keep going'],
+  'A living thing must show all the characteristics. A car cannot reproduce, grow or develop.');
+M('B1.2-01', 'Which feature do plant cells have that animal cells do not?',
+  ['Chloroplasts and a cellulose cell wall', 'A nucleus and a partially permeable membrane', 'Mitochondria and ribosomes in the cytoplasm', 'Cytoplasm and a nucleus containing DNA'],
+  'Plants are multicellular, have chloroplasts for photosynthesis and cellulose cell walls.');
+M('B1.2-02', 'How do <b>animals</b> usually store carbohydrate?',
+  ['As glycogen', 'As starch', 'As cellulose', 'As chitin'],
+  'Animals often store carbohydrate as glycogen. Plants store it as starch or sucrose.');
+M('B1.2-03', 'What are the cell walls of <b>fungi</b> made of?',
+  ['Chitin', 'Cellulose', 'Starch', 'Glycogen'],
+  'Fungal cell walls are chitin. Plant cell walls are cellulose.');
+M('B1.2-04', 'What is <b>saprotrophic nutrition</b>?',
+  ['Secreting enzymes onto food outside the body, then absorbing the products', 'Making food by photosynthesis, using light energy and chlorophyll', 'Swallowing food and then digesting it inside a gut with enzymes', 'Living inside another organism and absorbing food from its blood'],
+  'Fungi feed this way: extracellular digestion followed by absorption.');
+M('B1.2-05', 'The thread-like structures that make up the body of a fungus such as <i>Mucor</i> are called…',
+  ['hyphae', 'villi', 'plasmids', 'chloroplasts'],
+  'Hyphae form a network called a mycelium. Each hypha contains many nuclei.');
+M('B1.2-06', 'Which of these is a <b>protoctist</b>?',
+  ['<i>Amoeba</i>', '<i>Mucor</i>', '<i>Lactobacillus</i>', 'Maize'],
+  'Protoctists are microscopic single-celled organisms, e.g. <i>Amoeba</i>, <i>Chlorella</i> and <i>Plasmodium</i>. <i>Mucor</i> is a fungus; <i>Lactobacillus</i> is a bacterium.');
+T('B1.2-07', 'Yeast is a single-celled fungus.', true,
+  'True. Most fungi are made of hyphae, but some, like yeast, are single-celled.');
+MH('B1.2-08', '<i>Chlorella</i> is single-celled and has chloroplasts. <i>Amoeba</i> is single-celled and has no chloroplasts. Which group do both belong to?',
+  ['Protoctists', 'Plants', 'Fungi', 'Bacteria'],
+  'Protoctists are a varied group of single-celled organisms: some are plant-like (<i>Chlorella</i>), some animal-like (<i>Amoeba</i>).');
+MH('B1.2-09', 'An organism is multicellular, has no cell walls, has nervous co-ordination and stores glycogen. What is it?',
+  ['An animal', 'A plant', 'A fungus', 'A protoctist'],
+  'No cell wall + nervous co-ordination + glycogen = animal. Fungi also store glycogen but have chitin cell walls.');
+M('B1.3-01', 'Which structure do bacterial cells <b>not</b> have?',
+  ['A nucleus', 'A cell wall', 'Plasmids', 'A cell membrane'],
+  'Bacteria are prokaryotes: no nucleus. Their DNA is a circular chromosome loose in the cytoplasm, plus small rings called plasmids.');
+M('B1.3-02', 'What are <b>plasmids</b>?',
+  ['Small rings of DNA found in bacteria', 'The cell walls of bacteria', 'Tiny organelles that carry out photosynthesis', 'The threads that make up a fungus'],
+  'Bacteria have a circular chromosome plus extra small rings of DNA called plasmids.');
+M('B1.3-03', '<i>Lactobacillus bulgaricus</i> is a rod-shaped bacterium. What is it used for?',
+  ['Making yoghurt from milk', 'Making bread dough rise', 'Causing pneumonia in the lungs', 'Causing malaria in humans'],
+  '<i>Pneumococcus</i> causes pneumonia, <i>Plasmodium</i> causes malaria and yeast makes bread rise.');
+T('B1.3-04', 'All bacteria are pathogens.', false,
+  'False. Most bacteria are harmless or useful (e.g. <i>Lactobacillus</i> in yoghurt). Some, like <i>Pneumococcus</i>, are pathogens.');
+MH('B1.3-05', 'How is the DNA of a bacterium arranged?',
+  ['A circular chromosome in the cytoplasm, plus plasmids', 'Several chromosomes held inside a nucleus', 'A strand of RNA surrounded by a protein coat', 'Spread through many nuclei in long threads'],
+  'Bacteria have no nucleus. Chromosomes in a nucleus = eukaryotes; many nuclei in threads = fungal hyphae; protein coat = virus.');
+M('B1.4-01', 'What is a <b>pathogen</b>?',
+  ['A microorganism that causes disease', 'Any single-celled organism', 'A cell that fights infection', 'A chemical that kills bacteria'],
+  'Pathogens can be fungi, bacteria, protoctists or viruses.');
+T('B1.4-02', 'Viruses are living organisms.', false,
+  'False. Viruses are not living organisms: they have no cellular structure and can only reproduce inside living cells.');
+M('B1.4-03', 'What is a virus made of?',
+  ['A protein coat around either DNA or RNA', 'A cell wall, membrane and cytoplasm', 'A nucleus surrounded by cytoplasm', 'Hyphae containing many nuclei'],
+  'Viruses have no cells: just a protein coat and one type of nucleic acid.');
+M('B1.4-04', 'Which disease is caused by a <b>protoctist</b>?',
+  ['Malaria', 'Pneumonia', 'Influenza (flu)', 'AIDS'],
+  'Malaria is caused by <i>Plasmodium</i>. Pneumonia: <i>Pneumococcus</i> (bacterium). Flu and AIDS: viruses.');
+M('B1.4-05', 'How does the tobacco mosaic virus damage tobacco plants?',
+  ['It stops chloroplasts forming, so leaves become discoloured', 'It digests the cellulose cell walls, so the leaves fall apart', 'It blocks the xylem vessels, so the whole plant wilts', 'It feeds on the roots, so the plant cannot take in water'],
+  'Without chloroplasts in patches, the leaf has a mottled “mosaic” pattern and photosynthesises less.');
+MH('B1.4-06', 'Why can a virus only reproduce inside a living cell?',
+  ['It has no cell structure, so it uses the host cell to copy itself', 'It needs the host cell’s wall to protect its protein coat', 'It is too large to survive for long outside a cell', 'It needs the cell’s chloroplasts to make its own food'],
+  'Viruses are parasites: they take over the host cell to copy their nucleic acid and make new protein coats.');
+T('B1.4-07', 'Viruses are smaller than bacteria.', true,
+  'True. Viruses are much smaller than bacteria.');
+
+/* ===================== CHEMISTRY 1(a) States of matter (added 7 Nov 2026) ===================== */
+M('C1.1-01', 'Which describes the particles in a <b>solid</b>?',
+  ['Close together in a regular pattern, vibrating about fixed positions', 'Close together but randomly arranged, moving past each other', 'Far apart and randomly arranged, moving quickly in all directions', 'Far apart in a regular pattern, vibrating about fixed positions'],
+  'Solid: regular, close, vibrate. Liquid: close, random, slide past each other. Gas: far apart, random, fast.');
+M('C1.1-02', 'Which describes the particles in a <b>liquid</b>?',
+  ['Close together, randomly arranged and able to move past each other', 'Close together in neat rows and only able to vibrate on the spot', 'Far apart, randomly arranged and moving quickly in straight lines', 'Far apart in a regular pattern and not moving at all'],
+  'That is why liquids flow and take the shape of their container but can’t easily be compressed.');
+M('C1.1-03', 'In which state do the particles have the <b>most</b> energy?',
+  ['Gas', 'Liquid', 'Solid', 'All have the same energy'],
+  'Gas particles move fastest, so they have the most kinetic energy.');
+T('C1.1-04', 'Liquids can be compressed easily because their particles are far apart.', false,
+  'False. Liquid particles are close together (touching), so liquids hardly compress. Gases compress easily because their particles are far apart.');
+MH('C1.1-05', 'Why does a liquid take the shape of its container but keep the same volume?',
+  ['Its particles can move past each other but stay close together', 'Its particles are far apart and move freely in all directions', 'Its particles are fixed in a regular pattern but can vibrate', 'Its particles expand until they fill the whole container'],
+  'Particles sliding past each other = flows. Particles still touching = fixed volume.');
+M('C1.2-01', 'What is the change from a gas to a liquid called?',
+  ['Condensing', 'Evaporating', 'Melting', 'Freezing'],
+  'Melting (s→l), freezing (l→s), boiling/evaporating (l→g), condensing (g→l), sublimation (s→g).');
+M('C1.2-02', 'What is the change directly from a solid to a gas called?',
+  ['Sublimation', 'Evaporation', 'Condensation', 'Melting'],
+  'For example, solid carbon dioxide (dry ice) sublimes.');
+M('C1.2-03', 'When a solid melts, what happens to its particles?',
+  ['They gain energy, vibrate more and break free of fixed positions', 'They lose energy, vibrate less and move closer together', 'They gain energy and spread far apart, moving very quickly', 'They stop vibrating and slide past each other instead'],
+  'Heating gives particles energy to overcome some of the forces holding them in place.');
+T('C1.2-04', 'When a liquid freezes, its particles gain energy.', false,
+  'False. The particles <b>lose</b> energy to the surroundings and settle into a regular arrangement.');
+MH('C1.2-05', 'While ice is melting, its temperature stays at 0 °C even though it is being heated. Why?',
+  ['The energy is used to overcome forces between particles, not to raise the temperature', 'The thermometer cannot measure any temperature above 0 °C while ice is present', 'Ice cannot absorb any heat energy at all until every bit of it has melted', 'The heat energy is reflected away by the shiny surface of the ice'],
+  'During a change of state, energy goes into breaking forces between particles, so the temperature stays constant.');
+M('C1.3-01', 'A purple crystal of potassium manganate(VII) is placed in water. After a while all the water is pale purple. What explains this?',
+  ['The particles diffuse and spread out evenly', 'The water particles turn purple', 'The crystal reacts with the water', 'The crystal particles sink to the bottom'],
+  'Diffusion: particles move randomly and spread from high to low concentration.');
+M('C1.3-02', 'A coloured solution is diluted several times. The colour gets paler but never disappears completely. What does this show?',
+  ['It is made of tiny particles, which become more spread out', 'The particles get smaller each time the solution is diluted', 'Some of the particles are destroyed each time water is added', 'The water particles slowly change colour to match the dye'],
+  'There are huge numbers of tiny particles. Diluting spreads them out, so there are fewer in each drop.');
+MH('C1.3-03', 'Cotton wool soaked in ammonia is put at one end of a tube and cotton wool soaked in hydrogen chloride at the other. A white ring forms nearer the hydrogen chloride end. Why?',
+  ['Ammonia particles are lighter, so they diffuse faster and travel further', 'Hydrogen chloride particles are lighter, so they diffuse faster', 'Both gases diffuse at the same speed, so they meet in the middle', 'The white ring forms where the tube is warmest, near that end'],
+  'NH₃ (Mr 17) is lighter than HCl (Mr 36.5), so it diffuses faster.');
+T('C1.3-04', 'Gases diffuse more slowly at higher temperatures.', false,
+  'False. At higher temperatures the particles move faster, so gases diffuse <b>faster</b>.');
+M('C1.4-01', 'Salt is dissolved in water. Which is the <b>solvent</b>?',
+  ['Water', 'Salt', 'Salt water', 'The beaker'],
+  'Solute (salt) dissolves in the solvent (water) to make a solution (salt water).');
+M('C1.4-02', 'What is a <b>saturated solution</b>?',
+  ['A solution in which no more solute will dissolve at that temperature', 'A solution that contains only water and no dissolved substances', 'A solution in which the solute has spread out evenly everywhere', 'A solution that has been heated until all the water evaporated'],
+  'Add more solute to a saturated solution and it will just sit at the bottom.');
+M('C1.4-03', 'What is a <b>solute</b>?',
+  ['The substance that dissolves', 'The liquid that does the dissolving', 'The mixture that forms', 'The solid left after filtering'],
+  'Solute + solvent → solution.');
+T('C1.4-04', 'A solution is a mixture of a solute and a solvent.', true,
+  'True. Dissolving does not make a new substance, so a solution is a mixture.');
+
+/* ===================== CHEMISTRY 1(b) Elements, compounds and mixtures (added 7 Nov 2026) ===================== */
+M('C1.8-01', 'Which of these is a <b>compound</b>?',
+  ['Water, H₂O', 'Oxygen, O₂', 'Air', 'Iron, Fe'],
+  'A compound contains two or more elements chemically combined. O₂ and Fe are elements; air is a mixture.');
+M('C1.8-02', 'Which of these is a <b>mixture</b>?',
+  ['Sea water', 'Carbon dioxide', 'Sodium chloride', 'Copper'],
+  'Sea water is water with dissolved salts, not chemically combined.');
+M('C1.8-03', 'What is an <b>element</b>?',
+  ['A substance made of only one type of atom', 'A substance made of two types of atom bonded together', 'Two or more substances mixed but not bonded', 'Any substance that is a solid'],
+  'Every element has its own symbol in the Periodic Table.');
+T('C1.8-04', 'The substances in a mixture are chemically bonded together.', false,
+  'False. In a mixture the substances are not chemically combined, so they can be separated by physical methods.');
+MH('C1.8-05', 'Iron filings and sulfur powder are stirred together. Which statement is correct?',
+  ['It is a mixture: a magnet can pull out the iron', 'It is a compound: the iron and sulfur are bonded', 'It is an element: it contains only iron', 'It is a compound: it has a fixed formula'],
+  'They are not chemically combined until heated. Heating them makes the compound iron sulfide.');
+M('C1.9-01', 'How can you tell if a substance is <b>pure</b>?',
+  ['It melts or boils at one fixed temperature', 'It melts over a range of temperatures', 'It is colourless', 'It dissolves in water'],
+  'Mixtures melt and boil over a range of temperatures.');
+MH('C1.9-02', 'Pure water boils at 100 °C. A sample of water boils between 101 °C and 103 °C. What does this tell you?',
+  ['It is impure: it contains dissolved substances', 'It is pure, but the thermometer is wrong', 'It is pure water at a different pressure', 'It is a compound, not a mixture'],
+  'Impurities change the boiling point and make it happen over a range.');
+T('C1.9-03', 'A mixture always melts at one exact temperature.', false,
+  'False. A pure substance has a fixed melting point; a mixture usually melts over a range of temperatures.');
+M('C1.10-01', 'Which method separates an insoluble solid from a liquid?',
+  ['Filtration', 'Crystallisation', 'Simple distillation', 'Chromatography'],
+  'The solid stays in the filter paper as the residue; the liquid passes through as the filtrate.');
+M('C1.10-02', 'Which method gets pure water from salt water?',
+  ['Simple distillation', 'Filtration', 'Chromatography', 'Fractional distillation'],
+  'The water boils, then is cooled in a condenser and collected. The salt stays behind.');
+M('C1.10-03', 'Which method gets solid salt crystals from salt solution?',
+  ['Crystallisation', 'Filtration', 'Chromatography', 'Condensation'],
+  'Heat to evaporate some water, then leave to cool so crystals form.');
+M('C1.10-04', 'Which method separates a mixture of liquids with different boiling points, such as ethanol and water?',
+  ['Fractional distillation', 'Filtration', 'Crystallisation', 'Simple distillation'],
+  'A fractionating column lets the liquids separate as each boils off at its own temperature.');
+MH('C1.10-05', 'In simple distillation, what is the job of the condenser?',
+  ['To cool the vapour so it turns back into a liquid', 'To heat the mixture so that the liquid boils', 'To trap solid impurities so they are filtered out', 'To keep the vapour hot so it does not condense'],
+  'Cold water flows around the condenser, so the vapour condenses and drips into the collecting flask.');
+M('C1.11-01', 'A chromatogram of an ink shows three spots. What does this tell you?',
+  ['The ink contains at least three different substances', 'The ink is a pure substance that has split into three', 'The ink was dissolved in three different solvents', 'The ink is insoluble, so it left three marks behind'],
+  'Each spot is a different dissolved substance. (Insoluble substances stay on the start line.)');
+MH('C1.11-02', 'On a chromatogram, an unknown ink has spots at the same heights as dyes A and C. What can you conclude?',
+  ['The ink probably contains dyes A and C', 'The ink is pure', 'The ink contains A, B and C', 'The ink contains neither A nor C'],
+  'Spots that travel the same distance in the same solvent are likely the same substance.');
+T('C1.11-03', 'A pure substance gives only one spot on a chromatogram.', true,
+  'True. A mixture of soluble substances gives more than one spot.');
+M('C1.12-01', 'A spot travels 3.0 cm and the solvent front travels 6.0 cm. What is the Rf value?',
+  ['0.5', '2.0', '3.0', '9.0'],
+  'Rf = distance moved by spot ÷ distance moved by solvent = 3.0 ÷ 6.0 = <b>0.5</b>.');
+T('C1.12-02', 'An Rf value can be greater than 1.', false,
+  'False. A spot cannot travel further than the solvent, so Rf is always between 0 and 1.');
+M('C1.13-01', 'Why is the start line on chromatography paper drawn in <b>pencil</b>?',
+  ['Pencil does not dissolve in the solvent, so it won’t run', 'Pencil lines are easier to see than ink when wet', 'Pencil helps the solvent soak up the paper faster', 'Pencil stops the spots of ink spreading sideways'],
+  'An ink line would dissolve and add extra spots.');
+M('C1.13-02', 'Why must the start line be <b>above</b> the solvent level in the beaker?',
+  ['Otherwise the spots dissolve into the solvent in the beaker', 'So that the bottom of the paper does not get wet at all', 'So the solvent travels up the paper more quickly', 'So the pencil line stays dry and can still be seen'],
+  'If the spots are under the solvent, they wash off into it.');
+
+/* ===================== CHEMISTRY 1(e) Formulae, equations and calculations (added 7 Nov 2026) ===================== */
+M('C1.25-01', 'Which is the correctly balanced equation for magnesium burning in oxygen?',
+  ['2Mg + O₂ → 2MgO', 'Mg + O₂ → MgO', 'Mg + O → MgO', 'Mg + O₂ → MgO₂'],
+  'Two O atoms on the left need 2MgO on the right, then 2Mg to balance magnesium.');
+M('C1.25-02', 'Balance: <b>?</b>H₂ + O₂ → 2H₂O',
+  ['2', '1', '4', '3'],
+  '2H₂ + O₂ → 2H₂O: 4 H atoms and 2 O atoms on each side.');
+M('C1.25-03', 'What does the state symbol (aq) mean?',
+  ['Dissolved in water', 'Liquid', 'Gas', 'Solid'],
+  '(s) solid, (l) liquid, (g) gas, (aq) aqueous = dissolved in water.');
+MH('C1.25-04', 'Balance: CH₄ + <b>?</b>O₂ → CO₂ + 2H₂O',
+  ['2', '1', '3', '4'],
+  'On the right there are 2 + 2 = 4 O atoms, so you need 2O₂.');
+T('C1.25-05', 'Balancing an equation means changing the small numbers in the formulae.', false,
+  'False. You only change the big numbers in front of formulae. Changing H₂O to H₂O₂ would make a different substance.');
+M('C1.26-01', 'What is the relative formula mass (Mr) of carbon dioxide, CO₂? (C = 12, O = 16)',
+  ['44', '28', '40', '56'],
+  '12 + (2 × 16) = <b>44</b>.');
+M('C1.26-02', 'What is the Mr of calcium hydroxide, Ca(OH)₂? (Ca = 40, O = 16, H = 1)',
+  ['74', '57', '58', '114'],
+  '40 + 2 × (16 + 1) = 40 + 34 = <b>74</b>.');
+M('C1.27-01', 'What is the unit for the amount of a substance?',
+  ['The mole (mol)', 'The gram (g)', 'The litre (dm³)', 'The relative formula mass'],
+  'One mole of a substance has a mass in grams equal to its Ar or Mr.');
+T('C1.27-02', 'One mole of carbon atoms has a mass of 6 g.', false,
+  'False. The Ar of carbon is 12, so one mole has a mass of <b>12 g</b>. (6 is carbon’s atomic number.)');
+M('C1.28-01', 'How many moles are in 36 g of water (Mr = 18)?',
+  ['2 mol', '0.5 mol', '18 mol', '648 mol'],
+  'moles = mass ÷ Mr = 36 ÷ 18 = <b>2 mol</b>.');
+M('C1.28-02', 'What is the mass of 0.5 mol of sodium chloride (Mr = 58.5)?',
+  ['29.25 g', '117 g', '58.5 g', '0.0085 g'],
+  'mass = moles × Mr = 0.5 × 58.5 = <b>29.25 g</b>.');
+M('C1.29-01', '2Mg + O₂ → 2MgO. How many moles of MgO are made from 3 moles of Mg?',
+  ['3 mol', '1.5 mol', '6 mol', '2 mol'],
+  'The ratio Mg : MgO is 2 : 2 = 1 : 1, so 3 mol Mg → <b>3 mol MgO</b>.');
+MH('C1.29-02', 'CaCO₃ → CaO + CO₂. What mass of CaO is made from 50 g of CaCO₃? (Mr CaCO₃ = 100, CaO = 56)',
+  ['28 g', '50 g', '56 g', '22 g'],
+  '50 ÷ 100 = 0.5 mol CaCO₃ → 0.5 mol CaO (1 : 1). 0.5 × 56 = <b>28 g</b>.');
+M('C1.30-01', 'The theoretical yield is 20 g but only 15 g is made. What is the percentage yield?',
+  ['75%', '133%', '25%', '5%'],
+  'percentage yield = actual ÷ theoretical × 100 = 15 ÷ 20 × 100 = <b>75%</b>.');
+MH('C1.30-02', 'Which is <b>not</b> a reason why the percentage yield of a reaction is less than 100%?',
+  ['The reactants were weighed accurately', 'Some product was lost when it was filtered', 'The reaction did not go to completion', 'Some reactants made other products instead'],
+  'Accurate weighing does not lose product. The others all reduce the amount of product collected.');
+M('C1.31-01', 'Copper(II) sulfate crystals are heated until they turn white. The mass falls. What has been lost?',
+  ['Water of crystallisation', 'Copper', 'Sulfur dioxide', 'Oxygen'],
+  'Blue hydrated CuSO₄·5H₂O loses its water to become white anhydrous CuSO₄. The loss in mass is the water.');
+MH('C1.31-02', 'Why is a metal oxide heated repeatedly until its mass stops changing?',
+  ['To make sure the reaction is complete', 'To make the crucible cooler', 'To remove the lid', 'To make the oxide react with the crucible'],
+  'Heating to constant mass means no more change is happening, so the reaction has finished.');
+M('C1.32-01', 'What is an <b>empirical formula</b>?',
+  ['The simplest whole-number ratio of atoms of each element in a compound', 'The actual number of atoms of each element in a molecule', 'The formula of an element', 'The formula showing all the bonds'],
+  'For example, ethane C₂H₆ has the empirical formula CH₃.');
+M('C1.32-02', 'The molecular formula of glucose is C₆H₁₂O₆. What is its empirical formula?',
+  ['CH₂O', 'C₆H₁₂O₆', 'C₂H₄O₂', 'CHO'],
+  'Divide by the highest common factor, 6: C₁H₂O₁.');
+M('C1.33-01', 'A compound contains 12 g of carbon (Ar 12) and 4 g of hydrogen (Ar 1). What is its empirical formula?',
+  ['CH₄', 'C₃H', 'CH', 'C₁₂H₄'],
+  'C: 12 ÷ 12 = 1 mol. H: 4 ÷ 1 = 4 mol. Ratio 1 : 4 → <b>CH₄</b>.');
+MH('C1.33-02', 'A hydrocarbon has the empirical formula CH₂ and an Mr of 42. What is its molecular formula?',
+  ['C₃H₆', 'CH₂', 'C₂H₄', 'C₄H₈'],
+  'CH₂ has a mass of 14. 42 ÷ 14 = 3, so (CH₂)₃ = <b>C₃H₆</b>.');
+M('C1.36-01', 'In the experiment to find the formula of magnesium oxide, why is the crucible lid lifted from time to time?',
+  ['To let oxygen in so the magnesium can burn', 'To let the magnesium oxide escape as smoke', 'To let the crucible cool down between heatings', 'To stop the crucible cracking from the heat'],
+  'Lift it only briefly so that oxygen gets in but little white smoke (MgO) escapes.');
+MH('C1.36-02', 'Magnesium is heated in a crucible. Mass of Mg = 0.24 g; mass of oxide = 0.40 g. What is the formula of the oxide? (Mg = 24, O = 16)',
+  ['MgO', 'MgO₂', 'Mg₂O', 'Mg₂O₃'],
+  'O = 0.40 − 0.24 = 0.16 g. Mg: 0.24 ÷ 24 = 0.01 mol; O: 0.16 ÷ 16 = 0.01 mol. Ratio 1 : 1 → <b>MgO</b>.');
+T('C1.36-03', 'When copper(II) oxide is reduced by heating it in a stream of hydrogen, the solid loses mass.', true,
+  'True. The oxygen is removed from the copper(II) oxide, leaving copper. The loss in mass is the oxygen.');
+
+/* ===================== PHYSICS 7(c) Fission and fusion (added 7 Nov 2026) ===================== */
+M('P7.17-01', 'Which of these nuclear processes can be a source of energy?',
+  ['Fission, fusion and radioactive decay', 'Only fission in nuclear power stations', 'Only fusion inside stars like the Sun', 'Only radioactive decay of unstable nuclei'],
+  'All three release energy from the nucleus.');
+T('P7.17-02', 'Radioactive decay releases energy.', true,
+  'True. For example, the heat from radioactive decay helps keep the inside of the Earth hot.');
+M('P7.18-01', 'What starts the fission of a uranium-235 nucleus?',
+  ['A neutron colliding with it', 'An electron colliding with it', 'Heating it to millions of degrees', 'A gamma ray hitting it'],
+  'The U-235 nucleus absorbs a neutron, becomes unstable and splits.');
+M('P7.18-02', 'In what form is most of the energy from a fission released?',
+  ['Kinetic energy of the fission products', 'Light energy given out by the uranium', 'Chemical energy stored in new bonds', 'Electrical energy of the free electrons'],
+  'The daughter nuclei and neutrons fly apart very fast. This kinetic energy heats the reactor.');
+MH('P7.18-03', 'Why are neutrons, not protons, used to start fission?',
+  ['Neutrons have no charge, so they are not repelled by the positive nucleus', 'Neutrons are much heavier than protons', 'Neutrons are negatively charged and attracted to the nucleus', 'Protons would make the nucleus radioactive'],
+  'A proton would be pushed away by the positive charge of the nucleus.');
+M('P7.19-01', 'What does the fission of U-235 produce?',
+  ['Two radioactive daughter nuclei and a few neutrons', 'One larger nucleus and a fast-moving alpha particle', 'Two stable daughter nuclei and a few electrons', 'Hydrogen and helium nuclei and a gamma ray'],
+  'Usually two or three neutrons are released along with the two daughter nuclei.');
+T('P7.19-02', 'The daughter nuclei produced by fission are radioactive.', true,
+  'True. This is why spent nuclear fuel is radioactive waste.');
+M('P7.20-01', 'How is a chain reaction set up?',
+  ['Neutrons released by one fission go on to split other U-235 nuclei', 'The daughter nuclei join back together to make new U-235 nuclei', 'Electrons released by each fission go on to start the next one', 'Gamma rays released by each fission split the nearby nuclei'],
+  'Each fission releases 2–3 neutrons, which can cause more fissions.');
+MH('P7.20-02', 'Each fission releases about 3 neutrons. What would happen if every one of them caused another fission?',
+  ['The number of fissions would grow rapidly, out of control', 'The reaction would stop after the very first fission', 'The number of fissions would stay exactly the same', 'All the uranium would turn into lead straight away'],
+  '1 → 3 → 9 → 27… That is why reactors must control the number of neutrons.');
+M('P7.21-01', 'What do <b>control rods</b> do in a nuclear reactor?',
+  ['Absorb neutrons to control the rate of fission', 'Slow neutrons down so they cause fission', 'Absorb radiation to protect workers', 'Carry heat away to the boiler'],
+  'Lowering the rods absorbs more neutrons, slowing the chain reaction.');
+M('P7.21-02', 'What does the <b>moderator</b> do in a nuclear reactor?',
+  ['Slows down neutrons so they are more likely to cause fission', 'Absorbs neutrons so that the chain reaction stops completely', 'Stops radiation escaping from the core into the building', 'Speeds up neutrons so they hit nuclei harder and split them'],
+  'Slow neutrons are more easily absorbed by U-235 nuclei. Graphite or water is used.');
+MH('P7.21-03', 'The reactor is getting too hot. What should the operators do?',
+  ['Lower the control rods further into the core', 'Raise the control rods out of the core', 'Remove the moderator', 'Add more uranium fuel'],
+  'More control rod in the core absorbs more neutrons, so fewer fissions happen.');
+T('P7.21-04', 'Control rods slow neutrons down.', false,
+  'False. Control rods <b>absorb</b> neutrons. It is the moderator that slows them down.');
+M('P7.22-01', 'Why is a nuclear reactor surrounded by thick concrete shielding?',
+  ['To absorb ionising radiation so it does not escape', 'To slow down the neutrons so they cause more fission', 'To keep the core hot so the reaction keeps going', 'To reflect neutrons back so the reaction goes faster'],
+  'The shielding protects workers and the environment from radiation, especially gamma rays and neutrons.');
+MH('P7.22-02', 'Which of these is <b>not</b> a job of the shielding around a reactor?',
+  ['Controlling the rate of the chain reaction', 'Absorbing gamma radiation', 'Absorbing neutrons that escape the core', 'Protecting people who work nearby'],
+  'The rate is controlled by the control rods, not the shielding.');
+M('P7.23-01', 'What is the difference between fission and fusion?',
+  ['Fission splits a large nucleus; fusion joins small nuclei', 'Fission joins small nuclei; fusion splits a large nucleus', 'Fission happens in stars; fusion happens in power stations', 'Fission releases energy; fusion takes in energy'],
+  'Both release energy.');
+T('P7.23-02', 'Nuclear power stations today use fusion to generate electricity.', false,
+  'False. They use fission. Fusion power is still being developed.');
+M('P7.24-01', 'What is nuclear fusion?',
+  ['Small nuclei joining to form a larger nucleus, releasing energy', 'A large nucleus splitting into two smaller ones, releasing energy', 'An unstable nucleus emitting an alpha particle and a gamma ray', 'Two atoms joining together by sharing a pair of electrons'],
+  'For example, hydrogen nuclei fuse to make helium.');
+MH('P7.24-02', 'In fusion, the mass of the new nucleus is slightly less than the total mass of the nuclei that joined. What happened to the missing mass?',
+  ['It was released as energy', 'It escaped as fast electrons', 'It turned into extra neutrons', 'It was simply measured wrongly'],
+  'The loss of mass is accompanied by a release of energy.');
+M('P7.25-01', 'What is the energy source of stars?',
+  ['Nuclear fusion', 'Nuclear fission', 'Burning hydrogen gas in oxygen', 'Radioactive decay of uranium'],
+  'In the Sun, hydrogen nuclei fuse to make helium.');
+M('P7.26-01', 'Why does fusion need very high temperatures and pressures?',
+  ['Positive nuclei repel, so they must move very fast to get close', 'The nuclei have to be melted before they are able to join', 'High temperatures create the neutrons that start the reaction', 'Fusion only releases energy if the surroundings are already hot'],
+  'Electrostatic repulsion between protons must be overcome.');
+T('P7.26-02', 'Fusion can happen at room temperature if the nuclei are close together.', false,
+  'False. At low temperatures the nuclei move too slowly to overcome the electrostatic repulsion between their protons.');
+MH('P7.26-03', 'Why is it so hard to build a fusion power station on Earth?',
+  ['It is very hard to reach and contain the extreme temperatures needed', 'There is not enough hydrogen on Earth to use as a fuel', 'Fusion produces far less energy than burning fossil fuels', 'Fusion only works with uranium, which is rare and expensive'],
+  'The fuel must be hotter than the centre of the Sun and held so it does not touch the walls.');
+
+/* ===================== Top-up to ≥5 per point: Chemistry + Biology (added 7 Nov 2026) ===================== */
+M('B2.4-05', 'Which structure is found in animal cells as well as plant cells?',
+  ['Mitochondria', 'A cellulose cell wall', 'Chloroplasts', 'A large permanent vacuole'],
+  'Mitochondria are in both, because both respire.');
+M('C1.3-05', 'A drop of food colouring is added to a beaker of hot water and another to cold water. What would you expect?',
+  ['The colour spreads faster in the hot water', 'The colour spreads faster in the cold water', 'The colour spreads at the same rate in both', 'The colour only spreads in the cold water'],
+  'Particles move faster at higher temperatures, so diffusion is faster.');
+T('C1.4-05', 'A solvent is the substance that dissolves in a liquid.', false,
+  'False. The solute dissolves; the solvent is the liquid it dissolves in.');
+M('C1.9-04', 'A sample of solid melts between 78 °C and 84 °C. What does this suggest?',
+  ['It is a mixture', 'It is a pure element', 'It is a pure compound', 'It cannot be melted'],
+  'Melting over a range of temperatures shows it is impure (a mixture).');
+T('C1.9-05', 'Adding salt to water changes the temperature at which the water boils.', true,
+  'True. Salt water is a mixture, so it does not boil at exactly 100 °C.');
+M('C1.11-04', 'In chromatography, a spot stays on the start line. What does this tell you?',
+  ['That substance is insoluble in the solvent used', 'That substance is the most soluble in the solvent', 'That substance is pure water from the solvent', 'That the pencil line has dissolved in the solvent'],
+  'A substance only moves up the paper if it dissolves in the solvent.');
+MH('C1.11-05', 'A food colouring gives one spot with water as the solvent. Can you be sure it is pure?',
+  ['No: it might separate into more spots in a different solvent', 'Yes: a single spot on a chromatogram always means it is pure', 'No: a pure substance should always give exactly two spots', 'Yes: water dissolves every dye, so it would show any others'],
+  'Two dyes might travel the same distance in one solvent. Repeating with other solvents is a better test.');
+M('C1.12-03', 'Dye X has an Rf value of 0.80 and dye Y has an Rf value of 0.30. Which statement is true?',
+  ['X travelled further up the paper than Y', 'Y travelled further up the paper than X', 'Both travelled the same distance', 'Neither dye dissolved in the solvent'],
+  'A higher Rf means the dye travelled a bigger fraction of the solvent’s distance.');
+MH('C1.12-04', 'An unknown dye has Rf = 0.45. Known dyes, run in the same solvent, have: red 0.30, yellow 0.45, blue 0.70. What is the unknown dye?',
+  ['Yellow', 'Red', 'Blue', 'A mixture of red and blue'],
+  'In the same solvent, the same substance gives the same Rf value.');
+M('C1.13-03', 'Why is a lid put on the beaker during paper chromatography?',
+  ['To stop the solvent evaporating from the paper', 'To keep light out so the dyes do not fade', 'To stop the paper falling into the solvent', 'To keep the solvent warm so it moves faster'],
+  'If the solvent evaporates from the paper, the spots would not move properly.');
+T('C1.13-04', 'The spots of ink should be put below the level of the solvent.', false,
+  'False. The start line must be above the solvent, or the spots dissolve into the solvent in the beaker.');
+MH('C1.13-05', 'Why should the spots on the start line be small and concentrated?',
+  ['So they separate into clear, distinct spots that are easy to measure', 'So they dissolve more slowly and do not wash off the paper', 'So the solvent cannot reach them until the experiment is over', 'So the Rf value comes out bigger and is easier to calculate'],
+  'Large spots spread out and overlap, making it hard to see or measure separate substances.');
+T('C1.14-05', 'Neon exists as single atoms, not molecules.', true,
+  'True. Noble gases have full outer shells, so they exist as single atoms.');
+MH('C1.17-04', 'Boron has two isotopes, boron-10 and boron-11. Its relative atomic mass is 10.8. Which isotope is more common?',
+  ['Boron-11', 'Boron-10', 'They are equally common', 'You cannot tell'],
+  '10.8 is closer to 11 than to 10, so most boron atoms must be boron-11.');
+M('C1.18-05', 'What is the same for all the elements in one <b>period</b>?',
+  ['The number of occupied electron shells', 'The number of outer electrons', 'Their chemical properties', 'Their state at room temperature'],
+  'Period = row = number of shells. Group = column = number of outer electrons.');
+M('C1.19-04', 'Calcium is in Group 2, Period 4. What is its electronic configuration?',
+  ['2.8.8.2', '2.8.2', '2.8.10', '2.2.8.8'],
+  'Period 4 → 4 shells. Group 2 → 2 outer electrons. 2 + 8 + 8 + 2 = 20 electrons.');
+M('C1.20-04', 'Sulfur dioxide dissolves in water to form an acidic solution. What does this tell you about sulfur?',
+  ['It is a non-metal', 'It is a metal', 'It is a noble gas', 'It is a transition metal'],
+  'Non-metal oxides are acidic.');
+T('C1.20-05', 'All metals are good conductors of electricity.', true,
+  'True. Conducting electricity is one way to identify a metal. (Graphite is a non-metal that conducts, but it is the main exception.)');
+M('C1.21-04', 'Which of these is a <b>metal</b>?',
+  ['Calcium', 'Chlorine', 'Phosphorus', 'Argon'],
+  'Calcium is in Group 2, on the left of the table.');
+MH('C1.21-05', 'Element Q is in Group 6, Period 3. Is it a metal or a non-metal?',
+  ['A non-metal (it is sulfur)', 'A metal (it is magnesium)', 'A metal (it is aluminium)', 'A non-metal (it is oxygen)'],
+  'Group 6 is on the right of the table. Group 6, Period 3 is sulfur.');
+M('C1.22-04', 'An element has 3 occupied shells and 7 outer electrons. Which element is it?',
+  ['Chlorine', 'Fluorine', 'Nitrogen', 'Argon'],
+  'Period 3, Group 7 = chlorine (2.8.7). Fluorine is Period 2.');
+M('C1.23-04', 'Fluorine, chlorine and bromine all react with sodium in a similar way. Why?',
+  ['They all have 7 outer electrons', 'They all have the same number of shells', 'They are all gases at room temperature', 'They all have the same mass'],
+  'Same group = same number of outer electrons = similar reactions.');
+MH('C1.23-05', 'Rubidium is below potassium in Group 1. Predict how rubidium reacts with water.',
+  ['It reacts in a similar way, making an alkali and hydrogen', 'It does not react at all, because it is lower in the group', 'It reacts like a noble gas, because it has a full outer shell', 'It reacts to make an acidic solution and oxygen gas'],
+  'Elements in the same group have similar chemical properties because they have the same number of outer electrons.');
+M('C1.24-04', 'Why does helium not react even though it has only 2 electrons?',
+  ['Its only shell is full, and the first shell holds just 2', 'It has no protons in its nucleus to attract electrons', 'It is too light and small to collide with other atoms', 'Its 2 electrons are already shared with other atoms'],
+  'A full outer shell is stable, whether it holds 2 or 8 electrons.');
+T('C1.24-05', 'Noble gases exist as single atoms because they do not readily form bonds.', true,
+  'True. With full outer shells, noble gas atoms do not need to bond.');
+M('C1.26-03', 'What is the Mr of sulfuric acid, H₂SO₄? (H = 1, S = 32, O = 16)',
+  ['98', '49', '50', '96'],
+  '(2 × 1) + 32 + (4 × 16) = 2 + 32 + 64 = <b>98</b>.');
+MH('C1.26-04', 'What is the Mr of ammonium sulfate, (NH₄)₂SO₄? (N = 14, H = 1, S = 32, O = 16)',
+  ['132', '114', '118', '214'],
+  '2 × (14 + 4) + 32 + 64 = 36 + 32 + 64 = <b>132</b>.');
+M('C1.27-03', 'What is the mass of one mole of sodium atoms? (Na = 23)',
+  ['23 g', '1 g', '11 g', '46 g'],
+  'One mole of an element has a mass in grams equal to its Ar.');
+M('C1.27-04', 'One mole of water (H₂O) has a mass of…',
+  ['18 g', '3 g', '10 g', '16 g'],
+  'Mr = (2 × 1) + 16 = 18, so one mole has a mass of 18 g.');
+TH('C1.27-05', 'One mole of oxygen molecules (O₂) has the same mass as one mole of oxygen atoms (O).', false,
+  'False. One mole of O₂ has a mass of 32 g; one mole of O atoms has a mass of 16 g.');
+M('C1.28-03', 'Which equation links moles, mass and Mr?',
+  ['moles = mass ÷ Mr', 'moles = Mr ÷ mass', 'moles = mass × Mr', 'moles = mass − Mr'],
+  'Rearranged: mass = moles × Mr.');
+MH('C1.28-04', 'Which sample contains the most moles? (Mr: H₂O 18, CO₂ 44, NaCl 58.5)',
+  ['They all contain the same number of moles', '29.25 g of sodium chloride, because it has the biggest mass', '9 g of water, because water has the smallest Mr', '22 g of carbon dioxide, because it is a gas'],
+  'Water: 9 ÷ 18 = 0.5 mol. CO₂: 22 ÷ 44 = 0.5 mol. NaCl: 29.25 ÷ 58.5 = 0.5 mol. A bigger mass does not always mean more moles.');
+M('C1.29-03', 'Fe₂O₃ + 3CO → 2Fe + 3CO₂. How many moles of iron are made from 1 mole of Fe₂O₃?',
+  ['2 mol', '1 mol', '3 mol', '0.5 mol'],
+  'The equation shows 1 Fe₂O₃ : 2 Fe.');
+T('C1.29-04', 'In a reaction, the total mass of the products equals the total mass of the reactants.', true,
+  'True. Atoms are not created or destroyed, only rearranged (conservation of mass).');
+M('C1.30-03', 'What is the formula for percentage yield?',
+  ['actual yield ÷ theoretical yield × 100', 'theoretical yield ÷ actual yield × 100', 'actual yield − theoretical yield', 'actual yield × theoretical yield ÷ 100'],
+  'Percentage yield is always 100% or less.');
+T('C1.30-04', 'A percentage yield of 120% means the reaction worked extremely well.', false,
+  'False. You cannot get more product than the theoretical yield. Over 100% usually means the product was still wet or impure.');
+M('C1.31-03', 'To find the formula of copper(II) oxide, it is heated in a stream of hydrogen or methane. What is left at the end?',
+  ['Copper', 'Copper(II) oxide', 'Water', 'Copper hydroxide'],
+  'The oxygen is removed (reduction). The mass lost is the mass of oxygen.');
+MH('C1.31-04', 'Hydrated copper(II) sulfate (blue) is heated. 2.50 g becomes 1.60 g of white anhydrous solid. What mass of water was lost?',
+  ['0.90 g', '1.60 g', '2.50 g', '4.10 g'],
+  '2.50 − 1.60 = <b>0.90 g</b> of water of crystallisation.');
+M('C1.31-05', 'Why is the crucible lid kept on (lifted only briefly) when heating magnesium?',
+  ['To stop magnesium oxide escaping, which would make the mass too low', 'To stop any air getting in, so the magnesium does not burn', 'To make the magnesium burn faster and more completely', 'To keep the crucible cool enough to pick up safely'],
+  'Losing some white MgO smoke would give a mass of oxide that is too small.');
+M('C1.32-03', 'What is a <b>molecular formula</b>?',
+  ['The actual number of atoms of each element in one molecule', 'The simplest whole-number ratio of atoms of each element', 'The formula of an ion, showing its charge as well', 'A diagram showing every bond between the atoms'],
+  'Ethene: molecular formula C₂H₄, empirical formula CH₂.');
+M('C1.32-04', 'Which compound has the same empirical and molecular formula?',
+  ['Methane, CH₄', 'Ethane, C₂H₆', 'Glucose, C₆H₁₂O₆', 'Hydrogen peroxide, H₂O₂'],
+  'CH₄ cannot be simplified. C₂H₆ → CH₃, C₆H₁₂O₆ → CH₂O, H₂O₂ → HO.');
+TH('C1.32-05', 'Ethene (C₂H₄) and propene (C₃H₆) have the same empirical formula.', true,
+  'True. Both simplify to CH₂.');
+M('C1.33-03', 'A compound is 40 g calcium (Ar 40), 12 g carbon (Ar 12) and 48 g oxygen (Ar 16). What is its empirical formula?',
+  ['CaCO₃', 'CaCO', 'CaC₂O₃', 'Ca₂CO₃'],
+  'Ca 1 mol, C 1 mol, O 3 mol → <b>CaCO₃</b>.');
+MH('C1.33-04', 'A compound has the empirical formula CH and an Mr of 78. What is its molecular formula?',
+  ['C₆H₆', 'CH', 'C₃H₃', 'C₆H₁₂'],
+  'CH has a mass of 13. 78 ÷ 13 = 6, so <b>C₆H₆</b> (benzene).');
+M('C1.36-04', 'In the copper(II) oxide reduction experiment, why is the hydrogen (or methane) left flowing while the copper cools?',
+  ['To stop the hot copper reacting with air and turning back into oxide', 'To cool the copper down faster so it can be weighed sooner', 'To push any remaining water vapour out so it can be weighed', 'To make more copper form from the hydrogen gas'],
+  'Hot copper would re-oxidise if air got in.');
+T('C1.36-05', 'When magnesium is burned to make magnesium oxide, the mass of the solid decreases.', false,
+  'False. The mass <b>increases</b>, because oxygen from the air combines with the magnesium.');
+M('C1.40-05', 'In a dot-and-cross diagram for sodium chloride, what does the chloride ion look like?',
+  ['[Cl]⁻ with 8 outer electrons: 7 dots and 1 cross', '[Cl]⁺ with 6 outer electrons', 'Cl with 7 outer electrons and no charge', '[Cl]²⁻ with 8 crosses'],
+  'Chlorine’s 7 electrons are shown as one symbol; the electron gained from sodium is the other symbol.');
+M('C1.41-04', 'Why does a positive sodium ion attract a negative chloride ion?',
+  ['Opposite charges attract (electrostatic attraction)', 'They share a pair of electrons between them', 'Both ions are magnetic, so they pull together', 'The heavier ion pulls the lighter one by gravity'],
+  'An ionic bond is the electrostatic attraction between oppositely charged ions.');
+T('C1.41-05', 'An ionic bond is a shared pair of electrons between two ions.', false,
+  'False. That describes a covalent bond. An ionic bond is the electrostatic attraction between oppositely charged ions.');
+M('C1.42-04', 'Which property do giant ionic compounds usually have?',
+  ['High melting and boiling points', 'Low melting points', 'They are gases at room temperature', 'They are soft and slippery'],
+  'Lots of energy is needed to overcome the strong attractions throughout the lattice.');
+T('C1.42-05', 'Sodium chloride is a solid at room temperature because its ions are held strongly in a giant lattice.', true,
+  'True. Its melting point is 801 °C.');
+T('C1.43-04', 'Sodium chloride solution does not conduct electricity.', false,
+  'False. When it is dissolved, the ions are free to move and carry charge, so the solution conducts.');
+MH('C1.43-05', 'Why does solid sodium chloride not conduct, even though it is made of charged particles?',
+  ['The ions are held in fixed positions and cannot move', 'It has no charged particles at all when it is solid', 'Its electrons are all used up in covalent bonds', 'The positive and negative ions cancel each other out'],
+  'Charged particles must be free to move for a current to flow.');
+M('C1.44-04', 'How many electrons are shared in a <b>double</b> covalent bond?',
+  ['4', '2', '1', '8'],
+  'A double bond is two shared pairs = 4 electrons.');
+M('C1.44-05', 'In a molecule of hydrogen chloride (HCl), how many pairs of electrons are shared?',
+  ['1', '2', '7', '8'],
+  'H and Cl each need one more electron, so they share one pair: a single bond.');
+M('C1.45-04', 'Why are the atoms in a covalent bond held strongly together?',
+  ['Both positive nuclei are attracted to the negative shared electrons', 'A positive ion and a negative ion are attracted to each other', 'The two positive nuclei are attracted directly to each other', 'The shared electrons repel each other and push the atoms together'],
+  'This electrostatic attraction is strong, so covalent bonds are strong.');
+MH('C1.45-05', 'Which statement about covalent bonds is correct?',
+  ['They are strong, and hold atoms by attraction to a shared pair', 'They are weak, which is why simple molecules melt easily', 'They form when electrons are transferred from metal to non-metal', 'They only form between metal atoms in a sea of electrons'],
+  'Covalent bonds are strong. Simple molecular substances melt easily because the forces between molecules are weak, not the bonds.');
+M('C1.47-04', 'Which is most likely to be a simple molecular substance?',
+  ['A liquid that boils at 80 °C and does not conduct', 'A hard solid that only melts above 1500 °C', 'A solid that conducts electricity when molten', 'A shiny solid that conducts when solid'],
+  'Low boiling point + no conduction = simple molecular.');
+T('C1.47-05', 'Simple molecular substances are often gases or liquids at room temperature.', true,
+  'True. Weak intermolecular forces need little energy to overcome.');
+M('C1.48-04', 'Which has the higher boiling point, ethane (C₂H₆, Mr 30) or pentane (C₅H₁₂, Mr 72)?',
+  ['Pentane', 'Ethane', 'They are the same', 'It depends on the container'],
+  'Pentane has a higher Mr and stronger intermolecular forces.');
+T('C1.48-05', 'Larger simple molecules generally have higher boiling points.', true,
+  'True. Intermolecular forces get stronger as relative molecular mass increases.');
+M('C1.49-04', 'Silicon dioxide (sand) has a very high melting point. Why?',
+  ['It has a giant covalent structure with many strong bonds to break', 'It has strong intermolecular forces between its small molecules', 'It is made of ions held in a giant lattice by strong attractions', 'It has delocalised electrons that hold its atoms tightly together'],
+  'Silicon dioxide, like diamond, is a giant covalent structure.');
+T('C1.49-05', 'Substances with giant covalent structures are usually solids at room temperature.', true,
+  'True. A very large amount of energy is needed to break all their covalent bonds.');
+M('C1.51-04', 'Which of these conducts electricity?',
+  ['Graphite', 'Diamond', 'Sulfur', 'Water ice'],
+  'Graphite has delocalised electrons. Most covalent substances do not conduct.');
+T('C1.51-05', 'Pure water is a good conductor of electricity.', false,
+  'False. Pure water is a covalent substance and is a very poor conductor. Tap water conducts slightly because of dissolved ions.');
+
+/* ===================== Top-up to ≥5 per point: Physics (added 7 Nov 2026) ===================== */
+MH('P3.2-05', 'A slinky spring is pushed and pulled along its length. Which kind of wave is this, and why?',
+  ['Longitudinal: the coils move back and forth along the direction the wave travels', 'Transverse: the coils move up and down at right angles to the wave', 'Longitudinal: the coils move up and down at right angles to the wave', 'Transverse: the coils move along the direction the wave travels'],
+  'Pushing and pulling along the length makes compressions and rarefactions.');
+M('P3.4-04', 'Which of these shows that waves can transfer <b>information</b>?',
+  ['A radio receiving a broadcast', 'A ball rolling down a hill', 'Water flowing in a river', 'Wind blowing leaves'],
+  'Radio waves carry information from the transmitter to the receiver without any matter travelling.');
+T('P3.4-05', 'When a sound wave travels across a room, the air particles move from one side of the room to the other.', false,
+  'False. The particles vibrate about fixed positions. Only the energy travels across the room.');
+M('P3.6-04', 'A pendulum swings back and forth 5 times every second. What is its time period?',
+  ['0.2 s', '5 s', '0.5 s', '2 s'],
+  'f = 5 Hz, so T = 1 ÷ 5 = <b>0.2 s</b>.');
+M('P3.7-04', 'A sound wave has a frequency of 680 Hz in air, where sound travels at 340 m/s. What is its wavelength?',
+  ['0.5 m', '2 m', '231 200 m', '1020 m'],
+  'λ = v ÷ f = 340 ÷ 680 = <b>0.5 m</b>.');
+M('P3.8-05', 'A car sounds its horn as it drives past you. How does the pitch change?',
+  ['Higher as it approaches, then lower as it moves away', 'Lower as it approaches, then higher as it moves away', 'It stays the same the whole time', 'It gets higher the whole time'],
+  'Doppler effect: shorter wavelength in front of a moving source, longer behind it.');
+M('P3.9-05', 'Which of these is an example of <b>reflection</b>?',
+  ['An echo from a cliff', 'A straw looking bent in water', 'A rainbow from a prism', 'A swimming pool looking shallower than it is'],
+  'The other three are caused by refraction.');
+M('P3.10-04', 'What is the speed of all electromagnetic waves in free space?',
+  ['3 × 10⁸ m/s', '340 m/s', '3 × 10⁶ m/s', 'It depends on the wave'],
+  '300 000 000 m/s. 340 m/s is roughly the speed of sound in air.');
+M('P3.10-05', 'Which of these is <b>not</b> part of the electromagnetic spectrum?',
+  ['Sound waves', 'Microwaves', 'Ultraviolet', 'X-rays'],
+  'Sound is a longitudinal mechanical wave. The EM spectrum: radio, microwave, infrared, visible, UV, x-ray, gamma.');
+M('P3.14-04', 'What kind of wave is light?',
+  ['Transverse', 'Longitudinal', 'Mechanical', 'Sound'],
+  'Light is an electromagnetic wave, and all electromagnetic waves are transverse.');
+T('P3.14-05', 'Light can be reflected but not refracted.', false,
+  'False. Light can be reflected (mirrors) and refracted (lenses, glass blocks).');
+M('P3.15-04', 'The angle between the incident ray and the reflected ray is 80°. What is the angle of incidence?',
+  ['40°', '80°', '160°', '10°'],
+  'The normal is halfway between them, so each angle is 80 ÷ 2 = <b>40°</b>.');
+M('P3.16-04', 'On a ray diagram, what is the <b>normal</b>?',
+  ['A line at 90° to the surface where the ray hits', 'A line drawn along the surface of the mirror', 'The path that the reflected ray travels along', 'A line joining the light source to the mirror'],
+  'Angles are always measured between the ray and the normal.');
+MH('P3.16-05', 'A ray passes through a rectangular glass block at an angle. How does the ray leaving the block compare with the ray entering it?',
+  ['It is parallel to the entering ray but shifted sideways', 'It travels back the way it came', 'It bends further from the original direction', 'It travels along the surface of the block'],
+  'It bends towards the normal going in and away from the normal by the same amount coming out.');
+M('P3.17-04', 'In the refraction practical with a rectangular block, what should you draw first on the paper?',
+  ['The outline of the block and a normal where the ray enters', 'The refracted ray inside the block, using a ruler', 'The angle of refraction, measured with a protractor', 'The critical angle, marked on the far side of the block'],
+  'You need the outline and normal to measure the angles of incidence and refraction.');
+MH('P3.17-05', 'Why is the experiment best done in a darkened room?',
+  ['So the thin ray of light can be seen clearly and marked accurately', 'Because light refracts by a larger angle when it is dark', 'To stop the glass block getting hot from the room lights', 'So the ray box uses less electricity during the experiment'],
+  'A clear, thin ray gives more accurate marks and angle measurements.');
+M('P3.18-03', 'Light enters water (n = 1.33) at an angle. What does the refractive index tell you?',
+  ['How much the light slows down and bends in the water', 'How much of the light is reflected by the water surface', 'How much light the water absorbs before it reaches the bottom', 'How quickly the water moves when the light shines on it'],
+  'A bigger refractive index means the light slows more and bends more.');
+T('P3.18-04', 'A material with a higher refractive index bends light more.', true,
+  'True. For the same angle of incidence, the angle of refraction is smaller.');
+M('P3.19-04', 'In the glass block practical, why is a protractor needed?',
+  ['To measure the angles of incidence and refraction', 'To measure the thickness and width of the glass block', 'To measure how long the ray takes to cross the block', 'To measure the wavelength of the light from the ray box'],
+  'You then calculate n = sin i ÷ sin r.');
+MH('P3.19-05', 'A student plots sin i (y-axis) against sin r (x-axis). The line has a gradient of 1.5. What is the refractive index?',
+  ['1.5', '0.67', '3.0', '1.0'],
+  'sin i = n × sin r, so the gradient is n = <b>1.5</b>.');
+M('P3.20-04', 'Why are optical fibres useful for endoscopes and communications?',
+  ['Light travels along them around bends with very little loss', 'They make light travel faster than it does through air', 'They turn the light into electricity at the far end', 'They split white light into colours to carry more data'],
+  'Total internal reflection keeps the light inside the fibre.');
+T('P3.20-05', 'Total internal reflection only happens when the angle of incidence is greater than the critical angle.', true,
+  'True. And the light must be going from a denser material into a less dense one.');
+M('P3.21-04', 'What happens when light in glass hits the boundary at <b>less</b> than the critical angle?',
+  ['Most of it refracts out into the air, bending away from the normal', 'All of it is totally internally reflected back into the glass', 'It travels exactly along the boundary between glass and air', 'It is absorbed by the glass and turns into heat energy'],
+  'Only above the critical angle is all the light reflected.');
+T('P3.21-05', 'The critical angle is measured from the normal.', true,
+  'True. Like all angles of incidence, it is measured between the ray and the normal.');
+M('P3.22-03', 'Material A has a critical angle of 40°; material B has a critical angle of 30°. Which has the higher refractive index?',
+  ['B', 'A', 'They are the same', 'You cannot tell'],
+  'sin c = 1 ÷ n, so a smaller critical angle means a bigger refractive index.');
+T('P3.22-04', 'A material with a refractive index of 1.0 has a critical angle of 90°.', true,
+  'True. sin c = 1 ÷ 1 = 1, so c = 90°: total internal reflection could never happen.');
+T('P3.23-05', 'Sound waves cannot be refracted.', false,
+  'False. Sound changes speed and direction when it passes between materials, e.g. warm and cold air.');
+M('P7.2-04', 'Where are the electrons in an atom?',
+  ['Outside the nucleus, in shells', 'In the nucleus with the protons', 'In the nucleus with the neutrons', 'Spread evenly through the nucleus'],
+  'Protons and neutrons are in the nucleus; electrons are outside it.');
+M('P7.3-04', 'Carbon-12 and carbon-14 are isotopes. What is different about them?',
+  ['The number of neutrons', 'The number of protons', 'The number of electrons in a neutral atom', 'Their atomic number'],
+  'Both have 6 protons. C-12 has 6 neutrons; C-14 has 8.');
+TH('P7.3-05', 'Two atoms with the same mass number must be the same element.', false,
+  'False. Only the atomic (proton) number decides the element. For example, carbon-14 and nitrogen-14 have the same mass number.');
+M('P7.4-04', 'What does <b>ionising</b> radiation do to atoms?',
+  ['Knocks electrons off them, turning them into ions', 'Splits their nuclei in two, releasing more neutrons', 'Makes the atoms themselves become radioactive', 'Heats them up until the substance melts or boils'],
+  'Removing electrons creates charged ions. This is what damages cells.');
+T('P7.4-05', 'Alpha, beta and gamma are all emitted from the nucleus.', true,
+  'True. They come from unstable nuclei, not from the electron shells.');
+M('P7.6-04', 'In the penetration practical, why is the background count measured first?',
+  ['So it can be subtracted from each reading', 'To check the radioactive source is working', 'To give the Geiger counter time to warm up', 'To find the half-life of the source used'],
+  'Background radiation is always present.');
+M('P7.6-05', 'Which safety step is needed in the penetration practical?',
+  ['Handle the source with tongs and put it back in its lead box quickly', 'Wear sunglasses to protect your eyes from the gamma rays', 'Hold the source close to your body so you cannot drop it', 'Leave the source out of its box so you can use it again later'],
+  'Distance, short time and shielding reduce the dose.');
+M('P7.8-04', 'In a balanced nuclear equation, what must be the same on both sides?',
+  ['The total of the mass numbers and the total of the atomic numbers', 'The number of nuclei on the left and the number on the right', 'The total number of electrons around the nuclei on each side', 'The names and symbols of the elements on each side'],
+  'Mass (top numbers) and charge (bottom numbers) are conserved.');
+MH('P7.8-05', 'Strontium-90 (<span class="nuc"><sup>90</sup><sub>38</sub>Sr</span>) decays by beta emission. What nucleus is formed?',
+  ['<span class="nuc"><sup>90</sup><sub>39</sub>Y</span>', '<span class="nuc"><sup>90</sup><sub>37</sub>Rb</span>', '<span class="nuc"><sup>86</sup><sub>36</sub>Kr</span>', '<span class="nuc"><sup>89</sup><sub>38</sub>Sr</span>'],
+  'Beta: mass number stays 90, atomic number goes up by 1 to 39 (yttrium).');
+M('P7.9-04', 'What does a Geiger-Müller tube measure?',
+  ['The count rate of ionising radiation', 'The temperature of a radioactive source', 'The mass of the source in grams', 'The half-life of the source directly'],
+  'It clicks or counts each time ionising radiation passes through it.');
+T('P7.9-05', 'A Geiger-Müller detector protects you by stopping ionising radiation.', false,
+  'False. It <b>detects</b> ionising radiation; it does not block it.');
+M('P7.10-04', 'Which of these is a source of background radiation from the Earth?',
+  ['Rocks such as granite', 'Cosmic rays', 'The Sun’s visible light', 'Radio waves'],
+  'Some rocks contain radioactive elements, and radon gas seeps out of the ground.');
+MH('P7.10-05', 'Why do airline pilots receive a higher dose of background radiation than most people?',
+  ['They spend a lot of time high up, where there is less atmosphere to absorb cosmic rays', 'The metal in the plane’s body is slightly radioactive and gives them a dose', 'They breathe more radon gas because the air in the cabin is recycled', 'The jet fuel in the wings is radioactive and gives off gamma rays'],
+  'The atmosphere absorbs much of the cosmic radiation, so there is more at high altitude.');
+M('P7.12-04', 'A sample contains 1000 unstable nuclei. Its half-life is 2 hours. Roughly how many unstable nuclei are left after 2 hours?',
+  ['500', '1000', '250', '0'],
+  'One half-life: half of them have decayed.');
+MH('P7.12-05', 'Why do scientists use half-life instead of “the time for all the nuclei to decay”?',
+  ['Decay is random, so you can’t say when the last nucleus will decay', 'All of the nuclei in a sample decay at exactly the same moment', 'Every radioactive isotope has a half-life of exactly one year', 'The last few nuclei in any sample can never decay at all'],
+  'The number left halves every half-life, so it never reaches exactly zero in a predictable time.');
+M('P7.13-04', 'A source has a half-life of 5 days. What fraction of its activity is left after 15 days?',
+  ['1/8', '1/3', '1/4', '1/16'],
+  '15 days = 3 half-lives: ½ × ½ × ½ = <b>1/8</b>.');
+M('P7.14-05', 'Which radiation is used to sterilise medical equipment?',
+  ['Gamma rays', 'Alpha particles', 'Beta particles', 'Neutrons'],
+  'Gamma passes through the packaging and kills microorganisms.');
+T('P7.15-04', 'Irradiation stops as soon as you move away from the source.', true,
+  'True. Contamination is different: the radioactive material stays on or in you.');
+M('P7.15-05', 'Radon gas is breathed in and some decays inside the lungs. Is this contamination or irradiation?',
+  ['Contamination', 'Irradiation', 'Neither', 'Both'],
+  'The radioactive material is inside the body, so it is contamination.');
+T('P7.16-04', 'Ionising radiation can cause mutations in DNA.', true,
+  'True. Mutations can lead to cancer.');
+MH('P7.16-05', 'How can the risks from radioactive waste be reduced?',
+  ['Seal it in containers and store it securely deep underground', 'Dilute it in a large river so the radiation is spread out', 'Burn it in an incinerator to destroy the radioactivity', 'Bury it in shallow pits near towns so it is easy to check'],
+  'Long-lived waste must be isolated from people and the environment for a very long time.');
+M('P7.17-03', 'Where does the energy released in a nuclear reaction come from?',
+  ['The nucleus', 'The electron shells', 'Chemical bonds between atoms', 'Burning the fuel in oxygen'],
+  'Nuclear reactions change the nucleus. Chemical reactions involve electrons.');
+MH('P7.17-04', 'Compared with burning the same mass of coal, how much energy does nuclear fission release?',
+  ['Millions of times more', 'About the same amount', 'Much less than coal', 'Exactly twice as much'],
+  'Nuclear reactions release vastly more energy per kilogram than chemical reactions.');
+M('P7.18-04', 'What does a U-235 nucleus become just after it absorbs a neutron?',
+  ['An unstable U-236 nucleus that splits', 'A stable U-234 nucleus that stays whole', 'A helium nucleus and two free protons', 'A U-235 ion with an extra negative charge'],
+  'Absorbing the neutron makes U-236, which is very unstable and splits.');
+T('P7.18-05', 'In fission, two small nuclei join to make a larger nucleus.', false,
+  'False. That is fusion. In fission a large nucleus splits into two smaller nuclei.');
+M('P7.19-03', 'Roughly how many neutrons are released in one fission of U-235?',
+  ['2 or 3', 'None', 'About 100', 'Exactly 1'],
+  'Usually two or three. These can go on to cause more fissions.');
+MH('P7.19-04', 'Why must used nuclear fuel be handled as radioactive waste?',
+  ['It contains radioactive daughter nuclei made by fission', 'It has all turned into lead, which is a toxic metal', 'It contains no uranium at all, so it cannot be reused', 'It has become extremely cold after leaving the reactor'],
+  'The fission products are unstable and emit radiation.');
+T('P7.19-05', 'Fission of U-235 always produces the same two daughter nuclei.', false,
+  'False. Many different pairs of daughter nuclei are possible.');
+M('P7.20-03', 'Why is a chain reaction possible in uranium-235?',
+  ['Each fission releases neutrons that can cause more fissions', 'Uranium atoms are strongly attracted to each other', 'Each fission releases protons that split other nuclei', 'Uranium is a metal, so it conducts the energy along'],
+  'One neutron in, 2–3 neutrons out.');
+T('P7.20-04', 'In a nuclear power station, the chain reaction is controlled so that on average one neutron from each fission causes another fission.', true,
+  'True. This keeps the rate of fission (and heat output) steady.');
+MH('P7.20-05', 'What would happen to a chain reaction if most neutrons escaped from the fuel without hitting U-235 nuclei?',
+  ['It would die out', 'It would speed up', 'It would become fusion', 'It would carry on at the same rate'],
+  'Fewer than one new fission per fission means the reaction stops.');
+M('P7.21-05', 'What is the moderator usually made of?',
+  ['Graphite or water', 'Boron or cadmium', 'Lead', 'Concrete'],
+  'Boron and cadmium absorb neutrons, so they are used in control rods.');
+M('P7.22-03', 'What is the shielding around a reactor made of?',
+  ['Thick steel and concrete', 'Thin aluminium foil', 'Plastic and glass', 'Paper and cardboard'],
+  'Thick, dense materials absorb gamma rays and neutrons.');
+T('P7.22-04', 'The shielding around a reactor stops radiation escaping to the surroundings.', true,
+  'True. It protects workers and the public.');
+M('P7.22-05', 'Who does the shielding around a nuclear reactor mainly protect?',
+  ['Workers and the public near the reactor', 'The uranium fuel inside the core', 'The control rods and the moderator', 'The neutrons inside the reactor'],
+  'It absorbs radiation that would otherwise escape from the core.');
+M('P7.23-03', 'Which process happens in the core of the Sun?',
+  ['Fusion', 'Fission', 'Alpha decay', 'Combustion'],
+  'Hydrogen nuclei fuse to make helium.');
+M('P7.23-04', 'Which uses large, heavy nuclei as its fuel?',
+  ['Fission', 'Fusion', 'Both', 'Neither'],
+  'Fission splits heavy nuclei like U-235. Fusion joins light nuclei like hydrogen.');
+TH('P7.23-05', 'Both fission and fusion release energy.', true,
+  'True. Fission releases energy by splitting heavy nuclei; fusion by joining light ones.');
+M('P7.24-03', 'Which nuclei fuse in the Sun?',
+  ['Hydrogen nuclei, making helium', 'Uranium nuclei, making barium', 'Helium nuclei, making hydrogen', 'Carbon nuclei, making oxygen'],
+  'Hydrogen nuclei join to form helium nuclei.');
+T('P7.24-04', 'In fusion, a large nucleus splits into smaller nuclei.', false,
+  'False. That is fission. In fusion, smaller nuclei join to make a larger nucleus.');
+MH('P7.24-05', 'Which statement about the mass in fusion is correct?',
+  ['The mass of the products is slightly less than the mass of the nuclei that fused', 'The mass of the products is more than the mass of the nuclei that fused', 'The mass is exactly the same before and after', 'All the mass is turned into energy'],
+  'A small loss of mass goes with the release of energy.');
+M('P7.25-02', 'Why do stars give out so much light and heat?',
+  ['Fusion in their cores releases huge amounts of energy', 'They are burning huge amounts of coal and natural gas', 'Fission of uranium in their cores releases energy', 'They reflect light that comes from other, brighter stars'],
+  'Fusion is the energy source for stars.');
+T('P7.25-03', 'Stars get their energy from nuclear fission.', false,
+  'False. Stars are powered by nuclear fusion.');
+MH('P7.25-04', 'Why can fusion happen in the core of a star?',
+  ['The temperature and pressure are extremely high', 'There is a lot of uranium there', 'It is very cold, so nuclei slow down and stick', 'Stars are made of neutrons only'],
+  'Only at very high temperatures do nuclei move fast enough to overcome their repulsion.');
+M('P7.26-04', 'What force must be overcome for two nuclei to fuse?',
+  ['The electrostatic repulsion between their positive charges', 'The magnetic attraction between their spinning protons', 'The gravitational pull of the rest of the star on them', 'The attraction between their electrons and the other nucleus'],
+  'Both nuclei are positive, so they repel. They need very high speeds to get close enough.');
+T('P7.26-05', 'Higher temperatures make fusion more likely because nuclei move faster.', true,
+  'True. Faster nuclei can get close enough to fuse despite repelling each other.');

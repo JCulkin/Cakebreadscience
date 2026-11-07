@@ -14,6 +14,8 @@ Edit `interactive/spec-quiz/questions.js`. Every question has a **permanent id**
 - `T(id, statement, true|false, explanation)`.
 - `MH` / `TH` — the same, marked ★ harder (200 points in team mode; hidden if "Include harder questions" is unticked).
 - Randomised calculations: `gens.js`, `G('P3.5-g1', r => ({ q, o: [correct, ...3 wrong], x }), hard?)`. Fresh numbers every time.
+- Calculation questions: add their ids to `CALC_IDS` at the bottom of `gens.js`. Team mode leaves them out unless "Include calculation questions" is ticked (default off); solo has the same toggle (default on).
+- Quality rules (audited 7 Nov): the correct option must NOT usually be the longest — write distractors of similar length that state real misconceptions; keep true/false roughly half true, half false. `merge_new.py`-style workflow: write new questions with bare spec ids (`M('P3.5', …)`) in a scratch file, then number them from the next free number per point.
 - Nuclide notation: `<span class="nuc"><sup>14</sup><sub>6</sub>C</span>`.
 - Check the bank: `node check_bank.js interactive/spec-quiz` (validates ids, spec points, options, and runs each generator 3000 times).
 

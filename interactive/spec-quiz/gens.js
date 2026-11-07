@@ -110,3 +110,69 @@ G('C1.17-g1', r => {
   const opts = [f(ar), f((m1 + m2) / 2), f((p2 * m1 + p1 * m2) / 100), f(ar + 0.5), f(ar - 0.3), f(ar + 0.8)].filter((v, k, a) => a.indexOf(v) === k).slice(0, 4);
   return { q: `A sample of ${el} is ${p1}% ${el}-${m1} and ${p2}% ${el}-${m2}. What is its relative atomic mass, to 1 decimal place?`, o: opts, x: `(${p1} × ${m1} + ${p2} × ${m2}) ÷ 100 = ${p1 * m1 + p2 * m2} ÷ 100 = <b>${f(ar)}</b>.` };
 }, true);
+
+/* ---------- Chemistry 1(b), 1(e) calculations (added 7 Nov 2026) ---------- */
+G('C1.12-g1', r => {
+  const sol = r.pick([5, 6, 8, 10, 12]), spot = +(sol * r.pick([0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 0.8])).toFixed(1), rf = spot / sol;
+  return { q: `On a chromatogram, the solvent front moved ${sol} cm and a spot moved ${spot} cm. What is the Rf value of the spot?`, o: R.opts(rf, [sol / spot, sol - spot, rf + 0.15], ''), x: `Rf = distance moved by spot ÷ distance moved by solvent = ${spot} ÷ ${sol} = <b>${R.n(rf)}</b>.` };
+});
+const AR = { H: 1, C: 12, N: 14, O: 16, Na: 23, Mg: 24, Al: 27, S: 32, Cl: 35.5, K: 39, Ca: 40, Cu: 63.5, Zn: 65, Fe: 56 };
+const CMPDS = [['water', 'H₂O', { H: 2, O: 1 }], ['carbon dioxide', 'CO₂', { C: 1, O: 2 }], ['methane', 'CH₄', { C: 1, H: 4 }], ['ammonia', 'NH₃', { N: 1, H: 3 }],
+  ['sodium chloride', 'NaCl', { Na: 1, Cl: 1 }], ['magnesium oxide', 'MgO', { Mg: 1, O: 1 }], ['calcium carbonate', 'CaCO₃', { Ca: 1, C: 1, O: 3 }], ['sulfuric acid', 'H₂SO₄', { H: 2, S: 1, O: 4 }],
+  ['sodium hydroxide', 'NaOH', { Na: 1, O: 1, H: 1 }], ['magnesium chloride', 'MgCl₂', { Mg: 1, Cl: 2 }], ['aluminium oxide', 'Al₂O₃', { Al: 2, O: 3 }], ['calcium hydroxide', 'Ca(OH)₂', { Ca: 1, O: 2, H: 2 }],
+  ['copper(II) oxide', 'CuO', { Cu: 1, O: 1 }], ['ethane', 'C₂H₆', { C: 2, H: 6 }], ['potassium chloride', 'KCl', { K: 1, Cl: 1 }], ['zinc sulfate', 'ZnSO₄', { Zn: 1, S: 1, O: 4 }], ['iron(III) oxide', 'Fe₂O₃', { Fe: 2, O: 3 }]];
+const mr = c => Object.entries(c[2]).reduce((a, [e, n]) => a + AR[e] * n, 0);
+const arList = c => Object.keys(c[2]).map(e => `${e} = ${AR[e]}`).join(', ');
+G('C1.26-g1', r => {
+  const c = r.pick(CMPDS), m = mr(c), plain = Object.keys(c[2]).reduce((a, e) => a + AR[e], 0);
+  const wrong = [plain, m + AR[Object.keys(c[2])[0]], Object.entries(c[2]).reduce((a, [e, n]) => a + AR[e] + n, 0), m - 1, m + 16];
+  return { q: `What is the relative formula mass (Mr) of ${c[0]}, ${c[1]}? (${arList(c)})`, o: R.opts(m, wrong, ''), x: `${Object.entries(c[2]).map(([e, n]) => (n > 1 ? n + ' × ' : '') + AR[e]).join(' + ')} = <b>${R.n(m)}</b>.` };
+});
+G('C1.28-g1', r => {
+  const c = r.pick(CMPDS), m = mr(c), mol = r.pick([0.1, 0.2, 0.25, 0.5, 2, 3, 4]), mass = +(mol * m).toFixed(2);
+  if (r.int(0, 1)) return { q: `How many moles are in ${R.n(mass)} g of ${c[0]} (Mr = ${R.n(m)})?`, o: R.opts(mol, [mass * m, m / mass, mol * 10], 'mol'), x: `moles = mass ÷ Mr = ${R.n(mass)} ÷ ${R.n(m)} = <b>${R.n(mol)} mol</b>.` };
+  return { q: `What is the mass of ${R.n(mol)} mol of ${c[0]} (Mr = ${R.n(m)})?`, o: R.opts(mass, [m / mol, mol / m, m], 'g'), x: `mass = moles × Mr = ${R.n(mol)} × ${R.n(m)} = <b>${R.n(mass)} g</b>.` };
+});
+G('C1.29-g1', r => {
+  const rx = r.pick([
+    ['2Mg + O₂ → 2MgO', 'magnesium', 24, 1, 'magnesium oxide', 40, 1],
+    ['CaCO₃ → CaO + CO₂', 'calcium carbonate', 100, 1, 'calcium oxide', 56, 1],
+    ['2Na + Cl₂ → 2NaCl', 'sodium', 23, 1, 'sodium chloride', 58.5, 1],
+    ['CuO + H₂ → Cu + H₂O', 'copper(II) oxide', 79.5, 1, 'copper', 63.5, 1],
+    ['2H₂ + O₂ → 2H₂O', 'hydrogen', 2, 1, 'water', 18, 1],
+    ['CH₄ + 2O₂ → CO₂ + 2H₂O', 'methane', 16, 1, 'carbon dioxide', 44, 1],
+    ['N₂ + 3H₂ → 2NH₃', 'nitrogen', 28, 1, 'ammonia', 17, 2]]);
+  const [eq, a, ma, ra, b, mb, rb] = rx, mol = r.pick([0.1, 0.2, 0.25, 0.5, 1, 2]), massA = +(mol * ma).toFixed(2), massB = +(mol * rb / ra * mb).toFixed(2);
+  return { q: `${eq}. What mass of ${b} is made from ${R.n(massA)} g of ${a}? (Mr ${a} = ${ma}, ${b} = ${mb})`, o: R.opts(massB, [massA, mol * mb * (rb === 1 ? 2 : 0.5), massA * mb / 100, massB * 2], 'g'),
+    x: `moles of ${a} = ${R.n(massA)} ÷ ${ma} = ${R.n(mol)} mol. Ratio ${ra} : ${rb}, so ${R.n(mol * rb / ra)} mol of ${b}. Mass = ${R.n(mol * rb / ra)} × ${mb} = <b>${R.n(massB)} g</b>.` };
+}, true);
+G('C1.30-g1', r => {
+  const th = r.pick([10, 12, 16, 20, 25, 40, 50, 80]), pct = r.pick([40, 50, 60, 75, 80, 85, 90]), act = +(th * pct / 100).toFixed(1);
+  return { q: `The theoretical yield of a reaction is ${th} g, but only ${act} g of product is collected. What is the percentage yield?`, o: R.opts(pct, [th / act * 100, 100 - pct, th - act], '%').map(v => v.replace(' %', '%')), x: `percentage yield = actual ÷ theoretical × 100 = ${act} ÷ ${th} × 100 = <b>${pct}%</b>.` };
+});
+G('C1.33-g1', r => {
+  const f = r.pick([['C', 'H', 1, 4], ['C', 'H', 1, 2], ['C', 'H', 1, 3], ['Mg', 'O', 1, 1], ['Cu', 'O', 1, 1], ['Fe', 'O', 2, 3], ['Na', 'O', 2, 1], ['Al', 'O', 2, 3], ['C', 'O', 1, 2], ['S', 'O', 1, 3], ['N', 'H', 1, 3], ['Ca', 'Cl', 1, 2]]);
+  const [x, y, nx, ny] = f, k = r.pick([0.1, 0.2, 0.5, 1, 2]), mx = +(nx * k * AR[x]).toFixed(2), my = +(ny * k * AR[y]).toFixed(2);
+  const fm = (a, b) => `${x}${sub(a)}${y}${sub(b)}`;
+  const right = fm(nx, ny), wrong = [fm(ny, nx), fm(1, 1), fm(nx * 2, ny), fm(nx, ny + 1), fm(nx + 1, ny), fm(2, 1), fm(1, 2), fm(2, 3)].filter(w => w !== right);
+  return { q: `A compound contains ${R.n(mx)} g of ${x} and ${R.n(my)} g of ${y}. What is its empirical formula? (${x} = ${AR[x]}, ${y} = ${AR[y]})`, o: [right, ...[...new Set(wrong)].slice(0, 3)],
+    x: `${x}: ${R.n(mx)} ÷ ${AR[x]} = ${R.n(nx * k)} mol. ${y}: ${R.n(my)} ÷ ${AR[y]} = ${R.n(ny * k)} mol. Ratio ${nx} : ${ny} → <b>${right}</b>.` };
+}, true);
+G('P7.11-g1', r => {
+  const a = r.pick([20, 50, 120, 200, 300, 450, 600, 1500, 2000]), t = r.pick([['1 minute', 60], ['10 seconds', 10], ['1 hour', 3600], ['30 seconds', 30]]), n = a * t[1];
+  return { q: `A radioactive source has an activity of ${a} Bq. How many nuclei decay in ${t[0]}?`, o: R.opts(n, [a, a / t[1], n / 60 === a ? n * 10 : n / 60], ''), x: `${a} Bq = ${a} decays per second. ${a} × ${t[1]} = <b>${R.n(n)}</b>.` };
+});
+G('P3.15-g1', r => {
+  const toSurface = r.int(0, 1), a = r.pick([10, 15, 20, 25, 30, 35, 40, 50, 55, 60, 65, 70]), refl = toSurface ? 90 - a : a;
+  return { q: `A ray of light hits a plane mirror at ${a}° to the ${toSurface ? 'surface of the mirror' : 'normal'}. What is the angle of reflection?`, o: R.opts(refl, [toSurface ? a : 90 - a, 2 * a, 180 - a], '°').map(s => s.replace(' °', '°')),
+    x: `${toSurface ? `Angle of incidence (to the normal) = 90° − ${a}° = ${refl}°. ` : ''}Angle of reflection = angle of incidence = <b>${refl}°</b>.` };
+});
+
+/* ---------- calculation questions (need working out, so hard to do on the projector) ----------
+   Team mode leaves these out unless "Include calculation questions" is ticked. Add new calculation ids here. */
+const CALC_IDS = new Set(['P3.5-01', 'P3.5-02', 'P3.5-03', 'P3.6-01', 'P3.6-02', 'P3.6-03', 'P3.6-04', 'P3.7-01', 'P3.7-02', 'P3.7-03', 'P3.7-04',
+  'P7.11-03', 'P7.13-01', 'P7.13-02', 'P7.13-03', 'P3.18-01', 'P3.19-02', 'P3.22-01', 'P3.22-02',
+  'C1.12-01', 'C1.17-01', 'C1.17-03', 'C1.26-01', 'C1.26-02', 'C1.26-03', 'C1.26-04', 'C1.28-01', 'C1.28-02', 'C1.28-04',
+  'C1.29-02', 'C1.30-01', 'C1.31-04', 'C1.33-01', 'C1.33-02', 'C1.33-03', 'C1.33-04', 'C1.36-02',
+  'P3.5-g1', 'P3.6-g1', 'P3.7-g1', 'P3.18-g1', 'P3.22-g1', 'P7.13-g1', 'P7.11-g1', 'C1.17-g1', 'C1.12-g1', 'C1.26-g1', 'C1.28-g1', 'C1.29-g1', 'C1.30-g1', 'C1.33-g1']);
+QUESTIONS.forEach(q => { if (CALC_IDS.has(q.id)) q.calc = true; });
