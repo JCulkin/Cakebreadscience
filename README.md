@@ -17,7 +17,7 @@ The primary IGCSE Edexcel resources site with printable worksheets (83 total) an
 - **`worksheets/`** - Subject-organized printable worksheets
   - `biology/` (18), `chemistry/` (14), `physics/` (31), `maths/` (19), `cross-curricular/` (1)
   - Indexes: `science.html`, `maths.html`, `cross-curricular.html`
-  - Standards, naming and print rules: `worksheets/worksheets.md`; spec coverage: `worksheets/WORKSHEET_COVERAGE.md`
+  - Standards, naming, print rules and spec coverage: kept in the Claude project notes (see `CLAUDE.md`)
 
 - **`specifications/`** - Interactive curriculum browsers
   - `maths.html` - Mathematics specification navigator
@@ -101,7 +101,7 @@ worksheets/[subject]/[code]_[topic].html            e.g. physics/3b_wave_speed.h
 worksheets/[subject]/[code]_[topic]_practice.html   Practice layer (+ _practice_ms.html)
 worksheets/[subject]/[code]_[topic]_challenge.html  Challenge layer (+ _challenge_ms.html)
 ```
-Maths keeps its older pattern, e.g. `worksheets/maths/1.1_decimals_sets.html`. Full rules: `worksheets/worksheets.md`.
+Maths keeps its older pattern, e.g. `worksheets/maths/1.1_decimals_sets.html`. Full rules: in the Claude project notes (see `CLAUDE.md`).
 
 ### CSS Structure
 ```
@@ -130,7 +130,7 @@ interactive/
 
 ### Adding a New Worksheet
 1. Copy a template from `admin/templates/`
-2. Save to `worksheets/{subject}/[code]_[topic].html` (see `worksheets/worksheets.md`)
+2. Save to `worksheets/{subject}/[code]_[topic].html` (naming rules: see `CLAUDE.md`)
 3. Update CSS path: `../../css/{subject}.css`
 4. Add link to the subject index (`worksheets/science.html`, `maths.html` or `cross-curricular.html`); new sheets go on the test pages first
 5. Add to appropriate specification file (`specifications/maths.html` or `specifications/science.html`)
