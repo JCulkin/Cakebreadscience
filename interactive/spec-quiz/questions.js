@@ -1465,3 +1465,467 @@ M('P7.26-04', 'What force must be overcome for two nuclei to fuse?',
   'Both nuclei are positive, so they repel. They need very high speeds to get close enough.');
 T('P7.26-05', 'Higher temperatures make fusion more likely because nuclei move faster.', true,
   'True. Faster nuclei can get close enough to fuse despite repelling each other.');
+
+/* ===================== PHYSICS 1(b) Movement and position (added 7 Nov 2026) ===================== */
+M('P1.3-01', 'On a distance–time graph, what does a horizontal (flat) line show?',
+  ['The object is stationary', 'The object is moving at a steady speed', 'The object is accelerating', 'The object is slowing down'],
+  'Distance is not changing, so the object is not moving.');
+M('P1.3-02', 'On a distance–time graph, what does the gradient (slope) show?',
+  ['Speed', 'Acceleration', 'Distance travelled', 'Time taken'],
+  'Gradient = change in distance ÷ change in time = speed.');
+M('P1.3-03', 'On a distance–time graph, two straight lines are drawn for cars A and B. A’s line is steeper. What does this mean?',
+  ['A is moving faster than B', 'A is moving slower than B', 'A is accelerating and B is not', 'A has travelled for longer than B'],
+  'A steeper gradient means a greater speed.');
+MH('P1.3-04', 'A distance–time graph is a curve that gets steeper and steeper. What is the object doing?',
+  ['Speeding up (accelerating)', 'Moving at a constant speed', 'Slowing down', 'Standing still'],
+  'An increasing gradient means increasing speed.');
+T('P1.3-05', 'A straight sloping line on a distance–time graph shows a constant speed.', true,
+  'True. A constant gradient means a constant speed.');
+M('P1.4-01', 'A cyclist travels 300 m in 60 s. What is her average speed?',
+  ['5 m/s', '18 000 m/s', '0.2 m/s', '240 m/s'],
+  'average speed = distance ÷ time = 300 ÷ 60 = <b>5 m/s</b>.');
+M('P1.4-02', 'A car travels at an average speed of 20 m/s for 15 s. How far does it go?',
+  ['300 m', '1.33 m', '35 m', '0.75 m'],
+  'distance = speed × time = 20 × 15 = <b>300 m</b>.');
+MH('P1.4-03', 'A runner covers 400 m in 50 s and then another 400 m in 70 s. What is her average speed for the whole run?',
+  ['6.7 m/s', '6.9 m/s', '8.0 m/s', '5.7 m/s'],
+  'Total distance 800 m ÷ total time 120 s = <b>6.7 m/s</b>. (Averaging the two speeds, 8 and 5.7, gives the wrong answer.)');
+M('P1.5-01', 'In an experiment to find the average speed of a toy car, what must you measure?',
+  ['The distance travelled and the time taken', 'The mass of the car and the time taken', 'The force on the car and its mass', 'Only the time taken'],
+  'average speed = distance moved ÷ time taken.');
+M('P1.5-02', 'How could you make your measurement of the time for a toy car to travel 1 m more accurate?',
+  ['Use light gates connected to a timer instead of a stopwatch', 'Use a longer and heavier toy car on the same track', 'Measure the distance with a shorter ruler marked in cm', 'Only do the test once, so the car does not wear out'],
+  'Light gates remove human reaction time from the timing.');
+T('P1.5-03', 'Repeating a timing and taking the mean makes the result more reliable.', true,
+  'True. Averaging reduces the effect of random errors, such as reaction time.');
+MH('P1.5-04', 'A student drops a tennis ball and times its fall with a stopwatch. Why is the measured time likely to be too long?',
+  ['Her reaction time delays stopping the watch', 'The ball speeds up as it falls to the floor', 'Air resistance on the ball is zero indoors', 'The stopwatch always starts before she drops it'],
+  'There is a delay between seeing the ball land and pressing stop.');
+M('P1.6-01', 'A car speeds up from 0 to 20 m/s in 4 s. What is its acceleration?',
+  ['5 m/s²', '80 m/s²', '0.2 m/s²', '24 m/s²'],
+  'a = (v − u) ÷ t = (20 − 0) ÷ 4 = <b>5 m/s²</b>.');
+M('P1.6-02', 'What is the unit of acceleration?',
+  ['m/s²', 'm/s', 'N/kg', 'm²/s'],
+  'Acceleration is change in velocity (m/s) per second: m/s².');
+M('P1.6-03', 'A bus slows from 15 m/s to 5 m/s in 5 s. What is its acceleration?',
+  ['−2 m/s²', '2 m/s²', '−4 m/s²', '50 m/s²'],
+  'a = (5 − 15) ÷ 5 = <b>−2 m/s²</b>. The minus sign shows it is slowing down (decelerating).');
+MH('P1.6-04', 'A ball accelerates at 3 m/s² from rest for 4 s. What is its final velocity?',
+  ['12 m/s', '0.75 m/s', '7 m/s', '1.33 m/s'],
+  'v = u + a × t = 0 + 3 × 4 = <b>12 m/s</b>.');
+M('P1.7-01', 'On a velocity–time graph, what does a horizontal line above the time axis show?',
+  ['Constant velocity', 'The object is stationary', 'Constant acceleration', 'The object is slowing down'],
+  'Velocity is not changing, so acceleration is zero. (On a distance–time graph a flat line means stationary.)');
+M('P1.7-02', 'On a velocity–time graph, what does a straight line sloping downwards show?',
+  ['Constant deceleration', 'Constant velocity', 'The object is stationary', 'Increasing acceleration'],
+  'Velocity is decreasing steadily.');
+T('P1.7-03', 'A velocity–time graph and a distance–time graph of the same journey look the same.', false,
+  'False. They show different things: e.g. constant speed is a sloping line on a distance–time graph but a flat line on a velocity–time graph.');
+MH('P1.7-04', 'A velocity–time graph shows a line sloping up, then flat, then sloping down to zero. Describe the motion.',
+  ['Speeds up, travels at constant velocity, then slows to a stop', 'Goes up a hill, along the top, then down the other side', 'Stationary, then moving, then stationary', 'Slows down, stops, then speeds up'],
+  'A velocity–time graph shows how velocity changes, not the shape of the route.');
+M('P1.8-01', 'How do you find acceleration from a velocity–time graph?',
+  ['Calculate the gradient', 'Find the area under the line', 'Read the highest point', 'Measure the length of the line'],
+  'Gradient = change in velocity ÷ time = acceleration.');
+M('P1.8-02', 'On a velocity–time graph, the line rises from 2 m/s to 10 m/s over 4 s. What is the acceleration?',
+  ['2 m/s²', '2.5 m/s²', '3 m/s²', '32 m/s²'],
+  'gradient = (10 − 2) ÷ 4 = <b>2 m/s²</b>.');
+T('P1.8-03', 'A steeper line on a velocity–time graph means a greater acceleration.', true,
+  'True. The gradient is the acceleration.');
+M('P1.9-01', 'How do you find the distance travelled from a velocity–time graph?',
+  ['Find the area under the line', 'Calculate the gradient', 'Read the final velocity', 'Multiply the gradient by the time'],
+  'Area between the line and the time axis = distance travelled.');
+M('P1.9-02', 'A car travels at a constant 15 m/s for 10 s. What area is under its velocity–time graph for this time?',
+  ['150 m', '1.5 m', '25 m', '0.67 m'],
+  'Rectangle: 15 × 10 = <b>150 m</b>, the distance travelled.');
+MH('P1.9-03', 'A car accelerates steadily from rest to 20 m/s in 8 s. How far does it travel in this time?',
+  ['80 m', '160 m', '2.5 m', '28 m'],
+  'The area is a triangle: ½ × 8 × 20 = <b>80 m</b>.');
+M('P1.10-01', 'Which equation links final speed, initial speed, acceleration and distance?',
+  ['v² = u² + 2as', 'v = u² + 2as', 'v² = u + 2as²', 's = u² + 2av'],
+  'v² = u² + (2 × a × s). It is given on the exam paper ("use"), but you must be able to use it.');
+M('P1.10-02', 'A ball starts from rest and accelerates at 2 m/s² over 25 m. What is its final speed?',
+  ['10 m/s', '100 m/s', '50 m/s', '7.1 m/s'],
+  'v² = 0 + 2 × 2 × 25 = 100, so v = √100 = <b>10 m/s</b>.');
+MH('P1.10-03', 'A car travelling at 20 m/s brakes and stops in 40 m. What is its deceleration?',
+  ['5 m/s²', '10 m/s²', '0.5 m/s²', '2 m/s²'],
+  '0 = 20² + 2 × a × 40 → 0 = 400 + 80a → a = −5 m/s². The deceleration is <b>5 m/s²</b>.');
+
+/* ===================== PHYSICS 1(c) Forces, movement, shape and momentum (added 7 Nov 2026) ===================== */
+M('P1.11-01', 'Which of these can a force <b>not</b> change about an object on its own?',
+  ['Its mass', 'Its speed', 'Its shape', 'Its direction of motion'],
+  'Forces change speed, direction or shape. Mass stays the same.');
+T('P1.11-02', 'A force can change the shape of an object.', true,
+  'True. For example, squashing a ball or stretching a spring.');
+M('P1.11-03', 'A footballer kicks a moving ball sideways. Which effect of a force does this show?',
+  ['A change of direction', 'A change of mass', 'A change of state', 'No effect at all'],
+  'Forces can change speed, direction or shape.');
+M('P1.12-01', 'Which force acts between two charged balloons?',
+  ['Electrostatic force', 'Gravitational force only', 'Friction', 'Upthrust'],
+  'Charged objects attract or repel each other with an electrostatic force.');
+M('P1.12-02', 'Which force keeps the Moon in orbit around the Earth?',
+  ['Gravitational force', 'Electrostatic force', 'Magnetic force', 'Friction'],
+  'Gravity acts between any two masses.');
+T('P1.12-03', 'Gravitational and electrostatic forces can act without the objects touching.', true,
+  'True. They are non-contact forces. Friction and air resistance are contact forces.');
+M('P1.13-01', 'What is the difference between a vector and a scalar quantity?',
+  ['A vector has size and direction; a scalar has size only', 'A vector has size only; a scalar has size and direction', 'A vector is always bigger than a scalar', 'A scalar can only be a speed'],
+  'For example, velocity is a vector; speed is a scalar.');
+M('P1.13-02', 'Which of these is a scalar?',
+  ['Speed', 'Velocity', 'Force', 'Acceleration'],
+  'Speed has size only. Velocity, force and acceleration all have a direction too.');
+MH('P1.13-03', 'A car drives once around a circular track at a steady 20 m/s. Which statement is true?',
+  ['Its speed stays the same but its velocity changes', 'Its velocity stays the same but its speed changes', 'Both its speed and velocity stay the same', 'Neither is a vector'],
+  'Velocity includes direction, which is constantly changing on a circle.');
+T('P1.13-04', 'Distance is a vector quantity.', false,
+  'False. Distance is a scalar. Displacement (distance in a stated direction) is the vector.');
+M('P1.14-01', 'Why is force a vector quantity?',
+  ['It has both size and direction', 'It is measured in newtons', 'It can be very large', 'It always causes movement'],
+  'A force of 10 N to the left has a different effect from 10 N to the right.');
+T('P1.14-02', 'Force is a scalar quantity.', false,
+  'False. Force has size and direction, so it is a vector.');
+M('P1.14-03', 'On a force diagram, what does the length of an arrow show?',
+  ['The size of the force', 'The mass of the object', 'The speed of the object', 'How long the force lasts'],
+  'The arrow’s length shows size; its direction shows the direction of the force.');
+M('P1.15-01', 'A box is pushed with 30 N to the right while friction acts with 10 N to the left. What is the resultant force?',
+  ['20 N to the right', '40 N to the right', '20 N to the left', '3 N to the right'],
+  'Forces in opposite directions subtract: 30 − 10 = <b>20 N</b> in the direction of the bigger force.');
+M('P1.15-02', 'Two people push a car in the same direction with 200 N and 300 N. What is the resultant force?',
+  ['500 N', '100 N', '250 N', '60 000 N'],
+  'Forces in the same direction add.');
+MH('P1.15-03', 'An object has a resultant force of zero acting on it. It is moving. What happens?',
+  ['It carries on at a constant velocity', 'It gradually slows down and stops', 'It speeds up in the direction it moves', 'It changes direction and turns back'],
+  'Balanced forces mean no acceleration: it keeps moving at the same speed in the same direction.');
+M('P1.16-01', 'In which direction does friction act on a moving object?',
+  ['Opposite to the direction of motion', 'In the same direction as the motion', 'Always straight down, towards the ground', 'Always upwards, away from the ground'],
+  'Friction opposes motion.');
+T('P1.16-02', 'Air resistance is a type of friction.', true,
+  'True. It opposes the motion of objects moving through air.');
+M('P1.16-03', 'Why do car tyres have tread?',
+  ['To increase friction with the road so the car can grip and brake', 'To reduce friction with the road so the car can go faster', 'To make the tyres lighter so the car uses less fuel', 'To reduce air resistance on the wheels at high speed'],
+  'Friction between tyres and road lets a car accelerate, turn and stop.');
+M('P1.17-01', 'What resultant force makes a 1200 kg car accelerate at 2 m/s²?',
+  ['2400 N', '600 N', '1202 N', '0.0017 N'],
+  'F = m × a = 1200 × 2 = <b>2400 N</b>.');
+M('P1.17-02', 'A 5 kg trolley has a resultant force of 20 N on it. What is its acceleration?',
+  ['4 m/s²', '100 m/s²', '0.25 m/s²', '15 m/s²'],
+  'a = F ÷ m = 20 ÷ 5 = <b>4 m/s²</b>.');
+MH('P1.17-03', 'The same force acts on a full trolley and an empty trolley. Which accelerates more, and why?',
+  ['The empty one: a smaller mass gives a bigger acceleration', 'The full one: a bigger mass gives a bigger acceleration', 'Both the same: the same force gives the same acceleration', 'The full one: its extra weight pushes it forwards'],
+  'a = F ÷ m, so a smaller mass gives a bigger acceleration.');
+M('P1.18-01', 'What is the weight of a 50 kg person on Earth? (g = 10 N/kg)',
+  ['500 N', '5 N', '50 N', '60 N'],
+  'W = m × g = 50 × 10 = <b>500 N</b>.');
+M('P1.18-02', 'What is the difference between mass and weight?',
+  ['Mass is the amount of matter (kg); weight is the force of gravity on it (N)', 'Mass is the force of gravity on it (N); weight is the amount of matter (kg)', 'They are the same quantity, just measured in different units', 'Weight never changes, but mass depends on the gravitational field'],
+  'Your mass is the same on the Moon, but your weight is less.');
+MH('P1.18-03', 'An astronaut has a mass of 80 kg. On the Moon, g = 1.6 N/kg. What is her weight there?',
+  ['128 N', '800 N', '80 N', '50 N'],
+  'W = 80 × 1.6 = <b>128 N</b>. Her mass is still 80 kg.');
+T('P1.18-04', 'Your mass is smaller on the Moon than on Earth.', false,
+  'False. Mass stays the same. Your weight is smaller because the Moon’s gravitational field strength is lower.');
+M('P1.19-01', 'What is the stopping distance of a car?',
+  ['Thinking distance + braking distance', 'Thinking distance − braking distance', 'Braking distance only', 'The distance before the driver sees a hazard'],
+  'Thinking distance: travelled during the driver’s reaction time. Braking distance: travelled once the brakes are on.');
+M('P1.19-02', 'What is <b>thinking distance</b>?',
+  ['The distance travelled during the driver’s reaction time', 'The distance travelled while the brakes are applied', 'The distance to the hazard', 'The total stopping distance'],
+  'The car keeps moving at full speed while the driver reacts.');
+T('P1.19-03', 'Braking distance is the distance travelled while the driver is reacting.', false,
+  'False. That is thinking distance. Braking distance is travelled after the brakes are applied.');
+M('P1.20-01', 'Which factor increases the <b>thinking</b> distance?',
+  ['The driver being tired', 'Worn brake pads', 'An icy road surface', 'Bald, worn tyres'],
+  'Tiredness, alcohol, drugs and distractions increase reaction time. The others affect braking distance.');
+M('P1.20-02', 'Which factor increases the <b>braking</b> distance?',
+  ['A wet or icy road', 'The driver using a phone', 'The driver drinking alcohol', 'The driver being tired'],
+  'Less friction between tyres and road means a longer braking distance.');
+MH('P1.20-03', 'Why does a heavily loaded van need a longer braking distance than an empty one at the same speed?',
+  ['A larger mass needs a larger force to decelerate at the same rate', 'The driver of a loaded van always takes longer to react', 'Heavier vans have less friction between the tyres and road', 'The engine of a loaded van pushes it forward while braking'],
+  'a = F ÷ m: with the same braking force, a bigger mass decelerates less, so it travels further.');
+T('P1.20-04', 'Driving faster increases both thinking distance and braking distance.', true,
+  'True. More distance is covered during the reaction time, and there is more kinetic energy to remove when braking.');
+M('P1.21-01', 'A skydiver falls at a steady (terminal) velocity. What can you say about the forces on her?',
+  ['Air resistance equals her weight', 'Air resistance is greater than her weight', 'Her weight is greater than air resistance', 'There are no forces acting'],
+  'Balanced forces → zero resultant force → no acceleration.');
+M('P1.21-02', 'Just after a skydiver jumps, why does she accelerate?',
+  ['Her weight is bigger than the air resistance', 'Air resistance is bigger than her weight', 'The forces are balanced', 'There is no gravity in the air'],
+  'At first she is slow, so air resistance is small and there is a large resultant force downwards.');
+MH('P1.21-03', 'Why does a skydiver slow down when she opens her parachute?',
+  ['The air resistance becomes much bigger than her weight', 'Her weight decreases', 'Gravity stops acting', 'The parachute pulls her upwards with a magnetic force'],
+  'The larger area increases air resistance, giving a resultant force upwards until a new, lower terminal velocity is reached.');
+T('P1.21-04', 'At terminal velocity, the resultant force on a falling object is zero.', true,
+  'True. Weight and air resistance are balanced.');
+M('P1.22-01', 'In the spring experiment, what is the <b>extension</b>?',
+  ['The new length minus the original length', 'The new length of the spring', 'The original length of the spring', 'The force added'],
+  'Measure the original length first, then subtract it from each new length.');
+M('P1.22-02', 'How is the force on a spring changed in the experiment?',
+  ['By adding masses (weights) to a hanger', 'By heating the spring with a Bunsen burner', 'By cutting the spring to make it shorter', 'By pulling on it harder with your hand'],
+  'Each 100 g mass adds about 1 N of weight.');
+MH('P1.22-03', 'How can you make length readings in the spring practical more accurate?',
+  ['Read the ruler at eye level, using a pointer on the spring', 'Use the shortest ruler you can, so it is easier to read', 'Add all the masses at once to save time between readings', 'Read the ruler from below so you can see the scale clearly'],
+  'Eye level avoids parallax error; a pointer marks the same point each time.');
+T('P1.22-04', 'A rubber band gives a straight-line force–extension graph all the way.', false,
+  'False. Rubber bands give a curved graph. Springs give a straight line at first.');
+M('P1.23-01', 'What does Hooke’s law say?',
+  ['Extension is directly proportional to force, up to a limit', 'Extension is always exactly equal to the force applied', 'Extension is inversely proportional to the force applied', 'Extension decreases steadily as the force increases'],
+  'This is the initial straight, linear part of the force–extension graph.');
+M('P1.23-02', 'A spring obeys Hooke’s law. A 2 N force stretches it by 4 cm. What will a 6 N force stretch it by?',
+  ['12 cm', '8 cm', '6 cm', '24 cm'],
+  'Force × 3 → extension × 3: 4 × 3 = <b>12 cm</b>.');
+MH('P1.23-03', 'On a force–extension graph for a spring, the line is straight and then starts to curve. What does the curve show?',
+  ['The spring no longer obeys Hooke’s law', 'The spring is obeying Hooke’s law more closely', 'The spring has become shorter', 'The force has stopped increasing'],
+  'Beyond the limit of proportionality, extension is no longer proportional to force.');
+M('P1.24-01', 'What is <b>elastic</b> behaviour?',
+  ['Returning to the original shape when the force is removed', 'Staying stretched in a new shape after the force is removed', 'Breaking suddenly when only a small force is applied', 'Getting heavier the more it is stretched by a force'],
+  'A spring stretched only a little behaves elastically.');
+T('P1.24-02', 'If a spring is stretched too far, it may not return to its original shape.', true,
+  'True. It has been permanently deformed and no longer behaves elastically.');
+M('P1.24-03', 'Which of these shows elastic behaviour?',
+  ['A rubber band that goes back to its original length', 'Modelling clay that stays squashed after pressing', 'A drinks can that stays crushed after stepping on it', 'A paperclip that stays bent after being opened out'],
+  'The others are permanently deformed (plastic behaviour).');
+
+/* ===================== PHYSICS 2(b) Mains electricity (added 7 Nov 2026) ===================== */
+M('P2.2-01', 'What does a <b>fuse</b> do?',
+  ['Melts and breaks the circuit if the current gets too big', 'Stores charge so the appliance keeps working in a power cut', 'Increases the current so the appliance works more quickly', 'Connects the metal case to the ground to stop shocks'],
+  'This stops wires overheating and catching fire.');
+M('P2.2-02', 'Why is the metal case of a kettle connected to the <b>earth wire</b>?',
+  ['If the live wire touches the case, current flows to earth and the fuse blows', 'So the kettle heats up faster by drawing extra current from the ground', 'So the kettle uses less energy by sending some current back to earth', 'So the earth wire carries the current back to the power station normally'],
+  'Without earthing, the case could become live and give a fatal shock.');
+M('P2.2-03', 'What does <b>double insulation</b> mean?',
+  ['A plastic case and no exposed metal parts, so no earth wire is needed', 'A cable with two earth wires instead of one, for extra protection', 'A fuse with twice the normal rating, so it never blows by accident', 'Two separate plugs, so the appliance still works if one fails'],
+  'Double-insulated appliances have this symbol: a square inside a square.');
+MH('P2.2-04', 'What is one advantage of a circuit breaker over a fuse?',
+  ['It can be reset after it trips, instead of being replaced', 'It lets a bigger current flow safely before it trips', 'It does not need to be connected to the live wire', 'It keeps working even when the electricity is off'],
+  'Circuit breakers also switch off faster than fuses.');
+T('P2.2-05', 'The fuse is connected in the live wire.', true,
+  'True. Then when it melts, the appliance is disconnected from the high voltage.');
+M('P2.3-01', 'Why does a resistor get hot when a current flows through it?',
+  ['Energy is transferred to thermal energy as charges collide with ions', 'The resistor stores the electrical energy until it is switched off', 'The current flows backwards through it and rubs against the wire', 'The resistor absorbs heat from the air around the circuit'],
+  'This heating effect is used in kettles, toasters and electric heaters.');
+M('P2.3-02', 'Which appliance makes use of the heating effect of a current?',
+  ['A toaster', 'A radio', 'A mobile phone', 'A doorbell'],
+  'Also kettles, irons, hair dryers and electric heaters.');
+T('P2.3-03', 'The heating effect of a current is always useful.', false,
+  'False. It is useful in a kettle, but in wires, computers and light bulbs it wastes energy.');
+MH('P2.3-04', 'Why do the cables for an electric cooker need to be thicker than those for a lamp?',
+  ['The cooker draws a much larger current, which would overheat thin wires', 'Thick wires look safer, so people are less likely to touch them', 'The cooker uses a lower voltage, so it needs extra copper to carry it', 'Lamps need a higher resistance, so their wires must be thinner'],
+  'A larger current produces more heating in a wire, so cookers need low-resistance, thick cables.');
+M('P2.4-01', 'A kettle runs on 230 V and draws 10 A. What is its power?',
+  ['2300 W', '23 W', '240 W', '0.043 W'],
+  'P = I × V = 10 × 230 = <b>2300 W</b>.');
+M('P2.4-02', 'A 920 W microwave runs on 230 V. What current does it draw?',
+  ['4 A', '211 600 A', '0.25 A', '690 A'],
+  'I = P ÷ V = 920 ÷ 230 = <b>4 A</b>.');
+MH('P2.4-03', 'A hair dryer is rated 920 W, 230 V. Fuses of 3 A, 5 A and 13 A are available. Which should be fitted?',
+  ['5 A', '3 A', '13 A', 'No fuse is needed'],
+  'I = 920 ÷ 230 = 4 A. Choose the fuse just above the normal current: 3 A would blow in normal use, and 13 A would let too big a current flow before blowing.');
+T('P2.4-04', 'The fuse in a plug should have a rating just above the normal current of the appliance.', true,
+  'True. Too small and it blows in normal use; too big and it may not protect the cable.');
+M('P2.5-01', 'A 12 V heater draws 2 A for 60 s. How much energy is transferred?',
+  ['1440 J', '24 J', '144 J', '720 J'],
+  'E = I × V × t = 2 × 12 × 60 = <b>1440 J</b>.');
+M('P2.5-02', 'Which equation links energy, current, voltage and time?',
+  ['E = I × V × t', 'E = I × R', 'E = I ÷ V × t', 'E = Q ÷ t'],
+  'Energy transferred = current × voltage × time.');
+MH('P2.5-03', 'A 230 V lamp draws 0.5 A. How much energy does it transfer in 1 minute?',
+  ['6900 J', '115 J', '27.6 J', '6.9 J'],
+  'E = I × V × t = 0.5 × 230 × 60 = <b>6900 J</b>. Remember to convert minutes to seconds.');
+M('P2.6-01', 'What kind of current does a battery supply?',
+  ['Direct current (d.c.)', 'Alternating current (a.c.)', 'Both at once', 'Neither'],
+  'Direct current flows in one direction only.');
+M('P2.6-02', 'What is <b>alternating current</b> (a.c.)?',
+  ['Current that keeps changing direction', 'Current that flows in one direction only', 'Current from a battery', 'Current that is always zero'],
+  'Mains electricity is a.c.');
+T('P2.6-03', 'Mains electricity is direct current.', false,
+  'False. Mains electricity is alternating current (a.c.). Cells and batteries supply direct current (d.c.).');
+MH('P2.6-04', 'On an oscilloscope, which trace shows direct current from a battery?',
+  ['A flat horizontal line above zero', 'A wave going above and below zero', 'A line that keeps reversing', 'A zig-zag that crosses zero'],
+  'd.c. stays the same and in one direction. a.c. goes above and below zero.');
+
+/* ===================== PHYSICS 2(c) Energy and voltage in circuits (added 7 Nov 2026) ===================== */
+M('P2.7-01', 'Why are lights in a house wired in <b>parallel</b>?',
+  ['Each light can be switched separately and gets the full voltage', 'It uses less wire, so it is cheaper to fit in a new house', 'All the lights go off together, which is safer when one breaks', 'It makes the current the same through every light in the house'],
+  'In parallel, if one bulb fails the others stay on.');
+M('P2.7-02', 'In an old set of fairy lights wired in series, one bulb breaks. What happens?',
+  ['All the bulbs go out', 'Only that bulb goes out', 'The other bulbs get brighter', 'Nothing changes'],
+  'In series there is only one path, so a break stops the current everywhere.');
+MH('P2.7-03', 'Why might a simple torch with one switch and one bulb be wired in series?',
+  ['One switch controls everything and only one path is needed', 'So that the bulb gets more current than the cells', 'Because parallel circuits cannot have switches', 'To make the battery last longer than in any other circuit'],
+  'Series is fine when you want one switch to control all the components together.');
+T('P2.7-04', 'In a parallel circuit, if one branch breaks, the other branches still work.', true,
+  'True. Each branch has its own path back to the supply.');
+M('P2.8-01', 'In a series circuit, how does the current compare at different points?',
+  ['It is the same everywhere', 'It is biggest near the battery', 'It gets used up by each component', 'It is zero after the first bulb'],
+  'Current is not used up; it is the same all the way round a series circuit.');
+M('P2.8-02', 'More identical bulbs are added in series to a circuit. What happens to the current?',
+  ['It decreases', 'It increases', 'It stays the same', 'It becomes zero immediately'],
+  'More resistance in series → smaller current for the same voltage.');
+MH('P2.8-03', 'In a series circuit, a cell is replaced by one with double the voltage. What happens to the current?',
+  ['It doubles (if the resistance stays the same)', 'It halves, because the voltage is shared', 'It stays the same, because current is fixed', 'It goes up four times, because it is squared'],
+  'I = V ÷ R, so doubling V doubles I.');
+T('P2.8-04', 'Current gets used up as it flows through a bulb.', false,
+  'False. The current is the same before and after the bulb. It is energy that is transferred, not current used up.');
+M('P2.9-01', 'What does the I–V graph of a resistor at constant temperature look like?',
+  ['A straight line through the origin', 'A curve that gets flatter', 'Zero current in one direction', 'A horizontal line'],
+  'Current is directly proportional to voltage.');
+M('P2.9-02', 'How does the resistance of a filament lamp change as the current increases?',
+  ['It increases, because the filament gets hotter', 'It decreases, because the filament gets hotter', 'It stays the same', 'It falls to zero'],
+  'That is why its I–V graph curves and gets flatter.');
+M('P2.9-03', 'What is special about the I–V graph of a diode?',
+  ['Current only flows in one direction', 'It is a straight line through the origin', 'Current flows equally both ways', 'The current is always zero'],
+  'A diode has a very high resistance in the reverse direction.');
+MH('P2.9-04', 'To investigate how current varies with voltage, where should the voltmeter and ammeter be connected?',
+  ['Ammeter in series with it; voltmeter in parallel across it', 'Ammeter and voltmeter both in series with it', 'Ammeter and voltmeter both in parallel across it', 'Ammeter in parallel across it; voltmeter in series'],
+  'A variable resistor or variable power supply is used to change the voltage.');
+M('P2.10-01', 'The resistance in a circuit is increased. What happens to the current (if the voltage is unchanged)?',
+  ['It decreases', 'It increases', 'It stays the same', 'It reverses direction'],
+  'More resistance → less current.');
+T('P2.10-02', 'Adding a resistor in series makes the current in a circuit smaller.', true,
+  'True. The total resistance increases.');
+MH('P2.10-03', 'A variable resistor is used to dim a lamp. How does it work?',
+  ['Increasing its resistance reduces the current through the lamp', 'Increasing its resistance increases the voltage of the cell', 'It stores energy so the lamp needs less', 'It changes a.c. into d.c.'],
+  'Less current means the lamp transfers energy more slowly, so it is dimmer.');
+M('P2.11-01', 'How does the resistance of a light-dependent resistor (LDR) change as it gets brighter?',
+  ['It decreases', 'It increases', 'It stays the same', 'It becomes infinite'],
+  'LDRs are used in circuits that switch lights on automatically when it gets dark.');
+M('P2.11-02', 'How does the resistance of a thermistor change as it gets hotter?',
+  ['It decreases', 'It increases', 'It stays the same', 'It doubles every degree'],
+  'Thermistors are used in temperature sensors, e.g. in fire alarms and thermostats.');
+MH('P2.11-03', 'A circuit switches on a street lamp when it gets dark. Which component senses the light level?',
+  ['An LDR', 'A thermistor', 'A diode', 'A fuse'],
+  'In the dark, the LDR’s resistance rises, which can be used to switch the lamp on.');
+T('P2.11-04', 'A thermistor’s resistance increases when it is heated.', false,
+  'False. A thermistor’s resistance <b>decreases</b> as its temperature increases.');
+M('P2.12-01', 'How can you tell, without a meter, that a current is flowing in a simple circuit?',
+  ['A lamp or LED in the circuit lights up', 'The wires change colour as they warm up', 'The battery gets slightly bigger', 'The switch moves on its own'],
+  'Lamps and LEDs indicate that a current is flowing.');
+M('P2.12-02', 'Why are LEDs often used as indicator lights on electrical equipment?',
+  ['They show a current is flowing and use very little energy', 'They make the current bigger so the device works better', 'They protect the circuit by melting, just like a fuse', 'They only work with a.c., so they show mains is connected'],
+  'An LED is a light-emitting diode: it lights when current flows through it the right way.');
+T('P2.12-03', 'An LED will light up whichever way round it is connected.', false,
+  'False. An LED is a diode, so current flows (and it lights) in one direction only.');
+M('P2.12-04', 'A lamp in a circuit does not light. Which is a possible reason?',
+  ['There is a break in the circuit', 'The current is far too large', 'The cell voltage is too high', 'The wires are too thick'],
+  'No current, no light.');
+M('P2.13-01', 'A resistor has a current of 2 A through it and a voltage of 12 V across it. What is its resistance?',
+  ['6 Ω', '24 Ω', '0.17 Ω', '14 Ω'],
+  'R = V ÷ I = 12 ÷ 2 = <b>6 Ω</b>.');
+M('P2.13-02', 'A 10 Ω resistor has 0.5 A flowing through it. What is the voltage across it?',
+  ['5 V', '20 V', '0.05 V', '10.5 V'],
+  'V = I × R = 0.5 × 10 = <b>5 V</b>.');
+M('P2.13-03', 'What is the unit of resistance?',
+  ['The ohm (Ω)', 'The volt (V)', 'The ampere (A)', 'The watt (W)'],
+  'V = I × R, so 1 Ω = 1 V per A.');
+MH('P2.13-04', 'A 230 V supply is connected to a heater of resistance 46 Ω. What current flows?',
+  ['5 A', '10 580 A', '0.2 A', '184 A'],
+  'I = V ÷ R = 230 ÷ 46 = <b>5 A</b>.');
+M('P2.14-01', 'What is electric current?',
+  ['The rate of flow of charge', 'The energy carried by each charge', 'The force that pushes electrons', 'The amount of charge stored in a battery'],
+  'Current = charge ÷ time.');
+T('P2.14-02', 'A bigger current means more charge flows past a point each second.', true,
+  'True. 1 A = 1 coulomb per second.');
+M('P2.14-03', 'Which unit is the same as one ampere?',
+  ['One coulomb per second', 'One joule per coulomb', 'One volt per ohm squared', 'One watt per second'],
+  'I = Q ÷ t, so 1 A = 1 C/s.');
+M('P2.15-01', 'A current of 3 A flows for 20 s. How much charge flows?',
+  ['60 C', '6.7 C', '23 C', '0.15 C'],
+  'Q = I × t = 3 × 20 = <b>60 C</b>.');
+M('P2.15-02', 'What is the unit of charge?',
+  ['The coulomb (C)', 'The ampere (A)', 'The joule (J)', 'The volt (V)'],
+  'Q = I × t: amps × seconds = coulombs.');
+MH('P2.15-03', '1200 C of charge flows through a lamp in 10 minutes. What is the current?',
+  ['2 A', '120 A', '12 000 A', '0.5 A'],
+  'I = Q ÷ t = 1200 ÷ 600 s = <b>2 A</b>. Convert minutes to seconds first.');
+M('P2.16-01', 'In a metal wire, what moves to carry the current?',
+  ['Negatively charged electrons', 'Positively charged ions', 'Positively charged protons', 'Uncharged neutrons'],
+  'Metals have free (delocalised) electrons that can move.');
+T('P2.16-02', 'In a metal wire, the current is a flow of positive charges.', false,
+  'False. In metals the charges that move are negatively charged electrons.');
+MH('P2.16-03', 'Why do metals conduct electricity well?',
+  ['They contain free electrons that can move through the metal', 'Their atoms are positively charged and attract the current', 'They contain ions that are free to move when solid', 'They are always warm, which helps the current flow'],
+  'The delocalised electrons can drift through the metal lattice when a voltage is applied.');
+M('P2.17-01', '3 A flows into a junction. 1 A leaves along one branch. What current leaves along the other branch?',
+  ['2 A', '4 A', '3 A', '1 A'],
+  'Current in = current out: 3 = 1 + <b>2 A</b>.');
+M('P2.17-02', 'Why is current conserved at a junction?',
+  ['Charge can’t be created or destroyed, so what flows in must flow out', 'The junction stores some of the charge, then lets it go later', 'Current is used up at junctions, so the branches carry less', 'Electrons speed up at a junction, so the current stays the same'],
+  'The total current into a junction equals the total current out.');
+T('P2.17-03', 'The total current entering a junction equals the total current leaving it.', true,
+  'True. Current is conserved.');
+MH('P2.17-04', 'A parallel circuit has two branches carrying 0.4 A and 0.6 A. What does the ammeter next to the battery read?',
+  ['1.0 A', '0.2 A', '0.5 A', '0.24 A'],
+  'The branch currents add: 0.4 + 0.6 = <b>1.0 A</b>.');
+M('P2.18-01', 'Two lamps are connected in parallel to a 6 V battery. What is the voltage across each lamp?',
+  ['6 V', '3 V', '12 V', '0 V'],
+  'Components in parallel have the same voltage across them.');
+T('P2.18-02', 'Components connected in parallel have the same voltage across them.', true,
+  'True. Each branch is connected directly across the supply.');
+MH('P2.18-03', 'A 12 V supply has a 4 Ω and a 6 Ω resistor connected in parallel. What is the voltage across the 6 Ω resistor?',
+  ['12 V', '7.2 V', '4.8 V', '6 V'],
+  'In parallel, every branch has the full supply voltage.');
+M('P2.18-04', 'In a parallel circuit, how does the voltage across each branch compare with the supply voltage?',
+  ['Each branch has the same voltage as the supply', 'The voltages of the branches add up to the supply', 'Each branch has half the supply voltage', 'The voltage is zero in each branch'],
+  'In series the voltages add up; in parallel they are the same.');
+M('P2.19-01', 'A 2 Ω and a 4 Ω resistor are in series. What is the total resistance?',
+  ['6 Ω', '2 Ω', '8 Ω', '1.33 Ω'],
+  'In series, resistances add: 2 + 4 = <b>6 Ω</b>.');
+M('P2.19-02', 'A 3 Ω and a 9 Ω resistor are in series with a 6 V battery. What current flows?',
+  ['0.5 A', '2 A', '0.67 A', '72 A'],
+  'Total R = 12 Ω. I = V ÷ R = 6 ÷ 12 = <b>0.5 A</b>.');
+MH('P2.19-03', 'A 2 Ω and a 4 Ω resistor are in series with a 12 V supply. What is the voltage across the 4 Ω resistor?',
+  ['8 V', '4 V', '6 V', '12 V'],
+  'I = 12 ÷ 6 = 2 A. V = I × R = 2 × 4 = <b>8 V</b>. (The 2 Ω gets the other 4 V.)');
+T('P2.19-04', 'In a series circuit, the voltages across the components add up to the supply voltage.', true,
+  'True. The energy from the supply is shared between the components.');
+M('P2.20-01', 'What is meant by a voltage of 1 volt?',
+  ['1 joule of energy transferred per coulomb of charge', '1 coulomb of charge flowing past each second', '1 joule of energy transferred each second', '1 coulomb of charge per joule of energy'],
+  'Voltage is energy transferred per unit charge.');
+T('P2.20-02', 'A volt is a joule per coulomb.', true,
+  'True. Voltage = energy ÷ charge.');
+M('P2.20-03', 'A 9 V battery is used. How much energy does each coulomb of charge carry from the battery?',
+  ['9 J', '1 J', '0.11 J', '18 J'],
+  '9 V means 9 J per coulomb.');
+M('P2.21-01', '50 C of charge passes through a 12 V lamp. How much energy is transferred?',
+  ['600 J', '4.2 J', '62 J', '0.24 J'],
+  'E = Q × V = 50 × 12 = <b>600 J</b>.');
+M('P2.21-02', 'Which equation links energy transferred, charge and voltage?',
+  ['E = Q × V', 'E = I × R', 'E = Q ÷ t', 'E = V ÷ Q'],
+  'Energy transferred = charge × voltage.');
+MH('P2.21-03', 'A charge of 30 C transfers 360 J of energy as it passes through a motor. What is the voltage across the motor?',
+  ['12 V', '10 800 V', '0.083 V', '390 V'],
+  'V = E ÷ Q = 360 ÷ 30 = <b>12 V</b>.');
+M('P1.8-04', 'A velocity–time graph has a horizontal line. What is the acceleration?',
+  ['Zero', 'Constant and positive', 'Constant and negative', 'Increasing'],
+  'A flat line has a gradient of zero, so the velocity is not changing.');
+T('P1.9-04', 'The area under a velocity–time graph gives the acceleration.', false,
+  'False. The area gives the distance travelled. The gradient gives the acceleration.');
+M('P1.11-04', 'A goalkeeper catches a fast ball. Which effect does the force from her gloves have?',
+  ['It changes the ball’s speed, slowing it to a stop', 'It changes the ball’s mass', 'It makes the ball heavier', 'It has no effect on the ball'],
+  'Forces can change speed (including stopping an object), direction or shape.');
+M('P1.12-04', 'Which of these is a <b>contact</b> force?',
+  ['Friction', 'Gravitational force', 'Electrostatic force', 'Magnetic force'],
+  'Friction needs surfaces to touch. The others act at a distance.');
+MH('P1.14-04', 'Two forces of 5 N act on an object. Which statement is correct?',
+  ['The resultant could be anything from 0 N to 10 N, depending on their directions', 'The resultant must be 10 N', 'The resultant must be 0 N', 'The resultant must be 5 N'],
+  'Because force is a vector, the direction matters: same direction 10 N, opposite directions 0 N.');
+TH('P1.16-04', 'Friction always slows objects down, so it is never useful.', false,
+  'False. Friction slows things down, but it is also useful: it lets us walk, and lets car tyres grip and brakes work.');
+M('P1.19-04', 'A driver sees a hazard. During which part of the stopping distance is the car still travelling at full speed?',
+  ['Thinking distance', 'Braking distance', 'Both parts equally', 'Neither part'],
+  'The brakes are not yet on while the driver is reacting.');
+MH('P1.23-04', 'A spring stretches 3 cm with a 6 N load. Assuming Hooke’s law, what load gives a 5 cm extension?',
+  ['10 N', '8 N', '30 N', '2.5 N'],
+  'The spring stretches 0.5 cm per newton (3 ÷ 6), so 5 cm needs 5 ÷ 0.5 = <b>10 N</b>.');
+T('P1.24-04', 'A material that stays stretched after the force is removed is behaving elastically.', false,
+  'False. Elastic behaviour means returning to the original shape. Staying stretched is permanent (plastic) deformation.');
+M('P2.10-04', 'Two identical lamps are connected one after the other (in series) instead of one lamp. What happens to the current from the cell?',
+  ['It gets smaller', 'It gets bigger', 'It stays the same', 'It doubles'],
+  'More resistance in series → smaller current.');
+M('P2.14-04', 'What are the units of current, charge and time?',
+  ['Amperes, coulombs and seconds', 'Volts, joules and seconds', 'Amperes, joules and minutes', 'Ohms, coulombs and seconds'],
+  'Current (A) = charge (C) ÷ time (s).');
+M('P2.16-04', 'Why are copper wires used for electrical cables?',
+  ['Copper has many free electrons, so it conducts electricity well', 'Copper is a poor conductor, so it is safe to touch', 'Copper contains ions that carry the current', 'Copper is magnetic'],
+  'Free (delocalised) electrons make metals like copper good conductors.');
+MH('P2.20-04', 'A 6 V battery and a 12 V battery each push 1 C of charge round a circuit. Which statement is correct?',
+  ['The 12 V battery gives each coulomb twice as much energy', 'Both give the same energy to each coulomb', 'The 6 V battery gives more energy to each coulomb', 'Voltage has nothing to do with energy'],
+  'Voltage = energy per unit charge: 12 J/C compared with 6 J/C.');

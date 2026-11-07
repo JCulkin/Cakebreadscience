@@ -168,11 +168,47 @@ G('P3.15-g1', r => {
     x: `${toSurface ? `Angle of incidence (to the normal) = 90° − ${a}° = ${refl}°. ` : ''}Angle of reflection = angle of incidence = <b>${refl}°</b>.` };
 });
 
+/* ---------- Physics 1 and 2 equations (added 7 Nov 2026) ---------- */
+function eqGen(id, spec, hard) { G(id, r => { const c = spec(r); return { q: c.q, o: R.opts(c.ans, c.wrong, c.unit), x: c.x }; }, hard); }
+eqGen('P1.4-g1', r => { const v = r.pick([2, 4, 5, 8, 10, 12, 15, 20, 25, 30]), t = r.pick([4, 5, 8, 10, 12, 20, 30, 60]), d = v * t;
+  return r.int(0, 1) ? { q: `An object travels ${d} m in ${t} s. What is its average speed?`, ans: v, wrong: [d * t, t / d, d - t], unit: 'm/s', x: `speed = distance ÷ time = ${d} ÷ ${t} = <b>${v} m/s</b>.` }
+    : { q: `An object moves at ${v} m/s for ${t} s. How far does it travel?`, ans: d, wrong: [v / t, t / v, v + t], unit: 'm', x: `distance = speed × time = ${v} × ${t} = <b>${d} m</b>.` }; });
+eqGen('P1.6-g1', r => { const a = r.pick([0.5, 1, 2, 2.5, 3, 4, 5]), t = r.pick([2, 4, 5, 6, 8, 10]), u = r.pick([0, 0, 2, 4, 5, 10]), v = u + a * t;
+  return { q: `A car speeds up from ${u} m/s to ${R.n(v)} m/s in ${t} s. What is its acceleration?`, ans: a, wrong: [v / t, (v - u) * t, (v + u) / t], unit: 'm/s²', x: `a = (v − u) ÷ t = (${R.n(v)} − ${u}) ÷ ${t} = <b>${R.n(a)} m/s²</b>.` }; });
+eqGen('P1.10-g1', r => { const v = r.pick([4, 6, 8, 10, 12, 20]), a = r.pick([1, 2, 4, 5]), s = v * v / (2 * a);
+  return { q: `An object starts from rest and accelerates at ${a} m/s² over a distance of ${R.n(s)} m. What is its final speed?`, ans: v, wrong: [v * v, 2 * a * s / 2, Math.sqrt(a * s)], unit: 'm/s', x: `v² = u² + 2as = 0 + 2 × ${a} × ${R.n(s)} = ${v * v}, so v = √${v * v} = <b>${v} m/s</b>.` }; });
+eqGen('P1.15-g1', r => { const a = r.pick([20, 35, 50, 80, 120, 300]), b = r.pick([5, 10, 15, 25, 40, 100]), same = r.int(0, 1);
+  return { q: same ? `Two forces of ${a} N and ${b} N act on an object in the same direction. What is the resultant force?` : `A force of ${a} N acts to the right and a force of ${b} N acts to the left. What is the size of the resultant force?`,
+    ans: same ? a + b : Math.abs(a - b), wrong: same ? [Math.abs(a - b), a * b, (a + b) / 2] : [a + b, a * b, (a + b) / 2], unit: 'N', x: same ? `Same direction: add. ${a} + ${b} = <b>${a + b} N</b>.` : `Opposite directions: subtract. ${a} − ${b} = <b>${Math.abs(a - b)} N</b> ${a > b ? 'to the right' : 'to the left'}.` }; });
+eqGen('P1.17-g1', r => { const m = r.pick([2, 5, 10, 50, 80, 1000, 1200, 1500]), a = r.pick([0.5, 2, 3, 4, 5]), F = m * a;
+  return r.int(0, 1) ? { q: `What resultant force gives a ${m} kg object an acceleration of ${a} m/s²?`, ans: F, wrong: [m / a, a / m, m + a], unit: 'N', x: `F = m × a = ${m} × ${a} = <b>${R.n(F)} N</b>.` }
+    : { q: `A resultant force of ${R.n(F)} N acts on a ${m} kg object. What is its acceleration?`, ans: a, wrong: [F * m, m / F, F - m], unit: 'm/s²', x: `a = F ÷ m = ${R.n(F)} ÷ ${m} = <b>${a} m/s²</b>.` }; });
+eqGen('P1.18-g1', r => { const [place, g] = r.pick([['Earth', 10], ['Earth', 10], ['the Moon', 1.6], ['Mars', 3.7], ['Jupiter', 25]]), m = r.pick([2, 5, 10, 40, 50, 60, 70, 80]), W = m * g;
+  return { q: `What is the weight of a ${m} kg object on ${place}, where g = ${g} N/kg?`, ans: W, wrong: [m / g, m, m + g], unit: 'N', x: `W = m × g = ${m} × ${g} = <b>${R.n(W)} N</b>.` }; });
+eqGen('P2.4-g1', r => { const V = r.pick([230, 230, 12, 6]), I = r.pick([0.5, 2, 3, 4, 5, 8, 10]), P = V * I;
+  return r.int(0, 1) ? { q: `An appliance draws ${I} A from a ${V} V supply. What is its power?`, ans: P, wrong: [V / I, I / V, V + I], unit: 'W', x: `P = I × V = ${I} × ${V} = <b>${R.n(P)} W</b>.` }
+    : { q: `A ${R.n(P)} W appliance runs on ${V} V. What current does it draw?`, ans: I, wrong: [P * V, V / P, P - V], unit: 'A', x: `I = P ÷ V = ${R.n(P)} ÷ ${V} = <b>${I} A</b>.` }; });
+eqGen('P2.5-g1', r => { const V = r.pick([6, 12, 230]), I = r.pick([0.5, 2, 3, 5]), [tl, t] = r.pick([['10 s', 10], ['30 s', 30], ['1 minute', 60], ['2 minutes', 120]]), E = I * V * t;
+  return { q: `A device on a ${V} V supply draws ${I} A for ${tl}. How much energy is transferred?`, ans: E, wrong: [I * V, I * V * t / 60 === I * V ? E * 2 : I * V * (t / 60), I * t], unit: 'J', x: `E = I × V × t = ${I} × ${V} × ${t} s = <b>${R.n(E)} J</b>.` }; });
+eqGen('P2.13-g1', r => { const I = r.pick([0.2, 0.5, 1, 2, 3, 4]), R_ = r.pick([2, 3, 5, 6, 10, 12, 20, 50]), V = I * R_, k = r.int(0, 2);
+  if (k === 0) return { q: `A current of ${I} A flows through a ${R_} Ω resistor. What is the voltage across it?`, ans: V, wrong: [R_ / I, I / R_, R_ + I], unit: 'V', x: `V = I × R = ${I} × ${R_} = <b>${R.n(V)} V</b>.` };
+  if (k === 1) return { q: `A resistor has ${R.n(V)} V across it and ${I} A through it. What is its resistance?`, ans: R_, wrong: [V * I, I / V, V - I], unit: 'Ω', x: `R = V ÷ I = ${R.n(V)} ÷ ${I} = <b>${R_} Ω</b>.` };
+  return { q: `A supply of ${R.n(V)} V is connected across a ${R_} Ω resistor. What current flows?`, ans: I, wrong: [V * R_, R_ / V, V - R_ > 0 ? V - R_ : V + R_], unit: 'A', x: `I = V ÷ R = ${R.n(V)} ÷ ${R_} = <b>${I} A</b>.` }; });
+eqGen('P2.15-g1', r => { const I = r.pick([0.5, 1, 2, 3, 5]), [tl, t] = r.pick([['10 s', 10], ['20 s', 20], ['1 minute', 60], ['5 minutes', 300]]), Q = I * t;
+  return { q: `A current of ${I} A flows for ${tl}. How much charge flows?`, ans: Q, wrong: [t / I, I * (t >= 60 ? t / 60 : t * 2), I + t], unit: 'C', x: `Q = I × t = ${I} × ${t} s = <b>${R.n(Q)} C</b>.` }; });
+eqGen('P2.19-g1', r => { const a = r.pick([2, 3, 4, 5, 6, 10]), b = r.pick([2, 4, 6, 8, 10, 14]), I = r.pick([0.5, 1, 2]), V = I * (a + b);
+  return { q: `A ${a} Ω and a ${b} Ω resistor are in series with a supply of ${R.n(V)} V. What current flows?`, ans: I, wrong: [V / a, V / b, V * (a + b)], unit: 'A', x: `Total resistance = ${a} + ${b} = ${a + b} Ω. I = V ÷ R = ${R.n(V)} ÷ ${a + b} = <b>${I} A</b>.` }; }, true);
+eqGen('P2.21-g1', r => { const Q = r.pick([5, 10, 20, 30, 50, 100]), V = r.pick([1.5, 3, 6, 9, 12, 230]), E = Q * V;
+  return r.int(0, 1) ? { q: `${Q} C of charge passes through a component with ${V} V across it. How much energy is transferred?`, ans: E, wrong: [V / Q, Q / V, Q + V], unit: 'J', x: `E = Q × V = ${Q} × ${V} = <b>${R.n(E)} J</b>.` }
+    : { q: `${Q} C of charge transfers ${R.n(E)} J of energy. What is the voltage?`, ans: V, wrong: [E * Q, Q / E, E - Q], unit: 'V', x: `V = E ÷ Q = ${R.n(E)} ÷ ${Q} = <b>${V} V</b>.` }; });
+
 /* ---------- calculation questions (need working out, so hard to do on the projector) ----------
    Team mode leaves these out unless "Include calculation questions" is ticked. Add new calculation ids here. */
 const CALC_IDS = new Set(['P3.5-01', 'P3.5-02', 'P3.5-03', 'P3.6-01', 'P3.6-02', 'P3.6-03', 'P3.6-04', 'P3.7-01', 'P3.7-02', 'P3.7-03', 'P3.7-04',
   'P7.11-03', 'P7.13-01', 'P7.13-02', 'P7.13-03', 'P3.18-01', 'P3.19-02', 'P3.22-01', 'P3.22-02',
   'C1.12-01', 'C1.17-01', 'C1.17-03', 'C1.26-01', 'C1.26-02', 'C1.26-03', 'C1.26-04', 'C1.28-01', 'C1.28-02', 'C1.28-04',
   'C1.29-02', 'C1.30-01', 'C1.31-04', 'C1.33-01', 'C1.33-02', 'C1.33-03', 'C1.33-04', 'C1.36-02',
-  'P3.5-g1', 'P3.6-g1', 'P3.7-g1', 'P3.18-g1', 'P3.22-g1', 'P7.13-g1', 'P7.11-g1', 'C1.17-g1', 'C1.12-g1', 'C1.26-g1', 'C1.28-g1', 'C1.29-g1', 'C1.30-g1', 'C1.33-g1']);
+  'P3.5-g1', 'P3.6-g1', 'P3.7-g1', 'P3.18-g1', 'P3.22-g1', 'P7.13-g1', 'P7.11-g1', 'C1.17-g1', 'C1.12-g1', 'C1.26-g1', 'C1.28-g1', 'C1.29-g1', 'C1.30-g1', 'C1.33-g1',
+  'P1.4-g1', 'P1.6-g1', 'P1.10-g1', 'P1.15-g1', 'P1.17-g1', 'P1.18-g1', 'P2.4-g1', 'P2.5-g1', 'P2.13-g1', 'P2.15-g1', 'P2.19-g1', 'P2.21-g1',
+  'P1.4-01', 'P1.4-02', 'P1.6-01', 'P1.6-03', 'P1.6-04', 'P1.8-02', 'P1.9-02', 'P1.9-03', 'P1.10-02', 'P1.10-03', 'P1.17-01', 'P1.17-02', 'P1.18-01', 'P1.18-03', 'P2.4-01', 'P2.4-02', 'P2.4-03', 'P2.5-01', 'P2.5-03', 'P2.13-01', 'P2.13-02', 'P2.13-04', 'P2.15-01', 'P2.15-03', 'P2.19-02', 'P2.19-03', 'P2.21-01', 'P2.21-03']);
 QUESTIONS.forEach(q => { if (CALC_IDS.has(q.id)) q.calc = true; });
