@@ -2419,3 +2419,796 @@ M('P3.15-05', 'In what unit are the angles of incidence and reflection measured?
 M('P7.13-05', 'A half-life is given as “8”. Which unit could it be in?',
   ['Days (any unit of time)', 'Becquerels', 'Counts', 'Metres'],
   'Half-life is a time: seconds, minutes, hours, days or years. Activity is measured in becquerels.');
+
+/* ===================== BIOLOGY 2(c) Biological molecules (added 7 Nov 2026) ===================== */
+M('B2.7-01', 'Which elements are found in carbohydrates?',
+  ['Carbon, hydrogen and oxygen', 'Carbon, hydrogen and nitrogen', 'Carbon, oxygen and nitrogen', 'Hydrogen, oxygen and sulfur'],
+  'Carbohydrates and lipids contain C, H and O only. Proteins also contain nitrogen.');
+M('B2.7-02', 'Which type of molecule contains <b>nitrogen</b>?',
+  ['Proteins', 'Carbohydrates', 'Lipids', 'Glucose'],
+  'Proteins contain C, H, O and N (and sometimes S).');
+T('B2.7-03', 'Lipids contain nitrogen.', false,
+  'False. Lipids contain only carbon, hydrogen and oxygen. Proteins contain nitrogen.');
+MH('B2.7-04', 'A food molecule contains carbon, hydrogen, oxygen and nitrogen. What could it be?',
+  ['A protein', 'Starch', 'A fat', 'Glycogen'],
+  'Only proteins contain nitrogen out of these.');
+M('B2.8-01', 'Starch and glycogen are made from many molecules of…',
+  ['simple sugars (glucose)', 'amino acids', 'fatty acids and glycerol', 'nucleotides'],
+  'Starch (plants) and glycogen (animals) are long chains of glucose.');
+M('B2.8-02', 'What are proteins made from?',
+  ['Amino acids', 'Glucose', 'Fatty acids and glycerol', 'Starch'],
+  'Proteins are long chains of amino acids.');
+M('B2.8-03', 'What are lipids made from?',
+  ['Fatty acids and glycerol', 'Amino acids', 'Glucose', 'Glycogen'],
+  'A lipid (fat or oil) is made of glycerol joined to fatty acids.');
+T('B2.8-04', 'Glycogen is made from amino acids.', false,
+  'False. Glycogen is made from glucose (a simple sugar).');
+M('B2.9-01', 'Which reagent is used to test for <b>starch</b>?',
+  ['Iodine solution', 'Benedict’s solution', 'Biuret solution', 'Ethanol'],
+  'Iodine turns from orange-brown to blue-black.');
+M('B2.9-02', 'What is the positive result of Benedict’s test for glucose?',
+  ['Blue changes to brick red after heating', 'Orange-brown changes to blue-black', 'Blue changes to purple', 'A cloudy white emulsion forms'],
+  'The solution is heated in a water bath. Green, yellow and orange show smaller amounts of sugar.');
+M('B2.9-03', 'What is the positive result of the biuret test for protein?',
+  ['Blue changes to purple (lilac)', 'Blue changes to brick red', 'Orange-brown changes to blue-black', 'Colourless changes to cloudy white'],
+  'Biuret solution stays blue if there is no protein.');
+M('B2.9-04', 'How do you test a food for fat?',
+  ['Shake with ethanol, then add water: a cloudy white emulsion', 'Add iodine solution: it turns from orange-brown to blue-black', 'Heat with Benedict’s solution: it turns from blue to brick red', 'Add biuret solution: it turns from blue to purple'],
+  'This is the emulsion test.');
+MH('B2.9-05', 'Which food test needs heating?',
+  ['Benedict’s test for glucose', 'Iodine test for starch', 'Biuret test for protein', 'Emulsion test for fat'],
+  'The Benedict’s mixture is heated in a water bath at about 80 °C. Use a water bath, not a flame.');
+M('B2.10-01', 'What is an enzyme?',
+  ['A biological catalyst that speeds up reactions', 'A hormone that controls growth', 'A type of carbohydrate that stores energy', 'A cell that fights infection'],
+  'Enzymes are proteins that speed up metabolic reactions without being used up.');
+T('B2.10-02', 'Enzymes are used up in the reactions they catalyse.', false,
+  'False. Like all catalysts, enzymes are not used up; they can be used again and again.');
+M('B2.10-03', 'What type of molecule are enzymes?',
+  ['Proteins', 'Carbohydrates', 'Lipids', 'Minerals'],
+  'Enzymes are proteins, so their shape can be changed by heat and pH.');
+MH('B2.10-04', 'Why are enzymes needed in living cells?',
+  ['They speed up reactions that would be far too slow at body temperature', 'They raise the body temperature so that reactions are able to happen', 'They provide the energy that is needed for every reaction in the cell', 'They are the raw materials that are used up in metabolic reactions'],
+  'Without enzymes, metabolic reactions would be too slow to keep us alive.');
+M('B2.11-01', 'What happens to an enzyme at a temperature well above its optimum?',
+  ['Its active site changes shape (it is denatured)', 'It works faster than ever, because molecules move faster', 'It turns into a different enzyme with a new job', 'It is used up more quickly, so more must be made'],
+  'The substrate no longer fits the active site, so the rate falls.');
+M('B2.11-02', 'Why does the rate of an enzyme reaction increase from 10 °C to 30 °C?',
+  ['Molecules move faster, so they collide more often', 'The active site gets bigger, so more substrate fits', 'More enzyme is made by the cells as it warms up', 'The substrate changes shape to fit the active site'],
+  'More kinetic energy → more collisions between enzyme and substrate.');
+M('B2.11-03', 'What is the optimum temperature for most human enzymes?',
+  ['About 37 °C', 'About 0 °C', 'About 100 °C', 'About 60 °C'],
+  'Body temperature.');
+T('B2.11-04', 'A denatured enzyme starts working again when it is cooled down.', false,
+  'False. Denaturing is permanent: the active site has changed shape and does not go back.');
+MH('B2.11-05', 'An enzyme is kept at 5 °C and works very slowly. It is then warmed to 37 °C. What happens?',
+  ['It works faster, because the cold did not denature it', 'It stays slow, because the cold denatured its active site', 'It stops working, because warming always denatures enzymes', 'It speeds up only if some fresh enzyme is added as well'],
+  'Low temperatures slow enzymes down but do not change the shape of the active site.');
+M('B2.12-01', 'In the amylase and starch experiment, how do you know when all the starch has been digested?',
+  ['A drop no longer turns iodine blue-black', 'The mixture turns brick red on heating', 'Bubbles of gas stop forming in the tube', 'The mixture turns purple with biuret'],
+  'Samples are added to iodine on a spotting tile every 30 seconds.');
+M('B2.12-02', 'How are the different temperatures kept steady in the enzyme practical?',
+  ['Using water baths', 'Using a Bunsen burner', 'By stirring quickly', 'By adding ice to the tubes'],
+  'Each tube is left in a water bath at a set temperature.');
+MH('B2.12-03', 'Why are the enzyme and starch solutions left in the water bath for a few minutes before being mixed?',
+  ['So both reach the right temperature before the reaction starts', 'So the enzyme is denatured before the starch is added', 'So the starch has time to dissolve fully in the water', 'So the iodine can react with the starch before mixing'],
+  'Otherwise the reaction would start at the wrong temperature.');
+T('B2.12-04', 'In the enzyme practical, the volume and concentration of the enzyme should be kept the same.', true,
+  'True. Only the temperature should be changed for a fair test.');
+M('B2.13-01', 'Why does a change in pH affect an enzyme?',
+  ['It can change the shape of the active site', 'It makes the enzyme molecules move faster', 'It adds extra substrate to the reaction', 'It changes the temperature of the enzyme'],
+  'Away from its optimum pH, the substrate no longer fits as well.');
+M('B2.13-02', 'The enzyme pepsin works in the stomach. What is its likely optimum pH?',
+  ['About 2', 'About 7', 'About 9', 'About 14'],
+  'The stomach is acidic because of hydrochloric acid.');
+T('B2.13-03', 'All enzymes have the same optimum pH.', false,
+  'False. Each enzyme has its own optimum pH, matching where it works (e.g. pepsin ~2, amylase ~7).');
+MH('B2.13-04', 'Amylase from saliva enters the stomach. What happens to it?',
+  ['It stops working, because the acid changes its active site', 'It works faster, because acid is its optimum pH', 'It turns into pepsin and starts digesting protein', 'It carries on working at exactly the same rate'],
+  'Salivary amylase works best around pH 7.');
+
+/* ===================== BIOLOGY 2(d) Movement of substances into and out of cells (added 7 Nov 2026) ===================== */
+M('B2.15-01', 'What is <b>diffusion</b>?',
+  ['The net movement of particles from a high to a low concentration', 'The movement of water through a membrane only', 'Movement against a concentration gradient using energy', 'The movement of particles from a low to a high concentration'],
+  'Diffusion is passive: it needs no energy from respiration.');
+M('B2.15-02', 'What is <b>osmosis</b>?',
+  ['Net movement of water through a partially permeable membrane, dilute → concentrated', 'Net movement of any substance from a high to a low concentration, through any membrane', 'Movement of glucose into cells against a concentration gradient, using energy', 'Net movement of water through a partially permeable membrane, concentrated → dilute'],
+  'Water moves from where there is more water (dilute solution) to where there is less (concentrated solution).');
+M('B2.15-03', 'What is <b>active transport</b>?',
+  ['Movement against a concentration gradient, using energy from respiration', 'Movement down a concentration gradient, without using any energy', 'Movement of water across a partially permeable membrane by osmosis', 'Movement of gas particles spreading out evenly across a room'],
+  'For example, root hair cells take up mineral ions from dilute soil water.');
+T('B2.15-04', 'Active transport does not need any energy.', false,
+  'False. Active transport needs energy from respiration, because it moves substances against a concentration gradient.');
+MH('B2.15-05', 'Root hair cells take in nitrate ions even when the soil has a lower concentration of nitrate than the cell. Which process is this?',
+  ['Active transport', 'Diffusion', 'Osmosis', 'Transpiration'],
+  'Moving ions from low to high concentration needs energy.');
+M('B2.16-01', 'Which change would make diffusion into a cell <b>faster</b>?',
+  ['A steeper concentration gradient', 'A lower temperature', 'A longer diffusion distance', 'A smaller surface area'],
+  'Also: higher temperature, shorter distance and larger surface area.');
+M('B2.16-02', 'Which cube has the largest surface area to volume ratio?',
+  ['1 cm cube', '2 cm cube', '3 cm cube', '4 cm cube'],
+  'A 1 cm cube: SA 6 cm², volume 1 cm³ → 6 : 1. Bigger cubes have smaller ratios.');
+MH('B2.16-03', 'Why do large organisms need specialised exchange surfaces, while single cells do not?',
+  ['They have a small surface area to volume ratio, so diffusion is too slow', 'They have a large surface area to volume ratio, so they lose too much water', 'Large organisms do not use oxygen, so they need a different way to get food', 'Diffusion is faster over long distances, so they need to slow it down'],
+  'As size increases, volume grows faster than surface area.');
+T('B2.16-04', 'Lowering the temperature speeds up diffusion.', false,
+  'False. Higher temperatures speed up diffusion; lower temperatures slow it down.');
+M('B2.17-01', 'Potato cylinders are placed in different sugar solutions. Why are the cylinders weighed before and after?',
+  ['To measure the mass change caused by water moving in or out', 'To see how much sugar the potato makes in the solution', 'To find out the temperature of each sugar solution', 'To measure the rate of photosynthesis in the potato'],
+  'A gain in mass means water entered; a loss means water left.');
+MH('B2.17-02', 'A potato cylinder loses mass in a concentrated sugar solution. Why?',
+  ['Water leaves the cells by osmosis into the more concentrated solution', 'Sugar leaves the potato cells by diffusion into the solution', 'The potato cells respire and use up their stored starch', 'Water enters the potato cells by osmosis from the solution'],
+  'Water moves from the dilute cell contents to the concentrated solution.');
+M('B2.17-03', 'In the potato osmosis practical, why are the cylinders blotted dry before reweighing?',
+  ['To remove surface solution that would add extra mass', 'To speed up osmosis so the results are quicker', 'To kill the potato cells so they stop changing', 'To stop the potato turning brown in the air'],
+  'Only water inside the potato should be measured.');
+T('B2.17-04', 'Visking tubing can be used as a model of a partially permeable membrane.', true,
+  'True. Small molecules like water and glucose pass through; large ones like starch cannot.');
+
+/* ===================== BIOLOGY 2(e) Nutrition (added 7 Nov 2026) ===================== */
+M('B2.18-01', 'In photosynthesis, which energy change happens?',
+  ['Light energy to chemical energy', 'Chemical energy to light energy', 'Heat energy to light energy', 'Chemical energy to kinetic energy'],
+  'Light energy is absorbed by chlorophyll and stored as chemical energy in glucose.');
+M('B2.18-02', 'Why is photosynthesis important for nearly all life on Earth?',
+  ['It makes food (glucose) and releases oxygen', 'It removes oxygen from the air', 'It releases energy from glucose', 'It produces carbon dioxide for animals'],
+  'Producers make the food that feeds food chains.');
+T('B2.18-03', 'Photosynthesis happens in the mitochondria.', false,
+  'False. Photosynthesis happens in the chloroplasts. Mitochondria are where aerobic respiration happens.');
+M('B2.19-01', 'What is the word equation for photosynthesis?',
+  ['carbon dioxide + water → glucose + oxygen', 'glucose + oxygen → carbon dioxide + water', 'carbon dioxide + oxygen → glucose + water', 'glucose + water → carbon dioxide + oxygen'],
+  'Light energy and chlorophyll are needed.');
+M('B2.19-02', 'Which is the balanced symbol equation for photosynthesis?',
+  ['6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂', 'C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O', 'CO₂ + H₂O → C₆H₁₂O₆ + O₂', '6CO₂ + 6O₂ → C₆H₁₂O₆ + 6H₂O'],
+  'The reverse of aerobic respiration.');
+MH('B2.19-03', 'Where do the raw materials for photosynthesis come from?',
+  ['CO₂ from the air through stomata; water from the soil through roots', 'CO₂ from the soil through roots; water from the air through stomata', 'Both CO₂ and water from the soil, taken in through the roots', 'Both CO₂ and water from the air, taken in through the stomata'],
+  'Water travels up the xylem to the leaves.');
+M('B2.20-01', 'What is a <b>limiting factor</b> in photosynthesis?',
+  ['The factor in shortest supply, which stops the rate going higher', 'Any factor that damages or kills the plant if there is too much', 'The amount of oxygen in the air around the leaves', 'The colour of the leaf, which decides which light is absorbed'],
+  'Light intensity, carbon dioxide concentration and temperature can all be limiting.');
+M('B2.20-02', 'On a sunny, cold morning, which factor is most likely to limit photosynthesis?',
+  ['Temperature', 'Light intensity', 'Oxygen concentration', 'Water in the leaf'],
+  'Enzymes in photosynthesis work slowly when it is cold.');
+MH('B2.20-03', 'Increasing light intensity no longer increases the rate of photosynthesis. What could explain this?',
+  ['Another factor, such as CO₂ or temperature, is now limiting', 'The plant has run out of chlorophyll in its leaves', 'Light always stops having any effect above a set level', 'The plant has stopped respiring, so it has no energy'],
+  'Once light is not limiting, increasing it further has no effect.');
+T('B2.20-04', 'Very high temperatures can slow down photosynthesis.', true,
+  'True. The enzymes involved can be denatured.');
+M('B2.21-01', 'Why is the leaf’s palisade layer near the top surface?',
+  ['To absorb as much light as possible, with its many chloroplasts', 'To store water near the surface where the leaf loses most', 'To let carbon dioxide out of the leaf as quickly as possible', 'To protect the cells underneath from insects and disease'],
+  'Palisade cells are packed with chloroplasts.');
+M('B2.21-02', 'What is the role of the air spaces in the spongy mesophyll?',
+  ['Gases can diffuse quickly to and from the cells', 'They store the glucose made in photosynthesis', 'They absorb the light that passes the palisade', 'They carry water up from the roots to the leaf'],
+  'They give a large surface area for gas exchange.');
+M('B2.21-03', 'What controls the opening and closing of stomata?',
+  ['Guard cells', 'Palisade cells', 'Xylem vessels', 'The waxy cuticle'],
+  'Stomata let carbon dioxide in and oxygen and water vapour out.');
+MH('B2.21-04', 'Why are most leaves broad and thin?',
+  ['Broad: large area to absorb light; thin: short distance for gases', 'Broad: stores more water; thin: lets more light pass straight through', 'Broad: keeps the leaf warm; thin: makes the leaf lighter to hold up', 'Broad: reduces water loss; thin: lets the wind cool the leaf down'],
+  'Both features increase the rate of photosynthesis.');
+T('B2.21-05', 'The waxy cuticle on a leaf reduces water loss.', true,
+  'True. It is transparent so light can still pass through.');
+M('B2.22-01', 'Why do plants need <b>magnesium</b> ions?',
+  ['To make chlorophyll', 'To make amino acids', 'To make cellulose', 'To make starch'],
+  'Magnesium deficiency causes yellow leaves.');
+M('B2.22-02', 'Why do plants need <b>nitrate</b> ions?',
+  ['To make amino acids and proteins', 'To make chlorophyll for the leaves', 'To make glucose in photosynthesis', 'To make the cellulose cell walls'],
+  'Nitrate deficiency causes poor, stunted growth.');
+MH('B2.22-03', 'A plant has yellow leaves and grows poorly. Which mineral ion is it most likely short of?',
+  ['Magnesium (needed for chlorophyll)', 'Nitrate (needed for starch)', 'Calcium (needed for glucose)', 'Sodium (needed for cellulose)'],
+  'Without enough chlorophyll the leaves turn yellow and photosynthesise less.');
+T('B2.22-04', 'Plants absorb mineral ions from the soil through their roots.', true,
+  'True. Often by active transport.');
+M('B2.23-01', 'In the starch test on a leaf, why is the leaf boiled in ethanol?',
+  ['To remove the chlorophyll so the colour change shows', 'To kill any bacteria living on the leaf surface', 'To add starch to the leaf so the test works', 'To make the iodine react faster with the starch'],
+  'The leaf is first boiled in water to kill it, then warmed in ethanol (in a water bath, as ethanol is flammable).');
+M('B2.23-02', 'A plant is kept in the dark for 48 hours before an experiment. Why?',
+  ['To destarch it, so any starch found later was made in the experiment', 'To make it grow faster once it is put back into the light', 'To make it produce more chlorophyll in its leaves', 'To stop it respiring so it does not use up its glucose'],
+  'Without light, the plant uses up its stored starch.');
+MH('B2.23-03', 'A variegated leaf (green and white) is tested for starch. Which parts turn blue-black?',
+  ['Only the parts that were green', 'Only the white parts', 'The whole leaf', 'None of the leaf'],
+  'The white parts have no chlorophyll, so they cannot photosynthesise.');
+M('B2.23-04', 'How can you show that pondweed gives off oxygen in photosynthesis?',
+  ['Collect the gas and show it relights a glowing splint', 'Collect the gas and show it turns limewater milky', 'Collect the gas and show it burns with a squeaky pop', 'Show the water turns blue-black when iodine is added'],
+  'Counting bubbles also measures the rate of photosynthesis.');
+T('B2.23-05', 'Sodium hydroxide can be placed with a plant to remove carbon dioxide from the air around it.', true,
+  'True. This shows that carbon dioxide is needed for photosynthesis.');
+M('B2.24-01', 'Which list shows everything in a balanced diet?',
+  ['Carbohydrate, protein, lipid, vitamins, minerals, water and fibre', 'Carbohydrate, protein and lipid, with no need for anything else', 'Vitamins, minerals and water, which together give all our energy', 'Protein, fibre and water, with carbohydrate only for athletes'],
+  'All seven are needed in appropriate proportions.');
+T('B2.24-02', 'A balanced diet means eating equal amounts of every food group.', false,
+  'False. It means eating each nutrient in the right proportions, not equal amounts.');
+MH('B2.24-03', 'Why can eating too much food lead to health problems even if it is all “healthy” food?',
+  ['Extra energy is stored as fat, which can lead to obesity', 'Healthy foods contain no energy, so the body runs short', 'Eating too much food stops the gut from digesting it', 'The body cannot store any extra nutrients, so they are wasted'],
+  'Energy intake should match energy use.');
+M('B2.24-04', 'Why is water an important part of the diet?',
+  ['It is needed for chemical reactions and to transport substances', 'It provides lots of energy for respiration in the cells', 'It is used to build and repair muscle and other tissues', 'It contains fibre, which helps food move through the gut'],
+  'Most chemical reactions in the body take place in solution.');
+M('B2.25-01', 'What is the main function of <b>protein</b> in the diet?',
+  ['Growth and repair of cells', 'Giving quick energy', 'Helping food move through the gut', 'Helping blood to clot'],
+  'Sources include meat, fish, eggs and beans.');
+M('B2.25-02', 'Which vitamin is needed to absorb calcium and keep bones strong?',
+  ['Vitamin D', 'Vitamin A', 'Vitamin C', 'Iron'],
+  'Lack of vitamin D causes rickets. It is made in the skin in sunlight and found in oily fish.');
+M('B2.25-03', 'Why is <b>iron</b> needed in the diet?',
+  ['To make haemoglobin in red blood cells', 'To make bones and teeth hard and strong', 'To help food move through the gut', 'To prevent scurvy and keep gums healthy'],
+  'Lack of iron causes anaemia. Sources include red meat and spinach.');
+M('B2.25-04', 'What does <b>dietary fibre</b> do?',
+  ['Helps food move through the gut and prevents constipation', 'Provides most of the energy we need for respiration', 'Builds and repairs cells, especially in growing children', 'Carries oxygen around the body in the blood'],
+  'Fibre gives the gut muscles something to push against.');
+M('B2.25-05', 'Which vitamin helps prevent scurvy?',
+  ['Vitamin C', 'Vitamin A', 'Vitamin D', 'Calcium'],
+  'Found in citrus fruit. Needed for healthy skin and gums.');
+MH('B2.25-06', 'Vitamin A is found in carrots and liver. What is it needed for?',
+  ['Good vision, especially in dim light', 'Strong bones and teeth', 'Healthy skin and gums', 'Making haemoglobin'],
+  'Lack of vitamin A can cause night blindness.');
+M('B2.26-01', 'Who needs the most energy from food each day?',
+  ['A very active teenage athlete', 'An elderly person who sits most of the day', 'A young child', 'An office worker who does no exercise'],
+  'Energy needs increase with activity level and during growth.');
+M('B2.26-02', 'Why does a pregnant woman need more energy in her diet?',
+  ['To provide energy for the growing fetus', 'Because she becomes less active', 'To make her own bones grow longer', 'Because her cells stop respiring'],
+  'She also needs extra protein, calcium and iron.');
+T('B2.26-03', 'Energy requirements vary with age, activity and pregnancy.', true,
+  'True.');
+MH('B2.26-04', 'Why do teenagers often need more energy than adults of the same activity level?',
+  ['They are still growing', 'They have a lower body temperature', 'They respire less', 'They have smaller muscles'],
+  'Growth uses energy and materials.');
+M('B2.27-01', 'Which organ makes amylase, protease and lipase and releases them into the small intestine?',
+  ['The pancreas', 'The liver', 'The gall bladder', 'The large intestine'],
+  'Pancreatic juice enters the duodenum.');
+M('B2.27-02', 'What is the main job of the <b>colon</b> (large intestine)?',
+  ['Absorbing water from undigested food', 'Digesting protein with pepsin', 'Producing and storing bile', 'Absorbing glucose into the blood'],
+  'The rectum then stores the faeces until egestion.');
+M('B2.27-03', 'Where are most digested food molecules absorbed into the blood?',
+  ['The ileum (small intestine)', 'The stomach', 'The oesophagus', 'The rectum'],
+  'The ileum has villi with a huge surface area.');
+M('B2.27-04', 'Which part of the alimentary canal contains hydrochloric acid?',
+  ['The stomach', 'The duodenum', 'The mouth', 'The colon'],
+  'The acid kills bacteria and gives the best pH for pepsin.');
+T('B2.27-05', 'The oesophagus carries food from the mouth to the stomach.', true,
+  'True. Food is pushed along it by peristalsis.');
+M('B2.28-01', 'What is <b>peristalsis</b>?',
+  ['Waves of muscle contraction that push food along the gut', 'The breakdown of fat into small droplets by bile', 'The absorption of digested food into the villi', 'The chewing and grinding of food by the teeth'],
+  'Circular and longitudinal muscles contract in waves.');
+T('B2.28-02', 'Peristalsis only happens in the oesophagus.', false,
+  'False. It happens all along the alimentary canal.');
+MH('B2.28-03', 'How does fibre help peristalsis?',
+  ['It adds bulk for the gut muscles to push against', 'It contains enzymes that digest food faster', 'It makes the gut muscles relax and stretch', 'It is absorbed into the blood to give energy'],
+  'Low-fibre diets can lead to constipation.');
+M('B2.28-04', 'Which muscles in the gut wall contract to cause peristalsis?',
+  ['Circular and longitudinal muscles', 'Skeletal muscles in the abdomen', 'The diaphragm and intercostal muscles', 'The heart muscle'],
+  'Contracting circular muscle behind the food squeezes it forward.');
+M('B2.29-01', 'Which enzyme digests starch into maltose?',
+  ['Amylase', 'Protease', 'Lipase', 'Maltase'],
+  'Maltase then digests maltose into glucose.');
+M('B2.29-02', 'What are the products of lipid digestion?',
+  ['Fatty acids and glycerol', 'Amino acids', 'Glucose', 'Maltose'],
+  'Lipases break down lipids.');
+M('B2.29-03', 'What do protease enzymes produce?',
+  ['Amino acids', 'Glucose', 'Fatty acids', 'Starch'],
+  'Proteases break proteins into amino acids.');
+MH('B2.29-04', 'Why must large molecules like starch be digested before they are absorbed?',
+  ['They are too big to pass through the gut wall into the blood', 'They are poisonous until enzymes break them down', 'They would dissolve the walls of the blood vessels', 'They contain no energy until they are digested'],
+  'Only small, soluble molecules can be absorbed.');
+T('B2.29-05', 'Maltase digests starch into maltose.', false,
+  'False. Amylase digests starch into maltose; maltase then digests maltose into glucose.');
+M('B2.30-01', 'Where is bile made?',
+  ['In the liver', 'In the gall bladder', 'In the pancreas', 'In the stomach'],
+  'Bile is made in the liver and stored in the gall bladder.');
+T('B2.30-02', 'Bile is made in the gall bladder.', false,
+  'False. Bile is made in the liver and stored in the gall bladder.');
+M('B2.30-03', 'Which organ <b>stores</b> bile?',
+  ['The gall bladder', 'The liver', 'The pancreas', 'The small intestine'],
+  'Bile is made in the liver.');
+MH('B2.30-04', 'A person has their gall bladder removed. Can they still digest fat?',
+  ['Yes, less efficiently: the liver still makes bile, but it can’t be stored', 'No: bile is made in the gall bladder, so none would be produced', 'Yes, normally: the gall bladder digests protein, not fat', 'No: lipase is made in the gall bladder, so fat can’t be digested'],
+  'The bile drips into the intestine continuously instead.');
+M('B2.31-01', 'How does bile help the digestion of fats?',
+  ['It emulsifies fats into droplets, increasing the surface area for lipase', 'It is an enzyme that breaks fats down into fatty acids and glycerol', 'It absorbs the fats straight into the blood through the villi', 'It makes the fats more acidic so stomach enzymes can digest them'],
+  'Bile is not an enzyme.');
+M('B2.31-02', 'Why is bile alkaline?',
+  ['To neutralise stomach acid entering the small intestine', 'To digest proteins that the stomach did not break down', 'To kill bacteria that survive the stomach acid', 'To make food move faster along the small intestine'],
+  'Enzymes in the small intestine work best at a slightly alkaline pH.');
+T('B2.31-03', 'Bile is an enzyme that breaks fat down into fatty acids and glycerol.', false,
+  'False. Bile emulsifies fat; the enzyme lipase does the chemical digestion.');
+MH('B2.31-04', 'Why does emulsifying fat speed up its digestion?',
+  ['Smaller droplets have a larger surface area for lipase', 'It turns the fat into amino acids, which are easier to absorb', 'It raises the temperature in the small intestine', 'It lowers the pH to the optimum for lipase'],
+  'More surface area → more contact with the enzyme.');
+M('B2.32-01', 'How are villi adapted for absorption?',
+  ['Large surface area, thin walls and a good blood supply', 'Thick walls and few blood vessels, to stop leaks', 'A small surface area, to save energy in the gut', 'A waxy coating, to stop food sticking to them'],
+  'Each villus also has a lacteal that absorbs fatty acids and glycerol.');
+M('B2.32-02', 'Why are the walls of villi only one cell thick?',
+  ['To give a short distance for absorption', 'To make the villi strong and rigid', 'To stop large food particles passing', 'To store fat inside each villus'],
+  'Shorter diffusion distance → faster absorption.');
+MH('B2.32-03', 'What is the role of the dense network of capillaries in each villus?',
+  ['To carry absorbed food away, keeping a steep concentration gradient', 'To digest the food using enzymes made in the blood', 'To produce the enzymes that are released into the gut', 'To squeeze food along the gut by pumping blood'],
+  'Removing absorbed molecules keeps diffusion fast.');
+T('B2.32-04', 'Microvilli on the cells of villi increase the surface area even more.', true,
+  'True.');
+
+/* ===================== BIOLOGY 2(f) Respiration (added 7 Nov 2026) ===================== */
+M('B2.34-01', 'What does respiration produce that cells use as their energy source?',
+  ['ATP', 'Glucose', 'Oxygen', 'Carbon dioxide'],
+  'Respiration releases energy from glucose to make ATP.');
+T('B2.34-02', 'Respiration is the same as breathing.', false,
+  'False. Respiration is a chemical reaction in cells that releases energy. Breathing (ventilation) moves air in and out of the lungs.');
+MH('B2.34-03', 'Which cells respire?',
+  ['All living cells, in plants and animals, all the time', 'Only animal cells, because plants photosynthesise instead', 'Only plant cells, and only when it is dark', 'Only muscle cells, and only during exercise'],
+  'Plants respire day and night.');
+M('B2.34-04', 'Where in the cell does aerobic respiration take place?',
+  ['Mitochondria', 'Nucleus', 'Chloroplasts', 'Cell membrane'],
+  'Cells that need lots of energy have many mitochondria.');
+M('B2.35-01', 'What is ATP used for in cells?',
+  ['Providing energy for processes such as muscle contraction', 'Storing the genetic information that controls the cell', 'Making the cellulose that strengthens the cell wall', 'Absorbing the light energy needed for photosynthesis'],
+  'ATP is the energy carrier in cells.');
+T('B2.35-02', 'ATP provides energy for cells.', true,
+  'True.');
+MH('B2.35-03', 'Which process directly uses energy from ATP?',
+  ['Active transport', 'Diffusion', 'Osmosis', 'The spreading of a smell'],
+  'Diffusion and osmosis are passive.');
+M('B2.35-04', 'Which of these uses energy released in respiration?',
+  ['Building proteins from amino acids', 'Diffusion of oxygen into the blood', 'Osmosis into root hair cells', 'Light passing through a leaf'],
+  'Making large molecules needs energy.');
+M('B2.36-01', 'Which is true of <b>anaerobic</b> respiration compared with aerobic respiration?',
+  ['It releases less energy per glucose and needs no oxygen', 'It releases more energy and needs oxygen', 'It releases the same energy but makes no waste', 'It only happens in plants'],
+  'Aerobic respiration releases much more energy.');
+M('B2.36-02', 'When do human muscles respire anaerobically?',
+  ['During hard exercise, when not enough oxygen reaches them', 'When resting, because breathing slows down', 'Only while asleep, when the lungs are inactive', 'Never: human muscles always respire aerobically'],
+  'Lactic acid builds up and causes muscle fatigue.');
+MH('B2.36-03', 'Why does aerobic respiration release more energy than anaerobic respiration?',
+  ['Glucose is broken down completely to carbon dioxide and water', 'It uses more glucose for each reaction than anaerobic does', 'It happens much faster than anaerobic respiration', 'It does not need any enzymes to break glucose down'],
+  'In anaerobic respiration, glucose is only partly broken down.');
+T('B2.36-04', 'Anaerobic respiration needs oxygen.', false,
+  'False. Anaerobic respiration happens without oxygen; aerobic respiration needs it.');
+M('B2.37-01', 'What is the word equation for aerobic respiration?',
+  ['glucose + oxygen → carbon dioxide + water', 'carbon dioxide + water → glucose + oxygen', 'glucose → lactic acid', 'glucose → ethanol + carbon dioxide'],
+  'Energy is released (as ATP).');
+M('B2.37-02', 'Which is the balanced symbol equation for aerobic respiration?',
+  ['C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O', '6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂', 'C₆H₁₂O₆ + O₂ → CO₂ + H₂O', 'C₆H₁₂O₆ → 2C₂H₅OH + 2CO₂'],
+  'This is the reverse of the photosynthesis equation.');
+T('B2.37-03', 'Aerobic respiration produces carbon dioxide and water.', true,
+  'True.');
+M('B2.38-01', 'What is the word equation for anaerobic respiration in animals?',
+  ['glucose → lactic acid', 'glucose → ethanol + carbon dioxide', 'glucose + oxygen → carbon dioxide + water', 'glucose → lactic acid + carbon dioxide'],
+  'No carbon dioxide is made in animal anaerobic respiration.');
+M('B2.38-02', 'What is the word equation for anaerobic respiration in plants (and yeast)?',
+  ['glucose → ethanol + carbon dioxide', 'glucose → lactic acid', 'glucose + oxygen → ethanol', 'carbon dioxide + water → glucose'],
+  'This is fermentation, used to make bread rise and in brewing.');
+MH('B2.38-03', 'Yeast is used to make bread rise. Which product of anaerobic respiration does this?',
+  ['Carbon dioxide', 'Ethanol', 'Lactic acid', 'Oxygen'],
+  'Bubbles of CO₂ get trapped in the dough. The ethanol evaporates during baking.');
+T('B2.38-04', 'Anaerobic respiration in human muscles produces carbon dioxide.', false,
+  'False. In animals, anaerobic respiration produces only lactic acid.');
+M('B2.39-01', 'Germinating peas are put in a vacuum flask with a thermometer. What is the control?',
+  ['A flask of boiled (dead) peas', 'A flask with no thermometer', 'A flask in the dark', 'A flask of dry, ungerminated peas only'],
+  'Boiled peas cannot respire, so any temperature rise in the test flask is due to respiration. (Both are rinsed in disinfectant to kill microbes.)');
+M('B2.39-02', 'Hydrogencarbonate indicator is red in normal air. What colour does it turn when carbon dioxide levels rise?',
+  ['Yellow', 'Purple', 'Blue-black', 'Brick red'],
+  'More CO₂ makes it more acidic: red → orange → yellow. Less CO₂ turns it purple.');
+MH('B2.39-03', 'Why are the seeds in the respiration experiment rinsed in disinfectant?',
+  ['To kill microorganisms, whose respiration would also release heat', 'To speed up germination so the seeds respire faster', 'To feed the seeds with extra sugar for respiration', 'To stop the seeds absorbing water from the air'],
+  'Then only the seeds’ respiration is measured.');
+T('B2.39-04', 'Limewater can be used to show that respiring organisms release carbon dioxide.', true,
+  'True. It turns milky (cloudy).');
+
+/* ===================== BIOLOGY 2(g) Gas exchange (added 7 Nov 2026) ===================== */
+M('B2.46-01', 'Which list shows the path air takes into the lungs?',
+  ['Trachea → bronchi → bronchioles → alveoli', 'Bronchi → trachea → alveoli → bronchioles', 'Alveoli → bronchioles → bronchi → trachea', 'Trachea → bronchioles → alveoli → bronchi'],
+  'The trachea branches into two bronchi, then many bronchioles, ending in alveoli.');
+M('B2.46-02', 'What is the job of the pleural membranes?',
+  ['To reduce friction as the lungs move', 'To carry air into the lungs', 'To exchange gases with the blood', 'To push air out of the lungs'],
+  'Fluid between the membranes lets the lungs slide smoothly against the ribs.');
+M('B2.46-03', 'What separates the thorax from the abdomen?',
+  ['The diaphragm', 'The ribs', 'The trachea', 'The pleural membranes'],
+  'The diaphragm is a sheet of muscle below the lungs.');
+T('B2.46-04', 'The intercostal muscles are found between the ribs.', true,
+  'True. "Inter" means between and "costal" means ribs.');
+M('B2.47-01', 'What happens when you breathe in?',
+  ['Intercostal muscles and diaphragm contract; chest volume increases', 'Intercostal muscles and diaphragm relax; chest volume increases', 'Intercostal muscles contract; diaphragm relaxes; volume decreases', 'Diaphragm moves up; chest volume decreases'],
+  'The ribs move up and out and the diaphragm flattens, so the pressure inside falls and air flows in.');
+M('B2.47-02', 'Why does air flow into the lungs when the chest volume increases?',
+  ['The pressure inside falls below atmospheric pressure', 'The pressure inside rises above atmospheric pressure', 'The lungs suck the air in by themselves', 'The alveoli push the air inwards'],
+  'Air moves from higher to lower pressure.');
+MH('B2.47-03', 'What happens to the diaphragm when you breathe out (at rest)?',
+  ['It relaxes and moves up into a dome shape', 'It contracts and flattens downwards', 'It contracts and moves up', 'It stays still while the ribs move'],
+  'Relaxing the diaphragm and intercostal muscles reduces the chest volume, raising the pressure.');
+T('B2.47-04', 'When you breathe in, the diaphragm relaxes and moves up.', false,
+  'False. When you breathe in, the diaphragm contracts and flattens. It relaxes and domes up when you breathe out.');
+M('B2.48-01', 'Which feature of alveoli helps gas exchange?',
+  ['Walls one cell thick, giving a short diffusion distance', 'Thick walls, which stop the alveoli bursting', 'Few capillaries, so the blood moves slowly past', 'A dry surface, so gases do not dissolve'],
+  'Alveoli also have a huge surface area, a moist lining and a rich blood supply.');
+M('B2.48-02', 'Why do the lungs contain millions of alveoli?',
+  ['To give a very large surface area for gas exchange', 'To make the lungs heavier and more stable', 'To store oxygen for use during exercise', 'To filter dust out of the air'],
+  'More surface area → faster diffusion.');
+MH('B2.48-03', 'How does breathing (ventilation) help gas exchange in the alveoli?',
+  ['It keeps the oxygen concentration high in the alveoli, so the gradient stays steep', 'It pushes oxygen through the alveolus walls by force, so it enters faster', 'It cools the blood in the lungs so that it can carry more oxygen', 'It removes water from the alveoli so that the walls stay dry'],
+  'Blood flow on the other side keeps carrying oxygen away, maintaining the gradient too.');
+T('B2.48-04', 'Oxygen moves from the alveoli into the blood by active transport.', false,
+  'False. Oxygen moves by diffusion, from high concentration in the alveoli to low concentration in the blood.');
+M('B2.49-01', 'Which substance in tobacco smoke reduces the amount of oxygen the blood can carry?',
+  ['Carbon monoxide', 'Tar', 'Nicotine', 'Carbon dioxide'],
+  'Carbon monoxide combines with haemoglobin in red blood cells.');
+M('B2.49-02', 'How does tar in cigarette smoke harm the lungs?',
+  ['It contains carcinogens and damages cilia, so mucus builds up', 'It makes the alveolus walls thicker, so they are less likely to burst', 'It reduces the amount of nicotine that gets into the blood', 'It speeds up the heart rate by acting as a hormone'],
+  'Tar can cause lung cancer and bronchitis.');
+MH('B2.49-03', 'Smokers with emphysema are often breathless. Why?',
+  ['The alveolus walls break down, so there is less surface for gas exchange', 'Their alveoli fill up with extra oxygen that the blood cannot use', 'Their blood carries too much oxygen, which harms the muscles', 'Their diaphragm stops working, so they cannot breathe in'],
+  'Fewer, larger air spaces mean less oxygen gets into the blood.');
+M('B2.49-04', 'How can smoking increase the risk of coronary heart disease?',
+  ['Nicotine and carbon monoxide damage arteries and raise blood pressure', 'Tar blocks the trachea, so less air reaches the heart muscle', 'Smoke lowers the heart rate so far that the heart muscle weakens', 'Smoking increases the number of alveoli, which strains the heart'],
+  'This can lead to fatty deposits that narrow the coronary arteries.');
+T('B2.49-05', 'Nicotine is the addictive substance in tobacco smoke.', true,
+  'True. It also increases heart rate and narrows blood vessels.');
+M('B2.50-01', 'How could you show that exhaled air contains more carbon dioxide than inhaled air?',
+  ['Bubble both through limewater and see which turns milky faster', 'Test both with a glowing splint and see which relights', 'Test both with damp red litmus paper', 'Hold a lighted splint in both and listen for a pop'],
+  'Hydrogencarbonate indicator also works: it turns yellow faster with exhaled air.');
+M('B2.50-02', 'What happens to breathing rate during exercise?',
+  ['It increases, to supply more oxygen and remove more carbon dioxide', 'It decreases, so the muscles get less oxygen', 'It stays the same, because the heart does the extra work', 'It stops for a short time'],
+  'Breathing also gets deeper.');
+MH('B2.50-03', 'A student counts breaths per minute at rest and after exercise. Why should she wait until her breathing returns to normal before repeating?',
+  ['So each test starts from the same resting rate', 'So her muscles have time to grow between tests', 'So the room temperature has time to change', 'So she can practise breathing faster next time'],
+  'Starting from the same baseline makes the results comparable.');
+T('B2.50-04', 'During exercise, both breathing rate and depth of breathing increase.', true,
+  'True.');
+
+/* ===================== BIOLOGY 2(h) Transport (added 7 Nov 2026) ===================== */
+M('B2.51-01', 'Why can a single-celled organism like <i>Amoeba</i> rely on diffusion alone?',
+  ['It has a large surface area to volume ratio and short distances', 'It has a small surface area to volume ratio and long distances', 'It does not need oxygen or food at all', 'It has a heart that pumps substances around it'],
+  'Substances can diffuse to every part quickly enough.');
+T('B2.51-02', 'Single-celled organisms have a large surface area compared with their volume.', true,
+  'True.');
+MH('B2.51-03', 'If an <i>Amoeba</i> grew much larger, why might diffusion no longer supply it with enough oxygen?',
+  ['Its volume would increase faster than its surface area', 'Its surface area would increase faster than its volume', 'Oxygen cannot diffuse into larger cells at all', 'Larger cells need no oxygen'],
+  'Its surface area to volume ratio would fall and the distances to the centre would increase.');
+M('B2.51-04', 'What limits the size of single-celled organisms?',
+  ['Diffusion becomes too slow over larger distances', 'They cannot absorb enough light for their energy', 'They run out of DNA once they grow past a set size', 'They would need a skeleton to hold a larger shape'],
+  'Diffusion is only fast over short distances.');
+M('B2.52-01', 'Why do large multicellular organisms need a transport system?',
+  ['Their small surface area to volume ratio and long distances make diffusion too slow', 'Their large surface area to volume ratio makes them lose too much water', 'Their cells do not need oxygen, so it must be removed', 'They cannot carry out diffusion at all'],
+  'Blood (animals) and xylem and phloem (plants) carry substances long distances.');
+T('B2.52-02', 'Humans can rely on diffusion alone to get oxygen to all their cells.', false,
+  'False. The distances are too great, so we need lungs, blood and a heart.');
+MH('B2.52-03', 'Which two features do all transport systems of large organisms have?',
+  ['A network of vessels and a way of moving substances through them', 'A heart to pump blood and a pair of lungs to add oxygen to it', 'Xylem to carry water and phloem to carry sugars around', 'Large surface areas and no need for any vessels at all'],
+  'Plants move substances by transpiration and translocation; animals pump blood.');
+M('B2.52-04', 'Why does a whale need a circulatory system but a bacterium does not?',
+  ['Most whale cells are too far from the surface for diffusion', 'Bacteria are larger than whales, so they need no transport', 'Whales do not respire, so they need a system to bring food', 'Bacteria have tiny hearts that pump their cytoplasm around'],
+  'Diffusion is fast only over very short distances.');
+M('B2.53-01', 'What does phloem transport?',
+  ['Sucrose and amino acids', 'Water and mineral ions', 'Oxygen and carbon dioxide', 'Starch and cellulose'],
+  'Phloem carries food made in the leaves to other parts of the plant.');
+M('B2.53-02', 'In which direction(s) can phloem carry substances?',
+  ['Both up and down the plant', 'Only up from the roots', 'Only down from the leaves', 'Only sideways into leaves'],
+  'Sucrose goes wherever it is needed: growing tips, roots, fruits and storage organs.');
+T('B2.53-03', 'Phloem transports water from the roots to the leaves.', false,
+  'False. That is xylem. Phloem transports sucrose and amino acids.');
+MH('B2.53-04', 'A ring of bark (containing phloem) is removed from a tree trunk. What happens to the roots over time?',
+  ['They are starved of sugars from the leaves and eventually die', 'They receive more water than usual, so they swell and burst', 'They grow faster, because more sugar stays in the trunk', 'Nothing happens to them, because xylem carries their food'],
+  'Sucrose can no longer travel down past the ring.');
+M('B2.54-01', 'What does xylem transport?',
+  ['Water and mineral ions', 'Sucrose and amino acids', 'Oxygen only', 'Starch and glucose'],
+  'Xylem carries water and minerals from the roots to the rest of the plant.');
+M('B2.54-02', 'In which direction does xylem carry water?',
+  ['Up from the roots to the leaves', 'Down from the leaves to the roots', 'Both up and down', 'Only into the flowers'],
+  'Water is lost from the leaves and replaced from below.');
+T('B2.54-03', 'Xylem transports sucrose to the roots.', false,
+  'False. Xylem transports water and mineral ions upwards. Phloem transports sucrose.');
+MH('B2.54-04', 'A celery stalk is stood in water with red dye. Where does the red colour appear when the stalk is cut across?',
+  ['In the xylem vessels', 'In the phloem only', 'Evenly through the whole stalk', 'Only in the outer skin'],
+  'The dyed water travels up the xylem.');
+M('B2.59-01', 'Which is the liquid part of the blood?',
+  ['Plasma', 'Platelets', 'Red blood cells', 'White blood cells'],
+  'Blood = red cells, white cells, platelets and plasma.');
+M('B2.59-02', 'What do platelets do?',
+  ['Help the blood to clot', 'Carry oxygen', 'Make antibodies', 'Carry carbon dioxide'],
+  'They are fragments of cells that help seal wounds.');
+T('B2.59-03', 'Blood is made of red blood cells, white blood cells, platelets and plasma.', true,
+  'True.');
+MH('B2.59-04', 'A blood sample is spun in a centrifuge. Which part makes up just over half the volume?',
+  ['Plasma', 'Red blood cells', 'White blood cells', 'Platelets'],
+  'Plasma is about 55% of blood; red cells make up most of the rest.');
+M('B2.60-01', 'Which substance is carried in the <b>plasma</b>?',
+  ['Urea', 'Oxygen bound to haemoglobin', 'Haemoglobin', 'Antibodies inside red cells'],
+  'Plasma carries carbon dioxide, digested food, urea, hormones and heat energy.');
+M('B2.60-02', 'How are hormones carried around the body?',
+  ['Dissolved in the plasma', 'Inside red blood cells', 'Along nerves', 'Attached to platelets'],
+  'Hormones travel in the blood to their target organs.');
+T('B2.60-03', 'Plasma transports heat energy around the body.', true,
+  'True. This helps spread heat from active organs.');
+MH('B2.60-04', 'Glucose absorbed in the small intestine needs to reach the brain. How does it travel?',
+  ['Dissolved in the plasma', 'Inside red blood cells', 'Carried by white blood cells', 'Along the nerves'],
+  'Digested food molecules dissolve in the plasma.');
+M('B2.61-01', 'Why do red blood cells have no nucleus?',
+  ['There is more room for haemoglobin', 'So they can divide more quickly', 'So they can make antibodies', 'So they can respire aerobically'],
+  'More haemoglobin means more oxygen carried.');
+M('B2.61-02', 'Why are red blood cells a biconcave disc shape?',
+  ['To give a large surface area for oxygen to diffuse in and out', 'To store more glucose for the cell to use in respiration', 'To help them stick together when a clot needs to form', 'To help them surround and engulf invading bacteria'],
+  'The shape also lets them squeeze through capillaries.');
+M('B2.61-03', 'What does haemoglobin do?',
+  ['It combines with oxygen to carry it around the body', 'It digests bacteria that enter the bloodstream', 'It makes antibodies to fight specific pathogens', 'It helps the blood clot to seal wounds quickly'],
+  'Oxygen + haemoglobin → oxyhaemoglobin in the lungs; it releases the oxygen in the tissues.');
+T('B2.61-04', 'Red blood cells have a large nucleus.', false,
+  'False. Red blood cells have no nucleus, which leaves more room for haemoglobin.');
+M('B2.62-01', 'What do <b>phagocytes</b> do?',
+  ['Engulf and digest pathogens', 'Produce antibodies', 'Carry oxygen', 'Help blood to clot'],
+  'Phagocytes are a type of white blood cell.');
+M('B2.62-02', 'What do <b>lymphocytes</b> do?',
+  ['Produce antibodies specific to a pathogen', 'Engulf pathogens and digest them inside', 'Carry carbon dioxide back to the lungs', 'Transport hormones to their target organs'],
+  'Antibodies fit the specific antigens on a particular pathogen.');
+T('B2.62-03', 'One type of antibody can destroy every type of pathogen.', false,
+  'False. Antibodies are specific: each fits only one particular antigen.');
+MH('B2.62-04', 'Why do people rarely catch measles twice?',
+  ['Lymphocytes remember it and make antibodies quickly next time', 'Phagocytes stop working after the first measles infection', 'The measles virus cannot get into the body a second time', 'Red blood cells carry measles antibodies for the rest of life'],
+  'Memory lymphocytes give a faster, bigger response, so the person is immune.');
+M('B2.65-01', 'Which chamber of the heart pumps blood to the body?',
+  ['The left ventricle', 'The right ventricle', 'The left atrium', 'The right atrium'],
+  'The left ventricle pumps oxygenated blood into the aorta.');
+M('B2.65-02', 'Why does the left ventricle have a thicker muscle wall than the right ventricle?',
+  ['It pumps blood all round the body, so it needs a higher pressure', 'It pumps blood only to the lungs, which are further away', 'It receives blood from the body, so it must hold more', 'It contains more valves that need support'],
+  'The right ventricle only pumps blood to the nearby lungs.');
+M('B2.65-03', 'What is the job of the valves in the heart?',
+  ['To stop blood flowing backwards', 'To pump blood around the body', 'To add oxygen to the blood', 'To control the heart rate'],
+  'Valves make sure blood flows one way: atria → ventricles → arteries.');
+MH('B2.65-04', 'Which blood vessel carries oxygenated blood from the lungs to the heart?',
+  ['The pulmonary vein', 'The pulmonary artery', 'The vena cava', 'The aorta'],
+  'It is the only vein that carries oxygenated blood.');
+T('B2.65-05', 'The right side of the heart pumps oxygenated blood to the body.', false,
+  'False. The left side pumps oxygenated blood to the body; the right side pumps deoxygenated blood to the lungs.');
+M('B2.66-01', 'Why does heart rate increase during exercise?',
+  ['To deliver more oxygen and glucose to muscles and remove CO₂', 'To cool the body by pumping blood away from the skin', 'Because the muscles need less oxygen while exercising', 'To slow down respiration so the muscles do not tire'],
+  'Muscles respire faster during exercise.');
+M('B2.66-02', 'Which hormone increases heart rate when you are frightened?',
+  ['Adrenaline', 'Insulin', 'Oestrogen', 'Testosterone'],
+  'Adrenaline prepares the body for "fight or flight".');
+MH('B2.66-03', 'A fit person’s heart rate returns to normal more quickly after exercise than an unfit person’s. Why?',
+  ['Their heart pumps more blood each beat, so it recovers sooner', 'Their heart has no valves, so blood flows through more easily', 'Their muscles produce no carbon dioxide during exercise', 'Their blood has no plasma, so it is easier to pump'],
+  'Training strengthens the heart muscle.');
+T('B2.66-04', 'Adrenaline slows the heart down.', false,
+  'False. Adrenaline speeds up the heart rate.');
+M('B2.67-01', 'Which of these increases the risk of coronary heart disease?',
+  ['A diet high in saturated fat', 'Regular exercise', 'Not smoking', 'A diet high in fibre'],
+  'Other risk factors: smoking, high blood pressure, lack of exercise, obesity and stress.');
+M('B2.67-02', 'What happens in coronary heart disease?',
+  ['Fatty deposits narrow the coronary arteries, so heart muscle gets less oxygen', 'The heart valves stop working, so blood flows backwards into the atria', 'The lungs fill with fluid, so gas exchange stops and the heart weakens', 'The blood stops clotting, so the heart cannot seal small leaks'],
+  'This can cause a heart attack.');
+MH('B2.67-03', 'Why does regular exercise lower the risk of coronary heart disease?',
+  ['It helps control weight and blood pressure and lowers cholesterol', 'It makes the coronary arteries narrower so blood flows faster', 'It raises blood pressure so the heart muscle gets stronger', 'It stops the heart ever beating fast, which protects it'],
+  'Lack of exercise is a major risk factor.');
+T('B2.67-04', 'Smoking increases the risk of coronary heart disease.', true,
+  'True.');
+M('B2.68-01', 'Which blood vessels have thick, muscular, elastic walls?',
+  ['Arteries', 'Veins', 'Capillaries', 'All of them equally'],
+  'Arteries carry blood at high pressure away from the heart.');
+M('B2.68-02', 'Why do veins have valves?',
+  ['To stop blood flowing backwards, because the pressure is low', 'To pump blood away from the heart towards the organs', 'To let oxygen diffuse out of the blood into the tissues', 'To make blood flow faster in veins than in arteries'],
+  'Veins carry blood back to the heart at low pressure.');
+M('B2.68-03', 'Why are capillary walls only one cell thick?',
+  ['To give a short distance for substances to diffuse', 'To withstand the very high pressure of the blood', 'To stop blood flowing backwards to the arteries', 'To carry blood back to the heart as fast as possible'],
+  'Capillaries are where exchange with the tissues happens.');
+MH('B2.68-04', 'Which vessel has a large lumen (space inside) and thin walls?',
+  ['A vein', 'An artery', 'A capillary', 'The aorta'],
+  'A large lumen reduces resistance to the slow, low-pressure blood.');
+M('B2.69-01', 'Which blood vessel carries blood from the heart to the lungs?',
+  ['The pulmonary artery', 'The pulmonary vein', 'The aorta', 'The vena cava'],
+  'Arteries carry blood away from the heart.');
+M('B2.69-02', 'Which blood vessel carries blood to the kidneys?',
+  ['The renal artery', 'The renal vein', 'The hepatic vein', 'The pulmonary artery'],
+  '"Renal" means kidney; "hepatic" means liver.');
+M('B2.69-03', 'Which vessel brings deoxygenated blood from the body back to the heart?',
+  ['The vena cava', 'The aorta', 'The pulmonary vein', 'The renal artery'],
+  'It empties into the right atrium.');
+MH('B2.69-04', 'Why is human circulation called a <b>double</b> circulation?',
+  ['Blood goes through the heart twice in each full circuit of the body', 'There are two separate hearts, one for each side of the body', 'Every organ is supplied by two arteries instead of one', 'Blood flows in both directions in every blood vessel'],
+  'One circuit to the lungs, one to the rest of the body.');
+
+/* ===================== BIOLOGY 2(i) Excretion (added 7 Nov 2026) ===================== */
+M('B2.70-01', 'In bright light, which gas does a leaf give out overall?',
+  ['Oxygen', 'Carbon dioxide', 'Nitrogen', 'Water vapour only'],
+  'Photosynthesis is faster than respiration, so there is a net release of oxygen.');
+M('B2.70-02', 'In the dark, which gas does a leaf give out?',
+  ['Carbon dioxide', 'Oxygen', 'Nitrogen', 'Hydrogen'],
+  'Only respiration is happening.');
+M('B2.70-03', 'Through which structures are waste gases lost from a leaf?',
+  ['Stomata', 'Xylem vessels', 'Root hairs', 'Chloroplasts'],
+  'Stomata are pores, mostly on the lower surface.');
+MH('B2.70-04', 'Where does the oxygen given out by a leaf come from?',
+  ['It is a waste product of photosynthesis', 'It is a waste product of respiration', 'It is absorbed from the soil', 'It is made from nitrogen'],
+  'Carbon dioxide is the waste product of respiration.');
+T('B2.70-05', 'Plants only respire at night.', false,
+  'False. Plants respire all the time, day and night.');
+M('B2.71-01', 'What do the kidneys excrete?',
+  ['Urea, excess water and excess ions', 'Carbon dioxide and water vapour', 'Undigested food and fibre', 'Bile and digestive enzymes'],
+  'Urea is made in the liver from excess amino acids.');
+M('B2.71-02', 'What do the lungs excrete?',
+  ['Carbon dioxide (and water vapour)', 'Urea and excess salts', 'Undigested food', 'Oxygen and nitrogen'],
+  'Carbon dioxide is a waste product of respiration.');
+M('B2.71-03', 'Which organ excretes sweat containing water, salts and a little urea?',
+  ['The skin', 'The lungs', 'The liver', 'The small intestine'],
+  'The skin, lungs and kidneys are organs of excretion.');
+T('B2.71-04', 'Removing faeces is an example of excretion.', false,
+  'False. Faeces are mostly undigested food that never entered the cells. Getting rid of them is egestion.');
+
+/* ===================== BIOLOGY 2(j) Co-ordination and response (added 7 Nov 2026) ===================== */
+M('B2.80-01', 'Why do organisms need to respond to changes in their environment?',
+  ['To increase their chances of survival', 'To use up any spare energy they have', 'To make themselves grow more slowly', 'To stop themselves from reproducing'],
+  'For example, moving away from danger or towards food.');
+T('B2.80-02', 'Plants as well as animals respond to changes in their environment.', true,
+  'True. For example, shoots grow towards light.');
+M('B2.80-03', 'A woodlouse moves from a dry, bright area into a damp, dark one. What is this?',
+  ['A response to a change in the environment', 'An example of excretion of waste products', 'An example of photosynthesis in animals', 'Homeostasis happening inside its cells'],
+  'Damp, dark places help woodlice avoid drying out and being eaten.');
+MH('B2.80-04', 'Which is an example of an organism responding to a change in its <b>external</b> environment?',
+  ['A cat’s pupils shrinking in bright light', 'Insulin lowering blood glucose after a meal', 'The kidneys making more concentrated urine', 'Cells respiring to make ATP'],
+  'The other three are responses to internal changes.');
+M('B2.81-01', 'What is <b>homeostasis</b>?',
+  ['Keeping a constant internal environment', 'Responding to the direction of light', 'Growing in response to gravity', 'Producing offspring of the same kind'],
+  'Examples: body temperature and body water content.');
+M('B2.81-02', 'Which of these is an example of homeostasis?',
+  ['Keeping body temperature at about 37 °C', 'Digesting a meal in the stomach', 'Growing taller during puberty', 'Breathing faster when scared'],
+  'Body water content is another example.');
+T('B2.81-03', 'Body water content is controlled by homeostasis.', true,
+  'True. The kidneys play a major part.');
+MH('B2.81-04', 'Why is it important to keep body temperature close to 37 °C?',
+  ['Enzymes work best near 37 °C and could be denatured if too hot', 'Cells stop respiring completely once the body is above 30 °C', 'Blood would start to freeze if the body went above 37 °C', 'Hormones can only be made at exactly 37 °C and no other'],
+  'Too cold slows enzymes; too hot denatures them.');
+M('B2.82-01', 'What is the correct order of a co-ordinated response?',
+  ['Stimulus → receptor → effector → response', 'Receptor → stimulus → response → effector', 'Effector → receptor → stimulus → response', 'Stimulus → effector → receptor → response'],
+  'A co-ordinator (e.g. the brain) links the receptor and effector.');
+M('B2.82-02', 'What is an <b>effector</b>?',
+  ['A muscle or gland that produces a response', 'A cell that detects a stimulus', 'A change in the environment', 'A nerve that carries impulses to the brain'],
+  'Muscles contract; glands secrete.');
+M('B2.82-03', 'What is a <b>receptor</b>?',
+  ['A cell or organ that detects a stimulus', 'A muscle that contracts to make a response', 'A gland that releases a hormone into blood', 'A change in the environment, such as light'],
+  'For example, light receptors in the retina.');
+T('B2.82-04', 'A stimulus is a change in the environment that an organism can detect.', true,
+  'True.');
+M('B2.83-01', 'Which stimulus do plant shoots respond to by growing towards it?',
+  ['Light', 'Gravity', 'Darkness', 'Wind'],
+  'This is positive phototropism.');
+T('B2.83-02', 'Plants do not respond to stimuli because they have no nervous system.', false,
+  'False. Plants respond to stimuli such as light and gravity, using hormones such as auxin.');
+M('B2.83-03', 'Why is it useful for a plant shoot to grow towards light?',
+  ['It can absorb more light for photosynthesis', 'It can absorb more water through its leaves', 'It can reach more minerals in the air', 'It avoids being reached by pollinators'],
+  'More light → more photosynthesis → more glucose.');
+MH('B2.83-04', 'Which two stimuli are plant roots and shoots mainly responding to when a seed germinates underground?',
+  ['Gravity and light', 'Sound and touch', 'Temperature and sound', 'Oxygen and nitrogen'],
+  'Roots grow down (gravity); shoots grow up and towards light.');
+M('B2.84-01', 'How do roots respond to gravity?',
+  ['They grow downwards (positive geotropism)', 'They grow upwards (negative geotropism)', 'They grow sideways', 'They do not respond'],
+  'Shoots show negative geotropism: they grow upwards, against gravity.');
+M('B2.84-02', 'What is <b>phototropism</b>?',
+  ['A growth response to light', 'A growth response to gravity', 'A response to touch', 'The making of food using light'],
+  'Shoots are positively phototropic.');
+M('B2.84-03', 'How do plant shoots respond to gravity?',
+  ['They grow upwards, away from gravity', 'They grow downwards, towards gravity', 'They grow sideways along the ground', 'They do not respond to gravity'],
+  'This is negative geotropism.');
+MH('B2.84-04', 'A seedling is laid on its side in the dark. What happens after a few days?',
+  ['The shoot bends upwards and the root bends downwards', 'The shoot and root both bend downwards', 'The shoot and root both grow straight sideways', 'The shoot bends downwards and the root upwards'],
+  'With no light, the responses are to gravity.');
+M('B2.85-01', 'Where is auxin made in a shoot?',
+  ['In the shoot tip', 'In the roots', 'In the leaves only', 'In the flowers'],
+  'It moves down from the tip.');
+M('B2.85-02', 'When light comes from one side, how does auxin make a shoot bend towards it?',
+  ['Auxin collects on the shaded side, making those cells elongate more', 'Auxin collects on the lit side, making those cells grow more', 'Auxin is destroyed on the shaded side, so the lit side grows', 'Auxin makes the cells on the lit side shrink'],
+  'Faster growth on the shaded side bends the shoot towards the light.');
+T('B2.85-03', 'Auxin is a plant hormone.', true,
+  'True. It controls the phototropic response of shoots.');
+MH('B2.85-04', 'A shoot tip is covered with a foil cap and lit from one side. What happens?',
+  ['It grows straight up: the covered tip can’t detect the light', 'It bends towards the light even more strongly than usual', 'It bends away from the light, towards the darker side', 'It stops growing, because auxin can no longer be made'],
+  'The tip detects light and makes auxin; covering it prevents the response.');
+M('B2.86-01', 'How does nervous communication compare with hormonal communication?',
+  ['Nervous: faster, short-lived. Hormonal: slower, longer-lasting', 'Nervous: slower, longer-lasting. Hormonal: faster, short-lived', 'Both equally fast, and both use chemicals carried in the blood', 'Nervous uses the blood; hormonal uses electrical impulses in nerves'],
+  'Nerves use electrical impulses; hormones travel in the blood.');
+M('B2.86-02', 'How do hormones travel to their target organs?',
+  ['In the blood', 'Along nerves', 'Through the air', 'Through the gut'],
+  'Hormones are made in glands and carried in the plasma.');
+T('B2.86-03', 'Hormonal responses are usually faster than nervous responses.', false,
+  'False. Nervous responses are faster; hormonal responses are slower but last longer.');
+MH('B2.86-04', 'Which response is most likely to be controlled by hormones?',
+  ['Changes at puberty over several years', 'Pulling your hand away from a flame', 'Blinking when something flies at your eye', 'Catching a ball'],
+  'Hormonal effects are slow and long-lasting.');
+M('B2.87-01', 'What makes up the central nervous system (CNS)?',
+  ['The brain and spinal cord', 'The brain and the eyes', 'All the nerves in the body', 'The spinal cord and the muscles'],
+  'Nerves link the CNS to sense organs and effectors.');
+T('B2.87-02', 'The central nervous system is made of the brain and spinal cord.', true,
+  'True.');
+M('B2.87-03', 'What links the sense organs to the central nervous system?',
+  ['Nerves', 'Blood vessels', 'Hormones', 'Muscles'],
+  'Nerves are bundles of neurones.');
+MH('B2.87-04', 'A person’s spinal cord is damaged in the neck. Why might they lose feeling in their legs?',
+  ['Impulses from the legs can no longer reach the brain', 'The legs stop making blood cells after the injury', 'Hormones can no longer travel to the leg muscles', 'The receptors in the legs are all destroyed'],
+  'The spinal cord carries impulses between the body and the brain.');
+M('B2.88-01', 'In what form is information carried along nerves?',
+  ['Electrical impulses', 'Hormones in the blood', 'Sound waves', 'Light signals'],
+  'This makes nervous responses rapid.');
+M('B2.88-02', 'Which neurones carry impulses <b>from</b> receptors to the CNS?',
+  ['Sensory neurones', 'Motor neurones', 'Relay neurones', 'Hormone neurones'],
+  'Motor neurones carry impulses from the CNS to effectors.');
+T('B2.88-03', 'Sensory neurones carry impulses from the CNS to effectors.', false,
+  'False. Motor neurones carry impulses to effectors. Sensory neurones carry impulses from receptors to the CNS.');
+MH('B2.88-04', 'Light enters the eye and you press a button. Put the path in order.',
+  ['Receptor → sensory neurone → CNS → motor neurone → effector', 'Effector → motor neurone → CNS → sensory neurone → receptor', 'Receptor → motor neurone → CNS → sensory neurone → effector', 'CNS → receptor → sensory neurone → effector → motor neurone'],
+  'Sensory in, motor out.');
+M('B2.89-01', 'What is a <b>synapse</b>?',
+  ['A small gap between two neurones', 'The end of a muscle', 'A type of receptor in the skin', 'A gland that makes hormones'],
+  'Impulses cross the gap using chemicals.');
+M('B2.89-02', 'How does an impulse cross a synapse?',
+  ['Neurotransmitter diffuses across the gap and starts an impulse in the next neurone', 'The electrical impulse jumps straight across the gap to the next neurone', 'Blood flowing through the gap carries the impulse to the next neurone', 'The two neurones touch at the synapse and pass the impulse directly'],
+  'This also makes sure impulses travel in one direction only.');
+MH('B2.89-03', 'Why can impulses only travel one way across a synapse?',
+  ['Neurotransmitter is released by one side and detected only by the other', 'The gap is too wide for impulses to cross in the opposite direction', 'Impulses can only travel downwards, towards the feet', 'Synapses contain valves that stop impulses going backwards'],
+  'Only the first neurone releases neurotransmitter; only the second has receptors for it.');
+T('B2.89-04', 'Neurotransmitters cross a synapse by diffusion.', true,
+  'True.');
+M('B2.90-01', 'In the reflex arc for pulling a finger away from a hot object, what is the effector?',
+  ['A muscle in the arm', 'The temperature receptor in the skin', 'The spinal cord', 'The relay neurone'],
+  'The muscle contracts to move the hand away.');
+M('B2.90-02', 'Why are reflexes fast?',
+  ['The impulse does not go through the conscious part of the brain', 'Reflexes use hormones', 'Reflexes involve no neurones', 'Impulses travel faster in the arm than in the brain'],
+  'The pathway goes through the spinal cord via a relay neurone.');
+M('B2.90-03', 'Which neurone in a reflex arc is found inside the spinal cord, linking the other two?',
+  ['The relay neurone', 'The sensory neurone', 'The motor neurone', 'The optic nerve'],
+  'Receptor → sensory → relay → motor → effector.');
+MH('B2.90-04', 'Why are reflexes useful?',
+  ['They protect the body by acting automatically and quickly', 'They let us think carefully before deciding what to do', 'They only work when we are asleep, to keep us safe', 'They control how fast we grow during childhood'],
+  'Thinking would take too long when touching something hot.');
+M('B2.91-01', 'Which part of the eye contains light receptors?',
+  ['The retina', 'The cornea', 'The iris', 'The lens'],
+  'Rods and cones in the retina detect light.');
+M('B2.91-02', 'What does the iris do?',
+  ['Controls the size of the pupil and so how much light enters', 'Focuses light onto the retina by changing its shape', 'Carries impulses from the retina to the brain', 'Protects the front of the eye and refracts light'],
+  'The iris is the coloured part of the eye.');
+M('B2.91-03', 'What carries impulses from the retina to the brain?',
+  ['The optic nerve', 'The ciliary muscle', 'The suspensory ligaments', 'The cornea'],
+  'The retina is the receptor; the brain interprets the image.');
+MH('B2.91-04', 'Which two parts of the eye refract (bend) light to focus it on the retina?',
+  ['The cornea and the lens', 'The iris and the pupil', 'The retina and the optic nerve', 'The ciliary muscle and the iris'],
+  'The cornea does most of the bending; the lens fine-tunes the focus.');
+M('B2.92-01', 'How does the eye focus on a <b>near</b> object?',
+  ['Ciliary muscles contract, suspensory ligaments slacken, and the lens becomes fatter', 'Ciliary muscles relax, suspensory ligaments tighten, and the lens becomes thinner', 'The iris contracts, and the pupil gets bigger', 'The retina moves closer to the lens'],
+  'A fatter lens bends light more.');
+M('B2.92-02', 'What happens to the pupil in bright light?',
+  ['It gets smaller, to protect the retina', 'It gets bigger, to let in more light', 'It stays the same size', 'It closes completely'],
+  'The circular muscles of the iris contract.');
+MH('B2.92-03', 'When you look at a distant object, what shape is the lens?',
+  ['Thin: ciliary muscles relax and the ligaments pull tight', 'Fat: ciliary muscles contract and the ligaments slacken', 'Thin: ciliary muscles contract and the ligaments slacken', 'Fat: ciliary muscles relax and the ligaments pull tight'],
+  'Distant objects need less refraction.');
+T('B2.92-04', 'In dim light, the pupil gets smaller.', false,
+  'False. In dim light the pupil gets larger, to let more light in.');
+M('B2.93-01', 'How does sweating help cool the body?',
+  ['Water in sweat evaporates, taking heat energy from the skin', 'Sweat reflects heat away from the skin', 'Sweat makes the blood vessels move closer to the skin', 'Sweat stops the body making heat'],
+  'Evaporation uses heat energy from the body.');
+M('B2.93-02', 'What is <b>vasodilation</b>?',
+  ['Arterioles near the skin widen, so more heat is lost from the blood', 'Arterioles near the skin narrow, so less heat is lost from the blood', 'Blood vessels move nearer to the skin surface to lose more heat', 'Sweat glands stop making sweat so that the skin warms up'],
+  'This happens when the body is too hot.');
+M('B2.93-03', 'What happens to blood vessels in the skin when the body is too cold?',
+  ['Arterioles narrow (vasoconstriction), so less heat is lost', 'Arterioles widen (vasodilation), so more heat is lost', 'Blood vessels move deeper into the body', 'Blood stops flowing completely'],
+  'Shivering also releases heat from respiration in muscles.');
+T('B2.93-04', 'In vasodilation, blood vessels move closer to the surface of the skin.', false,
+  'False. Blood vessels do not move. The arterioles widen, so more blood flows through the capillaries near the surface.');
+MH('B2.93-05', 'Why does a person look pale when they are very cold?',
+  ['Vasoconstriction reduces blood flow to the skin surface', 'Their blood loses its haemoglobin in the cold', 'Sweating removes the colour from their skin', 'Vasodilation sends more blood to the skin surface'],
+  'Less blood near the surface reduces heat loss.');
+M('B2.94-01', 'Which hormone lowers blood glucose?',
+  ['Insulin', 'Adrenaline', 'Testosterone', 'Oestrogen'],
+  'Insulin is made in the pancreas; it makes the liver and muscles take up glucose and store it as glycogen.');
+M('B2.94-02', 'Where is adrenaline made?',
+  ['The adrenal glands', 'The pancreas', 'The testes', 'The ovaries'],
+  'Adrenaline prepares the body for action: faster heart rate and more glucose in the blood.');
+M('B2.94-03', 'Which hormone causes male secondary sexual characteristics, such as a deeper voice?',
+  ['Testosterone', 'Oestrogen', 'Progesterone', 'Insulin'],
+  'Testosterone is made in the testes.');
+M('B2.94-04', 'Which hormone, made in the ovaries, maintains the lining of the uterus?',
+  ['Progesterone', 'Testosterone', 'Insulin', 'Adrenaline'],
+  'Oestrogen (also from the ovaries) causes female secondary sexual characteristics and repairs the uterus lining.');
+MH('B2.94-05', 'A person’s pancreas makes too little insulin. What happens to their blood glucose after a meal?',
+  ['It rises too high and stays high', 'It falls too low and stays low', 'It stays exactly at a normal level', 'It is converted into adrenaline'],
+  'This is type 1 diabetes; it is treated with insulin injections.');
+M('B2.18-04', 'Which substance absorbs the light energy for photosynthesis?',
+  ['Chlorophyll', 'Haemoglobin', 'Starch', 'Cellulose'],
+  'Chlorophyll is the green pigment in chloroplasts.');
+MH('B2.19-04', 'In the photosynthesis equation, what are written above the arrow because they are needed but not used up?',
+  ['Light and chlorophyll', 'Oxygen and glucose', 'Water and carbon dioxide', 'Starch and minerals'],
+  'Light provides the energy; chlorophyll absorbs it.');
+M('B2.37-04', 'Which substance is a <b>reactant</b> in aerobic respiration?',
+  ['Oxygen', 'Carbon dioxide', 'Water', 'Lactic acid'],
+  'glucose + oxygen → carbon dioxide + water.');
