@@ -3212,3 +3212,476 @@ MH('B2.19-04', 'In the photosynthesis equation, what are written above the arrow
 M('B2.37-04', 'Which substance is a <b>reactant</b> in aerobic respiration?',
   ['Oxygen', 'Carbon dioxide', 'Water', 'Lactic acid'],
   'glucose + oxygen → carbon dioxide + water.');
+
+/* ===================== CHEMISTRY 3(a) Energetics (added 7 Nov 2026) ===================== */
+M('C3.1-01', 'What is an <b>exothermic</b> reaction?',
+  ['One that gives out heat energy to the surroundings', 'One that takes in heat energy from the surroundings', 'One that only happens when it is heated strongly', 'One that neither gives out nor takes in any energy'],
+  'The temperature of the surroundings rises.');
+M('C3.1-02', 'Which of these is <b>endothermic</b>?',
+  ['Thermal decomposition of calcium carbonate', 'Burning methane in air', 'Neutralising an acid with an alkali', 'Magnesium reacting with acid'],
+  'Thermal decomposition needs a constant supply of heat.');
+T('C3.1-03', 'Combustion reactions are endothermic.', false,
+  'False. Fuels give out heat energy when they burn, so combustion is exothermic.');
+MH('C3.1-04', 'Ammonium nitrate dissolves in water and the beaker feels cold. What does this show?',
+  ['Dissolving it is endothermic: heat is taken in from the water and surroundings', 'Dissolving it is exothermic: heat is given out to the surroundings', 'No energy change happens, the water was simply cold', 'The ammonium nitrate has reacted with oxygen in the air'],
+  'Cold packs use endothermic dissolving.');
+M('C3.1-05', 'In an exothermic reaction, what happens to the temperature of the reaction mixture?',
+  ['It rises', 'It falls', 'It stays exactly the same', 'It falls, then rises sharply'],
+  'Heat energy is released into the mixture and surroundings.');
+M('C3.2-01', 'Why is a polystyrene cup with a lid used for calorimetry of reactions in solution?',
+  ['It is a good insulator, so less heat is lost to the surroundings', 'It reacts with the solution to speed up the reaction', 'It conducts heat quickly to the thermometer', 'It stops the solution from changing colour'],
+  'Heat loss is the main source of error.');
+M('C3.2-02', 'What must be measured to find the heat energy change in a calorimetry experiment?',
+  ['The mass of the water or solution and its temperature change', 'The volume of the gas given off and the time it takes', 'The mass of the solid and the colour of the solution', 'The starting temperature and the time the reaction lasts'],
+  'Then use Q = mcΔT.');
+MH('C3.2-03', 'In a combustion experiment, a spirit burner heats water in a copper can. Why is the result usually lower than the data-book value?',
+  ['Much of the heat is lost to the surroundings instead of the water', 'Copper reacts with the fuel and absorbs its energy', 'The water gains more energy than the fuel releases', 'The thermometer always reads too high'],
+  'Incomplete combustion also releases less energy than expected.');
+T('C3.2-04', 'Stirring the solution during calorimetry makes the temperature reading less accurate.', false,
+  'False. Stirring spreads the heat evenly, so the reading is more accurate.');
+M('C3.3-01', '50 g of water warms by 10 °C. How much heat energy did it gain? (c = 4.2 J/g °C)',
+  ['2100 J', '500 J', '210 J', '21 000 J'],
+  'Q = m × c × ΔT = 50 × 4.2 × 10 = <b>2100 J</b>.');
+M('C3.3-02', 'In Q = mcΔT, what does ΔT stand for?',
+  ['The change in temperature', 'The final temperature', 'The time taken', 'The total energy'],
+  'ΔT = final temperature − starting temperature.');
+T('C3.3-03', 'In Q = mcΔT for a reaction in solution, m is the mass of the solution (or water) that is heated.', true,
+  'True. Not the mass of the solid reactant.');
+M('C3.4-01', 'What is the unit of molar enthalpy change, ΔH?',
+  ['kJ/mol', 'J/g °C', 'kJ/g', 'mol/kJ'],
+  'ΔH = −Q ÷ moles, usually given in kilojoules per mole.');
+M('C3.4-02', 'Why is ΔH negative for an exothermic reaction?',
+  ['The chemicals lose energy to the surroundings', 'The chemicals gain energy from the surroundings', 'The temperature of the surroundings falls', 'Fewer moles of product are made'],
+  'Negative ΔH = exothermic; positive ΔH = endothermic.');
+MH('C3.4-03', '0.05 mol of acid is neutralised and the solution gains 2800 J. What is ΔH?',
+  ['−56 kJ/mol', '+56 kJ/mol', '−140 kJ/mol', '−0.14 kJ/mol'],
+  'Q = 2.8 kJ. ΔH = −2.8 ÷ 0.05 = <b>−56 kJ/mol</b> (negative because it is exothermic).');
+M('C3.8-01', 'Zinc powder is added to copper(II) sulfate solution in a polystyrene cup. The temperature rises from 20 °C to 32 °C. What type of change is this?',
+  ['An exothermic displacement reaction', 'An endothermic displacement reaction', 'An endothermic neutralisation', 'A change with no energy transfer'],
+  'The temperature rose, so heat energy was given out.');
+M('C3.8-02', 'When measuring the temperature change of a neutralisation, why record the starting temperature of both solutions?',
+  ['To find the true temperature change caused by the reaction', 'To work out the volume of each solution being mixed', 'To check that neither solution has become acidic', 'To find out how long the whole reaction will last'],
+  'Use the average starting temperature if they differ.');
+MH('C3.8-03', 'Which change would make a calorimetry result more accurate?',
+  ['Adding a lid to the cup to reduce heat loss', 'Using a glass beaker instead of a polystyrene cup', 'Reading the thermometer only once at the end', 'Using a much larger volume of air in the cup'],
+  'Less heat lost means the measured temperature change is closer to the true value.');
+T('C3.8-04', 'Dissolving a salt in water always makes the temperature rise.', false,
+  'False. Some salts, such as ammonium nitrate, dissolve endothermically and the temperature falls.');
+
+/* ===================== CHEMISTRY 3(b) Rates of reaction (added 7 Nov 2026) ===================== */
+M('C3.9-01', 'How can you measure the rate of reaction between marble chips and hydrochloric acid?',
+  ['Measure the volume of gas given off over time with a gas syringe', 'Measure the colour of the acid at the start', 'Measure the mass of the marble chips before the start only', 'Measure the pH of the acid once, after an hour'],
+  'Or measure the loss of mass as carbon dioxide escapes.');
+M('C3.9-02', 'In the sodium thiosulfate and acid reaction, how is the rate measured?',
+  ['Time how long it takes for a cross under the flask to disappear', 'Measure the volume of hydrogen gas given off every 10 s', 'Weigh the flask every minute to find the loss in mass', 'Measure the temperature rise of the mixture with a probe'],
+  'A yellow precipitate of sulfur forms and hides the cross.');
+MH('C3.9-03', 'In the marble chips experiment, why is a cotton wool plug put in the neck of the flask on the balance?',
+  ['It lets carbon dioxide escape but stops acid spraying out', 'It stops any gas from escaping', 'It speeds up the reaction', 'It absorbs the carbon dioxide so it can be weighed'],
+  'Mass lost = mass of CO₂ given off.');
+T('C3.9-04', 'A catalyst can be investigated by comparing the rate of a reaction with and without it.', true,
+  'True. For example, hydrogen peroxide decomposing with and without manganese(IV) oxide.');
+M('C3.10-01', 'Which change would <b>slow down</b> a reaction?',
+  ['Lowering the temperature', 'Using a catalyst', 'Using powder instead of lumps', 'Increasing the concentration of acid'],
+  'The other three all speed reactions up.');
+M('C3.10-02', 'Increasing the pressure of a reacting gas has what effect on the rate?',
+  ['It increases the rate', 'It decreases the rate', 'It has no effect', 'It stops the reaction'],
+  'The gas particles are closer together.');
+T('C3.10-03', 'Using lumps instead of powder makes a reaction faster.', false,
+  'False. Powder has a larger surface area, so it reacts faster than lumps of the same mass.');
+MH('C3.10-04', 'Which graph line for volume of gas against time shows the fastest reaction?',
+  ['The line with the steepest slope at the start', 'The line that starts latest', 'The flattest line', 'The line that ends at the lowest volume'],
+  'The gradient of the line is the rate.');
+M('C3.11-01', 'Why does increasing concentration increase the rate of reaction?',
+  ['There are more particles in the same volume, so collisions are more frequent', 'The particles move faster, so every collision has more energy', 'The activation energy becomes lower, so more particles react', 'The particles become larger, so they are easier to collide with'],
+  'More frequent collisions → more successful collisions per second.');
+M('C3.11-02', 'Why does increasing temperature increase the rate of reaction?',
+  ['Particles move faster, collide more often, and more collisions have enough energy to react', 'The particles become bigger, so they collide much more often than before', 'The activation energy is lowered, so every collision leads to a reaction', 'More particles are made in the same volume, so collisions are more frequent'],
+  'Both the frequency and energy of collisions increase.');
+MH('C3.11-03', 'Why does crushing marble chips into powder make them react faster with acid?',
+  ['A larger surface area is exposed, so collisions with acid particles are more frequent', 'Crushing gives the particles more energy', 'Crushing lowers the activation energy', 'Powder has more particles in total than the same mass of lumps'],
+  'Only particles on the surface can be hit.');
+T('C3.11-04', 'For particles to react, they must collide with enough energy.', true,
+  'True. The minimum energy needed is the activation energy.');
+M('C3.12-01', 'What is a <b>catalyst</b>?',
+  ['A substance that speeds up a reaction but is chemically unchanged at the end', 'A substance that speeds up a reaction and is used up as it does so', 'A substance that slows down a reaction and is unchanged at the end', 'A reactant that is added in excess so the reaction goes to completion'],
+  'Catalysts can be reused.');
+T('C3.12-02', 'A catalyst is used up during a reaction.', false,
+  'False. A catalyst is chemically unchanged at the end of the reaction.');
+M('C3.12-03', 'Which substance is used as a catalyst for the decomposition of hydrogen peroxide?',
+  ['Manganese(IV) oxide', 'Sodium chloride', 'Copper(II) sulfate crystals', 'Calcium carbonate'],
+  'It makes oxygen bubble off much faster.');
+MH('C3.12-04', 'How could you show that manganese(IV) oxide is unchanged after catalysing a reaction?',
+  ['Filter it off, dry it and show its mass is the same as at the start', 'Show that the reaction mixture has changed colour', 'Show that oxygen relights a glowing splint', 'Measure the temperature of the solution'],
+  'Its mass and chemical identity are unchanged.');
+M('C3.13-01', 'How does a catalyst speed up a reaction?',
+  ['It provides an alternative pathway with a lower activation energy', 'It gives the particles more kinetic energy', 'It increases the concentration of the reactants', 'It raises the temperature of the mixture'],
+  'More collisions now have enough energy to react.');
+T('C3.13-02', 'A catalyst lowers the activation energy of a reaction.', true,
+  'True. It does this by providing an alternative reaction pathway.');
+MH('C3.13-03', 'On a reaction profile, how does the catalysed reaction differ from the uncatalysed one?',
+  ['The peak (activation energy) is lower, but the reactants and products are at the same levels', 'The peak is the same height, but the products are at a much lower energy level', 'The peak is higher and the products end up at a lower energy level than before', 'There is no peak at all, and the products are at the same level as the reactants'],
+  'A catalyst does not change the overall energy change.');
+M('C3.13-04', 'What is the <b>activation energy</b> of a reaction?',
+  ['The minimum energy particles need to collide and react', 'The total energy given out by the reaction', 'The energy stored in the products', 'The energy needed to melt the reactants'],
+  'Catalysts lower it.');
+M('C3.15-01', 'Large and small marble chips of the same total mass react with the same acid. Which gives off carbon dioxide faster?',
+  ['The small chips', 'The large chips', 'Both the same', 'Neither reacts'],
+  'Smaller chips have a larger total surface area.');
+M('C3.15-02', 'In the marble chips practical, why must the total mass of chips be the same each time?',
+  ['So that only one variable (size or concentration) is changed', 'So the reaction always takes one minute', 'So the acid changes colour at the same time', 'So that no gas is produced'],
+  'This makes it a fair test.');
+MH('C3.15-03', 'When the acid concentration is doubled (with excess marble), how does the final volume of CO₂ compare, if the volume of acid is the same?',
+  ['It is doubled, because there is twice as much acid to react', 'It stays the same, because only the rate changes', 'It is halved', 'No gas is made'],
+  'If acid is the limiting reactant, doubling its amount doubles the product.');
+T('C3.15-04', 'Increasing the concentration of hydrochloric acid makes marble chips react faster.', true,
+  'True. There are more acid particles in the same volume, so collisions are more frequent.');
+M('C3.16-01', 'How is the rate of decomposition of hydrogen peroxide measured in the catalyst practical?',
+  ['Collect the oxygen in a gas syringe and record its volume at regular times', 'Measure the temperature of the hydrogen peroxide only', 'Count the number of solid particles added', 'Measure the pH of the solution every minute'],
+  'The best catalyst gives the fastest rate of oxygen production.');
+M('C3.16-02', 'In the catalyst practical, what should be kept the same for each solid tested?',
+  ['The mass of solid and the volume and concentration of hydrogen peroxide', 'The colour of the solid and the size of the flask used each time', 'The time taken to collect the gas and the volume of oxygen made', 'The temperature of the room and the type of solid being tested'],
+  'Only the type of solid is changed.');
+T('C3.16-03', 'Hydrogen peroxide decomposes to water and oxygen.', true,
+  'True. 2H₂O₂ → 2H₂O + O₂.');
+MH('C3.16-04', 'Two solids are tested. Solid A gives 40 cm³ of oxygen in 30 s; solid B gives 40 cm³ in 90 s. What can you conclude?',
+  ['A is the better catalyst', 'B is the better catalyst', 'Neither is a catalyst', 'Both are equally good catalysts'],
+  'A produced the same volume three times faster.');
+M('C3.17-01', 'What does the symbol ⇌ show in an equation?',
+  ['The reaction is reversible', 'The reaction is very fast', 'A catalyst is used', 'The reaction gives out heat'],
+  'The products can react to re-form the reactants.');
+T('C3.17-02', 'Once the products of a reversible reaction form, they can never turn back into the reactants.', false,
+  'False. In a reversible reaction the products can react to re-form the reactants.');
+M('C3.17-03', 'Which of these is a reversible reaction?',
+  ['Heating hydrated copper(II) sulfate', 'Burning magnesium in oxygen', 'Burning methane in air', 'Neutralising hydrochloric acid with sodium hydroxide'],
+  'Adding water to the white anhydrous solid turns it blue again.');
+M('C3.18-01', 'Blue hydrated copper(II) sulfate is heated. What is seen?',
+  ['It turns white as water is given off', 'It turns black as copper is formed', 'It turns green and melts', 'Nothing happens'],
+  'CuSO₄·5H₂O ⇌ CuSO₄ + 5H₂O. Adding water reverses it.');
+M('C3.18-02', 'Ammonium chloride is heated at the bottom of a test tube. What happens?',
+  ['It decomposes into ammonia and hydrogen chloride, which re-form ammonium chloride at the cool top', 'It melts into a colourless liquid that then boils away completely out of the open tube', 'It reacts with oxygen to form a black solid that stays at the bottom of the test tube', 'It decomposes into nitrogen and chlorine gases, which escape and do not re-form a solid'],
+  'NH₄Cl ⇌ NH₃ + HCl.');
+MH('C3.18-03', 'Water is added to white anhydrous copper(II) sulfate. What else happens apart from the colour change?',
+  ['The mixture gets hot, because the reverse reaction is exothermic', 'The mixture gets cold, because the reverse reaction is endothermic', 'A gas is given off', 'Nothing else happens'],
+  'If the forward reaction is endothermic, the reverse is exothermic by the same amount.');
+T('C3.18-04', 'The white solid that forms at the top of the tube when ammonium chloride is heated is ammonium chloride.', true,
+  'True. Ammonia and hydrogen chloride recombine where the tube is cooler.');
+
+/* ===================== PHYSICS 4 Energy resources and energy transfers (added 7 Nov 2026) ===================== */
+M('P4.2-01', 'A stretched spring stores energy in which store?',
+  ['Elastic potential', 'Gravitational potential', 'Chemical', 'Nuclear'],
+  'Elastic stores fill when objects are stretched, squashed or bent.');
+M('P4.2-02', 'A battery-powered torch is switched on. What is the main energy transfer?',
+  ['Chemical store → (electrically) → light and thermal energy', 'Kinetic store → (mechanically) → chemical store', 'Nuclear store → (by heating) → kinetic store', 'Thermal store → (by radiation) → chemical store'],
+  'The battery\'s chemical store empties.');
+M('P4.2-03', 'Food and fuels are examples of which energy store?',
+  ['Chemical', 'Thermal', 'Kinetic', 'Magnetic'],
+  'Energy is released by chemical reactions such as respiration or combustion.');
+T('P4.2-04', 'Energy cannot be transferred by sound.', false,
+  'False. Sound is one way of transferring energy by radiation (waves).');
+MH('P4.2-05', 'A ball is thrown straight up. Ignoring air resistance, which store increases as it rises?',
+  ['Gravitational potential', 'Kinetic', 'Chemical', 'Elastic potential'],
+  'Kinetic store empties into the gravitational store as it slows.');
+M('P4.3-01', 'What does the principle of conservation of energy say?',
+  ['Energy cannot be created or destroyed, only transferred', 'Energy is used up whenever a device does useful work', 'Energy is created when fuels are burned in a power station', 'Energy is always transferred usefully if the device is new'],
+  'Total energy in = total energy out.');
+M('P4.3-02', 'A motor is supplied with 500 J. It transfers 350 J to its kinetic store. How much is wasted?',
+  ['150 J', '850 J', '350 J', '500 J'],
+  'Total out = total in, so 500 − 350 = <b>150 J</b>, mostly by heating.');
+T('P4.3-03', 'In a perfect energy transfer, some energy is destroyed.', false,
+  'False. Energy is never destroyed; it is only transferred to other stores, often wasted.');
+MH('P4.3-04', 'A falling ball lands and stops. Where has its kinetic energy gone?',
+  ['Mostly to thermal stores of the ball and ground, and some to sound', 'It has been destroyed by the impact with the hard ground below', 'Back into the chemical store of the ball, ready to bounce again', 'Into the gravitational store of the ground, which stores it forever'],
+  'The energy spreads out (dissipates) to the surroundings.');
+M('P4.4-01', 'A lamp is supplied with 200 J and gives out 40 J of light. What is its efficiency?',
+  ['0.2 (20%)', '0.4 (40%)', '5 (500%)', '0.8 (80%)'],
+  'Efficiency = useful ÷ total = 40 ÷ 200 = <b>0.2</b>.');
+M('P4.4-02', 'Which is the correct equation for efficiency?',
+  ['useful energy output ÷ total energy input', 'total energy input ÷ useful energy output', 'useful energy output × total energy input', 'wasted energy ÷ useful energy output'],
+  'Multiply by 100 for a percentage.');
+T('P4.4-03', 'A device can have an efficiency greater than 100%.', false,
+  'False. That would mean energy was created.');
+MH('P4.4-04', 'A motor is 25% efficient and gives 300 J of useful work. How much energy was supplied?',
+  ['1200 J', '75 J', '325 J', '900 J'],
+  'Total = useful ÷ efficiency = 300 ÷ 0.25 = <b>1200 J</b>.');
+M('P4.5-01', 'In a Sankey diagram, what does the width of each arrow show?',
+  ['The amount of energy transferred', 'The speed of the transfer', 'The type of energy store', 'The time the device is used'],
+  'Wide arrows mean lots of energy.');
+M('P4.5-02', 'What is the main wasted energy in a filament lamp?',
+  ['Thermal energy to the surroundings', 'Sound energy to the surroundings', 'Kinetic energy of the filament', 'Chemical energy in the filament'],
+  'Filament lamps are very inefficient: most energy heats the surroundings.');
+MH('P4.5-03', 'In a Sankey diagram, the input arrow is 10 squares wide and the useful arrow is 3 squares. What is the efficiency?',
+  ['30%', '70%', '3%', '13%'],
+  '3 ÷ 10 = 0.3 = <b>30%</b>.');
+T('P4.5-04', 'In an electric kettle, energy transferred to the thermal store of the water is useful.', true,
+  'True. Energy heating the kettle body and air is wasted.');
+M('P4.6-01', 'How is thermal energy transferred through a metal spoon?',
+  ['Conduction', 'Convection', 'Radiation only', 'Evaporation'],
+  'Particles vibrate and pass energy on; free electrons help in metals.');
+M('P4.6-02', 'Which method of thermal energy transfer can travel through a vacuum?',
+  ['Radiation', 'Conduction', 'Convection', 'All three of these'],
+  'Infrared radiation needs no particles. That is how heat reaches us from the Sun.');
+T('P4.6-03', 'Convection can happen in solids.', false,
+  'False. Convection needs a fluid (liquid or gas) whose particles can move around.');
+MH('P4.6-04', 'Why are metals much better conductors than non-metals?',
+  ['They have free (delocalised) electrons that carry energy quickly', 'Their particles are much further apart, so they move about freely', 'They are always at a higher temperature before they are heated', 'Their atoms cannot vibrate, so energy passes through them directly'],
+  'Free electrons move through the metal and transfer energy.');
+M('P4.7-01', 'Why does warm air rise?',
+  ['It expands, becomes less dense and floats up', 'Its particles get bigger, so it gets lighter', 'It contracts, so it becomes much more dense', 'Cold air is attracted downwards by the ground'],
+  'This sets up a convection current.');
+M('P4.7-02', 'Why is the heating element in a kettle at the bottom?',
+  ['Heated water rises and cooler water sinks, so convection heats all the water', 'Water conducts heat downwards well, so the bottom must be heated first', 'Radiation travels upwards more easily from the bottom of the kettle', 'The element is heavy, so placing it low stops the kettle falling over'],
+  'Convection currents circulate the water.');
+MH('P4.7-03', 'On a sunny day at the coast, why does a breeze blow from the sea towards the land?',
+  ['Land heats up faster; warm air rises over it and cooler air from the sea moves in', 'The sea heats up faster, so warm air above it is pushed towards the land', 'Radiation from the Sun pushes the air above the sea inland during the day', 'Cold air above the land sinks and flows out towards the warmer sea water'],
+  'This is a convection current on a large scale.');
+T('P4.7-04', 'A radiator heats a room mainly by setting up convection currents in the air.', true,
+  'True. Despite its name, most energy is transferred by convection.');
+M('P4.8-01', 'Which surface is the best emitter of infrared radiation?',
+  ['Dull black', 'Shiny silver', 'Shiny white', 'Polished metal'],
+  'Dull black surfaces are the best emitters and absorbers.');
+M('P4.8-02', 'Which surface is the best <b>reflector</b> of infrared radiation?',
+  ['Shiny silver', 'Dull black', 'Matt dark green', 'Rough dark grey'],
+  'Shiny light surfaces are poor absorbers and poor emitters.');
+T('P4.8-03', 'A cooler object emits more infrared radiation than a hotter identical object.', false,
+  'False. Emission increases with temperature, so the hotter object emits more.');
+MH('P4.8-04', 'An object stays at a constant temperature. What must be true?',
+  ['It absorbs radiation at the same rate as it emits it', 'It emits no radiation at all', 'It absorbs no radiation at all', 'It emits more radiation than it absorbs'],
+  'If it emitted more than it absorbed, it would cool down.');
+M('P4.9-01', 'In the Leslie cube experiment, what is measured to compare the surfaces?',
+  ['The infrared radiation emitted by each face, using a detector at the same distance', 'The mass of each face of the cube, using an electronic balance on each side', 'The colour change of the water inside the cube after it has been heated up', 'The time taken for the water inside the cube to boil with each face facing up'],
+  'The cube is filled with hot water so every face is at the same temperature.');
+M('P4.9-02', 'Rods of different metals have wax on one end and are heated at the other. What does the first wax to melt show?',
+  ['That metal is the best conductor', 'That metal is the worst conductor', 'That metal is the best emitter of radiation', 'That the wax is the best insulator'],
+  'Energy was conducted along that rod fastest.');
+MH('P4.9-03', 'To compare radiation absorbed by black and silver plates, why must the heater be the same distance from both?',
+  ['So both plates receive the same amount of radiation: a fair test', 'So the two plates can conduct heat across to each other', 'So stronger convection currents are set up near the plates', 'So the wax on both plates will melt at exactly the same time'],
+  'Only the surface colour should change.');
+T('P4.9-04', 'A crystal of potassium manganate(VII) in water can be used to show convection currents.', true,
+  'True. The purple colour follows the moving water when it is heated.');
+M('P4.10-01', 'Why does loft insulation reduce energy loss from a house?',
+  ['It traps air, which is a poor conductor, and stops convection', 'It reflects all of the heat back down into the rooms below', 'It conducts heat away from the house quickly to the outside', 'It absorbs heat from the house and then destroys that energy'],
+  'Trapped air cannot form convection currents.');
+M('P4.10-02', 'How does double glazing reduce heat loss?',
+  ['The gap between the panes reduces conduction', 'The extra glass reflects all radiation', 'The glass becomes a better conductor', 'It lets more convection happen'],
+  'A gas or vacuum gap conducts very poorly.');
+MH('P4.10-03', 'A vacuum flask has a silvered inner wall. Which transfer does the silvering reduce?',
+  ['Radiation', 'Conduction', 'Convection', 'Evaporation'],
+  'The vacuum stops conduction and convection; the stopper reduces evaporation.');
+T('P4.10-04', 'Cavity wall insulation works by trapping pockets of air.', true,
+  'True. Trapped air is a poor conductor and cannot convect.');
+M('P4.11-01', 'A 20 N force pushes a box 3 m. How much work is done?',
+  ['60 J', '6.7 J', '23 J', '0.15 J'],
+  'W = F × d = 20 × 3 = <b>60 J</b>.');
+M('P4.11-02', 'What is the unit of work done?',
+  ['Joule (J)', 'Newton (N)', 'Watt (W)', 'Newton per metre (N/m)'],
+  '1 J = 1 N × 1 m.');
+T('P4.11-03', 'If you push hard on a wall and it does not move, you do no work on it.', true,
+  'True. Work is only done if the force moves something in its direction.');
+MH('P4.11-04', '450 J of work is done pushing a trolley 15 m. What is the force?',
+  ['30 N', '6750 N', '465 N', '0.033 N'],
+  'F = W ÷ d = 450 ÷ 15 = <b>30 N</b>.');
+M('P4.12-01', 'A person does 500 J of work lifting a box. How much energy is transferred?',
+  ['500 J', '250 J', '1000 J', '0 J'],
+  'Work done = energy transferred.');
+T('P4.12-02', 'Work done against friction transfers energy to thermal stores.', true,
+  'True. Rubbing surfaces warm up.');
+M('P4.12-03', 'When a car brakes, work is done by friction. Where does the kinetic energy go?',
+  ['To thermal stores of the brakes and surroundings', 'To the chemical store of the fuel', 'To the gravitational store of the car', 'It disappears completely'],
+  'The brakes get hot.');
+MH('P4.12-04', 'A 2 N friction force acts on a sliding block for 5 m. How much does the thermal store increase by?',
+  ['10 J', '2.5 J', '7 J', '0.4 J'],
+  'Work against friction = 2 × 5 = <b>10 J</b>, all transferred by heating.');
+M('P4.13-01', 'A 2 kg box is lifted 3 m. What is its gain in GPE? (g = 10 N/kg)',
+  ['60 J', '6 J', '15 J', '600 J'],
+  'GPE = m × g × h = 2 × 10 × 3 = <b>60 J</b>.');
+M('P4.13-02', 'Which is the equation for gravitational potential energy?',
+  ['GPE = m × g × h', 'GPE = ½ × m × v²', 'GPE = F × t', 'GPE = m ÷ (g × h)'],
+  'Mass × gravitational field strength × height.');
+T('P4.13-03', 'Doubling the height an object is lifted makes its gain in GPE four times bigger.', false,
+  'False. GPE = mgh is proportional to height, so doubling the height doubles the GPE.');
+M('P4.14-01', 'What is the equation for kinetic energy?',
+  ['KE = ½ × m × v²', 'KE = m × g × h', 'KE = m × v', 'KE = ½ × m × v'],
+  'Speed is squared.');
+M('P4.14-02', 'A 4 kg ball moves at 3 m/s. What is its kinetic energy?',
+  ['18 J', '6 J', '12 J', '36 J'],
+  'KE = ½ × 4 × 3² = <b>18 J</b>.');
+TH('P4.14-03', 'Doubling the speed of a car doubles its kinetic energy.', false,
+  'False. KE depends on v², so doubling the speed makes the KE four times bigger.');
+M('P4.15-01', 'A ball is dropped from a height. Ignoring air resistance, what happens to its GPE as it falls?',
+  ['It is transferred to its kinetic store', 'It stays the same until it lands', 'It is destroyed', 'It is transferred to its chemical store'],
+  'GPE lost = KE gained.');
+MH('P4.15-02', 'A 1 kg ball falls 5 m. Ignoring air resistance, how fast is it moving just before it lands? (g = 10 N/kg)',
+  ['10 m/s', '50 m/s', '5 m/s', '100 m/s'],
+  'GPE = 1 × 10 × 5 = 50 J = ½ × 1 × v², so v² = 100 and v = <b>10 m/s</b>.');
+T('P4.15-03', 'With air resistance, a falling object gains less kinetic energy than the GPE it loses.', true,
+  'True. Some energy is transferred to thermal stores of the object and air.');
+M('P4.15-04', 'A roller coaster car rolls down a slope. Why is it slower at the bottom than the ideal calculation predicts?',
+  ['Work is done against friction and air resistance', 'Its mass increases as it falls', 'Gravity gets weaker at the bottom', 'Energy is created at the top of the slope'],
+  'That work transfers energy to thermal stores.');
+M('P4.16-01', 'What is power?',
+  ['The rate of transfer of energy', 'The total energy transferred', 'The force on an object', 'The energy stored in a battery'],
+  'Power = energy transferred ÷ time.');
+M('P4.16-02', 'What is the unit of power?',
+  ['Watt (W)', 'Joule (J)', 'Newton (N)', 'Ampere (A)'],
+  '1 W = 1 J/s.');
+T('P4.16-03', 'A more powerful motor transfers energy faster.', true,
+  'True. Power is the rate of energy transfer.');
+MH('P4.16-04', 'Two students run up the same stairs. They have the same mass, but A takes less time. What is true?',
+  ['They do the same work, but A has a greater power', 'A does more work and has a greater power', 'B does more work, so B has a greater power', 'They do the same work and have the same power'],
+  'Same mass and height → same work; less time → more power.');
+M('P4.17-01', 'A motor does 600 J of work in 20 s. What is its power?',
+  ['30 W', '12 000 W', '580 W', '0.033 W'],
+  'P = W ÷ t = 600 ÷ 20 = <b>30 W</b>.');
+M('P4.17-02', 'A 60 W lamp is on for 10 s. How much energy does it transfer?',
+  ['600 J', '6 J', '70 J', '0.17 J'],
+  'E = P × t = 60 × 10 = <b>600 J</b>.');
+MH('P4.17-03', 'A 2000 W kettle transfers 300 000 J. How long is it on for?',
+  ['150 s', '600 s', '15 s', '1500 s'],
+  't = E ÷ P = 300 000 ÷ 2000 = <b>150 s</b>.');
+T('P4.17-04', 'A 100 W device transfers 100 J of energy every minute.', false,
+  'False. 1 W = 1 J/s, so it transfers 100 J every second (6000 J a minute).');
+
+/* ===================== PHYSICS 5 Solids, liquids and gases (added 7 Nov 2026) ===================== */
+M('P5.3-01', 'What is the equation for density?',
+  ['density = mass ÷ volume', 'density = volume ÷ mass', 'density = mass × volume', 'density = mass − volume'],
+  'ρ = m ÷ V.');
+M('P5.3-02', 'A block has mass 600 g and volume 200 cm³. What is its density?',
+  ['3 g/cm³', '0.33 g/cm³', '120 000 g/cm³', '400 g/cm³'],
+  'ρ = 600 ÷ 200 = <b>3 g/cm³</b>.');
+T('P5.3-03', 'An object will float in water if it is less dense than water.', true,
+  'True. Water has a density of about 1 g/cm³ (1000 kg/m³).');
+MH('P5.3-04', 'A metal has density 8000 kg/m³. What is the mass of 0.002 m³ of it?',
+  ['16 kg', '4 000 000 kg', '0.00000025 kg', '8002 kg'],
+  'm = ρ × V = 8000 × 0.002 = <b>16 kg</b>.');
+M('P5.4-01', 'How can you find the volume of an irregular stone?',
+  ['Lower it into a measuring cylinder of water and measure the rise in water level', 'Measure its length, width and height with a ruler and multiply them together', 'Weigh it on a balance and divide the mass by the density of water in g/cm³', 'Heat it in a water bath and measure how much its length expands as it warms'],
+  'The volume of water displaced equals the stone\'s volume.');
+M('P5.4-02', 'Which apparatus is used to measure the mass of an object for a density practical?',
+  ['A top-pan (electronic) balance', 'A measuring cylinder with water', 'A newton meter (spring balance)', 'A metre rule and a set square'],
+  'Zero the balance first.');
+MH('P5.4-03', 'Why should you read the measuring cylinder at eye level at the bottom of the meniscus?',
+  ['To avoid parallax error and get an accurate volume', 'To make the water level rise up to the next mark', 'To stop the water from evaporating while reading', 'To measure the mass of the object more accurately'],
+  'Reading from above or below gives the wrong value.');
+T('P5.4-04', 'The volume of a regular cuboid can be found from length × width × height.', true,
+  'True. Use a ruler or vernier callipers.');
+M('P5.5-01', 'What is the equation for pressure?',
+  ['pressure = force ÷ area', 'pressure = area ÷ force', 'pressure = force × area', 'pressure = mass ÷ volume'],
+  'p = F ÷ A, in pascals (Pa) or N/m².');
+M('P5.5-02', 'A 600 N person stands on 0.03 m² of floor. What pressure do they exert?',
+  ['20 000 Pa', '18 Pa', '0.00005 Pa', '600 Pa'],
+  'p = 600 ÷ 0.03 = <b>20 000 Pa</b>.');
+T('P5.5-03', 'Snowshoes reduce the pressure on snow by reducing the area in contact.', false,
+  'False. They increase the area, so the same force gives a lower pressure.');
+MH('P5.5-04', 'Why does a sharp knife cut better than a blunt one?',
+  ['The same force acts on a smaller area, giving a greater pressure', 'A sharp knife exerts a larger force', 'A sharp knife has a larger area of contact', 'The pressure is the same; only the force changes'],
+  'p = F ÷ A: smaller A means larger p.');
+M('P5.6-01', 'In a liquid at rest, in which directions does the pressure at a point act?',
+  ['Equally in all directions', 'Only downwards, with depth', 'Only upwards, on objects', 'Only sideways, on the walls'],
+  'That is why water spurts out sideways from holes in a container.');
+T('P5.6-02', 'At a particular depth in a liquid, the pressure pushes only downwards.', false,
+  'False. The pressure at a point in a fluid acts equally in all directions.');
+M('P5.6-03', 'Holes are made at the same depth on different sides of a water bottle. How do the jets compare?',
+  ['They all spurt out equally far', 'Only the jet on one side comes out', 'The upward-facing jet is strongest', 'No water comes out of the side holes'],
+  'Pressure at the same depth acts equally in all directions.');
+MH('P5.6-04', 'Why is the wall of a dam much thicker at the bottom?',
+  ['Pressure increases with depth and pushes sideways on the wall', 'The water at the bottom is less dense', 'The pressure only acts downwards on the base', 'The air pressure is greater at the bottom'],
+  'Pressure at a point acts in all directions, including sideways against the wall.');
+M('P5.7-01', 'What is the equation for the pressure difference in a liquid?',
+  ['pressure difference = height × density × g', 'pressure difference = force × area', 'pressure difference = density ÷ height', 'pressure difference = mass × g'],
+  'p = h × ρ × g.');
+M('P5.7-02', 'What is the pressure difference 2 m below the surface of water? (ρ = 1000 kg/m³, g = 10 N/kg)',
+  ['20 000 Pa', '2000 Pa', '5000 Pa', '200 Pa'],
+  'p = 2 × 1000 × 10 = <b>20 000 Pa</b>.');
+T('P5.7-03', 'The pressure in a liquid increases with depth.', true,
+  'True. p = hρg, so it is proportional to depth.');
+MH('P5.7-04', 'A diver goes from 5 m to 15 m deep in sea water (ρ = 1030 kg/m³, g = 10 N/kg). How much does the pressure on her increase?',
+  ['103 000 Pa', '154 500 Pa', '51 500 Pa', '10 300 Pa'],
+  'Δh = 10 m, so Δp = 10 × 1030 × 10 = <b>103 000 Pa</b>.');
+M('P5.15-01', 'How do gas molecules exert a pressure on the walls of a container?',
+  ['They collide with the walls, exerting a force', 'They stick to the walls', 'They push out by expanding', 'They are attracted strongly to the walls'],
+  'Pressure = total force of collisions ÷ area.');
+M('P5.15-02', 'How do gas molecules move?',
+  ['Randomly, at high speeds in all directions', 'In straight lines towards the top of the container', 'Only by vibrating about fixed positions', 'Slowly in one direction only'],
+  'Brownian motion of smoke particles is evidence for this.');
+T('P5.15-03', 'Gas molecules in a container are all moving at the same speed.', false,
+  'False. They have a range of speeds in random directions.');
+MH('P5.15-04', 'More gas is pumped into a rigid container at constant temperature. Why does the pressure increase?',
+  ['More molecules hit the walls each second', 'Each molecule hits the walls harder', 'The molecules become larger', 'The walls move inwards'],
+  'Same speed, but more frequent collisions.');
+M('P5.16-01', 'What is the value of absolute zero in °C?',
+  ['−273 °C', '0 °C', '−100 °C', '−373 °C'],
+  'Absolute zero is 0 K.');
+M('P5.16-02', 'What happens to the particles of a substance at absolute zero?',
+  ['They have the minimum possible kinetic energy', 'They move at their fastest speed', 'They turn into a gas', 'They split into smaller particles'],
+  'You cannot get any colder.');
+T('P5.16-03', 'Nothing can be cooled below absolute zero.', true,
+  'True. The particles cannot have less kinetic energy than at absolute zero.');
+MH('P5.16-04', 'Why is there a lowest possible temperature but no highest?',
+  ['Particles can always gain more kinetic energy, but cannot have less than the minimum', 'The Kelvin scale only goes up to 273 K, so higher temperatures cannot be defined', 'Very hot particles turn completely into energy and so they disappear from the gas', 'There is a highest temperature too, but thermometers are not able to measure it'],
+  'Temperature is linked to particle kinetic energy.');
+M('P5.17-01', 'What is 27 °C in kelvin?',
+  ['300 K', '246 K', '27 K', '−246 K'],
+  'K = °C + 273 = 27 + 273 = <b>300 K</b>.');
+M('P5.17-02', 'What is 373 K in °C?',
+  ['100 °C', '646 °C', '0 °C', '−100 °C'],
+  '°C = K − 273 = <b>100 °C</b>.');
+T('P5.17-03', 'A temperature change of 1 K is the same as a change of 1 °C.', true,
+  'True. The two scales only differ in where zero is.');
+MH('P5.17-04', 'What is −73 °C in kelvin?',
+  ['200 K', '346 K', '−346 K', '73 K'],
+  '−73 + 273 = <b>200 K</b>.');
+M('P5.18-01', 'Why do gas molecules move faster when heated?',
+  ['They gain kinetic energy from the heating', 'They become lighter as they warm up', 'They lose energy each time they hit the walls', 'The heating makes each molecule larger'],
+  'Heating increases the average kinetic energy, so the average speed rises.');
+T('P5.18-02', 'Increasing the temperature of a gas decreases the average speed of its molecules.', false,
+  'False. Heating gives the molecules more kinetic energy, so they move faster on average.');
+M('P5.18-03', 'A gas is cooled. What happens to the average speed of its molecules?',
+  ['It decreases', 'It increases', 'It stays exactly the same', 'It drops to zero immediately'],
+  'Less kinetic energy means slower molecules.');
+MH('P5.18-04', 'A sealed gas is heated at constant volume. Why does its pressure rise?',
+  ['Molecules move faster, so they hit the walls more often and harder', 'More molecules are made by heating, so there are more collisions', 'The molecules expand, so they fill up more of the space inside', 'The walls of the container get thinner, so they are pushed more'],
+  'Both the frequency and force of collisions increase.');
+M('P5.19-01', 'The Kelvin temperature of a gas is proportional to what?',
+  ['The average kinetic energy of its molecules', 'The average volume of each of its molecules', 'The total number of molecules in the container', 'The mass of each molecule in the container'],
+  'Double the Kelvin temperature → double the average KE.');
+MH('P5.19-02', 'A gas is heated from 200 K to 400 K. What happens to the average kinetic energy of its molecules?',
+  ['It doubles', 'It stays the same', 'It halves', 'It increases by 200 times'],
+  'Average KE ∝ Kelvin temperature.');
+T('P5.19-03', 'Heating a gas from 10 °C to 20 °C doubles the average kinetic energy of its molecules.', false,
+  'False. Use kelvin: 283 K → 293 K is only about a 3.5% increase.');
+M('P5.19-04', 'At which temperature do gas molecules have the greatest average kinetic energy?',
+  ['400 K', '300 K', '100 °C', '0 °C'],
+  '400 K = 127 °C, the hottest of these.');
+M('P5.20-01', 'A fixed mass of gas is squashed to a smaller volume at constant temperature. What happens to its pressure?',
+  ['It increases', 'It decreases', 'It stays the same', 'It drops to zero'],
+  'Molecules hit the walls more often.');
+M('P5.20-02', 'A sealed can of gas is heated (constant volume). What happens to the pressure?',
+  ['It increases', 'It decreases', 'It stays the same', 'It first falls, then rises'],
+  'This is why aerosol cans must not be heated.');
+T('P5.20-03', 'For a fixed mass of gas at constant temperature, halving the volume halves the pressure.', false,
+  'False. Halving the volume doubles the pressure (p ∝ 1/V).');
+MH('P5.20-04', 'Why does the pressure of a gas increase when its volume is decreased at constant temperature?',
+  ['Molecules hit the walls more often, because there is less space', 'Molecules move faster and hit the walls harder than before', 'Each molecule gains mass, so it pushes harder on the walls', 'The molecules begin to stick together into bigger clumps'],
+  'Speed is unchanged because the temperature is unchanged.');
+M('P5.21-01', 'Which equation links pressure and Kelvin temperature of a fixed mass of gas at constant volume?',
+  ['p₁ ÷ T₁ = p₂ ÷ T₂', 'p₁ × T₁ = p₂ × T₂', 'p₁ × V₁ = p₂ × V₂', 'p₁ + T₁ = p₂ + T₂'],
+  'T must be in kelvin.');
+M('P5.21-02', 'A gas at 100 kPa and 300 K is heated to 600 K at constant volume. What is the new pressure?',
+  ['200 kPa', '50 kPa', '100 kPa', '400 kPa'],
+  'p₂ = 100 × 600 ÷ 300 = <b>200 kPa</b>.');
+TH('P5.21-03', 'Heating a gas at constant volume from 20 °C to 40 °C doubles its pressure.', false,
+  'False. In kelvin that is 293 K → 313 K, so the pressure only rises by about 7%.');
+M('P5.22-01', 'Which equation links pressure and volume of a fixed mass of gas at constant temperature?',
+  ['p₁ × V₁ = p₂ × V₂', 'p₁ ÷ V₁ = p₂ ÷ V₂', 'p₁ × T₁ = p₂ × T₂', 'p₁ + V₁ = p₂ + V₂'],
+  'This is Boyle\'s law.');
+M('P5.22-02', 'A gas has a volume of 4 m³ at 100 kPa. It is squashed to 2 m³ at constant temperature. What is the new pressure?',
+  ['200 kPa', '50 kPa', '400 kPa', '800 kPa'],
+  'p₂ = 100 × 4 ÷ 2 = <b>200 kPa</b>.');
+MH('P5.22-03', 'A syringe holds 30 cm³ of air at 100 kPa. The plunger is pushed until the pressure is 150 kPa. What is the new volume?',
+  ['20 cm³', '45 cm³', '15 cm³', '25 cm³'],
+  'V₂ = 100 × 30 ÷ 150 = <b>20 cm³</b>.');
+T('P5.22-04', 'For a fixed mass of gas at constant temperature, pressure ÷ volume stays the same.', false,
+  'False. It is pressure × volume that stays the same (p₁V₁ = p₂V₂).');
+M('C3.17-04', 'In a reversible reaction, what is true of the energy change in the two directions?',
+  ['If one direction is exothermic, the other is endothermic by the same amount', 'Both directions are always exothermic by the same amount', 'Both directions are always endothermic by the same amount', 'The reverse reaction has no energy change at all'],
+  'The same amount of energy is transferred, in opposite directions.');

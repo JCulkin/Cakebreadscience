@@ -204,11 +204,59 @@ eqGen('P2.21-g1', r => { const Q = r.pick([5, 10, 20, 30, 50, 100]), V = r.pick(
 
 /* ---------- calculation questions (need working out, so hard to do on the projector) ----------
    Team mode leaves these out unless "Include calculation questions" is ticked. Add new calculation ids here. */
+/* ---- added 7 Nov 2026: Chemistry 3, Physics 4, Physics 5 (wrong values are raw numbers; R.n only for display) ---- */
+eqGen('C3.3-g1', r => { const m = r.pick([50, 100, 200]), dT = r.pick([2, 4, 5, 6, 8, 10, 15]), Q = m * 4.2 * dT;
+  return r.int(0, 1) ? { q: `${m} g of water warms by ${dT} °C. How much heat energy does it gain? (c = 4.2 J/g °C)`, ans: Q, wrong: [m * dT, m * 4.2, Q * 10, Q / 10], unit: 'J', x: `Q = m × c × ΔT = ${m} × 4.2 × ${dT} = <b>${R.n(Q)} J</b>.` }
+    : { q: `${m} g of water gains ${R.n(Q)} J of heat energy. By how much does its temperature rise? (c = 4.2 J/g °C)`, ans: dT, wrong: [dT * 4.2, Q / m, m / dT, dT * 10], unit: '°C', x: `ΔT = Q ÷ (m × c) = ${R.n(Q)} ÷ (${m} × 4.2) = <b>${dT} °C</b>.` }; });
+G('C3.4-g1', r => { const mol = r.pick([0.02, 0.025, 0.04, 0.05, 0.1]), dH = r.pick([40, 50, 56, 60, 80, 120]), Q = mol * dH * 1000, ex = r.int(0, 2) > 0;
+  const sg = v => (v > 0 ? '+' : '−') + R.n(Math.abs(v)) + ' kJ/mol', c = ex ? -dH : dH;
+  const o = [sg(c), sg(-c), sg(c * 1000), sg(c / 10)];
+  return { q: `${mol} mol of reactant is used up. The solution ${ex ? 'warms up, gaining' : 'cools down, losing'} ${R.n(Q)} J of heat energy. What is ΔH?`, o,
+    x: `Q = ${R.n(Q)} J = ${R.n(Q / 1000)} kJ. ΔH = ${ex ? '−' : '+'}Q ÷ moles = ${R.n(Q / 1000)} ÷ ${mol} = <b>${sg(c)}</b> (${ex ? 'exothermic: the solution warmed' : 'endothermic: the solution cooled'}).` }; }, true);
+eqGen('P4.4-g1', r => { const tot = r.pick([100, 200, 400, 500, 800, 1000, 2000]), pct = r.pick([10, 20, 25, 30, 40, 60, 75, 80, 90]), use = tot * pct / 100;
+  return r.int(0, 2) ? { q: `A device is supplied with ${R.n(tot)} J and transfers ${R.n(use)} J usefully. What is its efficiency?`, ans: pct, wrong: [100 - pct, tot / use * 100, pct / 10, pct * 2], unit: '%', x: `efficiency = useful ÷ total = ${R.n(use)} ÷ ${R.n(tot)} = ${R.n(pct / 100)} = <b>${pct}%</b>.` }
+    : { q: `A device is ${pct}% efficient and is supplied with ${R.n(tot)} J. How much energy is transferred usefully?`, ans: use, wrong: [tot - use, tot * pct, tot / pct, use * 10], unit: 'J', x: `useful = efficiency × total = ${R.n(pct / 100)} × ${R.n(tot)} = <b>${R.n(use)} J</b>.` }; });
+eqGen('P4.11-g1', r => { const F = r.pick([5, 10, 15, 20, 25, 40, 50, 80, 120, 200]), d = r.pick([2, 3, 4, 5, 6, 8, 10, 12, 20]), W = F * d;
+  return r.int(0, 2) ? { q: `A force of ${F} N moves an object ${d} m in the direction of the force. How much work is done?`, ans: W, wrong: [F / d, F + d, W * 10, d / F], unit: 'J', x: `W = F × d = ${F} × ${d} = <b>${R.n(W)} J</b>.` }
+    : { q: `${R.n(W)} J of work is done moving an object ${d} m. What force was used?`, ans: F, wrong: [W * d, W - d, F * 10, d / W], unit: 'N', x: `F = W ÷ d = ${R.n(W)} ÷ ${d} = <b>${F} N</b>.` }; });
+eqGen('P4.13-g1', r => { const m = r.pick([0.5, 1, 2, 3, 4, 5, 10, 20, 50, 60]), h = r.pick([2, 3, 4, 5, 8, 10, 15, 20]), E = m * 10 * h;
+  return r.int(0, 2) ? { q: `A ${m} kg object is lifted ${h} m. What is its gain in gravitational potential energy? (g = 10 N/kg)`, ans: E, wrong: [m * h, m * 10, m * 10 / h, E * 10], unit: 'J', x: `GPE = m × g × h = ${m} × 10 × ${h} = <b>${R.n(E)} J</b>.` }
+    : { q: `A ${m} kg object gains ${R.n(E)} J of gravitational potential energy. How high was it lifted? (g = 10 N/kg)`, ans: h, wrong: [E / m, E / 10, h * 10, E * m], unit: 'm', x: `h = GPE ÷ (m × g) = ${R.n(E)} ÷ (${m} × 10) = <b>${h} m</b>.` }; });
+eqGen('P4.14-g1', r => { const m = r.pick([1, 2, 4, 5, 10, 50, 80, 1000]), v = r.pick([2, 3, 4, 5, 6, 10, 20]), E = 0.5 * m * v * v;
+  return r.int(0, 2) ? { q: `An object of mass ${R.n(m)} kg moves at ${v} m/s. What is its kinetic energy?`, ans: E, wrong: [m * v * v, 0.5 * m * v, m * v], unit: 'J', x: `KE = ½ × m × v² = ½ × ${R.n(m)} × ${v}² = <b>${R.n(E)} J</b>.` }
+    : { q: `An object moving at ${v} m/s has ${R.n(E)} J of kinetic energy. What is its mass?`, ans: m, wrong: [m * 2, E / v, m / 2, E / (v * v)], unit: 'kg', x: `m = 2 × KE ÷ v² = 2 × ${R.n(E)} ÷ ${v * v} = <b>${R.n(m)} kg</b>.` }; }, true);
+eqGen('P4.17-g1', r => { const P = r.pick([20, 40, 50, 60, 100, 200, 500, 1000, 2000]), t = r.pick([5, 10, 20, 30, 60, 120]), E = P * t, k = r.int(0, 2);
+  if (k === 0) return { q: `A machine transfers ${R.n(E)} J in ${t} s. What is its power?`, ans: P, wrong: [E * t, E - t, P * 10, t / E], unit: 'W', x: `P = E ÷ t = ${R.n(E)} ÷ ${t} = <b>${R.n(P)} W</b>.` };
+  if (k === 1) return { q: `A ${R.n(P)} W device is used for ${t} s. How much energy does it transfer?`, ans: E, wrong: [P / t, P + t, E * 10, t / P], unit: 'J', x: `E = P × t = ${R.n(P)} × ${t} = <b>${R.n(E)} J</b>.` };
+  return { q: `A ${R.n(P)} W motor does ${R.n(E)} J of work. How long does it take?`, ans: t, wrong: [E * P, P / E, t * 10, t / 10], unit: 's', x: `t = E ÷ P = ${R.n(E)} ÷ ${R.n(P)} = <b>${t} s</b>.` }; });
+eqGen('P5.3-g1', r => { const rho = r.pick([0.8, 2, 2.5, 2.7, 3, 7.8, 8, 11.3, 19.3]), V = r.pick([2, 4, 5, 10, 20, 50, 100]), m = rho * V, k = r.int(0, 2);
+  if (k === 0) return { q: `An object has a mass of ${R.n(m)} g and a volume of ${V} cm³. What is its density?`, ans: rho, wrong: [V / m, m * V, rho * 10, rho / 10], unit: 'g/cm³', x: `ρ = m ÷ V = ${R.n(m)} ÷ ${V} = <b>${rho} g/cm³</b>.` };
+  if (k === 1) return { q: `A material has a density of ${rho} g/cm³. What is the mass of ${V} cm³ of it?`, ans: m, wrong: [V / rho, rho / V, rho + V, m * 10], unit: 'g', x: `m = ρ × V = ${rho} × ${V} = <b>${R.n(m)} g</b>.` };
+  return { q: `An object of mass ${R.n(m)} g is made of a material of density ${rho} g/cm³. What is its volume?`, ans: V, wrong: [m * rho, rho / m, V * 10, V / 10], unit: 'cm³', x: `V = m ÷ ρ = ${R.n(m)} ÷ ${rho} = <b>${V} cm³</b>.` }; });
+eqGen('P5.5-g1', r => { const F = r.pick([20, 50, 100, 200, 500, 600, 800, 1000, 5000]), A = r.pick([0.01, 0.02, 0.04, 0.05, 0.1, 0.2, 0.5, 2]), p = F / A;
+  return r.int(0, 2) ? { q: `A force of ${R.n(F)} N acts on an area of ${A} m². What is the pressure?`, ans: p, wrong: [F * A, A / F, F, p * 10], unit: 'Pa', x: `p = F ÷ A = ${R.n(F)} ÷ ${A} = <b>${R.n(p)} Pa</b>.` }
+    : { q: `A pressure of ${R.n(p)} Pa acts on an area of ${A} m². What is the force?`, ans: F, wrong: [p / A, A / p, F * 10, F / 10], unit: 'N', x: `F = p × A = ${R.n(p)} × ${A} = <b>${R.n(F)} N</b>.` }; });
+eqGen('P5.7-g1', r => { const h = r.pick([0.5, 1, 2, 3, 5, 8, 10, 20, 50]), L = r.pick([['water', 1000], ['sea water', 1030], ['oil', 800], ['mercury', 13600]]), p = h * L[1] * 10;
+  return { q: `What is the pressure difference ${h} m below the surface of ${L[0]}? (ρ = ${R.n(L[1])} kg/m³, g = 10 N/kg)`, ans: p, wrong: [h * L[1], L[1] * 10 / h, p * 10, p / 100], unit: 'Pa', x: `p = h × ρ × g = ${h} × ${R.n(L[1])} × 10 = <b>${R.n(p)} Pa</b>.` }; });
+G('P5.17-g1', r => { const c = r.pick([-273, -200, -173, -73, -20, 0, 20, 27, 37, 100, 127, 227, 327]), k = c + 273;
+  const cs = v => (v < 0 ? '−' + Math.abs(v) : String(v)) + ' °C', ks = v => v + ' K';
+  const uniq = (first, cands) => { const o = [first]; for (const s of cands) if (!o.includes(s) && o.length < 4) o.push(s); return o; };
+  if (r.int(0, 1)) return { q: `What is ${cs(c).replace(' °C', '')} °C in kelvin?`, o: uniq(ks(k), [ks(Math.abs(c - 273)), ks(Math.abs(c)), ks(k + 100), ks(k + 273), ks(k + 10)]), x: `K = °C + 273 = ${c} + 273 = <b>${k} K</b>.` };
+  return { q: `What is ${k} K in °C?`, o: uniq(cs(c), [cs(k + 273), cs(k), cs(-c), cs(c + 100), cs(c - 100)]), x: `°C = K − 273 = ${k} − 273 = <b>${cs(c)}</b>.` }; });
+eqGen('P5.21-g1', r => { const p1 = r.pick([50, 80, 100, 120, 150, 200]), T1 = r.pick([200, 250, 300, 400]), f = r.pick([0.5, 1.2, 1.5, 2, 3]), T2 = T1 * f, p2 = p1 * f;
+  return r.int(0, 1) ? { q: `A fixed mass of gas at constant volume is at ${p1} kPa and ${T1} K. It is ${f > 1 ? 'heated' : 'cooled'} to ${R.n(T2)} K. What is the new pressure?`, ans: p2, wrong: [p1 / f, p1 + T2 - T1, p1, p2 * 2], unit: 'kPa', x: `p₂ = p₁ × T₂ ÷ T₁ = ${p1} × ${R.n(T2)} ÷ ${T1} = <b>${R.n(p2)} kPa</b>.` }
+    : { q: `A sealed gas at ${p1} kPa and ${T1} K changes to ${R.n(p2)} kPa at constant volume. What is its new temperature?`, ans: T2, wrong: [T1 / f, T2 - 273, T1, T2 * 2], unit: 'K', x: `T₂ = T₁ × p₂ ÷ p₁ = ${T1} × ${R.n(p2)} ÷ ${p1} = <b>${R.n(T2)} K</b>.` }; }, true);
+eqGen('P5.22-g1', r => { const p1 = r.pick([50, 80, 100, 120, 150, 200]), V1 = r.pick([10, 20, 40, 60, 100, 120]), f = r.pick([0.5, 0.25, 2, 4]), p2 = p1 * f, V2 = V1 / f;
+  return r.int(0, 1) ? { q: `A gas has a volume of ${V1} cm³ at ${p1} kPa. At constant temperature its pressure changes to ${R.n(p2)} kPa. What is its new volume?`, ans: V2, wrong: [V1 * f, V1, V2 * 2, V2 / 2], unit: 'cm³', x: `V₂ = p₁ × V₁ ÷ p₂ = ${p1} × ${V1} ÷ ${R.n(p2)} = <b>${R.n(V2)} cm³</b>.` }
+    : { q: `A gas at ${p1} kPa has a volume of ${V1} cm³. It is ${f > 1 ? 'compressed' : 'allowed to expand'} to ${R.n(V2)} cm³ at constant temperature. What is the new pressure?`, ans: p2, wrong: [p1 / f, p1, p2 * 2, p2 / 2], unit: 'kPa', x: `p₂ = p₁ × V₁ ÷ V₂ = ${p1} × ${V1} ÷ ${R.n(V2)} = <b>${R.n(p2)} kPa</b>.` }; });
+
 const CALC_IDS = new Set(['P3.5-01', 'P3.5-02', 'P3.5-03', 'P3.6-01', 'P3.6-02', 'P3.6-03', 'P3.6-04', 'P3.7-01', 'P3.7-02', 'P3.7-03', 'P3.7-04',
   'P7.11-03', 'P7.13-01', 'P7.13-02', 'P7.13-03', 'P3.18-01', 'P3.19-02', 'P3.22-01', 'P3.22-02',
   'C1.12-01', 'C1.17-01', 'C1.17-03', 'C1.26-01', 'C1.26-02', 'C1.26-03', 'C1.26-04', 'C1.28-01', 'C1.28-02', 'C1.28-04',
   'C1.29-02', 'C1.30-01', 'C1.31-04', 'C1.33-01', 'C1.33-02', 'C1.33-03', 'C1.33-04', 'C1.36-02',
   'P3.5-g1', 'P3.6-g1', 'P3.7-g1', 'P3.18-g1', 'P3.22-g1', 'P7.13-g1', 'P7.11-g1', 'C1.17-g1', 'C1.12-g1', 'C1.26-g1', 'C1.28-g1', 'C1.29-g1', 'C1.30-g1', 'C1.33-g1',
+  'C3.3-g1', 'C3.4-g1', 'P4.4-g1', 'P4.11-g1', 'P4.13-g1', 'P4.14-g1', 'P4.17-g1', 'P5.3-g1', 'P5.5-g1', 'P5.7-g1', 'P5.17-g1', 'P5.21-g1', 'P5.22-g1',
   'P1.4-g1', 'P1.6-g1', 'P1.10-g1', 'P1.15-g1', 'P1.17-g1', 'P1.18-g1', 'P2.4-g1', 'P2.5-g1', 'P2.13-g1', 'P2.15-g1', 'P2.19-g1', 'P2.21-g1',
-  'P1.4-01', 'P1.4-02', 'P1.6-01', 'P1.6-03', 'P1.6-04', 'P1.8-02', 'P1.9-02', 'P1.9-03', 'P1.10-02', 'P1.10-03', 'P1.17-01', 'P1.17-02', 'P1.18-01', 'P1.18-03', 'P2.4-01', 'P2.4-02', 'P2.4-03', 'P2.5-01', 'P2.5-03', 'P2.13-01', 'P2.13-02', 'P2.13-04', 'P2.15-01', 'P2.15-03', 'P2.19-02', 'P2.19-03', 'P2.21-01', 'P2.21-03', 'C2.14-02']);
+  'P1.4-01', 'P1.4-02', 'P1.6-01', 'P1.6-03', 'P1.6-04', 'P1.8-02', 'P1.9-02', 'P1.9-03', 'P1.10-02', 'P1.10-03', 'P1.17-01', 'P1.17-02', 'P1.18-01', 'P1.18-03', 'P2.4-01', 'P2.4-02', 'P2.4-03', 'P2.5-01', 'P2.5-03', 'P2.13-01', 'P2.13-02', 'P2.13-04', 'P2.15-01', 'P2.15-03', 'P2.19-02', 'P2.19-03', 'P2.21-01', 'P2.21-03', 'C2.14-02',
+  'C3.3-01', 'C3.4-03', 'P4.3-02', 'P4.4-01', 'P4.4-04', 'P4.5-03', 'P4.11-01', 'P4.11-04', 'P4.12-04', 'P4.13-01', 'P4.14-02', 'P4.15-02', 'P4.17-01', 'P4.17-02', 'P4.17-03', 'P5.3-02', 'P5.3-04', 'P5.5-02', 'P5.7-02', 'P5.7-04', 'P5.17-01', 'P5.17-02', 'P5.17-04', 'P5.21-02', 'P5.22-02', 'P5.22-03']);
 QUESTIONS.forEach(q => { if (CALC_IDS.has(q.id)) q.calc = true; });
