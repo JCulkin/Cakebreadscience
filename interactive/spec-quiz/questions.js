@@ -2395,3 +2395,27 @@ M('C2.49-04', 'Which colour change shows that water is present when it is added 
 M('C2.50-04', 'Which is a <b>physical</b> test for pure water?',
   ['Measuring its boiling point', 'Adding anhydrous copper(II) sulfate', 'Adding universal indicator', 'Adding cobalt chloride paper'],
   'The other tests are chemical and only show that water is present.');
+M('P1.17-04', 'What is the unit of force?',
+  ['The newton (N)', 'The kilogram (kg)', 'The joule (J)', 'The watt (W)'],
+  'F = m × a: 1 N is the force that gives 1 kg an acceleration of 1 m/s².');
+M('P1.18-05', 'What is the unit of gravitational field strength?',
+  ['N/kg', 'kg/N', 'm/s', 'N'],
+  'g = W ÷ m, so its unit is newtons per kilogram. On Earth g ≈ 10 N/kg.');
+T('P1.4-04', 'Speed is measured in metres per second (m/s).', true,
+  'True. Speed = distance (m) ÷ time (s).');
+M('P2.4-05', 'What is the unit of power?',
+  ['The watt (W)', 'The volt (V)', 'The joule (J)', 'The ampere (A)'],
+  '1 W = 1 joule per second.');
+T('P2.21-04', 'Energy transferred is measured in watts.', false,
+  'False. Energy is measured in joules (J). The watt is the unit of power: joules per second.');
+M('P3.3-08', 'What is the unit of frequency?',
+  ['The hertz (Hz)', 'The second (s)', 'The metre (m)', 'The metre per second (m/s)'],
+  '1 Hz = one wave per second.');
+T('P3.6-05', 'The time period of a wave is measured in hertz.', false,
+  'False. Time period is measured in seconds (s). Frequency is measured in hertz (Hz).');
+M('P3.15-05', 'In what unit are the angles of incidence and reflection measured?',
+  ['Degrees (°)', 'Metres (m)', 'Hertz (Hz)', 'Newtons (N)'],
+  'Angles are measured from the normal with a protractor.');
+M('P7.13-05', 'A half-life is given as “8”. Which unit could it be in?',
+  ['Days (any unit of time)', 'Becquerels', 'Counts', 'Metres'],
+  'Half-life is a time: seconds, minutes, hours, days or years. Activity is measured in becquerels.');

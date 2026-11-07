@@ -14,6 +14,9 @@ const TEAM_NAMES = ['Red', 'Blue', 'Green', 'Gold', 'Purple', 'Teal'];
 /* nuclide notation: <span class="nuc"><sup>A</sup><sub>Z</sub>X</span> → stacked numbers */
 const nuc = h => h.replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
 
+/* Physics 'Units' sub-topics are not shown (user's choice, 7 Nov): unit questions live inside the sub-topics that use them. */
+SPEC.forEach(s => s.topics.forEach(t => { t.subs = t.subs.filter(sb => sb.name !== 'Units'); }));
+
 /* ---------- index the spec ---------- */
 const POINTS = {};          // key → {key, id, text, subject, topic, sub, ...}
 SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => sb.points.forEach(p => {
