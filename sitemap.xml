@@ -4,9 +4,6 @@
     <loc>https://cakebreadscience.com/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/</loc>
-  </url>
-  <url>
     <loc>https://cakebreadscience.com/specifications/maths.html</loc>
   </url>
   <url>
@@ -24,76 +21,9 @@
   <url>
     <loc>https://cakebreadscience.com/interactive/organisms/gallery.html</loc>
   </url>
-
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/1.1_cell_structure.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/1.2_diversity_organisms.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/2.1_enzymes_nutrition.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/2.1_photosynthesis.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/2.4_respiration_energy.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/2.5_gas_exchange_transport.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/3.1_inheritance_variation.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/4.1_ecology.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/4.2_food_chains_worksheet.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/4.2_pyramids_numbers_biomass_energy.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/5.1_biological_resources.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/biology/common_animals_food_web_worksheet.html</loc>
-  </url>
-
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/1.1_periodic_table.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/1.4_atomic_structure_bonding.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/1.5_stoichiometry_moles.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/2.1_inorganic_chemistry.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/3.1_reactions_equations.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/3.2_rates_reaction.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/3.4_equilibrium.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/3.6_acids_bases.html</loc>
-  </url>
-  <url>
-    <loc>https://cakebreadscience.com/worksheets/chemistry/4.1_organic_chemistry.html</loc>
-  </url>
-
   <url>
     <loc>https://cakebreadscience.com/worksheets/cross-curricular/cells_and_atoms_worksheet.html</loc>
   </url>
-
   <url>
     <loc>https://cakebreadscience.com/worksheets/maths/1.1_decimals_sets.html</loc>
   </url>
@@ -148,35 +78,229 @@
   <url>
     <loc>https://cakebreadscience.com/worksheets/maths/6.2_statistics_probability_advanced.html</loc>
   </url>
-
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/1.1_forces_motion.html</loc>
+    <loc>https://cakebreadscience.com/interactive/elements-game/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/1.2_momentum_collisions.html</loc>
+    <loc>https://cakebreadscience.com/interactive/cell-game/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/2.1_electricity_circuits.html</loc>
+    <loc>https://cakebreadscience.com/interactive/cell-game/gallery.html</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/3.1_waves_radiation.html</loc>
+    <loc>https://cakebreadscience.com/interactive/typing-game/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/3.2_light_optics.html</loc>
+    <loc>https://cakebreadscience.com/interactive/spec-quiz/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/4.1_energy_resources.html</loc>
+    <loc>https://cakebreadscience.com/interactive/physics-equations/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/5.1_thermodynamics.html</loc>
+    <loc>https://cakebreadscience.com/interactive/waves/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/6.1_magnetism_electromagnetism.html</loc>
+    <loc>https://cakebreadscience.com/interactive/physics-long-answer/</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/7.1_nuclear.html</loc>
+    <loc>https://cakebreadscience.com/worksheets/science.html</loc>
   </url>
   <url>
-    <loc>https://cakebreadscience.com/worksheets/physics/8.1_astrophysics.html</loc>
+    <loc>https://cakebreadscience.com/worksheets/physics/1b_distance_time.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/1c_velocity_time_suvat.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/1d_forces_stopping_distance.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/1e_momentum_elasticity.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/2f_mains_electricity.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/2b_series_parallel.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/2c_ohms_law.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/2d_charge_energy_power.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/2e_iv_characteristics.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/3b_wave_speed.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/3c_em_spectrum.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/3d_reflection_refraction.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/3e_sound.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/4b_efficiency_sankey.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/4c_thermal_transfer.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/4d_work_power.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/5b_density.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/5c_pressure_fluids.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/5d_gas_particles_temp.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/5e_gas_laws.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/6b_field_patterns.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/6c_electromagnets.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/6d_motor_effect.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/6e_induction_generators.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/7b_nuclear_equations.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/7c_half_life.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/7d_fission_fusion.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/7e_radiation_safety.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/8b_orbits_gravity.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/8c_star_colour_temperature.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/physics/8d_stellar_evolution.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/1a_particles_separation.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/1b_atomic_structure_bonding.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/1c_stoichiometry_moles.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2a_group1_alkali_metals.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2b_halogens.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2c_atmosphere.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2d_reactivity_series.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2e_acids_alkalis_titrations.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2f_acids_bases_salts.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/2g_chemical_tests.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/3a_energy_reactions.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/3b_rates_equilibrium.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/4a_crude_oil_alkanes.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/chemistry/4b_alkenes_further_organic.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/practical_variables.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/1a_characteristics_classification.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2a_cells_organisation.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2b_biological_molecules_enzymes.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2c_plant_nutrition.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2d_nutrition_digestion.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2e_respiration.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2f_human_gas_exchange.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2g_plant_transport.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2h_human_circulation.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2i_plant_gas_exchange.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2j_human_excretion.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2k_plant_coordination.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/2l_human_coordination.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/3a_genetics_inheritance.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/3b_evolution_selection.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/4a_ecology.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/biology/5a_biological_resources.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/maths.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/maths/3.5_sketching_graphs_intercepts.html</loc>
+  </url>
+  <url>
+    <loc>https://cakebreadscience.com/worksheets/cross-curricular.html</loc>
   </url>
 </urlset>

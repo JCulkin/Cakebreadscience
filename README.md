@@ -9,15 +9,15 @@ A collection of educational websites for IGCSE Edexcel students, featuring works
 This repository contains **two separate educational sites**:
 
 ### 1. **Main Site** (Root Directory)
-The primary IGCSE Edexcel resources site with printable worksheets (172 total) and curriculum tools.
+The primary IGCSE Edexcel resources site with printable worksheets (83 total) and curriculum tools.
 
 **Homepage:** `index.html`
 
 #### Folders:
 - **`worksheets/`** - Subject-organized printable worksheets
-  - `biology/` (50), `chemistry/` (51), `physics/` (50), `maths/` (19), cross-curricular (2)
-  - Naming: `[section].[subsection]_[topic].html`
-  - Print-optimized A4 layout
+  - `biology/` (18), `chemistry/` (14), `physics/` (31), `maths/` (19), `cross-curricular/` (1)
+  - Indexes: `science.html`, `maths.html`, `cross-curricular.html`
+  - Standards, naming, print rules and spec coverage: kept in the Claude project notes (see `CLAUDE.md`)
 
 - **`specifications/`** - Interactive curriculum browsers
   - `maths.html` - Mathematics specification navigator
@@ -97,9 +97,11 @@ A companion educational site with additional resources and games.
 
 ### Worksheets
 ```
-worksheets/[subject]/[section].[subsection]_[topic].html
+worksheets/[subject]/[code]_[topic].html            e.g. physics/3b_wave_speed.html
+worksheets/[subject]/[code]_[topic]_practice.html   Practice layer (+ _practice_ms.html)
+worksheets/[subject]/[code]_[topic]_challenge.html  Challenge layer (+ _challenge_ms.html)
 ```
-**Example:** `worksheets/maths/1.2_algebra-basics.html`
+Maths keeps its older pattern, e.g. `worksheets/maths/1.1_decimals_sets.html`. Full rules: in the Claude project notes (see `CLAUDE.md`).
 
 ### CSS Structure
 ```
@@ -108,6 +110,9 @@ worksheets → ../../css/[subject].css
         imports worksheet.css
              ↓
         overrides colors
+
+Practice/Challenge sheets also link css/print-sheet.css
+(fixed A4 pages, uses the subject colour variables)
 ```
 
 ### Interactive Tools
@@ -125,9 +130,9 @@ interactive/
 
 ### Adding a New Worksheet
 1. Copy a template from `admin/templates/`
-2. Save to `worksheets/{subject}/[section].[subsection]_[topic].html`
+2. Save to `worksheets/{subject}/[code]_[topic].html` (naming rules: see `CLAUDE.md`)
 3. Update CSS path: `../../css/{subject}.css`
-4. Add link to `worksheets/index.html`
+4. Add link to the subject index (`worksheets/science.html`, `maths.html` or `cross-curricular.html`); new sheets go on the test pages first
 5. Add to appropriate specification file (`specifications/maths.html` or `specifications/science.html`)
 
 ### Creating a New Interactive Tool
@@ -199,6 +204,12 @@ Keep these in sync when adding/removing admin users.
 ---
 
 ## 📊 Recent Updates
+
+### 2026-11-07 - v3.0.0 New Homepage, Spec Quiz & Classroom Games
+- New homepage with featured games, interactives by subject and a Resources section
+- **Spec Quiz**: 1,805 questions on the whole Double Award spec; solo, team (projector) and Campaign modes with ranks, badges and leaderboards; report-a-question button
+- **Elements 1–20**, **What The Cell** and **Type Fast or Perish** games, each with team/projector or online Top 10 modes
+- Physics Long Answers, Equations Trainer and Waves linked from the homepage; sitemap fixed
 
 ### 2026-06-23 - v2.5.0 Ecology Tools (Food Webs & Ecological Pyramids)
 - **Food Webs** rebuilt from placeholder into a finished tool with Demonstration and Interactive (quiz) modes, savanna & garden ecosystems, energy-pyramid view, food-chain tracing, and a "remove a species" knock-on demo

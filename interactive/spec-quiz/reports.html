@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Spec Quiz: reported questions - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--red:#c62828}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45}
+header{background:#111;padding:18px 16px;color:var(--cream)}
+header a{color:var(--cream);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;text-transform:uppercase}
+header a span{color:var(--green2)}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:44px;line-height:1}
+.btn{font:inherit;font-weight:700;background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:8px 14px;cursor:pointer}
+.btn.alt{background:var(--paper);color:var(--ink)}.btn.green{background:var(--green);border-color:var(--green)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
+.note{background:#fff8d6;border-left:6px solid #c9a000;padding:10px 12px;margin-top:12px}
+.q{background:var(--paper);border:2px solid var(--ink);margin-top:12px}
+.q.done{opacity:.55}
+.qh{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:10px 14px;background:var(--soft);border-bottom:1px solid var(--line)}
+.qh b{font-family:'Barlow Condensed',sans-serif;font-size:22px}
+.count{font-weight:700;color:var(--red)}
+.qb{padding:10px 14px}
+.cur ol{margin:6px 0 0 22px}.cur li.ok{font-weight:700;color:var(--green)}
+.cur .x{font-size:14px;color:var(--muted);margin-top:4px}
+.rep{border-top:1px dashed var(--line);padding:8px 0;font-size:15px}
+.rep .why{font-weight:700}
+.rep .meta{font-size:13px;color:var(--muted)}
+.rep .shown{font-size:13px;color:var(--muted);margin-top:2px}
+textarea{width:100%;min-height:200px;font:13px monospace;margin-top:8px;padding:8px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header><a href="./">Cakebread <span>Science</span></a> · Spec Quiz</header>
+<main class="wrap">
+  <h1>Reported questions</h1>
+  <p>Questions students have flagged with “⚑ Report this question”. Only admins can see this page’s data.</p>
+  <div class="bar" id="authbar"></div>
+  <div id="out"></div>
+</main>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const strip = s => String(s || '').replace(/<[^>]+>/g, '');
+const BYID = {}; QUESTIONS.forEach(q => BYID[q.id] = q);
+let user = null, data = {}, showDone = false;
+
+function authBar() {
+  const bar = $('authbar');
+  if (typeof firebase === 'undefined') { bar.innerHTML = '<span class="note">Firebase could not load.</span>'; return; }
+  if (!user) { bar.innerHTML = '<button class="btn green" id="si">Sign in with Google</button>'; $('si').onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); return; }
+  bar.innerHTML = `<span>Signed in as <b>${esc(user.email)}</b></span>
+    <button class="btn alt" id="toggle">${showDone ? 'Hide fixed' : 'Show fixed too'}</button>
+    <button class="btn" id="copy">Copy open reports for Claude</button>
+    <button class="btn alt" id="so">Sign out</button>`;
+  $('so').onclick = () => firebase.auth().signOut();
+  $('toggle').onclick = () => { showDone = !showDone; authBar(); draw(); };
+  $('copy').onclick = copyForClaude;
+}
+
+function groups() {
+  const g = {};
+  Object.entries(data).forEach(([key, r]) => { (g[r.qid] = g[r.qid] || []).push({ key, ...r }); });
+  return Object.entries(g).map(([qid, reps]) => ({ qid, reps: reps.sort((a, b) => b.t - a.t), open: reps.filter(r => !r.resolved).length }))
+    .sort((a, b) => b.open - a.open || b.reps[0].t - a.reps[0].t);
+}
+
+function current(qid) {
+  const q = BYID[qid];
+  if (!q) return '<p class="cur">(This question id is no longer in the bank.)</p>';
+  if (q.gen) return '<div class="cur"><i>Randomised calculation: each student saw different numbers (shown with each report).</i></div>';
+  const opts = 'tf' in q ? ['True', 'False'] : q.o, ok = 'tf' in q ? (q.tf ? 0 : 1) : 0;
+  return `<div class="cur"><b>Now in the bank:</b> ${esc(strip(q.q))}<ol type="A">${opts.map((o, i) => `<li class="${i === ok ? 'ok' : ''}">${esc(strip(o))}${i === ok ? ' ✓' : ''}</li>`).join('')}</ol><div class="x">${esc(strip(q.x))}</div></div>`;
+}
+
+function draw() {
+  const out = $('out');
+  if (!user) { out.innerHTML = ''; return; }
+  const gs = groups().filter(g => showDone || g.open);
+  if (!gs.length) { out.innerHTML = '<p class="note">No open reports. 🎉</p>'; return; }
+  out.innerHTML = gs.map(g => `<div class="q ${g.open ? '' : 'done'}">
+    <div class="qh"><b>${esc(g.qid)}</b><span><span class="count">${g.open} open</span> · ${g.reps.length} total
+      ${g.open ? `<button class="btn alt" data-fix="${esc(g.qid)}">Mark fixed</button>` : ''}</span></div>
+    <div class="qb">${current(g.qid)}
+      ${g.reps.filter(r => showDone || !r.resolved).map(r => `<div class="rep"><span class="why">${esc(r.reason)}</span>${r.comment ? ` – “${esc(r.comment)}”` : ''}
+        <div class="meta">${new Date(r.t).toLocaleString()} · ${esc(r.mode || '')} · ${esc(r.name || 'not signed in')}${r.picked >= 0 && r.options ? ` · picked “${esc(r.options[r.picked])}”` : ''}${r.resolved ? ' · fixed' : ''}</div>
+        ${BYID[g.qid] && BYID[g.qid].gen ? `<div class="shown">Saw: ${esc(r.shown)} [${(r.options || []).map((o, i) => (i === r.correct ? '✓' : '') + esc(o)).join(' | ')}]</div>` : ''}</div>`).join('')}
+    </div></div>`).join('');
+  out.querySelectorAll('[data-fix]').forEach(b => b.onclick = async () => {
+    const qid = b.dataset.fix, upd = {};
+    Object.entries(data).forEach(([k, r]) => { if (r.qid === qid && !r.resolved) upd[k + '/resolved'] = true; });
+    try { await firebase.database().ref('specQuizReports').update(upd); } catch (e) { alert('Could not save: ' + e.message); }
+  });
+}
+
+function copyForClaude() {
+  const gs = groups().filter(g => g.open);
+  const text = 'Spec Quiz reported questions (please check each, fix what is wrong in questions.js without changing ids, and tell me what you changed):\n\n' +
+    gs.map(g => {
+      const q = BYID[g.qid];
+      const cur = q && !q.gen ? `Current: ${strip(q.q)} | Options: ${('tf' in q ? ['True', 'False'] : q.o).map(strip).join(' / ')} | Marked answer: ${'tf' in q ? (q.tf ? 'True' : 'False') : strip(q.o[0])}` : q ? 'Randomised calculation' : 'Not in bank';
+      return `${g.qid} (${g.open} report${g.open > 1 ? 's' : ''})\n  ${cur}\n` + g.reps.filter(r => !r.resolved).map(r => `  - ${r.reason}${r.comment ? ': "' + r.comment + '"' : ''}${q && q.gen ? ` [saw: ${r.shown} | ${(r.options || []).join(' / ')}]` : ''}`).join('\n');
+    }).join('\n\n');
+  navigator.clipboard.writeText(text).then(() => alert('Copied ' + gs.length + ' questions. Paste them into a chat with Claude.'), () => {
+    $('out').insertAdjacentHTML('afterbegin', `<textarea>${esc(text)}</textarea>`);
+  });
+}
+
+try {
+  firebase.initializeApp(window.firebaseConfig);
+  firebase.auth().onAuthStateChanged(u => {
+    user = u; authBar(); data = {};
+    if (!u) return draw();
+    if (!(window.ADMIN_EMAILS || []).includes(u.email)) { $('out').innerHTML = '<p class="note">This page is for admins only.</p>'; return; }
+    firebase.database().ref('specQuizReports').on('value', s => { data = s.val() || {}; draw(); },
+      e => { $('out').innerHTML = `<p class="note">Could not read reports (${esc(e.message)}). The Realtime Database rules need to allow admins to read <code>specQuizReports</code>.</p>`; });
+  });
+} catch (e) { authBar(); }
+</script>
+</body>
+</html>

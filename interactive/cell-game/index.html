@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What The Cell - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--red:#c62828;
+  --animal:#c0392b;--plant:#2e7d32;--fungus:#8d5524;--bacteria:#6a1b9a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+.stripes{display:flex;flex-direction:column}.stripes i{display:block}
+header{background:#111;padding:20px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:24px 40px 20px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,6vw,44px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 56px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(36px,7vw,56px);line-height:.95;letter-spacing:-.5px}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:26px;line-height:1.05}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:20px;line-height:1.1}
+.lede{font-size:18px;max-width:700px;margin-top:8px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:10px 18px;font-weight:700;font-size:16px}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.green{background:var(--green);border-color:var(--green)}
+.btn.big{padding:14px 24px;font-size:19px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.5px}
+.btn:disabled{opacity:.4;cursor:default}
+.hidden{display:none!important}
+.small{font-size:13px;color:var(--muted)}
+.bar6{display:flex;height:6px}.bar6 i{display:block}
+.card{background:var(--paper);border:2px solid var(--ink)}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.gchip{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:14px}
+.gchip i{width:12px;height:12px;border-radius:50%;display:inline-block}
+
+/* menu */
+.modes{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 6px}
+.rounds{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-top:16px}
+.rcard{text-align:left;background:var(--paper);border:2px solid var(--ink);padding:0;display:flex;flex-direction:column}
+.rcard:hover{transform:translateY(-2px)}
+.rcard .in{padding:12px 14px;display:flex;gap:12px;align-items:flex-start}
+.rnum{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:34px;line-height:1;color:var(--green);min-width:26px}
+.rcard p{font-size:14px;color:var(--muted);margin-top:3px}
+.rcard .best{font-size:12px;font-weight:600;color:var(--green);margin-top:6px}
+.credits{margin-top:28px;font-size:13px;color:var(--muted)}
+
+/* play */
+.hud{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;background:var(--ink);color:var(--cream);padding:10px 14px}
+.hud .rname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
+.hud .meta{font-size:13px;color:#aaa;text-transform:uppercase;letter-spacing:1.5px}
+.hud .score{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:var(--green2);line-height:1;text-align:right}
+.hud .score small{display:block;font-family:'Barlow',sans-serif;font-size:11px;color:#aaa;letter-spacing:1.5px;font-weight:600}
+.pips{display:flex;gap:4px;margin-top:6px}.pips i{width:22px;height:5px;background:#444;display:block}.pips i.done{background:var(--green2)}.pips i.miss{background:#e57373}.pips i.now{background:#fff}
+.stage{background:var(--paper);border:2px solid var(--ink);border-top:0;padding:16px}
+.prompt{font-size:21px;font-weight:600;line-height:1.3;margin-bottom:12px}
+.prompt b{color:var(--green)}
+.timer{height:8px;background:#e6e1d3;margin-bottom:12px;overflow:hidden}.timer i{display:block;height:100%;background:var(--green2);width:100%}
+.media{position:relative;width:100%;max-width:620px;margin:0 auto;background:#111;border:2px solid var(--ink);overflow:hidden}
+.media.white{background:#fff}
+.media .cellsvg{display:block;width:100%;height:auto}
+.media img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.zoombox{aspect-ratio:4/3}
+.zoombox>*{position:absolute;inset:0;width:100%;height:100%;transition:transform 12s linear,filter 12s linear}
+.zoombox img{object-fit:cover;aspect-ratio:auto}
+.zoombox svg{width:100%;height:100%}
+.cap{font-size:14px;color:var(--muted);text-align:center;margin-top:6px}
+.groups{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+@media(max-width:600px){.groups{grid-template-columns:1fr 1fr}}
+.gbtn{border:3px solid var(--g);background:var(--paper);padding:12px 6px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;color:var(--g)}
+.gbtn:hover:not(:disabled){background:var(--g);color:#fff}
+.gbtn.on{background:var(--g);color:#fff}
+.gbtn.right{background:var(--g);color:#fff;box-shadow:0 0 0 4px #b9e6c2}
+.gbtn.wrong{background:#f8d7d7;color:var(--red);border-color:var(--red);text-decoration:line-through}
+.gbtn:disabled{cursor:default}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+@media(max-width:600px){.opts{grid-template-columns:1fr}}
+.opt{background:var(--soft);border:2px solid var(--ink);padding:11px 14px;text-align:left;font-weight:600;font-size:17px}
+.opt:hover:not(:disabled){background:#fff}
+.opt.right{background:#d8f0de;border-color:var(--green)}
+.opt.wrong{background:#f8d7d7;border-color:var(--red)}
+.opt:disabled{cursor:default}
+.fb{margin-top:14px;padding:12px 14px;background:var(--soft);border-left:6px solid var(--green);font-size:16px}
+.fb.bad{border-left-color:var(--red)}
+.fb .pts{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:var(--green);float:right;margin-left:10px}
+.fb.bad .pts{color:var(--red)}
+.nextrow{margin-top:12px;display:flex;justify-content:flex-end}
+/* spot it */
+.spot .cellsvg{cursor:crosshair}
+.spot [data-part].hl,.jobhl [data-part].hl{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{filter:drop-shadow(0 0 0 rgba(255,193,7,0))}50%{filter:drop-shadow(0 0 5px #ffb300) drop-shadow(0 0 3px #ffb300)}}
+.spot [data-part].hl path,.spot [data-part].hl ellipse,.spot [data-part].hl circle:not([fill="transparent"]),.jobhl [data-part].hl path,.jobhl [data-part].hl ellipse,.jobhl [data-part].hl circle:not([fill="transparent"]){stroke:#ff6f00!important;stroke-width:3.5px}
+path[data-part="cytoplasm"].hl{fill:#ffe082!important;stroke:none!important}
+.jobhl .cellsvg{filter:none}
+.dim [data-part]:not(.hl){opacity:.35}
+.tapmark{pointer-events:none}
+/* label it */
+.labels{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;margin-top:12px}
+@media(max-width:600px){.labels{grid-template-columns:1fr}}
+.labels label{display:flex;align-items:center;gap:8px;font-weight:700}
+.labels .lt{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:19px;flex:none}
+.labels select{flex:1;font:inherit;font-size:16px;padding:8px;border:2px solid var(--ink);background:#fff;min-width:0}
+.labels select.right{border-color:var(--green);background:#d8f0de}
+.labels select.wrong{border-color:var(--red);background:#f8d7d7}
+.labels .fix{font-size:13px;color:var(--red);font-weight:600}
+/* odd one out */
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{position:relative;border:3px solid var(--ink);background:#111;padding:0;overflow:hidden}
+.tile .cellsvg,.tile img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:#fff}
+.tile .tag{position:absolute;left:0;right:0;bottom:0;background:rgba(17,17,17,.85);color:#fff;font-weight:700;font-size:14px;padding:4px 8px;text-align:left}
+.tile.right{border-color:var(--green);box-shadow:0 0 0 4px #b9e6c2}
+.tile.wrong{border-color:var(--red)}
+/* mystery */
+.clues{display:flex;flex-direction:column;gap:8px}
+.clue{background:var(--soft);border-left:6px solid var(--ink);padding:10px 12px;font-size:18px;font-weight:600}
+.clue small{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.clue.locked{color:#aaa;background:#f1efe8;border-left-color:#ccc;font-weight:400}
+.reveal{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:center;margin-top:12px}
+@media(max-width:600px){.reveal{grid-template-columns:1fr}}
+.reveal .media{max-width:none}
+/* tf */
+.tfbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.tfbtns .btn{font-size:24px;padding:16px;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase}
+.statement{font-size:26px;font-weight:700;line-height:1.25;padding:18px 4px;text-align:center}
+/* sort */
+.sortq{font-size:24px;font-weight:700;text-align:center;padding:10px 0 4px}
+/* difficulty + modes */
+.diffs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-top:8px;max-width:760px}
+.diff{text-align:left;background:var(--paper);border:3px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:2px}
+.diff b{font-family:'Barlow Condensed',sans-serif;font-size:26px;text-transform:uppercase;line-height:1}
+.diff span{font-size:14px;color:var(--muted)}
+.diff.on{border-color:var(--ink);background:#fff;box-shadow:inset 0 -6px 0 var(--green2)}
+.diff[data-d="hard"].on{box-shadow:inset 0 -6px 0 #d62828}
+.bigmodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-top:8px;max-width:760px}
+.bigmode{text-align:left;border:2px solid var(--ink);background:var(--paper);padding:18px;border-top:10px solid var(--c)}
+.bigmode h3{margin:0;font-size:32px}
+.bigmode p{font-size:14px;color:var(--muted);margin-top:4px}
+.dtag{display:inline-block;vertical-align:middle;font-size:16px;letter-spacing:1px;padding:3px 10px;background:var(--green);color:#fff}
+.dtag.hard{background:#d62828}
+/* team mode */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--paper);border:2px solid var(--ink);padding:6px 14px;font-weight:600;font-size:15px}
+.chip.on{background:var(--ink);color:var(--cream)}
+.setup{padding:16px 18px}.setup h3{margin-top:18px}.setup h3:first-child{margin-top:0}
+.teamnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:10px}
+.teamnames label{display:flex;align-items:center;gap:6px;border:2px solid var(--ink);background:#fff}
+.teamnames i{width:14px;align-self:stretch;background:var(--c)}
+.teamnames input{border:0;font:inherit;font-weight:700;font-size:17px;padding:8px;min-width:0;flex:1}
+.teamturn{display:flex;flex-direction:column;border-left:10px solid var(--c);padding-left:12px}
+.teamturn .tname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;text-transform:uppercase;color:#fff;line-height:1.05}
+.board{display:flex;flex-wrap:wrap;gap:6px}
+.tscore{background:#222;border-bottom:5px solid var(--c);padding:4px 12px;min-width:90px;text-align:center}
+.tscore span{display:block;font-size:13px;font-weight:600;color:#ccc}
+.tscore b{font-family:'Barlow Condensed',sans-serif;font-size:26px;color:#fff}
+.tscore.now{background:var(--c)}.tscore.now span{color:#fff}
+.tscore.bump b{animation:bump .5s}
+@keyframes bump{50%{transform:scale(1.5);color:#ffe082}}
+.podium{text-align:center}
+.pod{display:flex;justify-content:center;align-items:flex-end;gap:14px;height:340px;margin-top:20px}
+.pl{flex:1;max-width:170px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center}
+.pl .col{width:100%;height:var(--h);background:var(--c);border:2px solid var(--ink)}
+.pl b{font-family:'Barlow Condensed',sans-serif;font-size:36px}
+.pl span{font-weight:700;font-size:18px;margin-top:6px}
+.who{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+/* projector sizing (team mode) */
+body.proj .wrap{max-width:1400px}
+body.proj .prompt{font-size:clamp(24px,2.4vw,38px)}
+body.proj .media{max-width:min(860px,100%,calc((100vh - 400px)*4/3))}
+body.proj .quad{max-width:min(1000px,100%,calc((100vh - 330px)*4/3));margin:0 auto}
+body.proj .reveal{grid-template-columns:300px 1fr}
+.teamhud{position:sticky;top:0;z-index:10}
+body.proj .gbtn{font-size:clamp(24px,2.6vw,40px);padding:16px 6px}
+body.proj .opt{font-size:clamp(19px,1.9vw,30px);padding:14px 16px}
+body.proj .fb{font-size:clamp(18px,1.6vw,26px)}
+body.proj .statement{font-size:clamp(28px,3vw,46px)}
+body.proj .sortq{font-size:clamp(26px,2.6vw,40px)}
+body.proj .clue{font-size:clamp(19px,1.8vw,28px)}
+body.proj .labels select,body.proj .labels label{font-size:20px}
+body.proj .tfbtns .btn{font-size:34px}
+/* results */
+.bigscore{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:72px;line-height:1;color:var(--green)}
+table{border-collapse:collapse;width:100%;margin-top:12px;font-size:15px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+th{background:var(--soft);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.revise{columns:2;margin-top:8px}
+@media(max-width:600px){.revise{columns:1}}
+.revise li{margin:3px 0 3px 18px;break-inside:avoid}
+</style>
+</head>
+<body>
+<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
+<header><a href="/" class="brand">Cakebread <span>Science</span></a><span class="sub">Biology · Cells</span></header>
+<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
+
+<main class="wrap">
+  <section id="menu">
+    <a class="back" href="/">← Home</a>
+    <h1>What The Cell</h1>
+    <p class="lede">Animal, plant, fungus or bacterium? Recognise cells from diagrams and real microscope images, then name their parts.</p>
+    <div class="chiprow">
+      <span class="gchip"><i style="background:var(--animal)"></i>Animal</span>
+      <span class="gchip"><i style="background:var(--plant)"></i>Plant</span>
+      <span class="gchip"><i style="background:var(--fungus)"></i>Fungus</span>
+      <span class="gchip"><i style="background:var(--bacteria)"></i>Bacteria</span>
+    </div>
+    <h3 style="margin-top:22px">1. Difficulty</h3>
+    <div class="diffs">
+      <button class="diff" data-d="normal"><b>Normal</b><span>Drawn diagrams, “under the microscope” views and a few clear photos.</span></button>
+      <button class="diff" data-d="hard"><b>Hard</b><span>Mostly real microscope photos from labs: stains, odd angles, messy slides. 108 of them.</span></button>
+    </div>
+    <h3 style="margin-top:20px">2. Play</h3>
+    <div class="bigmodes">
+      <button class="bigmode" id="soloBtn" style="--c:#005e22"><h3>Solo</h3><p>Full game (5 random rounds), marathon (all 9) or practise one round.</p></button>
+      <button class="bigmode" id="playTeam" style="--c:#d62828"><h3>Team game</h3><p>For the whole class on the board: 2–6 teams take turns, scoreboard and podium.</p></button>
+    </div>
+    <p style="margin-top:16px;font-weight:700"><a href="gallery.html" style="color:var(--green)">🔬 Gallery</a> <span class="small" style="font-weight:400">every cell in the game, to study before you play</span></p>
+    <p class="credits">Spec: Edexcel International GCSE Science (Double Award) Biology 1.2–1.3 and 2.2–2.4. Diagrams and "under the microscope" views are drawn for this site. Includes 108 openly licensed microscope photos from Wikimedia Commons. <a href="credits.html">Photo credits</a></p>
+  </section>
+
+  <section id="play" class="hidden">
+    <div class="hud teamhud hidden" id="teamhud"></div>
+    <div class="hud" id="solohud">
+      <div><div class="meta" id="hudMeta"></div><div class="rname" id="hudRound"></div><div class="pips" id="pips"></div></div>
+      <div class="score"><small>Score</small><span id="hudScore">0</span></div>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div style="margin-top:10px"><button class="btn alt" id="quit">✕ Quit to menu</button></div>
+  </section>
+
+  <section id="solo" class="hidden">
+    <a class="back" href="#" id="soloBack">← Menu</a>
+    <h1>Solo <span class="dtag" id="soloDiff"></span></h1>
+    <div class="modes">
+      <button class="btn big green" id="playFull">Full game · 5 random rounds</button>
+      <button class="btn big alt" id="playAll">Marathon · all 9 rounds</button>
+    </div>
+    <p class="small" id="bestLine"></p>
+    <h2 style="margin-top:24px">Or pick a round</h2>
+    <div class="rounds" id="roundList"></div>
+  </section>
+  <section id="results" class="hidden"></section>
+  <section id="teamsetup" class="hidden"></section>
+</main>
+
+<div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="cells.js"></script>
+<script src="img/wiki/photos.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
