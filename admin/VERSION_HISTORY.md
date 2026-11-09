@@ -10,6 +10,7 @@
 - One **Spec Trackers** card replaces "Science Spec Tracker" and "Maths Spec"; its page (`specifications/science.html`) now shows Biology, Chemistry, Physics and Maths together, and the Maths spec links back to it
 - Cakebread Questing menu: "All leaderboards →" link under this week's board
 - The black **Cakebread Questing** banner on the homepage is now the hub for revision on the spec: Play → (the adventure), plus **Quick quiz** (solo or team game on the board) and **Flashcards** inside it; the separate Flashcards card and the "Just want a quick quiz?" box at the bottom of the Questing page are gone
+- Quick quiz page goes straight to "Choose the content" (intro text, Questing card and "Make a quiz" heading removed)
 - Homepage footer → v3.1.1
 
 ---
