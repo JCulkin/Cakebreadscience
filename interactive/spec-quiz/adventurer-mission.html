@@ -60,6 +60,8 @@
 .fb{margin-top:12px;padding:10px 14px;border-left:6px solid var(--green);background:#f0f8f2;font-size:16px}
 .fb.bad{border-color:var(--red);background:#fdf0f0}
 .fb .t{display:block;font-weight:700}
+.fb .face{float:right;width:46px;margin:-4px -4px 4px 10px}
+.verdict{display:flex;gap:14px;align-items:center;background:#fffaf0;border:2px solid var(--ink);padding:10px 14px;margin:14px auto 0;max-width:640px;text-align:left}.verdict img{width:84px;flex:none}.verdict p{font-size:17px}
 .next{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .report{font-size:13px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
 .report:disabled{text-decoration:none;cursor:default}
@@ -221,7 +223,7 @@ $('opts').addEventListener('click', e => {
     ar.classList.add('ouch');
     $('quote').textContent = `“See? ${MS.foe.name}!”`;
   }
-  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Right — hit!' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><img class="face" src="${ADV.face(ok ? (q.hard ? 'laugh' : 'happy') : 'worried')}" alt=""><span class="t">${ok ? 'Right — hit!' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
   $('nextBtn').textContent = MS.i + 1 < MS.qs.length ? 'Next →' : 'Finish the fight →';
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
 });
@@ -250,6 +252,13 @@ $('repBtn').onclick = () => {
 $('nextBtn').onclick = () => { MS.i++; if (MS.i < MS.qs.length) show(); else finish(); };
 
 /* results: real progress (saved), plus loot and coins for the adventurer */
+function verdict(right, won) {   // the Professor's reaction (mascot heads, 10 Nov)
+  const [f, line] = right >= 9 ? ['laugh', 'Flawless. I would give you a gold star, but the dragon ate them.']
+    : won ? ['happy', 'Toast. Lightly buttered. Come back tomorrow and those answers start to secure.']
+    : right >= 5 ? ['determined', 'Close! Read the “worth another look” answers below, then go again.']
+    : ['worried', 'Oof, it is still looking smug. Check the answers below: this is exactly how you get better.'];
+  return `<div class="verdict"><img src="${ADV.face(f)}" alt=""><p><b>The Professor${S.chapter < 2 ? ' <span class="small">(shouting from his cage)</span>' : ''}:</b> <i>“${line}”</i></p></div>`;
+}
 function finish() {
   const right = MS.res.filter(r => r.ok).length, won = MS.hp === 0;
   const before = MS.before, capBefore = MS.cap0, [statName, sk, cssk] = STAT[MS.sub.L];
@@ -269,6 +278,7 @@ function finish() {
     <img class="px" src="${won ? PIXEL.figure(ADV.eq(), ADV.look()) : MS.foe.img}" style="width:${won ? 130 : 110}px" alt="">
     <h1>${won ? `${MS.foe.name}: defeated!` : `${MS.foe.name} got away`}</h1>
     <div class="score">${right} of ${MS.qs.length} right first time${won ? '' : ' — it needed 7 hits. It will be back.'}</div></div>
+    ${verdict(right, won)}
     <div class="rewards">
       <div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_RARITY[drop.r]}</span><br><b style="font-size:20px">${drop.name}</b><br><i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>
       <div class="card"><h3 style="margin-top:0">What you got</h3><ul class="gain">

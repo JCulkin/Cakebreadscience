@@ -243,7 +243,12 @@ const ADV = (() => {
     heart: ['............', '.KK....KK...', 'KRRK..KRRK..', 'KRWRKKRRRK..', 'KRRRRRRRRK..', '.KRRRRRRK...', '..KRRRRK....', '...KRRK.....', '....KK......', '............', '............', '............'],
   };
   const cache = {};
+  // Sprites drawn from the mascot art (10 Nov 2026) are image files, not grids. icon() returns their URL.
+  const IMG = { prof: '/img/mascot/professor-pixel.png', profHead: '/img/mascot/head-pixel.png' };
+  // Professor reactions (smooth "pixel look" heads): happy, laugh, think, surprised, worried, determined
+  const face = f => `/img/mascot/head-${f}.webp`;
   function icon(name, swap) {
+    if (IMG[name]) return IMG[name];
     const k = name + (swap || '');
     if (cache[k]) return cache[k];
     const g = ICONS[name], c = document.createElement('canvas'), wd = Math.max(...g.map(r => r.length)); c.width = c.height = Math.max(wd, g.length);
@@ -253,5 +258,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

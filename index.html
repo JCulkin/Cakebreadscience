@@ -25,6 +25,7 @@ a{color:inherit}
 .site-header h1 span{color:var(--green2)}
 .site-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
 .site-header #cbs-account{margin-left:auto;align-self:center}
+.site-header .logo{align-self:center;width:clamp(48px,9vw,72px);height:auto}
 .quest{grid-column:1/-1;background:#151518;border:2px solid #151518;padding:16px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:center}
 .quest .ic{font-size:30px;line-height:1}
 .quest h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05;color:#eeeae0;font-size:30px}.quest h3 b{color:#00a03a}
@@ -99,7 +100,7 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 <body>
 
 <div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
-<header class="site-header"><h1>Cakebread <span>Science</span></h1><span class="sub">IGCSE Edexcel Resources</span><div id="cbs-account"></div></header>
+<header class="site-header"><img class="logo" src="/img/mascot/head-pixel-hd.webp" width="72" height="60" alt=""><h1>Cakebread <span>Science</span></h1><span class="sub">IGCSE Edexcel Resources</span><div id="cbs-account"></div></header>
 <div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
 
 <main class="wrap">
@@ -112,7 +113,7 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
     <div class="shead"><h2>Resources</h2><p>For lessons and revision.</p></div>
     <div class="res">
       <div class="quest" role="group" aria-label="Cakebread Questing">
-        <span class="ic">⚔️</span>
+        <img class="ic" src="/img/mascot/professor-pixel.png" width="84" height="84" alt="The Professor" style="image-rendering:pixelated">
         <div><h3>Cakebread <b>Questing</b><span class="new">New</span></h3><p>Revise the whole Double Award spec. Secure every spec point, power up your pixel adventurer and climb the class leaderboards.</p></div>
         <a class="play" href="interactive/spec-quiz/">Play →</a>
         <div class="modes">

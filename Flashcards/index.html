@@ -1172,7 +1172,7 @@
             const it = (typeof ADV_ITEMS !== 'undefined') && ADV_ITEMS.find(i => i.id === id); if (!it) return;
             const box = document.createElement('div'); box.className = 'loot-pop';
             box.innerHTML = `<div class="box"><div style="color:#2563eb;font-weight:800;text-transform:uppercase;font-size:.75em;letter-spacing:.06em">Today's flashcards done · loot</div>
-                <img src="${PIXEL.item(id)}" alt=""><h3>${it.name}</h3><p style="color:#555"><i>${it.d}</i></p>
+                <img src="/img/mascot/head-laugh.webp" alt="" style="width:70px;image-rendering:auto;float:left;margin-right:-70px"><img src="${PIXEL.item(id)}" alt=""><h3>${it.name}</h3><p style="color:#555"><i>${it.d}</i></p>
                 <p><b>+1 move</b> on Breadventure Land tonight.</p>
                 <a href="/interactive/spec-quiz/adventurer-wardrobe.html">Wear it →</a><br><button class="btn" onclick="this.closest('.loot-pop').remove()">Keep going</button></div>`;
             document.body.appendChild(box);
@@ -1686,8 +1686,9 @@ updateDeckProgress(currentDeck);
             // Cakebread Questing: XP, Health, mana, coins, securing spec points, today's +1 move
             const wasDue = !oldProgress || !oldProgress.repetitions || oldProgress.nextReview <= Date.now();   // early reviews (spec sessions) still secure cards but earn no game rewards
             const res = QE.recordCard(cardKey, currentCard.spec || null, quality, lootPick, wasDue);
-            gain(wasDue ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
-                : (res.notes.length ? res.notes.join(' · ') : 'Not due yet: practice only (no XP)'));
+            const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -6px">`;
+            gain(faceImg + (wasDue ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
+                : (res.notes.length ? res.notes.join(' · ') : 'Not due yet: practice only (no XP)')));
             if (res.done) showLoot(res.loot);
 
             // Remove from queue and show next
