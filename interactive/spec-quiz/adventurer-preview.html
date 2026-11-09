@@ -155,7 +155,7 @@ button{font:inherit;cursor:pointer;color:inherit}
       <li><b>Starter outfit</b> — deliberately sad (paper hat, school jumper, grey joggers, odd socks, empty crisp packet, slightly bent ruler).</li>
       <li><b>Mission drop</b> — every finished mission of 10 rolls one Common/Uncommon item. Same odds for everyone, so effort (not ability) fills the wardrobe.</li>
       <li><b>Topic badge tiers</b> — each Bronze / Silver / Gold gives a named item themed on that topic (17 topics × 3 = 51 items). The good stuff comes from real progress.</li>
-      <li><b>Legendaries</b> — one per science, held <i>live</i> by whoever has the most correct answers in it. Lose the lead, lose the item.</li>
+      <li><b>Legendaries</b> — one per science, held by whoever has the most correct answers in that science over the <b>last 7 days</b> (a rolling window, recalculated every day). Stop practising and it moves on to someone else.</li>
       <li><b>Set bonus</b> — wear 3 items from the same science → a title (e.g. “Certified Lab Gremlin”).</li>
     </ul>
   </div>
@@ -374,18 +374,18 @@ const ITEMS = [
      <text x="46" y="112.5" font-size="8" font-weight="900" text-anchor="middle" fill="#111" stroke="none" font-family="monospace">6 7</text>
      ${[0,1,2].map(r=>[0,1,2].map(c=>`<rect x="${36+c*7}" y="${118+r*6.5}" width="5" height="4.5" rx="1" fill="#9ca3af" stroke="none"/>`).join('')).join('')}</g></g>`},
   /* ---------- legendaries ---------- */
-  {id:'syringe', slot:'rhand', name:'Syringe of Plot Armour', r:'legend', s:'b', legend:'Biology', holder:'Priya K. (412 correct)', st:{aura:30,brain:10,vibes:10}, from:'Most correct Biology answers on the board',
+  {id:'syringe', slot:'rhand', name:'Syringe of Plot Armour', r:'legend', s:'b', legend:'Biology', holder:'Priya K. · 86 correct in the last 7 days', st:{aura:30,brain:10,vibes:10}, from:'Most correct Biology answers in the last 7 days',
    d:'You cannot be written out of this storyline.',
    svg:`<g ${INK}><g transform="rotate(-40 46 116)"><rect x="30" y="110" width="34" height="12" rx="2" fill="#e0f2fe"/><rect x="31" y="111" width="22" height="10" fill="#4ade80" stroke="none"/>
      <rect x="64" y="113" width="8" height="6" fill="#9ca3af"/><path d="M72 116 L84 116" stroke-width="1.5"/>
      <rect x="18" y="113" width="12" height="6" fill="#9ca3af"/><rect x="14" y="109" width="4" height="14" fill="#6b7280"/></g></g>
      <g fill="#fde047" stroke="#111" stroke-width=".8"><path d="M26 96 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2z"/></g>`},
-  {id:'pebble', slot:'lhand', name:'The Philosopher\'s Pebble', r:'legend', s:'c', legend:'Chemistry', holder:'Leo M. (389 correct)', st:{aura:30,brain:10,vibes:10}, from:'Most correct Chemistry answers on the board',
+  {id:'pebble', slot:'lhand', name:'The Philosopher\'s Pebble', r:'legend', s:'c', legend:'Chemistry', holder:'Leo M. · 71 correct in the last 7 days', st:{aura:30,brain:10,vibes:10}, from:'Most correct Chemistry answers in the last 7 days',
    d:'Turns lead into slightly shinier lead.',
    svg:`<g ${INK}><path d="M136 132 Q132 116 146 112 Q162 110 164 124 Q166 138 150 140 Q138 141 136 132 Z" fill="#a78bfa"/>
      <path d="M142 120 Q148 116 154 119" fill="none" stroke="#fff" stroke-width="2"/></g>
      <g fill="#fde047" stroke="#111" stroke-width=".8"><path d="M168 106 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2z M130 104 l1.5 -3.5 l1.5 3.5 l3.5 1.5 l-3.5 1.5 l-1.5 3.5 l-1.5 -3.5 l-3.5 -1.5z"/></g>`},
-  {id:'dodgeball', slot:'lhand', name:'Definitely-Not-Uranium Dodgeball', r:'legend', s:'p', legend:'Physics', holder:'You! (431 correct)', st:{aura:30,brain:10,vibes:10}, from:'Most correct Physics answers on the board',
+  {id:'dodgeball', slot:'lhand', name:'Definitely-Not-Uranium Dodgeball', r:'legend', s:'p', legend:'Physics', holder:'You! · 94 correct in the last 7 days', st:{aura:30,brain:10,vibes:10}, from:'Most correct Physics answers in the last 7 days',
    d:'Half-life: one PE lesson.',
    svg:`<circle cx="150" cy="122" r="20" fill="#bef264" opacity=".45"/>
      <g ${INK}><circle cx="150" cy="122" r="15" fill="#84cc16"/><path d="M135 122 Q150 112 165 122 M135 122 Q150 132 165 122" fill="none" stroke-width="1.6"/></g>
