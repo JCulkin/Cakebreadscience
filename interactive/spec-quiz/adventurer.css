@@ -1,0 +1,37 @@
+/* The Adventurer mock-up pages (start, base camp, mission). Same look as the Spec Quiz. */
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--red:#c8001e;
+  --str:#d08000;--hp:#16a34a;--mag:#c8001e;--b:#16a34a;--c:#dc2626;--p:#d97706}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+header{background:#111;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:16px 40px 14px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,38px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 56px}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1.05;margin:0 0 8px}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:18px;margin:12px 0 4px}
+.lede{font-size:18px;max-width:760px;margin-top:8px}
+.small{font-size:13px;color:var(--muted)}
+a{color:var(--green)}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{display:inline-block;background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:9px 16px;font-weight:700;text-decoration:none;text-align:center}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn.gold{background:#facc15;color:#111}
+.btn.big{font-size:20px;padding:12px 22px}
+.btn:disabled{opacity:.4;cursor:default}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.card{background:var(--paper);border:2px solid var(--ink);padding:14px 16px}
+.kick{font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;color:#b45309}
+.bar{height:12px;border:2px solid var(--ink);background:var(--soft);position:relative}
+.bar i{position:absolute;inset:0 auto 0 0}
+.stat{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;text-align:left;margin-top:8px;font-weight:700;font-size:14px}
+.stat small{grid-column:1/-1;font-weight:400;color:var(--muted);font-size:12px;margin-top:-4px}
+.teacher{margin-top:28px;border:2px dashed #999;background:#fbfaf6;padding:12px 16px;font-size:14px}
+.teacher li{margin:4px 0 0 18px}
+.nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle}
+.nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.55em;line-height:1.05;margin-right:1px}
+.nuc .ns i{font-style:normal}

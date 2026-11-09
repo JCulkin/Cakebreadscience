@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Spec Quiz with the Adventurer (mock-up) - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
+<style>
+.adv{display:grid;grid-template-columns:1fr;margin-top:20px;border:2px solid var(--ink);background:var(--paper);border-left:12px solid #b45309;text-decoration:none;color:inherit}
+@media(min-width:720px){.adv{grid-template-columns:210px 1fr auto}}
+.adv:hover{background:#fff8d6}
+.adv .scene{background:linear-gradient(#9fd3f0 0 58%,#b9d77f 58% 100%);display:flex;align-items:flex-end;justify-content:center;padding-top:10px;min-height:190px;position:relative;border-right:2px solid var(--ink)}
+@media(max-width:719px){.adv .scene{border-right:0;border-bottom:2px solid var(--ink)}}
+.adv .scene img{width:150px;display:block}
+.adv .scene .sun{position:absolute;top:12px;right:16px;width:26px;height:26px;background:#fde047;border:2px solid #111;border-radius:50%}
+.adv .mid{padding:14px 18px}
+.adv b.t{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:38px;line-height:1}
+.adv .desc{font-size:15px;color:var(--muted);max-width:620px;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border:2px solid var(--ink);border-radius:14px;padding:1px 10px;font-weight:700;font-size:14px;background:#fff}
+.chip.hot{background:#fde047}
+.adv .go{display:grid;place-items:center;padding:16px 24px;background:var(--ink);color:var(--cream);font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase}
+.row3{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+@media(min-width:800px){.row3{grid-template-columns:1fr 1fr 1fr}}
+.row3 .card h3{margin-top:0}
+.lb{list-style:none;font-size:15px}.lb li{display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid var(--line)}
+.lb img{width:26px;height:26px;border:1px solid var(--line);border-radius:4px;background:var(--soft)}
+.lb .n{flex:1}.lb .v{font-weight:700}
+.leg{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:14px}.leg img{width:40px;height:40px;background:var(--soft);border-radius:8px;flex:none}
+.quick{margin-top:28px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
+.quick p{max-width:640px}
+.newbie{display:none}
+body.new .returning{display:none}body.new .newbie{display:grid}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Double Award · Spec Quiz</span></header>
+<main class="wrap">
+  <h1>Spec Quiz</h1>
+  <p class="lede">Multiple choice and true-or-false questions on the Edexcel International GCSE Science (Double Award) specification.</p>
+
+  <a class="adv returning" href="adventurer-home.html" id="advCard">
+    <div class="scene"><span class="sun"></span><img class="px" id="fig" alt="Your adventurer"></div>
+    <div class="mid">
+      <span class="kick">Your campaign</span>
+      <b class="t" id="nick">Brave Neutron</b>
+      <div class="desc">Revise to get stronger, then send your adventurer out on the map with your class.</div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="go">Continue →</div>
+  </a>
+
+  <a class="adv newbie" href="adventurer-create.html?new=1">
+    <div class="scene"><span class="sun"></span><img class="px" id="fig0" alt=""></div>
+    <div class="mid">
+      <span class="kick">New</span>
+      <b class="t">Start your adventure</b>
+      <div class="desc">Make a little pixel adventurer. Every spec point you secure in the quiz makes them stronger. Every day you get 2 moves on the map to fight bosses with your class.</div>
+    </div>
+    <div class="go">Start →</div>
+  </a>
+
+  <div class="row3">
+    <div class="card">
+      <h3>This week · most correct</h3>
+      <ol class="lb" id="lbWeek"></ol>
+    </div>
+    <div class="card">
+      <h3>Legendaries this week</h3>
+      <div id="legs"></div>
+      <p class="small" style="margin-top:6px">Held by whoever got the most correct answers in that science in the last 7 days.</p>
+    </div>
+    <div class="card">
+      <h3>On the map now</h3>
+      <p style="font-size:15px">⚔ <b>Captain Inertia</b> is at 34% health — 4 of your class are fighting him.<br>💤 <b>The Mock Exam</b> is asleep. For now.</p>
+      <p style="margin-top:8px"><a href="adventurer-map.html">Open the map →</a></p>
+    </div>
+  </div>
+
+  <div class="quick card">
+    <p><b>Just want a quick quiz?</b> Tick the parts of the spec you want and play solo or as a class team game. No adventurer needed, nothing saved.</p>
+    <a class="btn alt" href="index.html">Make a quiz →</a>
+  </div>
+
+  <div class="teacher">
+    <b>Mock-up notes (teachers only — not shown to students):</b>
+    <ul>
+      <li>This replaces the top of today's Spec Quiz menu. The “Campaign” card becomes the adventurer card; the quiz picker below it stays exactly as it is (the button opens the real one).</li>
+      <li>New students see “Start your adventure” instead. <button class="btn alt" id="toggleNew" style="padding:2px 8px;font-size:13px">Show the new-student version</button></li>
+      <li>Leaderboard names and the map status are pretend.</li>
+    </ul>
+  </div>
+</main>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('start');
+const S = ADV.S, s = ADV.stats();
+if (!ADV.hasLook() || new URLSearchParams(location.search).has('new')) document.body.classList.add('new');
+document.getElementById('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
+document.getElementById('fig0').src = PIXEL.figure({ head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler' }, PIXEL.DEFAULT);
+document.getElementById('nick').textContent = ADV.nick();
+const movesLeft = S.moves - S.plan.length;
+document.getElementById('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">💪 ${s.str}</span><span class="chip" style="color:var(--hp)">❤ ${s.hp}</span><span class="chip" style="color:var(--mag)">✨ ${s.mag}</span>`
+  + (S.reportSeen < S.day ? `<span class="chip hot">📜 New morning report</span>` : '')
+  + (movesLeft > 0 ? `<span class="chip hot">🗺 ${movesLeft} move${movesLeft === 1 ? '' : 's'} to plan</span>` : '')
+  + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`);
+document.getElementById('toggleNew').onclick = () => { document.body.classList.toggle('new'); scrollTo(0, 0); };
+
+/* pretend board */
+const O = PIXEL.OPTIONS;
+const fake = (n, i) => PIXEL.portrait({ skin: O.skin[i % O.skin.length].id, hair: O.hair[(i * 3) % O.hair.length].id, hc: (O.hair[(i * 3) % O.hair.length].cloth ? O.cloth : O.hc)[i % 5].id, eyes: O.eyes[i % O.eyes.length].id, mouth: O.mouth[i % O.mouth.length].id, extras: [] });
+const BOARD = [['Fizzy Quark', 212], ['Sleepy Photon', 187], [ADV.nick() + ' (you)', 164], ['Turbo Enzyme', 150], ['Gentle Isotope', 131]];
+document.getElementById('lbWeek').innerHTML = BOARD.map(([n, v], i) => `<li><b>${i + 1}</b><img class="px" src="${n.includes('(you)') ? PIXEL.portrait(ADV.look()) : fake(n, i + 2)}" alt=""><span class="n">${n}</span><span class="v">${v}</span></li>`).join('');
+const LEG = [['syringe', 'Biology', 'Priya K.'], ['pebble', 'Chemistry', 'Leo M.'], ['dodgeball', 'Physics', ADV.nick() + ' (you!)']];
+document.getElementById('legs').innerHTML = LEG.map(([id, sci, who]) => { const it = ADV_ITEMS.find(i => i.id === id); return `<div class="leg"><img class="px" src="${PIXEL.item(id)}" alt=""><div><b>${it ? it.name : id}</b><br><span class="small">${sci} · held by ${who}</span></div></div>`; }).join('');
+</script>
+</body>
+</html>

@@ -58,12 +58,11 @@ details.why li{margin:6px 0 0 20px}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Spec Quiz · Preview</span></header>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Spec Quiz · My look</span></header>
 <div class="wrap">
-  <a class="back" href="/test.html">← Test page</a>
   <h1>Make your adventurer</h1>
-  <p class="lede">Pick a look. You can change it any time, for free. Clothes and gear come from the Campaign — this is just you.</p>
-  <span class="flag">Preview · saves in this browser only</span>
+  <p class="lede">Pick a look. You can change it any time, for free. Clothes and gear come from missions and the map — this is just you.</p>
+  <span class="flag">Mock-up · saves in this browser only</span>
 
   <div class="layout">
     <div class="card preview">
@@ -75,7 +74,7 @@ details.why li{margin:6px 0 0 20px}
       </div>
       <div class="acts">
         <button class="btn alt" id="rand">🎲 Surprise me</button>
-        <button class="btn green" id="save">Save &amp; go to wardrobe →</button>
+        <button class="btn green" id="save">Save →</button>
       </div>
       <div class="saved" id="saved"></div>
     </div>
@@ -106,7 +105,9 @@ details.why li{margin:6px 0 0 20px}
 </div>
 
 <script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
 <script>
+ADV.nav('look');
 const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick';
 const O = PIXEL.OPTIONS;
 let base = load(KEY_BASE) || Object.assign({}, PIXEL.DEFAULT), view = 'starter';
@@ -165,7 +166,7 @@ document.getElementById('rand').onclick = () => {
 document.getElementById('save').onclick = () => {
   base.v = 1;
   try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
-  location.href = 'adventurer-wardrobe.html';
+  location.href = 'adventurer-home.html';
 };
 render();
 </script>

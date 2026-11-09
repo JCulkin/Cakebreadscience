@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Mission (mock-up) - Spec Quiz - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
+<style>
+.wrap{max-width:900px}
+.hidden{display:none!important}
+/* choose */
+.choices{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
+@media(min-width:760px){.choices{grid-template-columns:1fr 1fr 1fr}}
+.choice{display:flex;flex-direction:column;align-items:center;text-align:center;border:2px solid var(--ink);background:#fff;padding:14px;gap:4px}
+.choice:hover{background:#fff8d6}
+.choice img{width:84px;height:84px}
+.choice .why{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+.choice b{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
+.choice .topic{font-size:14px;color:var(--muted)}
+.other{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.other select{font:inherit;padding:7px;border:2px solid var(--ink);max-width:100%}
+/* fight */
+.arena{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;background:linear-gradient(#bfe3f6 0 66%,#b9d77f 66% 100%);border:2px solid var(--ink);padding:52px 14px 10px;position:relative;overflow:hidden}
+.side{text-align:center;position:relative}
+.side img{display:block;margin:0 auto}
+#youFig{width:96px}
+#foeFig{width:120px;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-6px)}}
+.side .n{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:18px;line-height:1.05;margin-top:4px}
+.side .bar{height:12px;margin-top:4px}
+.vs{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:#fff;-webkit-text-stroke:1.5px #111;align-self:center}
+.quote{position:absolute;top:8px;right:12px;left:auto;max-width:min(60%,420px);background:#fff;border:2px solid var(--ink);border-radius:10px;padding:4px 10px;font-size:14px;font-weight:700;font-style:italic}
+.hit #foeFig{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-8px) rotate(-6deg)}40%{transform:translateX(8px) rotate(5deg)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+.ouch #youFig{animation:flash .5s}
+@keyframes flash{30%{filter:brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)}}
+.dmg{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:#e11d48;-webkit-text-stroke:1px #fff;animation:rise .9s forwards;pointer-events:none}
+@keyframes rise{to{transform:translateY(-40px);opacity:0}}
+.progress{display:flex;gap:4px;margin:10px 0 4px}
+.progress i{flex:1;height:8px;border:1.5px solid var(--ink);background:#fff}
+.progress i.ok{background:var(--green2)}.progress i.no{background:#f87171}.progress i.now{background:#fde047}
+.qcard{margin-top:8px}
+.qmeta{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.qtext{font-size:21px;font-weight:600;margin:6px 0 12px;line-height:1.3}
+.opts{display:grid;gap:8px}
+@media(min-width:640px){.opts{grid-template-columns:1fr 1fr}}
+.opt{display:flex;align-items:center;gap:10px;background:var(--soft);border:2px solid var(--ink);padding:11px 13px;text-align:left;font-weight:700;font-size:18px}
+.opt .key{flex:none;display:inline-grid;place-items:center;min-width:28px;height:28px;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px}
+.opt:hover:not(:disabled){background:#fff}
+.opt.right{background:#d8f0de;border-color:var(--green)}.opt.right .key{background:var(--green)}
+.opt.wrong{background:#f8d7d7;border-color:var(--red);text-decoration:line-through}.opt.wrong .key{background:var(--red)}
+.opt:disabled{cursor:default}
+.opts.n2 .opt{justify-content:center;font-size:24px}
+.fb{margin-top:12px;padding:10px 14px;border-left:6px solid var(--green);background:#f0f8f2;font-size:16px}
+.fb.bad{border-color:var(--red);background:#fdf0f0}
+.fb .t{display:block;font-weight:700}
+.next{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.report{font-size:13px;color:var(--muted)}
+/* results */
+.victory{text-align:center}
+.victory h1{font-size:clamp(32px,6vw,52px)}
+.victory .score{font-size:20px;margin-top:4px}
+.rewards{display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px;text-align:left}
+@media(min-width:700px){.rewards{grid-template-columns:1fr 1fr}}
+.drop{display:flex;gap:14px;align-items:center;border-top:6px solid #2563eb}
+.drop img{width:96px;height:96px;background:var(--soft);border-radius:12px;padding:6px;flex:none;animation:pop .6s cubic-bezier(.3,1.6,.6,1)}
+@keyframes pop{from{transform:scale(.2) rotate(-20deg)}}
+.gain li{list-style:none;margin:6px 0;font-size:16px}
+.gain .up{color:var(--green);font-weight:700}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+.review{margin-top:18px;text-align:left}
+.review li{margin:8px 0 0 18px;font-size:15px}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Spec Quiz · Mission</span></header>
+<main class="wrap">
+
+  <section id="choose">
+    <h1>Choose a mission</h1>
+    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, and right answers count towards securing spec points (which make you stronger).</p>
+    <div class="choices" id="choices"></div>
+    <div class="other"><label for="pick"><b>Or pick any topic:</b></label><select id="pick"></select><button class="btn" id="pickGo">Fight →</button></div>
+  </section>
+
+  <section id="fight" class="hidden">
+    <div class="arena" id="arena">
+      <div class="side"><img class="px" id="youFig" alt="You"><div class="n" id="youName"></div></div>
+      <div class="vs">VS</div>
+      <div class="side"><img class="px" id="foeFig" alt=""><div class="n" id="foeName"></div><div class="bar"><i id="foeHp" style="background:#e11d48;width:100%;transition:width .4s"></i></div></div>
+      <div class="quote" id="quote"></div>
+    </div>
+    <div class="progress" id="prog"></div>
+    <div class="card qcard">
+      <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <div id="fb"></div>
+      <div class="next"><span class="report">⚑ Report this question</span><button class="btn gold hidden" id="nextBtn">Next →</button></div>
+    </div>
+  </section>
+
+  <section id="done" class="hidden"></section>
+
+  <div class="teacher">
+    <b>Mock-up notes:</b>
+    <ul>
+      <li>This replaces today's Campaign mission screen. Same rules underneath (right first time on two different days secures a question; enough secured questions secure the spec point). Questions are the real bank.</li>
+      <li>The fight is just a skin over the 10 questions: right answer = hit, wrong answer = the misconception gloats and you see the explanation. You can't lose a mission.</li>
+      <li>Pretend rewards here: 6+ correct secures one spec point in that science (in the real thing it takes two different days).</li>
+    </ul>
+  </div>
+</main>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('mission');
+const S = ADV.S, $ = id => document.getElementById(id);
+const SCI_COL = { B: '#16a34a', C: '#dc2626', P: '#d97706' }, STAT = { B: ['Health', 'b', 'hp'], C: ['Magic', 'c', 'mag'], P: ['Strength', 'p', 'str'] };
+/* misconceptions to fight, one per topic (jokes swappable) */
+const FOES = {
+  B1: ['Viruses Are Alive', 'ghost'], B2: ['Plants Don\'t Respire', 'boss'], B3: ['Dominant Means Common', 'cube'], B4: ['Energy Gets Recycled', 'ghost'], B5: ['GM Food Is Poison', 'boss'],
+  C1: ['Melting Breaks the Bonds', 'cube'], C2: ['All Acids Burn', 'boss'], C3: ['Catalysts Get Used Up', 'ghost'], C4: ['Crude Oil Is Just Petrol', 'cube'],
+  P1: ['Heavy Things Fall Faster', 'boss'], P2: ['Current Gets Used Up', 'cube'], P3: ['Sound Travels in Space', 'ghost'], P4: ['Energy Just Disappears', 'ghost'],
+  P5: ['Heat Rises', 'boss'], P6: ['Magnets Stick to All Metals', 'cube'], P7: ['Radiation Makes You Glow', 'ghost'], P8: ['The Moon Makes Its Own Light', 'boss'],
+};
+
+/* sub-topics from the spec, with their questions */
+const SUBS = [];
+SPEC.forEach(subj => {
+  const L = subj.name[0];
+  subj.topics.forEach(t => t.subs.forEach(sb => {
+    const ids = new Set(sb.points.map(p => L + p.id));
+    const qs = QUESTIONS.filter(q => ids.has(q.s));
+    if (qs.length >= 6 && sb.name !== 'Units') SUBS.push({ key: L + t.n + sb.l, L, topic: L + t.n, subj: subj.name, name: sb.name, qs });
+  }));
+});
+const subBy = k => SUBS.find(s => s.key === k);
+const foeOf = sub => { const [name, shape] = FOES[sub.topic] || ['The Common Misconception', 'boss']; return { name, shape, col: SCI_COL[sub.L], img: ADV.icon(shape, SCI_COL[sub.L]) }; };
+
+/* choose screen */
+const PICKS = [['P3b', 'Suggested', '#b45309', 'Next on your path'], ['B2e', 'Rusty', '#2563eb', 'Not practised for 3 weeks'], ['C1f', 'Fresh', '#16a34a', 'Not started yet']].filter(([k]) => subBy(k));
+$('choices').innerHTML = PICKS.map(([k, tag, col, why]) => { const sb = subBy(k), f = foeOf(sb); return `<button class="choice" data-sub="${k}"><span class="why" style="color:${col}">${tag}</span><img class="px" src="${f.img}" alt=""><b>${f.name}</b><span class="topic">${sb.subj} ${sb.key.slice(1)} · ${sb.name}</span><span class="small">${why}</span></button>`; }).join('');
+$('pick').innerHTML = ['Biology', 'Chemistry', 'Physics'].map(n => `<optgroup label="${n}">${SUBS.filter(s => s.subj === n).map(s => `<option value="${s.key}">${s.key.slice(1)} ${s.name}</option>`).join('')}</optgroup>`).join('');
+$('choices').addEventListener('click', e => { const b = e.target.closest('[data-sub]'); if (b) start(b.dataset.sub); });
+$('pickGo').onclick = () => start($('pick').value);
+
+/* fight */
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let MS = null;
+function start(k) {
+  const sub = subBy(k), foe = foeOf(sub);
+  const qs = shuffle(sub.qs).slice(0, 10);
+  MS = { sub, foe, qs, i: 0, hp: 100, res: [] };
+  $('choose').classList.add('hidden'); $('fight').classList.remove('hidden');
+  $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
+  $('youName').textContent = ADV.nick();
+  $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
+  $('quote').textContent = `“${foe.name}. Everyone knows it.”`;
+  scrollTo(0, 0); show();
+}
+const DMG = 100 / 7;   // 7 right answers defeat it
+function show() {
+  const q = MS.qs[MS.i];
+  $('prog').innerHTML = MS.qs.map((_, j) => `<i class="${j < MS.res.length ? (MS.res[j].ok ? 'ok' : 'no') : j === MS.i ? 'now' : ''}"></i>`).join('');
+  $('qnum').textContent = `Question ${MS.i + 1} of ${MS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
+  $('qspec').textContent = `Spec ${q.s.slice(1)} · ${MS.sub.subj}`;
+  $('qtext').innerHTML = q.tf !== undefined ? `True or false? ${q.q}` : q.q;
+  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0]));
+  $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
+  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${t}</span></button>`).join('');
+  $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
+}
+$('opts').addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+  const q = MS.qs[MS.i], ok = b.dataset.ok === '1';
+  [...$('opts').children].forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); });
+  if (!ok) b.classList.add('wrong');
+  MS.res.push({ q, ok });
+  const ar = $('arena');
+  ar.classList.remove('hit', 'ouch'); void ar.offsetWidth;
+  if (ok) {
+    const d = Math.round(DMG * (q.hard ? 1.5 : 1));
+    MS.hp = Math.max(0, MS.hp - d); $('foeHp').style.width = MS.hp + '%';
+    ar.classList.add('hit');
+    const n = document.createElement('div'); n.className = 'dmg'; n.textContent = '−' + d; n.style.right = '18%'; n.style.top = '30%'; ar.appendChild(n); setTimeout(() => n.remove(), 900);
+    $('quote').textContent = MS.hp ? ['“Ow. Lucky guess.”', '“That one was just a flesh wound.”', '“Okay, but have you considered… no?”', '“Stop learning things!”'][MS.i % 4] : '“Noooo, I was so confident!”';
+  } else {
+    ar.classList.add('ouch');
+    $('quote').textContent = `“See? ${MS.foe.name}!”`;
+  }
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Right — hit!' : 'Not quite.'}</span>${q.x || ''}</div>`;
+  $('nextBtn').textContent = MS.i + 1 < MS.qs.length ? 'Next →' : 'Finish the fight →';
+  $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
+});
+$('nextBtn').onclick = () => { MS.i++; if (MS.i < MS.qs.length) show(); else finish(); };
+
+/* results + rewards (pretend) */
+function finish() {
+  const right = MS.res.filter(r => r.ok).length, won = MS.hp === 0;
+  const before = ADV.stats(), capBefore = ADV.levelCap(), [statName, sk, cssk] = STAT[MS.sub.L];
+  const securedPt = right >= 6;
+  if (securedPt) S.secured[sk]++;
+  const coins = 10 + (won ? 10 : 0); S.coins += coins;
+  const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
+  const drop = pool[Math.floor(Math.random() * pool.length)];
+  S.bag = [...new Set([...(S.bag || []), drop.id])]; S.lastLoot = drop.id; S.missionsToday++;
+  ADV.save();
+  const after = ADV.stats(), capAfter = ADV.levelCap(), toCap = 8 - ADV.securedTotal() % 8;
+  const wrong = MS.res.filter(r => !r.ok);
+  $('fight').classList.add('hidden');
+  $('done').classList.remove('hidden');
+  $('done').innerHTML = `<div class="victory">
+    <img class="px" src="${won ? PIXEL.figure(ADV.eq(), ADV.look()) : MS.foe.img}" style="width:${won ? 130 : 110}px" alt="">
+    <h1>${won ? `${MS.foe.name}: defeated!` : `${MS.foe.name} got away`}</h1>
+    <div class="score">${right} of ${MS.qs.length} right first time${won ? '' : ' — it needed 7 hits. It will be back.'}</div></div>
+    <div class="rewards">
+      <div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_RARITY[drop.r]}</span><br><b style="font-size:20px">${drop.name}</b><br><i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>
+      <div class="card"><h3 style="margin-top:0">What you got</h3><ul class="gain">
+        ${securedPt ? `<li class="up">🔒 Spec point secured in ${MS.sub.subj} → <b>${statName} ${before[cssk]} → ${after[cssk]}</b></li>` : `<li>Right answers count towards securing ${MS.sub.subj} points. Get 6+ right to secure one.</li>`}
+        ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! Bank XP from the map now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
+        <li>🪙 +${coins} coins${won ? ' (defeat bonus)' : ''}</li>
+        <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
+    </div>
+    ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
+    <div class="acts"><a class="btn green big" href="adventurer-map.html">🗺 Plan tonight's moves</a><a class="btn alt" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">⛺ Base camp</a></div>`;
+  scrollTo(0, 0);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Base camp (mock-up) - Spec Quiz - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
+<style>
+.camp{display:grid;grid-template-columns:1fr;gap:14px;margin-top:6px}
+@media(min-width:880px){.camp{grid-template-columns:300px 1fr}}
+.me{text-align:center;align-self:start}
+@media(min-width:880px){.me{position:sticky;top:56px}}
+.me .ttl{font-style:italic;color:var(--muted);font-size:14px}
+.me img.fig{width:180px;display:block;margin:4px auto}
+.nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1}
+.lvl{font-weight:700;margin-top:4px;display:flex;justify-content:space-between;font-size:15px}
+.xp{height:10px;border:2px solid var(--ink);background:var(--soft);position:relative;margin-top:2px}
+.xp i{position:absolute;inset:0 auto 0 0;background:#8b5cf6}
+.cap{font-size:12px;color:var(--muted);text-align:left;margin-top:3px}
+.me .links{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.me .links .btn{padding:5px 10px;font-size:14px}
+.today h2{margin-bottom:4px}
+.todo{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;margin-top:10px}
+.todo .ic{width:64px;height:64px;display:grid;place-items:center;border:2px solid var(--ink);background:var(--soft)}
+.todo .ic img{width:48px;height:48px}
+.todo b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1;display:block}
+.todo p{font-size:15px;color:var(--muted);margin-top:2px}
+.todo.main{border-left:10px solid #b45309}
+.todo.done{opacity:.65}
+.todo .tick{display:inline-block;background:var(--green);color:#fff;font-size:12px;font-weight:700;padding:1px 6px;margin-left:6px;vertical-align:4px;font-family:Barlow,Arial}
+@media(max-width:560px){.todo{grid-template-columns:auto 1fr}.todo .btn{grid-column:1/-1}}
+.rep{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#111;color:#e5e5e5;padding:8px 12px;margin-top:8px;max-height:110px;overflow:hidden;position:relative}
+.rep p{margin:2px 0}.rep .good{color:#86efac}.rep .bad{color:#fca5a5}.rep .lt{color:#fde047}.rep .new{color:#93c5fd}
+.rep::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(#1110,#111)}
+.grid2{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@media(min-width:700px){.grid2{grid-template-columns:1fr 1fr}}
+.sci{margin-top:10px}
+.sci .top{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.sci .bar{height:14px}
+.sci small{color:var(--muted);font-size:12px}
+.loot{display:flex;gap:12px;align-items:center;margin-top:6px}
+.loot img{width:72px;height:72px;background:var(--soft);border-radius:10px;padding:4px;flex:none}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Spec Quiz · Base camp</span></header>
+<main class="wrap">
+  <div class="camp">
+    <div class="card me">
+      <div class="nm" id="nm"></div>
+      <div class="ttl" id="ttl">“Certified Gravity Enjoyer”</div>
+      <img class="px fig" id="fig" alt="Your adventurer">
+      <div class="lvl"><span id="lvl"></span><span id="xpTxt" class="small"></span></div>
+      <div class="xp"><i id="xpbar"></i></div>
+      <div class="cap" id="cap"></div>
+      <div id="stats"></div>
+      <div class="links"><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a><a class="btn alt" href="adventurer-create.html">✏️ My look</a></div>
+    </div>
+
+    <div>
+      <div class="today">
+        <h2 id="dayTitle">Today</h2>
+        <div class="card todo main" id="tMission">
+          <div class="ic"><img class="px" id="enemyIc" alt=""></div>
+          <div><b>Today's mission <span class="tick" id="mDone" hidden>Done</span></b><p id="mText"></p></div>
+          <a class="btn gold big" href="adventurer-mission.html" id="mBtn">Start →</a>
+        </div>
+        <div class="card todo" id="tMap">
+          <div class="ic"><img class="px" id="mapIc" alt=""></div>
+          <div><b>Plan tonight's moves</b><p id="moveText"></p></div>
+          <a class="btn green" href="adventurer-map.html">Open the map →</a>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><h3 style="margin:0">Last night</h3><a href="adventurer-map.html" class="small">Full report on the map →</a></div>
+          <div class="rep" id="rep"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h3 style="margin-top:0">Spec points secured</h3>
+          <div id="sci"></div>
+          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days. Each one adds 1 to its stat for good.</p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0" id="lootTitle">Newest loot</h3>
+          <div id="loot"></div>
+          <h3>Brews</h3>
+          <div id="brews" style="font-size:15px"></div>
+          <p class="small">🪙 <span id="coins"></span> coins · spend them at the Tuck Shop on the map.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('home');
+const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats();
+$('nm').textContent = ADV.nick();
+$('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
+const l = s.l, cap = ADV.levelCap(), cur = ADV.xpFor(l), next = ADV.xpFor(l + 1);
+$('lvl').textContent = `Level ${l}`;
+$('xpTxt').textContent = `${S.xp - cur} / ${next - cur} XP`;
+$('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
+const toNextCap = 8 - ADV.securedTotal() % 8;
+$('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
+  : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
+$('stats').innerHTML = [['💪 Strength', s.str, 'str', `Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
+  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
+  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · spells coming`, s.mag / 70]]
+  .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
+
+$('dayTitle').textContent = `Today · day ${S.day}`;
+$('enemyIc').src = ADV.icon('boss', '#d97706');
+$('mapIc').src = ADV.icon('home');
+if (S.missionsToday) {
+  $('tMission').classList.add('done'); $('mDone').hidden = false;
+  $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
+  $('mBtn').textContent = 'Another →'; $('mBtn').classList.remove('gold', 'big');
+} else $('mText').textContent = '10 questions against a misconception. Suggested today: Physics 3b Properties of waves.';
+const left = S.moves - S.plan.length;
+$('moveText').textContent = left > 0 ? `${left} move${left === 1 ? '' : 's'} to plan. They happen at midnight. Captain Inertia is at ${Math.round((S.boss && S.boss['11,2'] !== undefined ? S.boss['11,2'] : 340) / 10)}% health.` : 'Both moves planned. See you in the morning.';
+if (!left) $('tMap').classList.add('done');
+const FIRST = ['<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Captain Inertia</b> for 214 damage.</p>', '<p class="bad">Mighty Ribosome was knocked out by <b>The Mighty Mitochondrion</b>.</p>', '<p>You rested in the Common Room. Health refilled.</p>', '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>'];
+$('rep').innerHTML = (S.report || FIRST).join('');
+
+$('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], ['p', 'Physics', 'Strength']].map(([k, n, st]) =>
+  `<div class="sci"><div class="top"><span style="color:var(--${k})">${n}</span><span>${S.secured[k]} / ${ADV.TOTAL[k]}</span></div><div class="bar"><i style="width:${S.secured[k] / ADV.TOTAL[k] * 100}%;background:var(--${k})"></i></div><small>→ ${st}</small></div>`).join('');
+
+const it = S.lastLoot && ADV_ITEMS.find(i => i.id === S.lastLoot);
+if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.item(it.id)}" alt=""><div><b>${it.name}</b><br><span class="small">${ADV_RARITY[it.r]} · ${it.d}</span><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`;
+else { $('lootTitle').textContent = 'Loot'; $('loot').innerHTML = `<p style="font-size:15px">Every mission drops an item. Finish today's mission to see what you get.</p>`; }
+$('brews').innerHTML = Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `🧪 ${n} ×${q}`).join('<br>') || 'None';
+$('coins').textContent = S.coins;
+</script>
+</body>
+</html>
