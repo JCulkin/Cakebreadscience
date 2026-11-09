@@ -128,7 +128,8 @@ table.st th{background:var(--soft)}
           <li><b>6 moves on your first day</b> (to get going), then <b>2 a day, +1 for finishing that day's first mission</b>. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves resolve once a day — the first visit to the site after midnight runs the night for everyone (no server needed). The “Mock: skip to morning” button exists only in this mock-up.</li>
           <li><b>Everything happens at midnight.</b> Next login shows the morning report. No reason to be online at night.</li>
           <li><b>Same square = same team.</b> Boss health carries over night to night, so a class can wear a boss down over a week. No fighting each other.</li>
-          <li><b>Losing is gentle.</b> Health 0 = knocked out, wake up in the Cakelab, nothing lost.</li>
+          <li><b>Fight alone or together.</b> Small monsters (orange health bars) can be beaten solo in a night or two and come back two days later; you also bump into the odd wild critter on the way. Bosses are built for teams: the panel shows "alone about N nights · with 4 classmates about M".</li>
+          <li><b>Health only comes back through revision</b> (plus a little from resting in the Cakelab): +2 per right mission answer, +1 per flashcard reviewed. Knocked out = wake in the Cakelab on a quarter of your Health, rest of tonight's moves cancelled, nothing lost.</li>
           <li><b>Water can't be crossed</b> (sea, Lost Property Lake, the River Tangent) except at the two bridges, so routes matter.</li>
           <li><b>Fog of war:</b> you only see squares within 2 steps of somewhere you've been. Bosses show through the fog as shadows so there's always somewhere to head for. Exploring is its own reward.</li>
         </ul>
@@ -249,10 +250,26 @@ const PLACES = {
   '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a later chapter (the Professor has plans).' },
   '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night. A later chapter.' },
 };
+/* small monsters you can beat on your own in a night or two (respawn 2 days after they're beaten) */
+const DENS = {
+  '5,3': ['Fruit Fly Swarm', 'boss', '#a16207', 'b', 30, 2, 'A buzzing cloud that came for the cake and stayed for the fight.'],
+  '3,1': ['Slime Mould', 'boss', '#65a30d', 'b', 38, 3, 'Not quite a fungus, not quite an animal, definitely sticky.'],
+  '12,3': ['Rogue Electron', 'ghost', '#38bdf8', 'p', 35, 3, 'Escaped from a shell and is very negative about it.'],
+  '3,6': ['Acid Frog', 'cube', '#84cc16', 'c', 38, 3, 'pH 2 and proud. Don\'t lick it.'],
+  '11,7': ['Static Sandling', 'ghost', '#eab308', 'p', 42, 3, 'Rubbed against too many sand dunes. Now it zaps.'],
+  '2,9': ['Germ Gang', 'boss', '#10b981', 'b', 48, 4, 'Three bacteria in a trench coat. Divides when nervous.'],
+  '17,4': ['Rust Mite', 'cube', '#c2410c', 'c', 48, 4, 'Eats iron, leaves flakes. Keep your sword dry.'],
+  '16,8': ['Glow Rat', 'ghost', '#bef264', 'p', 55, 4, 'Lives near the reactor. Glows faintly. Nobody pets it.'],
+};
+Object.entries(DENS).forEach(([k, [name, shape, col, sci, max, power, text]]) => { PLACES[k] = { type: 'monster', name, icon: shape, col, science: sci, max, power, text }; });
+if (!S.dens) S.dens = {};
+const denHp = k => { const d = S.dens[k]; if (!d) return PLACES[k].max; if (d.back) return d.back > S.day ? 0 : PLACES[k].max; return d.hp; };
+const WILD = { F: 'a Grumpy Woodlouse', f: 'a Pollen Sprite', P: 'a Lost Proton', M: 'a Falling Rock', S: 'a Frostbite Imp', m: 'a Bog Bubble', d: 'a Dust Devil', b: 'a Stray Bacterium', j: 'a Loose Bolt', r: 'a Two-Headed Pigeon', T: 'a Runaway Shopping Trolley', s: 'a Crabby Crab' };
+const HEAL = { mission: 2, card: 1, rest: 5 };   // Health per correct mission answer, per due flashcard, per night resting in the Cakelab
 /* the crumb trail from the Cakelab to the dragon's lair (shows through the fog) */
 const CRUMBS = ['7,3', '7,2'];
 S.boss = Object.assign({ '2,2': 600, '11,2': 340, '4,7': 820, '3,10': 1000, '16,4': 950, '17,6': 1100 }, S.boss || {});
-const TYPE = { cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
+const TYPE = { monster: 'Small monster', cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
 
 /* ===================== geometry ===================== */
 const key = (c, r) => c + ',' + r, unkey = k => k.split(',').map(Number);
@@ -358,7 +375,13 @@ function renderMap() {
     if (P && vis.has(k)) {
       const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
       const asleep = (P.ch || 1) > S.chapter, freed = P.type === 'cage' && S.chapter >= 2;
-      if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
+      if (P.type === 'monster') {
+        const hp = denHp(k), sz = 30;
+        things += `<ellipse cx="${x}" cy="${y + 10}" rx="11" ry="3" fill="#0003"/>` + img(icon(P.icon, P.col), x - sz / 2, y - sz / 2 - 4, sz, hp ? '' : 'opacity=".3"');
+        if (hp) things += `<rect x="${x - 13}" y="${y + 13}" width="26" height="5" fill="#fff" stroke="#111"/><rect x="${x - 12.5}" y="${y + 13.5}" width="${25 * hp / P.max}" height="4" fill="#f59e0b"/>`;
+        else things += `<text x="${x}" y="${y + 20}" text-anchor="middle" font-size="9" font-weight="700" fill="#111">back soon</text>`;
+      }
+      else if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
       if (P.type === 'cage') {   /* bars over the Professor (or an empty open cage once he's free) */
         const L = x - 18, T = y - 26;
         things += `<rect x="${L}" y="${T}" width="36" height="40" fill="none" stroke="#334155" stroke-width="3"/>` + (freed ? `<line x1="${L + 36}" y1="${T}" x2="${L + 50}" y2="${T + 8}" stroke="#334155" stroke-width="3"/>` : [1, 2, 3, 4, 5].map(i => `<line x1="${L + i * 6}" y1="${T}" x2="${L + i * 6}" y2="${T + 40}" stroke="#334155" stroke-width="2.2"/>`).join(''));
@@ -422,7 +445,7 @@ function renderMap() {
 function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
-    <div class="hp">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
+    <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
     <div class="day">Day ${S.day} · moves happen at midnight</div>
@@ -457,12 +480,21 @@ function renderPanel() {
   let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
+  if (P && P.type === 'monster') {
+    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 2.5)));   // ~2.5 moves (= attacks) a day
+    h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits back for about ${P.power}</div><div class="loot">⚔ <b>You can beat this on your own</b> — about ${n} night${n > 1 ? 's' : ''}. Drops: +30 XP, coins, sometimes a brew.</div>`
+      : `<div class="cap">Beaten — it'll be back in a day or two.</div>`;
+  }
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
+    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / (str * 2.5)), team = Math.ceil(S.boss[sel] / ((str + 4 * 22) * 2.5));
+    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 classmates about ${team}.</div>`;
+  }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
   if (P && P.stock) h += `<div class="loot"><b>In stock:</b><br>${P.stock.join('<br>')}</div>`;
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
   if (reach.has(sel)) {
     const n = S.plan.length + 1, stay = sel === last;
-    const what = P && P.type === 'boss' ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
+    const what = P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
   } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
   else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for the whole class the night the third boss falls.</div>`;
@@ -506,7 +538,8 @@ svg.addEventListener('pointermove', e => {
   if (k) {
   const D = describe(k), P = D.P;
   let extra = D.tp;
-  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health · best with friends`;
+  if (P && P.type === 'monster') extra += denHp(k) ? ` · ${denHp(k)}/${P.max} health · you can solo this` : ' · beaten, back soon';
   if (reachable().has(k)) extra += ' · click to plan a move';
   tip.innerHTML = `<b>${D.name}</b><small>${extra}</small>`;
   }
@@ -531,7 +564,11 @@ function overnight() {
   const lines = [], dmgOf = s => Math.round(s * (0.6 + rnd() * 0.8)), visBefore = visibleSet();
   let at = S.at;
   const steps = S.plan.length ? S.plan : [S.at];
+  let out = false;
+  /* knocked out: wake in the Cakelab on a quarter of your Health and skip the rest of tonight's moves. Missions and flashcards recharge it. */
+  const knockout = () => { out = true; at = '7,4'; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); lines.push(`<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S.health} Health. Your other moves tonight are cancelled. Recharge with a mission (+${HEAL.mission} per right answer) or your flashcards (+${HEAL.card} per card).</p>`); };
   steps.forEach((k, i) => {
+    if (out) return;
     const P = PLACES[k], [c, r] = unkey(k);
     lines.push(`<p>Move ${i + 1}: ${k === at ? 'You stay at' : 'You walk to'} <b>${P ? P.name : LAND[T_AT(c, r)].name}</b>.</p>`);
     at = k;
@@ -546,7 +583,24 @@ function overnight() {
       lines.push(`<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`);
       if (S.boss[k] === 0) lines.push(`<p class="lt">★ ${P.name} is defeated! Everyone who hit it this week gets: ${P.loot.join(', ')}.</p>`);
       if (S.boss[k] === 0 && ADV.CH1.includes(k)) lines.push(`<p class="new">🔑 The class now has <b>${ADV.keys()}/3</b> key pieces.</p>`);
-      if (S.health === 0) { lines.push(`<p class="bad">You are knocked out and wake up in the Cakelab with a mild headache. Nothing lost.</p>`); at = '7,4'; S.health = ADV.stats().hp; }
+      if (S.health === 0) knockout();
+    } else if (P && P.type === 'monster') {
+      let hp = denHp(k);
+      if (!hp) { lines.push(`<p>The ${P.name} has gone to lick its wounds. Nothing to fight here tonight.</p>`); }
+      else {
+        const team = PEOPLE.filter(p => S.people[p.i] === k), mine = dmgOf(ADV.stats().str), total = mine + team.reduce(a => a + dmgOf(18), 0);
+        hp = Math.max(0, hp - total);
+        lines.push(`<p class="good">You${team.length ? ' and ' + team.length + ' classmate' + (team.length > 1 ? 's' : '') : ''} take on the ${P.name}: ${total} damage.</p>`);
+        const hit = Math.round(P.power * (0.5 + rnd())); S.health = Math.max(0, S.health - hit);
+        lines.push(`<p class="bad">It fights back: −${hit} Health.</p>`);
+        if (!hp) { S.xp += 30; S.coins += 8; S.dens[k] = { hp: 0, back: S.day + 2 }; lines.push(`<p class="lt">★ ${P.name} beaten! +30 XP, +8 coins${rnd() < .3 ? ', and it dropped a Fizzy Courage' : ''}.</p>`); }
+        else { S.dens[k] = { hp }; S.xp += 10; lines.push(`<p>The ${P.name} limps off with ${hp} health left. Come back tomorrow to finish it.</p>`); }
+      }
+      if (S.health === 0) knockout();
+    } else if (!P && rnd() < .3 && WILD[T_AT(c, r)]) {
+      const w = WILD[T_AT(c, r)], hit = 1 + Math.floor(rnd() * 3); S.health = Math.max(0, S.health - hit); S.xp += 10;
+      lines.push(`<p>On the way you're jumped by <b>${w}</b>. You see it off (+10 XP, −${hit} Health).</p>`);
+      if (S.health === 0) knockout();
     } else if (P && P.type === 'dungeon') {
       const finds = ['a Fizzy Courage', '12 coins', 'a single damp glove (useless)', 'a Bottled Aura'];
       const f = finds[Math.floor(rnd() * finds.length)];
@@ -557,7 +611,7 @@ function overnight() {
     } else if (P && P.type === 'shop') {
       lines.push(`<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>`);
     } else if (P && P.type === 'home') {
-      S.health = ADV.stats().hp; lines.push(`<p class="good">You rest in the Cakelab. Health refilled.</p>`);
+      const before = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest); lines.push(`<p class="good">You rest in the Cakelab: +${S.health - before} Health.</p>`);
     }
   });
   const visAfter = visibleSet();

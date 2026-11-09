@@ -43,6 +43,7 @@ const ADV = (() => {
   /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured. */
   const LV = { str: 2, hp: 3, mag: 1 };
   const GEAR = 2;
+  const BASE = { str: 8, hp: 15 };   // every adventurer starts with this, so a brand-new student can still win small fights
   const securedTotal = () => { const s = S.secured; return s.p + s.b + s.c; };
   const levelCap = () => 2 + Math.floor(securedTotal() / 8);
   const xpFor = l => 100 * l * (l - 1) / 2;
@@ -50,7 +51,7 @@ const ADV = (() => {
   const level = () => Math.min(rawLevel(), levelCap());
   const stats = () => {
     const l = level(), sec = S.secured;
-    const s = { l, str: sec.p + LV.str * l + GEAR, hp: sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
+    const s = { l, str: BASE.str + sec.p + LV.str * l + GEAR, hp: BASE.hp + sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
     if (S.health == null || S.health > s.hp) S.health = s.hp;
     return s;
   };
@@ -93,7 +94,7 @@ const ADV = (() => {
     n.innerHTML = `<a class="brand" href="index.html">Cakebread <b>Questing</b></a>`
       + tab('home', 'adventurer-home.html', '🏠', 'Base camp')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure', 'cta map', '<span class="soon">preview</span>')
+      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map', '<span class="soon">preview</span>')
       + `<span class="gap"></span>`
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
@@ -157,7 +158,8 @@ const ADV = (() => {
   const PAL = { K: '#1b1b1f', W: '#fff', R: '#e11d48', G: '#22c55e', g: '#166534', B: '#92400e', b: '#2563eb', Y: '#facc15', y: '#e9d48b',
     S: '#9ca3af', s: '#4b5563', P: '#7c3aed', O: '#f97316', C: '#67e8f9', c: '#bfe9f5', L: '#a3e635', D: '#475569', N: '#78350f', w: '#cbd5e1',
     E: '#7f1d1d', A: '#f59e0b', V: '#c4b5fd', Q: '#fde68a', T: '#0f766e', M: '#a21caf', U: '#57534e', Z: '#d6d3d1',
-    h: '#ecfccb', I: '#f9a8d4', H: '#2dd4bf', F: '#fbbf24' };
+    h: '#ecfccb', I: '#f9a8d4', H: '#2dd4bf', F: '#fbbf24',
+    e: '#fff6e3', J: '#f5b840', X: '#d4902a', p: '#f472b6' };
   const ICONS = {
     boss: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', 'KRRWWRRWWRRK', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRKWKKWKRRK', 'KRRRKWWKRRRK', '.KRRRRRRRRK.', '.KRKRRRRKRK.', '.KK.KKKK.KK.', '............'],
     ghost: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', '.KRWWRRWWRK.', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRRRKKRRRRK', 'KRRRKRRKRRRK', 'KRRRRRRRRRRK', 'KRRRRRRRRRRK', 'KRKRRKKRRKRK', 'KK.KK..KK.KK'],
@@ -181,8 +183,12 @@ const ADV = (() => {
     dragonzz: ['KK......K..K......KK', 'KRK.....KKKK.....KRK', 'KRRK...KRRRRK...KRRK', 'KRRRK.KRRRRRRK.KRRRK', 'KRRRRKRKKRRKKRKRRRRK', 'KERRRKRRRRRRRRKRRREK', '.KERRKRRRRRRRRKRREK.', '..KERKRRRRRRRRKREK..', '...KKKKRRRRRRKKKK...', '.....KRRQQQQRRK.....', '....KRRQQQQQQRRK....', '....KRRQQQQQQRRK....', '...KRRRKQQQQKRRRK...', '...KRRK.KKKK.KRRKKK.', '...KKK........KKERK.', '...............KKK..'],
     gate: ['....KKKKKKKK....', '...KUUUUUUUUK...', '..KUZZZZZZZZUK..', '..KUZKKKKKKZUK..', '..KUZKCCCCKZUK..', '..KUZKCWWCKZUK..', '..KUZKCCCCKZUK..', '..KUZKCCCCKZUK..', '..KUZKKKKKKZUK..', '.KKUUUUUUUUUUKK.', '.KUUUUUUUUUUUUK.'],
 
-    /* the Professor (cake-slice scientist mascot): icing + sprinkles, teal goggles, lab coat, flask */
-    prof: ['...............KKK..', '............KKKIIIK.', '.........KKKIIYIIbK.', '......KKKIIRIIIGIIK.', '...KKKIIbIIIIYIIIIK.', '..KIIIIIIIIIIIIIIIK.', '.KQQQQQQQQQQQQQQQQK.', '.KQQQTTTTQQTTTTQQQK.', '.KQQQTHHTTTTHHTQQQK.', '.KQQQTTTTQQTTTTQQQK.', '.KRRRRRRRRRRRRRRRRK.', '.KQQQQQQKQQQKQQQQQK.', '.KQQQQQQQKKKQQQQQQK.', '.KWWWWWWWKKWWWWWWWK.', 'KWWKWWWWWKWWWWWKWWHK', 'KQK.KWWWWKWWWWK.KHHK', '....KWWWWKWWWWK..KKK', '.....KQK...KQK......', '.....KKK...KKK......'],
+    /* the Professor (cake-slice scientist mascot, after the top-left pose on the user's sheet): frosting dome with sprinkles,
+       sponge rim, big eyes, blush, lab coat open over the jam layers, flask. prof = no goggles (current pick); B goggles pushed up; C goggles on; D happy. */
+    prof: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    profB: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKTHHHTTTTTTHHHTKXK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    profC: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJTTTTTJJJJJJTTTTTJK......', '.KJTHKHTTTTTTTTHKHTJK......', '.KJTTTTTJJJJJJTTTTTJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    profD: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKJJKJJJJJJKJJKJJK......', '.KJJJKKJJJJJJJJKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
     crumbs: ['............', '............', '............', '............', '...F........', '.......Q....', '..I.........', '.....F...Y..', '.Q......F...', '....Q.......', '............', '............'],
     superbug: ['..K..........K....', '.K.K..KKKKKK.K.K..', 'K...KKGGGGGGKK..K.', '...KGGGGGGGGGGK...', '..KGGLGGGGGLGGGK..', '.KGGWWKGGGWWKGGGK.', '.KGGWKKGGGWKKGGGK.', 'KGGGGGGGGGGGGGGGGK', 'KGGgGGKKKKKKGGgGGK', 'KGGGGKWKWKWKGGGGGK', '.KGGGGKKKKKKGGGGK.', '..KGGgGGGGGGGgGK..', '...KKGGGGGGGGKK...', '.K.K.KKKKKKKK.K.K.', 'K.........K......K'],
     rustwyrm: ['...........KKKK...', '..........KOOOOK..', '.........KOYOKOOK.', '.........KOOOOOOOK', '..........KOWKWKK.', '...........KOOK...', '....KKKK...KNOK...', '...KONNOK..KONK...', '..KOOKKOOK.KNOK...', '..KNK..KNOKKONK...', '..KOK...KONNOOK...', '..KNOK...KKKKK....', '...KOOK...........', '....KNOKKKK.......', '.....KOONNOK......', '......KKKKKK......'],
@@ -221,5 +227,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, save, reset, look, hasLook, nick, eq, LV, GEAR, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

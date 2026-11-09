@@ -126,8 +126,8 @@ $('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
 const toNextCap = 8 - ADV.securedTotal() % 8;
 $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
   : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
-$('stats').innerHTML = [['💪 Strength', s.str, 'str', `Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
-  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
+$('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
+  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
   ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · spells coming`, s.mag / 70]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
 

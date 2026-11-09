@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Professor — pixel sketches - Cakebread Questing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
+<style>
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:16px}
+.v{background:#fff;border:2px solid var(--ink);padding:14px;text-align:center}
+.v.pick{border-color:#16a34a;box-shadow:0 0 0 3px #16a34a55}
+.v .big{width:190px;image-rendering:pixelated;display:block;margin:0 auto 8px;background:linear-gradient(#cfe8f7 0 70%,#b9d77f 70%);border:2px solid #111;padding:8px}
+.v b{font:900 22px 'Barlow Condensed',Arial;text-transform:uppercase;display:block}
+.v .sizes{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-top:8px}
+.v .sizes img{image-rendering:pixelated}
+.v .tag{display:inline-block;background:#16a34a;color:#fff;font-size:12px;font-weight:700;padding:1px 8px;margin-top:6px}
+.ref{display:flex;gap:16px;align-items:center;margin-top:16px}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a></header>
+<main class="wrap">
+  <h1>The Professor — pixel sketches</h1>
+  <p class="lede">Four takes on the top-left pose from your sheet: frosting dome with sprinkles, sponge rim, big eyes and blush, lab coat open over the jam layers, flask. Each is shown big, then at the sizes the game uses (mission page, map cage, quest banner). <b>A is in the game now</b> — tell me which one to keep.</p>
+  <div class="grid" id="grid"></div>
+  <div class="teacher">
+    <b>Notes:</b>
+    <ul>
+      <li>Goggles over the eyes (C) match the sheet but at small sizes they hide the eyes — the face reads best without them (A) or with them pushed up on the frosting (B, keeps the "scientist" cue).</li>
+      <li>D (happy, eyes closed) is a reaction pose — for rescues, wins and mission results, not the default.</li>
+      <li>Other poses from the sheet that would make good extra sprites later: thinking (hand on chin), reading, pointing at a board, coffee mug, celebrating.</li>
+    </ul>
+  </div>
+</main>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('');
+const V = [['prof', 'A · No goggles', 'Clearest face at small sizes', true], ['profB', 'B · Goggles up', 'Goggles pushed up on the frosting'], ['profC', 'C · Goggles on', 'Closest to your sheet'], ['profD', 'D · Happy', 'Reaction pose for wins']];
+document.getElementById('grid').innerHTML = V.map(([id, name, why, pick]) => { const src = ADV.icon(id); return `<div class="v ${pick ? 'pick' : ''}"><img class="big" src="${src}" alt=""><b>${name}</b><span class="small">${why}</span>
+  <div class="sizes"><img src="${src}" width="60" alt=""><img src="${src}" width="40" alt=""><img src="${src}" width="26" alt=""></div>${pick ? '<span class="tag">In the game now</span>' : ''}</div>`; }).join('');
+</script>
+</body>
+</html>
