@@ -157,14 +157,18 @@ table.st th{background:var(--soft)}
         <tr><td><b style="color:var(--mag)">Magic</b></td><td>Chemistry</td><td>Stored for now. Spells come later (ideas: shield the team, double a brew, reveal a dungeon square)</td></tr>
       </table>
       <ul>
-        <li><b>Stat points come from the quiz, not the map:</b> each spec point you <i>secure</i> in a science adds 1 to its stat. Real revision is the only way to get stronger, so a student can't grind the map instead of learning.</li>
-        <li><b>Level comes from the map</b> (XP from bosses and dungeons) but is <b>capped by the quiz</b>: your level cap is 2 + one level for every 8 spec points secured. Hit the cap and XP waits in the bank until you secure more points.</li>
+        <li><b>Your stats have two halves, so both the quiz and the game make you stronger:</b>
+          <br>• <b>Quiz half:</b> each spec point you <i>secure</i> in a science adds 1 to its stat.
+          <br>• <b>Game half:</b> every level adds +2 Strength, +3 Health and +1 Magic.</li>
+        <li><b>Level comes from the map</b> (XP from bosses and dungeons) but is <b>capped by the quiz</b>: cap = 2 + one level for every 8 spec points secured. Hit the cap and XP waits in the bank until you secure more points. So playing without revising stalls, and revising without playing leaves easy levels on the table.</li>
         <li>Gear can add small bonuses (+1 to +3) to a stat. The joke stats (Aura, Brain Cells, Vibes) stay jokes.</li>
         <li>Weaker students still matter: team fights add everyone's damage together, every hit counts towards the shared loot, and luck plays a part.</li>
       </ul>
       <h3>Room to grow (shown on the map)</h3>
       <ul>
         <li><b>Fog round the edge</b> (Uncharted): new squares can be revealed as the term goes on.</li>
+        <li><b>The Broken Bridge</b>: half a bridge leading west into the fog — a future map or a class repair event.</li>
+        <li><b>The Abandoned Mine</b>: boarded up in Gravity Peaks — a later dungeon, perhaps opened by a class-wide target.</li>
         <li><b>The Exam Hall Gate</b>: a locked portal to Map 2 (e.g. next term's topics or a mocks map).</li>
         <li><b>The Separate Science Ferry</b>: closed for now; an island for triple-science content.</li>
         <li><b>The Mock Exam</b>: a world boss asleep at the top of the map, to wake for the whole year group before mocks.</li>
@@ -197,6 +201,8 @@ const ICONS = {
   peak: ['............', '.....WW.....', '....WWSS....', '...SSSSSs...', '..SSSSSSss..', '.SSSSSSSsss.', 'SSSSSSSSssss', '............', '............', '............', '............', '............'],
   bubble: ['............', '...L........', '..L.L...L...', '...L...L.L..', '........L...', '....OO......', '...O..O.....', '....OO......', '............', '............', '............', '............'],
   boat: ['............', '.....K......', '.....KW.....', '.....KWW....', '.....KWWW...', '.....K......', '.BBBBBBBBBB.', '..BBBBBBBB..', '...bbbbbb...', '............', '............', '............'],
+  bridge: ['............', '............', 'B..B.....B..', 'BBBB.....BBB', 'BBBB..B..BBB', 'B..B...B.B..', 'B..B.....B..', 'bbbbbbbbbbbb', '.bbbbbbbbbb.', '............', '............', '............'],
+  mine: ['............', '.BBBBBBBBBB.', '.BKKKKKKKKB.', '.BYKKKKKKYB.', '.BKYKKKKYKB.', '.BKKYKKYKKB.', '.BKKKYYKKKB.', '.BKKYKKYKKB.', '.BKYKKKKYKB.', '.BYKKKKKKYB.', 'SSSSSSSSSSSS', '............'],
   lock: ['............', '....KKKK....', '...K....K...', '...K....K...', '..YYYYYYYY..', '..YYYKKYYY..', '..YYYKKYYY..', '..YYYYYYYY..', '............', '............', '............', '............'],
 };
 const iconCache = {};
@@ -236,6 +242,8 @@ const PLACES = {
   '9,5': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
   '3,6': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
   '10,3': { type: 'locked', name: 'The Exam Hall Gate', icon: 'portal', text: 'Locked. Leads to Map 2 — opens later in the year.' },
+  '0,3': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the fog. Someone will have to fix it one day — a future map or event starts here.' },
+  '8,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night. Opens later in the year.' },
   '0,7': { type: 'locked', name: 'Separate Science Ferry', icon: 'boat', text: 'Closed. Will sail to an island of triple-science content one day.' },
 };
 const DECOR = { forest: 'tree', peaks: 'peak', marsh: 'bubble' };
@@ -266,7 +274,9 @@ let me = { at: '5,3', moves: 2, plan: [], ko: false }, sel = '5,3', day = 1;
 const levelCap = () => 2 + Math.floor((ME.secured.p + ME.secured.b + ME.secured.c) / 8);
 const xpFor = l => 100 * l * (l - 1) / 2;
 function level() { let l = 1; while (xpFor(l + 1) <= ME.xp) l++; return Math.min(l, levelCap()); }
-const stats = () => ({ str: 1 + ME.secured.p + 2, hp: 1 + ME.secured.b, mag: ME.secured.c });  // +2 = gear bonus (pretend)
+/* stats = quiz part (secured spec points) + level part (from the map) + gear. Both halves matter. */
+const LV = { str: 2, hp: 3, mag: 1 };   // per level
+const stats = () => { const l = level(); return { str: ME.secured.p + LV.str * l + 2, hp: ME.secured.b + LV.hp * l, mag: ME.secured.c + LV.mag * l, l }; };
 
 function renderMe() {
   document.getElementById('nm').textContent = ME.nick;
@@ -276,8 +286,9 @@ function renderMe() {
   document.getElementById('xpbar').style.width = Math.min(100, (ME.xp - cur) / (next - cur) * 100) + '%';
   document.getElementById('cap').innerHTML = l >= cap ? `Level cap ${cap} reached — <b>secure more spec points in the quiz</b> to go higher. (${ME.xp - cur} XP waiting)` : `${ME.xp} XP · level cap ${cap} (from the quiz)`;
   const s = stats();
-  document.getElementById('stats').innerHTML = [['Strength', s.str, 'str', `Physics: ${ME.secured.p} points secured, +2 gear`], ['Health', `${ME.health}/${s.hp}`, 'hp', `Biology: ${ME.secured.b} points secured`, ME.health / s.hp], ['Magic', s.mag, 'mag', `Chemistry: ${ME.secured.c} points secured · spells coming later`]]
-    .map(([n, v, c, how, f]) => `<span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${(f !== undefined ? f : Math.min(1, (typeof v === 'number' ? v : 0) / 40)) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small>`).join('');
+  if (ME.health > s.hp) ME.health = s.hp;
+  document.getElementById('stats').innerHTML = [['Strength', s.str, 'str', `Physics ${ME.secured.p} + level ${LV.str * s.l} + gear 2`], ['Health', `${ME.health}/${s.hp}`, 'hp', `Biology ${ME.secured.b} + level ${LV.hp * s.l}`, ME.health / s.hp], ['Magic', s.mag, 'mag', `Chemistry ${ME.secured.c} + level ${LV.mag * s.l} · spells coming later`]]
+    .map(([n, v, c, how, f]) => `<span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${(f !== undefined ? f : Math.min(1, (typeof v === 'number' ? v : 0) / 60)) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small>`).join('');
   document.getElementById('moves').innerHTML = [...Array(Math.max(me.moves, 2))].map((_, i) => `<span class="${i < me.plan.length ? 'used' : ''}">${i + 1}</span>`).join('');
   document.getElementById('brews').innerHTML = BREWS.map(([n, q]) => `<span class="brew">${n} ×${q}</span>`).join('');
 }
