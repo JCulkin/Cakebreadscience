@@ -60,7 +60,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="mid">
       <span class="kick">New</span>
       <b class="t">Start your adventure</b>
-      <div class="desc">Make a little pixel adventurer. Every spec point you secure in the quiz makes them stronger. Every day you get 2 moves on the map to fight bosses with your class.</div>
+      <div class="desc">The Professor has been carried off by a dragon. Make a little pixel adventurer, revise to make them stronger, and help your class win the three key pieces to free him.</div>
     </div>
     <div class="go">Start →</div>
   </a>
@@ -76,9 +76,9 @@ body.new .returning{display:none}body.new .newbie{display:grid}
       <p class="small" style="margin-top:6px">Held by whoever got the most correct answers in that science in the last 7 days.</p>
     </div>
     <div class="card">
-      <h3>On the map now</h3>
-      <p style="font-size:15px">⚔ <b>Granitus the Stone Golem</b> is at 34% health — 4 of your class are fighting it.<br>💤 <b>Old Scorch the Dragon</b> is asleep. For now.</p>
-      <p style="margin-top:8px"><a href="adventurer-map.html">Open the map →</a></p>
+      <h3>The story so far</h3>
+      <p style="font-size:15px"><span id="storyNow"></span></p>
+      <p style="margin-top:8px"><a href="adventurer-map.html">Open Breadventure →</a></p>
     </div>
   </div>
 
@@ -110,7 +110,8 @@ const movesLeft = S.moves - S.plan.length;
 document.getElementById('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">💪 ${s.str}</span><span class="chip" style="color:var(--hp)">❤ ${s.hp}</span><span class="chip" style="color:var(--mag)">✨ ${s.mag}</span>`
   + (S.reportSeen < S.day ? `<span class="chip hot">📜 New morning report</span>` : '')
   + (movesLeft > 0 ? `<span class="chip hot">🗺 ${movesLeft} move${movesLeft === 1 ? '' : 's'} to plan</span>` : '')
-  + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`);
+  + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`) + (S.chapter < 2 ? `<span class="chip" style="border-color:#7c3aed">🔑 ${ADV.keys()}/3 · Free the Professor</span>` : '');
+document.getElementById('storyNow').innerHTML = S.chapter < 2 ? `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has locked the Professor in its lair. The class has <b>${ADV.keys()}/3</b> key pieces.<br>⚔ <b>Granitus the Stone Golem</b> is at 34% health — 4 of your class are fighting it.` : `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated" alt="">The Professor is free! <b>Chapter 2:</b> the Superbug, the Rust Wyrm and the Half-Life Horror are awake.`;
 document.getElementById('toggleNew').onclick = () => { document.body.classList.toggle('new'); scrollTo(0, 0); };
 
 /* pretend board */

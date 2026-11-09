@@ -22,6 +22,7 @@
 .choice .why{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
 .choice b{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
 .choice .topic{font-size:14px;color:var(--muted)}
+.prof{display:flex;gap:12px;align-items:center;margin-top:12px;background:#fffaf0;border:2px solid var(--ink);padding:8px 12px}.prof img{width:60px;image-rendering:pixelated;flex:none}.prof p{font-size:15px}
 .other{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .other select{font:inherit;padding:7px;border:2px solid var(--ink);max-width:100%}
 /* fight */
@@ -84,6 +85,7 @@
   <section id="choose">
     <h1>Choose a mission</h1>
     <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, right answers count towards securing spec points (which make you stronger), and your first mission each day gives you an extra move on the map.</p>
+    <div class="prof" id="prof"></div>
     <div class="choices" id="choices"></div>
     <div class="other"><label for="pick"><b>Or pick any topic:</b></label><select id="pick"></select><button class="btn" id="pickGo">Fight →</button></div>
   </section>
@@ -146,6 +148,9 @@ SPEC.forEach(subj => {
 const subBy = k => SUBS.find(s => s.key === k);
 const foeOf = sub => { const [name, shape] = FOES[sub.topic] || ['The Common Misconception', 'boss']; return { name, shape, col: SCI_COL[sub.L], img: ADV.icon(shape, SCI_COL[sub.L]) }; };
 
+/* the Professor's briefing (chapter 1: his notes, found in the Cakelab) */
+$('prof').innerHTML = S.chapter < 2 ? `<img src="${ADV.icon('prof')}" alt="" style="filter:grayscale(1);opacity:.6"><p><b>Found pinned up in the empty Cakelab:</b> <i>“Misconceptions are everywhere. Knock them out with real science and you'll be strong enough to come and get me. — The Professor. P.S. Bring snacks.”</i></p>`
+  : `<img src="${ADV.icon('prof')}" alt=""><p><b>The Professor:</b> <i>“Today's suggestion is waves. Get seven right and that misconception is toast. Lightly buttered.”</i></p>`;
 /* choose screen */
 const PICKS = [['P3b', 'Suggested', '#b45309', 'Next on your path'], ['B2e', 'Rusty', '#2563eb', 'Not practised for 3 weeks'], ['C1f', 'Fresh', '#16a34a', 'Not started yet']].filter(([k]) => subBy(k));
 $('choices').innerHTML = PICKS.map(([k, tag, col, why]) => { const sb = subBy(k), f = foeOf(sb); return `<button class="choice" data-sub="${k}"><span class="why" style="color:${col}">${tag}</span><img class="px" src="${f.img}" alt=""><b>${f.name}</b><span class="topic">${sb.subj} ${sb.key.slice(1)} · ${sb.name}</span><span class="small">${why}</span></button>`; }).join('');

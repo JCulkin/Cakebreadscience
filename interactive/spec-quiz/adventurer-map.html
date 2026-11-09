@@ -46,14 +46,21 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .hud .tools{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
 .hud .tools .btn{padding:4px 10px;font-size:14px}
 .hud .day{font-size:13px;color:var(--muted);font-weight:700}
+.questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
+.questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
+.questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
+@media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px}}
+#map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:3}
+.panel .fig{display:block;width:96px;margin:4px auto 0}
 @media(max-width:1460px){.hud .day{display:none}}
+@media(max-width:1400px){.hud .tools .t{display:none}.hud .tools #sleep .t{display:inline}}
 @media(max-width:760px){.hud{gap:6px 10px;padding:6px 8px}.hud .who img{width:32px;height:32px}.hud .nm{font-size:17px}.hud .hp .bar{width:70px}.hud .tools{margin-left:0;width:100%}.hud .tools .t{display:none}.hud .tools #sleep{margin-left:auto}.hud .tools #sleep .t{display:inline}}
 
 /* map */
 .mapwrap{position:relative;border:2px solid var(--ink);background:var(--sea)}
 .mapscroll{overflow:auto;-webkit-overflow-scrolling:touch}
 #map{display:block;width:100%;height:auto;max-height:calc(100vh - 180px);min-height:340px;background:var(--sea);user-select:none;-webkit-user-select:none}
-@media(max-width:760px){#map{width:780px;max-height:none}}
+@media(max-width:760px){#map{width:1000px;max-height:none}}
 #map .hit{fill:transparent;cursor:pointer}
 #map .hit:hover{fill:#ffffff22}
 .tip{position:absolute;pointer-events:none;background:#111;color:#fff;font-size:13px;padding:5px 9px;border-radius:4px;white-space:nowrap;z-index:5;display:none;box-shadow:0 2px 0 #0004}
@@ -103,6 +110,7 @@ table.st th{background:var(--soft)}
 <div class="wrap">
   <div class="hud" id="hud"></div>
   <div class="mapwrap">
+    <div class="questbar" id="questbar"></div>
     <div class="mapscroll" id="scroll"><svg id="map" role="img" aria-label="Hex map of Breadventure Land. Tap a square for details."></svg></div>
     <div class="tip" id="tip"></div>
     <div class="panel" id="panel" aria-live="polite"></div>
@@ -143,7 +151,8 @@ table.st th{background:var(--soft)}
           <li><b>The Broken Bridge</b> (west coast): leads off the map; a future map or a class repair event.</li>
           <li><b>The Abandoned Mine</b> (Gravity Peaks): a later dungeon.</li>
           <li><b>The Ancient Gate</b> (east): portal to Map 2.</li>
-          <li><b>Old Scorch the Dragon</b> (north): world boss, asleep; wakes for a year-group event.</li>
+          <li><b>Crumbmaw the Dragon</b> (north): took the Professor. Asleep; wakes for a year-group finale.</li>
+          <li><b>Chapter 1:</b> beat the Spore Lord, the Stone Golem and the Acid Hydra as a class to win the three key pieces and free the Professor. <b>Chapter 2</b> then wakes the Superbug, the Rust Wyrm and the Half-Life Horror (by the old reactor).</li>
         </ul>
       </div>
     </div>
@@ -162,20 +171,24 @@ const $ = id => document.getElementById(id);
 
 /* ===================== the world ===================== */
 /* ~ sea, o lake, = river (all water: can't walk), B bridge over the river,
-   F woods, f meadow, P fields, M peaks, S snow, m marsh, d dunes, s beach, T town */
+   F woods, f meadow, P fields, M peaks, S snow, m marsh, d dunes, s beach, T town,
+   b Petri Swamp (bacteria), j Scrap Heap Hills (rust), r the Glowing Wastes (old reactor) */
 const ROWS_TXT = [
-  '~~~~~FSSSSM~~~~',
-  '~~FFFFPSSSMMM~~',
-  '~FFFFFPP=MMMMM~',
-  '~FFooFPP=PMMMM~',
-  '~sFoofPTBPPMMPP',
-  '~sFFfPTP=PPddd~',
-  '~smmPPfP=Pdddd~',
-  '~~mmmmPPBPddd~~',
-  '~~~mmmmP=Pdd~~~',
-  '~~~~~mms=~~~~~~',
+  '~~~~~FSSSSM~~~~~~~~~',
+  '~~FFFFPSSSMMM~~~~~~~',
+  '~FFFFFPP=MMMMMM~~~~~',
+  '~FFooFPP=PMMMMjj~~~~',
+  '~sFoofPTBPPMMPjjjj~~',
+  '~sFFfPTP=PPdddPjjrr~',
+  '~smmPPfP=PddddPrrrr~',
+  '~~mmmmPPBPdddPPrrrr~',
+  '~~bmmmmP=PddPPrrrr~~',
+  '~~bbbmPs=sPPddrr~~~~',
+  '~bbbbbPP=PPPdd~~~~~~',
+  '~~bbbbPPBPPs~~~~~~~~',
+  '~~~~bb~~=~~~~~~~~~~~',
 ];
-const COLS = 15, ROWS = 10, R = 30, W3 = Math.sqrt(3) * R;
+const COLS = 20, ROWS = 13, R = 30, W3 = Math.sqrt(3) * R;
 const VB_W = Math.ceil(W3 * (COLS + 0.5) + 8), VB_H = Math.ceil(R * 1.5 * (ROWS - 1) + 2 * R + 8);
 const T_AT = (c, r) => (ROWS_TXT[r] || '')[c] || '~';
 const WATER = new Set(['~', 'o', '=']);
@@ -189,6 +202,9 @@ const LAND = {
   d: { col: '#e8cf8f', name: 'Dry Lab Dunes', decor: [['cactus', 1], ['rock', .6]] },
   s: { col: '#efe0b0', name: 'The Beach', decor: [['rock', .3]] },
   T: { col: '#e7d3a1', name: 'Homeroom Town', decor: [['house', 2]] },
+  b: { col: '#79b4a3', name: 'The Petri Swamp', decor: [['germ', 1.5], ['reeds', .8], ['bubble', .6]] },
+  j: { col: '#b38b6d', name: 'Scrap Heap Hills', decor: [['cog', 1.2], ['rock', .8]] },
+  r: { col: '#c9cf7f', name: 'The Glowing Wastes', decor: [['barrel', 1], ['deadtree', .9], ['rock', .4]] },
   B: { col: null, name: 'Bridge over the River Tangent', decor: [] },
 };
 const WATER_NAME = { '~': ['The Revision Sea', 'Endless. Salty. You cannot swim in a lab coat.'], o: ['Lost Property Lake', 'Full of single gloves and PE kits. Too deep to wade.'], '=': ['The River Tangent', 'Flows off in a direction nobody expected. Cross at a bridge.'] };
@@ -197,22 +213,34 @@ const PLACES = {
   '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
   '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend coins on brews. Stock changes every Monday.', stock: ['Bottled Aura · 30 coins', 'Electrolyte Slushie · 20 coins', 'Fizzy Courage · 40 coins', 'Decaf Panic · 25 coins'] },
   '6,6': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. A random event every night: a coin, a brew, or a very wet sock.' },
-  '2,2': { type: 'boss', science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
-    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Grins a lot.', loot: ['Spore Lord\'s Cap (Lowkey Legendary)', '2× Electrolyte Slushie', '+120 XP each'] },
-  '11,2': { type: 'boss', science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 1000, power: 8,
-    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force.', loot: ['Frictionless Slippers (Lowkey Legendary)', 'Bottled Aura', '+150 XP each'] },
-  '4,7': { type: 'boss', science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
-    text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Bring friends.', loot: ['Hydra Scale Shield (Rare)', 'Fizzy Courage', '+130 XP each'] },
-  '7,0': { type: 'worldboss', name: 'Old Scorch the Dragon', icon: 'dragonzz', text: 'Asleep on a hoard of stolen lab equipment in the Cold Store Hills. Far too strong for one class. When it wakes, the whole year group fights it together.' },
+  /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
+  '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
+    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', loot: ['🔑 Key piece 1 of 3', 'Spore Lord\'s Cap (Lowkey Legendary)', '+120 XP each'] },
+  '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 1000, power: 8,
+    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Legendary)', '+150 XP each'] },
+  '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
+    text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', loot: ['🔑 Key piece 3 of 3', 'Hydra Scale Shield (Rare)', '+130 XP each'] },
+  '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for one class. When it wakes, the whole year group fights it together.' },
+  '7,1': { type: 'cage', name: 'The Professor\'s Cage', icon: 'prof', text: 'The Professor is locked in here, looking cross and slightly crumbly. The lock needs all three key pieces — win them from the Spore Lord, the Stone Golem and the Acid Hydra.' },
+  /* chapter 2: wake up once the Professor is free */
+  '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 8,
+    text: 'A bacterium that has survived every antibiotic thrown at it, so now it is enormous and very smug. Lives in the Petri Swamp. Natural selection made it; your class will unmake it.', loot: ['Agar Plate Armour (Rare)', '2× Electrolyte Slushie', '+160 XP each'] },
+  '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 950, power: 9,
+    text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', loot: ['Galvanised Gauntlets (Rare)', 'Fizzy Courage', '+160 XP each'] },
+  '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
+    text: 'Something leaked out of the old reactor. Half of it has already decayed. The other half is very much still here.', loot: ['Lead Apron of Destiny (Lowkey Legendary)', 'Bottled Aura', '+180 XP each'] },
+  '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', text: 'A broken-down nuclear power station, cracked and humming. Explore it floor by floor (in a very sensible lead suit) for loot.' },
   '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', text: 'Three floors deep. Each night inside explores one floor: small fights, random loot, sometimes a brew.' },
   '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
   '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
-  '14,4': { type: 'locked', name: 'The Ancient Gate', icon: 'gate', text: 'A stone gate humming with blue light. Locked. It leads somewhere new — opens later in the year.' },
-  '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a future map or a class repair event starts here.' },
-  '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night.' },
+  '18,7': { type: 'locked', name: 'The Ancient Gate', icon: 'gate', text: 'A stone gate humming with blue light at the far edge of the Glowing Wastes. Locked. It leads somewhere new — a later chapter.' },
+  '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a later chapter (the Professor has plans).' },
+  '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night. A later chapter.' },
 };
-S.boss = Object.assign({ '2,2': 600, '11,2': 340, '4,7': 820 }, S.boss || {});
-const TYPE = { boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
+/* the crumb trail from the Cakelab to the dragon's lair (shows through the fog) */
+const CRUMBS = ['7,3', '7,2'];
+S.boss = Object.assign({ '2,2': 600, '11,2': 340, '4,7': 820, '3,10': 1000, '16,4': 950, '17,6': 1100 }, S.boss || {});
+const TYPE = { cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
 
 /* ===================== geometry ===================== */
 const key = (c, r) => c + ',' + r, unkey = k => k.split(',').map(Number);
@@ -227,7 +255,8 @@ function nb(c, r, dir) {
 const inMap = (c, r) => c >= 0 && r >= 0 && c < COLS && r < ROWS;
 const neighbours = (c, r) => [0, 1, 2, 3, 4, 5].map(d => nb(c, r, d)).filter(([x, y]) => inMap(x, y));
 const isWater = (c, r) => !inMap(c, r) || WATER.has(T_AT(c, r));
-const walkable = (c, r) => inMap(c, r) && !isWater(c, r) && !(PLACES[key(c, r)] && ['locked', 'worldboss'].includes(PLACES[key(c, r)].type));
+const sealed = P => P && (['locked', 'worldboss'].includes(P.type) || (P.type === 'cage' && S.chapter < 2 && ADV.keys() < 3) || (P.ch || 1) > S.chapter);
+const walkable = (c, r) => inMap(c, r) && !isWater(c, r) && !sealed(PLACES[key(c, r)]);
 const cube = (c, r) => { const x = c - (r - (r & 1)) / 2; return [x, r, -x - r]; };
 const dist = (a, b) => { const p = cube(...a), q = cube(...b); return Math.max(Math.abs(p[0] - q[0]), Math.abs(p[1] - q[1]), Math.abs(p[2] - q[2])); };
 const hash = (c, r, s = 0) => { let h = (c * 374761393 + r * 668265263 + s * 2246822519) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
@@ -251,10 +280,11 @@ const rnd = (() => { let s = 7 + S.day * 31; return () => (s = (s * 16807) % 214
 const O = PIXEL.OPTIONS, pickO = l => l[Math.floor(rnd() * l.length)].id;
 const NAMES = ['Sleepy Photon', 'Turbo Enzyme', 'Cosmic Alkane', 'Fizzy Quark', 'Gentle Isotope', 'Mighty Ribosome', 'Sneaky Catalyst', 'Wobbly Comet', 'Valiant Magnet', 'Lowkey Proton', 'Electric Beaker', 'Curious Nucleus'];
 if (!S.people) S.people = ['11,2', '11,2', '11,2', '2,2', '2,2', '2,5', '6,5', '6,6', '12,6', '7,4', '9,4', '4,7'];
+const DOING = ['fighting', 'exploring', 'having a sit down', 'looking for crumbs', 'reading a map upside down'];
 const PEOPLE = NAMES.map((n, i) => {
   const hair = O.hair[Math.floor(rnd() * O.hair.length)];
   const base = { skin: pickO(O.skin), hair: hair.id, hc: pickO(hair.cloth ? O.cloth : O.hc), eyes: pickO(O.eyes), mouth: pickO(O.mouth), extras: rnd() < .3 ? ['glasses'] : [] };
-  return { nick: n, i, face: PIXEL.portrait(base) };
+  return { nick: n, i, base, lvl: 2 + Math.floor(rnd() * 5), face: PIXEL.portrait(base) };
 });
 const ME_FACE = PIXEL.portrait(ADV.look());
 
@@ -314,9 +344,16 @@ function renderMap() {
         + `<line x1="${-W3 / 2 - 4}" y1="-10" x2="${W3 / 2 + 4}" y2="-10" stroke="#451a03" stroke-width="2"/><line x1="${-W3 / 2 - 4}" y1="10" x2="${W3 / 2 + 4}" y2="10" stroke="#451a03" stroke-width="2"/></g>`;
     }
     if (P && vis.has(k)) {
-      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.icon === 'gate' ? 36 : 32;
-      things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big);
-      if (P.type === 'boss') {
+      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
+      const asleep = (P.ch || 1) > S.chapter, freed = P.type === 'cage' && S.chapter >= 2;
+      if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
+      if (P.type === 'cage') {   /* bars over the Professor (or an empty open cage once he's free) */
+        const L = x - 18, T = y - 26;
+        things += `<rect x="${L}" y="${T}" width="36" height="40" fill="none" stroke="#334155" stroke-width="3"/>` + (freed ? `<line x1="${L + 36}" y1="${T}" x2="${L + 50}" y2="${T + 8}" stroke="#334155" stroke-width="3"/>` : [1, 2, 3, 4, 5].map(i => `<line x1="${L + i * 6}" y1="${T}" x2="${L + i * 6}" y2="${T + 40}" stroke="#334155" stroke-width="2.2"/>`).join(''));
+        things += `<text x="${x}" y="${y + 24}" text-anchor="middle" font-size="11" font-weight="900" fill="#111" paint-order="stroke" stroke="#fff" stroke-width="3">🔑 ${S.chapter >= 2 ? 3 : ADV.keys()}/3</text>`;
+      }
+      if (asleep) things += `<text x="${x + 16}" y="${y - 16}" font-size="12" font-weight="900" fill="#334155">z</text><text x="${x + 23}" y="${y - 24}" font-size="9" font-weight="900" fill="#334155">z</text>`;
+      if (P.type === 'boss' && !asleep) {
         const hp = S.boss[k];
         things += `<rect x="${x - 20}" y="${y + 16}" width="40" height="6" fill="#fff" stroke="#111" stroke-width="1.2"/><rect x="${x - 19.4}" y="${y + 16.6}" width="${38.8 * hp / P.max}" height="4.8" fill="#e11d48"/>`;
       }
@@ -326,8 +363,9 @@ function renderMap() {
     if (!vis.has(k)) {
       fog += `<polygon points="${hexPts(x, y, R * 1.35)}" fill="#dfe4ea"/>`;
       if (hash(c, r, 40) < .6) fog += `<circle cx="${x + (hash(c, r, 41) - .5) * 20}" cy="${y + (hash(c, r, 42) - .5) * 16}" r="${12 + hash(c, r, 43) * 10}" fill="#ffffff"/>`;
-      if (P && (P.type === 'boss' || P.type === 'worldboss')) fogTop += img(icon('shadow'), x - 18, y - 22, 36, 'opacity=".75"') + `<text x="${x}" y="${y + 21}" text-anchor="middle" font-size="11" font-weight="900" fill="#475569">?</text>`;
+      if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) fogTop += img(icon('shadow'), x - 18, y - 22, 36, 'opacity=".75"') + `<text x="${x}" y="${y + 21}" text-anchor="middle" font-size="11" font-weight="900" fill="#475569">?</text>`;
     }
+    if (CRUMBS.includes(k) && S.chapter < 2) fogTop += img(icon('crumbs'), x - 22, y - 18, 44) + img(icon('crumbs'), x - 8, y - 4, 34);
     hits += `<polygon class="hit" data-k="${k}" points="${hexPts(x, y)}"/>`;
   }
   /* fog also covers the sea round the edge of the map */
@@ -337,18 +375,18 @@ function renderMap() {
     const [x, y] = center(c, r);
     fog += `<polygon points="${hexPts(x, y, R * 1.35)}" fill="#dfe4ea"/>`;
   }
-  /* people (only where you can see) */
+  /* people (only where you can see) — drawn above the hit layer so their heads can be clicked */
   const here = {};
-  PEOPLE.forEach(p => { const at = S.people[p.i]; if (vis.has(at)) (here[at] = here[at] || []).push(p.face); });
-  (here[S.at] = here[S.at] || []).unshift('ME');
+  PEOPLE.forEach(p => { const at = S.people[p.i]; if (vis.has(at)) (here[at] = here[at] || []).push(p.i); });
+  (here[S.at] = here[S.at] || []).unshift('me');
   let ppl = '';
-  Object.entries(here).forEach(([k, faces]) => {
-    const [x, y] = center(...unkey(k)), show = faces.slice(0, 3);
-    show.forEach((f, i) => {
-      const fx = x - 25 + i * 13, fy = y - 32;
-      ppl += `<rect x="${fx - 1.5}" y="${fy - 1.5}" width="19" height="19" rx="3" fill="${f === 'ME' ? '#00a03a' : '#fff'}" stroke="#111" stroke-width="1.5"/>` + img(f === 'ME' ? ME_FACE : f, fx, fy, 16);
+  Object.entries(here).forEach(([k, list]) => {
+    const [x, y] = center(...unkey(k)), show = list.slice(0, 3);
+    show.forEach((who, i) => {
+      const fx = x - 25 + i * 13, fy = y - 32, me = who === 'me';
+      ppl += `<g class="pp" data-p="${who}"><rect x="${fx - 1.5}" y="${fy - 1.5}" width="19" height="19" rx="3" fill="${me ? '#00a03a' : '#fff'}" stroke="#111" stroke-width="1.5"/>` + img(me ? ME_FACE : PEOPLE[who].face, fx, fy, 16) + `</g>`;
     });
-    if (faces.length > 3) ppl += `<rect x="${x + 14}" y="${y - 32}" width="18" height="16" rx="3" fill="#111"/><text x="${x + 23}" y="${y - 20}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">+${faces.length - 3}</text>`;
+    if (list.length > 3) ppl += `<g class="pp" data-k2="${k}"><rect x="${x + 14}" y="${y - 32}" width="18" height="16" rx="3" fill="#111"/><text x="${x + 23}" y="${y - 20}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">+${list.length - 3}</text></g>`;
   });
   /* planned route + reachable squares + selection */
   let route = '';
@@ -363,9 +401,9 @@ function renderMap() {
   svg.style.background = revealAll ? '#4f9fd1' : '#e4e8ed';   /* letterbox edges match the fog */
   svg.innerHTML = `<defs><filter id="fogblur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="9"/></filter>
 </defs>
-    <rect width="${VB_W}" height="${VB_H}" fill="#4f9fd1"/>${water}${land}${coast}<g>${decor}</g>${things}${ppl}
+    <rect width="${VB_W}" height="${VB_H}" fill="#4f9fd1"/>${water}${land}${coast}<g>${decor}</g>${things}
     <g filter="url(#fogblur)" opacity=".97">${fog}</g>${fogTop}${route}
-    ${hits}`;
+    ${hits}${ppl}`;
 }
 
 /* ===================== HUD, panel, tooltip ===================== */
@@ -377,6 +415,8 @@ function renderHud() {
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
     <div class="day">Day ${S.day} · moves happen at midnight</div>
     <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button><button class="btn alt" id="fogBtn" title="Mock-up only: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button><button class="btn green" id="sleep" title="Mock-up only: pretend it is tomorrow">🌙<span class="t"> Mock: skip to morning</span></button></div>`;
+  $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · class quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
+    : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
   $('undo').onclick = () => { S.plan.pop(); ADV.save(); renderAll(); };
   $('repBtn').onclick = () => showReport();
   $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
@@ -386,11 +426,14 @@ function renderHud() {
 function describe(k) {
   const [c, r] = unkey(k), t = T_AT(c, r), P = PLACES[k], vis = visibleSet().has(k);
   if (!vis) {
-    if (P && (P.type === 'boss' || P.type === 'worldboss')) return { tp: 'Unexplored', name: 'Something big', text: 'You can hear it from here. Get within 2 squares to see what it is.' };
+    if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) return { tp: 'Unexplored', name: 'Something big', text: 'You can hear it from here. Get within 2 squares to see what it is.' };
+    if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'Cake crumbs in the fog', text: 'A trail of crumbs and sprinkles leads north into the fog. Follow it.' };
     return { tp: 'Unexplored', name: 'Fog', text: 'Nobody in your party has been near here yet. Walk within 2 squares to see what\'s there.' };
   }
-  if (P) return { tp: TYPE[P.type] + (P.science ? ' · ' + ADV.SCI[P.science] : ''), name: P.name, P, text: P.text };
+  if (P && P.type === 'cage' && S.chapter >= 2) return { tp: 'Empty cage', name: P.name, P, text: 'Empty now — the class set the Professor free. Someone has left a thank-you note and a single sprinkle.' };
+  if (P) return { tp: TYPE[P.type] + (P.science ? ' · ' + ADV.SCI[P.science] : '') + ((P.ch || 1) > S.chapter ? ' · Chapter ' + P.ch + ' (asleep)' : ''), name: P.name, P, text: P.text + ((P.ch || 1) > S.chapter ? ' <b>Asleep until the Professor is free.</b>' : '') };
   if (WATER.has(t)) return { tp: 'Water · can\'t cross', name: WATER_NAME[t][0], text: WATER_NAME[t][1], water: true };
+  if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'A trail of cake crumbs', text: 'Crumbs, sprinkles and the odd scorch mark, leading north towards the Cold Store Hills…' };
   return { tp: 'Land', name: LAND[t].name, text: t === 'B' ? 'The only ways across the River Tangent are this bridge and the one further south.' : 'Walk through. Each night here has a small chance of a random event.' };
 }
 
@@ -400,7 +443,7 @@ function renderPanel() {
   const D = describe(sel), P = D.P, reach = reachable(), last = lastStop();
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
   let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon)}" alt="">` : ''}${D.name}</div>`;
-  if (P && P.type === 'boss') h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
   if (P && P.stock) h += `<div class="loot"><b>In stock:</b><br>${P.stock.join('<br>')}</div>`;
@@ -410,6 +453,8 @@ function renderPanel() {
     const what = P && P.type === 'boss' ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
   } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
+  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for the whole class the night the third boss falls.</div>`;
+  else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">💤 Asleep until the Professor is free (chapter ${P.ch}).</div>`;
   else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
   else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight — come back tomorrow.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">Too far for one move — you can step to the glowing squares.</div>`;
@@ -418,8 +463,19 @@ function renderPanel() {
   if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(sel); ADV.save(); renderAll(); };
 }
 
+function renderPerson(who) {
+  const me = who === 'me', p = me ? null : PEOPLE[who], at = me ? S.at : S.people[p.i], [c, r] = unkey(at), P = PLACES[at];
+  const where = P ? P.name : LAND[T_AT(c, r)] ? LAND[T_AT(c, r)].name : '';
+  const fig = me ? PIXEL.figure(ADV.eq(), ADV.look()) : PIXEL.figure({ head: ['nocap', 'paperhat', null][who % 3], top: ['labcoat', 'jumper'][who % 2], bottom: 'joggers', shoes: 'oddsocks', lhand: null, rhand: null }, p.base);
+  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Classmate'} · level ${me ? ADV.stats().l : p.lvl}</div>
+    <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
+    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>${me ? '.' : ', ' + DOING[who % DOING.length] + '.'}</p>
+    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End your move here tonight to fight alongside them.</p>` : ''}`;
+  $('panel').classList.add('on');
+  $('pClose').onclick = () => { $('panel').classList.remove('on'); };
+}
 function renderLegend() {
-  $('legend').innerHTML = [['#5a9e4b', 'Woods'], ['#9fcf6e', 'Meadow'], ['#b9d77f', 'Fields'], ['#b8b0a2', 'Peaks'], ['#e8edf3', 'Snow'], ['#7fa77a', 'Marsh'], ['#e8cf8f', 'Dunes'], ['#4f9fd1', 'Water (can\'t cross)'], ['#dfe4ea', 'Fog (unexplored)']]
+  $('legend').innerHTML = [['#5a9e4b', 'Woods'], ['#9fcf6e', 'Meadow'], ['#b9d77f', 'Fields'], ['#b8b0a2', 'Peaks'], ['#e8edf3', 'Snow'], ['#7fa77a', 'Marsh'], ['#e8cf8f', 'Dunes'], ['#79b4a3', 'Petri Swamp'], ['#b38b6d', 'Scrap Heap'], ['#c9cf7f', 'Glowing Wastes'], ['#4f9fd1', 'Water (can\'t cross)'], ['#dfe4ea', 'Fog (unexplored)']]
     .map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>Hover or tap a square for details.</span>`;
 }
 
@@ -427,13 +483,21 @@ function renderLegend() {
 const tip = $('tip'), wrap = document.querySelector('.mapwrap');
 svg.addEventListener('pointermove', e => {
   if (e.pointerType !== 'mouse') return;
-  const k = e.target.dataset && e.target.dataset.k;
-  if (!k) { tip.style.display = 'none'; return; }
+  const pp = e.target.closest && e.target.closest('.pp');
+  let k = e.target.dataset && e.target.dataset.k;
+  if (pp && pp.dataset.p !== undefined) {
+    const me = pp.dataset.p === 'me', p = me ? null : PEOPLE[+pp.dataset.p];
+    tip.innerHTML = `<b>${me ? ADV.nick() + ' (you)' : p.nick}</b><small>Level ${me ? ADV.stats().l : p.lvl} · click for details</small>`;
+    k = null;
+  } else if (pp && pp.dataset.k2) k = pp.dataset.k2;
+  if (!k && !pp) { tip.style.display = 'none'; return; }
+  if (k) {
   const D = describe(k), P = D.P;
   let extra = D.tp;
-  if (P && P.type === 'boss') extra += ` · ${S.boss[k]}/${P.max} health`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health`;
   if (reachable().has(k)) extra += ' · click to plan a move';
   tip.innerHTML = `<b>${D.name}</b><small>${extra}</small>`;
+  }
   tip.style.display = 'block';
   const b = wrap.getBoundingClientRect(), tw = tip.offsetWidth;
   let lx = e.clientX - b.left + 14, ly = e.clientY - b.top + 14;
@@ -442,6 +506,9 @@ svg.addEventListener('pointermove', e => {
 });
 svg.addEventListener('pointerleave', () => tip.style.display = 'none');
 svg.addEventListener('click', e => {
+  const pp = e.target.closest && e.target.closest('.pp');
+  if (pp && pp.dataset.p !== undefined) { sel = null; renderMap(); renderPerson(pp.dataset.p === 'me' ? 'me' : +pp.dataset.p); return; }
+  if (pp && pp.dataset.k2) { sel = pp.dataset.k2; renderAll(); return; }
   const k = e.target.dataset && e.target.dataset.k; if (!k) return;
   sel = sel === k ? null : k; renderAll();
 });
@@ -457,7 +524,7 @@ function overnight() {
     lines.push(`<p>Move ${i + 1}: ${k === at ? 'You stay at' : 'You walk to'} <b>${P ? P.name : LAND[T_AT(c, r)].name}</b>.</p>`);
     at = k;
     if (!S.visited.includes(k)) S.visited.push(k);
-    if (P && P.type === 'boss' && S.boss[k] > 0) {
+    if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
       const team = PEOPLE.filter(p => S.people[p.i] === k);
       const mine = dmgOf(ADV.stats().str), theirs = team.reduce(a => a + dmgOf(12 + rnd() * 20), 0), total = mine + theirs;
       S.boss[k] = Math.max(0, S.boss[k] - total);
@@ -467,6 +534,7 @@ function overnight() {
       lines.push(`<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`);
       S.xp += 40; S.coins += 5;
       if (S.boss[k] === 0) lines.push(`<p class="lt">★ ${P.name} is defeated! Everyone who hit it this week gets: ${P.loot.join(', ')}.</p>`);
+      if (S.boss[k] === 0 && ADV.CH1.includes(k)) lines.push(`<p class="new">🔑 The class now has <b>${ADV.keys()}/3</b> key pieces.</p>`);
       if (S.health === 0) { lines.push(`<p class="bad">You are knocked out and wake up in the Cakelab with a mild headache. Nothing lost.</p>`); at = '7,4'; S.health = ADV.stats().hp; }
     } else if (P && P.type === 'dungeon') {
       const finds = ['a Fizzy Courage', '12 coins', 'a single damp glove (useless)', 'a Bottled Aura'];
@@ -486,10 +554,13 @@ function overnight() {
   const other = PEOPLE[Math.floor(rnd() * PEOPLE.length)], oAt = S.people[other.i];
   lines.push(`<p>Elsewhere: ${other.nick} tripped over a Bunsen burner in ${PLACES[oAt] ? PLACES[oAt].name : LAND[T_AT(...unkey(oAt))].name}. They're fine.</p>`);
   S.people = S.people.map(k => { if (rnd() >= .35) return k; const n = neighbours(...unkey(k)).filter(([c, r]) => walkable(c, r)); const [c, r] = n[Math.floor(rnd() * n.length)]; return key(c, r); });
+  let rescued = false;
+  if (S.chapter < 2 && ADV.keys() === 3) { S.chapter = 2; rescued = true; lines.unshift('<p class="lt">🔓 With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>'); }
   const used = S.plan.length;
   S.at = at; S.plan = []; S.moves = Math.min(4, S.moves - used + 2); S.day++; S.missionsToday = 0;   /* +1 move comes back with tomorrow's first mission */
   S.report = lines; S.reportSeen = S.day - 1;
-  ADV.save(); sel = S.at; renderAll(); showReport();
+  ADV.save(); sel = S.at; renderAll();
+  if (rescued) ADV.storyRescue(showReport); else showReport();
 }
 
 const FIRST_REPORT = [
@@ -499,7 +570,7 @@ const FIRST_REPORT = [
   '<p class="bad">Mighty Ribosome was flattened by a spore cloud from <b>The Spore Lord</b>. Recovering in the Cakelab.</p>',
   '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>',
   '<p>Nobody has gone near <b>The Acid Hydra</b> yet. All three heads are getting confident.</p>',
-  '<p class="new">Tip: the fog only lifts where you have been. something big is stomping about to the north-east — head over the bridge.</p>'];
+  '<p class="new">Tip: follow the cake crumbs north from the Cakelab — and win the three key pieces to free the Professor.</p>'];
 function showReport() {
   $('repTitle').textContent = `Morning report · day ${S.day}`;
   $('report').innerHTML = (S.report || FIRST_REPORT).join('');
@@ -514,7 +585,8 @@ function renderAll() { renderHud(); renderMap(); renderPanel(); }
 renderLegend(); renderAll();
 /* on phones the map scrolls sideways: start centred on you */
 { const sc = $('scroll'); if (sc.scrollWidth > sc.clientWidth) { const [x] = center(...unkey(S.at)); sc.scrollLeft = x / VB_W * sc.scrollWidth - sc.clientWidth / 2; } }
-if (S.reportSeen < S.day) showReport();
+if (!S.storySeen) ADV.storyIntro(() => { if (S.reportSeen < S.day) showReport(); });
+else if (S.reportSeen < S.day) showReport();
 </script>
 </body>
 </html>
