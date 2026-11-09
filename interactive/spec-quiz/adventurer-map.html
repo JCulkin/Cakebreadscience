@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Map (preview) - Spec Quiz - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--str:#d08000;--hp:#005e22;--mag:#c8001e}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 64px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1.05;margin:0 0 8px}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:18px;margin:12px 0 4px}
+.lede{font-size:18px;max-width:820px;margin-top:8px}
+.flag{display:inline-block;background:#ffe14d;border:2px solid var(--ink);font-weight:700;font-size:13px;padding:2px 8px;text-transform:uppercase;letter-spacing:1px;margin-top:10px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:8px 14px;font-weight:700}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+.btn:disabled{opacity:.4;cursor:default}
+img.px,image.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.card{background:var(--paper);border:2px solid var(--ink);padding:14px 16px}
+.game{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+@media(min-width:1000px){.game{grid-template-columns:270px 1fr 300px}}
+/* left: me */
+.me{text-align:center}
+.me img{width:150px;display:block;margin:0 auto}
+.nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;text-transform:uppercase;line-height:1}
+.lvl{font-weight:700;margin-top:4px}
+.xp{height:10px;border:2px solid var(--ink);background:var(--soft);margin:4px 0 2px;position:relative}
+.xp i{position:absolute;inset:0 auto 0 0;background:#8b5cf6}
+.cap{font-size:12px;color:var(--muted)}
+.stat{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;text-align:left;margin-top:8px;font-weight:700;font-size:14px}
+.stat .bar{height:12px;border:2px solid var(--ink);background:var(--soft);position:relative}
+.stat .bar i{position:absolute;inset:0 auto 0 0}
+.stat small{grid-column:1/-1;font-weight:400;color:var(--muted);font-size:12px;margin-top:-4px}
+.moves{display:flex;gap:6px;justify-content:center;margin:10px 0 4px}
+.moves span{width:26px;height:26px;border:2px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;background:#fde047}
+.moves span.used{background:#eee;color:#aaa}
+.brews{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.brew{border:2px solid var(--ink);background:#fff;padding:2px 7px;font-size:12px;font-weight:700;border-radius:12px}
+/* middle: map */
+.mapcard{padding:6px;overflow:auto}
+#map{display:block;width:100%;height:auto;min-width:470px;background:#7cb7d6;border:2px solid var(--ink)}
+#map .hex{stroke:#1b1b1f;stroke-width:1.5;cursor:pointer}
+#map .hex:hover{filter:brightness(1.12)}
+#map .sel{stroke:#fff;stroke-width:4}
+#map .reach{stroke:#facc15;stroke-width:3;stroke-dasharray:5 3}
+#map .lbl{font:700 9px Barlow,Arial;fill:#111;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#ffffffcc;stroke-width:3px}
+#map .path{fill:none;stroke:#facc15;stroke-width:5;stroke-linecap:round;stroke-dasharray:2 9;pointer-events:none}
+.keyrow{display:flex;flex-wrap:wrap;gap:5px;margin:8px 4px 0}.keyrow button{display:flex;align-items:center;gap:4px;border:2px solid var(--line);background:#fff;border-radius:14px;padding:1px 8px 1px 3px;font-size:12px;font-weight:700}.keyrow button.on{border-color:var(--ink)}.keyrow img{width:20px;height:20px}
+.maptools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 4px 2px}
+.maptools .hint{font-size:14px;color:var(--muted);flex:1;min-width:200px}
+/* right: info + report */
+.info .tp{font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted)}
+.info .tn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;line-height:1;text-transform:uppercase}
+.info p{font-size:14px;margin-top:6px}
+.bosshp{height:14px;border:2px solid var(--ink);background:#eee;margin-top:6px;position:relative}
+.bosshp i{position:absolute;inset:0 auto 0 0;background:#e11d48}
+.who{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.who img{width:30px;height:30px;border:2px solid var(--line);border-radius:6px;background:var(--soft)}
+.loot{font-size:13px;margin-top:6px}
+.report{margin-top:14px}
+.report .day{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#111;color:#e5e5e5;padding:10px 12px;max-height:340px;overflow:auto}
+.report .day p{margin:3px 0}
+.report .good{color:#86efac}.report .bad{color:#fca5a5}.report .loot{color:#fde047}
+/* design notes */
+.notes{display:grid;grid-template-columns:1fr;gap:14px;margin-top:22px}
+@media(min-width:900px){.notes{grid-template-columns:1fr 1fr}}
+.notes li{margin:5px 0 0 20px;font-size:15px}
+table.st{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+table.st td,table.st th{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
+table.st th{background:var(--soft)}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Spec Quiz · Preview</span></header>
+<div class="wrap">
+  <a class="back" href="/test.html">← Test page</a>
+  <h1>The Map: Lab Lands</h1>
+  <p class="lede">What the adventurer is for. Every day you get <b>2 moves</b> on the map. Plan them, log off, and overnight your adventurer explores, fights and loots. Next time you log in, read what happened. Land on the same square as classmates and you fight together.</p>
+  <span class="flag">Design preview · pretend classmates · nothing is saved online</span>
+
+  <div class="game">
+    <div class="card me">
+      <div class="nm" id="nm"></div>
+      <img class="px" id="fig" alt="Your adventurer">
+      <div class="lvl" id="lvl"></div>
+      <div class="xp"><i id="xpbar"></i></div>
+      <div class="cap" id="cap"></div>
+      <div class="stat" id="stats"></div>
+      <h3>Moves tonight</h3>
+      <div class="moves" id="moves"></div>
+      <div class="cap">2 new moves every day. Unused ones bank, up to 4.</div>
+      <h3>Brews</h3>
+      <div class="brews" id="brews"></div>
+      <div class="cap" style="margin-top:6px"><a href="adventurer-wardrobe.html">Wardrobe</a> · <a href="adventurer-create.html">Change look</a></div>
+    </div>
+
+    <div class="card mapcard">
+      <svg id="map" viewBox="0 0 610 392" role="img" aria-label="Hex map of Lab Lands"></svg>
+      <div class="keyrow" id="keyrow"></div>
+      <div class="maptools">
+        <span class="hint" id="hint">Tap a glowing square next to you to plan move 1.</span>
+        <button class="btn alt" id="undo">↶ Undo</button>
+        <button class="btn green" id="sleep">🌙 Skip to tomorrow morning</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="card info" id="info"></div>
+      <div class="card report"><h2 id="repTitle">This morning's report</h2><div class="day" id="report"></div></div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="card">
+      <h2>How it works</h2>
+      <ul>
+        <li><b>2 moves a day</b>, like Kingdom of Loathing's daily adventures but much smaller. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank up to 4, so missing a day isn't a disaster but nobody can hoard.</li>
+        <li><b>Overnight, everything happens at once</b> (at midnight). Moves you planned play out, bosses fight back, dungeons get explored, and the <b>morning report</b> tells the story with jokes. Nothing happens in real time, so there's no reason to be online at night.</li>
+        <li><b>Same square = same team.</b> Everyone who ends the night on a boss square fights it together. Boss health carries over from night to night and is visible to all, so a class can wear down a boss over a week.</li>
+        <li><b>Losing is gentle.</b> If your Health runs out you are “knocked out” and wake up in the Common Room. You lose nothing except the walk back.</li>
+        <li><b>Bosses drop loot for everyone who hit them</b> that week: gear, brews and XP. Dungeons give smaller random finds and the odd fight.</li>
+        <li><b>Everyone is visible on the map</b> as their little portrait, so you can see where the class is heading and pile in.</li>
+        <li><b>No fighting each other.</b> Players only ever team up.</li>
+      </ul>
+      <h3>Brews (the temporary potions)</h3>
+      <p style="font-size:15px">I'd call them <b>Brews</b>: short, chemistry-flavoured, and they fit “Chemistry gives Magic”. Alternatives: Tonics, Concoctions, Lab Snacks. A brew lasts a number of <i>moves</i>, not hours. Found on bosses and in dungeons, or bought at the Tuck Shop with coins from fights.</p>
+      <table class="st"><tr><th>Brew</th><th>Effect</th></tr>
+        <tr><td>Bottled Aura</td><td>+3 Strength for 2 moves</td></tr>
+        <tr><td>Electrolyte Slushie</td><td>Refills Health</td></tr>
+        <tr><td>Fizzy Courage</td><td>Better luck rolls for 2 moves</td></tr>
+        <tr><td>Essence of Main Character</td><td>Bosses target you less for 2 moves</td></tr>
+        <tr><td>Decaf Panic</td><td>Run away from a fight without being knocked out</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Stats and levels</h2>
+      <table class="st">
+        <tr><th>Stat</th><th>Comes from</th><th>Does</th></tr>
+        <tr><td><b style="color:var(--str)">Strength</b></td><td>Physics</td><td>Damage you deal to bosses</td></tr>
+        <tr><td><b style="color:var(--hp)">Health</b></td><td>Biology</td><td>How many hits you take before you're knocked out</td></tr>
+        <tr><td><b style="color:var(--mag)">Magic</b></td><td>Chemistry</td><td>Stored for now. Spells come later (ideas: shield the team, double a brew, reveal a dungeon square)</td></tr>
+      </table>
+      <ul>
+        <li><b>Stat points come from the quiz, not the map:</b> each spec point you <i>secure</i> in a science adds 1 to its stat. Real revision is the only way to get stronger, so a student can't grind the map instead of learning.</li>
+        <li><b>Level comes from the map</b> (XP from bosses and dungeons) but is <b>capped by the quiz</b>: your level cap is 2 + one level for every 8 spec points secured. Hit the cap and XP waits in the bank until you secure more points.</li>
+        <li>Gear can add small bonuses (+1 to +3) to a stat. The joke stats (Aura, Brain Cells, Vibes) stay jokes.</li>
+        <li>Weaker students still matter: team fights add everyone's damage together, every hit counts towards the shared loot, and luck plays a part.</li>
+      </ul>
+      <h3>Room to grow (shown on the map)</h3>
+      <ul>
+        <li><b>Fog round the edge</b> (Uncharted): new squares can be revealed as the term goes on.</li>
+        <li><b>The Exam Hall Gate</b>: a locked portal to Map 2 (e.g. next term's topics or a mocks map).</li>
+        <li><b>The Separate Science Ferry</b>: closed for now; an island for triple-science content.</li>
+        <li><b>The Mock Exam</b>: a world boss asleep at the top of the map, to wake for the whole year group before mocks.</li>
+        <li>Spells for Magic, class banners, a weekly boss rotation and seasonal events can slot in without changing the map.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script>
+/* ===================== pretend player ===================== */
+const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const ME = { base: load('cbs.adventurer.base') || PIXEL.DEFAULT, nick: localStorage.getItem('cbs.adventurer.nick') || 'Brave Neutron',
+  eq: load('cbs.adventurer.eq') || { head: 'nocap', top: 'labcoat', bottom: 'inertia', shoes: 'brownian', lhand: 'shield', rhand: 'glove' },
+  secured: { p: 22, b: 15, c: 19 }, xp: 640, health: 12 };
+const BREWS = [['Bottled Aura', 2], ['Electrolyte Slushie', 1], ['Fizzy Courage', 1]];
+
+/* ===================== pixel icons ===================== */
+const PAL = { K: '#1b1b1f', W: '#fff', R: '#e11d48', G: '#22c55e', g: '#166534', B: '#92400e', Y: '#facc15', S: '#9ca3af', s: '#4b5563', P: '#7c3aed', O: '#f97316', C: '#67e8f9', b: '#2563eb', L: '#a3e635', D: '#475569' };
+const ICONS = {
+  boss: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', 'KRRWWRRWWRRK', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRKWKKWKRRK', 'KRRRKWWKRRRK', '.KRRRRRRRRK.', '.KRKRRRRKRK.', '.KK.KKKK.KK.', '............'],
+  cave: ['............', '....SSSS....', '..SSSSSSSS..', '.SSSKKKKSSS.', '.SSKKKKKKSS.', 'SSKKKKKKKKSS', 'SSKKKYKKKKSS', 'SSKKKKKKKKSS', 'SSSKKKKKKSSS', 'ssssssssssss', '............', '............'],
+  shop: ['............', '...RRRRRR...', '..RWRWRWRW..', '.RRRRRRRRRR.', '..BBBBBBBB..', '..BYYBBCCB..', '..BYYBBCCB..', '..BBBBBBBB..', '..BBBKKBBB..', '..BBBKKBBB..', '............', '............'],
+  home: ['.....KK.....', '....KbbK....', '...KbbbbK...', '..KbbbbbbK..', '.KbbbbbbbbK.', '..BBBBBBBB..', '..BCCBBCCB..', '..BCCBBCCB..', '..BBBKKBBB..', '..BBBKKBBB..', '............', '............'],
+  portal: ['....PPPP....', '..PPKKKKPP..', '.PKKCCCCKKP.', '.PKCCWWCCKP.', 'PKCCWWWWCCKP', 'PKCCWWWWCCKP', '.PKCCWWCCKP.', '.PKKCCCCKKP.', '..PPKKKKPP..', '....PPPP....', '..ssssssss..', '............'],
+  ask: ['............', '....YYYY....', '...YKKKKY...', '...YK..KY...', '.......KY...', '......KY....', '.....KY.....', '.....KY.....', '............', '.....KY.....', '............', '............'],
+  tree: ['.....gg.....', '...gGGGg....', '..gGGGGGg...', '.gGGGGGGGg..', '..gGGGGGg...', '.gGGGGGGGg..', 'gGGGGGGGGGg.', '..gggggggg..', '.....BB.....', '.....BB.....', '............', '............'],
+  peak: ['............', '.....WW.....', '....WWSS....', '...SSSSSs...', '..SSSSSSss..', '.SSSSSSSsss.', 'SSSSSSSSssss', '............', '............', '............', '............', '............'],
+  bubble: ['............', '...L........', '..L.L...L...', '...L...L.L..', '........L...', '....OO......', '...O..O.....', '....OO......', '............', '............', '............', '............'],
+  boat: ['............', '.....K......', '.....KW.....', '.....KWW....', '.....KWWW...', '.....K......', '.BBBBBBBBBB.', '..BBBBBBBB..', '...bbbbbb...', '............', '............', '............'],
+  lock: ['............', '....KKKK....', '...K....K...', '...K....K...', '..YYYYYYYY..', '..YYYKKYYY..', '..YYYKKYYY..', '..YYYYYYYY..', '............', '............', '............', '............'],
+};
+const iconCache = {};
+function icon(name, swap) {
+  const key = name + (swap || '');
+  if (iconCache[key]) return iconCache[key];
+  const g = ICONS[name], c = document.createElement('canvas'); c.width = c.height = 12;
+  const x = c.getContext('2d');
+  g.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = (swap && ch === 'R') ? swap : PAL[ch]; x.fillRect(i, j, 1, 1); }));
+  return iconCache[key] = c.toDataURL();
+}
+
+/* ===================== the map ===================== */
+const COLS = 11, ROWS = 8, R = 30, W3 = Math.sqrt(3) * R;
+const TERRAIN = { plains: '#b5d98a', forest: '#5fae5a', peaks: '#c9c3b6', marsh: '#8fb38a', town: '#e9d8a6', water: '#7cb7d6', fog: '#9aa3ad', snow: '#eef2f7' };
+function terrainAt(c, r) {
+  if (r === 0 || r === ROWS - 1 || c === 0 || c === COLS - 1) return 'fog';
+  if (c <= 3 && r <= 4) return 'forest';
+  if (c >= 7 && r <= 4) return 'peaks';
+  if (r >= 5) return 'marsh';
+  if (r === 1 && c >= 4 && c <= 6) return 'snow';
+  return 'plains';
+}
+/* special places: [col,row] → {...} */
+const PLACES = {
+  '5,3': { type: 'home', name: 'The Common Room', icon: 'home', text: 'Everyone starts here, and comes back here when knocked out. Safe: nothing attacks you here.' },
+  '6,3': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend coins on brews. Stock changes every Monday.', stock: ['Bottled Aura · 30 coins', 'Electrolyte Slushie · 20 coins', 'Fizzy Courage · 40 coins', 'Decaf Panic · 25 coins'] },
+  '4,4': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. Exploring here gives a random event: a coin, a brew, or a very wet sock.' },
+  '2,2': { type: 'boss', science: 'b', name: 'The Mighty Mitochondrion', icon: 'boss', col: '#f97316', hp: 600, max: 900, power: 6,
+    text: 'The powerhouse of the cell, and it will not stop telling you. Weak to people who actually know what respiration is.', loot: ['Mitochondria Gauntlet (Lowkey Legendary)', '2× Electrolyte Slushie', '+120 XP each'] },
+  '8,2': { type: 'boss', science: 'p', name: 'Captain Inertia', icon: 'boss', col: '#d08000', hp: 340, max: 1000, power: 8,
+    text: 'Will not move unless an unbalanced force acts on him. You are the unbalanced force.', loot: ['Frictionless Slippers (Lowkey Legendary)', 'Bottled Aura', '+150 XP each'] },
+  '6,6': { type: 'boss', science: 'c', name: 'The Unbalanced Equation', icon: 'boss', col: '#7c3aed', hp: 820, max: 820, power: 7,
+    text: 'Two heads, three arms, never the same number of atoms on each side. Nobody has touched it yet.', loot: ['Hat of Avogadro (Rare)', 'Fizzy Courage', '+130 XP each'] },
+  '5,0': { type: 'worldboss', name: 'The Mock Exam (asleep)', icon: 'boss', col: '#111827', text: 'A world boss for the whole year group. Asleep until the week before mocks. Do not poke it.' },
+  '1,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', text: 'Three floors deep. Each night inside explores one floor: small fights, random loot, sometimes a brew.' },
+  '9,5': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
+  '3,6': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
+  '10,3': { type: 'locked', name: 'The Exam Hall Gate', icon: 'portal', text: 'Locked. Leads to Map 2 — opens later in the year.' },
+  '0,7': { type: 'locked', name: 'Separate Science Ferry', icon: 'boat', text: 'Closed. Will sail to an island of triple-science content one day.' },
+};
+const DECOR = { forest: 'tree', peaks: 'peak', marsh: 'bubble' };
+const key = (c, r) => c + ',' + r;
+function center(c, r) { return [W3 * (c + 0.5 * (r & 1)) + W3 / 2 + 4, R * 1.5 * r + R + 4]; }
+function hexPts(cx, cy) { return [...Array(6)].map((_, i) => { const a = Math.PI / 180 * (60 * i - 30); return (cx + R * Math.cos(a)).toFixed(1) + ',' + (cy + R * Math.sin(a)).toFixed(1); }).join(' '); }
+function neighbours(c, r) {
+  const d = r & 1 ? [[1, 0], [-1, 0], [1, -1], [0, -1], [1, 1], [0, 1]] : [[1, 0], [-1, 0], [0, -1], [-1, -1], [0, 1], [-1, 1]];
+  return d.map(([a, b]) => [c + a, r + b]).filter(([x, y]) => x >= 0 && y >= 0 && x < COLS && y < ROWS);
+}
+const walkable = (c, r) => terrainAt(c, r) !== 'fog' && !(PLACES[key(c, r)] && ['locked', 'worldboss'].includes(PLACES[key(c, r)].type));
+
+/* ===================== pretend classmates ===================== */
+const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+const pickO = l => l[Math.floor(rnd() * l.length)].id;
+const O = PIXEL.OPTIONS;
+const NAMES = ['Sleepy Photon', 'Turbo Enzyme', 'Cosmic Alkane', 'Fizzy Quark', 'Gentle Isotope', 'Mighty Ribosome', 'Sneaky Catalyst', 'Wobbly Comet', 'Valiant Magnet', 'Lowkey Proton', 'Electric Beaker', 'Curious Nucleus'];
+const SPOTS = ['8,2', '8,2', '8,2', '2,2', '2,2', '1,5', '6,3', '4,4', '9,5', '5,3', '7,4', '3,3'];
+const PEOPLE = NAMES.map((n, i) => {
+  const hair = O.hair[Math.floor(rnd() * O.hair.length)];
+  return { nick: n, at: SPOTS[i], base: { skin: pickO(O.skin), hair: hair.id, hc: pickO(hair.cloth ? O.cloth : O.hc), eyes: pickO(O.eyes), mouth: pickO(O.mouth), extras: rnd() < .3 ? ['glasses'] : [] } };
+});
+PEOPLE.forEach(p => p.face = PIXEL.portrait(p.base));
+ME.face = PIXEL.portrait(ME.base);
+
+/* ===================== state ===================== */
+let me = { at: '5,3', moves: 2, plan: [], ko: false }, sel = '5,3', day = 1;
+const levelCap = () => 2 + Math.floor((ME.secured.p + ME.secured.b + ME.secured.c) / 8);
+const xpFor = l => 100 * l * (l - 1) / 2;
+function level() { let l = 1; while (xpFor(l + 1) <= ME.xp) l++; return Math.min(l, levelCap()); }
+const stats = () => ({ str: 1 + ME.secured.p + 2, hp: 1 + ME.secured.b, mag: ME.secured.c });  // +2 = gear bonus (pretend)
+
+function renderMe() {
+  document.getElementById('nm').textContent = ME.nick;
+  document.getElementById('fig').src = PIXEL.figure(ME.eq, ME.base);
+  const l = level(), cap = levelCap(), next = xpFor(l + 1), cur = xpFor(l);
+  document.getElementById('lvl').textContent = `Level ${l}`;
+  document.getElementById('xpbar').style.width = Math.min(100, (ME.xp - cur) / (next - cur) * 100) + '%';
+  document.getElementById('cap').innerHTML = l >= cap ? `Level cap ${cap} reached — <b>secure more spec points in the quiz</b> to go higher. (${ME.xp - cur} XP waiting)` : `${ME.xp} XP · level cap ${cap} (from the quiz)`;
+  const s = stats();
+  document.getElementById('stats').innerHTML = [['Strength', s.str, 'str', `Physics: ${ME.secured.p} points secured, +2 gear`], ['Health', `${ME.health}/${s.hp}`, 'hp', `Biology: ${ME.secured.b} points secured`, ME.health / s.hp], ['Magic', s.mag, 'mag', `Chemistry: ${ME.secured.c} points secured · spells coming later`]]
+    .map(([n, v, c, how, f]) => `<span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${(f !== undefined ? f : Math.min(1, (typeof v === 'number' ? v : 0) / 40)) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small>`).join('');
+  document.getElementById('moves').innerHTML = [...Array(Math.max(me.moves, 2))].map((_, i) => `<span class="${i < me.plan.length ? 'used' : ''}">${i + 1}</span>`).join('');
+  document.getElementById('brews').innerHTML = BREWS.map(([n, q]) => `<span class="brew">${n} ×${q}</span>`).join('');
+}
+
+function renderMap() {
+  const svg = document.getElementById('map'); let h = '';
+  const last = me.plan.length ? me.plan[me.plan.length - 1] : me.at;
+  const [lc, lr] = last.split(',').map(Number);
+  const reach = me.plan.length < me.moves ? new Set([...neighbours(lc, lr).filter(([c, r]) => walkable(c, r)).map(([c, r]) => key(c, r)), last]) : new Set();
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const [x, y] = center(c, r), t = terrainAt(c, r), k = key(c, r), P = PLACES[k];
+    h += `<polygon class="hex ${reach.has(k) ? 'reach' : ''} ${sel === k ? 'sel' : ''}" data-k="${k}" points="${hexPts(x, y)}" fill="${TERRAIN[t]}" ${t === 'fog' ? 'fill-opacity=".85"' : ''}/>`;
+    if (t === 'fog' && !P) h += `<text x="${x}" y="${y + 5}" text-anchor="middle" font-size="16" font-weight="900" fill="#e5e7eb" pointer-events="none">?</text>`;
+    if (P) {
+      const big = P.type === 'worldboss' ? 40 : P.type === 'boss' ? 34 : 28;
+      h += `<image class="px" href="${icon(P.icon, P.col)}" x="${x - big / 2}" y="${y - big / 2 - 4}" width="${big}" height="${big}" pointer-events="none" style="image-rendering:pixelated"/>`;
+      if (P.type === 'boss') h += `<rect x="${x - 18}" y="${y + 13}" width="36" height="5" fill="#eee" stroke="#111" stroke-width="1" pointer-events="none"/><rect x="${x - 18}" y="${y + 13}" width="${36 * P.hp / P.max}" height="5" fill="#e11d48" pointer-events="none"/>`;
+      if (['locked'].includes(P.type)) h += `<image href="${icon('lock')}" x="${x + 6}" y="${y - 22}" width="14" height="14" pointer-events="none" style="image-rendering:pixelated"/>`;
+    } else if (DECOR[t] && (c * 7 + r * 3) % 3 !== 0) {
+      h += `<image href="${icon(DECOR[t])}" x="${x - 12}" y="${y - 14}" width="24" height="24" opacity=".85" pointer-events="none" style="image-rendering:pixelated"/>`;
+    }
+  }
+  /* people */
+  const here = {};
+  PEOPLE.forEach(p => (here[p.at] = here[p.at] || []).push(p.face));
+  (here[me.at] = here[me.at] || []).unshift('ME');
+  Object.entries(here).forEach(([k, faces]) => {
+    const [c, r] = k.split(',').map(Number), [x, y] = center(c, r);
+    faces.slice(0, 4).forEach((f, i) => {
+      const fx = x - 22 + i * 11, fy = y - 30;
+      h += f === 'ME' ? `<rect x="${fx - 1}" y="${fy - 1}" width="18" height="18" fill="#00a03a" stroke="#111" pointer-events="none"/><image href="${ME.face}" x="${fx}" y="${fy}" width="16" height="16" pointer-events="none" style="image-rendering:pixelated"/>`
+        : `<rect x="${fx}" y="${fy}" width="16" height="16" fill="#fff" stroke="#111" pointer-events="none"/><image href="${f}" x="${fx}" y="${fy}" width="16" height="16" pointer-events="none" style="image-rendering:pixelated"/>`;
+    });
+    if (faces.length > 4) h += `<text x="${x + 24}" y="${y - 18}" font-size="10" font-weight="900" fill="#111" pointer-events="none">+${faces.length - 4}</text>`;
+  });
+  /* planned path */
+  if (me.plan.length) {
+    const pts = [me.at, ...me.plan].map(k => center(...k.split(',').map(Number)).join(',')).join(' ');
+    h += `<polyline class="path" points="${pts}"/>`;
+    me.plan.forEach((k, i) => { const [x, y] = center(...k.split(',').map(Number)); h += `<circle cx="${x + 18}" cy="${y + 2}" r="8" fill="#facc15" stroke="#111" pointer-events="none"/><text x="${x + 18}" y="${y + 6}" font-size="10" font-weight="900" text-anchor="middle" pointer-events="none">${i + 1}</text>`; });
+  }
+  svg.innerHTML = h;
+  document.getElementById('hint').textContent = me.plan.length >= me.moves ? 'Both moves planned. They happen overnight — come back in the morning.'
+    : `Tap a glowing square (or your own square to stay and fight/explore) to plan move ${me.plan.length + 1}.`;
+  document.getElementById('undo').disabled = !me.plan.length;
+}
+
+function renderInfo() {
+  const [c, r] = sel.split(',').map(Number), P = PLACES[sel], t = terrainAt(c, r);
+  const people = PEOPLE.filter(p => p.at === sel), mine = me.at === sel;
+  const T = { boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
+  let html = `<div class="tp">${P ? T[P.type] + (P.science ? ' · ' + { b: 'Biology', c: 'Chemistry', p: 'Physics' }[P.science] : '') : t === 'fog' ? 'Uncharted' : t}</div>
+    <div class="tn">${P ? P.name : t === 'fog' ? 'Fog' : { plains: 'Open fields', forest: 'Greenhouse Woods', peaks: 'Gravity Peaks', marsh: 'Acid Marsh', snow: 'Cold Store Hills' }[t]}</div>`;
+  if (P && P.type === 'boss') html += `<div class="bosshp"><i style="width:${P.hp / P.max * 100}%"></i></div><div class="cap">${P.hp} / ${P.max} health · hits back for ${P.power}</div>`;
+  html += `<p>${P ? P.text : t === 'fog' ? 'Not on the map yet. New squares can be revealed later in the term.' : 'Walk through. Each night here has a small chance of a random event.'}</p>`;
+  if (P && P.loot) html += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
+  if (P && P.stock) html += `<div class="loot"><b>In stock:</b><br>${P.stock.join('<br>')}</div>`;
+  if (people.length || mine) html += `<div class="loot"><b>Here now:</b></div><div class="who">${mine ? `<img class="px" src="${ME.face}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}">`).join('')}</div>`;
+  document.getElementById('info').innerHTML = html;
+}
+
+/* ===================== overnight ===================== */
+function overnight() {
+  const lines = [], dmgOf = s => Math.round(s * (0.6 + rnd() * 0.8));
+  let at = me.at;
+  const steps = me.plan.length ? me.plan : [me.at];
+  steps.forEach((k, i) => {
+    const P = PLACES[k];
+    lines.push(`<p>Move ${i + 1}: ${k === at ? 'You stay at' : 'You walk to'} <b>${P ? P.name : 'the open fields'}</b>.</p>`);
+    at = k;
+    if (P && P.type === 'boss' && P.hp > 0) {
+      const team = PEOPLE.filter(p => p.at === k);
+      const mine = dmgOf(stats().str), theirs = team.reduce((a) => a + dmgOf(12 + rnd() * 20), 0), total = mine + theirs;
+      P.hp = Math.max(0, P.hp - total);
+      lines.push(`<p class="good">You and ${team.length} classmate${team.length === 1 ? '' : 's'} attack ${P.name}: ${total} damage (you did ${mine}).</p>`);
+      const hit = Math.round(P.power * (0.5 + rnd()));
+      ME.health = Math.max(0, ME.health - hit);
+      lines.push(`<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`);
+      ME.xp += 40;
+      if (P.hp === 0) { lines.push(`<p class="loot">★ ${P.name} is defeated! Everyone who hit it this week gets: ${P.loot.join(', ')}.</p>`); }
+      if (ME.health === 0) { lines.push(`<p class="bad">You are knocked out and wake up in the Common Room with a mild headache. Nothing lost.</p>`); at = '5,3'; ME.health = stats().hp; }
+    } else if (P && P.type === 'dungeon') {
+      const finds = ['a Fizzy Courage', '12 coins', 'a single damp glove (useless)', 'a Bottled Aura'];
+      const f = finds[Math.floor(rnd() * finds.length)];
+      lines.push(`<p>You explore floor ${1 + Math.floor(rnd() * 3)} of ${P.name} and find <span class="loot">${f}</span>.</p>`); ME.xp += 25;
+    } else if (P && P.type === 'event') {
+      lines.push(`<p>You poke the puddle. It pokes back. You find <span class="loot">5 coins</span> and lose a sock.</p>`);
+    } else if (P && P.type === 'shop') {
+      lines.push(`<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>`);
+    } else if (P && P.type === 'home') {
+      ME.health = stats().hp; lines.push(`<p class="good">You rest in the Common Room. Health refilled.</p>`);
+    }
+  });
+  /* classmates' stories */
+  const other = PEOPLE[Math.floor(rnd() * PEOPLE.length)];
+  lines.push(`<p>Elsewhere: ${other.nick} tripped over a Bunsen burner in ${PLACES[other.at] ? PLACES[other.at].name : 'the fields'}. They're fine.</p>`);
+  PEOPLE.forEach(p => { if (rnd() < .35) { const n = neighbours(...p.at.split(',').map(Number)).filter(([c, r]) => walkable(c, r)); const [c, r] = n[Math.floor(rnd() * n.length)]; p.at = key(c, r); } });
+  const used = me.plan.length; me.at = at; me.plan = []; me.moves = Math.min(4, me.moves - used + 2);
+  day++; sel = me.at;
+  document.getElementById('repTitle').textContent = `Morning report · day ${day}`;
+  document.getElementById('report').innerHTML = lines.join('');
+  renderAll();
+}
+
+document.getElementById('map').addEventListener('click', e => {
+  const k = e.target.dataset && e.target.dataset.k; if (!k) return;
+  sel = k;
+  const last = me.plan.length ? me.plan[me.plan.length - 1] : me.at, [lc, lr] = last.split(',').map(Number);
+  const ok = me.plan.length < me.moves && (k === last || neighbours(lc, lr).some(([c, r]) => key(c, r) === k)) && walkable(...k.split(',').map(Number));
+  if (ok) me.plan.push(k);
+  renderAll();
+});
+document.getElementById('undo').onclick = () => { me.plan.pop(); renderAll(); };
+document.getElementById('sleep').onclick = overnight;
+function renderKey() {
+  document.getElementById('keyrow').innerHTML = Object.entries(PLACES).map(([k, P]) => `<button data-place="${k}" class="${sel === k ? 'on' : ''}"><img class="px" src="${icon(P.icon, P.col)}" alt="">${P.name.replace(' (asleep)', '')}</button>`).join('');
+}
+document.getElementById('keyrow').addEventListener('click', e => { const b = e.target.closest('[data-place]'); if (b) { sel = b.dataset.place; renderAll(); } });
+function renderAll() { renderMe(); renderMap(); renderInfo(); renderKey(); }
+
+/* yesterday's report so the page opens with something to read */
+document.getElementById('report').innerHTML = `
+  <p>Overnight, 9 of your class went adventuring.</p>
+  <p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Captain Inertia</b> for 214 damage. He moved 3 cm. Progress.</p>
+  <p class="bad">Mighty Ribosome was knocked out by <b>The Mighty Mitochondrion</b> during a lecture about ATP.</p>
+  <p>You rested in the Common Room. Health refilled.</p>
+  <p class="loot">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>
+  <p>Nobody has touched <b>The Unbalanced Equation</b> yet. It is getting confident.</p>`;
+renderAll();
+</script>
+</body>
+</html>

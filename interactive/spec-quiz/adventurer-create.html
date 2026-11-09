@@ -46,8 +46,8 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .row{display:flex;flex-wrap:wrap;gap:8px}
 .sw{width:40px;height:40px;border:2px solid var(--ink);border-radius:50%;position:relative}
 .sw.on{outline:3px solid var(--green2);outline-offset:2px}
-.tile{width:78px;border:2px solid var(--line);background:var(--soft);padding:4px 2px 3px;text-align:center;font-size:12px;font-weight:700;line-height:1.1;border-radius:8px}
-.tile img{width:64px;height:64px;display:block;margin:0 auto 3px}
+.tile{width:70px;border:2px solid var(--line);background:var(--soft);padding:3px;border-radius:8px}
+.tile img{width:60px;height:60px;display:block;margin:0 auto}
 .tile.on{border-color:var(--ink);background:#fff;box-shadow:inset 0 0 0 2px var(--green2)}
 .tile .chk{display:none}
 .tile.on .chk{display:inline}
@@ -123,7 +123,7 @@ const colours = () => O.hair.find(h => h.id === base.hair)?.cloth ? O.cloth : O.
 
 function tile(group, opt, b, multi) {
   const on = multi ? (base.extras || []).includes(opt.id) : base[group] === opt.id;
-  return `<button class="tile ${on ? 'on' : ''}" data-g="${group}" data-v="${opt.id}" aria-pressed="${on}"><img class="px" src="${PIXEL.portrait(b)}" alt="">${opt.name}${multi ? ' <span class="chk">✓</span>' : ''}</button>`;
+  return `<button class="tile ${on ? 'on' : ''}" data-g="${group}" data-v="${opt.id}" aria-pressed="${on}" aria-label="${opt.name}"><img class="px" src="${PIXEL.portrait(b)}" alt=""></button>`;
 }
 function render() {
   document.getElementById('fig').src = PIXEL.figure(outfit(), base);
