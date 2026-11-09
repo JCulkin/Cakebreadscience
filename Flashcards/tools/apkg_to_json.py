@@ -1,88 +1,130 @@
-import json
-import os
-import sqlite3
-import zipfile
+"""Convert the Anki decks in Flashcards/ANKI files/ to JSON the Flashcards page loads (Flashcards/data/<deck>.json).
+
+Usage (from the repo root):  python3 -I Flashcards/tools/apkg_to_json.py
+Needs: pip install zstandard   (new Anki exports keep the cards in a zstd-compressed collection.anki21b)
+
+Each card: {"id": Anki card id (students' progress is saved against it — never change), "front", "back",
+            "spec": "B2.27" (subject letter + Double Award spec number, from the deck's 3rd field) or null,
+            "topic": "B2"}.
+The 3rd field holds the spec number ("2.27", "1.02", or just a topic like "2"). Numbers that aren't Double Award points
+in interactive/spec-quiz/spec.js (e.g. Biology-only numbering) keep "topic" but get "spec": null.
+Also copies any card images missing from Flashcards/media/ out of the decks (8 were missing until 10 Nov 2026), and writes
+interactive/spec-quiz/cards.js: CARD_COUNTS = { 'B2.27': n, ... } so the Questing engine knows how many
+cards each spec point has without loading the decks."""
+import json, re, sqlite3, sys, tempfile, zipfile
 from pathlib import Path
 
-# Usage: python apkg_to_json.py
-# Converts .apkg files in Flashcards/ANKI files/ to JSON in Flashcards/data/
+ROOT = Path(__file__).resolve().parents[2]
+APKG_DIR = ROOT / 'Flashcards' / 'ANKI files'
+OUT_DIR = ROOT / 'Flashcards' / 'data'
+SPEC_JS = ROOT / 'interactive' / 'spec-quiz' / 'spec.js'
+COUNTS_JS = ROOT / 'interactive' / 'spec-quiz' / 'cards.js'
 
-ROOT = Path(__file__).resolve().parents[1]
-APKG_DIR = ROOT / 'ANKI files'
-OUT_DIR = ROOT / 'data'
-OUT_DIR.mkdir(parents=True, exist_ok=True)
-
-DECKS = {
-    'biology': 'IGCSE__Biology_v2.apkg',
-    'chemistry': 'IGCSE__Chemistry_v3.apkg',
-    'physics': 'IGCSE__Physics_v1.apkg',
-    'physics-eqns': 'IGCSE__Physics-eqns_v1.apkg',
+DECKS = {  # deck id (used in progress keys `${deck}_${cardId}`) → (file, subject letter, display name)
+    'biology': ('IGCSE__Biology_v2.apkg', 'B', 'Biology'),
+    'chemistry': ('IGCSE__Chemistry_v3.apkg', 'C', 'Chemistry'),
+    'physics': ('IGCSE__Physics_v1.apkg', 'P', 'Physics'),
+    'physics-eqns': ('IGCSE__Physics-eqns_v1.apkg', 'P', 'Physics equations'),
 }
 
 
-def extract_collection(apkg_path: Path, work_dir: Path) -> Path:
-    """Extract collection.anki2/collection.anki21 from the .apkg into work_dir and return path."""
-    with zipfile.ZipFile(apkg_path, 'r') as z:
-        name = None
-        if 'collection.anki2' in z.namelist():
-            name = 'collection.anki2'
-        elif 'collection.anki21' in z.namelist():
-            name = 'collection.anki21'
-        else:
-            raise FileNotFoundError('collection.anki2/collection.anki21 not found in apkg')
-        out_path = work_dir / name
-        with z.open(name) as src, open(out_path, 'wb') as dst:
-            dst.write(src.read())
-        return out_path
+def spec_points():
+    src = SPEC_JS.read_text(encoding='utf-8')
+    data = json.loads(src[src.index('['):src.rindex(']') + 1])
+    keys = set()
+    for s in data:
+        for t in s['topics']:
+            for sb in t['subs']:
+                if sb['name'] == 'Units':
+                    continue
+                for p in sb['points']:
+                    keys.add(s['name'][0] + p['id'])
+    return keys
 
 
-def read_cards_from_collection(collection_path: Path):
-    conn = sqlite3.connect(str(collection_path))
-    try:
-        cur = conn.cursor()
-        cur.execute(
-            '''SELECT cards.id, notes.flds FROM cards JOIN notes ON cards.nid = notes.id'''
-        )
-        cards = []
-        for card_id, flds in cur.fetchall():
-            # Anki field separator is \x1f
-            parts = flds.split('\x1f')
-            front = parts[0] if parts else ''
-            back = parts[1] if len(parts) > 1 else ''
-            cards.append({
-                'id': card_id,
-                'front': front,
-                'back': back,
-            })
-        return cards
-    finally:
-        conn.close()
+def read_collection(apkg):
+    z = zipfile.ZipFile(apkg)
+    names = z.namelist()
+    if 'collection.anki21b' in names:
+        import zstandard
+        raw = zstandard.ZstdDecompressor().decompressobj().decompress(z.read('collection.anki21b'))
+    else:
+        raw = z.read('collection.anki21' if 'collection.anki21' in names else 'collection.anki2')
+    tmp = Path(tempfile.mkdtemp()) / 'c.db'
+    tmp.write_bytes(raw)
+    con = sqlite3.connect(str(tmp))
+    rows = con.execute('SELECT cards.id, notes.flds FROM cards JOIN notes ON cards.nid = notes.id ORDER BY cards.id').fetchall()
+    con.close()
+    return rows
 
 
-def convert_all():
-    tmp_dir = OUT_DIR / '_tmp'
-    tmp_dir.mkdir(parents=True, exist_ok=True)
-    for deck_id, filename in DECKS.items():
-        apkg_path = APKG_DIR / filename
-        if not apkg_path.exists():
-            print(f'[WARN] Missing apkg: {apkg_path}')
-            continue
-        try:
-            coll_path = extract_collection(apkg_path, tmp_dir)
-            cards = read_cards_from_collection(coll_path)
-            out_file = OUT_DIR / f'{deck_id}.json'
-            with open(out_file, 'w', encoding='utf-8') as f:
-                json.dump(cards, f, ensure_ascii=False, indent=2)
-            print(f'[OK] {deck_id}: {len(cards)} cards -> {out_file}')
-        except Exception as e:
-            print(f'[ERROR] {deck_id}: {e}')
-    # Clean up temp files
-    for p in tmp_dir.glob('collection.anki*'):
-        try:
-            os.remove(p)
-        except Exception:
-            pass
+def _varint(b, i):
+    n = sh = 0
+    while True:
+        x = b[i]; i += 1; n |= (x & 0x7f) << sh; sh += 7
+        if x < 0x80:
+            return n, i
+
+
+def extract_media(apkg):
+    """New-format decks: 'media' is a zstd protobuf list of entries {1: file name}; file k in the zip is entry k (zstd)."""
+    z = zipfile.ZipFile(apkg)
+    if 'collection.anki21b' not in z.namelist():
+        return 0
+    import zstandard
+    dec = lambda b: zstandard.ZstdDecompressor().decompressobj().decompress(b)
+    m, i, names = dec(z.read('media')), 0, []
+    while i < len(m) and m[i] == 0x0a:
+        ln, i = _varint(m, i + 1); ent, i = m[i:i + ln], i + ln
+        j, name = 0, None
+        while j < len(ent):
+            t = ent[j]; j += 1
+            if t & 7 == 2:
+                l, j = _varint(ent, j)
+                if t >> 3 == 1:
+                    name = ent[j:j + l].decode('utf-8', 'replace')
+                j += l
+            elif t & 7 == 0:
+                _, j = _varint(ent, j)
+            else:
+                break
+        names.append(name)
+    media, added = ROOT / 'Flashcards' / 'media', 0
+    for k, name in enumerate(names):
+        if name and not (media / name).exists() and str(k) in z.namelist():
+            (media / name).write_bytes(dec(z.read(str(k)))); added += 1
+    return added
+
+
+def main():
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    points = spec_points()
+    counts, report = {}, []
+    index = {}
+    for deck, (fname, L, name) in DECKS.items():
+        cards, tagged = [], 0
+        for cid, flds in read_collection(APKG_DIR / fname):
+            f = flds.split('\x1f') + ['', '', '']
+            raw = re.sub(r'<[^>]+>|&nbsp;', '', f[2]).strip()
+            m = re.match(r'^(\d+)(?:\.(\d+))?', raw)
+            topic = L + m.group(1) if m else None
+            spec = f'{L}{int(m.group(1))}.{int(m.group(2))}' if m and m.group(2) else None
+            if spec and spec not in points:
+                spec = None
+            if spec:
+                tagged += 1
+                counts[spec] = counts.get(spec, 0) + 1
+            cards.append({'id': cid, 'front': f[0], 'back': f[1], 'spec': spec, 'topic': topic})
+        extract_media(APKG_DIR / fname)
+        (OUT_DIR / f'{deck}.json').write_text(json.dumps(cards, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+        index[deck] = {'name': name, 'subject': L, 'cards': len(cards)}
+        report.append(f'{deck}: {len(cards)} cards, {tagged} tagged to a Double Award spec point')
+    (OUT_DIR / 'index.json').write_text(json.dumps(index, indent=1), encoding='utf-8')
+    COUNTS_JS.write_text('/* Flashcards per Double Award spec point. Generated by Flashcards/tools/apkg_to_json.py — do not edit by hand. */\n'
+                         'const CARD_COUNTS = ' + json.dumps(dict(sorted(counts.items())), separators=(',', ':')) + ';\n', encoding='utf-8')
+    print('\n'.join(report))
+    print(f'{len(counts)} spec points have flashcards')
 
 
 if __name__ == '__main__':
-    convert_all()
+    main()

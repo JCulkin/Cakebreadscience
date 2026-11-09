@@ -25,6 +25,7 @@
 .me .links{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .me .links .btn{padding:5px 10px;font-size:14px}
 .today h2{margin-bottom:4px}
+.todo .tick[hidden]{display:none}
 .todo{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;margin-top:10px}
 .todo .ic{width:64px;height:64px;display:grid;place-items:center;border:2px solid var(--ink);background:var(--soft)}
 .todo .ic img{width:48px;height:48px}
@@ -77,6 +78,11 @@
           <div><b>Today's mission <span class="tick" id="mDone" hidden>Done</span></b><p id="mText"></p></div>
           <a class="btn gold big" href="adventurer-mission.html" id="mBtn">Start →</a>
         </div>
+        <div class="card todo" id="tCards">
+          <div class="ic" style="font-size:34px">🃏</div>
+          <div><b>Flashcards <span class="tick" id="cDone" hidden>Done</span></b><p id="cText"></p></div>
+          <a class="btn alt" href="/Flashcards/" id="cBtn">Flashcards →</a>
+        </div>
         <div class="card todo" id="tMap">
           <div class="ic"><img class="px" id="mapIc" alt=""></div>
           <div><b>Breadventure Land · opens soon</b><p>The map where your class sets out to free the Professor. Take a look around the preview; your strength, health and magic will count there.</p></div>
@@ -88,7 +94,7 @@
         <div class="card">
           <h3 style="margin-top:0">Spec points secured</h3>
           <div id="sci"></div>
-          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days. Each one adds 1 to its stat for good.</p>
+          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days — flashcards rated Good on two different days count too. Each one adds 1 to its stat for good.</p>
           <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="showMe"> Show me on the class leaderboards</label>
         </div>
         <div class="card">
@@ -110,6 +116,7 @@
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
@@ -128,7 +135,8 @@ $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is wait
   : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
 $('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
   ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
-  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · spells coming`, s.mag / 70]]
+  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · more Magic = more mana`, s.mag / 70],
+  ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
 
 $('dayTitle').textContent = `Today · day ${S.day}`;
@@ -155,6 +163,12 @@ if (S.missionsToday) {
   $('mBtn').textContent = 'Another →'; $('mBtn').classList.remove('gold', 'big');
 } else { const sg = QE.suggestion(); $('mText').textContent = `10 questions against a misconception. Get questions right first time on two different days to secure spec points.${sg ? ` Suggested: ${sg.subj} ${sg.key.slice(1)} ${sg.name}.` : ''}`; }
 
+{
+  const cd = QE.cardsToday(), target = QE.cardsTarget(), won = QE.revisedToday();
+  if (cd.done) { $('tCards').classList.add('done'); $('cDone').hidden = false; $('cText').textContent = `${cd.n} cards today: +${cd.xp} XP, ❤ +${cd.n} Health, 🔮 +${cd.n} mana and a loot drop.`; }
+  else $('cText').innerHTML = `${cd.n ? `${cd.n} of ${target} cards today. ` : ''}Review <b>${target}</b> cards for ${won ? 'a loot drop (today\'s +1 move is already won)' : '<b>+1 move</b> and a loot drop'}. Every card: +2 XP, ❤ +1 Health, 🔮 +1 mana; cards rated Good on two different days secure spec points too.`;
+}
+$('mText').insertAdjacentHTML('beforeend', QE.revisedToday() ? '' : ' <b>Your first mission today also gives +1 move.</b>');
 $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], ['p', 'Physics', 'Strength']].map(([k, n, st]) =>
   `<div class="sci"><div class="top"><span style="color:var(--${k})">${n}</span><span>${S.secured[k]} / ${ADV.TOTAL[k]}</span></div><div class="bar"><i style="width:${S.secured[k] / ADV.TOTAL[k] * 100}%;background:var(--${k})"></i></div><small>→ ${st}</small></div>`).join('');
 

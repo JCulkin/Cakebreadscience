@@ -125,11 +125,11 @@ table.st th{background:var(--soft)}
     <div class="cols">
       <div>
         <ul>
-          <li><b>6 moves on your first day</b> (to get going), then <b>2 a day, +1 for finishing that day's first mission</b>. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves resolve once a day — the first visit to the site after midnight runs the night for everyone (no server needed). The “Mock: skip to morning” button exists only in this mock-up.</li>
+          <li><b>6 moves on your first day</b> (to get going), then <b>2 a day, +1 for that day's first revision</b>: a finished mission or today's flashcards (15 cards). A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves resolve once a day — the first visit to the site after midnight runs the night for everyone (no server needed). The “Mock: skip to morning” button exists only in this mock-up.</li>
           <li><b>Everything happens at midnight.</b> Next login shows the morning report. No reason to be online at night.</li>
           <li><b>Same square = same team.</b> Boss health carries over night to night, so a class can wear a boss down over a week. No fighting each other.</li>
           <li><b>Fight alone or together.</b> Small monsters (orange health bars) can be beaten solo in a night or two and come back two days later; you also bump into the odd wild critter on the way. Bosses are built for teams: the panel shows "alone about N nights · with 4 classmates about M".</li>
-          <li><b>Health only comes back through revision</b> (plus a little from resting in the Cakelab): +2 per right mission answer, +1 per flashcard reviewed. Knocked out = wake in the Cakelab on a quarter of your Health, rest of tonight's moves cancelled, nothing lost.</li>
+          <li><b>Health only comes back through revision</b> (plus a little from resting in the Cakelab): +2 per right mission answer, +1 per flashcard reviewed. <b>Mana</b> for spells (Patch Up, Jam Shield, Lift the Fog) comes from flashcards (+1 a card) and missions (+1 per 3 right). Knocked out = wake in the Cakelab on a quarter of your Health, rest of tonight's moves cancelled, nothing lost.</li>
           <li><b>Water can't be crossed</b> (sea, Lost Property Lake, the River Tangent) except at the two bridges, so routes matter.</li>
           <li><b>Fog of war:</b> you only see squares within 2 steps of somewhere you've been. Bosses show through the fog as shadows so there's always somewhere to head for. Exploring is its own reward.</li>
         </ul>
@@ -163,6 +163,7 @@ table.st th{background:var(--soft)}
   </details>
 </div>
 
+<div class="modal" id="spellModal" role="dialog" aria-modal="true" aria-label="Spells"><div class="box"><div id="spellBody"></div><button class="btn gold" id="spellClose">Back to the map →</button></div></div>
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="repTitle"><div class="box"><h2 id="repTitle">Morning report</h2><div class="day" id="report"></div><button class="btn gold" id="repClose">To the map →</button></div></div>
 
 <script src="/js/firebase-config.js"></script>
@@ -173,6 +174,7 @@ table.st th{background:var(--soft)}
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
@@ -300,7 +302,8 @@ let revealAll = false;
 function visibleSet() {
   const v = new Set();
   const seen = S.visited.map(unkey);
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT)) v.add(key(c, r));
+  const lifted = (S.lifted || []).map(unkey);   // Lift the Fog spell: 4 steps round where it was cast
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT) || lifted.some(p => dist(p, [c, r]) <= 4)) v.add(key(c, r));
   return v;
 }
 
@@ -406,7 +409,7 @@ function renderMap() {
   /* fog also covers the sea round the edge of the map */
   const seen = S.visited.map(unkey);
   for (let r = -2; r <= ROWS + 1; r++) for (let c = -2; c <= COLS + 1; c++) {
-    if (inMap(c, r) || revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT)) continue;
+    if (inMap(c, r) || revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT) || (S.lifted || []).some(k => dist(unkey(k), [c, r]) <= 4)) continue;
     const [x, y] = center(c, r);
     fog += `<polygon points="${hexPts(x, y, HEXR * 1.35)}" fill="#dfe4ea"/>`;
   }
@@ -446,6 +449,7 @@ function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
+    <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells${S.shield ? ' · 🛡' : ''}</button></div>
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
     <div class="day">Day ${S.day} · moves happen at midnight</div>
@@ -456,6 +460,31 @@ function renderHud() {
   $('repBtn').onclick = () => showReport();
   $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
   $('sleep').onclick = overnight;
+  $('spellBtn').onclick = showSpells;
+}
+
+/* ===================== spells (mana from flashcards and missions) ===================== */
+const SPELLS = [
+  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.', ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.',
+    cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
+  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight. (On the shared map it will cover everyone on your square.)', ok: () => !S.shield, why: 'Already up for tonight.',
+    cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
+  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.', ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.',
+    cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
+];
+function showSpells() {
+  $('spellClose').onclick = () => $('spellModal').classList.remove('on');
+  const m = $('spellModal'), s = ADV.stats();
+  const row = sp => { const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
+    <div style="flex:1"><b>${sp.name}</b> · ${sp.cost} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
+    <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
+  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
+    ${SPELLS.map(row).join('')}<p class="small" style="margin-top:10px">Preview: spells change your map here only. On the shared class map, Jam Shield will protect your whole square and a heal can go to a classmate.</p>`;
+  m.classList.add('on');
+  $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
+    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; const msg = sp.cast(); ADV.save(); renderAll(); showSpells();
+    $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
+  });
 }
 
 function describe(k) {
@@ -557,11 +586,12 @@ svg.addEventListener('click', e => {
   const k = e.target.dataset && e.target.dataset.k; if (!k) return;
   sel = sel === k ? null : k; renderAll();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('modal').classList.remove('on'); sel = null; renderAll(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('modal').classList.remove('on'); $('spellModal').classList.remove('on'); sel = null; renderAll(); } });
 
 /* ===================== overnight ===================== */
 function overnight() {
   const lines = [], dmgOf = s => Math.round(s * (0.6 + rnd() * 0.8)), visBefore = visibleSet();
+  const ouch = h => (S.shield ? Math.ceil(h / 2) : h);   // Jam Shield spell
   let at = S.at;
   const steps = S.plan.length ? S.plan : [S.at];
   let out = false;
@@ -578,7 +608,7 @@ function overnight() {
       const mine = dmgOf(ADV.stats().str), theirs = team.reduce(a => a + dmgOf(12 + rnd() * 20), 0), total = mine + theirs;
       S.boss[k] = Math.max(0, S.boss[k] - total);
       lines.push(`<p class="good">You${team.length ? ` and ${team.length} classmate${team.length === 1 ? '' : 's'}` : ''} attack ${P.name}: ${total} damage (you did ${mine}).</p>`);
-      const hit = Math.round(P.power * (0.5 + rnd()));
+      const hit = ouch(Math.round(P.power * (0.5 + rnd())));
       S.health = Math.max(0, S.health - hit);
       lines.push(`<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`);
       if (S.boss[k] === 0) lines.push(`<p class="lt">★ ${P.name} is defeated! Everyone who hit it this week gets: ${P.loot.join(', ')}.</p>`);
@@ -591,14 +621,14 @@ function overnight() {
         const team = PEOPLE.filter(p => S.people[p.i] === k), mine = dmgOf(ADV.stats().str), total = mine + team.reduce(a => a + dmgOf(18), 0);
         hp = Math.max(0, hp - total);
         lines.push(`<p class="good">You${team.length ? ' and ' + team.length + ' classmate' + (team.length > 1 ? 's' : '') : ''} take on the ${P.name}: ${total} damage.</p>`);
-        const hit = Math.round(P.power * (0.5 + rnd())); S.health = Math.max(0, S.health - hit);
+        const hit = ouch(Math.round(P.power * (0.5 + rnd()))); S.health = Math.max(0, S.health - hit);
         lines.push(`<p class="bad">It fights back: −${hit} Health.</p>`);
         if (!hp) { S.xp += 30; S.coins += 8; S.dens[k] = { hp: 0, back: S.day + 2 }; lines.push(`<p class="lt">★ ${P.name} beaten! +30 XP, +8 coins${rnd() < .3 ? ', and it dropped a Fizzy Courage' : ''}.</p>`); }
         else { S.dens[k] = { hp }; S.xp += 10; lines.push(`<p>The ${P.name} limps off with ${hp} health left. Come back tomorrow to finish it.</p>`); }
       }
       if (S.health === 0) knockout();
     } else if (!P && rnd() < .3 && WILD[T_AT(c, r)]) {
-      const w = WILD[T_AT(c, r)], hit = 1 + Math.floor(rnd() * 3); S.health = Math.max(0, S.health - hit); S.xp += 10;
+      const w = WILD[T_AT(c, r)], hit = ouch(1 + Math.floor(rnd() * 3)); S.health = Math.max(0, S.health - hit); S.xp += 10;
       lines.push(`<p>On the way you're jumped by <b>${w}</b>. You see it off (+10 XP, −${hit} Health).</p>`);
       if (S.health === 0) knockout();
     } else if (P && P.type === 'dungeon') {
@@ -620,7 +650,9 @@ function overnight() {
   let rescued = false;
   if (S.chapter < 2 && ADV.keys() === 3) { S.chapter = 2; rescued = true; lines.unshift('<p class="lt">🔓 With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>'); }
   const used = S.plan.length;
-  S.at = at; S.plan = []; S.moves = Math.min(4, S.moves - used + 2); S.day++;   /* +1 move comes back with tomorrow's first mission */
+  if (S.shield) lines.push('<p class="lt">🛡 Your Jam Shield took half of every hit tonight. It has worn off.</p>');
+  S.shield = false;
+  S.at = at; S.plan = []; S.moves = Math.min(4, S.moves - used + 2); S.day++;   /* +1 more comes with the day's first mission or flashcards (ADV.collect) */
   S.report = lines; S.reportSeen = S.day - 1;
   ADV.save(); sel = S.at; renderAll();
   if (rescued) ADV.storyRescue(showReport); else showReport();

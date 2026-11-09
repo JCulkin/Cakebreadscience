@@ -127,6 +127,7 @@
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
@@ -247,7 +248,8 @@ function finish() {
   const coins = 10 + (won ? 10 : 0);
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
   const drop = pool[Math.floor(Math.random() * pool.length)];
-  QE.finishMission({ coins, loot: drop.id });
+  const firstRev = !QE.revisedToday();
+  QE.finishMission({ coins, loot: drop.id, right });
   QE.busy = false;
   const after = ADV.stats(), capAfter = ADV.levelCap(), toCap = 8 - ADV.securedTotal() % 8, st = QE.stats();
   const gainP = st.securedP - MS.st0.securedP, gainQ = st.securedQ - MS.st0.securedQ, xp = S.xp - MS.xp0;
@@ -266,6 +268,7 @@ function finish() {
         ${gainP > 0 ? `<li class="up">📌 ${gainP} spec point${gainP === 1 ? '' : 's'} secured${statUps.length ? ' → ' + statUps.map(([, n, c]) => `<b>${n} ${before[c]} → ${after[c]}</b>`).join(', ') : ''}</li>` : `<li>Secure ${MS.sub.subj} spec points to raise your ${statName}.</li>`}
         ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! XP you had banked now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
         <li>🪙 +${coins} coins${won ? ' (defeat bonus)' : ''}</li>
+        <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}

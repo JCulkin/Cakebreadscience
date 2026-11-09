@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Flashcards - Cakebread Science</title>
-    <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel with virtual pet gamification. Study Biology, Chemistry, Physics, and Physics Equations.">
+    <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Cakebread Questing adventurer. Study Biology, Chemistry, Physics, and Physics Equations.">
     <meta name="keywords" content="IGCSE, Edexcel, flashcards, spaced repetition, biology, chemistry, physics">
     <meta name="author" content="Cakebread Science">
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -573,355 +573,24 @@
         .mini-badge.badge-silver { border-color: #a0a0a0; color: #808080; }
         .mini-badge.badge-gold { border-color: #daa520; color: #b8860b; }
 
-        /* Pet House */
-        .pet-house {
-            position: fixed;
-            right: 24px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 180px;
-            background: rgba(255, 255, 255, 0.97);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-            padding: 10px 12px 12px;
-            text-align: center;
-            display: none;
-            z-index: 50;
-            overflow: hidden;
-        }
-
-        .pet-house.visible { display: block; }
-
-        .pet-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 6px;
-            font-size: 0.7em;
-            color: #888;
-        }
-        .pet-stats .stat-val { font-weight: 700; font-size: 1.3em; color: #005e22; display: block; }
-        .pet-stats .stat-val.streak-color { color: #f39c12; }
-
-        .pet-room {
-            position: relative;
-            border-radius: 12px;
-            padding: 6px 4px 2px;
-            min-height: 150px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: background 0.4s ease;
-        }
-
-        .pet-room .deco { position: absolute; z-index: 4; width: 30px; height: 38px; }
-        .pet-room .deco-left { left: 4px; bottom: 6px; }
-        .pet-room .deco-right { right: 4px; bottom: 6px; }
-        .pet-room .deco svg { width: 100%; height: 100%; }
-
-        .pet-room .pet-roof {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 28px;
-            z-index: 5;
-            pointer-events: none;
-        }
-        .pet-room .pet-roof svg { width: 100%; height: 100%; }
-
-        .pet-room .floor-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 24px;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .pet-room .floor-overlay svg { width: 100%; height: 100%; }
-
-        .blob-shadow {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 10px;
-            background: radial-gradient(ellipse, rgba(0,0,0,0.12) 0%, transparent 70%);
-            border-radius: 50%;
-            z-index: 2;
-        }
-
-        .pet-house .pet-stage-name {
-            font-size: 0.75em;
-            font-weight: 700;
-            color: #005e22;
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .pet-house .pet-label {
-            font-size: 0.65em;
-            color: #aaa;
-            margin-top: 1px;
-        }
-
-        .pet-btns {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-            justify-content: center;
-        }
-
-        .pet-btn {
-            background: rgba(0, 94, 34, 0.1);
-            border: none;
-            color: #005e22;
-            padding: 5px 10px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.72em;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .pet-btn:hover { background: #005e22; color: white; }
-
-        .pet-btn.feed-btn { background: rgba(231, 76, 60, 0.1); color: #e74c3c; }
-        .pet-btn.feed-btn:hover { background: #e74c3c; color: white; }
-        .pet-btn.feed-btn.fed { background: rgba(0, 94, 34, 0.1); color: #005e22; pointer-events: none; }
-
-        .hungry-indicator {
-            display: none;
-            font-size: 1.2em;
-            animation: hungryPulse 1.5s ease-in-out infinite;
-            position: absolute;
-            top: 8px;
-            right: 8px;
-        }
-        .pet-house.blob-hungry .hungry-indicator { display: block; }
-
-        @keyframes hungryPulse {
-            0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.15); opacity: 1; }
-        }
-
-        .pet-svg-wrap {
-            animation: petBounce 2.5s ease-in-out infinite;
-            position: relative;
-            z-index: 3;
-        }
-
-        @keyframes petBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .pet-svg-wrap .eyes {
-            animation: petBlink 4s ease-in-out infinite;
-        }
-
-        @keyframes petBlink {
-            0%, 42%, 46%, 100% { transform: scaleY(1); }
-            44% { transform: scaleY(0.05); }
-        }
-
-        /* Mood: happy mouth shown by default, sad mouth hidden */
-        .mouth-sad { display: none; }
-        .pet-house.blob-hungry .mouth-happy { display: none; }
-        .pet-house.blob-hungry .mouth-sad { display: block; }
-
-        /* Feed animation */
-        .feed-float {
-            position: absolute;
-            font-size: 1.5em;
-            z-index: 10;
-            animation: feedFloat 1s ease-out forwards;
-            pointer-events: none;
-        }
-
-        @keyframes feedFloat {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-50px) scale(0.5); opacity: 0; }
-        }
-
-        /* Accessory tier effects */
-        .acc-group { display: none; }
-        .acc-group.active { display: block; }
-        .acc-group.tier-bronze { opacity: 0.85; }
-        .acc-group.tier-silver { opacity: 1; }
-        .acc-group.tier-gold { opacity: 1; filter: drop-shadow(0 0 3px rgba(218, 165, 32, 0.6)); }
-
-        /* Stage groups */
-        .pet-stage { display: none; }
-        .pet-stage.active { display: block; }
-        .pet-stage.stage-master.active { filter: drop-shadow(0 0 6px rgba(0, 94, 34, 0.5)); }
-
-        /* House floor styles */
-        .pet-room.floor-grass { background: linear-gradient(to top, #8bc97e 0%, #b5e4a8 20%, #d4f5d0 35%, transparent 55%); }
-        .pet-room.floor-wood { background: linear-gradient(to top, #b8875a 0%, #d4a574 15%, #e8cfa8 30%, transparent 50%); }
-
-        /* House background styles */
-        .pet-room.bg-clouds { background: linear-gradient(180deg, #c5e3f6 0%, #e8f4fd 40%, #f0f8ff 100%); }
-        .pet-room.bg-stars { background: linear-gradient(180deg, #1a1a3e 0%, #2d2d5e 50%, #3d3d6e 100%); }
-        .pet-room.bg-night { background: linear-gradient(180deg, #0a0e2a 0%, #0c1445 30%, #1a237e 70%, #283593 100%); }
-
-        /* Background animated elements */
-        .pet-room .bg-cloud {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .pet-room.bg-clouds .bg-cloud { opacity: 0.5; animation: cloudDrift linear infinite; }
-
-        @keyframes cloudDrift {
-            0% { transform: translateX(-25px); }
-            100% { transform: translateX(185px); }
-        }
-
-        .pet-room .bg-star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            opacity: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .pet-room.bg-stars .bg-star,
-        .pet-room.bg-night .bg-star { opacity: 1; animation: twinkle ease-in-out infinite; }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.4); }
-        }
-
-        .pet-room .bg-moon {
-            position: absolute;
-            top: 6px;
-            right: 10px;
-            z-index: 0;
-            opacity: 0;
-            pointer-events: none;
-        }
-        .pet-room.bg-night .bg-moon { opacity: 1; }
-
-        /* Master sparkles */
-        .pet-room .sparkle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: #ffd93d;
-            border-radius: 50%;
-            opacity: 0;
-            z-index: 6;
-            pointer-events: none;
-        }
-        .pet-room.show-sparkles .sparkle {
-            animation: sparkleFloat 2.5s ease-in-out infinite;
-        }
-
-        @keyframes sparkleFloat {
-            0% { opacity: 0; transform: translateY(0) scale(0); }
-            20% { opacity: 1; transform: translateY(-6px) scale(1); }
-            80% { opacity: 0.6; transform: translateY(-30px) scale(0.8); }
-            100% { opacity: 0; transform: translateY(-38px) scale(0); }
-        }
-
-        /* Combined floor + background */
-        .pet-room.floor-grass.bg-clouds { background: linear-gradient(to top, #8bc97e 0%, #b5e4a8 18%, #d4f5d0 30%, #e8f4fd 55%, #c5e3f6 100%); }
-        .pet-room.floor-grass.bg-stars { background: linear-gradient(to top, #5a8a50 0%, #6b9960 15%, #4a6a40 30%, #2d2d5e 55%, #1a1a3e 100%); }
-        .pet-room.floor-grass.bg-night { background: linear-gradient(to top, #3a5a30 0%, #4a6a40 15%, #2a4a20 30%, #1a237e 55%, #0a0e2a 100%); }
-        .pet-room.floor-wood.bg-clouds { background: linear-gradient(to top, #b8875a 0%, #d4a574 15%, #e8cfa8 28%, #e8f4fd 50%, #c5e3f6 100%); }
-        .pet-room.floor-wood.bg-stars { background: linear-gradient(to top, #8a6545 0%, #a07050 15%, #7a5535 28%, #2d2d5e 50%, #1a1a3e 100%); }
-        .pet-room.floor-wood.bg-night { background: linear-gradient(to top, #6a4535 0%, #7a5040 15%, #5a3525 28%, #1a237e 50%, #0a0e2a 100%); }
-
-        /* Store modal */
-        .store-tabs { display: flex; gap: 4px; margin-bottom: 16px; }
-        .store-tab {
-            flex: 1;
-            padding: 8px;
-            border: 2px solid #eef0f4;
-            border-radius: 10px;
-            background: white;
-            cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 600;
-            color: #888;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        .store-tab.active { border-color: #005e22; color: #005e22; background: rgba(0, 94, 34, 0.05); }
-
-        .store-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .store-item {
-            border: 2px solid #eef0f4;
-            border-radius: 12px;
-            padding: 12px 8px;
-            text-align: center;
-            transition: all 0.2s;
-        }
-        .store-item:hover { border-color: #005e22; }
-        .store-item .item-emoji { font-size: 1.8em; }
-        .store-item .item-name { font-size: 0.8em; font-weight: 600; color: #444; margin: 4px 0 2px; }
-        .store-item .item-cost { font-size: 0.75em; color: #005e22; font-weight: 700; }
-
-        .store-item .buy-btn {
-            margin-top: 6px;
-            padding: 4px 14px;
-            border: none;
-            border-radius: 8px;
-            background: #005e22;
-            color: white;
-            font-size: 0.75em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .store-item .buy-btn:hover { background: #004d1a; }
-        .store-item .buy-btn:disabled { background: #ccc; cursor: not-allowed; }
-        .store-item .buy-btn.owned { background: #005e22; }
-
-        .store-item .equip-btn {
-            margin-top: 6px;
-            padding: 4px 14px;
-            border: 2px solid #005e22;
-            border-radius: 8px;
-            background: white;
-            color: #005e22;
-            font-size: 0.75em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .store-item .equip-btn:hover { background: #005e22; color: white; }
-        .store-item .equip-btn.equipped { background: #005e22; color: white; }
-
-        .store-balance {
-            text-align: center;
-            margin-bottom: 14px;
-            font-size: 1.1em;
-            color: #005e22;
-            font-weight: 700;
-        }
-
-        .inv-food-count { font-size: 0.7em; color: #888; }
-
-        @media (max-width: 1100px) {
-            .pet-house { display: none !important; }
-        }
+        /* Cakebread Questing panel (replaces the Study Blob, 10 Nov 2026) */
+        .quest { margin: 0 0 20px; border: 2px solid #111; border-radius: 12px; padding: 14px 16px; background: #fffbea; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
+        .quest img.px { width: 64px; height: 64px; image-rendering: pixelated; flex: none; }
+        .quest .q-main { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+        @media (max-width: 480px) { .quest { padding: 12px; gap: 10px; } .quest img.px { width: 48px; height: 48px; } }
+        .quest .q-kick { font-size: 0.72em; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #b45309; }
+        .quest .q-title { font-weight: 800; font-size: 1.05em; margin: 2px 0 6px; }
+        .quest .q-bar { height: 10px; background: #eee; border: 1.5px solid #111; border-radius: 6px; overflow: hidden; }
+        .quest .q-bar i { display: block; height: 100%; background: #f59e0b; }
+        .quest .q-bar.done i { background: #16a34a; }
+        .quest .q-earned { font-size: 0.85em; color: #555; margin-top: 6px; }
+        .quest a.q-go { background: #111; color: #fff; text-decoration: none; font-weight: 800; padding: 9px 14px; border-radius: 8px; white-space: nowrap; }
+        .gain { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #111; color: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 700; font-size: 0.9em; z-index: 50; animation: gainUp 1.6s ease forwards; pointer-events: none; max-width: 92vw; text-align: center; }
+        @keyframes gainUp { 0% { opacity: 0; transform: translate(-50%, 10px); } 12% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -8px); } }
+        .loot-pop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 60; }
+        .loot-pop .box { background: #fff; border: 3px solid #111; border-radius: 14px; padding: 22px; max-width: 360px; text-align: center; }
+        .loot-pop img { width: 96px; height: 96px; image-rendering: pixelated; }
+        .loot-pop button { margin-top: 12px; }
     </style>
 </head>
 <body>
@@ -949,6 +618,7 @@
                     <button class="top-btn" onclick="openSettings()">⚙️ Settings</button>
                 </div>
                 <div class="user-info" id="userInfo"></div>
+                <div class="quest" id="questPanel"></div>
                 <div class="badges-row" id="badgesRow"></div>
                 <div id="totalDueToday" style="text-align: center; margin-bottom: 20px; display: none;">
                     <div style="font-size: 3em; font-weight: bold; color: #111; line-height: 1;" id="totalDueCount">0</div>
@@ -958,262 +628,6 @@
                 <div class="deck-list" id="deckList">
                     <div class="loading">Loading decks...</div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Pet House -->
-        <div class="pet-house" id="petHouse">
-            <span class="hungry-indicator">🍽️</span>
-            <div class="pet-stats">
-                <div><span class="stat-val" id="petPoints">0</span>pts</div>
-                <div><span class="stat-val streak-color" id="petStreak">0</span>streak</div>
-            </div>
-            <div class="pet-room" id="petRoom">
-                <div class="pet-roof" id="petRoof"></div>
-
-                <!-- Background elements (clouds, stars, moon) -->
-                <div class="bg-cloud" style="width:32px;height:14px;top:10px;left:-18px;animation-duration:16s;"></div>
-                <div class="bg-cloud" style="width:24px;height:10px;top:24px;left:-10px;animation-duration:22s;animation-delay:5s;"></div>
-                <div class="bg-cloud" style="width:28px;height:12px;top:6px;left:-24px;animation-duration:19s;animation-delay:10s;"></div>
-                <div class="bg-cloud" style="width:20px;height:8px;top:34px;left:-12px;animation-duration:25s;animation-delay:2s;"></div>
-
-                <div class="bg-star" style="top:8px;left:15%;animation-duration:2.2s;animation-delay:0s;"></div>
-                <div class="bg-star" style="top:18px;left:75%;animation-duration:1.8s;animation-delay:0.8s;"></div>
-                <div class="bg-star" style="top:32px;left:40%;animation-duration:2.5s;animation-delay:1.4s;"></div>
-                <div class="bg-star" style="top:12px;left:55%;animation-duration:2.0s;animation-delay:0.3s;"></div>
-                <div class="bg-star" style="top:38px;left:20%;animation-duration:2.8s;animation-delay:1.0s;"></div>
-                <div class="bg-star" style="top:6px;left:85%;animation-duration:2.3s;animation-delay:1.8s;"></div>
-                <div class="bg-star" style="top:26px;left:10%;animation-duration:1.9s;animation-delay:0.5s;"></div>
-                <div class="bg-star" style="top:15px;left:65%;animation-duration:2.6s;animation-delay:2.0s;"></div>
-
-                <svg class="bg-moon" width="16" height="16" viewBox="0 0 18 18">
-                    <circle cx="9" cy="9" r="7" fill="#ffeaa7" />
-                    <circle cx="12" cy="7" r="6" fill="#0c1445" />
-                </svg>
-
-                <!-- Sparkles for master stage -->
-                <div class="sparkle" style="top:30%;left:20%;animation-delay:0s;"></div>
-                <div class="sparkle" style="top:25%;left:75%;animation-delay:0.8s;"></div>
-                <div class="sparkle" style="top:50%;left:15%;animation-delay:1.6s;"></div>
-                <div class="sparkle" style="top:45%;left:80%;animation-delay:0.4s;"></div>
-
-                <div class="deco deco-left" id="petDecoLeft"></div>
-                <div class="deco deco-right" id="petDecoRight"></div>
-
-                <div class="blob-shadow"></div>
-
-                <div class="floor-overlay" id="floorOverlay"></div>
-
-            <div class="pet-svg-wrap">
-                <svg viewBox="0 0 120 140" width="120" height="140" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Stage 1: Egg -->
-                    <g class="pet-stage stage-egg">
-                        <ellipse cx="60" cy="80" rx="28" ry="36" fill="#005e22" />
-                        <ellipse cx="60" cy="85" rx="22" ry="28" fill="#8b9ff5" />
-                        <!-- Crack -->
-                        <polyline points="42,68 48,58 55,66 60,54 66,64 72,56 78,68" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" />
-                        <!-- Eyes peeking through crack -->
-                        <g class="eyes" style="transform-origin: 60px 62px;">
-                            <circle cx="52" cy="62" r="3.5" fill="white" />
-                            <circle cx="68" cy="62" r="3.5" fill="white" />
-                            <circle cx="53" cy="62" r="2" fill="#333" />
-                            <circle cx="69" cy="62" r="2" fill="#333" />
-                            <circle cx="54" cy="61" r="0.8" fill="white" />
-                            <circle cx="70" cy="61" r="0.8" fill="white" />
-                        </g>
-                    </g>
-
-                    <!-- Stage 2: Hatchling -->
-                    <g class="pet-stage stage-hatchling">
-                        <!-- Body -->
-                        <ellipse cx="60" cy="90" rx="26" ry="30" fill="#005e22" />
-                        <ellipse cx="60" cy="94" rx="20" ry="22" fill="#8b9ff5" />
-                        <!-- Eyes -->
-                        <g class="eyes" style="transform-origin: 60px 80px;">
-                            <circle cx="50" cy="80" r="6" fill="white" />
-                            <circle cx="70" cy="80" r="6" fill="white" />
-                            <circle cx="52" cy="80" r="3.5" fill="#333" />
-                            <circle cx="72" cy="80" r="3.5" fill="#333" />
-                            <circle cx="53.5" cy="78.5" r="1.2" fill="white" />
-                            <circle cx="73.5" cy="78.5" r="1.2" fill="white" />
-                        </g>
-                        <!-- Blush -->
-                        <ellipse cx="42" cy="88" rx="5" ry="3" fill="rgba(255,150,150,0.4)" />
-                        <ellipse cx="78" cy="88" rx="5" ry="3" fill="rgba(255,150,150,0.4)" />
-                    </g>
-
-                    <!-- Stage 3: Junior -->
-                    <g class="pet-stage stage-junior">
-                        <!-- Body -->
-                        <ellipse cx="60" cy="88" rx="30" ry="34" fill="#005e22" />
-                        <ellipse cx="60" cy="93" rx="23" ry="24" fill="#8b9ff5" />
-                        <!-- Arm nubs -->
-                        <ellipse cx="32" cy="85" rx="8" ry="5" fill="#005e22" transform="rotate(-20,32,85)" />
-                        <ellipse cx="88" cy="85" rx="8" ry="5" fill="#005e22" transform="rotate(20,88,85)" />
-                        <!-- Eyes -->
-                        <g class="eyes" style="transform-origin: 60px 76px;">
-                            <circle cx="48" cy="76" r="7" fill="white" />
-                            <circle cx="72" cy="76" r="7" fill="white" />
-                            <circle cx="50" cy="76" r="4" fill="#333" />
-                            <circle cx="74" cy="76" r="4" fill="#333" />
-                            <circle cx="51.5" cy="74.5" r="1.5" fill="white" />
-                            <circle cx="75.5" cy="74.5" r="1.5" fill="white" />
-                        </g>
-                        <!-- Mouth -->
-                        <path class="mouth-happy" d="M54,90 Q60,96 66,90" fill="none" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-                        <path class="mouth-sad" d="M54,94 Q60,89 66,94" fill="none" stroke="#333" stroke-width="1.5" stroke-linecap="round" />
-                        <!-- Blush -->
-                        <ellipse cx="38" cy="86" rx="5" ry="3" fill="rgba(255,150,150,0.35)" />
-                        <ellipse cx="82" cy="86" rx="5" ry="3" fill="rgba(255,150,150,0.35)" />
-                    </g>
-
-                    <!-- Stage 4: Teen -->
-                    <g class="pet-stage stage-teen">
-                        <!-- Body -->
-                        <ellipse cx="60" cy="85" rx="32" ry="38" fill="#005e22" />
-                        <ellipse cx="60" cy="91" rx="24" ry="26" fill="#8b9ff5" />
-                        <!-- Arms -->
-                        <ellipse cx="28" cy="80" rx="10" ry="6" fill="#005e22" transform="rotate(-15,28,80)" />
-                        <ellipse cx="92" cy="80" rx="10" ry="6" fill="#005e22" transform="rotate(15,92,80)" />
-                        <!-- Antennae -->
-                        <line x1="50" y1="50" x2="42" y2="36" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
-                        <circle cx="42" cy="34" r="4" fill="#8b9ff5" />
-                        <line x1="70" y1="50" x2="78" y2="36" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
-                        <circle cx="78" cy="34" r="4" fill="#8b9ff5" />
-                        <!-- Eyes -->
-                        <g class="eyes" style="transform-origin: 60px 72px;">
-                            <circle cx="47" cy="72" r="8" fill="white" />
-                            <circle cx="73" cy="72" r="8" fill="white" />
-                            <circle cx="49" cy="72" r="4.5" fill="#333" />
-                            <circle cx="75" cy="72" r="4.5" fill="#333" />
-                            <circle cx="51" cy="70" r="1.8" fill="white" />
-                            <circle cx="77" cy="70" r="1.8" fill="white" />
-                        </g>
-                        <!-- Smile -->
-                        <path class="mouth-happy" d="M50,88 Q60,96 70,88" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
-                        <path class="mouth-sad" d="M50,94 Q60,87 70,94" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
-                        <!-- Feet nubs -->
-                        <ellipse cx="48" cy="120" rx="8" ry="4" fill="#004d1a" />
-                        <ellipse cx="72" cy="120" rx="8" ry="4" fill="#004d1a" />
-                    </g>
-
-                    <!-- Stage 5: Adult -->
-                    <g class="pet-stage stage-adult">
-                        <!-- Body -->
-                        <ellipse cx="60" cy="82" rx="34" ry="40" fill="#005e22" />
-                        <ellipse cx="60" cy="89" rx="26" ry="28" fill="#8b9ff5" />
-                        <!-- Arms -->
-                        <path d="M26,75 Q18,70 16,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
-                        <path d="M94,75 Q102,70 104,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
-                        <!-- Antennae -->
-                        <line x1="48" y1="45" x2="38" y2="28" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
-                        <circle cx="38" cy="26" r="5" fill="#ffd93d" />
-                        <line x1="72" y1="45" x2="82" y2="28" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
-                        <circle cx="82" cy="26" r="5" fill="#ffd93d" />
-                        <!-- Eyes -->
-                        <g class="eyes" style="transform-origin: 60px 68px;">
-                            <circle cx="45" cy="68" r="9" fill="white" />
-                            <circle cx="75" cy="68" r="9" fill="white" />
-                            <circle cx="48" cy="68" r="5" fill="#333" />
-                            <circle cx="78" cy="68" r="5" fill="#333" />
-                            <circle cx="50" cy="66" r="2" fill="white" />
-                            <circle cx="80" cy="66" r="2" fill="white" />
-                        </g>
-                        <!-- Happy smile -->
-                        <path class="mouth-happy" d="M48,86 Q60,97 72,86" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
-                        <path class="mouth-sad" d="M48,94 Q60,85 72,94" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
-                        <!-- Feet -->
-                        <ellipse cx="46" cy="120" rx="10" ry="5" fill="#004d1a" />
-                        <ellipse cx="74" cy="120" rx="10" ry="5" fill="#004d1a" />
-                    </g>
-
-                    <!-- Stage 6: Master -->
-                    <g class="pet-stage stage-master">
-                        <!-- Body -->
-                        <ellipse cx="60" cy="82" rx="34" ry="40" fill="#005e22" />
-                        <ellipse cx="60" cy="89" rx="26" ry="28" fill="#a0b4ff" />
-                        <!-- Arms -->
-                        <path d="M26,75 Q16,68 14,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
-                        <path d="M94,75 Q104,68 106,78" stroke="#005e22" stroke-width="8" fill="none" stroke-linecap="round" />
-                        <!-- Crown-like antennae -->
-                        <line x1="48" y1="45" x2="36" y2="24" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
-                        <polygon points="36,24 31,14 36,18 36,10 40,18 41,14 36,24" fill="#ffd93d" />
-                        <line x1="72" y1="45" x2="84" y2="24" stroke="#005e22" stroke-width="3" stroke-linecap="round" />
-                        <polygon points="84,24 79,14 84,18 84,10 88,18 89,14 84,24" fill="#ffd93d" />
-                        <!-- Sparkle star on top -->
-                        <polygon points="60,8 62,14 68,14 63,18 65,24 60,20 55,24 57,18 52,14 58,14" fill="#ffd93d" />
-                        <!-- Eyes -->
-                        <g class="eyes" style="transform-origin: 60px 68px;">
-                            <circle cx="45" cy="68" r="9" fill="white" />
-                            <circle cx="75" cy="68" r="9" fill="white" />
-                            <circle cx="48" cy="68" r="5" fill="#4a5bbf" />
-                            <circle cx="78" cy="68" r="5" fill="#4a5bbf" />
-                            <circle cx="50" cy="66" r="2" fill="white" />
-                            <circle cx="80" cy="66" r="2" fill="white" />
-                        </g>
-                        <!-- Big smile -->
-                        <path class="mouth-happy" d="M46,86 Q60,100 74,86" fill="rgba(255,255,255,0.3)" stroke="#333" stroke-width="2" stroke-linecap="round" />
-                        <path class="mouth-sad" d="M48,96 Q60,86 72,96" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round" />
-                        <!-- Feet -->
-                        <ellipse cx="46" cy="120" rx="10" ry="5" fill="#004d1a" />
-                        <ellipse cx="74" cy="120" rx="10" ry="5" fill="#004d1a" />
-                    </g>
-
-                    <!-- === ACCESSORIES === -->
-
-                    <!-- Book (First Steps) - improved with spine + pages -->
-                    <g class="acc-group" data-badge="first-steps">
-                        <rect x="93" y="86" width="4" height="22" rx="1" fill="#cd7f32" class="acc-main-fill" />
-                        <rect x="97" y="86" width="13" height="22" rx="1.5" fill="#cd7f32" opacity="0.85" class="acc-main-fill" />
-                        <rect x="96" y="87.5" width="12" height="19" rx="1" fill="#ffeaa7" />
-                        <line x1="98" y1="91" x2="106" y2="91" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
-                        <line x1="98" y1="94" x2="106" y2="94" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
-                        <line x1="98" y1="97" x2="104" y2="97" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
-                        <line x1="98" y1="100" x2="105" y2="100" stroke="#cd7f32" stroke-width="0.6" opacity="0.4" class="acc-detail-stroke" />
-                    </g>
-
-                    <!-- Graduation Cap (Scholar) -->
-                    <g class="acc-group" data-badge="scholar">
-                        <polygon points="60,32 35,44 60,52 85,44" fill="#333" class="acc-main-fill" />
-                        <rect x="55" y="28" width="10" height="6" rx="1" fill="#333" class="acc-main-fill" />
-                        <line x1="82" y1="44" x2="82" y2="56" stroke="#cd7f32" stroke-width="1.5" class="acc-detail-stroke" />
-                        <circle cx="82" cy="57" r="2" fill="#cd7f32" class="acc-detail-fill" />
-                    </g>
-
-                    <!-- Leaf/Sprout (Biologist) -->
-                    <g class="acc-group" data-badge="biologist">
-                        <line x1="60" y1="48" x2="60" y2="32" stroke="#27ae60" stroke-width="2.5" class="acc-detail-stroke" />
-                        <ellipse cx="54" cy="30" rx="8" ry="5" fill="#27ae60" transform="rotate(-30,54,30)" class="acc-main-fill" />
-                        <ellipse cx="67" cy="32" rx="7" ry="4" fill="#2ecc71" transform="rotate(25,67,32)" />
-                    </g>
-
-                    <!-- Goggles (Chemist) -->
-                    <g class="acc-group" data-badge="chemist">
-                        <ellipse cx="46" cy="60" rx="11" ry="9" fill="none" stroke="#cd7f32" stroke-width="2.5" class="acc-main-stroke" />
-                        <ellipse cx="74" cy="60" rx="11" ry="9" fill="none" stroke="#cd7f32" stroke-width="2.5" class="acc-main-stroke" />
-                        <line x1="57" y1="60" x2="63" y2="60" stroke="#cd7f32" stroke-width="2" class="acc-main-stroke" />
-                        <ellipse cx="46" cy="60" rx="9" ry="7" fill="rgba(135,206,250,0.3)" />
-                        <ellipse cx="74" cy="60" rx="9" ry="7" fill="rgba(135,206,250,0.3)" />
-                    </g>
-
-                    <!-- Lightning Bolt (Physicist) -->
-                    <g class="acc-group" data-badge="physicist">
-                        <polygon points="64,6 56,20 62,20 54,34 70,18 63,18 70,6" fill="#f39c12" class="acc-main-fill" />
-                    </g>
-
-                    <!-- Cape (Well Rounded) -->
-                    <g class="acc-group" data-badge="well-rounded">
-                        <path d="M36,60 Q30,80 28,110 L60,105 L92,110 Q90,80 84,60" fill="#cd7f32" opacity="0.7" class="acc-main-fill" />
-                        <path d="M38,62 Q32,80 30,108 L60,103 L90,108 Q88,80 82,62" fill="#e6c17a" opacity="0.4" />
-                    </g>
-                </svg>
-            </div>
-            </div><!-- /pet-room -->
-            <div class="pet-stage-name" id="petStageName">Egg</div>
-            <div class="pet-label">Study Blob</div>
-            <div class="pet-btns">
-                <button class="pet-btn" onclick="openStore()">🏪 Store</button>
-                <button class="pet-btn feed-btn" id="feedBtn" onclick="openStore('inventory')">🍽️ Feed</button>
             </div>
         </div>
 
@@ -1287,6 +701,16 @@
 
                     <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Daily Study</h3>
                     <p>Each day you&rsquo;ll see cards due for review plus a batch of new cards (default 5 per deck, adjustable in Settings). Once all due cards are done, you can optionally study 5 more.</p>
+
+                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Cakebread Questing</h3>
+                    <p>Your flashcards power your adventurer in <a href="/interactive/spec-quiz/">Cakebread Questing</a>, the same way quiz missions do:</p>
+                    <ul style="margin: 6px 0 0 20px;">
+                        <li>Every card: <strong>+2 XP</strong> (up to 60 a day), <strong>+1 Health</strong> and <strong>+1 mana</strong> for Breadventure Land, and a coin every 5 cards.</li>
+                        <li>Review <strong>15 cards</strong> in a day (or all of them, if fewer are due) for <strong>+1 move</strong> and a loot drop. A quiz mission earns the same +1 move, once a day.</li>
+                        <li>Rate a card Good or Easy on <strong>two different days</strong> and it&rsquo;s secured. Secured cards count towards securing their spec point, which makes your adventurer permanently stronger.</li>
+                        <li>Cards you rate Again or Hard flag their spec point, and it shows up in your suggested missions the next day.</li>
+                    </ul>
+                    <p style="margin-top: 8px;">Be honest with your ratings: Again and Hard still earn XP, Health and mana, so there&rsquo;s no reward for pretending.</p>
                 </div>
             </div>
         </div>
@@ -1334,49 +758,30 @@
                 </div>
             </div>
         </div>
-<!-- Store Modal -->
-        <div id="store-screen" class="settings-screen">
-            <div class="settings-panel" style="max-width: 520px; max-height: 90vh; overflow-y: auto;">
-                <h2>🏪 Store</h2>
-                <button class="cancel-settings" onclick="closeStore()" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 10px 20px;">Close</button>
-                <div class="store-balance" id="storeBalance">0 points</div>
-                <div class="store-tabs">
-                    <button class="store-tab active" onclick="switchStoreTab('food')">🍎 Food</button>
-                    <button class="store-tab" onclick="switchStoreTab('house')">🏠 House</button>
-                    <button class="store-tab" onclick="switchStoreTab('inventory')">📦 Inventory</button>
-                </div>
-                <div class="store-grid" id="storeContent"></div>
-            </div>
-        </div>
     </div>
 
-    <!-- Libraries for parsing .apkg files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fzstd@0.1.1/umd/index.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyARP2uokd2lPxXcpPwII3MfK6b_NzSmeO8",
-            authDomain: "elevenstudents-76f31.firebaseapp.com",
-            projectId: "elevenstudents-76f31",
-            storageBucket: "elevenstudents-76f31.firebasestorage.app",
-            messagingSenderId: "692298982954",
-            appId: "1:692298982954:web:87168356e4206206f8c553",
-            measurementId: "G-12TNV8DRZT"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+    <!-- Same Firebase app, SDK and sign-in as the rest of the site (Cakebread Questing, Spec Tracker, homepage), so one sign-in
+         covers everything. Then the Questing engine: every card reviewed feeds the adventurer (see questing-engine.js). -->
+    <script src="/js/firebase-config.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+    <script src="/interactive/spec-quiz/spec.js"></script>
+    <script src="/interactive/spec-quiz/questions.js"></script>
+    <script src="/interactive/spec-quiz/gens.js"></script>
+    <script src="/interactive/spec-quiz/cards.js"></script>
+    <script src="/interactive/spec-quiz/questing-engine.js"></script>
+    <script src="/interactive/spec-quiz/adventurer-items.js"></script>
+    <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
+    <script>
+        /* Cards come from data/<deck>.json (made from the Anki decks by tools/apkg_to_json.py). Card progress (SM-2) is
+           saved in users/{uid}.progress['<deck>_<cardId>'] as before, so nobody loses their reviews. */
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const userDocRef = () => db.collection('users').doc(currentUser.uid);
 
         // Global state
         let currentUser = null;
@@ -1390,22 +795,12 @@
             lastStudyDate: null,
             newCardsToday: {}  // Track per deck: { deckId: count }
         };
-        let petData = {
-            streak: 0,
-            lastStreakDate: null,
-            points: 0,
-            totalPoints: 0,
-            fedToday: false,
-            lastFedDate: null,
-            inventory: [],
-            equipped: { floor: null, background: null, roof: null, 'deco-left': null, 'deco-right': null }
-        };
         let deckCards = {}; // Store all parsed cards by deck
         let deckMetadata = {
-            biology: { name: 'IGCSE Biology', file: 'ANKI files/IGCSE__Biology_v2.apkg', cards: [] },
-            chemistry: { name: 'IGCSE Chemistry', file: 'ANKI files/IGCSE__Chemistry_v3.apkg', cards: [] },
-            physics: { name: 'IGCSE Physics', file: 'ANKI files/IGCSE__Physics_v1.apkg', cards: [] },
-            'physics-eqns': { name: 'IGCSE Physics Equations', file: 'ANKI files/IGCSE__Physics-eqns_v1.apkg', cards: [] }
+            biology: { name: 'IGCSE Biology', file: 'data/biology.json', cards: [] },
+            chemistry: { name: 'IGCSE Chemistry', file: 'data/chemistry.json', cards: [] },
+            physics: { name: 'IGCSE Physics', file: 'data/physics.json', cards: [] },
+            'physics-eqns': { name: 'IGCSE Physics Equations', file: 'data/physics-eqns.json', cards: [] }
         };
         // Badge definitions - each has 3 levels (bronze/silver/gold)
         const BADGES = {
@@ -1527,73 +922,7 @@
         function updateBadgeDisplay() {
             const { badges } = computeBadges(userProgress);
             renderBadges(badges, document.getElementById('badgesRow'));
-            updatePet(badges);
-            updatePetHouseUI();
-        }
-
-        // Pet evolution stages
-        const PET_STAGES = [
-            { key: 'egg', name: 'Egg', minLevels: 0 },
-            { key: 'hatchling', name: 'Hatchling', minLevels: 1 },
-            { key: 'junior', name: 'Junior', minLevels: 4 },
-            { key: 'teen', name: 'Teen', minLevels: 8 },
-            { key: 'adult', name: 'Adult', minLevels: 12 },
-            { key: 'master', name: 'Master', minLevels: 16 },
-        ];
-
-        // Accessory tier colors
-        const TIER_FILLS = {
-            1: { main: '#cd7f32', detail: '#cd7f32' },  // Bronze
-            2: { main: '#a0a0a0', detail: '#808080' },  // Silver
-            3: { main: '#daa520', detail: '#b8860b' },   // Gold
-        };
-
-        function updatePet(badges) {
-            const petHouse = document.getElementById('petHouse');
-            if (!petHouse) return;
-
-            // Calculate total badge levels
-            const totalLevels = badges.reduce((sum, b) => sum + b.level, 0);
-
-            // Determine evolution stage
-            let currentStage = PET_STAGES[0];
-            for (const stage of PET_STAGES) {
-                if (totalLevels >= stage.minLevels) currentStage = stage;
-            }
-
-            // Show correct stage, hide others
-            petHouse.querySelectorAll('.pet-stage').forEach(el => el.classList.remove('active'));
-            const stageEl = petHouse.querySelector(`.stage-${currentStage.key}`);
-            if (stageEl) stageEl.classList.add('active');
-
-            // Update stage name
-            const nameEl = document.getElementById('petStageName');
-            if (nameEl) nameEl.textContent = currentStage.name;
-
-            // Toggle sparkles for master stage
-            const petRoom = document.getElementById('petRoom');
-            if (petRoom) petRoom.classList.toggle('show-sparkles', currentStage.key === 'master');
-
-            // Update accessories
-            petHouse.querySelectorAll('.acc-group').forEach(el => {
-                const badgeId = el.getAttribute('data-badge');
-                const badge = badges.find(b => b.id === badgeId);
-
-                if (badge) {
-                    el.classList.add('active');
-                    el.classList.remove('tier-bronze', 'tier-silver', 'tier-gold');
-                    el.classList.add(['', 'tier-bronze', 'tier-silver', 'tier-gold'][badge.level]);
-
-                    // Update fill colors based on tier
-                    const tierColor = TIER_FILLS[badge.level];
-                    el.querySelectorAll('.acc-main-fill').forEach(f => f.setAttribute('fill', tierColor.main));
-                    el.querySelectorAll('.acc-main-stroke').forEach(f => f.setAttribute('stroke', tierColor.main));
-                    el.querySelectorAll('.acc-detail-fill').forEach(f => f.setAttribute('fill', tierColor.detail));
-                    el.querySelectorAll('.acc-detail-stroke').forEach(f => f.setAttribute('stroke', tierColor.detail));
-                } else {
-                    el.classList.remove('active', 'tier-bronze', 'tier-silver', 'tier-gold');
-                }
-            });
+            renderQuest();
         }
 
         // SM-2 Algorithm implementation
@@ -1633,9 +962,8 @@
 
         // Login with Google
         window.loginWithGoogle = async function() {
-            const provider = new GoogleAuthProvider();
             try {
-                const result = await signInWithPopup(auth, provider);
+                const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
                 currentUser = result.user;
                 await initializeUser();
                 showScreen('deck-selector');
@@ -1648,43 +976,24 @@
 
         // Initialize user in Firestore
         async function initializeUser() {
-            const userRef = doc(db, 'users', currentUser.uid);
-            const userDoc = await getDoc(userRef);
-            
-            if (!userDoc.exists()) {
-                await setDoc(userRef, {
+            const userRef = userDocRef();
+            const userDoc = await userRef.get();
+            const userData = userDoc.exists ? userDoc.data() : null;
+            if (!userData || !userData.progress || !userData.settings) {
+                await userRef.set({
                     email: currentUser.email,
                     displayName: currentUser.displayName,
-                    createdAt: Date.now(),
-                    progress: {},
-                    settings: {
-                        newCardsPerDay: 5,
-                        lastStudyDate: null,
-                        newCardsToday: {}
-                    },
-                    petData: petData
-                });
+                    createdAt: (userData && userData.createdAt) || Date.now(),
+                    progress: (userData && userData.progress) || {},
+                    settings: (userData && userData.settings) || { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} }
+                }, { merge: true });
             }
-            
-            const userData = userDoc.data();
             userProgress = userData?.progress || {};
-            settings = userData?.settings || {
-                newCardsPerDay: 5,
-                lastStudyDate: null,
-                newCardsToday: {}
-            };
+            settings = userData?.settings || { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
 
             // Ensure newCardsToday is an object
             if (typeof settings.newCardsToday !== 'object' || settings.newCardsToday === null) {
                 settings.newCardsToday = {};
-            }
-
-            // Load pet data
-            const savedPet = userData?.petData;
-            if (savedPet) {
-                petData = { ...petData, ...savedPet };
-                if (!petData.equipped) petData.equipped = { floor: null, background: null, roof: null, 'deco-left': null, 'deco-right': null };
-                if (!Array.isArray(petData.inventory)) petData.inventory = [];
             }
 
             // Reset daily counters if new day
@@ -1692,9 +1001,6 @@
             if (settings.lastStudyDate !== today) {
                 settings.lastStudyDate = today;
                 settings.newCardsToday = {};
-            }
-            if (petData.lastFedDate !== today) {
-                petData.fedToday = false;
             }
         }
 
@@ -1707,12 +1013,6 @@
 
             if (screenName === 'deck-selector' && currentUser) {
                 document.getElementById('userInfo').textContent = `Signed in as ${currentUser.email}`;
-            }
-
-            // Show pet house only on deck selector
-            const petHouse = document.getElementById('petHouse');
-            if (petHouse) {
-                petHouse.classList.toggle('visible', screenName === 'deck-selector');
             }
         }
 
@@ -1796,98 +1096,69 @@
             return tmp.innerHTML;
         }
 
-        // Parse .apkg file - ONLY SOURCE OF CARDS
-        async function parseApkgFile(filePath) {
+        // Load a deck's cards (JSON made from the Anki deck; same card ids as before)
+        async function loadDeckJson(filePath) {
             try {
-                const response = await fetch(encodeURI(filePath));
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const blob = await response.blob();
-                
-                if (!window.JSZip) {
-                    throw new Error('JSZip library not loaded');
-                }
-                
-                const zip = await window.JSZip.loadAsync(blob);
-                
-                // Try different database file names in order of preference
-                let dbFile = zip.file('collection.anki21b') ||
-                             zip.file('collection.anki21') || 
-                             zip.file('collection.anki2');
-                
-                if (!dbFile) {
-                    console.error('[APKG] Available files in ZIP:', Object.keys(zip.files));
-                    throw new Error('No collection.anki* found in archive');
-                }
-                
-                let dbData = await dbFile.async('uint8array');
-                
-                // Check if it's zstd compressed and decompress if needed
-                if (dbData[0] === 0x28 && dbData[1] === 0xb5 && dbData[2] === 0x2f && dbData[3] === 0xfd) {
-                    const decompressed = fzstd.decompress(dbData);
-                    dbData = new Uint8Array(decompressed);
-                }
-                
-                // Initialize SQL.js
-                if (!window.initSqlJs) {
-                    throw new Error('SQL.js library not loaded');
-                }
-                
-                const SQL = await window.initSqlJs({
-                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
-                });
-                
-                const db = new SQL.Database(dbData);
-                
-                // Get all cards
-                const result = db.exec(`
-                    SELECT notes.flds, cards.id
-                    FROM cards
-                    JOIN notes ON cards.nid = notes.id
-                `);
-                
-                if (!result.length) {
-                    db.close();
-                    return [];
-                }
-                
-                const cards = [];
-                result[0].values.forEach((row) => {
-                    const fields = row[0].split('\x1f'); // Anki uses \x1f as field separator
-                    const cardId = row[1];
-                    
-                    // Process HTML to point images to media folder
-                    const front = processHtmlWithImages(fields[0]);
-                    const back = processHtmlWithImages(fields[1]);
-                    
-                    cards.push({
-                        id: cardId,
-                        front: front,
-                        back: back
-                    });
-                });
-                
-                db.close();
-                return cards;
+                const response = await fetch(filePath);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const cards = await response.json();
+                return cards.map(c => ({ id: c.id, front: processHtmlWithImages(c.front), back: processHtmlWithImages(c.back), spec: c.spec, topic: c.topic }));
             } catch (error) {
-                console.error(`[APKG] ERROR parsing ${filePath}:`, error);
-                console.error('[APKG] Error details:', error.message, error.stack);
+                console.error(`[DECK] could not load ${filePath}:`, error);
                 return [];
             }
         }
-        
-        // Parse all deck files from .apkg ONLY
+
         async function parseAllDecks() {
-            const promises = Object.keys(deckMetadata).map(async (deckId) => {
+            await Promise.all(Object.keys(deckMetadata).map(async (deckId) => {
                 const deck = deckMetadata[deckId];
-                const cards = await parseApkgFile(deck.file);
-                deckCards[deckId] = cards || [];
+                deckCards[deckId] = await loadDeckJson(deck.file);
                 deck.cardCount = deckCards[deckId].length;
-            });
-            await Promise.all(promises);
+            }));
+        }
+
+        /* ---------- Cakebread Questing (replaces the Study Blob, 10 Nov 2026) ---------- */
+        const ymd = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+        /* bring in reviews made before cards counted for Questing (the engine skips cards it already has) */
+        function importOldReviews() {
+            const list = [];
+            Object.keys(deckMetadata).forEach(deckId => (deckCards[deckId] || []).forEach(card => {
+                const key = `${deckId}_${card.id}`, p = userProgress[key];
+                if (p && p.repetitions > 0) list.push({ key, spec: card.spec, reps: p.repetitions, last: ymd(p.nextReview - p.interval * 864e5) });
+            }));
+            return QE.importCards(list);
+        }
+        const totalDue = () => Object.keys(deckMetadata).reduce((n, id) => n + getDueCount(id), 0);
+        function lootPick() {
+            if (typeof ADV_ITEMS === 'undefined') return null;
+            const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
+            return pool[Math.floor(Math.random() * pool.length)].id;
+        }
+        function renderQuest() {
+            const el = document.getElementById('questPanel'); if (!el) return;
+            const d = QE.cardsToday(), target = QE.cardsTarget(), pct = Math.min(100, d.n / target * 100);
+            let pic = '';
+            try { const look = JSON.parse(localStorage.getItem('cbs.adventurer.base')); const eq = JSON.parse(localStorage.getItem('cbs.adventurer.eq')); pic = PIXEL.portrait(look || PIXEL.DEFAULT, eq || {}); } catch (e) {}
+            const title = d.done ? '✅ Today\'s flashcards done: <b>+1 move</b> on Breadventure Land and a loot drop'
+                : QE.missionsToday() ? 'Today\'s +1 move is already won (you did a mission). Cards still give XP, ❤ Health and 🔮 mana.'
+                : `Review <b>${target}</b> card${target > 1 ? 's' : ''} today for <b>+1 move</b> on Breadventure Land and a loot drop`;
+            el.innerHTML = `${pic ? `<img class="px" src="${pic}" alt="">` : ''}
+                <div class="q-main"><div class="q-kick">Cakebread Questing · every card counts</div>
+                <div class="q-title">${title}</div>
+                <div class="q-bar ${d.done ? 'done' : ''}"><i style="width:${pct}%"></i></div>
+                <div class="q-earned">Today: ${d.n} card${d.n === 1 ? '' : 's'} · +${d.xp} XP${d.xp >= QE.CARD.xpCap ? ' (daily max)' : ''} · ❤ +${d.n} Health · 🔮 +${d.n} mana · 🪙 +${d.coins}.
+                A card rated Good on two different days is secured and counts towards its spec point, like a quiz question.</div></div>
+                <a class="q-go" href="/interactive/spec-quiz/adventurer-home.html">Base camp →</a>`;
+        }
+        function gain(text) { const g = document.createElement('div'); g.className = 'gain'; g.innerHTML = text; document.body.appendChild(g); setTimeout(() => g.remove(), 1700); }
+        function showLoot(id) {
+            const it = (typeof ADV_ITEMS !== 'undefined') && ADV_ITEMS.find(i => i.id === id); if (!it) return;
+            const box = document.createElement('div'); box.className = 'loot-pop';
+            box.innerHTML = `<div class="box"><div style="color:#2563eb;font-weight:800;text-transform:uppercase;font-size:.75em;letter-spacing:.06em">Today's flashcards done · loot</div>
+                <img src="${PIXEL.item(id)}" alt=""><h3>${it.name}</h3><p style="color:#555"><i>${it.d}</i></p>
+                <p><b>+1 move</b> on Breadventure Land tonight.</p>
+                <a href="/interactive/spec-quiz/adventurer-wardrobe.html">Wear it →</a><br><button class="btn" onclick="this.closest('.loot-pop').remove()">Keep going</button></div>`;
+            document.body.appendChild(box);
         }
 
         // Load available decks
@@ -1951,6 +1222,8 @@
                 updateDeckProgress(deck.id);
             });
             updateTotalDueToday();
+            importOldReviews();
+            QE.cardsDue(totalDue());
             updateBadgeDisplay();
         }
 
@@ -2201,379 +1474,13 @@
             if (deckChart) deckChart.destroy();
         }
 
-        // === STORE, FEEDING & HOUSE SYSTEM ===
-
-        const STORE_ITEMS = {
-            // Food (consumable)
-            'apple':        { emoji: '🍎', name: 'Apple',        cost: 2,  type: 'food' },
-            'banana':       { emoji: '🍌', name: 'Banana',       cost: 3,  type: 'food' },
-            'cookie':       { emoji: '🍪', name: 'Cookie',       cost: 4,  type: 'food' },
-            'ice-cream':    { emoji: '🍦', name: 'Ice Cream',    cost: 5,  type: 'food' },
-            'pizza':        { emoji: '🍕', name: 'Pizza',        cost: 6,  type: 'food' },
-            'cake':         { emoji: '🎂', name: 'Cake',         cost: 8,  type: 'food' },
-            'sushi':        { emoji: '🍣', name: 'Sushi',        cost: 10, type: 'food' },
-            'golden-apple': { emoji: '✨',  name: 'Golden Feast', cost: 20, type: 'food' },
-            // House items (permanent, one per slot)
-            'grass-floor':  { emoji: '🌱', name: 'Grass',          cost: 5,  type: 'house', slot: 'floor' },
-            'wood-floor':   { emoji: '🪵', name: 'Wood Floor',     cost: 10, type: 'house', slot: 'floor' },
-            'cloud-bg':     { emoji: '☁️',  name: 'Clouds',         cost: 8,  type: 'house', slot: 'background' },
-            'stars-bg':     { emoji: '⭐', name: 'Stars',          cost: 12, type: 'house', slot: 'background' },
-            'night-bg':     { emoji: '🌙', name: 'Night Sky',      cost: 18, type: 'house', slot: 'background' },
-            'plant-l':      { emoji: '🪴', name: 'Potted Plant',   cost: 8,  type: 'house', slot: 'deco-left' },
-            'frame-l':      { emoji: '🖼️',  name: 'Picture Frame',  cost: 6,  type: 'house', slot: 'deco-left' },
-            'books-r':      { emoji: '📚', name: 'Bookshelf',      cost: 12, type: 'house', slot: 'deco-right' },
-            'lamp-r':       { emoji: '💡', name: 'Lamp',           cost: 10, type: 'house', slot: 'deco-right' },
-            'basic-roof':   { emoji: '🏠', name: 'Basic Roof',     cost: 10, type: 'house', slot: 'roof' },
-            'tile-roof':    { emoji: '🏛️',  name: 'Tiled Roof',     cost: 20, type: 'house', slot: 'roof' },
-            'royal-roof':   { emoji: '👑', name: 'Royal Roof',     cost: 35, type: 'house', slot: 'roof' },
-        };
-
-        // SVG Decoration Templates
-        const DECOR_SVG = {
-            // Roofs
-            'basic-roof': `<svg viewBox="0 0 200 28" preserveAspectRatio="none">
-                <polygon points="100,2 195,26 5,26" fill="#8B6C4A" stroke="#6B4C2A" stroke-width="1.5"/>
-                <line x1="52" y1="14" x2="148" y2="14" stroke="#6B4C2A" stroke-width="0.7" opacity="0.5"/>
-                <line x1="30" y1="20" x2="170" y2="20" stroke="#6B4C2A" stroke-width="0.7" opacity="0.5"/>
-                <polygon points="100,2 103,2 103,0 100,0" fill="#6B4C2A"/>
-            </svg>`,
-            'tile-roof': `<svg viewBox="0 0 200 28" preserveAspectRatio="none">
-                <path d="M5,26 Q100,-2 195,26" fill="#C75B39" stroke="#a04828" stroke-width="1"/>
-                <path d="M25,23 Q48,16 71,23" fill="none" stroke="#a04828" stroke-width="0.7" opacity="0.5"/>
-                <path d="M55,19 Q78,12 101,19" fill="none" stroke="#a04828" stroke-width="0.7" opacity="0.5"/>
-                <path d="M85,19 Q108,12 131,19" fill="none" stroke="#a04828" stroke-width="0.7" opacity="0.5"/>
-                <path d="M115,23 Q138,16 161,23" fill="none" stroke="#a04828" stroke-width="0.7" opacity="0.5"/>
-                <line x1="5" y1="26" x2="195" y2="26" stroke="#a04828" stroke-width="1.3"/>
-            </svg>`,
-            'royal-roof': `<svg viewBox="0 0 200 32" preserveAspectRatio="none">
-                <path d="M5,30 Q40,24 100,4 Q160,24 195,30" fill="#3D2B6B" stroke="#DAA520" stroke-width="1.3"/>
-                <path d="M8,29 Q42,23 100,6 Q158,23 192,29" fill="none" stroke="#DAA520" stroke-width="0.5" opacity="0.5"/>
-                <line x1="100" y1="4" x2="100" y2="-3" stroke="#DAA520" stroke-width="1.3"/>
-                <polygon points="96,-3 100,-8 104,-3" fill="#e74c3c" stroke="#DAA520" stroke-width="0.4"/>
-                <circle cx="40" cy="24" r="1.2" fill="#DAA520" opacity="0.6"/>
-                <circle cx="70" cy="17" r="1.2" fill="#DAA520" opacity="0.6"/>
-                <circle cx="130" cy="17" r="1.2" fill="#DAA520" opacity="0.6"/>
-                <circle cx="160" cy="24" r="1.2" fill="#DAA520" opacity="0.6"/>
-            </svg>`,
-
-            // Left decorations
-            'plant-l': `<svg viewBox="0 0 30 38">
-                <path d="M12,36 L12,32 L18,32 L18,36 Z" fill="#c0784a"/>
-                <path d="M11,32 L12,24 L18,24 L19,32 Z" fill="#d4915e"/>
-                <line x1="15" y1="24" x2="15" y2="12" stroke="#3a7a2a" stroke-width="1.8"/>
-                <ellipse cx="10" cy="14" rx="6" ry="4" fill="#3a9a2a" transform="rotate(-30,10,14)"/>
-                <ellipse cx="20" cy="15" rx="5" ry="3.5" fill="#2ecc71" transform="rotate(25,20,15)"/>
-                <ellipse cx="14" cy="9" rx="5" ry="3.8" fill="#4ab84a" transform="rotate(-15,14,9)"/>
-                <path d="M10,14 L15,19" stroke="#2a6a1a" stroke-width="0.4" opacity="0.5"/>
-                <path d="M20,15 L15,20" stroke="#2a6a1a" stroke-width="0.4" opacity="0.5"/>
-            </svg>`,
-            'frame-l': `<svg viewBox="0 0 30 38">
-                <rect x="3" y="5" width="24" height="28" rx="1.5" fill="#8B6C4A" />
-                <rect x="5" y="7" width="20" height="24" rx="0.8" fill="#a0845a" />
-                <rect x="6.5" y="8.5" width="17" height="21" fill="#d4e8f0" />
-                <rect x="6.5" y="19" width="17" height="11" fill="#7ab87a" />
-                <path d="M6.5,19 Q12,16 17,19 Q22,17 23.5,19" fill="#8ac88a"/>
-                <circle cx="18" cy="12" r="2.5" fill="#ffd93d" opacity="0.8"/>
-            </svg>`,
-
-            // Right decorations
-            'books-r': `<svg viewBox="0 0 30 38">
-                <rect x="2" y="32" width="26" height="2.5" rx="0.8" fill="#8B6C4A"/>
-                <rect x="3" y="9" width="5" height="23" rx="0.8" fill="#e74c3c"/>
-                <rect x="9" y="12" width="4" height="20" rx="0.8" fill="#3498db"/>
-                <rect x="14" y="7" width="5" height="25" rx="0.8" fill="#27ae60"/>
-                <rect x="20" y="10" width="4" height="22" rx="0.8" fill="#f39c12"/>
-                <rect x="25" y="14" width="3" height="18" rx="0.8" fill="#9b59b6"/>
-                <line x1="5.5" y1="11" x2="5.5" y2="15" stroke="white" stroke-width="0.5" opacity="0.5"/>
-                <line x1="16.5" y1="9" x2="16.5" y2="13" stroke="white" stroke-width="0.5" opacity="0.5"/>
-            </svg>`,
-            'lamp-r': `<svg viewBox="0 0 30 38">
-                <defs>
-                    <radialGradient id="lampGlow"><stop offset="0%" stop-color="#ffd93d" stop-opacity="0.4"/><stop offset="100%" stop-color="#ffd93d" stop-opacity="0"/></radialGradient>
-                </defs>
-                <circle cx="18" cy="12" r="12" fill="url(#lampGlow)"/>
-                <rect x="12" y="33" width="10" height="3.5" rx="1.5" fill="#666"/>
-                <line x1="17" y1="33" x2="17" y2="24" stroke="#666" stroke-width="2.2" stroke-linecap="round"/>
-                <line x1="17" y1="24" x2="20" y2="14" stroke="#666" stroke-width="2.2" stroke-linecap="round"/>
-                <path d="M14,14 L26,14 L23,7 L17,7 Z" fill="#555"/>
-                <path d="M17,7 L23,7" stroke="#ffd93d" stroke-width="0.8" opacity="0.7"/>
-                <ellipse cx="20" cy="14" rx="6" ry="1.2" fill="#ffd93d" opacity="0.3"/>
-            </svg>`,
-
-            // Floor overlays
-            'grass-floor': `<svg viewBox="0 0 180 24" preserveAspectRatio="none">
-                <path d="M9,24 L10.5,14 L12,24" fill="#3a8a2a"/>
-                <path d="M22,24 L23.5,17 L25,24" fill="#4a9a3a"/>
-                <path d="M36,24 L38,12 L40,24" fill="#2a7a1a"/>
-                <path d="M52,24 L53.5,15 L55,24" fill="#4aaa3a"/>
-                <path d="M68,24 L69.5,10 L71,24" fill="#3a9a2a"/>
-                <path d="M82,24 L83.5,17 L85,24" fill="#2a8a1a"/>
-                <path d="M98,24 L100,13 L102,24" fill="#4a9a3a"/>
-                <path d="M115,24 L116.5,15 L118,24" fill="#3a7a2a"/>
-                <path d="M130,24 L132,11 L134,24" fill="#5aaa4a"/>
-                <path d="M145,24 L146.5,17 L148,24" fill="#3a9a2a"/>
-                <path d="M160,24 L162,14 L164,24" fill="#2a8a1a"/>
-                <path d="M45,24 L46,19 L47,24" fill="#5aaa4a" opacity="0.7"/>
-                <path d="M92,24 L93,20 L94,24" fill="#5aaa4a" opacity="0.7"/>
-                <path d="M138,24 L139,19 L140,24" fill="#3a9a3a" opacity="0.7"/>
-            </svg>`,
-            'wood-floor': `<svg viewBox="0 0 180 24" preserveAspectRatio="none">
-                <line x1="0" y1="7" x2="180" y2="7" stroke="#9a6b3a" stroke-width="0.7" opacity="0.4"/>
-                <line x1="0" y1="15" x2="180" y2="15" stroke="#9a6b3a" stroke-width="0.7" opacity="0.4"/>
-                <line x1="0" y1="22" x2="180" y2="22" stroke="#9a6b3a" stroke-width="0.7" opacity="0.3"/>
-                <line x1="40" y1="0" x2="40" y2="7" stroke="#9a6b3a" stroke-width="0.4" opacity="0.3"/>
-                <line x1="105" y1="7" x2="105" y2="15" stroke="#9a6b3a" stroke-width="0.4" opacity="0.3"/>
-                <line x1="70" y1="15" x2="70" y2="22" stroke="#9a6b3a" stroke-width="0.4" opacity="0.3"/>
-                <line x1="140" y1="0" x2="140" y2="7" stroke="#9a6b3a" stroke-width="0.4" opacity="0.3"/>
-                <circle cx="78" cy="10" r="2.5" fill="none" stroke="#9a6b3a" stroke-width="0.4" opacity="0.3"/>
-                <circle cx="78" cy="10" r="1.2" fill="none" stroke="#9a6b3a" stroke-width="0.3" opacity="0.3"/>
-            </svg>`,
-        };
-
-        let currentStoreTab = 'food';
-
-        window.openStore = function(tab) {
-            currentStoreTab = tab || 'food';
-            document.getElementById('store-screen').style.display = 'flex';
-            renderStore();
-        }
-
-        window.closeStore = function() {
-            document.getElementById('store-screen').style.display = 'none';
-        }
-
-        window.switchStoreTab = function(tab) {
-            currentStoreTab = tab;
-            renderStore();
-        }
-
-        function renderStore() {
-            const content = document.getElementById('storeContent');
-            const balance = document.getElementById('storeBalance');
-            balance.textContent = `${petData.points} points`;
-
-            // Update tab active state
-            document.querySelectorAll('.store-tab').forEach((t, i) => {
-                const tabs = ['food', 'house', 'inventory'];
-                t.classList.toggle('active', tabs[i] === currentStoreTab);
-            });
-
-            if (currentStoreTab === 'inventory') {
-                renderInventory(content);
-                return;
-            }
-
-            const items = Object.entries(STORE_ITEMS).filter(([, item]) => item.type === currentStoreTab);
-            content.innerHTML = items.map(([id, item]) => {
-                const owned = item.type === 'house' && petData.inventory.includes(id);
-                const canAfford = petData.points >= item.cost;
-                const equipped = item.slot && petData.equipped[item.slot] === id;
-
-                let btnHTML;
-                if (owned) {
-                    btnHTML = `<button class="equip-btn ${equipped ? 'equipped' : ''}" onclick="event.stopPropagation(); toggleEquip('${id}')">${equipped ? 'Equipped' : 'Equip'}</button>`;
-                } else {
-                    btnHTML = `<button class="buy-btn" ${!canAfford ? 'disabled' : ''} onclick="event.stopPropagation(); buyItem('${id}')">Buy · ${item.cost}pts</button>`;
-                }
-
-                return `<div class="store-item">
-                    <div class="item-emoji">${item.emoji}</div>
-                    <div class="item-name">${item.name}</div>
-                    ${item.slot ? `<div style="font-size:0.65em;color:#aaa;">${item.slot}</div>` : ''}
-                    ${btnHTML}
-                </div>`;
-            }).join('');
-        }
-
-        function renderInventory(content) {
-            // Count food items
-            const foodCounts = {};
-            petData.inventory.forEach(id => {
-                if (STORE_ITEMS[id] && STORE_ITEMS[id].type === 'food') {
-                    foodCounts[id] = (foodCounts[id] || 0) + 1;
-                }
-            });
-
-            // Get owned house items
-            const houseItems = [...new Set(petData.inventory.filter(id => STORE_ITEMS[id] && STORE_ITEMS[id].type === 'house'))];
-
-            const foodHTML = Object.entries(foodCounts).map(([id, count]) => {
-                const item = STORE_ITEMS[id];
-                const canFeed = !petData.fedToday;
-                return `<div class="store-item">
-                    <div class="item-emoji">${item.emoji}</div>
-                    <div class="item-name">${item.name} <span class="inv-food-count">×${count}</span></div>
-                    <button class="buy-btn" ${!canFeed ? 'disabled' : ''} onclick="event.stopPropagation(); feedBlob('${id}')">${canFeed ? '🍽️ Feed' : '✓ Fed'}</button>
-                </div>`;
-            }).join('');
-
-            const houseHTML = houseItems.map(id => {
-                const item = STORE_ITEMS[id];
-                const equipped = petData.equipped[item.slot] === id;
-                return `<div class="store-item">
-                    <div class="item-emoji">${item.emoji}</div>
-                    <div class="item-name">${item.name}</div>
-                    <div style="font-size:0.65em;color:#aaa;">${item.slot}</div>
-                    <button class="equip-btn ${equipped ? 'equipped' : ''}" onclick="event.stopPropagation(); toggleEquip('${id}')">${equipped ? 'Equipped' : 'Equip'}</button>
-                </div>`;
-            }).join('');
-
-            if (!foodHTML && !houseHTML) {
-                content.innerHTML = '<p style="color:#aaa; text-align:center; grid-column:1/-1; padding:20px;">No items yet. Buy some from the store!</p>';
-                return;
-            }
-
-            content.innerHTML = foodHTML + houseHTML;
-        }
-
-        window.buyItem = async function(itemId) {
-            const item = STORE_ITEMS[itemId];
-            if (!item || petData.points < item.cost) return;
-
-            // House items can only be bought once
-            if (item.type === 'house' && petData.inventory.includes(itemId)) return;
-
-            petData.points -= item.cost;
-            petData.inventory.push(itemId);
-
-            await savePetData();
-            renderStore();
-            updatePetHouseUI();
-        }
-
-        window.toggleEquip = async function(itemId) {
-            const item = STORE_ITEMS[itemId];
-            if (!item || !item.slot) return;
-
-            if (petData.equipped[item.slot] === itemId) {
-                petData.equipped[item.slot] = null;
-            } else {
-                petData.equipped[item.slot] = itemId;
-            }
-
-            await savePetData();
-            renderStore();
-            renderHouseDecor();
-        }
-
-        window.feedBlob = async function(itemId) {
-            if (petData.fedToday) return;
-            const idx = petData.inventory.indexOf(itemId);
-            if (idx === -1) return;
-
-            const item = STORE_ITEMS[itemId];
-
-            // Consume food
-            petData.inventory.splice(idx, 1);
-            petData.fedToday = true;
-            petData.lastFedDate = new Date().toDateString();
-
-            // Play feed animation
-            const petHouse = document.getElementById('petHouse');
-            petHouse.classList.remove('blob-hungry');
-            const feedBtn = document.getElementById('feedBtn');
-            if (feedBtn) { feedBtn.classList.add('fed'); feedBtn.textContent = '✓ Fed'; }
-
-            // Float emoji
-            const floater = document.createElement('div');
-            floater.className = 'feed-float';
-            floater.textContent = item.emoji;
-            floater.style.left = '50%';
-            floater.style.top = '40%';
-            petHouse.appendChild(floater);
-            setTimeout(() => floater.remove(), 1000);
-
-            await savePetData();
-            renderStore();
-        }
-
-        async function savePetData() {
-            if (!currentUser) return;
-            const userRef = doc(db, 'users', currentUser.uid);
-            await updateDoc(userRef, { 'petData': petData });
-        }
-
-        // Update pet house UI elements (points, streak, mood, decorations)
-        function updatePetHouseUI() {
-            const pointsEl = document.getElementById('petPoints');
-            const streakEl = document.getElementById('petStreak');
-            const feedBtn = document.getElementById('feedBtn');
-            const petHouse = document.getElementById('petHouse');
-
-            if (pointsEl) pointsEl.textContent = petData.points;
-            if (streakEl) streakEl.textContent = petData.streak;
-
-            if (petHouse) {
-                petHouse.classList.toggle('blob-hungry', !petData.fedToday);
-            }
-
-            if (feedBtn) {
-                if (petData.fedToday) {
-                    feedBtn.classList.add('fed');
-                    feedBtn.textContent = '✓ Fed';
-                } else {
-                    feedBtn.classList.remove('fed');
-                    feedBtn.textContent = '🍽️ Feed';
-                }
-            }
-
-            renderHouseDecor();
-        }
-
-        // Render house decorations based on equipped items
-        function renderHouseDecor() {
-            const room = document.getElementById('petRoom');
-            const decoLeft = document.getElementById('petDecoLeft');
-            const decoRight = document.getElementById('petDecoRight');
-            const roof = document.getElementById('petRoof');
-            const floorOverlay = document.getElementById('floorOverlay');
-            if (!room) return;
-
-            // Floor CSS classes
-            room.classList.remove('floor-grass', 'floor-wood');
-            if (petData.equipped.floor === 'grass-floor') room.classList.add('floor-grass');
-            else if (petData.equipped.floor === 'wood-floor') room.classList.add('floor-wood');
-
-            // Floor SVG overlay
-            if (floorOverlay) {
-                const floorId = petData.equipped.floor;
-                floorOverlay.innerHTML = floorId && DECOR_SVG[floorId] ? DECOR_SVG[floorId] : '';
-            }
-
-            // Background CSS classes
-            room.classList.remove('bg-clouds', 'bg-stars', 'bg-night');
-            if (petData.equipped.background === 'cloud-bg') room.classList.add('bg-clouds');
-            else if (petData.equipped.background === 'stars-bg') room.classList.add('bg-stars');
-            else if (petData.equipped.background === 'night-bg') room.classList.add('bg-night');
-
-            // Left decoration SVG
-            if (decoLeft) {
-                const leftId = petData.equipped['deco-left'];
-                decoLeft.innerHTML = leftId && DECOR_SVG[leftId] ? DECOR_SVG[leftId] : '';
-            }
-
-            // Right decoration SVG
-            if (decoRight) {
-                const rightId = petData.equipped['deco-right'];
-                decoRight.innerHTML = rightId && DECOR_SVG[rightId] ? DECOR_SVG[rightId] : '';
-            }
-
-            // Roof SVG
-            if (roof) {
-                const roofId = petData.equipped.roof;
-                roof.innerHTML = roofId && DECOR_SVG[roofId] ? DECOR_SVG[roofId] : '';
-            }
-        }
-
         window.saveSettings = async function() {
             const newCardsInput = document.getElementById('newCardsPerDay');
             settings.newCardsPerDay = parseInt(newCardsInput.value) || 5;
 
             // Save to Firestore
             if (currentUser) {
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    'settings': settings
-                });
+                await userDocRef().update({ 'settings': settings });
             }
 
             closeSettings();
@@ -2596,10 +1503,7 @@
 
             // Reset in Firestore
             if (currentUser) {
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    'progress': {},
-                    'settings': settings
-                });
+                await userDocRef().update({ 'progress': {}, 'settings': settings });
             }
 
             // Refresh all deck stats
@@ -2754,29 +1658,16 @@ updateDeckProgress(currentDeck);
                 settings.newCardsToday[currentDeck]++;
             }
 
-            // Award streak points on first card of the day
-            const todayStr = new Date().toDateString();
-            if (petData.lastStreakDate !== todayStr) {
-                const yesterday = new Date();
-                yesterday.setDate(yesterday.getDate() - 1);
-                if (petData.lastStreakDate === yesterday.toDateString()) {
-                    petData.streak++;
-                } else {
-                    petData.streak = 1;
-                }
-                petData.points += petData.streak;
-                petData.totalPoints += petData.streak;
-                petData.lastStreakDate = todayStr;
-                updatePetHouseUI();
-            }
-
             // Save to Firestore
-            const userRef = doc(db, 'users', currentUser.uid);
-            await updateDoc(userRef, {
+            await userDocRef().update({
                 [`progress.${cardKey}`]: newProgress,
-                'settings': settings,
-                'petData': petData
+                'settings': settings
             });
+
+            // Cakebread Questing: XP, Health, mana, coins, securing spec points, today's +1 move
+            const res = QE.recordCard(cardKey, currentCard.spec || null, quality, lootPick);
+            gain([res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : ''));
+            if (res.done) showLoot(res.loot);
 
             // Remove from queue and show next
             studyQueue.shift();
@@ -2809,7 +1700,7 @@ updateDeckProgress(currentDeck);
         });
 
         // Check auth state
-        onAuthStateChanged(auth, (user) => {
+        auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
 initializeUser().then(() => {

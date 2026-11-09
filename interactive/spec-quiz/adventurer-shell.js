@@ -14,6 +14,7 @@ const ADV = (() => {
     v: 2, day: 1, health: null,
     moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // map: 6 moves on day one, then 2 a day (+1 for the day's first mission)
     brews: {}, missionsSeen: 0, reportSeen: 0, report: null, chapter: 1, storySeen: false, rescueSeen: false,
+    mana: 0, bonusDay: null, shield: false,   // mana for spells; the day the +1 revision move was last given; Shield spell for tonight
   });
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   /* real values live in the engine; the map state is plain data */
@@ -53,8 +54,24 @@ const ADV = (() => {
     const l = level(), sec = S.secured;
     const s = { l, str: BASE.str + sec.p + LV.str * l + GEAR, hp: BASE.hp + sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
     if (S.health == null || S.health > s.hp) S.health = s.hp;
+    s.mana = 10 + s.mag;   // most mana a student can hold
+    if (S.mana == null) S.mana = 0;
+    if (S.mana > s.mana) S.mana = s.mana;
     return s;
   };
+
+  /* ---------- revision → Breadventure Land: Health and mana earned by missions and flashcards wait in the engine's pool
+     until a Questing page opens; the day's first revision (mission or today's flashcards) gives +1 move once a day. ---------- */
+  const MOVE_CAP = 5;
+  function collect() {
+    const s = stats(), p = QE.takePool(), g = { hp: 0, mana: 0, move: false };
+    if (p.hp) { const b = S.health; S.health = Math.min(s.hp, S.health + p.hp); g.hp = S.health - b; }
+    if (p.mana) { const b = S.mana; S.mana = Math.min(s.mana, S.mana + p.mana); g.mana = S.mana - b; }
+    if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP, S.moves + 1); g.move = true; }
+    if (g.hp || g.mana || g.move) save();
+    return g;
+  }
+  let gained = { hp: 0, mana: 0, move: false };
 
   /* ---------- nav bar (one bar: brand, Base camp, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
@@ -86,7 +103,7 @@ const ADV = (() => {
 .advnav .soon{background:#111;color:#4ade80;border-radius:10px;font-size:11px;font-weight:900;padding:0 6px;line-height:17px;text-transform:uppercase;letter-spacing:.5px}
 @media(max-width:640px){.advnav{gap:4px;padding:6px 8px}.advnav .brand,.advnav .acct .nm,.advnav .acct .sv{display:none}.advnav .tab .lbl{display:none}.advnav .cta .lbl{display:inline}.advnav .cta{font-size:15px;padding:6px 10px}}`;
     document.head.appendChild(css);
-    const noMission = !S.missionsToday;
+    const noMission = !QE.revisedToday();   // the "!" goes once the day's revision is done: a mission or today's flashcards
     const n = document.createElement('nav');
     n.className = 'advnav';
     n.setAttribute('aria-label', 'Cakebread Questing');
@@ -95,6 +112,7 @@ const ADV = (() => {
       + tab('home', 'adventurer-home.html', '🏠', 'Base camp')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map', '<span class="soon">preview</span>')
+      + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
       + `<span class="gap"></span>`
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
@@ -111,6 +129,14 @@ const ADV = (() => {
       acct.querySelector('#advOut').onclick = () => QE.signOut();
     };
     draw(); QE.onChange(draw);
+    gained = collect();
+    if (gained.hp || gained.mana || gained.move) {
+      const t = document.createElement('div');
+      t.setAttribute('role', 'status');
+      t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center;transition:opacity .5s';
+      t.textContent = 'From your revision: ' + [gained.hp && `❤ +${gained.hp} Health`, gained.mana && `🔮 +${gained.mana} mana`, gained.move && '+1 move on Breadventure Land'].filter(Boolean).join(' · ');
+      document.body.appendChild(t); setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 600); }, 4200);
+    }
   }
 
   /* ---------- story pop-ups (chapter 1: the Professor is taken; the rescue) ---------- */
@@ -227,5 +253,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();
