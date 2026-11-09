@@ -35,7 +35,7 @@ const keysOfSub = sb => sb.points.map(p => p.key);
 
 /* ---------- selection ---------- */
 const withQs = () => Object.keys(QBY);
-let SEL = new Set(store.get('sel') || withQs());
+let SEL = new Set();   // starts with nothing ticked every visit (user, 9 Nov)
 let OPEN = new Set(store.get('open') || []);
 const saveSel = () => store.set('sel', [...SEL]);
 const saveOpen = () => store.set('open', [...OPEN]);
