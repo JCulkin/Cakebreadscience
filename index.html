@@ -25,12 +25,19 @@ a{color:inherit}
 .site-header h1 span{color:var(--green2)}
 .site-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
 .site-header #cbs-account{margin-left:auto;align-self:center}
-.rcard.quest{grid-column:1/-1;background:#151518;border-color:#151518;align-items:center}
-.rcard.quest h3{color:#eeeae0;font-size:30px}.rcard.quest h3 b{color:#00a03a}
-.rcard.quest p{color:#bbb;font-size:15px}
-.rcard.quest .go{margin-left:auto;background:#facc15;color:#111;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;padding:8px 18px;border:2px solid #111;box-shadow:0 3px 0 #000;white-space:nowrap}
-.rcard.quest:hover{background:#222;box-shadow:inset 6px 0 0 #00a03a}
-@media(max-width:560px){.rcard.quest{flex-wrap:wrap}.rcard.quest .go{margin-left:0}}
+.quest{grid-column:1/-1;background:#151518;border:2px solid #151518;padding:16px 18px;display:grid;grid-template-columns:auto 1fr auto;gap:6px 14px;align-items:center}
+.quest .ic{font-size:30px;line-height:1}
+.quest h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05;color:#eeeae0;font-size:30px}.quest h3 b{color:#00a03a}
+.quest p{color:#bbb;font-size:15px;margin-top:3px}
+.quest .play{background:#facc15;color:#111;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;padding:8px 18px;border:2px solid #111;box-shadow:0 3px 0 #000;white-space:nowrap;text-decoration:none}
+.quest .play:hover{background:#fde047}
+.quest .modes{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.quest .modes a{display:flex;gap:10px;align-items:center;flex:1 1 260px;text-decoration:none;color:#eeeae0;border:1px solid #3a3a40;background:#1f1f24;padding:9px 12px}
+.quest .modes a:hover{border-color:#00a03a;background:#24242a}
+.quest .modes .mi{font-size:22px}
+.quest .modes b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:19px;display:block;line-height:1}
+.quest .modes small{color:#aaa;font-size:13px}
+@media(max-width:620px){.quest{grid-template-columns:auto 1fr}.quest .play{grid-column:1/-1;text-align:center}.quest .modes{grid-column:1/-1}}
 @media(max-width:700px){.site-header{padding:20px 16px 18px}}
 .wrap{max-width:1140px;margin:0 auto;padding:26px 24px 56px}
 @media(max-width:700px){.wrap{padding:18px 16px 44px}}
@@ -104,11 +111,18 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
   <section id="resources">
     <div class="shead"><h2>Resources</h2><p>For lessons and revision.</p></div>
     <div class="res">
-      <a class="rcard quest" href="interactive/spec-quiz/"><span class="ic">⚔️</span><span><h3>Cakebread <b>Questing</b><span class="new">New</span></h3><p>Questions on the whole Double Award spec. Secure every spec point, power up your pixel adventurer and climb the class leaderboards. Or make a quick quiz for the board.</p></span><span class="go">Play →</span></a>
+      <div class="quest" role="group" aria-label="Cakebread Questing">
+        <span class="ic">⚔️</span>
+        <div><h3>Cakebread <b>Questing</b><span class="new">New</span></h3><p>Revise the whole Double Award spec. Secure every spec point, power up your pixel adventurer and climb the class leaderboards.</p></div>
+        <a class="play" href="interactive/spec-quiz/">Play →</a>
+        <div class="modes">
+          <a href="interactive/spec-quiz/quiz.html"><span class="mi">❓</span><span><b>Quick quiz</b><small>Pick any part of the spec. Play solo, or as a team game on the board.</small></span></a>
+          <a href="Flashcards/index.html"><span class="mi">🃏</span><span><b>Flashcards</b><small>Key facts and definitions, with spaced repetition.</small></span></a>
+        </div>
+      </div>
       <a class="rcard" href="interactive/lessons/"><span class="ic">🎓</span><span><h3>Lessons<span class="new">New</span></h3><p>Interactive lessons for each spec topic, with a projector mode for teaching.</p></span></a>
       <a class="rcard" href="booklets/"><span class="ic">📚</span><span><h3>Question Booklets<span class="new">New</span></h3><p>Exam-style questions to do online or print, with guided versions and mark schemes. Includes the Physics 6-mark long answers.</p></span></a>
       <a class="rcard" href="specifications/science.html"><span class="ic">📋</span><span><h3>Spec Trackers</h3><p>Biology, Chemistry, Physics and Maths: every spec point in one place. Tick them off as you revise.</p></span></a>
-      <a class="rcard" href="Flashcards/index.html"><span class="ic">🃏</span><span><h3>Flashcards</h3><p>Key facts and definitions to test yourself.</p></span></a>
       <a class="rcard" href="https://notebooklm.google.com/notebook/64a15481-bc3b-42f9-93af-3eb82fe9918e" target="_blank" rel="noopener"><span class="ic">🤖</span><span><h3>AI Tutor</h3><p>Ask questions about the course (opens NotebookLM).</p></span></a>
     </div>
   </section>
