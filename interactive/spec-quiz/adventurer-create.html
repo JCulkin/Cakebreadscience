@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>My look - Cakebread Questing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 64px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:22px;line-height:1.05;margin:0 0 8px}
+.lede{font-size:18px;max-width:760px;margin-top:8px}
+.flag{display:inline-block;background:#ffe14d;border:2px solid var(--ink);font-weight:700;font-size:13px;padding:2px 8px;text-transform:uppercase;letter-spacing:1px;margin-top:10px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:9px 16px;font-weight:700}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.btn.green{background:var(--green);border-color:var(--green);color:#fff}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.layout{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
+@media(min-width:860px){.layout{grid-template-columns:320px 1fr}.preview{position:sticky;top:12px;align-self:start}}
+.card{background:var(--paper);border:2px solid var(--ink);padding:16px}
+.preview{text-align:center}
+.preview #fig{width:100%;max-width:250px;display:block;margin:6px auto}
+.nick{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1;display:flex;gap:8px;justify-content:center;align-items:center}
+.nick button{border:2px solid var(--ink);background:#fff;font-size:16px;width:34px;height:34px}
+.small{font-size:13px;color:var(--muted)}
+.seg{display:inline-flex;border:2px solid var(--ink);margin:4px 0 8px}
+.seg button{border:0;background:#fff;padding:4px 10px;font-weight:700;font-size:13px}
+.seg button.on{background:var(--ink);color:#fff}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.sec{margin-bottom:14px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:40px;height:40px;border:2px solid var(--ink);border-radius:50%;position:relative}
+.sw.on{outline:3px solid var(--green2);outline-offset:2px}
+.tile{width:70px;border:2px solid var(--line);background:var(--soft);padding:3px;border-radius:8px}
+.tile img{width:60px;height:60px;display:block;margin:0 auto}
+.tile.on{border-color:var(--ink);background:#fff;box-shadow:inset 0 0 0 2px var(--green2)}
+.tile .chk{display:none}
+.tile.on .chk{display:inline}
+details.why{margin-top:22px;background:var(--paper);border:2px solid var(--ink);padding:12px 16px}
+details.why summary{font-weight:700;cursor:pointer}
+details.why li{margin:6px 0 0 20px}
+.saved{color:var(--green);font-weight:700;min-height:20px;font-size:14px}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · My look</span></header>
+<div class="wrap">
+  <h1>Make your adventurer</h1>
+  <p class="lede">Pick a look. You can change it any time, for free. Clothes and gear come from missions and the map — this is just you.</p>
+
+  <div class="layout">
+    <div class="card preview">
+      <div class="nick"><span id="nick"></span><button id="reroll" title="New name" aria-label="New name">🎲</button></div>
+      <div class="small">Your adventurer name (what classmates see)</div>
+      <img id="fig" class="px" alt="Your adventurer">
+      <div class="seg" role="group" aria-label="Preview">
+        <button data-view="starter" class="on">Starter outfit</button><button data-view="hat">With a hat</button><button data-view="base">No outfit</button>
+      </div>
+      <div class="acts">
+        <button class="btn alt" id="rand">🎲 Surprise me</button>
+        <button class="btn green" id="save">Save →</button>
+      </div>
+      <div class="saved" id="saved"></div>
+    </div>
+
+    <div>
+      <div class="card sec"><h2>Skin tone</h2><div class="row" id="o-skin"></div></div>
+      <div class="card sec"><h2>Hair or head covering</h2><div class="row" id="o-hair"></div></div>
+      <div class="card sec"><h2 id="hcTitle">Hair colour</h2><div class="row" id="o-hc"></div></div>
+      <div class="card sec"><h2>Eyes</h2><div class="row" id="o-eyes"></div></div>
+      <div class="card sec"><h2>Mouth</h2><div class="row" id="o-mouth"></div></div>
+      <div class="card sec"><h2>Extras <span class="small" style="text-transform:none;font-family:Barlow">— pick any, or none</span></h2><div class="row" id="o-extras"></div></div>
+    </div>
+  </div>
+
+  <details class="why">
+    <summary>For teachers: why there is no boy / girl choice</summary>
+    <ul>
+      <li><b>One body for everyone.</b> Every adventurer has the same small, chunky body. Hair, face, skin and extras are separate choices, and every option is open to everyone. Nobody has to pick a box, and nobody is told “that hair is for girls”.</li>
+      <li><b>We don't collect gender at all.</b> A quiz avatar doesn't need it, so storing it would be personal data with no purpose (data minimisation under GDPR). The saved look is just <code>{skin, hair, colour, eyes, mouth, extras}</code>.</li>
+      <li><b>No pronouns anywhere.</b> The game always says “you” or uses the adventurer name, so there is nothing to get wrong.</li>
+      <li><b>Clothes are never gendered.</b> Gear comes from the Campaign and anyone can wear anything (the kilt included).</li>
+      <li><b>Changing your look is free and unlimited</b>, so a student can change how they present without it costing them progress or drawing attention.</li>
+      <li><b>Faith and disability are built in:</b> hijab, turban/patka and kippah, glasses and a hearing aid. Hats sit on top of head coverings rather than replacing them.</li>
+      <li><b>Names:</b> the leaderboard currently shows first name + initial from the Google account, which can be a name a student doesn't use. The generated adventurer name (no typing, so nothing to moderate) avoids that — <i>your decision which one the boards show</i>.</li>
+      <li><b>Future-proof:</b> options are saved by id, so new hairstyles, tones or extras can be added later without breaking anyone's saved look. Skin tones are numbered, not named after ethnicities.</li>
+    </ul>
+  </details>
+</div>
+
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('look');
+const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick';
+const O = PIXEL.OPTIONS;
+let base = load(KEY_BASE) || Object.assign({}, PIXEL.DEFAULT), view = 'starter';
+let nick = localStorage.getItem(KEY_NICK) || newNick();
+function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function newNick() {
+  const A = ['Brave', 'Chaotic', 'Sleepy', 'Mighty', 'Curious', 'Sneaky', 'Cosmic', 'Turbo', 'Gentle', 'Unbothered', 'Sparkly', 'Lowkey', 'Valiant', 'Wobbly', 'Electric', 'Fizzy'];
+  const N = ['Neutron', 'Mitochondrion', 'Proton', 'Catalyst', 'Isotope', 'Photon', 'Enzyme', 'Electron', 'Nucleus', 'Quark', 'Alkane', 'Ribosome', 'Comet', 'Magnet', 'Pipette', 'Beaker'];
+  return A[Math.random() * A.length | 0] + ' ' + N[Math.random() * N.length | 0];
+}
+const STARTER = {head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler'};
+const outfit = () => view === 'base' ? {} : view === 'hat' ? Object.assign({}, STARTER, {head: 'nocap'}) : Object.assign({}, STARTER, {head: null});
+const colours = () => O.hair.find(h => h.id === base.hair)?.cloth ? O.cloth : O.hc;
+
+function tile(group, opt, b, multi) {
+  const on = multi ? (base.extras || []).includes(opt.id) : base[group] === opt.id;
+  return `<button class="tile ${on ? 'on' : ''}" data-g="${group}" data-v="${opt.id}" aria-pressed="${on}" aria-label="${opt.name}"><img class="px" src="${PIXEL.portrait(b)}" alt=""></button>`;
+}
+function render() {
+  document.getElementById('fig').src = PIXEL.figure(outfit(), base);
+  document.getElementById('nick').textContent = nick;
+  document.getElementById('o-skin').innerHTML = O.skin.map(o => `<button class="sw ${base.skin === o.id ? 'on' : ''}" style="background:${o.c}" data-g="skin" data-v="${o.id}" aria-label="${o.name}" title="${o.name}"></button>`).join('');
+  document.getElementById('o-hair').innerHTML = O.hair.map(o => {
+    const cl = !!o.cloth, cur = colours();
+    const hc = cl === !!O.hair.find(h => h.id === base.hair)?.cloth ? base.hc : (cl ? 'navy' : 'brown');
+    return tile('hair', o, Object.assign({}, base, {hair: o.id, hc}));
+  }).join('');
+  const cl = colours() === O.cloth;
+  document.getElementById('hcTitle').textContent = cl ? 'Colour' : 'Hair colour';
+  document.getElementById('o-hc').innerHTML = colours().map(o => `<button class="sw ${base.hc === o.id ? 'on' : ''}" style="background:${o.c}" data-g="hc" data-v="${o.id}" aria-label="${o.name}" title="${o.name}"></button>`).join('');
+  document.getElementById('o-eyes').innerHTML = O.eyes.map(o => tile('eyes', o, Object.assign({}, base, {eyes: o.id}))).join('');
+  document.getElementById('o-mouth').innerHTML = O.mouth.map(o => tile('mouth', o, Object.assign({}, base, {mouth: o.id}))).join('');
+  document.getElementById('o-extras').innerHTML = O.extras.map(o => tile('extras', o, Object.assign({}, base, {extras: [...new Set([...(base.extras || []), o.id])]}), true)).join('');
+  document.querySelectorAll('[data-view]').forEach(b => b.classList.toggle('on', b.dataset.view === view));
+}
+document.addEventListener('click', e => {
+  const v = e.target.closest('[data-view]');
+  if (v) { view = v.dataset.view; render(); return; }
+  const t = e.target.closest('[data-g]'); if (!t) return;
+  const g = t.dataset.g, val = t.dataset.v;
+  if (g === 'extras') { const s = new Set(base.extras || []); s.has(val) ? s.delete(val) : s.add(val); base.extras = [...s]; }
+  else if (g === 'hair') {
+    const wasCloth = !!O.hair.find(h => h.id === base.hair)?.cloth, isCloth = !!O.hair.find(h => h.id === val)?.cloth;
+    base.hair = val; if (wasCloth !== isCloth) base.hc = isCloth ? 'navy' : 'brown';
+  } else base[g] = val;
+  document.getElementById('saved').textContent = '';
+  render();
+});
+document.getElementById('reroll').onclick = () => { nick = newNick(); render(); };
+document.getElementById('rand').onclick = () => {
+  const r = l => l[Math.random() * l.length | 0].id;
+  base.skin = r(O.skin); base.hair = r(O.hair); base.hc = r(colours()); base.eyes = r(O.eyes); base.mouth = r(O.mouth);
+  base.extras = O.extras.filter(() => Math.random() < .22).map(o => o.id);
+  render();
+};
+document.getElementById('save').onclick = () => {
+  base.v = 1;
+  try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
+  QE.syncLook();
+  setTimeout(() => { location.href = 'adventurer-home.html'; }, QE.user ? 700 : 0);
+};
+render();
+</script>
+</body>
+</html>

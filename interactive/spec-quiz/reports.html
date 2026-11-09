@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Spec Quiz: reported questions - Cakebread Science</title>
+<title>Cakebread Questing: reported questions - Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -37,7 +37,7 @@ textarea{width:100%;min-height:200px;font:13px monospace;margin-top:8px;padding:
 </style>
 </head>
 <body>
-<header><a href="./">Cakebread <span>Science</span></a> · Spec Quiz</header>
+<header><a href="./">Cakebread <span>Science</span></a> · Cakebread Questing</header>
 <main class="wrap">
   <h1>Reported questions</h1>
   <p>Questions students have flagged with “⚑ Report this question”. Only admins can see this page’s data.</p>
@@ -109,7 +109,7 @@ function draw() {
 
 function copyForClaude() {
   const gs = groups().filter(g => g.open);
-  const text = 'Spec Quiz reported questions (please check each, fix what is wrong in questions.js without changing ids, and tell me what you changed):\n\n' +
+  const text = 'Cakebread Questing reported questions (please check each, fix what is wrong in questions.js without changing ids, and tell me what you changed):\n\n' +
     gs.map(g => {
       const q = BYID[g.qid];
       const cur = q && !q.gen ? `Current: ${strip(q.q)} | Options: ${('tf' in q ? ['True', 'False'] : q.o).map(strip).join(' / ')} | Marked answer: ${'tf' in q ? (q.tf ? 'True' : 'False') : strip(q.o[0])}` : q ? 'Randomised calculation' : 'Not in bank';

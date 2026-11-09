@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Wardrobe - Cakebread Questing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;
+  --common:#9ca3af;--uncommon:#2e9d4a;--rare:#2563eb;--lowkey:#8b5cf6;--unhinged:#ea580c;--legend:#d4a017}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1050px;margin:0 auto;padding:20px 16px 64px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+.flag{display:inline-block;background:#ffe14d;border:2px solid var(--ink);font-weight:700;font-size:13px;padding:2px 8px;text-transform:uppercase;letter-spacing:1px;margin-top:10px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:9px 16px;font-weight:700}
+.btn.alt{background:var(--paper);color:var(--ink)}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+.layout{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
+@media(min-width:820px){.layout{grid-template-columns:300px 1fr}.me{position:sticky;top:12px;align-self:start}}
+.card{background:var(--paper);border:2px solid var(--ink);padding:16px}
+.me{text-align:center}
+.me #fig{width:100%;max-width:240px;display:block;margin:4px auto}
+.nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1}
+.ttl{font-style:italic;color:var(--muted)}
+.stats{display:flex;justify-content:center;gap:14px;font-weight:700;font-size:14px;margin-top:4px}
+.set{font-size:13px;margin-top:8px;color:var(--muted)}
+.set b{color:var(--ink)}
+.me a{color:var(--green);font-weight:700;font-size:14px}
+/* slot bar */
+.slots{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.slot{border:2px solid var(--line);background:var(--soft);border-radius:10px;padding:4px 2px;text-align:center;font-size:12px;font-weight:700;line-height:1.1}
+.slot img{width:100%;max-width:56px;aspect-ratio:1;display:block;margin:0 auto 2px;object-fit:contain}
+.slot .empty{width:56px;max-width:100%;aspect-ratio:1;margin:0 auto 2px;display:grid;place-items:center;color:#bbb;font-size:22px}
+.slot.on{border-color:var(--ink);background:#fff;box-shadow:inset 0 0 0 2px var(--green2)}
+.slot .n{display:block;font-size:11px;color:var(--muted);font-weight:600}
+/* items for one slot */
+.shelfhead{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 8px}
+.shelfhead h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.it{border:2px solid var(--line);background:#fff;border-radius:10px;padding:6px 4px 0;text-align:center;font-size:13px;font-weight:700;line-height:1.1;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.it img{width:72px;height:72px;margin:0 auto 4px;object-fit:contain}
+.it .lbl{padding:0 2px 8px;flex:1}
+.it::after{content:'';position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--r)}
+.it.sel{border-color:var(--ink);box-shadow:inset 0 0 0 2px var(--green2)}
+.it .wearing{position:absolute;top:4px;right:4px;background:var(--ink);color:#fff;font-size:10px;padding:1px 5px;border-radius:4px}
+.it.more{border-style:dashed;color:var(--muted);justify-content:center;min-height:120px;font-weight:600}
+.it.more::after{display:none}
+.it.more b{font-size:26px;color:var(--ink);display:block}
+.r-common{--r:var(--common)}.r-uncommon{--r:var(--uncommon)}.r-rare{--r:var(--rare)}.r-lowkey{--r:var(--lowkey)}.r-unhinged{--r:linear-gradient(90deg,#ea580c,#db2777,#7c3aed)}.r-legend{--r:var(--legend)}
+/* detail */
+.detail{display:flex;gap:14px;align-items:flex-start;margin-top:14px;border-top:5px solid var(--r);background:#fff;border-left:2px solid var(--ink);border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);padding:12px}
+.detail.r-unhinged{border-top-color:var(--unhinged)}
+.detail img{width:110px;height:110px;flex:none;object-fit:contain;background:var(--soft);border-radius:10px;padding:6px}
+.detail .rar{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px}
+.detail .dn{font-weight:700;font-size:21px;line-height:1.1}
+.detail .dd{font-style:italic;margin:4px 0}
+.detail .ds{font-size:13px;color:var(--muted)}
+.detail .acts{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.hints{margin-top:12px;background:#fff;border:2px dashed #aaa;padding:10px 14px;font-size:14px}
+.hints li{margin:4px 0 0 18px}
+@media(max-width:520px){.detail{flex-direction:column;align-items:center;text-align:center}.detail .acts{justify-content:center}}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Wardrobe</span></header>
+<div class="wrap">
+  <h1>Wardrobe</h1>
+
+  <div class="layout">
+    <div class="card me">
+      <div class="nm" id="nm"></div>
+      <div class="ttl" id="ttl"></div>
+      <img id="fig" class="px" alt="Your adventurer wearing the chosen items">
+      <div class="stats" id="stats"></div>
+      <div class="set" id="set"></div>
+      <div style="margin-top:10px"><a href="adventurer-create.html">✏️ Change my look</a> · <a href="adventurer-home.html">⛺ Base camp</a></div>
+    </div>
+
+    <div>
+      <div class="slots" id="slots" role="tablist" aria-label="Slots"></div>
+      <div class="shelfhead"><h2 id="slotName"></h2><span class="small" id="count" style="color:var(--muted);font-size:14px"></span></div>
+      <div class="grid" id="grid"></div>
+      <div id="detail"></div>
+      <div id="hints"></div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('wardrobe');
+const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick', KEY_EQ = 'cbs.adventurer.eq';
+const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
+const base = load(KEY_BASE) || PIXEL.DEFAULT;
+const nick = localStorage.getItem(KEY_NICK) || 'Brave Neutron';
+const byId = Object.fromEntries(ADV_ITEMS.map(i => [i.id, i]));
+/* what you own: the starter outfit + everything missions have dropped (saved in your account) + any legendary you hold this week */
+const STARTER = ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id);
+const OWNED = new Set([...STARTER, ...(ADV.S.bag || [])]);
+const HOLDERS = {};
+let eq = ADV.eq();
+for (const k in eq) if (eq[k] && !OWNED.has(eq[k])) { const st = ADV_ITEMS.find(i => i.slot === k && i.from === 'Starter outfit'); eq[k] = st ? st.id : null; }
+/* legendaries: whoever tops this week's board in that science holds it */
+QE.onChange(() => {
+  if (!QE.user || HOLDERS._done) return; HOLDERS._done = true;
+  QE.board().then(rows => {
+    const week = rows.filter(r => r.wk === QE.WEEK);
+    [['syringe', 'wb'], ['pebble', 'wc'], ['dodgeball', 'wp']].forEach(([id, f]) => { const b = week.filter(r => r[f] > 0).sort((a, c) => c[f] - a[f])[0]; if (b) { HOLDERS[id] = b.me ? 'you' : b.name; if (b.me) OWNED.add(id); } });
+    render();
+  }).catch(() => {});
+});
+let slot = 'head', sel = eq.head || null, showHints = false;
+const PIC = {}; const pic = id => PIC[id] || (PIC[id] = PIXEL.item(id));
+const SUBJ = {b: 'Biology', c: 'Chemistry', p: 'Physics'};
+const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
+
+function setBonus() {
+  const c = {b: 0, c: 0, p: 0};
+  Object.values(eq).forEach(id => { const s = id && byId[id].s; if (s) c[s]++; });
+  const names = {b: 'Certified Plant Whisperer', c: 'Certified Lab Gremlin', p: 'Certified Gravity Enjoyer'};
+  const [k, n] = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+  return n >= 3 ? {title: names[k], txt: `<b>Set bonus:</b> ${n} ${SUBJ[k]} items → “${names[k]}”`} : {title: null, txt: `Wear 3 items from one science for a set bonus.`};
+}
+function render() {
+  document.getElementById('fig').src = PIXEL.figure(eq, base);
+  document.getElementById('nm').textContent = nick;
+  const sb = setBonus();
+  document.getElementById('ttl').textContent = '“' + (sb.title || 'Side Quest Enjoyer') + '”';
+  document.getElementById('set').innerHTML = sb.txt;
+  const t = {aura: 0, brain: 0, vibes: 0}; Object.values(eq).forEach(id => { if (id) for (const k in t) t[k] += byId[id].st[k]; });
+  document.getElementById('stats').innerHTML = `<span>✨ Aura ${t.aura}</span><span>🧠 Brain ${t.brain}</span><span>🌀 Vibes ${t.vibes}</span>`;
+
+  document.getElementById('slots').innerHTML = ADV_SLOTS.map(s => {
+    const id = eq[s.k];
+    return `<button class="slot ${slot === s.k ? 'on' : ''}" role="tab" aria-selected="${slot === s.k}" data-slot="${s.k}">
+      ${id ? `<img class="px" src="${pic(id)}" alt="">` : '<div class="empty">＋</div>'}${s.name}</button>`;
+  }).join('');
+
+  const all = ADV_ITEMS.filter(i => i.slot === slot), mine = all.filter(i => OWNED.has(i.id)), missing = all.filter(i => !OWNED.has(i.id));
+  document.getElementById('slotName').textContent = ADV_SLOTS.find(s => s.k === slot).name;
+  document.getElementById('count').textContent = `${mine.length} of ${all.length} found`;
+  document.getElementById('grid').innerHTML = mine.map(i => `<button class="it r-${i.r} ${sel === i.id ? 'sel' : ''}" data-id="${i.id}">
+      ${eq[slot] === i.id ? '<span class="wearing">ON</span>' : ''}<img class="px" src="${pic(i.id)}" alt=""><span class="lbl">${i.name}</span></button>`).join('')
+    + (missing.length ? `<button class="it more" data-hints="1"><b>+${missing.length}</b>still to find</button>` : '');
+
+  const it = sel && byId[sel] && byId[sel].slot === slot ? byId[sel] : null;
+  document.getElementById('detail').innerHTML = it ? `<div class="detail r-${it.r}">
+      <img class="px" src="${pic(it.id)}" alt="">
+      <div><div class="rar" style="color:var(--${it.r})">${ADV_RARITY[it.r]}</div>
+        <div class="dn">${it.name}</div><div class="dd">${it.d}</div>
+        <div class="ds">Aura ${sgn(it.st.aura)} · Brain ${sgn(it.st.brain)} · Vibes ${sgn(it.st.vibes)}<br>Got it from: ${it.legend ? 'top of the ' + it.legend + ' board this week — keep practising to keep it!' : it.from}</div>
+        <div class="acts">${eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>` : `<button class="btn" data-wear="${it.id}">Wear it</button>`}</div></div></div>` : '';
+
+  document.getElementById('hints').innerHTML = showHints && missing.length ? `<div class="hints"><b>Still to find in this slot:</b><ul>${missing.map(i =>
+      `<li>${i.legend ? `A legendary — held this week by <b>${HOLDERS[i.id] || 'nobody yet'}</b> (most correct ${i.legend} answers this week)` : `??? — ${i.from}`}</li>`).join('')}</ul></div>` : '';
+}
+document.addEventListener('click', e => {
+  const s = e.target.closest('[data-slot]');
+  if (s) { slot = s.dataset.slot; sel = eq[slot] || null; showHints = false; render(); return; }
+  if (e.target.closest('[data-hints]')) { showHints = !showHints; render(); return; }
+  const w = e.target.closest('[data-wear]');
+  if (w) { eq[slot] = w.dataset.wear; save(); render(); return; }
+  if (e.target.closest('[data-off]')) { eq[slot] = null; save(); render(); return; }
+  const t = e.target.closest('.it[data-id]');
+  if (t) { sel = t.dataset.id; render(); }
+});
+function save() { try { localStorage.setItem(KEY_EQ, JSON.stringify(eq)); } catch (e) {} QE.syncLook(); }
+render();
+</script>
+</body>
+</html>

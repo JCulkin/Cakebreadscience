@@ -241,7 +241,7 @@ body.proj .einfo,body.proj .rt{font-size:20px}
       <button class="bigmode" id="soloBtn" style="--c:#005e22"><h3>Solo</h3><p>Play on your own. Pick Stage 1 (the table), Stage 2 (electrons) or everything, round by round or randomised.</p></button>
       <button class="bigmode" id="teamBtn" style="--c:#d62828"><h3>Team game</h3><p>For the whole class on the board: 2–6 teams, timer, steals, scoreboard.</p></button>
     </div>
-    <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:6px 18px"><span><button class="linkbtn" id="hsBtn">🏆 High scores</button></span><span><button class="linkbtn" id="exploreBtn">Explore the table →</button> <span class="small">a clickable table for teaching</span></span></p>
+    <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:6px 18px"><span><button class="linkbtn" id="hsBtn">🏆 Leaderboards</button></span><span><button class="linkbtn" id="exploreBtn">Explore the table →</button> <span class="small">a clickable table for teaching</span></span></p>
     <p class="small" style="margin-top:20px">Edexcel International GCSE Science (Double Award) Chemistry 1.14–1.24 and 1.37–1.38. Configurations are written the Edexcel way, e.g. 2.8.1. Hydrogen is shown on its own, not as a Group 1 metal. Boron and silicon are semi-metals, so they are left out of the metal/non-metal sorting questions.</p>
   </section>
 
@@ -259,10 +259,11 @@ body.proj .einfo,body.proj .rt{font-size:20px}
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="/js/firebase-config.js"></script>
-<script src="scores.js"></script>
+<script src="/js/leaderboards.js"></script>
 <script src="data.js"></script>
 <script src="rounds.js"></script>
 <script src="game.js"></script>

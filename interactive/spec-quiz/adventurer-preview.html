@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>The Adventurer (preview) - Cakebread Questing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;
+  --bio:#005e22;--chem:#c8001e;--phys:#d08000;
+  --common:#8a8f98;--uncommon:#2e9d4a;--rare:#2563eb;--lowkey:#8b5cf6;--unhinged:#ea580c;--legend:#d4a017}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 64px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:30px;line-height:1.05;margin:40px 0 4px}
+h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:20px;line-height:1.1}
+.lede{font-size:18px;max-width:780px;margin-top:8px}
+.note{font-size:14px;color:var(--muted);max-width:780px;margin:4px 0 14px}
+.card{background:var(--paper);border:2px solid var(--ink)}
+.in{padding:16px 18px}
+button{font:inherit;cursor:pointer;color:inherit}
+.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:9px 16px;font-weight:700}
+.btn.alt{background:var(--paper);color:var(--ink)}
+.preview-flag{display:inline-block;background:#ffe14d;border:2px solid var(--ink);font-weight:700;font-size:13px;padding:2px 8px;text-transform:uppercase;letter-spacing:1px;margin-top:10px}
+
+/* ---- character sheet ---- */
+.sheet{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:860px){.sheet{grid-template-columns:330px 1fr}}
+.hero{text-align:center}
+.hero svg.fig{width:100%;max-width:290px;height:auto;display:block;margin:0 auto}
+.pname{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;text-transform:uppercase;line-height:1}
+.ptitle{font-style:italic;color:var(--muted);margin-top:2px}
+.stats{display:grid;grid-template-columns:auto 1fr auto;gap:6px 10px;align-items:center;text-align:left;margin-top:14px;font-weight:600;font-size:15px}
+.bar{height:12px;border:2px solid var(--ink);background:var(--soft);position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;transition:width .4s}
+.setline{margin-top:12px;font-size:14px;padding:8px;border:2px dashed var(--ink);background:#fffbe6;min-height:40px}
+.pxbtns{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}.pxbtns button{border:2px solid var(--ink);background:#fff;padding:3px 12px;font-weight:700;font-size:14px}.pxbtns button.on{background:var(--ink);color:#fff}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+#figPx{width:100%;max-width:290px;display:block;margin:0 auto}
+.thumb img,.item .pic img,.drop .pic img{width:100%;height:100%;object-fit:contain;padding:4px}
+.lineup{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.lineup img{width:150px;background:#fff;border:2px solid var(--ink)}
+.slots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:600px){.slots{grid-template-columns:repeat(3,1fr)}}
+.slot{border:2px solid var(--ink);background:var(--paper);display:flex;gap:10px;align-items:center;padding:8px;cursor:pointer;text-align:left}
+.slot.on{outline:3px solid var(--green2);outline-offset:-1px}
+.slot .lab{font-size:12px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-weight:700}
+.slot .nm{font-weight:700;line-height:1.15}
+.thumb{width:58px;height:58px;flex:none;border:2px solid var(--line);background:var(--soft);border-radius:8px}
+.thumb svg{width:100%;height:100%;display:block}
+
+/* ---- inventory ---- */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 10px}
+.tab{border:2px solid var(--ink);background:var(--paper);padding:5px 12px;font-weight:700;font-size:14px}
+.tab.on{background:var(--ink);color:var(--cream)}
+.inv{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.item{border:3px solid var(--r);background:var(--paper);padding:10px;cursor:pointer;position:relative;text-align:left;display:flex;flex-direction:column;gap:6px}
+.item:hover{transform:translateY(-2px)}
+.item.eq::after{content:'EQUIPPED';position:absolute;top:6px;right:6px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;padding:1px 6px;letter-spacing:1px}
+.item .pic{height:110px;border-radius:8px;background:radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--r) 22%,#fff) 0,#fff 70%)}
+.item .pic svg{width:100%;height:100%}
+.item .rar{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--r)}
+.item .nm{font-weight:700;font-size:17px;line-height:1.1}
+.item .ds{font-size:14px;font-style:italic;color:#333}
+.item .st{font-size:13px;color:var(--muted);font-weight:600}
+.item.locked{cursor:default;border-style:dashed;border-color:#aaa}
+.item.locked .pic svg,.item.locked .pic img{filter:brightness(0) opacity(.18)}
+.item.locked .nm{color:#999}
+.item.locked .how{font-size:13px;font-weight:700;color:var(--ink);background:var(--soft);padding:4px 6px}
+.r-common{--r:var(--common)}.r-uncommon{--r:var(--uncommon)}.r-rare{--r:var(--rare)}.r-lowkey{--r:var(--lowkey)}.r-unhinged{--r:var(--unhinged)}.r-legend{--r:var(--legend)}
+.r-unhinged{border-image:linear-gradient(90deg,#ea580c,#db2777,#7c3aed,#ea580c) 1}
+.r-legend .pic{animation:glow 2.5s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 18px 2px #f5c84299 inset}}
+.legend-holder{font-size:13px;font-weight:700;background:#fff4cc;padding:3px 6px}
+.keyrow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.key{border:3px solid var(--r);padding:2px 8px;font-weight:700;font-size:13px;background:#fff}
+
+/* ---- badges ---- */
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.badge{border:2px solid var(--ink);background:var(--paper);padding:10px;text-align:center}
+.badge svg{width:96px;height:110px;display:block;margin:0 auto}
+.badge .tn{font-weight:700;line-height:1.1;font-size:15px;margin-top:4px}
+.badge .tt{font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-top:3px}
+.badge .pr{font-size:12px;color:var(--muted)}
+.tiers{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+.tiers figure{text-align:center;font-size:13px;font-weight:700}
+.tiers svg{width:110px;height:126px;display:block}
+.titles{display:flex;flex-wrap:wrap;gap:8px}
+.titles span{border:2px solid var(--ink);padding:4px 10px;background:var(--paper);font-style:italic;font-weight:600}
+.titles span.lock{color:#999;border-style:dashed;border-color:#aaa}
+
+/* ---- mission ---- */
+.battle{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:760px){.battle{grid-template-columns:260px 1fr}}
+.monster svg{width:100%;max-width:240px;display:block;margin:0 auto}
+.monster .say{border:2px solid var(--ink);border-radius:14px;padding:8px 12px;background:#fff;font-weight:700;position:relative;margin-bottom:10px;text-align:center}
+.monster .say::after{content:'';position:absolute;left:50%;bottom:-11px;border:10px solid transparent;border-top-color:var(--ink);border-bottom:0;transform:translateX(-50%)}
+.hp{display:flex;gap:3px;margin:8px 0}
+.hp i{flex:1;height:14px;border:2px solid var(--ink);background:#e11d48;transition:background .3s}
+.hp i.gone{background:#eee}
+.log{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;background:#111;color:#e5e5e5;padding:12px 14px;min-height:230px;border:2px solid var(--ink)}
+.log p{margin:2px 0;opacity:0;animation:in .3s forwards}
+.log .ok{color:#86efac}.log .no{color:#fca5a5}.log .loot{color:#fde047;font-weight:700}
+@keyframes in{to{opacity:1}}
+.drop{display:flex;gap:14px;align-items:center;margin-top:12px;border:3px solid var(--r);padding:10px;background:#fff;animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.drop .pic{width:110px;height:110px;flex:none}
+.drop .pic svg{width:100%;height:100%}
+@keyframes pop{from{transform:scale(.4);opacity:0}}
+.mobile-demo{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.phone{width:300px;border:3px solid var(--ink);border-radius:26px;padding:14px 12px;background:#fff}
+.phone .pt{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:20px}
+.phone .row{display:flex;gap:10px;align-items:center;margin-top:8px}
+.phone .row svg{width:90px;height:110px;flex:none}
+.phone .mini{font-size:13px}
+.phone .new{background:#ffe14d;border:2px solid var(--ink);font-weight:700;font-size:12px;padding:1px 6px;display:inline-block}
+.dec{border-left:5px solid var(--green);background:var(--paper);padding:10px 14px;margin-top:10px;max-width:820px}
+.dec li{margin-left:20px}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Preview</span></header>
+<div class="wrap">
+  <a class="back" href="/test.html">← Test page</a>
+  <h1>The Adventurer</h1>
+  <p class="lede">A design preview for the Campaign rewards: a small stick-figure adventurer whose six slots (head, top, bottom, shoes, left hand, right hand) fill up as a student works through the spec. Click things — it all works on this page with pretend data.</p>
+  <span class="preview-flag">Preview only · not connected to the quiz yet</span>
+  <p style="margin-top:10px;font-weight:700">Newer pages: <a href="adventurer-create.html">Make your adventurer</a> (choose a look) · <a href="adventurer-wardrobe.html">Wardrobe</a> (choose items)</p>
+
+  <h2>1. Character sheet</h2>
+  <p class="note"><b>Two art styles to compare:</b> switch between the new pixel version and the first vector try with the buttons above the character. What a student sees on the Campaign screen. Click a slot, then an item below to equip it. Joke stats (Aura, Brain Cells, Vibes) add up from what's worn and change nothing in the game.</p>
+  <div class="sheet">
+    <div class="card in hero">
+      <div class="pname">Sam B.</div>
+      <div class="ptitle" id="ptitle">“Side Quest Enjoyer”</div>
+      <div class="pxbtns"><button data-style="pixel" class="on">Pixel (new)</button><button data-style="vector">Vector (first try)</button></div>
+      <img id="figPx" class="px" alt="The adventurer in pixel art wearing the equipped items">
+      <svg class="fig" id="fig" viewBox="0 -40 200 280" role="img" aria-label="The adventurer wearing the equipped items"></svg>
+      <div class="stats" id="stats"></div>
+      <div class="setline" id="setline"></div>
+    </div>
+    <div>
+      <div class="slots" id="slots"></div>
+      <div class="tabs" id="tabs"></div>
+      <div class="keyrow" id="rkey"></div>
+      <div class="inv" id="inv"></div>
+    </div>
+  </div>
+
+  <h3 style="margin:18px 0 8px">Pixel line-up: five outfits</h3>
+  <div class="lineup" id="lineup"></div>
+
+  <h2>2. Where items come from</h2>
+  <div class="dec">
+    <ul>
+      <li><b>Starter outfit</b> — deliberately sad (paper hat, school jumper, grey joggers, odd socks, empty crisp packet, slightly bent ruler).</li>
+      <li><b>Mission drop</b> — every finished mission of 10 rolls one Common/Uncommon item. Same odds for everyone, so effort (not ability) fills the wardrobe.</li>
+      <li><b>Topic badge tiers</b> — each Bronze / Silver / Gold gives a named item themed on that topic (17 topics × 3 = 51 items). The good stuff comes from real progress.</li>
+      <li><b>Legendaries</b> — one per science, held by whoever has the most correct answers in that science over the <b>last 7 days</b> (a rolling window, recalculated every day). Stop practising and it moves on to someone else.</li>
+      <li><b>Set bonus</b> — wear 3 items from the same science → a title (e.g. “Certified Lab Gremlin”).</li>
+    </ul>
+  </div>
+
+  <h2>3. Mission result</h2>
+  <p class="note">The end of a mission, told as a fight. The enemy is always a real misconception from the topic just practised.</p>
+  <div class="card in">
+    <div class="battle">
+      <div class="monster">
+        <div class="say" id="say">“Heavy things fall faster.”</div>
+        <svg viewBox="0 0 200 170" id="monsterSvg" role="img" aria-label="A wobbly blob monster called The Misconception"></svg>
+        <div style="text-align:center;font-weight:700">Wild Misconception · Physics 1</div>
+        <div class="hp" id="hp"></div>
+      </div>
+      <div>
+        <div class="log" id="log"></div>
+        <div id="dropBox"></div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="replay">▶ Play mission result</button>
+          <button class="btn alt" id="nextEnemy">Next enemy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>4. Badges — 20 in total</h2>
+  <p class="note">The 61 sub-topic badges and 20 milestone badges go. What's left: one badge per topic that upgrades Bronze → Silver → Gold, plus one badge per science for getting every topic to Gold. Sub-topic progress shows as rings on the map instead.</p>
+  <div class="card in">
+    <h3>One badge, three tiers</h3>
+    <div class="tiers" id="tiers"></div>
+  </div>
+  <h3 style="margin:16px 0 8px">Sam's shelf (pretend progress)</h3>
+  <div class="shelf" id="shelf"></div>
+
+  <h2>5. Titles (the old milestones)</h2>
+  <p class="note">Shown in italics under the name. One worn at a time. Greyed ones are still to earn.</p>
+  <div class="titles" id="titles"></div>
+
+  <h2>6. On a phone</h2>
+  <p class="note">The mission-end screen and the Campaign home, at phone width.</p>
+  <div class="mobile-demo">
+    <div class="phone">
+      <div class="pt">Mission complete</div>
+      <div class="mini">7 / 10 correct · +45 XP · 2 questions secured</div>
+      <div class="row"><svg viewBox="0 0 120 120" id="phDrop"></svg>
+        <div><span class="new">NEW</span><div style="font-weight:700" id="phDropName"></div><div class="mini" id="phDropDesc"></div></div></div>
+      <div class="mini" style="margin-top:8px">⭐ <b>Physics 1</b> badge upgraded to <b>Silver</b> → unlocked <b>Trousers of Moderate Inertia</b></div>
+    </div>
+    <div class="phone">
+      <div class="pt">Campaign</div>
+      <div class="row"><svg viewBox="0 -40 200 280" id="phFig"></svg>
+        <div class="mini"><b>Sam B.</b><br><i>“Side Quest Enjoyer”</i><br>Rank: Padawan<br>Points secured: 84 / 403<br>Items: 23 / 90<br><a href="#" onclick="return false">Wardrobe →</a></div></div>
+      <div class="mini" style="margin-top:8px">Next up: <b>Chemistry 3b Rates</b> (2 points rusty)</div>
+    </div>
+  </div>
+
+  <h2>7. Decisions for you</h2>
+  <div class="dec">
+    <ul>
+      <li>Badge tiers at 25% / 60% / 100% of points secured in the topic — OK?</li>
+      <li>Keep the Star Wars × US Army ranks next to this, or let the character's level replace them?</li>
+      <li>Should students pick a name for the character, or use their first name + initial (as now)?</li>
+      <li>Which items to cut or rename — everything above is a draft; the jokes live in one list so they can be swapped each term.</li>
+    </ul>
+  </div>
+</div>
+
+<script src="adventurer-pixel.js"></script>
+<script>
+/* ===================== DRAWINGS =====================
+   Figure coordinates (viewBox 0 -40 200 280): head centre (100,50) r 20, shoulders (100,88),
+   right hand (viewer's left) at (58,128), left hand (viewer's right) at (142,128),
+   hips (100,150), feet at (80,212) and (120,212). Every item is drawn in these coordinates,
+   so the same drawing is used on the figure and (cropped) as the item's picture. */
+const INK = 'stroke="#111" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"';
+const BODY_BACK = `<g ${INK} fill="none">
+  <path d="M100 150 L80 212 M100 150 L120 212" stroke-width="3"/>
+  <path d="M100 70 L100 150" stroke-width="3"/></g>`;
+const HEAD = `<g ${INK}><circle cx="100" cy="50" r="20" fill="#fff" stroke-width="3"/>
+  <circle cx="93" cy="47" r="2.2" fill="#111" stroke="none"/><circle cx="107" cy="47" r="2.2" fill="#111" stroke="none"/>
+  <path d="M93 57 Q100 62 107 57" fill="none"/></g>`;
+const ARMS = `<g ${INK} fill="none"><path d="M100 88 L58 128 M100 88 L142 128" stroke-width="3"/></g>
+  <g ${INK} fill="#fff"><circle cx="58" cy="128" r="4.5"/><circle cx="142" cy="128" r="4.5"/></g>`;
+
+const SLOTS = [
+  {k:'head', name:'Head', box:'62 -38 76 76'},
+  {k:'top', name:'Top', box:'52 70 96 96'},
+  {k:'bottom', name:'Bottom', box:'58 140 84 84'},
+  {k:'shoes', name:'Shoes', box:'58 186 84 46'},
+  {k:'lhand', name:'Left hand', box:'108 92 76 76'},
+  {k:'rhand', name:'Right hand', box:'16 92 76 76'},
+];
+const RAR = {common:'Common', uncommon:'Uncommon', rare:'Rare', lowkey:'Lowkey Legendary', unhinged:'Absolutely Unhinged', legend:'Legendary'};
+const SUBJ = {b:'Biology', c:'Chemistry', p:'Physics'};
+
+const sleeve = (c) => `<path d="M100 88 L76 111 M100 88 L124 111" stroke="${c}" stroke-width="10" stroke-linecap="round" fill="none"/>`;
+const ITEMS = [
+  /* ---------- head ---------- */
+  {id:'paperhat', slot:'head', name:'Paper Hat', r:'common', st:{aura:0,brain:1,vibes:1}, from:'Starter outfit',
+   d:'Folded from a revision timetable. Still more organised than you.',
+   svg:`<g ${INK}><path d="M78 33 L100 -6 L122 33 Z" fill="#fffdf5"/><path d="M85 22 L115 22 M89 14 L111 14" stroke-width="1.2" stroke="#9aa"/></g>`},
+  {id:'avogadro', slot:'head', name:'Hat of Avogadro', r:'rare', s:'c', st:{aura:4,brain:6,vibes:2}, from:'Chemistry 1 · Silver',
+   d:'Contains 6.02 × 10²³ smaller hats.',
+   svg:`<g ${INK}><rect x="74" y="27" width="52" height="7" rx="2" fill="#222"/><rect x="83" y="-4" width="34" height="32" fill="#2b2b2b"/>
+     <rect x="83" y="18" width="34" height="5" fill="#c8001e" stroke="none"/>
+     <rect x="91" y="-9" width="18" height="4" rx="1" fill="#222"/><rect x="95" y="-24" width="10" height="16" fill="#2b2b2b"/>
+     <rect x="96.5" y="-27" width="7" height="3" fill="#222"/><rect x="98" y="-35" width="4" height="9" fill="#2b2b2b"/>
+     <circle cx="100" cy="-38" r="1.2" fill="#222"/></g>`},
+  {id:'nocap', slot:'head', name:'No-Cap Cap', r:'uncommon', st:{aura:3,brain:1,vibes:3}, from:'Mission drop',
+   d:'Physically unable to lie. Useless at true/false anyway.',
+   svg:`<g ${INK}><path d="M79 38 Q79 10 100 10 Q121 10 121 38 Z" fill="#2563eb"/><path d="M118 36 Q138 36 142 41 Q128 44 118 41 Z" fill="#1e40af"/>
+     <circle cx="100" cy="11" r="2.5" fill="#1e40af"/>
+     <text x="100" y="31" font-size="9" font-weight="800" text-anchor="middle" fill="#fff" stroke="none" font-family="Arial">NO CAP</text></g>`},
+  {id:'delulu', slot:'head', name:'Delulu Goggles', r:'lowkey', st:{aura:5,brain:-2,vibes:7}, from:'Mission drop (rare roll)',
+   d:'You see the answer you wanted. +2 Vibes, −2 accuracy.',
+   svg:`<g ${INK}><path d="M78 46 L84 46 M116 46 L122 46" /><circle cx="92" cy="47" r="8" fill="#f9a8d4" fill-opacity=".85"/><circle cx="108" cy="47" r="8" fill="#f9a8d4" fill-opacity=".85"/>
+     <path d="M100 47 L100 47" /><path d="M99 46 Q100 43 101 46"/>
+     <path d="M70 30 l3 -6 l3 6 l-6 -3 l6 0 z M128 26 l2 -4 l2 4 l-4 -2 l4 0 z" fill="#fde047" stroke-width="1"/></g>`},
+  {id:'halo', slot:'head', name:'Halo of Main Character Energy', r:'unhinged', st:{aura:12,brain:0,vibes:8}, from:'Physics 3 · Gold',
+   d:'The camera follows you now. Background characters whisper.',
+   svg:`<g ${INK}><ellipse cx="100" cy="20" rx="24" ry="6" fill="none" stroke="#f5c842" stroke-width="5"/><ellipse cx="100" cy="20" rx="24" ry="6" fill="none" stroke-width="1.2"/>
+     <path d="M66 6 l5 4 M134 6 l-5 4 M100 -8 l0 7" stroke="#f5c842" stroke-width="3"/></g>`},
+  /* ---------- top ---------- */
+  {id:'jumper', slot:'top', name:'School Jumper', r:'common', st:{aura:0,brain:1,vibes:0}, from:'Starter outfit',
+   d:'Name label says someone else\'s name. You\'ve never asked.',
+   svg:`${sleeve('#8a929c')}<g ${INK}><path d="M82 80 L118 80 L124 150 L76 150 Z" fill="#8a929c"/><path d="M92 80 L100 92 L108 80" fill="none"/><path d="M77 143 L123 143" stroke-width="1.4"/></g>`},
+  {id:'labcoat', slot:'top', name:'Lab Coat With One Mystery Stain', r:'uncommon', s:'c', st:{aura:2,brain:3,vibes:1}, from:'Chemistry 2 · Bronze',
+   d:'Nobody knows. Nobody asks.',
+   svg:`${sleeve('#fff')}<path d="M100 88 L76 111 M100 88 L124 111" stroke="#111" stroke-width="1.2" fill="none" stroke-dasharray="0"/>
+     <g ${INK}><path d="M82 80 L118 80 L128 168 L72 168 Z" fill="#fff"/><path d="M93 80 L100 104 L107 80 M100 104 L100 168" fill="none"/>
+     <rect x="105" y="112" width="12" height="9" fill="none" stroke-width="1.5"/>
+     <path d="M84 132 q4 -6 9 -1 q6 2 3 7 q-2 6 -8 4 q-7 -1 -4 -10z" fill="#8a6d3b" fill-opacity=".75" stroke="none"/></g>`},
+  {id:'npc', slot:'top', name:'NPC T-Shirt', r:'uncommon', st:{aura:-1,brain:2,vibes:4}, from:'Mission drop',
+   d:'Says “Greetings, traveller” when poked.',
+   svg:`${sleeve('#16a34a')}<g ${INK}><path d="M82 80 L118 80 L122 150 L78 150 Z" fill="#16a34a"/><path d="M92 80 Q100 88 108 80" fill="none"/>
+     <text x="100" y="125" font-size="13" font-weight="900" text-anchor="middle" fill="#fff" stroke="none" font-family="Arial">NPC</text></g>`},
+  {id:'chainmail', slot:'top', name:'Chainmail of Covalent Bonds', r:'rare', s:'c', st:{aura:4,brain:5,vibes:2}, from:'Chemistry 1 · Gold',
+   d:'Shares electrons, not snacks.',
+   svg:`${sleeve('#9ca3af')}<g ${INK}><path d="M82 80 L118 80 L124 152 L76 152 Z" fill="#cbd5e1"/></g>
+     <g stroke="#475569" stroke-width="1.4" fill="#fff">${[92,104,116,128,140].map((y,i)=>[86,96,106,116].map((x,j)=>`<circle cx="${x+(i%2?4:0)}" cy="${y}" r="3.2"/>`).join('')).join('')}</g>
+     <g stroke="#475569" stroke-width="1.2">${[92,104,116,128,140].map((y,i)=>[86,96,106].map(x=>`<path d="M${x+3.2+(i%2?4:0)} ${y} L${x+6.8+(i%2?4:0)} ${y}"/>`).join('')).join('')}</g>`},
+  /* ---------- bottom ---------- */
+  {id:'joggers', slot:'bottom', name:'Grey Joggers', r:'common', st:{aura:0,brain:0,vibes:2}, from:'Starter outfit',
+   d:'Comfortable. Shapeless. Honest.',
+   svg:`<g><path d="M100 150 L81 207 M100 150 L119 207" stroke="#6b7280" stroke-width="15" stroke-linecap="round"/><rect x="85" y="146" width="30" height="9" rx="3" fill="#6b7280"/></g>
+     <g ${INK} fill="none"><path d="M86 148 L114 148" stroke-width="1.4"/><path d="M76 205 L86 209 M114 209 L124 205" stroke-width="2"/></g>`},
+  {id:'inertia', slot:'bottom', name:'Trousers of Moderate Inertia', r:'uncommon', s:'p', st:{aura:2,brain:3,vibes:1}, from:'Physics 1 · Silver',
+   d:'Hard to get going. Hard to stop.',
+   svg:`<path d="M100 150 L81 208 M100 150 L119 208" stroke="#7c4a1e" stroke-width="15" stroke-linecap="butt"/><rect x="84" y="145" width="32" height="9" fill="#5b3412"/>
+     <g ${INK} fill="none"><rect x="84" y="145" width="32" height="9" stroke-width="1.6"/><rect x="96" y="146.5" width="8" height="6" fill="#d4a017" stroke-width="1"/></g>
+     <g stroke="#111" stroke-width="1.6"><path d="M64 170 L72 170 M62 178 L71 178 M128 170 L136 170 M129 178 L138 178"/></g>
+     <text x="88" y="185" font-size="7" font-weight="800" fill="#fff" font-family="Arial" transform="rotate(18 88 185)">kg</text>`},
+  {id:'kilt', slot:'bottom', name:'Kilt of Kinetic Energy', r:'rare', s:'p', st:{aura:6,brain:3,vibes:5}, from:'Physics 4 · Gold',
+   d:'½mv² of pure swish.',
+   svg:`<g ${INK}><path d="M80 147 L120 147 L131 186 L69 186 Z" fill="#b91c1c"/></g>
+     <g stroke="#1e3a8a" stroke-width="3" opacity=".8"><path d="M86 147 L80 186 M100 147 L100 186 M114 147 L120 186 M77 160 L123 160 M74 174 L126 174"/></g>
+     <g stroke="#fde047" stroke-width="1"><path d="M93 147 L90 186 M107 147 L110 186 M75 167 L125 167"/></g>
+     <g ${INK} fill="none"><path d="M80 147 L120 147 L131 186 L69 186 Z"/><path d="M60 182 q-6 -6 0 -12 M140 182 q6 -6 0 -12" stroke-width="1.8"/></g>`},
+  /* ---------- shoes ---------- */
+  {id:'oddsocks', slot:'shoes', name:'Odd Socks', r:'common', st:{aura:0,brain:0,vibes:1}, from:'Starter outfit',
+   d:'One is red. One is a different red. Both are damp.',
+   svg:`<g ${INK}><ellipse cx="77" cy="214" rx="10" ry="5.5" fill="#dc2626"/><ellipse cx="123" cy="214" rx="10" ry="5.5" fill="#f87171"/>
+     <path d="M118 210 L118 218 M123 209 L123 219 M128 210 L128 218" stroke="#b91c1c" stroke-width="1.4"/></g>`},
+  {id:'brownian', slot:'shoes', name:'Socks of Brownian Motion', r:'uncommon', s:'p', st:{aura:2,brain:2,vibes:3}, from:'Mission drop',
+   d:'Random, jittery, never a matching pair.',
+   svg:`<g ${INK}><ellipse cx="77" cy="214" rx="10" ry="5.5" fill="#a855f7"/><ellipse cx="123" cy="214" rx="10" ry="5.5" fill="#22c55e"/></g>
+     <g fill="#fff"><circle cx="73" cy="213" r="1.6"/><circle cx="80" cy="215" r="1.6"/><circle cx="77" cy="211" r="1.2"/></g>
+     <g stroke="#fff" stroke-width="1.6"><path d="M117 214 L129 214"/></g>
+     <g stroke="#111" stroke-width="1.4" fill="none"><path d="M63 204 l3 -3 l-2 -3 l4 -2 M133 202 l3 2 l-1 4 l4 1 M88 224 l2 3 l3 -2"/></g>`},
+  {id:'grass', slot:'shoes', name:'Touch-Grass Boots', r:'rare', s:'b', st:{aura:5,brain:2,vibes:6}, from:'Biology 4 · Silver',
+   d:'Grass grows wherever you step. You were warned.',
+   svg:`<g ${INK}><path d="M72 200 L84 200 L85 210 Q92 211 92 218 L68 218 Q66 208 72 200 Z" fill="#365314"/><path d="M116 200 L128 200 L132 208 Q134 218 130 218 L108 218 Q108 211 115 210 Z" fill="#365314"/></g>
+     <g stroke="#22c55e" stroke-width="2.2" fill="none" stroke-linecap="round"><path d="M64 226 l2 -7 M70 226 l1 -9 M76 226 l3 -7 M84 226 l-1 -8 M90 226 l3 -6 M108 226 l-2 -7 M114 226 l1 -9 M120 226 l3 -7 M127 226 l-1 -8 M134 226 l2 -6"/></g>`},
+  {id:'frictionless', slot:'shoes', name:'Frictionless Slippers', r:'lowkey', s:'p', st:{aura:7,brain:1,vibes:6}, from:'Physics 1 · Gold',
+   d:'Stopping distance: yes.',
+   svg:`<g ${INK}><ellipse cx="78" cy="213" rx="13" ry="7" fill="#fbcfe8"/><ellipse cx="124" cy="213" rx="13" ry="7" fill="#fbcfe8"/>
+     <circle cx="86" cy="208" r="3" fill="#fff"/><circle cx="132" cy="208" r="3" fill="#fff"/></g>
+     <g stroke="#111" stroke-width="1.8" stroke-linecap="round"><path d="M56 210 L44 210 M58 216 L40 216 M102 210 L92 210 M104 216 L90 216"/></g>`},
+  /* ---------- left hand (character's left = viewer's right) ---------- */
+  {id:'crisps', slot:'lhand', name:'Empty Crisp Packet', r:'common', st:{aura:0,brain:0,vibes:-1}, from:'Starter outfit',
+   d:'Rustles menacingly. Contains air and regret.',
+   svg:`<g ${INK}><path d="M136 112 L160 108 L163 136 L139 140 Z" fill="#facc15"/><path d="M136 112 l3 -3 l3 3 l3 -3 l3 3 l3 -3 l3 3 l3 -3 l3 3 M139 140 l3 3 l3 -3 l3 3 l3 -3 l3 3 l3 -3 l3 3 l3 -3" fill="none" stroke-width="1.5"/>
+     <circle cx="150" cy="124" r="6" fill="#ef4444" stroke-width="1.5"/></g>`},
+  {id:'shield', slot:'lhand', name:'Periodic Table Shield', r:'rare', s:'c', st:{aura:4,brain:6,vibes:1}, from:'Chemistry 2 · Silver',
+   d:'The noble gases refuse to get involved.',
+   svg:`<g ${INK}><path d="M128 100 L170 100 L170 128 Q170 150 149 160 Q128 150 128 128 Z" fill="#fff"/></g>
+     <g stroke="#111" stroke-width=".8">${[0,1,2,3].map(r=>[0,1,2,3,4,5].map(c=>{const sk=(r===0&&c>0&&c<5);const col=c===5?'#a78bfa':c===0?'#f87171':c===4?'#34d399':'#fde68a';return sk?'':`<rect x="${132+c*5.6}" y="${106+r*7}" width="5" height="6" fill="${col}"/>`}).join('')).join('')}</g>
+     <g ${INK} fill="none"><path d="M128 100 L170 100 L170 128 Q170 150 149 160 Q128 150 128 128 Z"/></g>`},
+  {id:'clipboard', slot:'lhand', name:'Clipboard of Authority', r:'uncommon', st:{aura:4,brain:2,vibes:2}, from:'Mission drop',
+   d:'Nobody questions someone with a clipboard.',
+   svg:`<g ${INK}><rect x="134" y="104" width="30" height="40" rx="2" fill="#b45309"/><rect x="138" y="110" width="22" height="30" fill="#fff" stroke-width="1.4"/>
+     <rect x="143" y="100" width="12" height="7" rx="2" fill="#9ca3af"/><path d="M141 116 L157 116 M141 122 L157 122 M141 128 L152 128" stroke-width="1.2"/>
+     <path d="M141 134 l3 3 l6 -7" stroke="#16a34a" stroke-width="2" fill="none"/></g>`},
+  /* ---------- right hand (viewer's left) ---------- */
+  {id:'ruler', slot:'rhand', name:'Slightly Bent Ruler', r:'common', st:{aura:0,brain:1,vibes:0}, from:'Starter outfit',
+   d:'30 cm of pure intimidation. Well, 29.4 cm.',
+   svg:`<g ${INK}><path d="M60 126 Q44 112 34 92 L40 89 Q50 109 65 122 Z" fill="#fde68a"/>
+     <path d="M38 96 l3 -1.5 M42 103 l3 -2 M47 109 l3 -2 M52 115 l3 -2" stroke-width="1.2"/></g>`},
+  {id:'glove', slot:'rhand', name:'Newton\'s Third Glove', r:'rare', s:'p', st:{aura:6,brain:4,vibes:3}, from:'Physics 1 · Bronze',
+   d:'Every slap gets an equal and opposite slap.',
+   svg:`<g ${INK}><circle cx="52" cy="124" r="14" fill="#dc2626"/><path d="M62 132 Q66 138 64 142 L54 142 Q52 138 56 136" fill="#dc2626"/><path d="M44 116 Q50 112 56 118" fill="none" stroke="#fff" stroke-width="2"/></g>
+     <g stroke="#111" stroke-width="2" fill="#111"><path d="M34 106 L22 98" /><path d="M22 98 l6 0 l-3 5 z" stroke-width="1"/><path d="M70 106 L82 98"/><path d="M82 98 l-6 0 l3 5 z" stroke-width="1"/></g>`},
+  {id:'mito', slot:'rhand', name:'Mitochondria Gauntlet', r:'lowkey', s:'b', st:{aura:8,brain:5,vibes:6}, from:'Biology 2 · Gold',
+   d:'The powerhouse of the hand.',
+   svg:`<g ${INK}><ellipse cx="50" cy="122" rx="20" ry="12" fill="#fb923c" transform="rotate(-30 50 122)"/>
+     <path d="M36 128 q4 -10 8 -2 q4 -10 8 -2 q4 -10 8 -2" fill="none" stroke="#9a3412" stroke-width="2" transform="rotate(-30 50 122)"/></g>
+     <path d="M30 96 L24 108 L31 107 L26 119" fill="none" stroke="#facc15" stroke-width="3" stroke-linejoin="round"/>`},
+  {id:'pipette', slot:'rhand', name:'Pipette of Precise Disappointment', r:'uncommon', s:'c', st:{aura:1,brain:4,vibes:-1}, from:'Chemistry 2 · Bronze',
+   d:'Delivers exactly 25.0 cm³ of sadness.',
+   svg:`<g ${INK}><path d="M62 132 L30 100" stroke-width="5" stroke="#111"/><path d="M62 132 L30 100" stroke-width="2.6" stroke="#e0f2fe"/>
+     <ellipse cx="46" cy="116" rx="7" ry="5" fill="#e0f2fe" transform="rotate(45 46 116)"/><circle cx="66" cy="136" r="5" fill="#f9a8d4"/>
+     <path d="M27 103 q-3 6 0 8 q3 -2 0 -8z" fill="#38bdf8" stroke-width="1"/></g>`},
+  {id:'calc67', slot:'rhand', name:'The 6-7 Calculator', r:'unhinged', st:{aura:67,brain:-6,vibes:7}, from:'Mission drop (1 in 67)',
+   d:'Answers every question with “six… seven…”.',
+   svg:`<g ${INK}><rect x="32" y="102" width="28" height="38" rx="3" fill="#1f2937" transform="rotate(-12 46 121)"/>
+     <g transform="rotate(-12 46 121)"><rect x="35" y="105" width="22" height="9" fill="#bbf7d0" stroke-width="1"/>
+     <text x="46" y="112.5" font-size="8" font-weight="900" text-anchor="middle" fill="#111" stroke="none" font-family="monospace">6 7</text>
+     ${[0,1,2].map(r=>[0,1,2].map(c=>`<rect x="${36+c*7}" y="${118+r*6.5}" width="5" height="4.5" rx="1" fill="#9ca3af" stroke="none"/>`).join('')).join('')}</g></g>`},
+  /* ---------- legendaries ---------- */
+  {id:'syringe', slot:'rhand', name:'Syringe of Plot Armour', r:'legend', s:'b', legend:'Biology', holder:'Priya K. · 86 correct in the last 7 days', st:{aura:30,brain:10,vibes:10}, from:'Most correct Biology answers in the last 7 days',
+   d:'You cannot be written out of this storyline.',
+   svg:`<g ${INK}><g transform="rotate(-40 46 116)"><rect x="30" y="110" width="34" height="12" rx="2" fill="#e0f2fe"/><rect x="31" y="111" width="22" height="10" fill="#4ade80" stroke="none"/>
+     <rect x="64" y="113" width="8" height="6" fill="#9ca3af"/><path d="M72 116 L84 116" stroke-width="1.5"/>
+     <rect x="18" y="113" width="12" height="6" fill="#9ca3af"/><rect x="14" y="109" width="4" height="14" fill="#6b7280"/></g></g>
+     <g fill="#fde047" stroke="#111" stroke-width=".8"><path d="M26 96 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2z"/></g>`},
+  {id:'pebble', slot:'lhand', name:'The Philosopher\'s Pebble', r:'legend', s:'c', legend:'Chemistry', holder:'Leo M. · 71 correct in the last 7 days', st:{aura:30,brain:10,vibes:10}, from:'Most correct Chemistry answers in the last 7 days',
+   d:'Turns lead into slightly shinier lead.',
+   svg:`<g ${INK}><path d="M136 132 Q132 116 146 112 Q162 110 164 124 Q166 138 150 140 Q138 141 136 132 Z" fill="#a78bfa"/>
+     <path d="M142 120 Q148 116 154 119" fill="none" stroke="#fff" stroke-width="2"/></g>
+     <g fill="#fde047" stroke="#111" stroke-width=".8"><path d="M168 106 l2 -5 l2 5 l5 2 l-5 2 l-2 5 l-2 -5 l-5 -2z M130 104 l1.5 -3.5 l1.5 3.5 l3.5 1.5 l-3.5 1.5 l-1.5 3.5 l-1.5 -3.5 l-3.5 -1.5z"/></g>`},
+  {id:'dodgeball', slot:'lhand', name:'Definitely-Not-Uranium Dodgeball', r:'legend', s:'p', legend:'Physics', holder:'You! · 94 correct in the last 7 days', st:{aura:30,brain:10,vibes:10}, from:'Most correct Physics answers in the last 7 days',
+   d:'Half-life: one PE lesson.',
+   svg:`<circle cx="150" cy="122" r="20" fill="#bef264" opacity=".45"/>
+     <g ${INK}><circle cx="150" cy="122" r="15" fill="#84cc16"/><path d="M135 122 Q150 112 165 122 M135 122 Q150 132 165 122" fill="none" stroke-width="1.6"/></g>
+     <g fill="#111"><path d="M150 122 L146 114 A9 9 0 0 1 154 114 Z M150 122 L158 125 A9 9 0 0 1 154 131 Z M150 122 L146 131 A9 9 0 0 1 142 125 Z" transform="translate(0 0) scale(1)" opacity=".85"/></g>
+     <circle cx="150" cy="122" r="2.2" fill="#84cc16" stroke="#111" stroke-width="1"/>`},
+];
+/* locked examples: drawn, but shown as silhouettes */
+const LOCKED = ['halo','kilt','frictionless','mito','calc67','syringe','pebble'];
+
+/* ===================== STATE ===================== */
+const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
+const equipped = {head:'nocap', top:'labcoat', bottom:'inertia', shoes:'brownian', lhand:'shield', rhand:'glove'};
+let curSlot = 'all', STYLE = 'pixel';
+const pic = it => STYLE === 'pixel' && PIXEL.has(it.id) ? `<img class="px" src="${PIXEL.item(it.id)}" alt="">` : itemSVG(it);
+
+function figureSVG(eq) {
+  const g = s => eq[s] ? byId[eq[s]].svg : '';
+  return BODY_BACK + g('bottom') + g('shoes') + g('top') + ARMS + HEAD + g('head') + g('rhand') + g('lhand');
+}
+/* each picture is fitted to its own drawing: measure it once in a hidden SVG, then pad to a square */
+const BOX = {};
+const measure = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+measure.setAttribute('style', 'position:absolute;left:-9999px;width:200px;height:280px');
+measure.setAttribute('viewBox', '0 -40 200 280');
+document.body.appendChild(measure);
+function itemBox(it) {
+  if (BOX[it.id]) return BOX[it.id];
+  measure.innerHTML = `<g>${it.svg}</g>`;
+  const b = measure.firstChild.getBBox(), side = Math.max(b.width, b.height) + 12;
+  return BOX[it.id] = `${(b.x + b.width / 2 - side / 2).toFixed(1)} ${(b.y + b.height / 2 - side / 2).toFixed(1)} ${side.toFixed(1)} ${side.toFixed(1)}`;
+}
+function itemSVG(it) { return `<svg viewBox="${itemBox(it)}" aria-hidden="true">${it.svg}</svg>`; }
+function statsOf(eq) {
+  const t = {aura:0, brain:0, vibes:0};
+  Object.values(eq).forEach(id => { if (id) for (const k in t) t[k] += byId[id].st[k]; });
+  return t;
+}
+function setBonus(eq) {
+  const c = {b:0, c:0, p:0};
+  Object.values(eq).forEach(id => { const s = byId[id] && byId[id].s; if (s) c[s]++; });
+  const names = {b:'Certified Plant Whisperer', c:'Certified Lab Gremlin', p:'Certified Gravity Enjoyer'};
+  const best = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+  if (best[1] >= 3) return {title: names[best[0]], txt: `<b>Set bonus!</b> ${best[1]} ${SUBJ[best[0]]} items worn → title <b>“${names[best[0]]}”</b>`};
+  return {title: null, txt: `Wear 3 items from the same science for a set bonus. (Now: Biology ${c.b}, Chemistry ${c.c}, Physics ${c.p})`};
+}
+function render() {
+  const fig = document.getElementById('fig'), figPx = document.getElementById('figPx');
+  fig.innerHTML = figureSVG(equipped);
+  if (STYLE === 'pixel') { figPx.src = PIXEL.figure(equipped); figPx.style.display = ''; fig.style.display = 'none'; }
+  else { figPx.style.display = 'none'; fig.style.display = ''; }
+  document.getElementById('phFig').innerHTML = STYLE === 'pixel' ? `<image href="${PIXEL.figure(equipped)}" x="0" y="-40" width="200" height="280" style="image-rendering:pixelated" preserveAspectRatio="xMidYMid meet"/>` : figureSVG(equipped);
+  document.querySelectorAll('.pxbtns button').forEach(b => b.classList.toggle('on', b.dataset.style === STYLE));
+  const st = statsOf(equipped), max = 60;
+  document.getElementById('stats').innerHTML = [['Aura', st.aura, '#8b5cf6'], ['Brain Cells', st.brain, '#2563eb'], ['Vibes', st.vibes, '#ea580c']]
+    .map(([n, v, c]) => `<span>${n}</span><div class="bar"><i style="width:${Math.max(0, Math.min(100, v / max * 100))}%;background:${c}"></i></div><span>${v}</span>`).join('');
+  const sb = setBonus(equipped);
+  document.getElementById('setline').innerHTML = sb.txt;
+  document.getElementById('ptitle').textContent = `“${sb.title || 'Side Quest Enjoyer'}”`;
+  document.getElementById('slots').innerHTML = SLOTS.map(s => {
+    const it = byId[equipped[s.k]];
+    return `<button class="slot ${curSlot === s.k ? 'on' : ''}" data-slot="${s.k}"><div class="thumb">${pic(it)}</div><div><div class="lab">${s.name}</div><div class="nm">${it.name}</div></div></button>`;
+  }).join('');
+  document.getElementById('tabs').innerHTML = [{k:'all', name:'All'}, ...SLOTS].map(s => `<button class="tab ${curSlot === s.k ? 'on' : ''}" data-slot="${s.k}">${s.name}</button>`).join('');
+  const list = ITEMS.filter(i => curSlot === 'all' || i.slot === curSlot);
+  document.getElementById('inv').innerHTML = list.map(it => {
+    const locked = LOCKED.includes(it.id) && !it.legend || (it.legend && !it.holder.startsWith('You'));
+    const eq = equipped[it.slot] === it.id;
+    const slotName = SLOTS.find(s => s.k === it.slot).name;
+    return `<button class="item r-${it.r} ${locked ? 'locked' : ''} ${eq ? 'eq' : ''}" data-id="${it.id}" ${locked ? 'aria-disabled="true"' : ''}>
+      <div class="pic">${pic(it)}</div>
+      <div class="rar">${RAR[it.r]} · ${slotName}</div>
+      <div class="nm">${locked && !it.legend ? '???' : it.name}</div>
+      ${locked && !it.legend ? `<div class="how">🔒 ${it.from}</div>` : `<div class="ds">${it.d}</div>`}
+      ${it.legend ? `<div class="legend-holder">👑 Held by ${it.holder}</div>` : ''}
+      ${locked ? '' : `<div class="st">Aura ${sgn(it.st.aura)} · Brain ${sgn(it.st.brain)} · Vibes ${sgn(it.st.vibes)} · <span style="font-weight:400">${it.from}</span></div>`}
+    </button>`;
+  }).join('');
+}
+const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
+document.getElementById('rkey').innerHTML = Object.entries(RAR).map(([k, v]) => `<span class="key r-${k}">${v}</span>`).join('');
+document.addEventListener('click', e => {
+  const st = e.target.closest('[data-style]');
+  if (st) { STYLE = st.dataset.style; render(); return; }
+  const s = e.target.closest('[data-slot]');
+  if (s) { curSlot = s.dataset.slot; render(); return; }
+  const it = e.target.closest('.item');
+  if (it && !it.classList.contains('locked')) { const x = byId[it.dataset.id]; equipped[x.slot] = x.id; render(); }
+});
+
+/* ===================== BADGES ===================== */
+const TOPICS = [
+  ['b', 'B1', 'Living organisms'], ['b', 'B2', 'Structure & function'], ['b', 'B3', 'Reproduction & inheritance'], ['b', 'B4', 'Ecology'], ['b', 'B5', 'Biological resources'],
+  ['c', 'C1', 'Principles of chemistry'], ['c', 'C2', 'Inorganic chemistry'], ['c', 'C3', 'Physical chemistry'], ['c', 'C4', 'Organic chemistry'],
+  ['p', 'P1', 'Forces & motion'], ['p', 'P2', 'Electricity'], ['p', 'P3', 'Waves'], ['p', 'P4', 'Energy'], ['p', 'P5', 'Solids, liquids & gases'], ['p', 'P6', 'Magnetism'], ['p', 'P7', 'Radioactivity'], ['p', 'P8', 'Astrophysics']];
+const PROG = {B1:100, B2:41, B3:8, B4:0, B5:0, C1:72, C2:30, C3:0, C4:0, P1:66, P2:25, P3:100, P4:12, P5:0, P6:0, P7:58, P8:0};
+const SCOL = {b:'#005e22', c:'#c8001e', p:'#d08000'};
+const ICON = {
+  B1:'<path d="M0 8 Q-9 -2 0 -10 Q9 -2 0 8 M0 8 L0 -6" />', B2:'<circle r="9"/><circle r="3.5" cx="2" cy="-1"/>', B3:'<path d="M-6 -10 Q6 -5 -6 0 Q6 5 -6 10 M6 -10 Q-6 -5 6 0 Q-6 5 6 10"/>',
+  B4:'<path d="M-10 6 L-3 -6 L2 2 L5 -3 L10 6 Z"/>', B5:'<path d="M-7 8 L-4 -6 L4 -6 L7 8 Z M-5 0 L5 0"/>',
+  C1:'<circle r="3"/><ellipse rx="10" ry="4"/><ellipse rx="10" ry="4" transform="rotate(60)"/><ellipse rx="10" ry="4" transform="rotate(-60)"/>', C2:'<rect x="-9" y="-9" width="8" height="8"/><rect x="1" y="-9" width="8" height="8"/><rect x="-9" y="1" width="8" height="8"/><rect x="1" y="1" width="8" height="8"/>',
+  C3:'<path d="M-3 -10 L-3 -2 L-9 9 L9 9 L3 -2 L3 -10 Z"/>', C4:'<path d="M0 -10 L9 -5 L9 5 L0 10 L-9 5 L-9 -5 Z"/>',
+  P1:'<path d="M-10 0 L8 0 M3 -5 L9 0 L3 5"/>', P2:'<path d="M2 -11 L-5 1 L1 1 L-2 11 L6 -2 L0 -2 Z"/>', P3:'<path d="M-11 0 Q-8 -8 -5 0 Q-2 8 1 0 Q4 -8 7 0 Q10 8 12 0"/>',
+  P4:'<path d="M0 -10 Q7 -2 4 5 Q2 10 0 10 Q-6 10 -6 3 Q-6 -2 0 -10 Z"/>', P5:'<circle r="2.5" cx="-5" cy="-4"/><circle r="2.5" cx="5" cy="-2"/><circle r="2.5" cx="-2" cy="6"/><circle r="2.5" cx="7" cy="7"/>',
+  P6:'<path d="M-8 -9 L-8 2 A8 8 0 0 0 8 2 L8 -9 M-8 -4 L-3 -4 M3 -4 L8 -4"/>', P7:'<circle r="2.5"/><path d="M0 -3 L-4 -10 A11 11 0 0 1 4 -10 Z M2.6 1.5 L10 3 A11 11 0 0 1 6 9 Z M-2.6 1.5 L-6 9 A11 11 0 0 1 -10 3 Z"/>',
+  P8:'<path d="M0 -10 L2.5 -3 L10 -3 L4 2 L6 9 L0 5 L-6 9 L-4 2 L-10 -3 L-2.5 -3 Z"/>'};
+const TIER = p => p >= 100 ? 'gold' : p >= 60 ? 'silver' : p >= 25 ? 'bronze' : 'none';
+const TCOL = {gold:['#f5c842', '#b8860b'], silver:['#e5e7eb', '#9ca3af'], bronze:['#e0a16a', '#9a5b2a'], none:['#f3f3f3', '#c8c8c8']};
+function badgeSVG(code, subj, prog, tier) {
+  const [face, rim] = TCOL[tier]; const lock = tier === 'none';
+  const C = 2 * Math.PI * 44, dash = C * Math.min(prog, 100) / 100;
+  const stars = {bronze:1, silver:2, gold:3, none:0}[tier];
+  return `<svg viewBox="0 0 100 114" aria-hidden="true">
+    <circle cx="50" cy="50" r="44" fill="none" stroke="#eee" stroke-width="6"/>
+    <circle cx="50" cy="50" r="44" fill="none" stroke="${SCOL[subj]}" stroke-width="6" stroke-dasharray="${dash} ${C}" ${prog ? '' : 'stroke-opacity="0"'} transform="rotate(-90 50 50)" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="35" fill="${face}" stroke="${rim}" stroke-width="4" ${lock ? 'stroke-dasharray="4 4"' : ''}/>
+    <circle cx="50" cy="50" r="25" fill="${lock ? '#fafafa' : SCOL[subj]}" stroke="#111" stroke-width="2"/>
+    <g transform="translate(50 46)" fill="none" stroke="${lock ? '#bbb' : '#fff'}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">${ICON[code]}</g>
+    <text x="50" y="69" font-size="9" font-weight="900" text-anchor="middle" fill="${lock ? '#bbb' : '#fff'}" font-family="Arial">${code}</text>
+    ${[...Array(stars)].map((_, i) => `<path transform="translate(${50 + (i - (stars - 1) / 2) * 13} 106) scale(.55)" d="M0 -10 L2.9 -3.1 L10 -3.1 L4.3 1.2 L6.2 8.4 L0 4 L-6.2 8.4 L-4.3 1.2 L-10 -3.1 L-2.9 -3.1 Z" fill="${rim}" stroke="#111" stroke-width="1.5"/>`).join('')}
+  </svg>`;
+}
+document.getElementById('tiers').innerHTML = [['none', 'Not started', 0], ['bronze', 'Bronze · 25%', 30], ['silver', 'Silver · 60%', 66], ['gold', 'Gold · 100%', 100]]
+  .map(([t, l, p]) => `<figure>${badgeSVG('P1', 'p', p, t)}<figcaption>${l}</figcaption></figure>`).join('') +
+  `<p class="note" style="max-width:340px;margin:0">The coloured ring shows how much of the topic's spec points are secured; the medal colour and stars show the tier. Each upgrade also unlocks an item.</p>`;
+const subjectBadge = (s, done) => `<div class="badge"><svg viewBox="0 0 100 100" aria-hidden="true">
+  <path d="M50 6 L88 22 L88 52 Q88 80 50 94 Q12 80 12 52 L12 22 Z" fill="${done ? SCOL[s] : '#f3f3f3'}" stroke="${done ? '#b8860b' : '#c8c8c8'}" stroke-width="5" ${done ? '' : 'stroke-dasharray="5 4"'}/>
+  <text x="50" y="58" font-size="22" font-weight="900" text-anchor="middle" fill="${done ? '#fff' : '#bbb'}" font-family="Arial">${s.toUpperCase()}</text>
+  <text x="50" y="76" font-size="9" font-weight="700" text-anchor="middle" fill="${done ? '#fde68a' : '#bbb'}" font-family="Arial">ALL GOLD</text></svg>
+  <div class="tn">${SUBJ[s]} Master</div><div class="pr">${done ? 'Earned' : 'Every ' + SUBJ[s] + ' topic at Gold'}</div></div>`;
+document.getElementById('shelf').innerHTML = TOPICS.map(([s, code, name]) => {
+  const p = PROG[code], t = TIER(p);
+  return `<div class="badge">${badgeSVG(code, s, p, t)}<div class="tn">${name}</div>
+    <div class="tt" style="color:${TCOL[t][1]}">${t === 'none' ? 'Not yet' : t}</div><div class="pr">${p}% of points secured</div></div>`;
+}).join('') + ['b', 'c', 'p'].map(s => subjectBadge(s, false)).join('');
+
+/* ===================== TITLES ===================== */
+const TITLES = [['Side Quest Enjoyer', 1, 'first mission'], ['Certified Lab Gremlin', 1, 'Chemistry set bonus'], ['7-Day Streak Enjoyer', 1, '7 days in a row'],
+  ['Touched Grass (Academically)', 1, 'a Biology topic at Gold'], ['Unc of the Spec', 0, '100 points secured'], ['Main Character (Revised)', 0, '500 correct answers'],
+  ['Aura Farmer', 0, 'wear 3 Rare items at once'], ['Final Boss of Double Award', 0, 'all 3 subject badges']];
+document.getElementById('titles').innerHTML = TITLES.map(([t, got, how]) => `<span class="${got ? '' : 'lock'}" title="${how}">${got ? '“' + t + '”' : '🔒 ' + t + ' — ' + how}</span>`).join('');
+
+/* ===================== MISSION ===================== */
+const ENEMIES = [
+  {say:'“Heavy things fall faster.”', topic:'Physics 1', col:'#a3e635', hit:['Stopping distance question: correct', 'Weight = mass × g: correct', 'Terminal velocity: correct'], miss:'Free-fall speeds: wrong — the Misconception gloats', loot:'frictionless'},
+  {say:'“Plants get their food from the soil.”', topic:'Biology 2', col:'#fb7185', hit:['Photosynthesis equation: correct', 'Limiting factors: correct', 'Role of chlorophyll: correct'], miss:'Mineral ions: wrong — it absorbs a nitrate and grows', loot:'grass'},
+  {say:'“Atoms are destroyed when things burn.”', topic:'Chemistry 1', col:'#60a5fa', hit:['Conservation of mass: correct', 'Balancing equations: correct', 'Moles of product: correct'], miss:'Relative formula mass: wrong — it does a smug little dance', loot:'avogadro'},
+];
+let ei = 0, timers = [];
+function monsterSVG(col, hurt) {
+  return `<g stroke="#111" stroke-width="3" stroke-linejoin="round">
+    <path d="M40 150 Q20 150 24 116 Q20 70 60 52 Q100 30 140 52 Q180 70 176 116 Q180 150 160 150 Q150 140 140 150 Q128 140 116 150 Q104 140 92 150 Q80 140 68 150 Q56 140 40 150 Z" fill="${col}"/>
+    <ellipse cx="78" cy="92" rx="13" ry="${hurt ? 3 : 15}" fill="#fff"/><ellipse cx="124" cy="92" rx="13" ry="${hurt ? 3 : 15}" fill="#fff"/>
+    ${hurt ? '' : '<circle cx="82" cy="96" r="5" fill="#111" stroke="none"/><circle cx="120" cy="96" r="5" fill="#111" stroke="none"/>'}
+    <path d="${hurt ? 'M84 130 Q101 118 118 130' : 'M80 122 Q101 138 122 122'}" fill="none"/>
+    <path d="M62 64 L52 40 M140 64 L150 40" fill="none"/><circle cx="52" cy="38" r="5" fill="${col}"/><circle cx="150" cy="38" r="5" fill="${col}"/>
+    ${hurt ? '<path d="M30 60 l10 6 M170 60 l-10 6 M100 20 l0 10" stroke-width="2"/>' : ''}</g>`;
+}
+function setEnemy() {
+  const E = ENEMIES[ei];
+  document.getElementById('say').textContent = E.say;
+  document.getElementById('monsterSvg').innerHTML = monsterSVG(E.col, false);
+  document.querySelector('.monster > div:nth-of-type(2)').textContent = 'Wild Misconception · ' + E.topic;
+  document.getElementById('hp').innerHTML = '<i></i>'.repeat(10);
+  document.getElementById('log').innerHTML = '<p style="opacity:1">Press “Play mission result”.</p>';
+  document.getElementById('dropBox').innerHTML = '';
+}
+function play() {
+  timers.forEach(clearTimeout); timers = [];
+  const E = ENEMIES[ei], log = document.getElementById('log'), hp = [...document.querySelectorAll('#hp i')];
+  hp.forEach(h => h.classList.remove('gone')); document.getElementById('dropBox').innerHTML = '';
+  document.getElementById('monsterSvg').innerHTML = monsterSVG(E.col, false);
+  log.innerHTML = '';
+  const seq = [['', `A wild Misconception appears: ${E.say}`]];
+  const results = [1, 1, 0, 1, 1, 1, 0, 1, 0, 1];
+  let h = 0, k = 0;
+  results.forEach((ok, i) => {
+    seq.push([ok ? 'ok' : 'no', ok ? `Q${i + 1} · ${E.hit[k++ % E.hit.length]}. It loses 1 HP.` : `Q${i + 1} · ${E.miss}.`]);
+    if (ok) seq.push(['hp', h++]);
+  });
+  seq.push(['', `7 / 10 correct. The Misconception flees, muttering “${E.say.replace(/[“”]/g, '')}”.`]);
+  seq.push(['loot', `Loot dropped: ${byId[E.loot].name}!`]);
+  let t = 0;
+  seq.forEach(([cls, txt]) => {
+    t += cls === 'hp' ? 0 : 420;
+    timers.push(setTimeout(() => {
+      if (cls === 'hp') { hp[txt].classList.add('gone'); if (txt === 6) document.getElementById('monsterSvg').innerHTML = monsterSVG(E.col, true); return; }
+      log.insertAdjacentHTML('beforeend', `<p class="${cls}">${txt}</p>`);
+      if (cls === 'loot') {
+        const it = byId[E.loot];
+        document.getElementById('dropBox').innerHTML = `<div class="drop r-${it.r}"><div class="pic">${pic(it)}</div>
+          <div><div class="rar" style="color:var(--r);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px">${RAR[it.r]} · ${SLOTS.find(s => s.k === it.slot).name}</div>
+          <div style="font-weight:700;font-size:20px;line-height:1.1">${it.name}</div><div style="font-style:italic">${it.d}</div></div></div>`;
+      }
+    }, t));
+  });
+}
+document.getElementById('replay').onclick = play;
+document.getElementById('nextEnemy').onclick = () => { ei = (ei + 1) % ENEMIES.length; timers.forEach(clearTimeout); setEnemy(); };
+
+/* phone mock */
+document.getElementById('phDropName').textContent = byId.brownian.name;
+document.getElementById('phDropDesc').textContent = byId.brownian.d;
+document.getElementById('phDrop').outerHTML = `<div style="width:90px;height:90px;flex:none">${pic(byId.brownian)}</div>`;
+
+setEnemy(); render();
+document.getElementById('lineup').innerHTML = [
+  ['paperhat','jumper','joggers','oddsocks','crisps','ruler'], ['avogadro','chainmail','kilt','grass','pebble','syringe'],
+  ['halo','npc','inertia','frictionless','dodgeball','calc67'], ['delulu','labcoat','kilt','brownian','clipboard','mito'],
+  ['nocap','jumper','joggers','grass','shield','pipette']].map(o => { const eq = {}; o.forEach(id => eq[byId[id].slot] = id);
+  return `<img class="px" src="${PIXEL.figure(eq)}" alt="">`; }).join('');
+</script>
+</body>
+</html>

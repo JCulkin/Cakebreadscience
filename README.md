@@ -205,6 +205,11 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-11-09 - v3.1.0 Cakebread Questing, Shared Leaderboards & Question Booklets
+- **Cakebread Questing** replaces the Spec Quiz: pixel adventurer, Base camp, missions as fights, wardrobe and loot, all on real progress saved to the student's Google account; Breadventure Land map as a preview; Quick quiz for the board
+- Shared leaderboards with Google sign-in names for every game, plus a combined `/leaderboards/` page
+- Question Booklets page; Google sign-in at the top right of the homepage
+
 ### 2026-11-07 - v3.0.0 New Homepage, Spec Quiz & Classroom Games
 - New homepage with featured games, interactives by subject and a Resources section
 - **Spec Quiz**: 1,805 questions on the whole Double Award spec; solo, team (projector) and Campaign modes with ranks, badges and leaderboards; report-a-question button

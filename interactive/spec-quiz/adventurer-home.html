@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Base camp - Cakebread Questing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
+<style>
+.camp{display:grid;grid-template-columns:1fr;gap:14px;margin-top:6px}
+@media(min-width:880px){.camp{grid-template-columns:300px 1fr}}
+.me{text-align:center;align-self:start}
+@media(min-width:880px){.me{position:sticky;top:56px}}
+.me .ttl{font-style:italic;color:var(--muted);font-size:14px}
+.me img.fig{width:180px;display:block;margin:4px auto}
+.nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1}
+.lvl{font-weight:700;margin-top:4px;display:flex;justify-content:space-between;font-size:15px}
+.xp{height:10px;border:2px solid var(--ink);background:var(--soft);position:relative;margin-top:2px}
+.xp i{position:absolute;inset:0 auto 0 0;background:#8b5cf6}
+.cap{font-size:12px;color:var(--muted);text-align:left;margin-top:3px}
+.me .links{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.me .links .btn{padding:5px 10px;font-size:14px}
+.today h2{margin-bottom:4px}
+.todo{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;margin-top:10px}
+.todo .ic{width:64px;height:64px;display:grid;place-items:center;border:2px solid var(--ink);background:var(--soft)}
+.todo .ic img{width:48px;height:48px}
+.todo b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1;display:block}
+.todo p{font-size:15px;color:var(--muted);margin-top:2px}
+.todo.main{border-left:10px solid #b45309}
+.todo.done{opacity:.65}
+.todo .tick{display:inline-block;background:var(--green);color:#fff;font-size:12px;font-weight:700;padding:1px 6px;margin-left:6px;vertical-align:4px;font-family:Barlow,Arial}
+@media(max-width:560px){.todo{grid-template-columns:auto 1fr}.todo .btn{grid-column:1/-1}}
+.rep{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:#111;color:#e5e5e5;padding:8px 12px;margin-top:8px;max-height:110px;overflow:hidden;position:relative}
+.rep p{margin:2px 0}.rep .good{color:#86efac}.rep .bad{color:#fca5a5}.rep .lt{color:#fde047}.rep .new{color:#93c5fd}
+.rep::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(#1110,#111)}
+.grid2{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@media(min-width:700px){.grid2{grid-template-columns:1fr 1fr}}
+.sci{margin-top:10px}
+.sci .top{display:flex;justify-content:space-between;font-weight:700;font-size:15px}
+.sci .bar{height:14px}
+.sci small{color:var(--muted);font-size:12px}
+.loot{display:flex;gap:12px;align-items:center;margin-top:6px}
+.quest{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-left:10px solid #7c3aed;margin-bottom:10px;background:#fbf7ff}
+.quest .cage{position:relative;width:86px;height:96px;background:#e8edf3;border:2px solid #111;display:grid;place-items:end center}
+.quest .cage img{width:70px;image-rendering:pixelated}
+.quest .cage i{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 11px,#334155 11px 14px)}
+.quest .k{font-size:22px;letter-spacing:4px;margin:4px 0}
+.quest .mk{font-size:12px;color:#777;margin-top:4px}.quest .mk button{font:inherit;background:none;border:1px solid #aaa;padding:1px 6px;cursor:pointer}
+.loot img{width:72px;height:72px;background:var(--soft);border-radius:10px;padding:4px;flex:none}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Cakebread Questing · Base camp</span></header>
+<main class="wrap">
+  <div class="camp">
+    <div class="card me">
+      <div class="nm" id="nm"></div>
+      <div class="ttl" id="ttl">“Certified Gravity Enjoyer”</div>
+      <img class="px fig" id="fig" alt="Your adventurer">
+      <div class="lvl"><span id="lvl"></span><span id="xpTxt" class="small"></span></div>
+      <div class="xp"><i id="xpbar"></i></div>
+      <div class="cap" id="cap"></div>
+      <div id="stats"></div>
+      <div class="links"><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a><a class="btn alt" href="adventurer-create.html">✏️ My look</a></div>
+    </div>
+
+    <div>
+      <div class="today">
+        <h2 id="dayTitle">Today</h2>
+        <div class="card quest" id="quest"></div>
+        <div class="card todo main" id="tMission">
+          <div class="ic"><img class="px" id="enemyIc" alt=""></div>
+          <div><b>Today's mission <span class="tick" id="mDone" hidden>Done</span></b><p id="mText"></p></div>
+          <a class="btn gold big" href="adventurer-mission.html" id="mBtn">Start →</a>
+        </div>
+        <div class="card todo" id="tMap">
+          <div class="ic"><img class="px" id="mapIc" alt=""></div>
+          <div><b>Breadventure Land · opens soon</b><p>The map where your class sets out to free the Professor. Take a look around the preview; your strength, health and magic will count there.</p></div>
+          <a class="btn green" href="adventurer-map.html">Preview →</a>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <h3 style="margin-top:0">Spec points secured</h3>
+          <div id="sci"></div>
+          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days. Each one adds 1 to its stat for good.</p>
+          <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="showMe"> Show me on the class leaderboards</label>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0" id="lootTitle">Newest loot</h3>
+          <div id="loot"></div>
+          <h3>Brews</h3>
+          <div id="brews" style="font-size:15px"></div>
+          <p class="small">🪙 <span id="coins"></span> coins from missions. Brews and the Tuck Shop arrive with Breadventure Land.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('home');
+const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats();
+$('nm').textContent = ADV.nick();
+$('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
+const l = s.l, cap = ADV.levelCap(), cur = ADV.xpFor(l), next = ADV.xpFor(l + 1);
+$('lvl').textContent = `Level ${l}`;
+$('xpTxt').textContent = `${S.xp - cur} / ${next - cur} XP`;
+$('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
+const toNextCap = 8 - ADV.securedTotal() % 8;
+$('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
+  : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
+$('stats').innerHTML = [['💪 Strength', s.str, 'str', `Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
+  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
+  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · spells coming`, s.mag / 70]]
+  .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
+
+$('dayTitle').textContent = `Today · day ${S.day}`;
+function renderQuest() {
+  const k = ADV.keys(), q = $('quest');
+  if (S.chapter < 2) q.innerHTML = `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>
+    <div><span class="kick" style="color:#7c3aed">Chapter 1 · The class quest</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">Free the Professor</b>
+    <div class="k">${[0, 1, 2].map(i => `<span style="opacity:${i < k ? 1 : .22}">🔑</span>`).join('')}</div>
+    <div class="small" style="color:#333">${ADV.DRAGON} the dragon has the Professor locked in a cage in its lair. Win the key pieces from the <b>Spore Lord</b>, the <b>Stone Golem</b> and the <b>Acid Hydra</b> as a class, in Breadventure Land (opens soon). Get strong first: every spec point you secure counts.</div>
+    <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
+  else q.innerHTML = `<div class="cage" style="background:#fff7d6"><img src="${ADV.icon('prof')}" alt="The Professor"></div>
+    <div><span class="kick" style="color:#7c3aed">Chapter 2 · The monsters wake</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">The Professor is back</b>
+    <div class="small" style="color:#333;margin-top:4px"><i>“Right. The Superbug, the Rust Wyrm and whatever crawled out of that old reactor. Revise, then go and sort them out.”</i></div>
+    <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
+  $('replayIntro').onclick = () => ADV.storyIntro();
+}
+renderQuest();
+if (!S.storySeen) ADV.storyIntro();
+$('enemyIc').src = ADV.icon('boss', '#d97706');
+$('mapIc').src = ADV.icon('crumbs');
+if (S.missionsToday) {
+  $('tMission').classList.add('done'); $('mDone').hidden = false;
+  $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
+  $('mBtn').textContent = 'Another →'; $('mBtn').classList.remove('gold', 'big');
+} else { const sg = QE.suggestion(); $('mText').textContent = `10 questions against a misconception. Get questions right first time on two different days to secure spec points.${sg ? ` Suggested: ${sg.subj} ${sg.key.slice(1)} ${sg.name}.` : ''}`; }
+
+$('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], ['p', 'Physics', 'Strength']].map(([k, n, st]) =>
+  `<div class="sci"><div class="top"><span style="color:var(--${k})">${n}</span><span>${S.secured[k]} / ${ADV.TOTAL[k]}</span></div><div class="bar"><i style="width:${S.secured[k] / ADV.TOTAL[k] * 100}%;background:var(--${k})"></i></div><small>→ ${st}</small></div>`).join('');
+
+const it = S.lastLoot && ADV_ITEMS.find(i => i.id === S.lastLoot);
+if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.item(it.id)}" alt=""><div><b>${it.name}</b><br><span class="small">${ADV_RARITY[it.r]} · ${it.d}</span><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`;
+else { $('lootTitle').textContent = 'Loot'; $('loot').innerHTML = `<p style="font-size:15px">Every mission drops an item. Finish today's mission to see what you get.</p>`; }
+$('brews').innerHTML = Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `🧪 ${n} ×${q}`).join('<br>') || 'None';
+$('coins').textContent = S.coins;
+$('showMe').checked = !QE.prog.hide;
+$('showMe').onchange = () => QE.setHide(!$('showMe').checked);
+</script>
+</body>
+</html>

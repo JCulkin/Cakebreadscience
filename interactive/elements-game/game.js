@@ -91,36 +91,10 @@ function soloBreakdown(){if(SOLO.ids[0]!=='random')return SOLO.per.map(p=>({name
   const by={};SOLO.cur.qs.forEach((q,i)=>{if(i>SOLO.cur.qi)return;const r=ROUNDS.find(x=>x.id===q.round);const k=r?r.name:q.round;by[k]=by[k]||{name:k,score:0,max:0};by[k].max+=100;by[k].score+=q._pts||0;});
   return Object.values(by);}
 
-/* ===================== HIGH SCORES ===================== */
-const S=window.EScores;
-const BOARDS=['s1_rounds','s1_random','s2_rounds','s2_random','all_rounds','all_random'];
-function listHtml(list,me){return list.length?`<ol>${list.map((e,i)=>`<li class="${me&&i===me-1?'me':''}"><span class="rk">${i+1}</span><span class="nm">${esc(e.name)}</span><span class="sc">${e.score}</span></li>`).join('')}</ol>`:'<div class="empty">No scores yet. Be the first!</div>';}
-function showBoard(el,board,o={}){if(!el)return;if(!S||!S.online()){el.innerHTML='';return;}
-  const tok=Math.random();el.dataset.tok=tok;el.innerHTML=`<div class="hs"><h3>${o.title||'Top 10'}</h3><div class="small">Loading…</div></div>`;
-  S.get(board).then(l=>{if(el.dataset.tok!=tok)return;el.innerHTML=`<div class="hs"><h3>${o.title||'Top 10'}</h3>${listHtml(l,o.me)}</div>`;})
-   .catch(()=>{if(el.dataset.tok!=tok)return;el.innerHTML=`<div class="hs"><h3>${o.title||'Top 10'}</h3><div class="empty">Couldn’t load the high scores (no connection?).</div></div>`;});}
-function resultsBoard(board,score){const el=$('hsArea');if(!el||!S||!S.online())return;el.innerHTML='<div class="hs small">Checking the Top 10…</div>';
-  S.get(board).then(list=>{
-    if(!S.qualifies(list,score)){el.innerHTML=`<div class="hs"><h3>Top 10 · ${S.boardName(board)}</h3>${listHtml(list)}</div>`;return;}
-    const rank=list.filter(e=>e.score>=score).length+1;
-    el.innerHTML=`<div class="hsform"><b>🎉 You made the Top 10! (#${rank})</b><div class="small">${S.boardName(board)}</div>
-      <div class="row"><input id="hsName" maxlength="20" placeholder="Your name" autocomplete="off" aria-label="Your name"><button class="btn green" id="hsSave">Save score</button></div><div class="msg" id="hsMsg"></div></div>
-      <div class="hs"><h3>Top 10 now</h3>${listHtml(list)}</div>`;
-    const inp=$('hsName'),btn=$('hsSave'),msg=$('hsMsg');inp.value=store.get('hsname')||'';inp.focus({preventScroll:true});
-    const go=()=>{const n=S.clean(inp.value);if(!n){msg.textContent='Type your name first.';return;}if(S.rude(n)){msg.textContent='Choose a different name.';return;}
-      btn.disabled=true;msg.textContent='';store.set('hsname',n);
-      S.save(board,n,score).then(r=>{el.innerHTML=`<div class="hs"><h3>${r.rank?`Saved: you’re #${r.rank}!`:'Saved, but you’ve already been pushed out of the Top 10!'}</h3>${listHtml(r.list,r.rank)}</div>`;})
-       .catch(()=>{btn.disabled=false;msg.textContent='Couldn’t save (no connection?). Try again.';});};
-    btn.onclick=go;inp.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();go();}};})
-   .catch(()=>{el.innerHTML='<div class="hs small">Couldn’t reach the high scores (no connection?).</div>';});}
-let HSB='s1_rounds';
-function hiscores(){const box=$('hiscores');
-  box.innerHTML=`<a class="back" href="#" id="hsBack">← Menu</a><h1>High scores</h1><p class="lede">Top 10 for each solo setup. Single-round practice and team games aren’t ranked.</p>
-    <div class="hsboards">${BOARDS.map(b=>`<button class="chip ${b===HSB?'on':''}" data-b="${b}">${S?S.boardName(b):b}</button>`).join('')}</div><div id="hsList"></div>`;
-  box.querySelector('#hsBack').onclick=ev=>{ev.preventDefault();menu();};
-  box.querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{HSB=b.dataset.b;hiscores();});
-  if(!S||!S.online())$('hsList').innerHTML='<div class="hs"><div class="empty">High scores need an internet connection.</div></div>';else showBoard($('hsList'),HSB,{title:S.boardName(HSB)});
-  show('hiscores');}
+/* ===================== HIGH SCORES (shared site leaderboards: /js/leaderboards.js, sign in with Google) ===================== */
+function showBoard(el,board,o={}){if(!el||!window.LB)return;LB.panel(el,'elements_'+board,{title:o.title});}
+function resultsBoard(board,score){const el=$('hsArea');if(!el||!window.LB)return;LB.panel(el,'elements_'+board,{score,title:'Leaderboard · '+LB.boardLabel('elements_'+board).replace('Elements 1–20 · ','')});}
+function hiscores(){location.href='/leaderboards/#elements';}
 
 /* ===================== SOLO SETUP ===================== */
 function soloSetup(){const s=store.get('solocfg')||{content:'s1',order:'rounds'};const box=$('solosetup');

@@ -220,7 +220,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
       <button class="bigmode" id="soloBtn" style="--c:#005e22"><h3>Solo</h3><p>Full game (5 random rounds), marathon (all 9) or practise one round.</p></button>
       <button class="bigmode" id="playTeam" style="--c:#d62828"><h3>Team game</h3><p>For the whole class on the board: 2–6 teams take turns, scoreboard and podium.</p></button>
     </div>
-    <p style="margin-top:16px;font-weight:700"><a href="gallery.html" style="color:var(--green)">🔬 Gallery</a> <span class="small" style="font-weight:400">every cell in the game, to study before you play</span></p>
+    <p style="margin-top:16px;font-weight:700"><a href="/leaderboards/#cell" style="color:var(--green)">🏆 Leaderboards</a> &nbsp; <a href="gallery.html" style="color:var(--green)">🔬 Gallery</a> <span class="small" style="font-weight:400">every cell in the game, to study before you play</span></p>
     <p class="credits">Spec: Edexcel International GCSE Science (Double Award) Biology 1.2–1.3 and 2.2–2.4. Diagrams and "under the microscope" views are drawn for this site. Includes 108 openly licensed microscope photos from Wikimedia Commons. <a href="credits.html">Photo credits</a></p>
   </section>
 
@@ -242,6 +242,7 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
       <button class="btn big alt" id="playAll">Marathon · all 9 rounds</button>
     </div>
     <p class="small" id="bestLine"></p>
+    <div id="soloBoard"></div>
     <h2 style="margin-top:24px">Or pick a round</h2>
     <div class="rounds" id="roundList"></div>
   </section>
@@ -250,6 +251,11 @@ td.r{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/leaderboards.js"></script>
 <script src="cells.js"></script>
 <script src="img/wiki/photos.js"></script>
 <script src="game.js"></script>

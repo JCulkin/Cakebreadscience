@@ -612,6 +612,20 @@ document.getElementById("printMS").addEventListener("click", () => {
   buildCovers("ms");
   window.print();
 });
+
+// Links from the Question Booklets page: ?print=worksheet | guided | ms opens the print dialog.
+(() => {
+  const mode = new URLSearchParams(location.search).get("print");
+  if (!["worksheet", "guided", "ms"].includes(mode)) return;
+  const go = () => setTimeout(() => {
+    if (mode === "ms") document.getElementById("printMS").click();
+    else {
+      document.getElementById("printGuide").checked = mode === "guided";
+      document.getElementById("printWorksheet").click();
+    }
+  }, 300);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); else window.addEventListener("load", go);
+})();
 </script>
 </body>
 </html>
