@@ -125,11 +125,11 @@ if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
   $('mBtn').textContent = 'Another →'; $('mBtn').classList.remove('gold', 'big');
-} else $('mText').textContent = '10 questions against a misconception. Suggested today: Physics 3b Properties of waves.';
+} else $('mText').textContent = '10 questions against a misconception. Your first one today earns +1 move on the map. Suggested: Physics 3b Properties of waves.';
 const left = S.moves - S.plan.length;
-$('moveText').textContent = left > 0 ? `${left} move${left === 1 ? '' : 's'} to plan. They happen at midnight. Captain Inertia is at ${Math.round((S.boss && S.boss['11,2'] !== undefined ? S.boss['11,2'] : 340) / 10)}% health.` : 'Both moves planned. See you in the morning.';
+$('moveText').textContent = left > 0 ? `${left} move${left === 1 ? '' : 's'} to plan. They happen at midnight. The Stone Golem is at ${Math.round((S.boss && S.boss['11,2'] !== undefined ? S.boss['11,2'] : 340) / 10)}% health.` : 'Both moves planned. See you in the morning.';
 if (!left) $('tMap').classList.add('done');
-const FIRST = ['<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Captain Inertia</b> for 214 damage.</p>', '<p class="bad">Mighty Ribosome was knocked out by <b>The Mighty Mitochondrion</b>.</p>', '<p>You rested in the Common Room. Health refilled.</p>', '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>'];
+const FIRST = ['<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Granitus the Stone Golem</b> for 214 damage.</p>', '<p class="bad">Mighty Ribosome was flattened by <b>The Spore Lord</b>.</p>', '<p>You rested in the Cakelab. Health refilled.</p>', '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>'];
 $('rep').innerHTML = (S.report || FIRST).join('');
 
 $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], ['p', 'Physics', 'Strength']].map(([k, n, st]) =>

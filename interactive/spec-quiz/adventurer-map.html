@@ -114,10 +114,10 @@ table.st th{background:var(--soft)}
     <div class="cols">
       <div>
         <ul>
-          <li><b>6 moves on your first day</b> (to get going), then <b>2 a day</b>. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves only resolve once a day at midnight. The “Mock: skip to morning” button exists only in this mock-up.</li>
+          <li><b>6 moves on your first day</b> (to get going), then <b>2 a day, +1 for finishing that day's first mission</b>. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves resolve once a day — the first visit to the site after midnight runs the night for everyone (no server needed). The “Mock: skip to morning” button exists only in this mock-up.</li>
           <li><b>Everything happens at midnight.</b> Next login shows the morning report. No reason to be online at night.</li>
           <li><b>Same square = same team.</b> Boss health carries over night to night, so a class can wear a boss down over a week. No fighting each other.</li>
-          <li><b>Losing is gentle.</b> Health 0 = knocked out, wake up in the Common Room, nothing lost.</li>
+          <li><b>Losing is gentle.</b> Health 0 = knocked out, wake up in the Cakelab, nothing lost.</li>
           <li><b>Water can't be crossed</b> (sea, Lost Property Lake, the River Tangent) except at the two bridges, so routes matter.</li>
           <li><b>Fog of war:</b> you only see squares within 2 steps of somewhere you've been. Bosses show through the fog as shadows so there's always somewhere to head for. Exploring is its own reward.</li>
         </ul>
@@ -142,9 +142,8 @@ table.st th{background:var(--soft)}
         <ul>
           <li><b>The Broken Bridge</b> (west coast): leads off the map; a future map or a class repair event.</li>
           <li><b>The Abandoned Mine</b> (Gravity Peaks): a later dungeon.</li>
-          <li><b>The Exam Hall Gate</b> (east): portal to Map 2.</li>
-          <li><b>Separate Science Ferry</b> (south coast): triple-science island.</li>
-          <li><b>The Mock Exam</b> (north): world boss, asleep until before mocks.</li>
+          <li><b>The Ancient Gate</b> (east): portal to Map 2.</li>
+          <li><b>Old Scorch the Dragon</b> (north): world boss, asleep; wakes for a year-group event.</li>
         </ul>
       </div>
     </div>
@@ -195,23 +194,22 @@ const LAND = {
 const WATER_NAME = { '~': ['The Revision Sea', 'Endless. Salty. You cannot swim in a lab coat.'], o: ['Lost Property Lake', 'Full of single gloves and PE kits. Too deep to wade.'], '=': ['The River Tangent', 'Flows off in a direction nobody expected. Cross at a bridge.'] };
 
 const PLACES = {
-  '7,4': { type: 'home', name: 'The Common Room', icon: 'home', text: 'Everyone starts here and comes back here when knocked out. Safe: nothing attacks you. Resting here refills Health.' },
+  '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
   '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend coins on brews. Stock changes every Monday.', stock: ['Bottled Aura · 30 coins', 'Electrolyte Slushie · 20 coins', 'Fizzy Courage · 40 coins', 'Decaf Panic · 25 coins'] },
   '6,6': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. A random event every night: a coin, a brew, or a very wet sock.' },
-  '2,2': { type: 'boss', science: 'b', name: 'The Mighty Mitochondrion', icon: 'boss', col: '#f97316', max: 900, power: 6,
-    text: 'The powerhouse of the cell, and it will not stop telling you. Weak to people who actually know what respiration is.', loot: ['Mitochondria Gauntlet (Lowkey Legendary)', '2× Electrolyte Slushie', '+120 XP each'] },
-  '11,2': { type: 'boss', science: 'p', name: 'Captain Inertia', icon: 'boss', col: '#d08000', max: 1000, power: 8,
-    text: 'Will not move unless an unbalanced force acts on him. You are the unbalanced force.', loot: ['Frictionless Slippers (Lowkey Legendary)', 'Bottled Aura', '+150 XP each'] },
-  '4,7': { type: 'boss', science: 'c', name: 'The Unbalanced Equation', icon: 'cube', col: '#7c3aed', max: 820, power: 7,
-    text: 'Never the same number of atoms on each side. Nobody has touched it yet.', loot: ['Hat of Avogadro (Rare)', 'Fizzy Courage', '+130 XP each'] },
-  '7,0': { type: 'worldboss', name: 'The Mock Exam', icon: 'ghost', col: '#334155', text: 'A world boss for the whole year group. Asleep until the week before mocks. Do not poke it.' },
+  '2,2': { type: 'boss', science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
+    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Grins a lot.', loot: ['Spore Lord\'s Cap (Lowkey Legendary)', '2× Electrolyte Slushie', '+120 XP each'] },
+  '11,2': { type: 'boss', science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 1000, power: 8,
+    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force.', loot: ['Frictionless Slippers (Lowkey Legendary)', 'Bottled Aura', '+150 XP each'] },
+  '4,7': { type: 'boss', science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
+    text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Bring friends.', loot: ['Hydra Scale Shield (Rare)', 'Fizzy Courage', '+130 XP each'] },
+  '7,0': { type: 'worldboss', name: 'Old Scorch the Dragon', icon: 'dragonzz', text: 'Asleep on a hoard of stolen lab equipment in the Cold Store Hills. Far too strong for one class. When it wakes, the whole year group fights it together.' },
   '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', text: 'Three floors deep. Each night inside explores one floor: small fights, random loot, sometimes a brew.' },
   '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
   '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
-  '14,4': { type: 'locked', name: 'The Exam Hall Gate', icon: 'portal', text: 'Locked. Leads to Map 2 — opens later in the year.' },
+  '14,4': { type: 'locked', name: 'The Ancient Gate', icon: 'gate', text: 'A stone gate humming with blue light. Locked. It leads somewhere new — opens later in the year.' },
   '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a future map or a class repair event starts here.' },
   '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night.' },
-  '7,9': { type: 'locked', name: 'Separate Science Ferry', icon: 'boat', text: 'Closed. Will sail to an island of triple-science content one day.' },
 };
 S.boss = Object.assign({ '2,2': 600, '11,2': 340, '4,7': 820 }, S.boss || {});
 const TYPE = { boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
@@ -316,8 +314,8 @@ function renderMap() {
         + `<line x1="${-W3 / 2 - 4}" y1="-10" x2="${W3 / 2 + 4}" y2="-10" stroke="#451a03" stroke-width="2"/><line x1="${-W3 / 2 - 4}" y1="10" x2="${W3 / 2 + 4}" y2="10" stroke="#451a03" stroke-width="2"/></g>`;
     }
     if (P && vis.has(k)) {
-      const big = P.type === 'worldboss' ? 46 : P.type === 'boss' ? 40 : 32;
-      things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon, P.col), x - big / 2, y - big / 2 - 4, big);
+      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.icon === 'gate' ? 36 : 32;
+      things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big);
       if (P.type === 'boss') {
         const hp = S.boss[k];
         things += `<rect x="${x - 20}" y="${y + 16}" width="40" height="6" fill="#fff" stroke="#111" stroke-width="1.2"/><rect x="${x - 19.4}" y="${y + 16.6}" width="${38.8 * hp / P.max}" height="4.8" fill="#e11d48"/>`;
@@ -401,7 +399,7 @@ function renderPanel() {
   if (!sel) { pn.classList.remove('on'); return; }
   const D = describe(sel), P = D.P, reach = reachable(), last = lastStop();
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
-  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
+  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss') h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
@@ -469,7 +467,7 @@ function overnight() {
       lines.push(`<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`);
       S.xp += 40; S.coins += 5;
       if (S.boss[k] === 0) lines.push(`<p class="lt">★ ${P.name} is defeated! Everyone who hit it this week gets: ${P.loot.join(', ')}.</p>`);
-      if (S.health === 0) { lines.push(`<p class="bad">You are knocked out and wake up in the Common Room with a mild headache. Nothing lost.</p>`); at = '7,4'; S.health = ADV.stats().hp; }
+      if (S.health === 0) { lines.push(`<p class="bad">You are knocked out and wake up in the Cakelab with a mild headache. Nothing lost.</p>`); at = '7,4'; S.health = ADV.stats().hp; }
     } else if (P && P.type === 'dungeon') {
       const finds = ['a Fizzy Courage', '12 coins', 'a single damp glove (useless)', 'a Bottled Aura'];
       const f = finds[Math.floor(rnd() * finds.length)];
@@ -480,7 +478,7 @@ function overnight() {
     } else if (P && P.type === 'shop') {
       lines.push(`<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>`);
     } else if (P && P.type === 'home') {
-      S.health = ADV.stats().hp; lines.push(`<p class="good">You rest in the Common Room. Health refilled.</p>`);
+      S.health = ADV.stats().hp; lines.push(`<p class="good">You rest in the Cakelab. Health refilled.</p>`);
     }
   });
   const visAfter = visibleSet();
@@ -489,7 +487,7 @@ function overnight() {
   lines.push(`<p>Elsewhere: ${other.nick} tripped over a Bunsen burner in ${PLACES[oAt] ? PLACES[oAt].name : LAND[T_AT(...unkey(oAt))].name}. They're fine.</p>`);
   S.people = S.people.map(k => { if (rnd() >= .35) return k; const n = neighbours(...unkey(k)).filter(([c, r]) => walkable(c, r)); const [c, r] = n[Math.floor(rnd() * n.length)]; return key(c, r); });
   const used = S.plan.length;
-  S.at = at; S.plan = []; S.moves = Math.min(4, S.moves - used + 2); S.day++;
+  S.at = at; S.plan = []; S.moves = Math.min(4, S.moves - used + 2); S.day++; S.missionsToday = 0;   /* +1 move comes back with tomorrow's first mission */
   S.report = lines; S.reportSeen = S.day - 1;
   ADV.save(); sel = S.at; renderAll(); showReport();
 }
@@ -497,11 +495,11 @@ function overnight() {
 const FIRST_REPORT = [
   '<p class="lt">Welcome to Breadventure Land! First-day boost: <b>6 moves</b> today (then 2 a day).</p>',
   '<p>Overnight, 9 of your class went adventuring.</p>',
-  '<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Captain Inertia</b> for 214 damage. He moved 3 cm. Progress.</p>',
-  '<p class="bad">Mighty Ribosome was knocked out by <b>The Mighty Mitochondrion</b> during a lecture about ATP.</p>',
+  '<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Granitus the Stone Golem</b> for 214 damage. It moved 3 cm. Progress.</p>',
+  '<p class="bad">Mighty Ribosome was flattened by a spore cloud from <b>The Spore Lord</b>. Recovering in the Cakelab.</p>',
   '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>',
-  '<p>Nobody has touched <b>The Unbalanced Equation</b> yet. It is getting confident.</p>',
-  '<p class="new">Tip: the fog only lifts where you have been. Captain Inertia is somewhere to the north-east — head over the bridge.</p>'];
+  '<p>Nobody has gone near <b>The Acid Hydra</b> yet. All three heads are getting confident.</p>',
+  '<p class="new">Tip: the fog only lifts where you have been. something big is stomping about to the north-east — head over the bridge.</p>'];
 function showReport() {
   $('repTitle').textContent = `Morning report · day ${S.day}`;
   $('report').innerHTML = (S.report || FIRST_REPORT).join('');

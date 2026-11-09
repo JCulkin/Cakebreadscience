@@ -8,7 +8,7 @@ const ADV = (() => {
   const SCI = { b: 'Biology', c: 'Chemistry', p: 'Physics' };
   const DEF = () => ({
     v: 1, day: 1, xp: 640, coins: 35, secured: { p: 22, b: 15, c: 19 }, health: 27,
-    moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // day 1: welcome boost of 6 moves, then 2 a day
+    moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // day 1: welcome boost of 6 moves, then 2 a day (+1 for the day's first mission)
     brews: { 'Bottled Aura': 2, 'Electrolyte Slushie': 1, 'Fizzy Courage': 1 },
     bag: [], lastLoot: null, missionsToday: 0, reportSeen: 0, report: null,
   });
@@ -73,7 +73,8 @@ const ADV = (() => {
 
   /* ---------- 12×12 pixel icons ---------- */
   const PAL = { K: '#1b1b1f', W: '#fff', R: '#e11d48', G: '#22c55e', g: '#166534', B: '#92400e', b: '#2563eb', Y: '#facc15', y: '#e9d48b',
-    S: '#9ca3af', s: '#4b5563', P: '#7c3aed', O: '#f97316', C: '#67e8f9', c: '#bfe9f5', L: '#a3e635', D: '#475569', N: '#78350f', w: '#cbd5e1' };
+    S: '#9ca3af', s: '#4b5563', P: '#7c3aed', O: '#f97316', C: '#67e8f9', c: '#bfe9f5', L: '#a3e635', D: '#475569', N: '#78350f', w: '#cbd5e1',
+    E: '#7f1d1d', A: '#f59e0b', V: '#c4b5fd', Q: '#fde68a', T: '#0f766e', M: '#a21caf', U: '#57534e', Z: '#d6d3d1' };
   const ICONS = {
     boss: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', 'KRRWWRRWWRRK', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRKWKKWKRRK', 'KRRRKWWKRRRK', '.KRRRRRRRRK.', '.KRKRRRRKRK.', '.KK.KKKK.KK.', '............'],
     ghost: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', '.KRWWRRWWRK.', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRRRKKRRRRK', 'KRRRKRRKRRRK', 'KRRRRRRRRRRK', 'KRRRRRRRRRRK', 'KRKRRKKRRKRK', 'KK.KK..KK.KK'],
@@ -88,6 +89,14 @@ const ADV = (() => {
     bridge: ['............', '............', 'N..N.....N..', 'NNNN.....NNN', 'NNNN..N..NNN', 'N..N...N.N..', 'N..N.....N..', '............', '............', '............', '............', '............'],
     mine: ['............', '.NNNNNNNNNN.', '.NKKKKKKKKN.', '.NYKKKKKKYN.', '.NKYKKKKYKN.', '.NKKYKKYKKN.', '.NKKKYYKKKN.', '.NKKYKKYKKN.', '.NKYKKKKYKN.', '.NYKKKKKKYN.', 'SSSSSSSSSSSS', '............'],
     lock: ['............', '....KKKK....', '...K....K...', '...K....K...', '..YYYYYYYY..', '..YYYKKYYY..', '..YYYKKYYY..', '..YYYYYYYY..', '............', '............', '............', '............'],
+
+    /* map monsters (bigger sprites; any size works) */
+    golem: ['......KKKKKK......', '.....KZZZZZZK.....', '....KZwZZZZZZK....', '....KZAAZZAAZK....', '....KZZZZZZZZK....', '...KKZZKKKKZZKK...', '..KUUKZZZZZZKUUK..', '.KUZZKZgZZgZKZZUK.', 'KUZwZKZZZZZZKZwZUK', 'KUZZZKZZgZZZKZZZUK', 'KUZZKKZZZZZZKKZZUK', '.KKK.KUZZZZUK.KKK.', '.....KUZKKZUK.....', '....KUZZK.KZZUK...', '...KUZZZK.KZZZUK..', '...KKKKKK.KKKKKK..'],
+    spore: ['.....KKKKKKK.....', '...KKRRRRRRRKK...', '..KRRWWRRRRWWRK..', '.KRRRWWRRRRWWRRK.', '.KRRRRRRWWRRRRRK.', 'KRRWWRRRWWRRRWWRK', 'KKKKKKKKKKKKKKKKK', '...KQQQQQQQQQK...', '...KQKKQQQKKQK...', '...KQKYQQQKYQK...', '...KQQQQQQQQQK...', '...KQQKWKWKQQK...', '..gKQQKKKKKQQKg..', '.gLKQQQQQQQQQKLg.', 'gLgKKQQQQQQQKKgLg', '..gggKKKKKKKggg..'],
+    hydra: ['.KKKK....KKKK....KKKK.', 'KPPYPK..KPYYPK..KPYPPK', 'KWPPPK..KPPPPK..KPPPWK', '.KKPPK..KWKKWK..KPPKK.', '...KPK...KPPK...KPK...', '...KPK...KPPK...KPK...', '...KPPK..KPPK..KPPK...', '....KPPK.KPPK.KPPK....', '.....KPPKKPPKKPPK.....', '....KPPPPPPPPPPPPK....', '...KPPVVVVVVVVVPPPK...', '..KPPVVVVVVVVVVVPPPK..', '..KPPPPPPPPPPPPPPPPK..', '.KPPKPPKPPKPPKPPKPPK..', '..KK.KK.KK.KK.KK.KK...', '..L.....L......L......'],
+    dragon: ['KK......K..K......KK', 'KRK.....KKKK.....KRK', 'KRRK...KRRRRK...KRRK', 'KRRRK.KRRRRRRK.KRRRK', 'KRRRRKRYKRRKYRKRRRRK', 'KERRRKRRRRRRRRKRRREK', '.KERRKRRRRRRRRKRREK.', '..KERKRWRRRRWRKREK..', '...KKKKRRRRRRKKKK...', '.....KRRQQQQRRK.....', '....KRRQQQQQQRRK....', '....KRRQQQQQQRRK....', '...KRRRKQQQQKRRRK...', '...KRRK.KKKK.KRRKKK.', '...KKK........KKERK.', '...............KKK..'],
+    dragonzz: ['KK......K..K......KK', 'KRK.....KKKK.....KRK', 'KRRK...KRRRRK...KRRK', 'KRRRK.KRRRRRRK.KRRRK', 'KRRRRKRKKRRKKRKRRRRK', 'KERRRKRRRRRRRRKRRREK', '.KERRKRRRRRRRRKRREK.', '..KERKRRRRRRRRKREK..', '...KKKKRRRRRRKKKK...', '.....KRRQQQQRRK.....', '....KRRQQQQQQRRK....', '....KRRQQQQQQRRK....', '...KRRRKQQQQKRRRK...', '...KRRK.KKKK.KRRKKK.', '...KKK........KKERK.', '...............KKK..'],
+    gate: ['....KKKKKKKK....', '...KUUUUUUUUK...', '..KUZZZZZZZZUK..', '..KUZKKKKKKZUK..', '..KUZKCCCCKZUK..', '..KUZKCWWCKZUK..', '..KUZKCCCCKZUK..', '..KUZKCCCCKZUK..', '..KUZKKKKKKZUK..', '.KKUUUUUUUUUUKK.', '.KUUUUUUUUUUUUK.'],
     /* decoration */
     tree: ['.....gg.....', '...gGGGg....', '..gGGGGGg...', '.gGGGGGGGg..', '..gGGGGGg...', '.gGGGGGGGg..', 'gGGGGGGGGGg.', '..gggggggg..', '.....BB.....', '.....BB.....', '............', '............'],
     pine: ['.....g......', '....gGg.....', '....gGg.....', '...gGGGg....', '...gGGGg....', '..gGGGGGg...', '..gGGGGGg...', '.gGGGGGGGg..', 'ggggggggggg.', '.....B......', '.....B......', '............'],
@@ -110,9 +119,10 @@ const ADV = (() => {
   function icon(name, swap) {
     const k = name + (swap || '');
     if (cache[k]) return cache[k];
-    const g = ICONS[name], c = document.createElement('canvas'); c.width = c.height = 12;
+    const g = ICONS[name], c = document.createElement('canvas'), wd = Math.max(...g.map(r => r.length)); c.width = c.height = Math.max(wd, g.length);
     const x = c.getContext('2d');
-    g.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = (swap && ch === 'R') ? swap : PAL[ch]; x.fillRect(i, j, 1, 1); }));
+    const ox = Math.floor((c.width - wd) / 2), oy = c.height - g.length;
+    g.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = (swap && ch === 'R') ? swap : PAL[ch]; x.fillRect(i + ox, j + oy, 1, 1); }));
     return cache[k] = c.toDataURL();
   }
 

@@ -83,7 +83,7 @@
 
   <section id="choose">
     <h1>Choose a mission</h1>
-    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, and right answers count towards securing spec points (which make you stronger).</p>
+    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, right answers count towards securing spec points (which make you stronger), and your first mission each day gives you an extra move on the map.</p>
     <div class="choices" id="choices"></div>
     <div class="other"><label for="pick"><b>Or pick any topic:</b></label><select id="pick"></select><button class="btn" id="pickGo">Fight →</button></div>
   </section>
@@ -213,6 +213,7 @@ function finish() {
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
   const drop = pool[Math.floor(Math.random() * pool.length)];
   S.bag = [...new Set([...(S.bag || []), drop.id])]; S.lastLoot = drop.id; S.missionsToday++;
+  const bonusMove = S.missionsToday === 1; if (bonusMove) S.moves = Math.min(5, S.moves + 1);   // first mission of the day = +1 move
   ADV.save();
   const after = ADV.stats(), capAfter = ADV.levelCap(), toCap = 8 - ADV.securedTotal() % 8;
   const wrong = MS.res.filter(r => !r.ok);
@@ -228,7 +229,7 @@ function finish() {
         ${securedPt ? `<li class="up">🔒 Spec point secured in ${MS.sub.subj} → <b>${statName} ${before[cssk]} → ${after[cssk]}</b></li>` : `<li>Right answers count towards securing ${MS.sub.subj} points. Get 6+ right to secure one.</li>`}
         ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! Bank XP from the map now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
         <li>🪙 +${coins} coins${won ? ' (defeat bonus)' : ''}</li>
-        <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
+        ${bonusMove ? `<li class="up">🗺 +1 move on the map tonight (first mission today)</li>` : `<li>⚔ Missions today: ${S.missionsToday} (the extra move is for the first one each day)</li>`}</ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
     <div class="acts"><a class="btn green big" href="adventurer-map.html">🗺 Plan tonight's moves</a><a class="btn alt" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">⛺ Base camp</a></div>`;
