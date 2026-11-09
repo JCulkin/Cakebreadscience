@@ -33,8 +33,12 @@ function signOut(){return auth?auth.signOut():Promise.resolve();}
 function submit(board,score,extra){if(!db||!user)return Promise.reject(new Error('not signed in'));const u=user;
   return db.ref('gameScores/'+board+'/'+u.uid).transaction(cur=>{if(cur&&cur.score>=score){cur.name=nameOf(u);return cur;}return Object.assign({name:nameOf(u),score,t:Date.now()},extra?{extra}:{});})
     .then(r=>{const v=r.snapshot.val()||{};return {best:v.score||score,improved:(v.score===score)};});}
+/* Scores from before sign-in (8–9 Nov 2026: a typed name, no account) stay on the boards, read from the old frozen lists. Same scoring rules as now. */
+const LEGACY=b=>{let m=b.match(/^elements_(.+)$/);if(m)return 'elements20HighScores/'+m[1];m=b.match(/^typing_(sprint|storm)$/);if(m)return 'typingHighScores/'+m[1];return null;};
+function legacy(board){const path=LEGACY(board);if(!path||!db)return Promise.resolve([]);
+  return db.ref(path).once('value').then(s=>{const v=s.val()||[];return (Array.isArray(v)?v:Object.values(v)).filter(x=>x&&typeof x.score==='number').map((x,i)=>({uid:'legacy:'+i,name:String(x.name||'?').slice(0,20),score:x.score,t:Date.parse(x.date)||0,legacy:true}));}).catch(()=>[]);}
 function top(board){if(!db)return Promise.reject(new Error('offline'));
-  return Promise.race([db.ref('gameScores/'+board).once('value').then(s=>{const v=s.val()||{};return Object.entries(v).filter(([,x])=>x&&typeof x.score==='number').map(([uid,x])=>({uid,name:x.name,score:x.score,t:x.t,extra:x.extra})).sort((a,b)=>b.score-a.score||a.t-b.t);}),
+  return Promise.race([Promise.all([db.ref('gameScores/'+board).once('value'),legacy(board)]).then(([s,old])=>{const v=s.val()||{};return Object.entries(v).filter(([,x])=>x&&typeof x.score==='number').map(([uid,x])=>({uid,name:x.name,score:x.score,t:x.t,extra:x.extra})).concat(old).sort((a,b)=>b.score-a.score||a.t-b.t);}),
     new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);}
 function css(){if(document.getElementById('lbcss'))return;const s=document.createElement('style');s.id='lbcss';s.textContent=`
 .lbx{margin-top:14px;font-family:inherit}
@@ -45,6 +49,7 @@ function css(){if(document.getElementById('lbcss'))return;const s=document.creat
 .lbx li .rk{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;color:#555}
 .lbx li:nth-child(1) .rk{color:#c9a227}.lbx li:nth-child(2) .rk{color:#8a8f98}.lbx li:nth-child(3) .rk{color:#b0703c}
 .lbx li .nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lbx li .nm .old{margin-left:8px;font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.5px}
 .lbx li .sc small{font-family:'Barlow',sans-serif;font-weight:600;font-size:13px;color:#1d4ed8}
 .lbx li .sc{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;color:#005e22}
 .lbx li.me{background:#fff3c4}
@@ -58,7 +63,7 @@ function css(){if(document.getElementById('lbcss'))return;const s=document.creat
 .lbx .who{font-size:13px;color:#555;margin-top:6px}.lbx .who button{background:none;border:0;color:#005e22;text-decoration:underline;font:inherit;cursor:pointer;padding:0}`;document.head.appendChild(s);}
 const G_ICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
 function listHtml(list,meUid){if(!list.length)return '<div class="empty">No scores yet. Be the first!</div>';
-  const myIdx=meUid?list.findIndex(x=>x.uid===meUid):-1;let rows=list.slice(0,10).map((e,i)=>`<li class="${e.uid===meUid?'me':''}"><span class="rk">${i+1}</span><span class="nm">${esc(e.name)}</span><span class="sc">${e.score}${e.extra?`<small> · ${esc(e.extra)}</small>`:''}</span></li>`).join('');
+  const myIdx=meUid?list.findIndex(x=>x.uid===meUid):-1;let rows=list.slice(0,10).map((e,i)=>`<li class="${e.uid===meUid?'me':''}"><span class="rk">${i+1}</span><span class="nm">${esc(e.name)}${e.legacy?'<small class="old" title="Saved before sign-in, with a typed name">before sign-in</small>':''}</span><span class="sc">${e.score}${e.extra?`<small> · ${esc(e.extra)}</small>`:''}</span></li>`).join('');
   if(myIdx>=10){const e=list[myIdx];rows+=`<li class="gap">⋯</li><li class="me"><span class="rk">${myIdx+1}</span><span class="nm">${esc(e.name)}</span><span class="sc">${e.score}${e.extra?`<small> · ${esc(e.extra)}</small>`:''}</span></li>`;}
   return `<ol>${rows}</ol>`;}
 /* panel(el, board, {score, title}) — draws the board; with a score it saves it (signed in) or asks the student to sign in */
