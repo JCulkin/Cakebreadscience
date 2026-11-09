@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Base camp (mock-up) - Cakebread Questing</title>
+<title>Base camp - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,12 +79,8 @@
         </div>
         <div class="card todo" id="tMap">
           <div class="ic"><img class="px" id="mapIc" alt=""></div>
-          <div><b>Plan tonight's moves in Breadventure</b><p id="moveText"></p></div>
-          <a class="btn green" href="adventurer-map.html">Open the map →</a>
-        </div>
-        <div class="card" style="margin-top:10px">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><h3 style="margin:0">Last night</h3><a href="adventurer-map.html" class="small">Full report on the map →</a></div>
-          <div class="rep" id="rep"></div>
+          <div><b>Breadventure Land · opens soon</b><p>The map where your class sets out to free the Professor. Take a look around the preview; your strength, health and magic will count there.</p></div>
+          <a class="btn green" href="adventurer-map.html">Preview →</a>
         </div>
       </div>
 
@@ -93,18 +89,28 @@
           <h3 style="margin-top:0">Spec points secured</h3>
           <div id="sci"></div>
           <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days. Each one adds 1 to its stat for good.</p>
+          <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="showMe"> Show me on the class leaderboards</label>
         </div>
         <div class="card">
           <h3 style="margin-top:0" id="lootTitle">Newest loot</h3>
           <div id="loot"></div>
           <h3>Brews</h3>
           <div id="brews" style="font-size:15px"></div>
-          <p class="small">🪙 <span id="coins"></span> coins · spend them at the Tuck Shop on the map.</p>
+          <p class="small">🪙 <span id="coins"></span> coins from missions. Brews and the Tuck Shop arrive with Breadventure Land.</p>
         </div>
       </div>
     </div>
   </div>
 </main>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
 <script src="adventurer-shell.js"></script>
@@ -131,13 +137,12 @@ function renderQuest() {
   if (S.chapter < 2) q.innerHTML = `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>
     <div><span class="kick" style="color:#7c3aed">Chapter 1 · The class quest</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">Free the Professor</b>
     <div class="k">${[0, 1, 2].map(i => `<span style="opacity:${i < k ? 1 : .22}">🔑</span>`).join('')}</div>
-    <div class="small" style="color:#333">${ADV.DRAGON} the dragon has the Professor locked in a cage in its lair. Win the key pieces from the <b>Spore Lord</b>, the <b>Stone Golem</b> and the <b>Acid Hydra</b> as a class. ${k}/3 so far.</div>
-    <div class="mk">Mock-up: <button id="skipRescue">skip to the rescue</button> <button id="replayIntro">replay the intro</button></div></div>`;
+    <div class="small" style="color:#333">${ADV.DRAGON} the dragon has the Professor locked in a cage in its lair. Win the key pieces from the <b>Spore Lord</b>, the <b>Stone Golem</b> and the <b>Acid Hydra</b> as a class, in Breadventure Land (opens soon). Get strong first: every spec point you secure counts.</div>
+    <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
   else q.innerHTML = `<div class="cage" style="background:#fff7d6"><img src="${ADV.icon('prof')}" alt="The Professor"></div>
     <div><span class="kick" style="color:#7c3aed">Chapter 2 · The monsters wake</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">The Professor is back</b>
     <div class="small" style="color:#333;margin-top:4px"><i>“Right. The Superbug, the Rust Wyrm and whatever crawled out of that old reactor. Revise, then go and sort them out.”</i></div>
-    <div class="mk">Mock-up: <button id="replayIntro">replay the intro</button></div></div>`;
-  if ($('skipRescue')) $('skipRescue').onclick = () => { ADV.CH1.forEach(c => { S.boss = S.boss || {}; S.boss[c] = 0; }); S.chapter = 2; ADV.save(); ADV.storyRescue(() => location.reload()); };
+    <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
   $('replayIntro').onclick = () => ADV.storyIntro();
 }
 renderQuest();
@@ -148,12 +153,7 @@ if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
   $('mBtn').textContent = 'Another →'; $('mBtn').classList.remove('gold', 'big');
-} else $('mText').textContent = '10 questions against a misconception. Your first one today earns +1 move on the map. Suggested: Physics 3b Properties of waves.';
-const left = S.moves - S.plan.length;
-$('moveText').textContent = left > 0 ? `${left} move${left === 1 ? '' : 's'} to plan. They happen at midnight.${S.chapter < 2 ? ' Follow the crumbs north — and help win the key pieces.' : ''}` : 'All moves planned. See you in the morning.';
-if (!left) $('tMap').classList.add('done');
-const FIRST = ['<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Granitus the Stone Golem</b> for 214 damage.</p>', '<p class="bad">Mighty Ribosome was flattened by <b>The Spore Lord</b>.</p>', '<p>You rested in the Cakelab. Health refilled.</p>', '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>'];
-$('rep').innerHTML = (S.report || FIRST).join('');
+} else { const sg = QE.suggestion(); $('mText').textContent = `10 questions against a misconception. Get questions right first time on two different days to secure spec points.${sg ? ` Suggested: ${sg.subj} ${sg.key.slice(1)} ${sg.name}.` : ''}`; }
 
 $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], ['p', 'Physics', 'Strength']].map(([k, n, st]) =>
   `<div class="sci"><div class="top"><span style="color:var(--${k})">${n}</span><span>${S.secured[k]} / ${ADV.TOTAL[k]}</span></div><div class="bar"><i style="width:${S.secured[k] / ADV.TOTAL[k] * 100}%;background:var(--${k})"></i></div><small>→ ${st}</small></div>`).join('');
@@ -163,6 +163,8 @@ if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.it
 else { $('lootTitle').textContent = 'Loot'; $('loot').innerHTML = `<p style="font-size:15px">Every mission drops an item. Finish today's mission to see what you get.</p>`; }
 $('brews').innerHTML = Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `🧪 ${n} ×${q}`).join('<br>') || 'None';
 $('coins').textContent = S.coins;
+$('showMe').checked = !QE.prog.hide;
+$('showMe').onchange = () => QE.setHide(!$('showMe').checked);
 </script>
 </body>
 </html>

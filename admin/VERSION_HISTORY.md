@@ -2,6 +2,35 @@
 
 ---
 
+## [3.1.0] - 2026-11-09
+### Cakebread Questing, Shared Leaderboards & Question Booklets
+
+#### Cakebread Questing (`interactive/spec-quiz/`, replaces the Spec Quiz)
+- The Spec Quiz is renamed **Cakebread Questing** everywhere; its menu is now the Questing page at the same address
+- **The Adventurer:** students make a pixel adventurer (no gender field; hijab, turban/patka, kippah, glasses, hearing aid), with a **Base camp** (level, Strength / Health / Magic from secured spec points, coins, newest loot), **Missions** (10 real bank questions as a fight against a misconception, ⚑ report button on every question), a **Wardrobe** (six gear slots, loot from missions, weekly legendaries) and **My look**
+- Runs on real progress: same rules as the old Campaign (right first time on two different days secures a question; enough secured questions secure the spec point; rust after 21 days), saved to the student's Google account. Existing Campaign progress carries over
+- New `questing-engine.js` holds the progress rules and saving; the old Campaign screen (`campaign.js`, Italian gear, scout badges, ranks) is retired
+- Legendaries go to the most correct answers in each science **this week**; the class board shows this week's most correct answers with each student's adventurer
+- **Breadventure Land** (the class map, story chapter 1: free the Professor from Crumbmaw the dragon) is up as a clearly labelled **preview**: explore, plan moves, try a night. Nothing on the map is saved to the account yet and there are no class battles until the shared map is built
+- The tick-the-spec picker is now **Quick quiz** (`quiz.html`): solo or team game on the board, nothing saved
+- "Show me on the class leaderboards" switch on Base camp
+
+#### Leaderboards
+- Shared leaderboards for Elements 1–20, What The Cell and Type Fast or Perish: Google sign-in names, one row per student (best score), sign-in prompt to save; `/js/leaderboards.js`
+- New combined page `/leaderboards/` (all games + Cakebread Questing), linked from the homepage. Scores from before sign-in stay on the boards, marked as such
+- Type Fast or Perish shows words per minute next to points, explains the scoring and compares your speed with published averages
+
+#### Added
+- **Question Booklets** page (`/booklets/`): Physics 6-mark long-answer booklet (online, or print the booklet, guided booklet or mark schemes), with spaces for Chemistry, Biology and topic booklets
+- Homepage: **Google sign-in at the top right** (`/js/account.js`; one account across the site), Cakebread Questing card, Question Booklets card; Resources now come before Interactives
+- Sitemap: booklets and leaderboards pages
+
+#### Changed
+- Admin console button moved to the bottom right of the homepage (the sign-in box is top right)
+- Homepage footer → v3.1.0
+
+---
+
 ## [3.0.0] - 2026-11-07
 ### New Homepage, Spec Quiz & Classroom Games
 

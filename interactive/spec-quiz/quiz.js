@@ -1,4 +1,4 @@
-/* Spec Quiz: spec picker (subject → topic → sub-topic → points), solo mode and team (projector) mode.
+/* Cakebread Questing quick quiz: spec picker (subject → topic → sub-topic → points), solo mode and team (projector) mode.
    Needs spec.js (SPEC) and questions.js (QUESTIONS). Question spec ids: subject letter + point id, e.g. 'P3.5'. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

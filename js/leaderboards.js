@@ -1,6 +1,6 @@
 /* Cakebread Science: shared leaderboards for every game.
-   Sign in with Google (same Firebase project and accounts as the Spec Tracker, Flashcards and Spec Quiz).
-   Names come from the Google account: first name + last initial (like the Spec Quiz board).
+   Sign in with Google (same Firebase project and accounts as the Spec Tracker, Flashcards and Cakebread Questing).
+   Names come from the Google account: first name + last initial (like the Cakebread Questing board).
    Realtime Database: gameScores/<board>/<uid> = { name, score, t }  (one row per student per board: their best score)
    Needs, before this file: firebase-app-compat, firebase-auth-compat, firebase-database-compat (9.22.2) and /js/firebase-config.js.
    Teacher: the Realtime Database rules need, for example:

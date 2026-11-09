@@ -1,4 +1,4 @@
-/* Question bank for the Spec Quiz. Every question has a PERMANENT id: spec point + number, e.g. 'P3.5-03' = Physics 3.5, question 3.
+/* Question bank for Cakebread Questing (formerly the Spec Quiz). Every question has a PERMANENT id: spec point + number, e.g. 'P3.5-03' = Physics 3.5, question 3.
    Campaign progress is saved against these ids, so NEVER renumber, reuse or delete an id: give a new question the next free number
    for its point, and if a question is wrong, fix its wording rather than replacing it. Randomised calculations live in gens.js.
    M(id, question, [correct, wrong, wrong, wrong], explanation)  → multiple choice (options are shuffled at runtime)

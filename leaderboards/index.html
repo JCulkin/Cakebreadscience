@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leaderboards - Cakebread Science</title>
-<meta name="description" content="Leaderboards for the Cakebread Science games: Elements 1–20, What The Cell, Type Fast or Perish and the Spec Quiz.">
+<meta name="description" content="Leaderboards for the Cakebread Science games: Elements 1–20, What The Cell, Type Fast or Perish and Cakebread Questing.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,7 +65,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 (function(){
 const $=id=>document.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const COL={elements:'#b45309',cell:'#2e7d32',typing:'#c2185b',quiz:'#1d4ed8'};
-const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Spec Quiz',url:'/interactive/spec-quiz/',boards:{quiz_xp:'Campaign XP (all time)',quiz_week:'Correct answers this week'}}});
+const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Cakebread Questing',url:'/interactive/spec-quiz/',boards:{quiz_xp:'XP (all time)',quiz_week:'Correct answers this week'}}});
 let game=(location.hash||'#elements').slice(1);if(!TABS[game])game='elements';let board=null;
 function bar(){const el=$('bar');if(!window.LB||!LB.online()){el.textContent='Leaderboards need an internet connection.';return;}
   const u=LB.user;el.innerHTML=u?`Signed in as <b>${esc(LB.nameOf(u))}</b> <button class="linkbtn" id="out">Sign out</button>`:`<button class="gsign" id="in">Sign in with Google</button><span>to put your scores on the leaderboards.</span>`;
@@ -76,7 +76,7 @@ function draw(){const G=TABS[game];const keys=Object.keys(G.boards);if(!keys.inc
   $('boards').innerHTML=`<div class="chips">${keys.map(k=>`<button class="chip ${k===board?'on':''}" data-b="${k}">${esc(G.boards[k])}</button>`).join('')}</div><a class="play" href="${G.url}">Play ${esc(G.name)} →</a>`;
   $('boards').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{board=b.dataset.b;draw();});
   if(game==='quiz')quiz();else LB.panel($('list'),board,{title:G.boards[board]});}
-// Spec Quiz keeps its own board (specQuizBoard/{uid}); show it here read-only
+// Cakebread Questing keeps its own board (specQuizBoard/{uid}); show it here read-only
 function quiz(){const el=$('list');el.innerHTML='<div class="lbx"><p class="note">Loading…</p></div>';
   if(!window.firebase||!firebase.database){el.innerHTML='<p class="note">Needs an internet connection.</p>';return;}
   firebase.database().ref('specQuizBoard').once('value').then(s=>{const v=s.val()||{};const wk=Object.values(v).reduce((m,x)=>x&&x.wk>m?x.wk:m,'');
@@ -84,8 +84,8 @@ function quiz(){const el=$('list');el.innerHTML='<div class="lbx"><p class="note
     const me=LB.user&&LB.user.uid,idx=rows.findIndex(r=>r.uid===me);
     let html=rows.slice(0,10).map((r,i)=>`<li style="${r.uid===me?'background:#fff3c4':''}"><span style="font-family:'Barlow Condensed';font-weight:900;font-size:20px">${i+1}</span><b>${esc(r.name)}</b><span style="font-family:'Barlow Condensed';font-weight:900;font-size:22px;color:#005e22">${r.score}</span></li>`).join('');
     if(idx>=10)html+=`<li style="background:#fff3c4"><span>${idx+1}</span><b>${esc(rows[idx].name)}</b><span>${rows[idx].score}</span></li>`;
-    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Spec Quiz scores come from its Campaign mode. Choose whether you appear on its leaderboards in the Campaign screen.</p></div>`;})
-   .catch(()=>{el.innerHTML='<p class="note">The Spec Quiz leaderboard can’t be read right now. Try signing in.</p>';});}
+    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Cakebread Questing scores come from its missions. Choose whether you appear on its leaderboards at Base camp.</p></div>`;})
+   .catch(()=>{el.innerHTML='<p class="note">The Cakebread Questing leaderboard can’t be read right now. Try signing in.</p>';});}
 if(window.LB)LB.onUser(()=>{bar();draw();});else{bar();}
 })();
 </script>

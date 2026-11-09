@@ -24,6 +24,13 @@ a{color:inherit}
 .site-header h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-size:clamp(36px,7vw,56px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
 .site-header h1 span{color:var(--green2)}
 .site-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.site-header #cbs-account{margin-left:auto;align-self:center}
+.rcard.quest{grid-column:1/-1;background:#151518;border-color:#151518;align-items:center}
+.rcard.quest h3{color:#eeeae0;font-size:30px}.rcard.quest h3 b{color:#00a03a}
+.rcard.quest p{color:#bbb;font-size:15px}
+.rcard.quest .go{margin-left:auto;background:#facc15;color:#111;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;padding:8px 18px;border:2px solid #111;box-shadow:0 3px 0 #000;white-space:nowrap}
+.rcard.quest:hover{background:#222;box-shadow:inset 6px 0 0 #00a03a}
+@media(max-width:560px){.rcard.quest{flex-wrap:wrap}.rcard.quest .go{margin-left:0}}
 @media(max-width:700px){.site-header{padding:20px 16px 18px}}
 .wrap{max-width:1140px;margin:0 auto;padding:26px 24px 56px}
 @media(max-width:700px){.wrap{padding:18px 16px 44px}}
@@ -85,7 +92,7 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 <body>
 
 <div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
-<header class="site-header"><h1>Cakebread <span>Science</span></h1><span class="sub">IGCSE Edexcel Resources</span></header>
+<header class="site-header"><h1>Cakebread <span>Science</span></h1><span class="sub">IGCSE Edexcel Resources</span><div id="cbs-account"></div></header>
 <div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
 
 <main class="wrap">
@@ -97,9 +104,10 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
   <section id="resources">
     <div class="shead"><h2>Resources</h2><p>For lessons and revision.</p></div>
     <div class="res">
+      <a class="rcard quest" href="interactive/spec-quiz/"><span class="ic">⚔️</span><span><h3>Cakebread <b>Questing</b><span class="new">New</span></h3><p>Questions on the whole Double Award spec. Secure every spec point, power up your pixel adventurer and climb the class leaderboards. Or make a quick quiz for the board.</p></span><span class="go">Play →</span></a>
       <a class="rcard" href="interactive/lessons/"><span class="ic">🎓</span><span><h3>Lessons<span class="new">New</span></h3><p>Interactive lessons for each spec topic, with a projector mode for teaching.</p></span></a>
-      <a class="rcard" href="interactive/spec-quiz/"><span class="ic">❓</span><span><h3>Spec Quiz<span class="new">New</span></h3><p>Quiz on any part of the Double Award spec: solo, team on the board, or the long-term campaign.</p></span></a>
       <a class="rcard" href="interactive/physics-long-answer/"><span class="ic">✍️</span><span><h3>Physics Long Answers<span class="new">New</span></h3><p>56 exam-style 4–6 mark questions with mark schemes and your own learning bank.</p></span></a>
+      <a class="rcard" href="booklets/"><span class="ic">📚</span><span><h3>Question Booklets<span class="new">New</span></h3><p>Printable booklets of exam-style questions, with guided versions and mark schemes.</p></span></a>
       <a class="rcard" href="leaderboards/"><span class="ic">🏆</span><span><h3>Leaderboards<span class="new">New</span></h3><p>Top scores from every game in one place. Sign in with Google to get on them.</p></span></a>
       <a class="rcard" href="specifications/science.html"><span class="ic">📋</span><span><h3>Science Spec Tracker</h3><p>Tick off the specification as you revise it.</p></span></a>
       <a class="rcard" href="Flashcards/index.html"><span class="ic">🃏</span><span><h3>Flashcards</h3><p>Key facts and definitions to test yourself.</p></span></a>
@@ -171,19 +179,20 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
-<footer>Cakebread Science v3.0.0</footer>
+<footer>Cakebread Science v3.1.0</footer>
 
 <!-- Admin Console Button (admin emails only) -->
-<a href="admin/index.html" id="admin-console-btn" style="display:none; position:fixed; top:14px; right:18px; z-index:999; background:#1a1d26; color:#7ec898; border:1px solid #005e22; border-radius:8px; padding:8px 14px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; text-decoration:none; box-shadow:0 2px 10px rgba(0,0,0,0.4);">⚙️ Admin Console</a>
+<a href="admin/index.html" id="admin-console-btn" style="display:none; position:fixed; bottom:14px; right:18px; z-index:999; background:#1a1d26; color:#7ec898; border:1px solid #005e22; border-radius:8px; padding:8px 14px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; text-decoration:none; box-shadow:0 2px 10px rgba(0,0,0,0.4);">⚙️ Admin Console</a>
 
 <script src="js/firebase-config.js"></script>
 <script src="js/admin-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="js/account.js"></script>
 <script>
     (function() {
         try{
-        firebase.initializeApp(window.firebaseConfig);
+        if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
         firebase.auth().onAuthStateChanged(function(user) {
             if (user && ADMIN_EMAILS.includes(user.email)) {
                 document.getElementById('admin-console-btn').style.display = 'inline-block';

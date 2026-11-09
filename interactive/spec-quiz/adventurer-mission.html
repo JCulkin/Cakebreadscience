@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Mission (mock-up) - Cakebread Questing</title>
+<title>Mission - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -61,7 +61,15 @@
 .fb.bad{border-color:var(--red);background:#fdf0f0}
 .fb .t{display:block;font-weight:700}
 .next{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.report{font-size:13px;color:var(--muted)}
+.report{font-size:13px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
+.report:disabled{text-decoration:none;cursor:default}
+.repbox{margin-top:10px;padding:10px 12px;border:2px dashed var(--line);font-size:15px}
+.repbox .rr{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.repbox .rr button{border:2px solid var(--ink);background:#fff;border-radius:14px;padding:2px 10px;font:600 14px Barlow,Arial;cursor:pointer}
+.repbox .rr button.on{background:#fde047}
+.repbox textarea{width:100%;min-height:54px;font:inherit;font-size:15px;padding:6px}
+.campnote{margin-top:6px;font-size:.92em;color:#333}
+.savenote{text-align:center;font-size:14px;color:var(--muted);margin-top:12px}
 /* results */
 .victory{text-align:center}
 .victory h1{font-size:clamp(32px,6vw,52px)}
@@ -84,7 +92,7 @@
 
   <section id="choose">
     <h1>Choose a mission</h1>
-    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, right answers count towards securing spec points (which make you stronger), and your first mission each day gives you an extra move on the map.</p>
+    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, right answers count towards securing spec points (which make you stronger), and a question you get right first time on two different days is secured for good.</p>
     <div class="prof" id="prof"></div>
     <div class="choices" id="choices"></div>
     <div class="other"><label for="pick"><b>Or pick any topic:</b></label><select id="pick"></select><button class="btn" id="pickGo">Fight →</button></div>
@@ -103,23 +111,23 @@
       <div class="qtext" id="qtext"></div>
       <div class="opts" id="opts"></div>
       <div id="fb"></div>
-      <div class="next"><span class="report">⚑ Report this question</span><button class="btn gold hidden" id="nextBtn">Next →</button></div>
+      <div class="next"><button type="button" class="report" id="repBtn">⚑ Report this question</button><button class="btn gold hidden" id="nextBtn">Next →</button></div>
+      <div class="repbox hidden" id="repBox"></div>
     </div>
   </section>
 
   <section id="done" class="hidden"></section>
 
-  <div class="teacher">
-    <b>Mock-up notes:</b>
-    <ul>
-      <li>This replaces today's Campaign mission screen. Same rules underneath (right first time on two different days secures a question; enough secured questions secure the spec point). Questions are the real bank.</li>
-      <li>The fight is just a skin over the 10 questions: right answer = hit, wrong answer = the misconception gloats and you see the explanation. You can't lose a mission.</li>
-      <li>Pretend rewards here: 6+ correct secures one spec point in that science (in the real thing it takes two different days).</li>
-    </ul>
-  </div>
 </main>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="spec.js"></script>
 <script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
 <script src="adventurer-shell.js"></script>
@@ -135,25 +143,20 @@ const FOES = {
   P5: ['Heat Rises', 'boss'], P6: ['Magnets Stick to All Metals', 'cube'], P7: ['Radiation Makes You Glow', 'ghost'], P8: ['The Moon Makes Its Own Light', 'boss'],
 };
 
-/* sub-topics from the spec, with their questions */
-const SUBS = [];
-SPEC.forEach(subj => {
-  const L = subj.name[0];
-  subj.topics.forEach(t => t.subs.forEach(sb => {
-    const ids = new Set(sb.points.map(p => L + p.id));
-    const qs = QUESTIONS.filter(q => ids.has(q.s));
-    if (qs.length >= 6 && sb.name !== 'Units') SUBS.push({ key: L + t.n + sb.l, L, topic: L + t.n, subj: subj.name, name: sb.name, qs });
-  }));
-});
+/* sub-topics with questions (Units hidden), from the engine */
+const SUBS = QE.allSubs().filter(s => s.nq >= 4);
 const subBy = k => SUBS.find(s => s.key === k);
 const foeOf = sub => { const [name, shape] = FOES[sub.topic] || ['The Common Misconception', 'boss']; return { name, shape, col: SCI_COL[sub.L], img: ADV.icon(shape, SCI_COL[sub.L]) }; };
+const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
 
 /* the Professor's briefing (chapter 1: his notes, found in the Cakelab) */
 $('prof').innerHTML = S.chapter < 2 ? `<img src="${ADV.icon('prof')}" alt="" style="filter:grayscale(1);opacity:.6"><p><b>Found pinned up in the empty Cakelab:</b> <i>“Misconceptions are everywhere. Knock them out with real science and you'll be strong enough to come and get me. — The Professor. P.S. Bring snacks.”</i></p>`
   : `<img src="${ADV.icon('prof')}" alt=""><p><b>The Professor:</b> <i>“Today's suggestion is waves. Get seven right and that misconception is toast. Lightly buttered.”</i></p>`;
 /* choose screen */
-const PICKS = [['P3b', 'Suggested', '#b45309', 'Next on your path'], ['B2e', 'Rusty', '#2563eb', 'Not practised for 3 weeks'], ['C1f', 'Fresh', '#16a34a', 'Not started yet']].filter(([k]) => subBy(k));
-$('choices').innerHTML = PICKS.map(([k, tag, col, why]) => { const sb = subBy(k), f = foeOf(sb); return `<button class="choice" data-sub="${k}"><span class="why" style="color:${col}">${tag}</span><img class="px" src="${f.img}" alt=""><b>${f.name}</b><span class="topic">${sb.subj} ${sb.key.slice(1)} · ${sb.name}</span><span class="small">${why}</span></button>`; }).join('');
+const TAGCOL = { Suggested: '#b45309', Rusty: '#2563eb', 'Ready to secure': '#7c3aed', Fresh: '#16a34a', 'Keep going': '#475569' };
+const PICKS = QE.picks().filter(p => subBy(p.sub.key));
+$('choices').innerHTML = PICKS.map(({ sub, tag, why }) => { const sb = subBy(sub.key), f = foeOf(sb); return `<button class="choice" data-sub="${sb.key}"><span class="why" style="color:${TAGCOL[tag] || '#b45309'}">${tag}</span><img class="px" src="${f.img}" alt=""><b>${f.name}</b><span class="topic">${sb.subj} ${sb.key.slice(1)} · ${esc(sb.name)}</span><span class="small">${why}</span></button>`; }).join('');
 $('pick').innerHTML = ['Biology', 'Chemistry', 'Physics'].map(n => `<optgroup label="${n}">${SUBS.filter(s => s.subj === n).map(s => `<option value="${s.key}">${s.key.slice(1)} ${s.name}</option>`).join('')}</optgroup>`).join('');
 $('choices').addEventListener('click', e => { const b = e.target.closest('[data-sub]'); if (b) start(b.dataset.sub); });
 $('pickGo').onclick = () => start($('pick').value);
@@ -163,8 +166,10 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 let MS = null;
 function start(k) {
   const sub = subBy(k), foe = foeOf(sub);
-  const qs = shuffle(sub.qs).slice(0, 10);
-  MS = { sub, foe, qs, i: 0, hp: 100, res: [] };
+  const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(k => topicKeys.add(k)));
+  const qs = QE.buildMission(sub.keys, topicKeys);
+  MS = { sub, foe, qs, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
+  QE.busy = true;
   $('choose').classList.add('hidden'); $('fight').classList.remove('hidden');
   $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
   $('youName').textContent = ADV.nick();
@@ -183,13 +188,18 @@ function show() {
   $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
   $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${t}</span></button>`).join('');
   $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
+  MS.opts = opts; MS.picked = -1;
+  $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
+  $('repBox').classList.add('hidden'); $('repBox').innerHTML = '';
 }
 $('opts').addEventListener('click', e => {
   const b = e.target.closest('.opt'); if (!b || b.disabled) return;
   const q = MS.qs[MS.i], ok = b.dataset.ok === '1';
   [...$('opts').children].forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); });
   if (!ok) b.classList.add('wrong');
+  MS.picked = [...$('opts').children].indexOf(b);
   MS.res.push({ q, ok });
+  const notes = QE.recordAnswer(q, ok);
   const ar = $('arena');
   ar.classList.remove('hit', 'ouch'); void ar.offsetWidth;
   if (ok) {
@@ -202,25 +212,46 @@ $('opts').addEventListener('click', e => {
     ar.classList.add('ouch');
     $('quote').textContent = `“See? ${MS.foe.name}!”`;
   }
-  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Right — hit!' : 'Not quite.'}</span>${q.x || ''}</div>`;
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Right — hit!' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
   $('nextBtn').textContent = MS.i + 1 < MS.qs.length ? 'Next →' : 'Finish the fight →';
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
 });
+/* ⚑ report this question (goes to the teacher's reports page) */
+const REPORTED = new Set();
+$('repBtn').onclick = () => {
+  const q = MS.qs[MS.i], box = $('repBox');
+  if ($('repBtn').disabled) return;
+  box.classList.toggle('hidden'); if (box.innerHTML) return;
+  box.innerHTML = `<b>What's wrong with this question?</b><div class="rr">${QE.REPORT_REASONS.map((r, i) => `<button type="button" data-r="${i}">${r}</button>`).join('')}</div>
+    <textarea maxlength="400" placeholder="Optional: tell us more (e.g. what you think the answer should be)"></textarea>
+    <div style="margin-top:6px;display:flex;gap:8px;align-items:center"><button type="button" class="btn gold" id="repSend" disabled>Send report</button><span id="repMsg" class="small"></span></div>`;
+  let reason = null;
+  box.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { reason = QE.REPORT_REASONS[+b.dataset.r]; box.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', x === b)); $('repSend').disabled = false; });
+  $('repSend').onclick = () => {
+    if (!reason) return;
+    if (REPORTED.size >= 10) { $('repMsg').textContent = 'That is the limit for this visit. Thank you!'; return; }
+    REPORTED.add(q.id); $('repSend').disabled = true;
+    const opts = MS.opts || [];
+    QE.report(q, opts.map(o => o[0]), opts.findIndex(o => o[1]), MS.picked, reason, box.querySelector('textarea').value)
+      .then(() => { box.innerHTML = '<b>Thank you!</b> Your teacher will check this question.'; })
+      .catch(() => { box.innerHTML = 'It could not be sent right now. Please tell your teacher instead.'; });
+    $('repBtn').disabled = true; $('repBtn').textContent = '⚑ Reported, thank you';
+  };
+};
 $('nextBtn').onclick = () => { MS.i++; if (MS.i < MS.qs.length) show(); else finish(); };
 
-/* results + rewards (pretend) */
+/* results: real progress (saved), plus loot and coins for the adventurer */
 function finish() {
   const right = MS.res.filter(r => r.ok).length, won = MS.hp === 0;
-  const before = ADV.stats(), capBefore = ADV.levelCap(), [statName, sk, cssk] = STAT[MS.sub.L];
-  const securedPt = right >= 6;
-  if (securedPt) S.secured[sk]++;
-  const coins = 10 + (won ? 10 : 0); S.coins += coins;
+  const before = MS.before, capBefore = MS.cap0, [statName, sk, cssk] = STAT[MS.sub.L];
+  const coins = 10 + (won ? 10 : 0);
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
   const drop = pool[Math.floor(Math.random() * pool.length)];
-  S.bag = [...new Set([...(S.bag || []), drop.id])]; S.lastLoot = drop.id; S.missionsToday++;
-  const bonusMove = S.missionsToday === 1; if (bonusMove) S.moves = Math.min(5, S.moves + 1);   // first mission of the day = +1 move
-  ADV.save();
-  const after = ADV.stats(), capAfter = ADV.levelCap(), toCap = 8 - ADV.securedTotal() % 8;
+  QE.finishMission({ coins, loot: drop.id });
+  QE.busy = false;
+  const after = ADV.stats(), capAfter = ADV.levelCap(), toCap = 8 - ADV.securedTotal() % 8, st = QE.stats();
+  const gainP = st.securedP - MS.st0.securedP, gainQ = st.securedQ - MS.st0.securedQ, xp = S.xp - MS.xp0;
+  const statUps = [['p', 'Strength', 'str'], ['b', 'Health', 'hp'], ['c', 'Magic', 'mag']].filter(([k]) => S.secured[k] > MS.sec0[k]);
   const wrong = MS.res.filter(r => !r.ok);
   $('fight').classList.add('hidden');
   $('done').classList.remove('hidden');
@@ -231,13 +262,16 @@ function finish() {
     <div class="rewards">
       <div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_RARITY[drop.r]}</span><br><b style="font-size:20px">${drop.name}</b><br><i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>
       <div class="card"><h3 style="margin-top:0">What you got</h3><ul class="gain">
-        ${securedPt ? `<li class="up">🔒 Spec point secured in ${MS.sub.subj} → <b>${statName} ${before[cssk]} → ${after[cssk]}</b></li>` : `<li>Right answers count towards securing ${MS.sub.subj} points. Get 6+ right to secure one.</li>`}
-        ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! Bank XP from the map now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
+        <li>⭐ +${xp} XP · ${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b>` : 'questions you got right today secure when you get them right again on another day'}</li>
+        ${gainP > 0 ? `<li class="up">📌 ${gainP} spec point${gainP === 1 ? '' : 's'} secured${statUps.length ? ' → ' + statUps.map(([, n, c]) => `<b>${n} ${before[c]} → ${after[c]}</b>`).join(', ') : ''}</li>` : `<li>Secure ${MS.sub.subj} spec points to raise your ${statName}.</li>`}
+        ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! XP you had banked now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
         <li>🪙 +${coins} coins${won ? ' (defeat bonus)' : ''}</li>
-        ${bonusMove ? `<li class="up">🗺 +1 move on the map tonight (first mission today)</li>` : `<li>⚔ Missions today: ${S.missionsToday} (the extra move is for the first one each day)</li>`}</ul></div>
+        <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><a class="btn green big" href="adventurer-map.html">🗺 Plan tonight's moves</a><a class="btn alt" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">⛺ Base camp</a></div>`;
+    <div class="acts"><a class="btn gold big" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">⛺ Base camp</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
+    <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe and get on the leaderboards.'}</p>`;
+  if (QE.user) QE.onChange(() => { const n = $('saveNote'); if (n) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent; });
   scrollTo(0, 0);
 }
 </script>

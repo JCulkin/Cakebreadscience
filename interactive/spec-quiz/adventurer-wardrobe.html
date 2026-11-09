@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Wardrobe (preview) - Cakebread Questing</title>
+<title>Wardrobe - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,7 +78,6 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 <header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Wardrobe</span></header>
 <div class="wrap">
   <h1>Wardrobe</h1>
-  <span class="flag">Mock-up · pretend inventory · saves in this browser only</span>
 
   <div class="layout">
     <div class="card me">
@@ -100,6 +99,15 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
   </div>
 </div>
 
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
 <script src="adventurer-shell.js"></script>
@@ -110,11 +118,21 @@ const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e
 const base = load(KEY_BASE) || PIXEL.DEFAULT;
 const nick = localStorage.getItem(KEY_NICK) || 'Brave Neutron';
 const byId = Object.fromEntries(ADV_ITEMS.map(i => [i.id, i]));
-/* pretend inventory: starter outfit + some mission drops + some badge items; holds the Physics legendary this week */
-const OWNED = new Set(['paperhat', 'jumper', 'joggers', 'oddsocks', 'crisps', 'ruler', 'nocap', 'delulu', 'labcoat', 'npc', 'inertia',
-  'brownian', 'grass', 'shield', 'clipboard', 'glove', 'pipette', 'dodgeball', ...(ADV.S.bag || [])]);
-const HOLDERS = {syringe: 'Priya K.', pebble: 'Leo M.'};
-let eq = load(KEY_EQ) || {head: 'nocap', top: 'labcoat', bottom: 'inertia', shoes: 'brownian', lhand: 'shield', rhand: 'glove'};
+/* what you own: the starter outfit + everything missions have dropped (saved in your account) + any legendary you hold this week */
+const STARTER = ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id);
+const OWNED = new Set([...STARTER, ...(ADV.S.bag || [])]);
+const HOLDERS = {};
+let eq = ADV.eq();
+for (const k in eq) if (eq[k] && !OWNED.has(eq[k])) { const st = ADV_ITEMS.find(i => i.slot === k && i.from === 'Starter outfit'); eq[k] = st ? st.id : null; }
+/* legendaries: whoever tops this week's board in that science holds it */
+QE.onChange(() => {
+  if (!QE.user || HOLDERS._done) return; HOLDERS._done = true;
+  QE.board().then(rows => {
+    const week = rows.filter(r => r.wk === QE.WEEK);
+    [['syringe', 'wb'], ['pebble', 'wc'], ['dodgeball', 'wp']].forEach(([id, f]) => { const b = week.filter(r => r[f] > 0).sort((a, c) => c[f] - a[f])[0]; if (b) { HOLDERS[id] = b.me ? 'you' : b.name; if (b.me) OWNED.add(id); } });
+    render();
+  }).catch(() => {});
+});
 let slot = 'head', sel = eq.head || null, showHints = false;
 const PIC = {}; const pic = id => PIC[id] || (PIC[id] = PIXEL.item(id));
 const SUBJ = {b: 'Biology', c: 'Chemistry', p: 'Physics'};
@@ -158,7 +176,7 @@ function render() {
         <div class="acts">${eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>` : `<button class="btn" data-wear="${it.id}">Wear it</button>`}</div></div></div>` : '';
 
   document.getElementById('hints').innerHTML = showHints && missing.length ? `<div class="hints"><b>Still to find in this slot:</b><ul>${missing.map(i =>
-      `<li>${i.legend ? `A legendary — held this week by <b>${HOLDERS[i.id] || 'someone else'}</b> (most correct ${i.legend} answers in the last 7 days)` : `??? — ${i.from}`}</li>`).join('')}</ul></div>` : '';
+      `<li>${i.legend ? `A legendary — held this week by <b>${HOLDERS[i.id] || 'nobody yet'}</b> (most correct ${i.legend} answers this week)` : `??? — ${i.from}`}</li>`).join('')}</ul></div>` : '';
 }
 document.addEventListener('click', e => {
   const s = e.target.closest('[data-slot]');
@@ -170,7 +188,7 @@ document.addEventListener('click', e => {
   const t = e.target.closest('.it[data-id]');
   if (t) { sel = t.dataset.id; render(); }
 });
-function save() { try { localStorage.setItem(KEY_EQ, JSON.stringify(eq)); } catch (e) {} }
+function save() { try { localStorage.setItem(KEY_EQ, JSON.stringify(eq)); } catch (e) {} QE.syncLook(); }
 render();
 </script>
 </body>

@@ -1,40 +1,57 @@
-/* The Adventurer — shared bits for the clickable mock (9 Nov 2026).
-   Nav bar across all the Adventurer pages, the pretend saved game (localStorage), the stat rules, and the 12×12 pixel icons
-   used by the map, base camp and mission pages. Needs adventurer-pixel.js loaded first (for portraits). */
+/* Cakebread Questing: shared bits for every Questing page.
+   Top bar (with Google sign-in), the Adventurer's stats, story pop-ups and the 12×12 pixel icons.
+   Real progress (XP, secured spec points, coins, loot, missions today) comes from questing-engine.js (QE), which
+   saves to the student's account. The map state (moves, plan, position, health, brews, bosses) is Breadventure
+   Land's own and stays in this browser until the shared class map is built.
+   Needs, first: questing-engine.js (and its scripts) and adventurer-pixel.js. */
 const ADV = (() => {
   const KEY = 'cbs.adventurer.state';
   /* Totals of non-Units spec points per science (Double Award): used for progress bars. */
   const TOTAL = { b: 134, c: 130, p: 139 };
   const SCI = { b: 'Biology', c: 'Chemistry', p: 'Physics' };
+  const STARTER = { head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler' };
   const DEF = () => ({
-    v: 1, day: 1, xp: 640, coins: 35, secured: { p: 22, b: 15, c: 19 }, health: 27,
-    moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // day 1: welcome boost of 6 moves, then 2 a day (+1 for the day's first mission)
-    brews: { 'Bottled Aura': 2, 'Electrolyte Slushie': 1, 'Fizzy Courage': 1 },
-    bag: [], lastLoot: null, missionsToday: 0, reportSeen: 0, report: null, chapter: 1, storySeen: false, rescueSeen: false,
+    v: 2, day: 1, health: null,
+    moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // map: 6 moves on day one, then 2 a day (+1 for the day's first mission)
+    brews: {}, missionsSeen: 0, reportSeen: 0, report: null, chapter: 1, storySeen: false, rescueSeen: false,
   });
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
-  let S = Object.assign(DEF(), load(KEY) || {});
+  /* real values live in the engine; the map state is plain data */
+  function attach(o) {
+    ['xp', 'secured', 'coins', 'bag', 'lastLoot', 'missionsToday'].forEach(k => delete o[k]);   // left over from the mock-up
+    const def = (k, get, set) => Object.defineProperty(o, k, { get, set: set || (() => {}), enumerable: false, configurable: true });
+    def('xp', () => QE.prog.xp);
+    def('secured', () => QE.securedBySci());
+    def('coins', () => QE.game.coins || 0, v => { QE.game.coins = v; QE.gameChanged(); });
+    def('bag', () => QE.game.bag || [], v => { QE.game.bag = v; QE.gameChanged(); });
+    def('lastLoot', () => QE.game.lastLoot, v => { QE.game.lastLoot = v; QE.gameChanged(); });
+    def('missionsToday', () => QE.missionsToday());
+    return o;
+  }
+  let stored = load(KEY);
+  if (stored && stored.v !== 2) stored = null;   // the mock-up's pretend game: start again from the real numbers
+  let S = attach(Object.assign(DEF(), stored || {}));
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
-  const reset = () => { try { localStorage.removeItem(KEY); } catch (e) {} S = DEF(); };
+  const reset = () => { try { localStorage.removeItem(KEY); } catch (e) {} S = attach(DEF()); };
 
-  /* look, name, gear (saved by the creator and wardrobe pages) */
+  /* look, name, gear (saved by the creator and wardrobe pages; the engine copies them into the account) */
   const look = () => load('cbs.adventurer.base') || PIXEL.DEFAULT;
   const hasLook = () => !!load('cbs.adventurer.base');
   const nick = () => localStorage.getItem('cbs.adventurer.nick') || 'Brave Neutron';
-  const eq = () => load('cbs.adventurer.eq') || { head: 'nocap', top: 'labcoat', bottom: 'inertia', shoes: 'brownian', lhand: 'shield', rhand: 'glove' };
+  const eq = () => load('cbs.adventurer.eq') || Object.assign({}, STARTER);
 
-  /* stats = quiz half (secured spec points) + game half (level) + gear. Level comes from map XP, capped by the quiz. */
+  /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured. */
   const LV = { str: 2, hp: 3, mag: 1 };
   const GEAR = 2;
-  const securedTotal = () => S.secured.p + S.secured.b + S.secured.c;
+  const securedTotal = () => { const s = S.secured; return s.p + s.b + s.c; };
   const levelCap = () => 2 + Math.floor(securedTotal() / 8);
   const xpFor = l => 100 * l * (l - 1) / 2;
   const rawLevel = () => { let l = 1; while (xpFor(l + 1) <= S.xp) l++; return l; };
   const level = () => Math.min(rawLevel(), levelCap());
   const stats = () => {
-    const l = level();
-    const s = { l, str: S.secured.p + LV.str * l + GEAR, hp: S.secured.b + LV.hp * l, mag: S.secured.c + LV.mag * l };
-    if (S.health > s.hp) S.health = s.hp;
+    const l = level(), sec = S.secured;
+    const s = { l, str: sec.p + LV.str * l + GEAR, hp: sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
+    if (S.health == null || S.health > s.hp) S.health = s.hp;
     return s;
   };
 
@@ -61,28 +78,38 @@ const ADV = (() => {
 @keyframes advpulse{50%{transform:scale(1.18)}}
 .advnav .sm{font-size:14px;padding:6px 8px}
 .advnav .gap{flex:1;min-width:8px}
-.advnav .mock{display:flex;gap:6px;align-items:center;white-space:nowrap;font:700 10px Barlow,Arial;color:#facc15;text-transform:uppercase;letter-spacing:1px;padding-left:6px;border-left:1px solid #333}
-.advnav .mock button,.advnav .mock a{font:700 10px Barlow,Arial;background:none;border:1px solid #555;color:#aaa;padding:2px 6px;cursor:pointer;text-transform:uppercase;letter-spacing:1px}
-@media(max-width:640px){.advnav{gap:4px;padding:6px 8px}.advnav .brand,.advnav .mock{display:none}.advnav .tab .lbl{display:none}.advnav .cta .lbl{display:inline}.advnav .cta{font-size:15px;padding:6px 10px}}`;
+.advnav .acct{display:flex;gap:6px;align-items:center;white-space:nowrap;padding-left:8px;border-left:1px solid #333;color:#ccc;font-size:14px;font-weight:700}
+.advnav .acct button{font:700 14px Barlow,Arial;background:#eeeae0;border:2px solid #111;color:#111;padding:4px 10px;border-radius:7px;cursor:pointer}
+.advnav .acct button.out{background:none;border:1px solid #555;color:#aaa;font-size:12px;padding:2px 7px}
+.advnav .acct .sv{font-size:11px;color:#888;font-weight:600}
+.advnav .soon{background:#111;color:#4ade80;border-radius:10px;font-size:11px;font-weight:900;padding:0 6px;line-height:17px;text-transform:uppercase;letter-spacing:.5px}
+@media(max-width:640px){.advnav{gap:4px;padding:6px 8px}.advnav .brand,.advnav .acct .nm,.advnav .acct .sv{display:none}.advnav .tab .lbl{display:none}.advnav .cta .lbl{display:inline}.advnav .cta{font-size:15px;padding:6px 10px}}`;
     document.head.appendChild(css);
-    const movesLeft = S.moves - S.plan.length, noMission = !S.missionsToday;
+    const noMission = !S.missionsToday;
     const n = document.createElement('nav');
     n.className = 'advnav';
     n.setAttribute('aria-label', 'Cakebread Questing');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
-    n.innerHTML = `<a class="brand" href="adventurer-start.html">Cakebread <b>Questing</b></a>`
+    n.innerHTML = `<a class="brand" href="index.html">Cakebread <b>Questing</b></a>`
       + tab('home', 'adventurer-home.html', '🏠', 'Base camp')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure', 'cta map', movesLeft > 0 ? `<span class="dot">${movesLeft}</span>` : '')
+      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure', 'cta map', '<span class="soon">preview</span>')
       + `<span class="gap"></span>`
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
-      + `<span class="mock">Mock-up <button type="button" id="advReset" title="Start the pretend game again">Reset</button><a href="/test.html">Test page</a></span>`;
+      + `<span class="acct" id="advAcct"></span>`;
     document.body.prepend(n);
-    n.querySelector('#advReset').onclick = () => {
-      if (!confirm('Reset the pretend game (level, map, loot, story)? Your look and gear stay.')) return;
-      reset(); save(); location.reload();
+    const acct = n.querySelector('#advAcct');
+    const draw = () => {
+      const u = QE.user;
+      if (!QE.online) { acct.innerHTML = '<span class="sv">Offline · saved in this browser</span>'; return; }
+      if (!u && !QE.known) { acct.innerHTML = ''; return; }
+      if (!u) { acct.innerHTML = `<span class="sv">Not signed in</span><button type="button" id="advIn">Sign in</button>`; acct.querySelector('#advIn').onclick = () => QE.signIn().catch(e => { if (e && e.code !== 'auth/popup-closed-by-user') alert('Sign-in did not work: ' + (e.message || e)); }); return; }
+      const st = { saving: 'Saving…', saved: 'Saved ✓', error: 'Not saved', loading: 'Loading…' }[QE.status] || '';
+      acct.innerHTML = `<span class="sv">${st}</span><span class="nm">${(u.displayName || 'Student').split(' ')[0]}</span><button type="button" class="out" id="advOut">Sign out</button>`;
+      acct.querySelector('#advOut').onclick = () => QE.signOut();
     };
+    draw(); QE.onChange(draw);
   }
 
   /* ---------- story pop-ups (chapter 1: the Professor is taken; the rescue) ---------- */

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Make your adventurer (preview) - Cakebread Questing</title>
+<title>My look - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,7 +62,6 @@ details.why li{margin:6px 0 0 20px}
 <div class="wrap">
   <h1>Make your adventurer</h1>
   <p class="lede">Pick a look. You can change it any time, for free. Clothes and gear come from missions and the map — this is just you.</p>
-  <span class="flag">Mock-up · saves in this browser only</span>
 
   <div class="layout">
     <div class="card preview">
@@ -89,7 +88,7 @@ details.why li{margin:6px 0 0 20px}
     </div>
   </div>
 
-  <details class="why" open>
+  <details class="why">
     <summary>For teachers: why there is no boy / girl choice</summary>
     <ul>
       <li><b>One body for everyone.</b> Every adventurer has the same small, chunky body. Hair, face, skin and extras are separate choices, and every option is open to everyone. Nobody has to pick a box, and nobody is told “that hair is for girls”.</li>
@@ -104,6 +103,15 @@ details.why li{margin:6px 0 0 20px}
   </details>
 </div>
 
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="questing-engine.js"></script>
 <script src="adventurer-pixel.js"></script>
 <script src="adventurer-shell.js"></script>
 <script>
@@ -166,7 +174,8 @@ document.getElementById('rand').onclick = () => {
 document.getElementById('save').onclick = () => {
   base.v = 1;
   try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
-  location.href = 'adventurer-home.html';
+  QE.syncLook();
+  setTimeout(() => { location.href = 'adventurer-home.html'; }, QE.user ? 700 : 0);
 };
 render();
 </script>
