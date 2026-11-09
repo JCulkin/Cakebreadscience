@@ -46,6 +46,11 @@ button{font:inherit;cursor:pointer;color:inherit}
 .bar{height:12px;border:2px solid var(--ink);background:var(--soft);position:relative;overflow:hidden}
 .bar i{position:absolute;inset:0 auto 0 0;transition:width .4s}
 .setline{margin-top:12px;font-size:14px;padding:8px;border:2px dashed var(--ink);background:#fffbe6;min-height:40px}
+.pxbtns{display:flex;gap:6px;justify-content:center;margin:6px 0 2px}.pxbtns button{border:2px solid var(--ink);background:#fff;padding:3px 12px;font-weight:700;font-size:14px}.pxbtns button.on{background:var(--ink);color:#fff}
+img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+#figPx{width:100%;max-width:290px;display:block;margin:0 auto}
+.thumb img,.item .pic img,.drop .pic img{width:100%;height:100%;object-fit:contain;padding:4px}
+.lineup{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.lineup img{width:150px;background:#fff;border:2px solid var(--ink)}
 .slots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:600px){.slots{grid-template-columns:repeat(3,1fr)}}
 .slot{border:2px solid var(--ink);background:var(--paper);display:flex;gap:10px;align-items:center;padding:8px;cursor:pointer;text-align:left}
@@ -70,7 +75,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 .item .ds{font-size:14px;font-style:italic;color:#333}
 .item .st{font-size:13px;color:var(--muted);font-weight:600}
 .item.locked{cursor:default;border-style:dashed;border-color:#aaa}
-.item.locked .pic svg{filter:brightness(0) opacity(.18)}
+.item.locked .pic svg,.item.locked .pic img{filter:brightness(0) opacity(.18)}
 .item.locked .nm{color:#999}
 .item.locked .how{font-size:13px;font-weight:700;color:var(--ink);background:var(--soft);padding:4px 6px}
 .r-common{--r:var(--common)}.r-uncommon{--r:var(--uncommon)}.r-rare{--r:var(--rare)}.r-lowkey{--r:var(--lowkey)}.r-unhinged{--r:var(--unhinged)}.r-legend{--r:var(--legend)}
@@ -132,11 +137,13 @@ button{font:inherit;cursor:pointer;color:inherit}
   <span class="preview-flag">Preview only · not connected to the quiz yet</span>
 
   <h2>1. Character sheet</h2>
-  <p class="note">What a student sees on the Campaign screen. Click a slot, then an item below to equip it. Joke stats (Aura, Brain Cells, Vibes) add up from what's worn and change nothing in the game.</p>
+  <p class="note"><b>Two art styles to compare:</b> switch between the new pixel version and the first vector try with the buttons above the character. What a student sees on the Campaign screen. Click a slot, then an item below to equip it. Joke stats (Aura, Brain Cells, Vibes) add up from what's worn and change nothing in the game.</p>
   <div class="sheet">
     <div class="card in hero">
       <div class="pname">Sam B.</div>
       <div class="ptitle" id="ptitle">“Side Quest Enjoyer”</div>
+      <div class="pxbtns"><button data-style="pixel" class="on">Pixel (new)</button><button data-style="vector">Vector (first try)</button></div>
+      <img id="figPx" class="px" alt="The adventurer in pixel art wearing the equipped items">
       <svg class="fig" id="fig" viewBox="0 -40 200 280" role="img" aria-label="The adventurer wearing the equipped items"></svg>
       <div class="stats" id="stats"></div>
       <div class="setline" id="setline"></div>
@@ -148,6 +155,9 @@ button{font:inherit;cursor:pointer;color:inherit}
       <div class="inv" id="inv"></div>
     </div>
   </div>
+
+  <h3 style="margin:18px 0 8px">Pixel line-up: five outfits</h3>
+  <div class="lineup" id="lineup"></div>
 
   <h2>2. Where items come from</h2>
   <div class="dec">
@@ -223,6 +233,7 @@ button{font:inherit;cursor:pointer;color:inherit}
   </div>
 </div>
 
+<script src="adventurer-pixel.js"></script>
 <script>
 /* ===================== DRAWINGS =====================
    Figure coordinates (viewBox 0 -40 200 280): head centre (100,50) r 20, shoulders (100,88),
@@ -398,7 +409,8 @@ const LOCKED = ['halo','kilt','frictionless','mito','calc67','syringe','pebble']
 /* ===================== STATE ===================== */
 const byId = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 const equipped = {head:'nocap', top:'labcoat', bottom:'inertia', shoes:'brownian', lhand:'shield', rhand:'glove'};
-let curSlot = 'all';
+let curSlot = 'all', STYLE = 'pixel';
+const pic = it => STYLE === 'pixel' && PIXEL.has(it.id) ? `<img class="px" src="${PIXEL.item(it.id)}" alt="">` : itemSVG(it);
 
 function figureSVG(eq) {
   const g = s => eq[s] ? byId[eq[s]].svg : '';
@@ -431,8 +443,12 @@ function setBonus(eq) {
   return {title: null, txt: `Wear 3 items from the same science for a set bonus. (Now: Biology ${c.b}, Chemistry ${c.c}, Physics ${c.p})`};
 }
 function render() {
-  document.getElementById('fig').innerHTML = figureSVG(equipped);
-  document.getElementById('phFig').innerHTML = figureSVG(equipped);
+  const fig = document.getElementById('fig'), figPx = document.getElementById('figPx');
+  fig.innerHTML = figureSVG(equipped);
+  if (STYLE === 'pixel') { figPx.src = PIXEL.figure(equipped); figPx.style.display = ''; fig.style.display = 'none'; }
+  else { figPx.style.display = 'none'; fig.style.display = ''; }
+  document.getElementById('phFig').innerHTML = STYLE === 'pixel' ? `<image href="${PIXEL.figure(equipped)}" x="0" y="-40" width="200" height="280" style="image-rendering:pixelated" preserveAspectRatio="xMidYMid meet"/>` : figureSVG(equipped);
+  document.querySelectorAll('.pxbtns button').forEach(b => b.classList.toggle('on', b.dataset.style === STYLE));
   const st = statsOf(equipped), max = 60;
   document.getElementById('stats').innerHTML = [['Aura', st.aura, '#8b5cf6'], ['Brain Cells', st.brain, '#2563eb'], ['Vibes', st.vibes, '#ea580c']]
     .map(([n, v, c]) => `<span>${n}</span><div class="bar"><i style="width:${Math.max(0, Math.min(100, v / max * 100))}%;background:${c}"></i></div><span>${v}</span>`).join('');
@@ -441,7 +457,7 @@ function render() {
   document.getElementById('ptitle').textContent = `“${sb.title || 'Side Quest Enjoyer'}”`;
   document.getElementById('slots').innerHTML = SLOTS.map(s => {
     const it = byId[equipped[s.k]];
-    return `<button class="slot ${curSlot === s.k ? 'on' : ''}" data-slot="${s.k}"><div class="thumb">${itemSVG(it)}</div><div><div class="lab">${s.name}</div><div class="nm">${it.name}</div></div></button>`;
+    return `<button class="slot ${curSlot === s.k ? 'on' : ''}" data-slot="${s.k}"><div class="thumb">${pic(it)}</div><div><div class="lab">${s.name}</div><div class="nm">${it.name}</div></div></button>`;
   }).join('');
   document.getElementById('tabs').innerHTML = [{k:'all', name:'All'}, ...SLOTS].map(s => `<button class="tab ${curSlot === s.k ? 'on' : ''}" data-slot="${s.k}">${s.name}</button>`).join('');
   const list = ITEMS.filter(i => curSlot === 'all' || i.slot === curSlot);
@@ -450,7 +466,7 @@ function render() {
     const eq = equipped[it.slot] === it.id;
     const slotName = SLOTS.find(s => s.k === it.slot).name;
     return `<button class="item r-${it.r} ${locked ? 'locked' : ''} ${eq ? 'eq' : ''}" data-id="${it.id}" ${locked ? 'aria-disabled="true"' : ''}>
-      <div class="pic">${itemSVG(it)}</div>
+      <div class="pic">${pic(it)}</div>
       <div class="rar">${RAR[it.r]} · ${slotName}</div>
       <div class="nm">${locked && !it.legend ? '???' : it.name}</div>
       ${locked && !it.legend ? `<div class="how">🔒 ${it.from}</div>` : `<div class="ds">${it.d}</div>`}
@@ -462,6 +478,8 @@ function render() {
 const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
 document.getElementById('rkey').innerHTML = Object.entries(RAR).map(([k, v]) => `<span class="key r-${k}">${v}</span>`).join('');
 document.addEventListener('click', e => {
+  const st = e.target.closest('[data-style]');
+  if (st) { STYLE = st.dataset.style; render(); return; }
   const s = e.target.closest('[data-slot]');
   if (s) { curSlot = s.dataset.slot; render(); return; }
   const it = e.target.closest('.item');
@@ -568,7 +586,7 @@ function play() {
       log.insertAdjacentHTML('beforeend', `<p class="${cls}">${txt}</p>`);
       if (cls === 'loot') {
         const it = byId[E.loot];
-        document.getElementById('dropBox').innerHTML = `<div class="drop r-${it.r}"><div class="pic">${itemSVG(it)}</div>
+        document.getElementById('dropBox').innerHTML = `<div class="drop r-${it.r}"><div class="pic">${pic(it)}</div>
           <div><div class="rar" style="color:var(--r);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px">${RAR[it.r]} · ${SLOTS.find(s => s.k === it.slot).name}</div>
           <div style="font-weight:700;font-size:20px;line-height:1.1">${it.name}</div><div style="font-style:italic">${it.d}</div></div></div>`;
       }
@@ -581,9 +599,14 @@ document.getElementById('nextEnemy').onclick = () => { ei = (ei + 1) % ENEMIES.l
 /* phone mock */
 document.getElementById('phDropName').textContent = byId.brownian.name;
 document.getElementById('phDropDesc').textContent = byId.brownian.d;
-document.getElementById('phDrop').outerHTML = `<div style="width:90px;height:90px;flex:none">${itemSVG(byId.brownian)}</div>`;
+document.getElementById('phDrop').outerHTML = `<div style="width:90px;height:90px;flex:none">${pic(byId.brownian)}</div>`;
 
 setEnemy(); render();
+document.getElementById('lineup').innerHTML = [
+  ['paperhat','jumper','joggers','oddsocks','crisps','ruler'], ['avogadro','chainmail','kilt','grass','pebble','syringe'],
+  ['halo','npc','inertia','frictionless','dodgeball','calc67'], ['delulu','labcoat','kilt','brownian','clipboard','mito'],
+  ['nocap','jumper','joggers','grass','shield','pipette']].map(o => { const eq = {}; o.forEach(id => eq[byId[id].slot] = id);
+  return `<img class="px" src="${PIXEL.figure(eq)}" alt="">`; }).join('');
 </script>
 </body>
 </html>
