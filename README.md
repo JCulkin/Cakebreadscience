@@ -205,6 +205,10 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-11-09 - v3.1.1 Tidier Homepage & One Spec Tracker Page
+- Leaderboards and Physics Long Answers cards removed from the homepage (reach them from the games and from Question Booklets)
+- One Spec Trackers card and page for Biology, Chemistry, Physics and Maths
+
 ### 2026-11-09 - v3.1.0 Cakebread Questing, Shared Leaderboards & Question Booklets
 - **Cakebread Questing** replaces the Spec Quiz: pixel adventurer, Base camp, missions as fights, wardrobe and loot, all on real progress saved to the student's Google account; Breadventure Land map as a preview; Quick quiz for the board
 - Shared leaderboards with Google sign-in names for every game, plus a combined `/leaderboards/` page

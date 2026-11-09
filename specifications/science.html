@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Science Specification Tracker - Cakebread Science</title>
-    <meta name="description" content="IGCSE Edexcel Science specification hub for Biology, Chemistry, and Physics.">
+    <title>Spec Trackers - Cakebread Science</title>
+    <meta name="description" content="IGCSE Edexcel specification trackers for Biology, Chemistry, Physics and Maths.">
     <meta name="keywords" content="IGCSE, Edexcel, science, biology, chemistry, physics, specification, worksheets">
     <meta name="author" content="Cakebread Science">
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -23,6 +23,7 @@
                 <a href="biology.html" class="topbar-link subject-bio">Biology</a>
                 <a href="chemistry.html" class="topbar-link subject-chem">Chemistry</a>
                 <a href="physics.html" class="topbar-link subject-phys">Physics</a>
+                <a href="maths.html" class="topbar-link subject-maths">Maths</a>
             </div>
             <div class="topbar-right">
 <span class="auth-status" data-auth-status>Not signed in</span>
@@ -33,9 +34,9 @@
 
         <section class="science-hero">
             <div class="science-hero-copy">
-                <span class="hero-eyebrow">IGCSE Edexcel Science</span>
-                <h1>Science Specification Tracker</h1>
-                <p class="hero-lede">Master Biology, Chemistry, and Physics with detailed specification breakdowns. Track your progress with checkboxes or RAG (Red / Amber / Green) confidence levels.</p>
+                <span class="hero-eyebrow">IGCSE Edexcel Science &amp; Maths</span>
+                <h1>Spec Trackers</h1>
+                <p class="hero-lede">Every point of the Biology, Chemistry, Physics and Maths specifications in one place. Track your progress with checkboxes or RAG (Red / Amber / Green) confidence levels.</p>
                 <p class="hero-note">Progress saves locally and syncs to your account when signed in.</p>
             </div>
         </section>
@@ -76,13 +77,24 @@
                 </div>
                 <a href="physics.html" class="card-link">Explore Specification →</a>
             </article>
+
+            <article class="subject-card maths-card">
+                <div class="card-header">
+                    <h2>📐 Maths</h2>
+                    <p class="card-subtitle">Number, algebra, geometry and statistics</p>
+                </div>
+                <div class="card-progress">
+                    <span class="progress-text">Every spec point with its worksheets. Progress tracking coming soon.</span>
+                </div>
+                <a href="maths.html" class="card-link">Explore Specification →</a>
+            </article>
         </section>
     </div>
 
 <style>
         .science-subjects {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 24px;
             padding: 32px 0;
         }
@@ -113,6 +125,10 @@
 
         .physics-card {
             background: linear-gradient(135deg, #8f4f12 0%, #b06a19 45%, #d28d38 100%);
+        }
+
+        .maths-card {
+            background: linear-gradient(135deg, #17398a 0%, #2255cc 45%, #4a7be0 100%);
         }
 
         .card-header {

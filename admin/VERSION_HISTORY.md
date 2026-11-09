@@ -2,6 +2,17 @@
 
 ---
 
+## [3.1.1] - 2026-11-09
+### Tidier Homepage & One Spec Tracker Page
+
+#### Changed
+- Homepage Resources trimmed: the **Leaderboards** card and jump link are gone (each game, and Cakebread Questing, links to `/leaderboards/`); **Physics Long Answers** now lives inside **Question Booklets**
+- One **Spec Trackers** card replaces "Science Spec Tracker" and "Maths Spec"; its page (`specifications/science.html`) now shows Biology, Chemistry, Physics and Maths together, and the Maths spec links back to it
+- Cakebread Questing menu: "All leaderboards →" link under this week's board
+- Homepage footer → v3.1.1
+
+---
+
 ## [3.1.0] - 2026-11-09
 ### Cakebread Questing, Shared Leaderboards & Question Booklets
 
