@@ -33,19 +33,98 @@ const PIXEL = (() => {
     for (const [k, c] of L.det) { const [x, y] = k.split(',').map(Number); put(x, y, c); }
   }
 
-  /* ---------- the body ---------- */
-  const BODY = layer(a => {
-    a.r(15, 19, 10, 10, '#e5e7eb');                             // vest under everything
-    a.r(11, 20, 3, 7, SKIN).r(26, 20, 3, 7, SKIN).r(11, 27, 3, 2, SKIN).r(26, 27, 3, 2, SKIN);
-    a.r(16, 29, 3, 8, SKIN).r(21, 29, 3, 8, SKIN).r(15, 37, 4, 2, SKIN).r(21, 37, 4, 2, SKIN);
+  /* ---------- the base character (no gender field: one body for everyone; looks are separate choices) ----------
+     A saved look is {v, skin, hair, hc, eyes, mouth, extras[]}. Options are referred to by id, so new ones can be
+     added at the end of any list without breaking saved looks; an unknown id falls back to the first option. */
+  const OPTIONS = {
+    skin: [['s1', '#ffe0bd'], ['s2', '#f8d0a8'], ['s3', '#f1c27d'], ['s4', '#e0ac69'], ['s5', '#c68642'], ['s6', '#a46a3a'], ['s7', '#8d5524'], ['s8', '#5c3a21']]
+      .map(([id, c], i) => ({ id, name: 'Tone ' + (i + 1), c })),
+    hair: [
+      { id: 'crop', name: 'Short' }, { id: 'spiky', name: 'Spiky' }, { id: 'swoop', name: 'Side swoop' }, { id: 'buzz', name: 'Buzz cut' },
+      { id: 'bob', name: 'Bob' }, { id: 'long', name: 'Long' }, { id: 'pony', name: 'Ponytail' }, { id: 'buns', name: 'Space buns' },
+      { id: 'curly', name: 'Big curls' }, { id: 'braids', name: 'Braids / locs' }, { id: 'mohawk', name: 'Mohawk' }, { id: 'bald', name: 'Bald' },
+      { id: 'hijab', name: 'Hijab', cloth: true }, { id: 'turban', name: 'Turban / patka', cloth: true }],
+    hc: [['black', '#221c19'], ['darkbrown', '#3b2417'], ['brown', '#6b3f1d'], ['auburn', '#8a3324'], ['ginger', '#c8642a'], ['darkblonde', '#b98a3e'],
+      ['blonde', '#e3c16f'], ['grey', '#9ca3af'], ['white', '#eceff3'], ['blue', '#3b82f6'], ['pink', '#ec4899'], ['purple', '#8b5cf6'], ['green', '#22c55e']]
+      .map(([id, c]) => ({ id, name: id, c })),
+    cloth: [['cblack', '#1f2937'], ['navy', '#1e3a8a'], ['cwhite', '#f1f5f9'], ['maroon', '#7f1d1d'], ['teal', '#0f766e'], ['cgrey', '#6b7280'],
+      ['sand', '#d6b98c'], ['cpink', '#f9a8d4'], ['violet', '#6d28d9'], ['orange', '#ea580c']].map(([id, c]) => ({ id, name: id, c })),
+    eyes: [{ id: 'dot', name: 'Classic' }, { id: 'big', name: 'Big' }, { id: 'happy', name: 'Happy' }, { id: 'sleepy', name: 'Sleepy' }, { id: 'wink', name: 'Wink' }, { id: 'fierce', name: 'Determined' }],
+    mouth: [{ id: 'smile', name: 'Smile' }, { id: 'grin', name: 'Grin' }, { id: 'flat', name: 'Neutral' }, { id: 'oh', name: 'Surprised' }, { id: 'smirk', name: 'Smirk' }, { id: 'tongue', name: 'Cheeky' }],
+    extras: [{ id: 'blush', name: 'Rosy cheeks' }, { id: 'freckles', name: 'Freckles' }, { id: 'glasses', name: 'Glasses' }, { id: 'shades', name: 'Sunglasses' },
+      { id: 'hearing', name: 'Hearing aid' }, { id: 'kippah', name: 'Kippah' }, { id: 'plaster', name: 'Plaster' }, { id: 'earrings', name: 'Earrings' }],
+  };
+  const DEFAULT = { v: 1, skin: 's3', hair: 'crop', hc: 'brown', eyes: 'dot', mouth: 'smile', extras: ['blush'] };
+  const pick = (list, id) => list.find(o => o.id === id) || list[0];
+  function norm(b) {
+    b = Object.assign({}, DEFAULT, b || {});
+    const hair = pick(OPTIONS.hair, b.hair);
+    const colours = hair.cloth ? OPTIONS.cloth : OPTIONS.hc;
+    return { skin: pick(OPTIONS.skin, b.skin).c, hair: hair.id, cloth: !!hair.cloth, hc: (colours.find(o => o.id === b.hc) || colours[hair.cloth ? 1 : 2]).c,
+      eyes: pick(OPTIONS.eyes, b.eyes).id, mouth: pick(OPTIONS.mouth, b.mouth).id, extras: new Set(b.extras || []) };
+  }
+
+  const bodyL = B => layer(a => {
+    a.r(15, 19, 10, 10, '#e5e7eb');
+    a.r(11, 20, 3, 7, B.skin).r(26, 20, 3, 7, B.skin).r(11, 27, 3, 2, B.skin).r(26, 27, 3, 2, B.skin);
+    a.r(16, 29, 3, 8, B.skin).r(21, 29, 3, 8, B.skin).r(15, 37, 4, 2, B.skin).r(21, 37, 4, 2, B.skin);
   });
-  const HEAD = layer(a => {
-    a.r(13, 5, 14, 14, SKIN).cut([13, 5], [26, 5], [13, 18], [26, 18]);
-    a.r(12, 10, 1, 3, SKIN).r(27, 10, 1, 3, SKIN);                // ears
-    a.d(INKC, [17, 11], [17, 12], [22, 11], [22, 12]).d('#fff', [17, 11], [22, 11]).d(INKC, [17, 12], [22, 12], [16, 11], [21, 11]);
-    a.d(INKC, [18, 15], [19, 16], [20, 16], [21, 15]).d('#f4a3a3', [15, 14], [24, 14], [14, 14], [25, 14]);
-    a.d('#6b3f1d', ...[[14, 5], [15, 5], [16, 5], [17, 5], [18, 5], [19, 5], [20, 5], [21, 5], [22, 5], [23, 5], [24, 5], [25, 5], [14, 6], [15, 6], [16, 6], [19, 6], [20, 6], [23, 6], [24, 6], [25, 6], [14, 7], [25, 7]]); // hair
+  const headL = B => layer(a => { a.r(13, 5, 14, 14, B.skin).cut([13, 5], [26, 5], [13, 18], [26, 18]); a.r(12, 10, 1, 3, B.skin).r(27, 10, 1, 3, B.skin); });
+  const top = (a, c) => a.r(13, 4, 14, 3, c).cut([13, 4], [26, 4]);
+  const HAIR_BACK = {
+    long: (a, c) => a.r(11, 5, 18, 17, c).cut([11, 5], [28, 5]),
+    bob: (a, c) => a.r(11, 5, 18, 11, c).cut([11, 5], [28, 5]),
+    pony: (a, c) => a.r(27, 6, 3, 3, c).r(28, 9, 3, 8, c).r(29, 17, 2, 2, c),
+    braids: (a, c) => { a.r(11, 5, 18, 10, c); [11, 27].forEach(x => a.r(x, 15, 2, 10, c)); },
+    hijab: (a, c) => a.r(11, 3, 18, 18, c).cut([11, 3], [28, 3]),
+  };
+  const HAIR_FRONT = {
+    crop: (a, c) => { top(a, c); a.r(13, 7, 1, 2, c).r(26, 7, 1, 2, c); },
+    spiky: (a, c) => { top(a, c); a.r(13, 7, 1, 2, c).r(26, 7, 1, 2, c); a.f(c, [14, 3], [15, 2], [17, 3], [18, 2], [20, 3], [21, 2], [23, 3], [24, 2], [25, 3]); },
+    swoop: (a, c) => { top(a, c); a.r(13, 7, 7, 1, c).r(13, 8, 4, 1, c).r(13, 9, 2, 1, c).r(26, 7, 1, 2, c); },
+    buzz: (a, c) => { for (let x = 14; x <= 25; x++) for (let y = 5; y <= 6; y++) if ((x + y) % 2 === 0) a.d(c, [x, y]); a.d(c, [13, 6], [26, 6]); },
+    bob: (a, c) => { top(a, c); a.r(12, 7, 2, 9, c).r(26, 7, 2, 9, c).r(14, 7, 4, 1, c); },
+    long: (a, c) => { top(a, c); a.r(12, 7, 2, 11, c).r(26, 7, 2, 11, c); },
+    pony: (a, c) => { top(a, c); a.r(13, 7, 1, 2, c).r(26, 7, 1, 2, c); a.d('#ef4444', [27, 8], [28, 8]); },
+    buns: (a, c) => { top(a, c); a.r(13, 7, 1, 2, c).r(26, 7, 1, 2, c); a.e(14, 2, 2.4, 2.4, c).e(25, 2, 2.4, 2.4, c); },
+    curly: (a, c) => { a.e(19.5, 3.5, 9.5, 5.5, c).e(12, 9, 2.5, 4, c).e(27, 9, 2.5, 4, c); a.d(tone(c, -0.3), [15, 2], [18, 1], [21, 3], [24, 1], [26, 4], [13, 5], [17, 5], [23, 6], [12, 10], [27, 11]); },
+    braids: (a, c) => { top(a, c); a.r(12, 7, 2, 8, c).r(26, 7, 2, 8, c); a.d(tone(c, -0.3), [15, 4], [18, 4], [21, 4], [24, 4], [12, 9], [12, 12], [27, 9], [27, 12]); },
+    mohawk: (a, c) => { a.r(18, -1, 4, 7, c).cut([18, -1], [21, -1]); a.d(tone(c, -0.3), [19, 1], [20, 3]); },
+    bald: (a, c) => {},
+    hijab: (a, c) => { a.r(12, 3, 16, 5, c).cut([12, 3], [27, 3]).r(12, 8, 2, 12, c).r(26, 8, 2, 12, c).r(14, 19, 12, 2, c); a.d(tone(c, -0.18), [14, 5], [15, 6], [24, 6], [25, 5]); },
+    turban: (a, c) => { a.e(19.5, 4, 8, 5, c).r(12, 6, 16, 3, c); a.d(tone(c, -0.25), [14, 4], [15, 3], [16, 2], [17, 1], [22, 6], [23, 5], [24, 4], [25, 3], [13, 7], [26, 7]); a.f(tone(c, 0.15), [19, 0], [20, 0]); },
+  };
+  const faceL = B => layer(a => {
+    const K = INKC, W = '#fff', S = B.skin, x = B.extras;
+    const E = {
+      dot: () => a.d(K, [17, 11], [17, 12], [22, 11], [22, 12]).d(W, [17, 11], [22, 11]).d(K, [16, 11], [21, 11], [16, 12], [21, 12]),
+      big: () => a.d(K, [16, 10], [17, 10], [16, 11], [17, 11], [16, 12], [17, 12], [21, 10], [22, 10], [21, 11], [22, 11], [21, 12], [22, 12]).d(W, [16, 10], [21, 10]),
+      happy: () => a.d(K, [16, 12], [17, 11], [18, 12], [21, 12], [22, 11], [23, 12]),
+      sleepy: () => a.d(K, [16, 12], [17, 12], [18, 12], [21, 12], [22, 12], [23, 12]).d(tone(S, -0.25), [16, 11], [17, 11], [18, 11], [21, 11], [22, 11], [23, 11]),
+      wink: () => a.d(K, [16, 11], [17, 11], [16, 12], [17, 12], [21, 12], [22, 12], [23, 12]).d(W, [17, 11]),
+      fierce: () => a.d(K, [16, 11], [17, 11], [16, 12], [17, 12], [21, 11], [22, 11], [21, 12], [22, 12], [15, 9], [16, 9], [17, 10], [22, 10], [23, 9], [24, 9]).d(W, [17, 11], [22, 11]),
+    };
+    const M = {
+      smile: () => a.d(K, [18, 15], [19, 16], [20, 16], [21, 15]),
+      grin: () => a.d(K, [17, 15], [22, 15], [18, 16], [19, 16], [20, 16], [21, 16]).d(W, [18, 15], [19, 15], [20, 15], [21, 15]),
+      flat: () => a.d(K, [18, 16], [19, 16], [20, 16], [21, 16]),
+      oh: () => a.d(K, [19, 15], [20, 15], [19, 17], [20, 17], [18, 16], [21, 16]).d('#7f1d1d', [19, 16], [20, 16]),
+      smirk: () => a.d(K, [18, 16], [19, 16], [20, 16], [21, 15], [22, 14]),
+      tongue: () => a.d(K, [18, 15], [19, 16], [20, 16], [21, 15]).d('#f472b6', [20, 17], [21, 17]),
+    };
+    E[B.eyes](); M[B.mouth]();
+    if (x.has('blush')) a.d('#f4a3a3', [14, 14], [15, 14], [24, 14], [25, 14]);
+    if (x.has('freckles')) a.d(tone(S, -0.35), [15, 13], [16, 14], [14, 15], [23, 13], [24, 14], [25, 15]);
+    if (x.has('plaster')) a.d('#f5deb3', [23, 14], [24, 14], [25, 14]).d('#d6b98c', [24, 14]);
+    if (x.has('glasses')) a.d(K, [15, 10], [15, 11], [15, 12], [16, 13], [17, 13], [18, 12], [18, 11], [18, 10], [16, 9], [17, 9], [19, 11], [20, 11],
+      [21, 10], [21, 11], [21, 12], [22, 13], [23, 13], [24, 12], [24, 11], [24, 10], [22, 9], [23, 9]);
+    if (x.has('shades')) a.d(K, ...[15, 16, 17, 18, 19, 20, 21, 22, 23, 24].map(i => [i, 10]), [15, 11], [16, 11], [17, 11], [18, 11], [21, 11], [22, 11], [23, 11], [24, 11], [16, 12], [17, 12], [22, 12], [23, 12]).d('#60a5fa', [16, 11], [22, 11]);
+    if (x.has('hearing') && !B.cloth) a.d('#38bdf8', [27, 9], [28, 10], [28, 11]);
+    if (x.has('earrings') && !B.cloth) a.d('#facc15', [12, 13], [27, 13]);
   });
+  const kippahL = B => layer(a => { a.r(17, 3, 6, 2, '#1e3a8a').cut([17, 3], [22, 3]); a.d('#93c5fd', [18, 4], [20, 4]); });
+  const hairBackL = B => HAIR_BACK[B.hair] ? layer(a => HAIR_BACK[B.hair](a, B.hc)) : null;
+  const hairFrontL = B => layer(a => HAIR_FRONT[B.hair](a, B.hc));
 
   /* ---------- items (same ids as the vector version) ---------- */
   const tri = (c) => a => { for (let i = 0; i <= 8; i++) a.r(19 - i, -3 + i, 2 + 2 * i, 1, c); };
@@ -149,9 +228,16 @@ const PIXEL = (() => {
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const ctx = c.getContext('2d'); layers.forEach(L => paint(ctx, L)); return c;
   }
-  function figure(eq) {
-    const g = s => eq[s] && D[eq[s]] ? [D[eq[s]]] : [];
-    return canvasFor([BODY, ...g('bottom'), ...g('shoes'), ...g('top'), HEAD, ...g('head'), ...g('rhand'), ...g('lhand')]).toDataURL();
+  function layersFor(eq, base) {
+    const B = norm(base), g = k => eq && eq[k] && D[eq[k]] ? [D[eq[k]]] : [];
+    return [hairBackL(B), bodyL(B), ...g('bottom'), ...g('shoes'), ...g('top'), headL(B), hairFrontL(B), faceL(B),
+      ...(B.extras.has('kippah') && !B.cloth && !(eq && eq.head) ? [kippahL(B)] : []), ...g('head'), ...g('rhand'), ...g('lhand')].filter(Boolean);
+  }
+  function figure(eq, base) { return canvasFor(layersFor(eq, base)).toDataURL(); }
+  /* head-and-shoulders crop for option tiles */
+  function portrait(base, eq) {
+    const c = canvasFor(layersFor(eq || {}, base)), o = document.createElement('canvas'); o.width = 24; o.height = 24;
+    o.width = 26; o.height = 26; o.getContext('2d').drawImage(c, 7 + OX, -5 + OY, 26, 26, 0, 0, 26, 26); return o.toDataURL();
   }
   function item(id) {                       // the item alone, cropped to a square with a 2-pixel margin
     const c = canvasFor([D[id]]), ctx = c.getContext('2d'), px = ctx.getImageData(0, 0, W, H).data;
@@ -161,5 +247,5 @@ const PIXEL = (() => {
     o.getContext('2d').drawImage(c, x0, y0, x1 - x0 + 1, y1 - y0 + 1, Math.floor((s - (x1 - x0 + 1)) / 2), Math.floor((s - (y1 - y0 + 1)) / 2), x1 - x0 + 1, y1 - y0 + 1);
     return o.toDataURL();
   }
-  return { figure, item, has: id => !!D[id], W, H };
+  return { figure, portrait, item, has: id => !!D[id], OPTIONS, DEFAULT, W, H };
 })();
