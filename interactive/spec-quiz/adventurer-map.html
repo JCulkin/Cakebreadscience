@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>The Map (mock-up) - Spec Quiz - Cakebread Science</title>
+<title>The Map (mock-up) - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -99,11 +99,11 @@ table.st th{background:var(--soft)}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Spec Quiz · The Adventurer</span></header>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Breadventure Land</span></header>
 <div class="wrap">
   <div class="hud" id="hud"></div>
   <div class="mapwrap">
-    <div class="mapscroll" id="scroll"><svg id="map" role="img" aria-label="Hex map of Lab Lands. Tap a square for details."></svg></div>
+    <div class="mapscroll" id="scroll"><svg id="map" role="img" aria-label="Hex map of Breadventure Land. Tap a square for details."></svg></div>
     <div class="tip" id="tip"></div>
     <div class="panel" id="panel" aria-live="polite"></div>
   </div>
@@ -114,7 +114,7 @@ table.st th{background:var(--soft)}
     <div class="cols">
       <div>
         <ul>
-          <li><b>2 moves a day.</b> A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li>
+          <li><b>6 moves on your first day</b> (to get going), then <b>2 a day</b>. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves only resolve once a day at midnight. The “Mock: skip to morning” button exists only in this mock-up.</li>
           <li><b>Everything happens at midnight.</b> Next login shows the morning report. No reason to be online at night.</li>
           <li><b>Same square = same team.</b> Boss health carries over night to night, so a class can wear a boss down over a week. No fighting each other.</li>
           <li><b>Losing is gentle.</b> Health 0 = knocked out, wake up in the Common Room, nothing lost.</li>
@@ -378,7 +378,7 @@ function renderHud() {
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
     <div class="day">Day ${S.day} · moves happen at midnight</div>
-    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button><button class="btn alt" id="fogBtn" title="Mock-up only: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button><button class="btn green" id="sleep" title="Mock-up only: pretend it is tomorrow">🌙<span class="t"> Skip to morning</span></button></div>`;
+    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button><button class="btn alt" id="fogBtn" title="Mock-up only: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button><button class="btn green" id="sleep" title="Mock-up only: pretend it is tomorrow">🌙<span class="t"> Mock: skip to morning</span></button></div>`;
   $('undo').onclick = () => { S.plan.pop(); ADV.save(); renderAll(); };
   $('repBtn').onclick = () => showReport();
   $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
@@ -413,7 +413,7 @@ function renderPanel() {
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
   } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
   else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
-  else if (S.plan.length >= S.moves) h += `<div class="no">Both moves planned. Come back tomorrow (or press Skip to morning).</div>`;
+  else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight — come back tomorrow.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">Too far for one move — you can step to the glowing squares.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
   $('pClose').onclick = () => { sel = null; renderAll(); };
@@ -495,13 +495,13 @@ function overnight() {
 }
 
 const FIRST_REPORT = [
+  '<p class="lt">Welcome to Breadventure Land! First-day boost: <b>6 moves</b> today (then 2 a day).</p>',
   '<p>Overnight, 9 of your class went adventuring.</p>',
   '<p class="good">Fizzy Quark, Sleepy Photon and Turbo Enzyme hit <b>Captain Inertia</b> for 214 damage. He moved 3 cm. Progress.</p>',
   '<p class="bad">Mighty Ribosome was knocked out by <b>The Mighty Mitochondrion</b> during a lecture about ATP.</p>',
-  '<p>You walked back from Gravity Peaks and rested in the Common Room. Health refilled.</p>',
   '<p class="lt">Gentle Isotope found a Bottled Aura in the Petri Dish Pit.</p>',
   '<p>Nobody has touched <b>The Unbalanced Equation</b> yet. It is getting confident.</p>',
-  '<p class="new">Tip: the fog only lifts where you have been. The woods to the west are still unexplored.</p>'];
+  '<p class="new">Tip: the fog only lifts where you have been. Captain Inertia is somewhere to the north-east — head over the bridge.</p>'];
 function showReport() {
   $('repTitle').textContent = `Morning report · day ${S.day}`;
   $('report').innerHTML = (S.report || FIRST_REPORT).join('');

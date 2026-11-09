@@ -8,7 +8,7 @@ const ADV = (() => {
   const SCI = { b: 'Biology', c: 'Chemistry', p: 'Physics' };
   const DEF = () => ({
     v: 1, day: 1, xp: 640, coins: 35, secured: { p: 22, b: 15, c: 19 }, health: 27,
-    moves: 2, plan: [], at: '7,4', visited: ['7,4', '8,4', '9,4', '9,3', '10,2', '11,2'],
+    moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // day 1: welcome boost of 6 moves, then 2 a day
     brews: { 'Bottled Aura': 2, 'Electrolyte Slushie': 1, 'Fizzy Courage': 1 },
     bag: [], lastLoot: null, missionsToday: 0, reportSeen: 0, report: null,
   });
@@ -40,7 +40,7 @@ const ADV = (() => {
 
   /* ---------- nav bar ---------- */
   const PAGES = [
-    ['start', 'adventurer-start.html', 'Spec Quiz'],
+    ['start', 'adventurer-start.html', 'Questing'],
     ['home', 'adventurer-home.html', 'Base camp'],
     ['mission', 'adventurer-mission.html', 'Mission'],
     ['map', 'adventurer-map.html', 'Map'],
