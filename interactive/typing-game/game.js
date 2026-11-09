@@ -1,7 +1,7 @@
-/* Type Fast or Perish: Sixty-Second Sprint (normal) and Hard mode. Needs words.js and scores.js. */
+/* Type Fast or Perish: Sixty-Second Sprint (normal) and Hard mode. Needs words.js and /js/leaderboards.js. */
 (function(){
 const $=id=>document.getElementById(id);
-const W=window.TW,S=window.TScores;
+const W=window.TW;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const store={get(k){try{return JSON.parse(localStorage.getItem('tfp:'+k));}catch(e){return null;}},set(k,v){try{localStorage.setItem('tfp:'+k,JSON.stringify(v));}catch(e){}}};
@@ -137,26 +137,8 @@ function endGame(){if(!G)return;clearInterval(G.timer);cancelAnimationFrame(G.ra
   resultsBoard(g.mode,g.score);}
 
 /* ===================== HIGH SCORES ===================== */
-function listHtml(list,me){return list.length?`<ol>${list.map((e,i)=>`<li class="${me&&i===me-1?'me':''}"><span class="rk">${i+1}</span><span class="nm">${esc(e.name)}</span><span class="sc">${e.score}</span></li>`).join('')}</ol>`:'<div class="empty">No scores yet. Be the first!</div>';}
-function showBoard(el,board,title){if(!S||!S.online()){el.innerHTML=`<div class="hs"><h3>${title}</h3><div class="empty">High scores need an internet connection.</div></div>`;return;}
-  el.innerHTML=`<div class="hs"><h3>${title}</h3><div class="small">Loading…</div></div>`;
-  S.get(board).then(l=>{el.innerHTML=`<div class="hs"><h3>${title}</h3>${listHtml(l)}</div>`;}).catch(()=>{el.innerHTML=`<div class="hs"><h3>${title}</h3><div class="empty">Couldn’t load the high scores (no connection?).</div></div>`;});}
-function resultsBoard(board,score){const el=$('hsArea');if(!el||!S||!S.online())return;el.innerHTML='<div class="hs small">Checking the Top 10…</div>';
-  S.get(board).then(list=>{
-    if(!S.qualifies(list,score)){el.innerHTML=`<div class="hs"><h3>Top 10 · ${S.boardName(board)}</h3>${listHtml(list)}</div>`;return;}
-    const rank=list.filter(e=>e.score>=score).length+1;
-    el.innerHTML=`<div class="hsform"><b>🎉 You made the Top 10! (#${rank})</b><div class="small">${S.boardName(board)}</div>
-      <div class="row"><input id="hsName" maxlength="20" placeholder="Your name" autocomplete="off" aria-label="Your name"><button class="btn green" id="hsSave">Save score</button></div><div class="msg" id="hsMsg"></div></div>
-      <div class="hs"><h3>Top 10 now</h3>${listHtml(list)}</div>`;
-    const inp=$('hsName'),btn=$('hsSave'),msg=$('hsMsg');inp.value=store.get('hsname')||'';setTimeout(()=>inp.focus({preventScroll:true}),300);
-    const go=()=>{const n=S.clean(inp.value);if(!n){msg.textContent='Type your name first.';return;}if(S.rude(n)){msg.textContent='Choose a different name.';return;}
-      btn.disabled=true;msg.textContent='';store.set('hsname',n);
-      S.save(board,n,score).then(r=>{el.innerHTML=`<div class="hs"><h3>${r.rank?`Saved: you’re #${r.rank}!`:'Saved, but you’ve already been pushed out of the Top 10!'}</h3>${listHtml(r.list,r.rank)}</div>`;})
-       .catch(()=>{btn.disabled=false;msg.textContent='Couldn’t save (no connection?). Try again.';});};
-    btn.onclick=go;inp.onkeydown=ev=>{if(ev.key==='Enter'){ev.preventDefault();go();}};})
-   .catch(()=>{el.innerHTML='<div class="hs small">Couldn’t reach the high scores (no connection?).</div>';});}
-function hiscores(){const box=$('hiscores');box.innerHTML=`<a class="back" href="#" id="hsBack">← Menu</a><h1>High scores</h1><div class="boards"><div id="hb1"></div><div id="hb2"></div></div>`;
-  $('hsBack').onclick=e=>{e.preventDefault();menu();};showBoard($('hb1'),'sprint','Sixty-Second Sprint');showBoard($('hb2'),'storm','Hard mode');show('hiscores');}
+function resultsBoard(board,score){const el=$('hsArea');if(!el||!window.LB)return;LB.panel(el,'typing_'+board,{score,title:'Leaderboard · '+(board==='sprint'?'Sixty-Second Sprint':'Hard mode')});}
+function hiscores(){location.href='/leaderboards/#typing';}
 
 /* ===================== MENU ===================== */
 function stop(){if(G){clearInterval(G.timer);clearTimeout(G.cd);cancelAnimationFrame(G.raf);G.over=true;}G=null;}

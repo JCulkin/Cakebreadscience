@@ -151,7 +151,7 @@ button{font:inherit;cursor:pointer;color:inherit}
       <button class="bigmode" id="stormBtn" style="--c:#c2185b"><span class="diff">Really hard</span><h3>Hard mode</h3><p>Words fall from the sky and speed up. Start typing any word to lock onto it. Three lives. Improbability events flip, shrink, hide and reverse the words. Type the golden <b>towel</b> to clear the sky.</p><span class="best" id="bestStorm"></span></button>
     </div>
     <div class="key"><span style="--k:var(--bio)">Biology</span><span style="--k:var(--chem)">Chemistry</span><span style="--k:var(--phys)">Physics</span><span style="--k:var(--silly)">Nonsense</span></div>
-    <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 High scores</button></p>
+    <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 Leaderboards</button></p>
     <p class="small" style="margin-top:20px">Key words from Edexcel International GCSE Science (Double Award): biology, chemistry and physics, with UK spellings. Capital letters don’t matter. Works best on a real keyboard.</p>
   </section>
 
@@ -166,10 +166,11 @@ button{font:inherit;cursor:pointer;color:inherit}
 </main>
 
 <div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="/js/firebase-config.js"></script>
-<script src="scores.js"></script>
+<script src="/js/leaderboards.js"></script>
 <script src="words.js"></script>
 <script src="game.js"></script>
 </body>

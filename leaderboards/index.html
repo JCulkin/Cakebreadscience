@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaderboards - Cakebread Science</title>
+<meta name="description" content="Leaderboards for the Cakebread Science games: Elements 1–20, What The Cell, Type Fast or Perish and the Spec Quiz.">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
+.stripes{display:flex;flex-direction:column}.stripes i{display:block}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 56px}
+.back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
+.lede{font-size:17px;max-width:680px;margin-top:8px}
+button{font:inherit;cursor:pointer;color:inherit}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:14px;padding:10px 14px;background:var(--paper);border:2px solid var(--ink)}
+.gsign{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid #111;padding:7px 14px;font-weight:700}
+.gsign:hover{background:#111;color:#fff}
+.linkbtn{background:none;border:0;color:var(--green);text-decoration:underline;font-weight:600;padding:0}
+.games{display:flex;flex-wrap:wrap;gap:0;margin-top:20px;border-bottom:3px solid var(--ink)}
+.games button{background:none;border:0;padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:20px;border-bottom:6px solid transparent;margin-bottom:-3px;color:#666}
+.games button.on{color:var(--ink);border-bottom-color:var(--c)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.chip{background:var(--paper);border:2px solid var(--ink);padding:6px 12px;font-weight:600;font-size:15px}
+.chip.on{background:var(--ink);color:var(--cream)}
+.play{display:inline-block;margin-top:14px;font-weight:700;color:var(--green)}
+.note{margin-top:12px;font-size:14px;color:var(--muted)}
+.lbx ol{list-style:none;border:2px solid #111;background:#fff;margin-top:6px}
+.lbx li{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;padding:7px 12px;border-top:1px solid var(--line)}
+.lbx li:first-child{border-top:0}
+</style>
+</head>
+<body>
+<div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
+<header><a href="/" class="brand">Cakebread <span>Science</span></a><span class="sub">Leaderboards</span></header>
+<div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
+<main class="wrap">
+  <a class="back" href="/">← Home</a>
+  <h1>Leaderboards</h1>
+  <p class="lede">Every game’s leaderboard in one place. Sign in with your Google account to put your scores on them; your name shows as first name and last initial.</p>
+  <div class="bar" id="bar">Loading…</div>
+  <nav class="games" id="games"></nav>
+  <div id="boards"></div>
+  <div id="list"></div>
+</main>
+<div class="stripes"><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i><i style="height:9px;background:#111"></i><i style="height:4px;background:#005e22"></i></div>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/leaderboards.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const COL={elements:'#b45309',cell:'#2e7d32',typing:'#c2185b',quiz:'#1d4ed8'};
+const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Spec Quiz',url:'/interactive/spec-quiz/',boards:{quiz_xp:'Campaign XP (all time)',quiz_week:'Correct answers this week'}}});
+let game=(location.hash||'#elements').slice(1);if(!TABS[game])game='elements';let board=null;
+function bar(){const el=$('bar');if(!window.LB||!LB.online()){el.textContent='Leaderboards need an internet connection.';return;}
+  const u=LB.user;el.innerHTML=u?`Signed in as <b>${esc(LB.nameOf(u))}</b> <button class="linkbtn" id="out">Sign out</button>`:`<button class="gsign" id="in">Sign in with Google</button><span>to put your scores on the leaderboards.</span>`;
+  if($('in'))$('in').onclick=()=>LB.signIn().catch(()=>{});if($('out'))$('out').onclick=()=>LB.signOut();}
+function draw(){const G=TABS[game];const keys=Object.keys(G.boards);if(!keys.includes(board))board=keys[0];
+  $('games').innerHTML=Object.entries(TABS).map(([k,g])=>`<button class="${k===game?'on':''}" style="--c:${COL[k]}" data-g="${k}">${esc(g.name)}</button>`).join('');
+  $('games').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{game=b.dataset.g;board=null;history.replaceState(null,'','#'+game);draw();});
+  $('boards').innerHTML=`<div class="chips">${keys.map(k=>`<button class="chip ${k===board?'on':''}" data-b="${k}">${esc(G.boards[k])}</button>`).join('')}</div><a class="play" href="${G.url}">Play ${esc(G.name)} →</a>`;
+  $('boards').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{board=b.dataset.b;draw();});
+  if(game==='quiz')quiz();else LB.panel($('list'),board,{title:G.boards[board]});}
+// Spec Quiz keeps its own board (specQuizBoard/{uid}); show it here read-only
+function quiz(){const el=$('list');el.innerHTML='<div class="lbx"><p class="note">Loading…</p></div>';
+  if(!window.firebase||!firebase.database){el.innerHTML='<p class="note">Needs an internet connection.</p>';return;}
+  firebase.database().ref('specQuizBoard').once('value').then(s=>{const v=s.val()||{};const wk=Object.values(v).reduce((m,x)=>x&&x.wk>m?x.wk:m,'');
+    const rows=Object.entries(v).filter(([,x])=>x&&!x.hide).map(([uid,x])=>({uid,name:x.name,score:board==='quiz_xp'?(x.xp||0):(x.wk===wk?(x.wkCorrect||0):0)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
+    const me=LB.user&&LB.user.uid,idx=rows.findIndex(r=>r.uid===me);
+    let html=rows.slice(0,10).map((r,i)=>`<li style="${r.uid===me?'background:#fff3c4':''}"><span style="font-family:'Barlow Condensed';font-weight:900;font-size:20px">${i+1}</span><b>${esc(r.name)}</b><span style="font-family:'Barlow Condensed';font-weight:900;font-size:22px;color:#005e22">${r.score}</span></li>`).join('');
+    if(idx>=10)html+=`<li style="background:#fff3c4"><span>${idx+1}</span><b>${esc(rows[idx].name)}</b><span>${rows[idx].score}</span></li>`;
+    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Spec Quiz scores come from its Campaign mode. Choose whether you appear on its leaderboards in the Campaign screen.</p></div>`;})
+   .catch(()=>{el.innerHTML='<p class="note">The Spec Quiz leaderboard can’t be read right now. Try signing in.</p>';});}
+if(window.LB)LB.onUser(()=>{bar();draw();});else{bar();}
+})();
+</script>
+</body>
+</html>

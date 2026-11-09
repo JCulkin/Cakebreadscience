@@ -318,7 +318,9 @@ function finish(){if(GAME.mode.startsWith('round:'))GAME.mode='round:'+GAME.roun
     <div class="bigscore">${GAME.score}</div><div class="small">out of ${GAME.max} (${pct}%)${isBest?' · New personal best!':best?` · Your best: ${best}`:''}</div>
     <table><tr><th>Round</th><th style="text-align:right">Score</th></tr>${GAME.per.map(p=>`<tr><td>${p.R.name}</td><td class="r">${p.score} / ${p.max}</td></tr>`).join('')}</table>
     ${rev.length?`<h3 style="margin-top:18px">Revise these</h3><ul class="revise">${rev.map(([t,n])=>`<li>${t}${n>1?` <span class="small">(×${n})</span>`:''}</li>`).join('')}</ul>`:'<p style="margin-top:14px"><b>No mistakes to revise.</b></p>'}
+    <div id="hsArea"></div>
     <div class="modes" style="margin-top:18px"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="toMenu">Menu</button></div></div></div>`;
+  if((GAME.mode==='full'||GAME.mode==='all')&&window.LB)LB.panel($('hsArea'),'cell_'+DIFF+'_'+GAME.mode,{score:GAME.score,title:'Leaderboard · '+(DIFF==='hard'?'Hard':'Normal')+' · '+(GAME.mode==='full'?'Full game':'Marathon')});
   const again=GAME.rounds.map(r=>r.id),mode=GAME.mode;
   $('again').onclick=()=>startGame(mode,mode==='full'?shuffle(ROUNDS.map(r=>r.id)).slice(0,5):again);$('toMenu').onclick=soloMenu;show('results');}
 function dtag(){return `<span class="dtag ${DIFF}">${DIFF==='hard'?'Hard':'Normal'}</span>`;}
@@ -326,7 +328,7 @@ function menu(){GAME=null;TEAM=null;STEAL=null;document.querySelectorAll('.diff'
 function soloMenu(){GAME=null;TEAM=null;$('soloDiff').outerHTML=`<span class="dtag ${DIFF}" id="soloDiff">${DIFF==='hard'?'Hard':'Normal'}</span>`;
   $('roundList').innerHTML=ROUNDS.map((r,i)=>{const b=store.get('best:'+DIFF+':round:'+r.id);return `<button class="rcard" data-id="${r.id}"><div class="bar6"><i style="flex:4;background:#005e22"></i><i style="flex:1;background:#111"></i><i style="flex:6;background:#005e22"></i><i style="flex:2;background:#111"></i></div><div class="in"><span class="rnum">${i+1}</span><span><h3>${r.name}</h3><p>${r.desc}</p>${b?`<div class="best">Best: ${b} / 500</div>`:''}</span></div></button>`;}).join('');
   $('roundList').querySelectorAll('.rcard').forEach(b=>b.onclick=()=>startGame('round:'+b.dataset.id,[b.dataset.id]));
-  const bf=store.get('best:'+DIFF+':full'),ba=store.get('best:'+DIFF+':all');$('bestLine').textContent=[bf?`Full game best: ${bf} / 2500`:'',ba?`Marathon best: ${ba} / 4500`:''].filter(Boolean).join(' · ');show('solo');}
+  const bf=store.get('best:'+DIFF+':full'),ba=store.get('best:'+DIFF+':all');$('bestLine').textContent=[bf?`Full game best: ${bf} / 2500`:'',ba?`Marathon best: ${ba} / 4500`:''].filter(Boolean).join(' · ');if(window.LB){LB.panel($('soloBoard'),'cell_'+DIFF+'_full',{title:'Leaderboard · '+(DIFF==='hard'?'Hard':'Normal')+' · Full game'});}show('solo');}
 document.querySelectorAll('.diff').forEach(b=>b.onclick=()=>{DIFF=b.dataset.d;store.set('diff',DIFF);menu();});
 $('soloBtn').onclick=soloMenu;$('soloBack').onclick=e=>{e.preventDefault();menu();};
 $('playFull').onclick=()=>startGame('full',shuffle(ROUNDS.map(r=>r.id)).slice(0,5));
