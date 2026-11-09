@@ -8,7 +8,7 @@
    - XP: 5 per correct answer (10 if ★ harder), +20 when a question is secured, +100 the first time a spec point is secured.
 
    SAVED DATA
-   Firestore users/{uid}.specQuiz = PROG, users/{uid}.specQuizSummary, users/{uid}.questing = GAME
+   Firestore users/{uid}.specQuiz = PROG, users/{uid}.specQuizSummary (+ points: {'B2.27': 's'|'r'|'l'} for the spec tracker), users/{uid}.questing = GAME
    Realtime Database specQuizBoard/{uid} = { name, xp, rank, pts, wk, wkCorrect, bio, chem, phys, wb, wc, wp (this week per science), look, eq, hide, t }
    PROG = { v, q: { id: { c: 0|1|2, d, l, n, r } }, xp, correct, hard, subj, weeks, missions, unrusted, earned, hide, updatedAt }
    GAME = { coins, bag: [itemId], lastLoot, days: { 'YYYY-MM-DD': missions finished }, look, eq, nick, updatedAt }
@@ -136,7 +136,30 @@ const QE = (() => {
     for (const k in POINT_QS) { const p = pointState(k); if (p.secured) { securedP++; per[POINTS[k] ? POINTS[k].subject : 'Physics']++; } }
     return { securedQ, securedP, per };
   }
-  function boardName() { const n = (FB.user && FB.user.displayName || 'Student').trim().split(/\s+/); return n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : ''); }
+  /* ---------- names (user, 9 Nov: "Let students alter their own names within some sensible bounds") ----------
+     The adventurer name (GAME.nick, set on the My look page) is the student's public name: leaderboards and Breadventure Land.
+     Rules: 2–16 characters; letters (any alphabet), spaces, hyphens, apostrophes; at least 2 letters; no rude words;
+     no posing as staff. checkName(n) → '' if fine, else the reason to show. */
+  const RUDE = ['fuck', 'shit', 'cunt', 'bitch', 'bastard', 'wank', 'twat', 'slut', 'whore', 'nigg', 'fagg', 'retard', 'rapist', 'nazi', 'hitler',
+    'penis', 'vagina', 'porn', 'dildo', 'boob', 'asshole', 'arsehole', 'bollock', 'pussy', 'tranny', 'kike', 'chink', 'wanker', 'jizz', 'semen'];
+  const RUDE_WORDS = ['cock', 'dick', 'tits', 'piss', 'prick', 'paki', 'spaz', 'cum', 'sex', 'sexy', 'ass', 'arse', 'gay', 'nonce', 'pedo', 'paedo'];
+  const STAFF = ['teacher', 'admin', 'moderator', 'cakebread', 'headteacher', 'staff'], TITLES = ['mr', 'mrs', 'ms', 'miss', 'sir', 'dr', 'prof', 'professor'];
+  function checkName(raw) {
+    const n = String(raw || '').trim().replace(/\s+/g, ' ');
+    if (n.length < 2) return 'At least 2 letters, please.';
+    if (n.length > 16) return '16 characters at most.';
+    if (!/^[\p{L}][\p{L}' \-]*$/u.test(n)) return 'Letters, spaces, hyphens and apostrophes only — no numbers or symbols.';
+    if ((n.match(/\p{L}/gu) || []).length < 2) return 'At least 2 letters, please.';
+    const flat = n.toLowerCase().replace(/[^\p{L}]/gu, ''), words = n.toLowerCase().split(/[\s'\-]+/);
+    if (RUDE.some(w => flat.includes(w)) || words.some(w => RUDE_WORDS.includes(w))) return 'Pick a different name.';
+    if (STAFF.some(w => flat.includes(w)) || TITLES.includes(words[0])) return 'That looks like a staff name — pick your own.';
+    return '';
+  }
+  const cleanName = n => String(n || '').trim().replace(/\s+/g, ' ');
+  /* one letter per started spec point for the spec tracker (One spec, 10 Nov): s secured, r rusty, l learning */
+  function pointSummary() { const o = {}; for (const k in POINT_QS) { const st = pointState(k); if (st.started) o[k] = st.rusty ? 'r' : st.secured ? 's' : 'l'; } return o; }
+  const googleName = () => { const n = (FB.user && FB.user.displayName || 'Student').trim().split(/\s+/); return n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : ''); };
+  function boardName() { return GAME.nick && !checkName(GAME.nick) ? cleanName(GAME.nick) : googleName(); }
   async function saveRemote() {
     if (!FB.ok || !FB.user) return;
     FB.status = 'saving'; emit();
@@ -145,7 +168,7 @@ const QE = (() => {
       await FB.db.collection('users').doc(FB.user.uid).set({
         email: FB.user.email || null, displayName: FB.user.displayName || null, lastAccess: new Date().toISOString(),
         specQuiz: PROG, questing: GAME,
-        specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, updatedAt: new Date().toISOString() }
+        specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, points: pointSummary(), updatedAt: new Date().toISOString() }
       }, { merge: true });
       FB.status = 'saved';
     } catch (e) { console.error('Questing save failed', e); FB.status = 'error'; }
@@ -338,8 +361,9 @@ const QE = (() => {
   /* called once when Flashcards opens: how many cards are due today (only the first call of the day counts) */
   function cardsDue(n) { const d = cardDay(); if (d.due == null) { d.due = n; GAME.updatedAt = Date.now(); save(); } return d; }
   const cardsTarget = () => { const d = (GAME.cd || {})[TODAY]; return d && d.due != null ? Math.max(1, Math.min(CARD.doneAt, d.due)) : CARD.doneAt; };
-  /* grade 1 Again · 2 Hard · 3 Good · 4 Easy. Returns { notes, day, done (just finished today's cards), loot } */
-  function recordCard(key, spec, grade, lootPick) {
+  /* grade 1 Again · 2 Hard · 3 Good · 4 Easy. Returns { notes, day, done (just finished today's cards), loot }.
+     due = false (a card reviewed early, e.g. from a spec-point session): still counts for securing, but no XP/Health/mana/coins/daily count */
+  function recordCard(key, spec, grade, lootPick, due = true) {
     const c = Object.assign({ c: 0, n: 0 }, (PROG.cards || {})[key]), notes = [], ok = grade >= 3;
     const before = spec && POINT_QS[spec] ? pointState(spec) : null;
     c.n++; c.s = spec || null;
@@ -354,7 +378,9 @@ const QE = (() => {
     }
     PROG.cards = PROG.cards || {}; PROG.cards[key] = c; cardsV++;
     if (before) pointNotes(spec, before, notes);
-    const d = cardDay(); d.n++;
+    const d = cardDay();
+    if (!due) { PROG.updatedAt = Date.now(); save(); return { notes, day: d, done: false, loot: null }; }   // not due: practice only
+    d.n++;
     if (d.xp < CARD.xpCap) { const x = Math.min(CARD.xp, CARD.xpCap - d.xp); d.xp += x; PROG.xp += x; }
     if (d.n % CARD.coinEvery === 0) { d.coins++; GAME.coins = (GAME.coins || 0) + 1; notes.push('+1 coin'); }
     earn({ hp: CARD.hp, mana: CARD.mana });
@@ -440,7 +466,7 @@ const QE = (() => {
   return {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },
     get online() { return FB.ok; }, set busy(v) { busy = !!v; }, get busy() { return busy; },
-    TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, onChange: f => listeners.push(f),
+    TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName,
     signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,

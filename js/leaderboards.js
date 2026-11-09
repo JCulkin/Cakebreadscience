@@ -26,7 +26,10 @@ if(auth)auth.onAuthStateChanged(async u=>{user=u;ready=true;
   if(u){const p=pending.get();if(p&&p.board&&p.score>0){try{await submit(p.board,p.score,p.extra);}catch(e){}pending.set(null);}}
   subs.forEach(f=>{try{f(u);}catch(e){}});});
 else ready=true;
-function nameOf(u){const n=(u&&u.displayName||'Student').trim().split(/\s+/);return n[0]+(n.length>1?' '+n[n.length-1][0]+'.':'');}
+// the student's chosen Cakebread Questing name (checked when they set it on the My look page), else first name + initial
+function nameOf(u){let c='';try{c=(localStorage.getItem('cbs.adventurer.nick')||'').trim().replace(/\s+/g,' ');}catch(e){}
+  if(c&&c.length>=2&&c.length<=16&&/^[\p{L}][\p{L}' \-]*$/u.test(c))return c;
+  const n=(u&&u.displayName||'Student').trim().split(/\s+/);return n[0]+(n.length>1?' '+n[n.length-1][0]+'.':'');}
 function signIn(){if(!auth)return Promise.reject(new Error('offline'));return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}
 function signOut(){return auth?auth.signOut():Promise.resolve();}
 // save a score: keeps the student's best only

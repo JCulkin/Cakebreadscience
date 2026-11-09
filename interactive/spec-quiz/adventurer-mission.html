@@ -165,18 +165,26 @@ $('pickGo').onclick = () => start($('pick').value);
 /* fight */
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 let MS = null;
-function start(k) {
+/* start(sub-topic key) — or start(sub-topic key, spec point) for a mission on one point (from the spec tracker's "Quiz me";
+   its questions come first, topped up from the rest of the sub-topic) */
+function start(k, point) {
   const sub = subBy(k), foe = foeOf(sub);
   const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(k => topicKeys.add(k)));
-  const qs = QE.buildMission(sub.keys, topicKeys);
-  MS = { sub, foe, qs, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
+  const qs = point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
+  MS = { sub, foe, qs, point, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
   QE.busy = true;
   $('choose').classList.add('hidden'); $('fight').classList.remove('hidden');
   $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
   $('youName').textContent = ADV.nick();
   $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
-  $('quote').textContent = `“${foe.name}. Everyone knows it.”`;
+  $('quote').textContent = point ? `“${foe.name}. Everyone knows it.” · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : `“${foe.name}. Everyone knows it.”`;
   scrollTo(0, 0); show();
+}
+/* ?point=B2.27 (from the spec tracker): go straight into a mission on that point */
+{
+  const pt = new URLSearchParams(location.search).get('point');
+  const sb = pt && SUBS.find(x => x.keys.has(pt));
+  if (sb) setTimeout(() => start(sb.key, pt), 0);
 }
 const DMG = 100 / 7;   // 7 right answers defeat it
 function show() {

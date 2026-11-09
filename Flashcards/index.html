@@ -1112,9 +1112,26 @@
         async function parseAllDecks() {
             await Promise.all(Object.keys(deckMetadata).map(async (deckId) => {
                 const deck = deckMetadata[deckId];
-                deckCards[deckId] = await loadDeckJson(deck.file);
+                deckCards[deckId] = (await loadDeckJson(deck.file)).map(c => Object.assign(c, { deck: deckId }));
                 deck.cardCount = deckCards[deckId].length;
             }));
+        }
+
+        /* ---------- One spec: ?spec=B2.27 (from the spec tracker) studies every card on that point, due or not ---------- */
+        let specDone = false;
+        function studySpecFromUrl() {
+            const spec = new URLSearchParams(location.search).get('spec');
+            if (!spec || specDone) return;
+            specDone = true;
+            const cards = Object.values(deckCards).flat().filter(c => c.spec === spec);
+            if (!cards.length) return;
+            const L = { B: 'Biology', C: 'Chemistry', P: 'Physics' }[spec[0]] || '';
+            currentDeck = cards[0].deck;
+            studyQueue = cards.slice();
+            showScreen('study-screen');
+            document.getElementById('deckTitle').textContent = `${L} ${spec.slice(1)} · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
+            updateStats();
+            showNextCard();
         }
 
         /* ---------- Cakebread Questing (replaces the Study Blob, 10 Nov 2026) ---------- */
@@ -1225,6 +1242,7 @@
             importOldReviews();
             QE.cardsDue(totalDue());
             updateBadgeDisplay();
+            studySpecFromUrl();
         }
 
         // Update progress display for a deck
@@ -1581,6 +1599,7 @@
 updateDeckProgress(currentDeck);
             
             currentCard = studyQueue[0];
+            if (currentCard.deck) currentDeck = currentCard.deck;   // a spec-point session mixes decks
             isFlipped = false;
 
             document.getElementById('flashcardContainer').innerHTML = `
@@ -1665,8 +1684,10 @@ updateDeckProgress(currentDeck);
             });
 
             // Cakebread Questing: XP, Health, mana, coins, securing spec points, today's +1 move
-            const res = QE.recordCard(cardKey, currentCard.spec || null, quality, lootPick);
-            gain([res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : ''));
+            const wasDue = !oldProgress || !oldProgress.repetitions || oldProgress.nextReview <= Date.now();   // early reviews (spec sessions) still secure cards but earn no game rewards
+            const res = QE.recordCard(cardKey, currentCard.spec || null, quality, lootPick, wasDue);
+            gain(wasDue ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
+                : (res.notes.length ? res.notes.join(' · ') : 'Not due yet: practice only (no XP)'));
             if (res.done) showLoot(res.loot);
 
             // Remove from queue and show next
@@ -1685,6 +1706,7 @@ updateDeckProgress(currentDeck);
 
         // Back to decks
         window.backToDecks = function() {
+            document.getElementById('deckTitle').textContent = '';
             showScreen('deck-selector');
         };
 

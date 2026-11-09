@@ -36,7 +36,9 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .preview{text-align:center}
 .preview #fig{width:100%;max-width:250px;display:block;margin:6px auto}
 .nick{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1;display:flex;gap:8px;justify-content:center;align-items:center}
-.nick button{border:2px solid var(--ink);background:#fff;font-size:16px;width:34px;height:34px}
+.nick button{border:2px solid var(--ink);background:#fff;font-size:16px;width:34px;height:34px;flex:none}
+.nick input{font:inherit;text-transform:none;text-align:center;width:100%;max-width:300px;border:2px solid var(--ink);padding:4px 6px;background:#fff}
+.namerr{color:#b91c1c;font-size:14px;font-weight:700;min-height:18px}
 .small{font-size:13px;color:var(--muted)}
 .seg{display:inline-flex;border:2px solid var(--ink);margin:4px 0 8px}
 .seg button{border:0;background:#fff;padding:4px 10px;font-weight:700;font-size:13px}
@@ -65,8 +67,9 @@ details.why li{margin:6px 0 0 20px}
 
   <div class="layout">
     <div class="card preview">
-      <div class="nick"><span id="nick"></span><button id="reroll" title="New name" aria-label="New name">🎲</button></div>
-      <div class="small">Your adventurer name (what classmates see)</div>
+      <div class="nick"><input id="nick" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me">🎲</button></div>
+      <div class="small">Your name in Cakebread Questing: on the leaderboards and Breadventure Land. Type your own (2–16 letters) or press 🎲.</div>
+      <div class="namerr" id="namerr" role="alert"></div>
       <img id="fig" class="px" alt="Your adventurer">
       <div class="seg" role="group" aria-label="Preview">
         <button data-view="starter" class="on">Starter outfit</button><button data-view="hat">With a hat</button><button data-view="base">No outfit</button>
@@ -137,7 +140,7 @@ function tile(group, opt, b, multi) {
 }
 function render() {
   document.getElementById('fig').src = PIXEL.figure(outfit(), base);
-  document.getElementById('nick').textContent = nick;
+  const ni = document.getElementById('nick'); if (document.activeElement !== ni) ni.value = nick;
   document.getElementById('o-skin').innerHTML = O.skin.map(o => `<button class="sw ${base.skin === o.id ? 'on' : ''}" style="background:${o.c}" data-g="skin" data-v="${o.id}" aria-label="${o.name}" title="${o.name}"></button>`).join('');
   document.getElementById('o-hair').innerHTML = O.hair.map(o => {
     const cl = !!o.cloth, cur = colours();
@@ -165,7 +168,9 @@ document.addEventListener('click', e => {
   document.getElementById('saved').textContent = '';
   render();
 });
-document.getElementById('reroll').onclick = () => { nick = newNick(); render(); };
+document.getElementById('reroll').onclick = () => { nick = newNick(); document.getElementById('nick').value = nick; checkNick(); render(); };
+const checkNick = () => { const e = QE.checkName(document.getElementById('nick').value); document.getElementById('namerr').textContent = e; return !e; };
+document.getElementById('nick').addEventListener('input', e => { nick = e.target.value; checkNick(); document.getElementById('saved').textContent = ''; });
 document.getElementById('rand').onclick = () => {
   const r = l => l[Math.random() * l.length | 0].id;
   base.skin = r(O.skin); base.hair = r(O.hair); base.hc = r(colours()); base.eyes = r(O.eyes); base.mouth = r(O.mouth);
@@ -173,6 +178,8 @@ document.getElementById('rand').onclick = () => {
   render();
 };
 document.getElementById('save').onclick = () => {
+  if (!checkNick()) { document.getElementById('nick').focus(); return; }
+  nick = QE.cleanName(nick);
   base.v = 1;
   try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
   QE.syncLook();
