@@ -205,10 +205,11 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
-### 2026-11-09 - v3.1.1 Tidier Homepage & One Spec Tracker Page
-- Leaderboards and Physics Long Answers cards removed from the homepage (reach them from the games and from Question Booklets)
-- One Spec Trackers card and page for Biology, Chemistry, Physics and Maths
-- Quick quiz and Flashcards now sit inside the Cakebread Questing banner on the homepage
+### 2026-11-10 - v4.0.0 One Revision Journey
+- **Breadventure Land** is a shared world: plan moves, fight bosses together overnight, free the Professor
+- **Flashcards feed Cakebread Questing** (XP, Health, mana, coins, loot); the pet is gone; same Google sign-in as the rest of the site
+- **My day** revision planner, spec trackers that link every point to its quiz, flashcards and resources, the **Professor** mascot across the site, a rebuilt **admin console** with name approval
+- Homepage tidy: Questing banner with Quick quiz + Flashcards, one Spec Trackers page (sciences + maths)
 
 ### 2026-11-09 - v3.1.0 Cakebread Questing, Shared Leaderboards & Question Booklets
 - **Cakebread Questing** replaces the Spec Quiz: pixel adventurer, Base camp, missions as fights, wardrobe and loot, all on real progress saved to the student's Google account; Breadventure Land map as a preview; Quick quiz for the board

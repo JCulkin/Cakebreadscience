@@ -2,16 +2,32 @@
 
 ---
 
-## [3.1.1] - 2026-11-09
-### Tidier Homepage & One Spec Tracker Page
+## [4.0.0] - 2026-11-10
+### One Revision Journey: Breadventure Land, Flashcards in Questing, My Day, the Professor
+
+#### Cakebread Questing
+- **Breadventure Land is live as one shared world** for everyone who plays: plan moves on the map, and each night (run by the first visit after midnight) everyone's moves resolve together — fight the chapter-1 bosses side by side to win the three key pieces and free the Professor, then chapter 2 wakes. Eight small monsters you can beat alone, wild critters, dungeons, a morning report, other players on the map, boss rewards (coins + items)
+- **Health, mana and moves come from revision:** right mission answers and flashcard reviews recharge Health and mana; the day's first mission or today's flashcards gives +1 move. Spells (Patch Up, Jam Shield, Lift the Fog) and the **Tuck Shop** brews, bought with real coins
+- **Base camp is now the Cakelab**, with a Breadventure Land picture card at the top
+- **Flashcards are part of Questing:** every card reviewed earns XP, Health, mana and coins; finishing today's cards drops loot; secured cards help secure spec points; cards you struggle with come back as a suggested mission. The Study Blob pet is gone. Cards load instantly (no more unpacking the Anki files in the browser) and Flashcards uses the same Google sign-in as the rest of the site (students sign in once more)
+- Students can choose their adventurer name; **new names wait for the teacher's approval**
+- Missions: the Professor reacts to every answer and gives a verdict at the end; `?point=` missions start on a single spec point
+
+#### Added
+- **My day** (`/today/`): what to do today (mission, cards, map moves) and what to revise next — nearly secured points, flashcard weak spots, rusty points. "My day →" button in the homepage header when signed in
+- **Spec trackers link to everything (One spec, step 1):** each spec point shows its Cakebread Questing status (secured / rusty / learning, or "quiz: not tried" when you rated it but haven't proved it), Quiz me, its flashcards, and the lessons, worksheets, 6-mark questions and equations that cover it
+- **The Professor**, the cake-slice scientist mascot: favicon and home-screen icons, homepage logo, Questing sprite, reaction faces, mission verdicts, a new 404 page
+- **Admin console rebuilt:** overview with the name-approval queue, students (with a detail drawer: rename, hide, progress, strengths and weak spots), a spec map of every student × spec point, question statistics, leaderboard clean-up, Breadventure Land controls, backup and restore
 
 #### Changed
-- Homepage Resources trimmed: the **Leaderboards** card and jump link are gone (each game, and Cakebread Questing, links to `/leaderboards/`); **Physics Long Answers** now lives inside **Question Booklets**
-- One **Spec Trackers** card replaces "Science Spec Tracker" and "Maths Spec"; its page (`specifications/science.html`) now shows Biology, Chemistry, Physics and Maths together, and the Maths spec links back to it
-- Cakebread Questing menu: "All leaderboards →" link under this week's board
-- The black **Cakebread Questing** banner on the homepage is now the hub for revision on the spec: Play → (the adventure), plus **Quick quiz** (solo or team game on the board) and **Flashcards** inside it; the separate Flashcards card and the "Just want a quick quiz?" box at the bottom of the Questing page are gone
-- Quick quiz page goes straight to "Choose the content" (intro text, Questing card and "Make a quiz" heading removed); its back link goes to the homepage; it remembers what you last ticked, and starts with nothing ticked on a first visit
-- Homepage footer → v3.1.1
+- Homepage: the black Cakebread Questing banner is the hub for revising the spec — **Play →** plus **Quick quiz** (solo or team game on the board) and **Flashcards** inside it; the Leaderboards and Physics Long Answers cards are gone (the games link to `/leaderboards/`; the 6-markers live in **Question Booklets**); one **Spec Trackers** card, whose page now has Biology, Chemistry, Physics and Maths together
+- Quick quiz goes straight to "Choose the content", remembers what you last ticked (nothing on a first visit) and goes back to the homepage
+- No teacher notes on student pages; no "class" wording in Questing (one world for everyone)
+
+#### Fixed
+- Clicking a point on the spec trackers now opens it
+- Spec trackers no longer scroll sideways on phones
+- Homepage footer → v4.0.0
 
 ---
 

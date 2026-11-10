@@ -842,6 +842,20 @@ footer {
     }
 }
 
+/* Narrow screens: one column. The forced column break (.column-break) otherwise pushes half of each topic off the right edge. */
+@media (max-width: 720px) {
+    .topic-card {
+        columns: auto;
+        column-count: 1;
+        column-width: auto;
+    }
+
+    .spec-item.column-break {
+        break-before: auto;
+        -webkit-column-break-before: auto;
+    }
+}
+
 @media (max-width: 520px) {
     .spec-topbar {
         position: static;
