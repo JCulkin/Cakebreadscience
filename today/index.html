@@ -24,14 +24,6 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .hello{display:flex;gap:16px;align-items:center;margin-bottom:18px}
 .hello img{width:84px;image-rendering:pixelated;background:var(--paper);border:2px solid var(--ink)}
 .hello h1{font-size:40px}.hello p{color:var(--muted)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
-@media(max-width:820px){.steps{grid-template-columns:1fr}}
-.step{background:var(--paper);border:2px solid var(--ink);padding:14px 16px;display:flex;flex-direction:column;gap:6px;position:relative}
-.step.done{background:#f0fdf4;border-color:var(--s)}
-.step .ic{font-size:30px;line-height:1}
-.step h2{font-size:24px}
-.step p{color:#333;flex:1}
-.step .tick{position:absolute;right:12px;top:10px;font:900 15px Barlow,Arial;color:var(--s)}
 .btn{display:inline-block;background:#facc15;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;padding:7px 14px;font-size:19px;text-decoration:none;align-self:flex-start}
 .btn.alt{background:var(--paper)}.btn.green{background:#4ade80}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
@@ -53,6 +45,12 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .gate button{font:900 19px 'Barlow Condensed',Arial;text-transform:uppercase;background:#111;color:#fff;border:0;padding:8px 16px;margin-left:8px;cursor:pointer}
 .links{display:flex;flex-wrap:wrap;gap:8px}
 .links a{background:var(--paper);border:2px solid var(--ink);padding:6px 12px;text-decoration:none;color:var(--ink);font-weight:700}
+.tline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:2px solid #111;padding:10px 12px;margin:0 0 18px}
+.tline b{font:900 20px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin-right:4px}
+.tline a{padding:5px 10px;border:2px solid #111;text-decoration:none;color:#111;font-weight:700;font-size:14px;background:#fef3c7}
+.tline a.ok{background:#dcfce7;border-color:#15803d;color:#15803d}
+.tline a.go{margin-left:auto;background:#111;color:#fff}
+@media(max-width:560px){.tline a.go{margin-left:0}}
 </style>
 </head>
 <body>
@@ -122,6 +120,9 @@ async function draw() {
     landTxt = `${newRep ? newRep + ' ' : ''}${planned ? `${planned} move${planned > 1 ? 's' : ''} planned for tonight.` : `${land.st.moves || 0} move${land.st.moves === 1 ? '' : 's'} to plan for tonight.`} ❤ ${land.st.health ?? '–'}/${s.hp} Health${land.st.pending ? ' · 🎁 rewards to collect' : ''}.`;
     landBtn = planned ? 'See the map →' : 'Plan your moves →';
   } else if (!land) landTxt = 'Breadventure Land couldn\'t load just now.';
+  let landShort = 'Breadventure Land';
+  if (land && land.st && land.w) { const pl = land.pb && land.pb.plan && land.pb.plan.day === land.w.day ? land.pb.plan.steps.length : 0, mv = land.st.moves || 0;
+    landShort = land.st.pending ? '🎁 Rewards waiting' : pl ? `${pl} move${pl > 1 ? 's' : ''} planned` : mv ? `${mv} move${mv > 1 ? 's' : ''} to plan` : 'No moves left'; }
 
   /* nearly secured, rusty, weak flashcards */
   const near = Object.keys(QE.POINT_QS).map(k => [k, QE.pointState(k)]).filter(([, p]) => p.started && !p.secured && p.need - (p.sec + p.cSec) <= 1.5)
@@ -144,23 +145,18 @@ async function draw() {
   const streak = (() => { let n = 0; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i < days.length - 1) break; } return n; })();
 
   $('main').innerHTML = `<div class="hello"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} spec points secured${streak > 1 ? ` · 🔥 ${streak} days in a row` : ''}</p></div></div>
-    <h2 style="font-size:20px;margin-bottom:8px">Today</h2>
-    <div class="steps">
-      <div class="step ${missionDone ? 'done' : ''}">${missionDone ? '<span class="tick">✓ Done</span>' : ''}<span class="ic">⚔️</span><h2>A mission</h2>
-        <p>${missionDone ? `Done: ${QE.missionsToday()} today. Another one can't hurt.` : pick ? `Suggested: <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b> (${esc(pick.why.toLowerCase())}).` : '10 questions against a misconception.'}</p>
-        <a class="btn" href="${Q}adventurer-mission.html">${missionDone ? 'Another mission →' : 'Start →'}</a></div>
-      <div class="step ${cardsDone ? 'done' : ''}">${cardsDone ? '<span class="tick">✓ Done</span>' : ''}<span class="ic">🃏</span><h2>Flashcards</h2>
-        <p>${cardsDone ? `Today's cards are done (${cd.n}). Nice.` : `${due ? `<b>${due}</b> card${due > 1 ? 's are' : ' is'} due for review.` : 'No reviews due: learn some new cards.'} ${cd && cd.n ? `${cd.n} done today, ` : ''}${QE.cardsTarget()} for today's +1 move and loot.`}</p>
-        <a class="btn alt" href="/Flashcards/">${cardsDone ? 'More cards →' : 'Review →'}</a></div>
-      <div class="step ${landDone ? 'done' : ''}">${landDone ? '<span class="tick">✓ Planned</span>' : ''}<span class="ic">🗺️</span><h2>Breadventure Land</h2>
-        <p>${landTxt}</p><a class="btn green" href="${Q}adventurer-map.html">${landBtn}</a></div>
-    </div>
+    <div class="tline"><b>Today</b>
+      <a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission to do'}</a>
+      <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} card${due > 1 ? 's' : ''} due` : 'New cards'}</a>
+      <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
+      <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a></div>
+    <h2 style="font-size:22px;margin:4px 0 8px">What to revise</h2>
     <div class="cols">
       <div>
         ${near.length ? `<div class="card"><h2>Nearly secured</h2><p class="small muted" style="margin-bottom:4px">One more right answer or card on another day locks these in.</p>${near.map(([k]) => row(k, 'Nearly there')).join('')}</div>` : ''}
         ${weak.length ? `<div class="card"><h2>From your flashcards</h2>${weak.map(k => row(k, 'You rated these cards hard')).join('')}</div>` : ''}
         ${rusty.length ? `<div class="card"><h2>Gone rusty</h2>${rusty.map(k => row(k, 'Secured, but not practised for 3 weeks')).join('')}</div>` : ''}
-        ${!near.length && !weak.length && !rusty.length ? `<div class="card"><h2>Where to start</h2><p>Do a mission or some flashcards: this page then shows the spec points you're closest to securing, and the ones that need another look.</p></div>` : ''}
+        ${!near.length && !weak.length && !rusty.length ? `<div class="card"><h2>Where to start</h2><p>${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Do a mission or some flashcards: this page then lists the spec points you're closest to securing and the ones that need another look.</p><p style="margin-top:8px"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a> <a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p></div>` : ''}
       </div>
       <div>
         <div class="card"><h2>The spec</h2><div class="sci">${sciRow('B', 'biology', 'var(--bio)')}${sciRow('C', 'chemistry', 'var(--chem)')}${sciRow('P', 'physics', 'var(--phys)')}</div>
