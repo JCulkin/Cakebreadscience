@@ -459,9 +459,24 @@ const QE = (() => {
     catch (e) { return Promise.reject(e); }
   }
 
-  /* keep the look in the account when the creator/wardrobe pages change it */
-  if (syncLookIntoGame()) writeLocal();
-  initFirebase();
+  /* ---------- admin console (10 Nov): read another student's saved PROG with the same rules ----------
+     analyse(prog) → { stats, points: { key: 's'|'r'|'l'|'n' }, topics: { 'B2': { n, s, r, l } } }. Doesn't touch this browser's progress. */
+  function analyse(p) {
+    const keep = PROG; PROG = Object.assign(blank(), p || {}); cardsV++;
+    try {
+      const st = securedStats(), points = {}, topics = {};
+      for (const k in POINT_QS) {
+        const ps = pointState(k), v = ps.rusty ? 'r' : ps.secured ? 's' : ps.started ? 'l' : 'n';
+        points[k] = v;
+        const t = k.split('.')[0], x = topics[t] = topics[t] || { n: 0, s: 0, r: 0, l: 0 };
+        x.n++; if (v !== 'n') x[v]++;
+      }
+      return { stats: st, points, topics };
+    } finally { PROG = keep; cardsV++; }
+  }
+
+  /* keep the look in the account when the creator/wardrobe pages change it (not on the admin console: window.QE_PASSIVE) */
+  if (!window.QE_PASSIVE) { if (syncLookIntoGame()) writeLocal(); initFirebase(); }
 
   return {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },
@@ -470,6 +485,6 @@ const QE = (() => {
     signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,
-    recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,
+    analyse, isoWeek, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,
   };
 })();

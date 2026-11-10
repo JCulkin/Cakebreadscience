@@ -67,7 +67,7 @@ details.why li{margin:6px 0 0 20px}
 
   <div class="layout">
     <div class="card preview">
-      <div class="nick"><input id="nick" maxlength="16" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me">🎲</button></div>
+      <div class="nick"><input id="nick" maxlength="16" placeholder="Your first name + initial" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me">🎲</button></div>
       <div class="small">Your name in Cakebread Questing: on the leaderboards and Breadventure Land. Type your own (2–16 letters) or press 🎲.</div>
       <div class="namerr" id="namerr" role="alert"></div>
       <img id="fig" class="px" alt="Your adventurer">
@@ -91,19 +91,6 @@ details.why li{margin:6px 0 0 20px}
     </div>
   </div>
 
-  <details class="why">
-    <summary>For teachers: why there is no boy / girl choice</summary>
-    <ul>
-      <li><b>One body for everyone.</b> Every adventurer has the same small, chunky body. Hair, face, skin and extras are separate choices, and every option is open to everyone. Nobody has to pick a box, and nobody is told “that hair is for girls”.</li>
-      <li><b>We don't collect gender at all.</b> A quiz avatar doesn't need it, so storing it would be personal data with no purpose (data minimisation under GDPR). The saved look is just <code>{skin, hair, colour, eyes, mouth, extras}</code>.</li>
-      <li><b>No pronouns anywhere.</b> The game always says “you” or uses the adventurer name, so there is nothing to get wrong.</li>
-      <li><b>Clothes are never gendered.</b> Gear comes from the Campaign and anyone can wear anything (the kilt included).</li>
-      <li><b>Changing your look is free and unlimited</b>, so a student can change how they present without it costing them progress or drawing attention.</li>
-      <li><b>Faith and disability are built in:</b> hijab, turban/patka and kippah, glasses and a hearing aid. Hats sit on top of head coverings rather than replacing them.</li>
-      <li><b>Names:</b> the leaderboard currently shows first name + initial from the Google account, which can be a name a student doesn't use. The generated adventurer name (no typing, so nothing to moderate) avoids that — <i>your decision which one the boards show</i>.</li>
-      <li><b>Future-proof:</b> options are saved by id, so new hairstyles, tones or extras can be added later without breaking anyone's saved look. Skin tones are numbered, not named after ethnicities.</li>
-    </ul>
-  </details>
 </div>
 
 <script src="/js/firebase-config.js"></script>
@@ -123,7 +110,7 @@ ADV.nav('look');
 const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick';
 const O = PIXEL.OPTIONS;
 let base = load(KEY_BASE) || Object.assign({}, PIXEL.DEFAULT), view = 'starter';
-let nick = localStorage.getItem(KEY_NICK) || newNick();
+let nick = localStorage.getItem(KEY_NICK); nick = nick === '-' ? '' : nick || newNick();   // '-' = cleared by the admin: use the Google name
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function newNick() {
   const A = ['Brave', 'Chaotic', 'Sleepy', 'Mighty', 'Curious', 'Sneaky', 'Cosmic', 'Turbo', 'Gentle', 'Unbothered', 'Sparkly', 'Lowkey', 'Valiant', 'Wobbly', 'Electric', 'Fizzy'];
@@ -140,7 +127,7 @@ function tile(group, opt, b, multi) {
 }
 function render() {
   document.getElementById('fig').src = PIXEL.figure(outfit(), base);
-  const ni = document.getElementById('nick'); if (document.activeElement !== ni) ni.value = nick;
+  const ni = document.getElementById('nick'); if (document.activeElement !== ni) ni.value = nick === '-' ? '' : nick;
   document.getElementById('o-skin').innerHTML = O.skin.map(o => `<button class="sw ${base.skin === o.id ? 'on' : ''}" style="background:${o.c}" data-g="skin" data-v="${o.id}" aria-label="${o.name}" title="${o.name}"></button>`).join('');
   document.getElementById('o-hair').innerHTML = O.hair.map(o => {
     const cl = !!o.cloth, cur = colours();
@@ -169,7 +156,7 @@ document.addEventListener('click', e => {
   render();
 });
 document.getElementById('reroll').onclick = () => { nick = newNick(); document.getElementById('nick').value = nick; checkNick(); render(); };
-const checkNick = () => { const e = QE.checkName(document.getElementById('nick').value); document.getElementById('namerr').textContent = e; return !e; };
+const checkNick = () => { const v = document.getElementById('nick').value.trim(), e = v ? QE.checkName(v) : ''; document.getElementById('namerr').textContent = e; return !e; };
 document.getElementById('nick').addEventListener('input', e => { nick = e.target.value; checkNick(); document.getElementById('saved').textContent = ''; });
 document.getElementById('rand').onclick = () => {
   const r = l => l[Math.random() * l.length | 0].id;
@@ -179,7 +166,7 @@ document.getElementById('rand').onclick = () => {
 };
 document.getElementById('save').onclick = () => {
   if (!checkNick()) { document.getElementById('nick').focus(); return; }
-  nick = QE.cleanName(nick);
+  nick = QE.cleanName(nick) || '-';
   base.v = 1;
   try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
   QE.syncLook();

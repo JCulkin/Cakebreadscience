@@ -38,7 +38,7 @@ const ADV = (() => {
   /* look, name, gear (saved by the creator and wardrobe pages; the engine copies them into the account) */
   const look = () => load('cbs.adventurer.base') || PIXEL.DEFAULT;
   const hasLook = () => !!load('cbs.adventurer.base');
-  const nick = () => localStorage.getItem('cbs.adventurer.nick') || 'Brave Neutron';
+  const nick = () => { const n = localStorage.getItem('cbs.adventurer.nick'); return n && !QE.checkName(n) ? n : n === '-' ? QE.googleName() : 'Brave Neutron'; };
   const eq = () => load('cbs.adventurer.eq') || Object.assign({}, STARTER);
 
   /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured. */
