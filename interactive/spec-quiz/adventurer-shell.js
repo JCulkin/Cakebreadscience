@@ -115,6 +115,7 @@ const ADV = (() => {
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
+      + tab('today', '/today/', '📅', 'My day')
       + `<span class="gap"></span>`
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')

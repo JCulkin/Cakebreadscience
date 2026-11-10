@@ -53,7 +53,7 @@ const WATER_NAME = { '~': ['The Revision Sea', 'Endless. Salty. You cannot swim 
 
 const PLACES = {
   '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
-  '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend coins on brews. Stock changes every Monday.', stock: ['Bottled Aura · 30 coins', 'Electrolyte Slushie · 20 coins', 'Fizzy Courage · 40 coins', 'Decaf Panic · 25 coins'] },
+  '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend your coins on brews. Stand here to buy; drink them anywhere (Spells & brews).', stock: true },
   '6,6': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. A random event every night: a coin, a brew, or a very wet sock.' },
   /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
   '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
@@ -95,6 +95,16 @@ const WILD = { F: 'a Grumpy Woodlouse', f: 'a Pollen Sprite', P: 'a Lost Proton'
 const HEAL = { mission: 2, card: 1, rest: 5 };   // Health per correct mission answer, per due flashcard, per night resting in the Cakelab
 /* the crumb trail from the Cakelab to the dragon's lair (shows through the fog) */
 const CRUMBS = ['7,3', '7,2'];
+
+/* ===================== brews (the Tuck Shop's stock; coins come from missions, flashcards and the map) =====================
+   now: used straight away (client); night: a flag on your state that tonight's fights read, then it wears off */
+const BREWS = {
+  slushie: { name: 'Electrolyte Slushie', ic: '🥤', cost: 20, when: 'now', what: 'Refills your Health straight away.' },
+  aura: { name: 'Bottled Aura', ic: '✨', cost: 30, when: 'night', what: '+5 Strength in tonight\'s fights.' },
+  fizz: { name: 'Fizzy Courage', ic: '🫧', cost: 40, when: 'night', what: 'Your hits do half as much again tonight.' },
+  calm: { name: 'Decaf Panic', ic: '☕', cost: 25, when: 'night', what: 'You can\'t be knocked out tonight (you stop at 1 Health).' },
+};
+const BREW_OLD = { 'Fizzy Courage': 'fizz', 'Bottled Aura': 'aura', 'Electrolyte Slushie': 'slushie', 'Decaf Panic': 'calm' };   // dungeon finds before 10 Nov used names
 
 /* ===================== geometry ===================== */
 const key = (c, r) => c + ',' + r, unkey = k => k.split(',').map(Number);
@@ -142,6 +152,8 @@ function resolve(w0, pubs, st0, today) {
   const lines = {}, out = {}, used = {}, visBefore = {}, pos = {}, rewards = {};
   const say = (u, h) => lines[u].push(h);
   const ouch = (u, h) => (S[u].shield ? Math.ceil(h / 2) : h);
+  const strOf = u => ((P_(u).str || 10) + (S[u].aura ? 5 : 0)) * (S[u].fizz ? 1.5 : 1);
+  const hurt = (u, h) => { S[u].health = Math.max(S[u].calm ? 1 : 0, S[u].health - h); };
   const give = (u, coins, item) => { const r = rewards[u] = rewards[u] || { coins: 0, items: [] }; r.coins += coins || 0; if (item) r.items.push(item); };
   const knockout = u => { out[u] = true; pos[u] = HOME; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4));
     say(u, `<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Your other moves tonight are cancelled. Recharge with a mission (+${HEAL.mission} per right answer) or your flashcards (+${HEAL.card} per card).</p>`); };
@@ -174,21 +186,21 @@ function resolve(w0, pubs, st0, today) {
       else if (P && P.type === 'monster') {
         const d = st.dens[k]; let hp = !d ? P.max : d.back ? (d.back > tNum ? 0 : P.max) : d.hp;
         if (!hp) { say(u, `<p>The ${P.name} has gone to lick its wounds. Nothing to fight here tonight.</p>`); return; }
-        const dmg = Math.round((P_(u).str || 10) * (0.6 + rnd() * 0.8)); hp = Math.max(0, hp - dmg);
+        const dmg = Math.round(strOf(u) * (0.6 + rnd() * 0.8)); hp = Math.max(0, hp - dmg);
         say(u, `<p class="good">You take on the ${P.name}: ${dmg} damage.</p>`);
-        const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); st.health = Math.max(0, st.health - hit);
+        const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit);
         say(u, `<p class="bad">It fights back: −${hit} Health.</p>`);
         if (!hp) { st.dens[k] = { back: tNum + 2 }; give(u, 8); say(u, `<p class="lt">★ ${P.name} beaten! +8 coins. It'll be back in two days.</p>`); }
         else { st.dens[k] = { hp }; say(u, `<p>The ${P.name} limps off with ${hp} health left. Come back to finish it.</p>`); }
         if (st.health === 0) knockout(u);
       } else if (!P && rnd() < .3 && WILD[T_AT(c, r)]) {
-        const hit = ouch(u, 1 + Math.floor(rnd() * 3)); st.health = Math.max(0, st.health - hit);
+        const hit = ouch(u, 1 + Math.floor(rnd() * 3)); hurt(u, hit);
         say(u, `<p>On the way you're jumped by <b>${WILD[T_AT(c, r)]}</b>. You see it off (−${hit} Health).</p>`);
         if (st.health === 0) knockout(u);
       } else if (P && P.type === 'dungeon') {
         const roll = rnd();
         if (roll < .35) { give(u, 12); say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">12 coins</span>.</p>`); }
-        else if (roll < .65) { const b = rnd() < .5 ? 'Fizzy Courage' : 'Bottled Aura'; st.brews[b] = (st.brews[b] || 0) + 1; say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">a ${b}</span>.</p>`); }
+        else if (roll < .65) { const b = rnd() < .5 ? 'fizz' : 'aura'; st.brews[b] = (st.brews[b] || 0) + 1; say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">a ${BREWS[b].name}</span>.</p>`); }
         else say(u, `<p>You explore a floor of ${P.name} and find a single damp glove. Useless.</p>`);
       } else if (P && P.type === 'event') {
         if (rnd() < .4) { give(u, 5); say(u, '<p>You poke the puddle and fish out <span class="lt">5 coins</span>.</p>'); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
@@ -198,14 +210,14 @@ function resolve(w0, pubs, st0, today) {
     /* bosses: everyone on the square this step fights together */
     Object.entries(fights).forEach(([k, team]) => {
       const P = PLACES[k];
-      const dmg = team.map(u => Math.round((P_(u).str || 10) * (0.6 + rnd() * 0.8))), total = dmg.reduce((a, b) => a + b, 0);
+      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8))), total = dmg.reduce((a, b) => a + b, 0);
       w.boss[k] = Math.max(0, w.boss[k] - total);
       const hk = w.hit[k] = w.hit[k] || {};
       team.forEach((u, j) => {
         hk[u] = true;
         const others = team.length - 1;
         say(u, `<p class="good">You${others ? ` and ${others} other${others > 1 ? 's' : ''}` : ''} attack ${P.name}: ${total} damage (you did ${dmg[j]}).</p>`);
-        if (w.boss[k] > 0) { const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); S[u].health = Math.max(0, S[u].health - hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
+        if (w.boss[k] > 0) { const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
       });
       if (w.boss[k] === 0) {
         const coins = (P.ch || 1) > 1 ? 50 : 40;
@@ -224,7 +236,9 @@ function resolve(w0, pubs, st0, today) {
     const vis = visibleOf(st);
     Object.entries(PLACES).forEach(([k, P]) => { if (vis.has(k) && !visBefore[u].has(k)) lines[u].push(`<p class="new">🗺 The fog clears: you can now see <b>${P.name}</b>.</p>`); });
     if (st.shield) lines[u].push('<p class="lt">🛡 Your Jam Shield took half of every hit tonight. It has worn off.</p>');
+    ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">${BREWS[b].ic} Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
     st.shield = false;
+    Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
     st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - used[u]) + DAILY_MOVES * elapsed);
     if (!plans[u].length) lines[u].push(`<p>You didn't plan any moves${elapsed > 1 ? ' for a while' : ''}, so you stayed at ${PLACES[st.at] ? PLACES[st.at].name : 'your spot'}.</p>`);
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
@@ -280,7 +294,7 @@ async function runNightIfDue(force) {
 const me = () => states[uid];
 
 return { ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
-  key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
+  BREWS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
   newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, runNightIfDue, me,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();

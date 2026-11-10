@@ -365,7 +365,7 @@ function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells${S.shield ? ' · 🛡' : ''}</button></div>
+    <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
     <div class="day">Day ${S.dayNo || 1} · moves happen at midnight</div>
@@ -379,6 +379,12 @@ function renderHud() {
 }
 
 /* ===================== spells (mana from flashcards and missions) ===================== */
+function brewRows() {
+  const have = Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0);
+  return `<h3 style="margin:14px 0 4px">🧪 Brews</h3>` + (have.length ? have.map(([id, b]) => { const on = b.when === 'night' && S[id];
+    return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:26px">${b.ic}</span><div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
+    : '<p class="small">None yet. Buy them at the Tuck Shop with coins from missions, flashcards and the map, or find them in dungeons.</p>');
+}
 const SPELLS = [
   { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.', ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.',
     cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
@@ -393,9 +399,17 @@ function showSpells() {
   const row = sp => { const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
     <div style="flex:1"><b>${sp.name}</b> · ${sp.cost} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
     <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
-  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
-    ${SPELLS.map(row).join('')}`;
+  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
+    ${SPELLS.map(row).join('')}${brewRows()}`;
   m.classList.add('on');
+  $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
+    const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
+    S.brews[id]--; let msg;
+    if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `🥤 Health refilled (+${S.health - b0}).`; }
+    else { S[id] = true; msg = `${br.ic} ${br.name}: ${br.what}`; }
+    persist(); renderAll(); showSpells();
+    $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
+  });
   $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
     const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; const msg = sp.cast(); persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
@@ -434,7 +448,11 @@ function renderPanel() {
     h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}.</div>`;
   }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
-  if (P && P.stock) h += `<div class="loot"><b>In stock:</b><br>${P.stock.join('<br>')}</div>`;
+  if (P && P.stock) {
+    const here = S.at === sel && shared;
+    h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Stand here to buy (end a move on the Tuck Shop).</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
+      `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
+  }
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
   if (reach.has(sel)) {
     const n = S.plan.length + 1, stay = sel === last;
@@ -449,6 +467,11 @@ function renderPanel() {
   pn.innerHTML = h; pn.classList.add('on');
   $('pClose').onclick = () => { sel = null; renderAll(); };
   if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(sel); persist(); renderAll(); };
+  pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
+    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; persist(); renderAll();
+    toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
+  });
 }
 
 function renderPerson(who) {
@@ -509,14 +532,14 @@ function persist() {
   ADV.save();
   if (!shared) return;
   BL.savePlan(S.plan.slice()).catch(e => console.warn('plan not saved', e));
-  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [] }).catch(e => console.warn('state not saved', e));
+  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
   S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
   Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: st.moves || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
-    shield: !!st.shield, dens: st.dens || {}, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
+    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
   S.plan = pub.plan && pub.plan.day === w.day && Array.isArray(pub.plan.steps) ? pub.plan.steps.slice(0, S.moves) : [];
   buildPeople(); ADV.save();
 }
