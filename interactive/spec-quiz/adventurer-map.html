@@ -423,7 +423,7 @@ function describe(k) {
     if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'Cake crumbs in the fog', text: 'A trail of crumbs and sprinkles leads north into the fog. Follow it.' };
     return { tp: 'Unexplored', name: 'Fog', text: 'You haven\'t been near here yet. Walk within 2 squares to see what\'s there.' };
   }
-  if (P && P.type === 'cage' && S.chapter >= 2) return { tp: 'Empty cage', name: P.name, P, text: 'Empty now — the class set the Professor free. Someone has left a thank-you note and a single sprinkle.' };
+  if (P && P.type === 'cage' && S.chapter >= 2) return { tp: 'Empty cage', name: P.name, P, text: 'Empty now — everyone set the Professor free. Someone has left a thank-you note and a single sprinkle.' };
   if (P) return { tp: TYPE[P.type] + (P.science ? ' · ' + ADV.SCI[P.science] : '') + ((P.ch || 1) > S.chapter ? ' · Chapter ' + P.ch + ' (asleep)' : ''), name: P.name, P, text: P.text + ((P.ch || 1) > S.chapter ? ' <b>Asleep until the Professor is free.</b>' : '') };
   if (WATER.has(t)) return { tp: 'Water · can\'t cross', name: WATER_NAME[t][0], text: WATER_NAME[t][1], water: true };
   if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'A trail of cake crumbs', text: 'Crumbs, sprinkles and the odd scorch mark, leading north towards the Cold Store Hills…' };
@@ -459,7 +459,7 @@ function renderPanel() {
     const what = P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
   } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
-  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for the whole class the night the third boss falls.</div>`;
+  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
   else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">💤 Asleep until the Professor is free (chapter ${P.ch}).</div>`;
   else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
   else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight. Come back tomorrow, or do a mission or your flashcards for an extra move.</div>`;

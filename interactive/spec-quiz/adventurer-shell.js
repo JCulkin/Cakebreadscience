@@ -168,7 +168,7 @@ const ADV = (() => {
       <div class="pics"><img src="${icon('crumbs')}" width="60" alt=""><img src="${icon('prof')}" width="110" alt="The Professor" style="opacity:.35;filter:grayscale(1)"><img src="${icon('dragonzz')}" width="110" alt="${DRAGON} the dragon"></div>
       <p>You arrive at the <b>Cakelab</b> and it's empty. The Professor's coffee is still warm. There are scorch marks on the ceiling and a trail of <b>cake crumbs</b> leading north.</p>
       <p><b>${DRAGON}</b>, a dragon with a very sweet tooth, has carried the Professor off to its lair in the Cold Store Hills and locked him in a cage. It handed one piece of the cage key to each of its three guards: <b>the Spore Lord</b>, <b>Granitus the Stone Golem</b> and <b>the Acid Hydra</b>.</p>
-      <p>No one can beat them alone. <b>Your whole class</b> has to win back all three key pieces to free the Professor. Revise to get stronger, then follow the crumbs.</p>`,
+      <p>No one can beat them alone. <b>Everyone who plays</b> has to win back all three key pieces to free the Professor. Revise to get stronger, then follow the crumbs.</p>`,
       'Follow the crumbs →', () => { S.storySeen = true; save(); onClose && onClose(); });
     return m;
   }

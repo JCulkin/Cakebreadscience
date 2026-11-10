@@ -62,11 +62,11 @@ const PLACES = {
     text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Legendary)', '+40 coins each'] },
   '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
     text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', item: 'shield', loot: ['🔑 Key piece 3 of 3', 'Periodic Table Shield (Rare)', '+40 coins each'] },
-  '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for one class. When it wakes, the whole year group fights it together.' },
+  '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for anyone alone. When it wakes, everyone fights it together.' },
   '7,1': { type: 'cage', name: 'The Professor\'s Cage', icon: 'prof', text: 'The Professor is locked in here, looking cross and slightly crumbly. The lock needs all three key pieces — win them from the Spore Lord, the Stone Golem and the Acid Hydra.' },
   /* chapter 2: wake up once the Professor is free */
   '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 8,
-    text: 'A bacterium that has survived every antibiotic thrown at it, so now it is enormous and very smug. Lives in the Petri Swamp. Natural selection made it; your class will unmake it.', item: 'grass', loot: ['Touch-Grass Boots (Rare)', 'Electrolyte Slushie', '+50 coins each'] },
+    text: 'A bacterium that has survived every antibiotic thrown at it, so now it is enormous and very smug. Lives in the Petri Swamp. Natural selection made it; you lot will unmake it.', item: 'grass', loot: ['Touch-Grass Boots (Rare)', 'Electrolyte Slushie', '+50 coins each'] },
   '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 950, power: 9,
     text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', item: 'chainmail', loot: ['Chainmail of Covalent Bonds (Rare)', 'Fizzy Courage', '+50 coins each'] },
   '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
