@@ -290,7 +290,7 @@ function finish() {
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><a class="btn gold big" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">⛺ Base camp</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
+    <div class="acts"><a class="btn gold big" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">🧁 Cakelab</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
     <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe and get on the leaderboards.'}</p>`;
   if (QE.user) QE.onChange(() => { const n = $('saveNote'); if (n) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent; });
   scrollTo(0, 0);

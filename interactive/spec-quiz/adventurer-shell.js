@@ -75,7 +75,7 @@ const ADV = (() => {
   }
   let gained = { hp: 0, mana: 0, move: false };
 
-  /* ---------- nav bar (one bar: brand, Base camp, the two big actions, then small links) ---------- */
+  /* ---------- nav bar (one bar: brand, Cakelab, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
   function nav(active) {
     const css = document.createElement('style');
@@ -111,7 +111,7 @@ const ADV = (() => {
     n.setAttribute('aria-label', 'Cakebread Questing');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
     n.innerHTML = `<a class="brand" href="index.html">Cakebread <b>Questing</b></a>`
-      + tab('home', 'adventurer-home.html', '🏠', 'Base camp')
+      + tab('home', 'adventurer-home.html', '🧁', 'Cakelab')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')

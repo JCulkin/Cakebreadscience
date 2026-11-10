@@ -301,7 +301,7 @@ function openStudent(uid) {
   $('ren').onclick = () => { const n = QE.cleanName($('nn').value), bad = QE.checkName(n); if (bad) return msg(bad); setNick(n); };
   $('clr').onclick = () => setNick('-');
   if ($('hid')) $('hid').onclick = async () => {
-    if (s.hide) return msg('Already hidden. Students can switch this themselves on Base camp.', true);
+    if (s.hide) return msg('Already hidden. Students can switch this themselves on Cakelab.', true);
     try { await DB.collection('users').doc(uid).update({ 'specQuiz.hide': true, 'specQuiz.updatedAt': Date.now() }); s.hide = true; s.prog.hide = true;
       try { if (D.board[uid]) { await RT.ref('specQuizBoard/' + uid + '/hide').set(true); D.board[uid].hide = true; } } catch (e) {}
       msg('Hidden from the Cakebread Questing boards.', true); $('hid').textContent = 'Hidden from boards ✓'; drawStudents(); drawBoards();
