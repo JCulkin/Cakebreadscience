@@ -84,7 +84,7 @@ function quiz(){const el=$('list');el.innerHTML='<div class="lbx"><p class="note
     const me=LB.user&&LB.user.uid,idx=rows.findIndex(r=>r.uid===me);
     let html=rows.slice(0,10).map((r,i)=>`<li style="${r.uid===me?'background:#fff3c4':''}"><span style="font-family:'Barlow Condensed';font-weight:900;font-size:20px">${i+1}</span><b>${esc(r.name)}</b><span style="font-family:'Barlow Condensed';font-weight:900;font-size:22px;color:#005e22">${r.score}</span></li>`).join('');
     if(idx>=10)html+=`<li style="background:#fff3c4"><span>${idx+1}</span><b>${esc(rows[idx].name)}</b><span>${rows[idx].score}</span></li>`;
-    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Cakebread Questing scores come from its missions. Choose whether you appear on its leaderboards at Base camp.</p></div>`;})
+    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Cakebread Questing scores come from its missions. Choose whether you appear on its leaderboards at Cakelab.</p></div>`;})
    .catch(()=>{el.innerHTML='<p class="note">The Cakebread Questing leaderboard can’t be read right now. Try signing in.</p>';});}
 if(window.LB)LB.onUser(()=>{bar();draw();});else{bar();}
 })();

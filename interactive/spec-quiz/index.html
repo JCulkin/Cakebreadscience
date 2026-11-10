@@ -32,8 +32,6 @@
 .lb img{width:26px;height:26px;border:1px solid var(--line);border-radius:4px;background:var(--soft)}
 .lb .n{flex:1}.lb .v{font-weight:700}
 .leg{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:14px}.leg img{width:40px;height:40px;background:var(--soft);border-radius:8px;flex:none}
-.quick{margin-top:28px;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between}
-.quick p{max-width:640px}
 .newbie{display:none}
 .signin{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;margin-top:14px;border-left:8px solid #facc15}
 .signin[hidden]{display:none}
@@ -46,7 +44,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
 <main class="wrap">
   <h1>Cakebread Questing</h1>
   <p class="lede">Questions on the whole Edexcel International GCSE Science (Double Award) spec. Answer them to secure every spec point and power up your adventurer.</p>
-  <div class="card signin" id="signin" hidden><div><b>Sign in to save your adventure.</b> Your progress, loot and look are kept in your Google account, and you appear on the class leaderboards. Without signing in, progress stays in this browser only.</div><button class="btn gold" id="signinBtn" type="button">Sign in with Google</button></div>
+  <div class="card signin" id="signin" hidden><div><b>Sign in to save your adventure.</b> Your progress, loot and look are kept in your Google account, and you appear on the leaderboards. Without signing in, progress stays in this browser only.</div><button class="btn gold" id="signinBtn" type="button">Sign in with Google</button></div>
 
   <a class="adv returning" href="adventurer-home.html" id="advCard">
     <div class="scene"><span class="sun"></span><img class="px" id="fig" alt="Your adventurer"></div>
@@ -64,7 +62,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="mid">
       <span class="kick">New</span>
       <b class="t">Start your adventure</b>
-      <div class="desc">The Professor has been carried off by a dragon. Make a little pixel adventurer, then answer questions on the spec to make them stronger. Breadventure Land, where your class sets out to free him, opens soon.</div>
+      <div class="desc">The Professor has been carried off by a dragon. Make a little pixel adventurer, then answer questions on the spec to make them stronger. Then head into Breadventure Land, one world shared by every player, to free him together.</div>
     </div>
     <div class="go">Start →</div>
   </a>
@@ -73,6 +71,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="card">
       <h3>This week · most correct</h3>
       <ol class="lb" id="lbWeek"></ol>
+      <p class="small" style="margin-top:8px"><a href="/leaderboards/">All leaderboards →</a></p>
     </div>
     <div class="card">
       <h3>Legendaries this week</h3>
@@ -82,14 +81,10 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="card">
       <h3>The story so far</h3>
       <p style="font-size:15px"><span id="storyNow"></span></p>
-      <p style="margin-top:8px"><a href="adventurer-map.html">Take a look at Breadventure Land (preview) →</a></p>
+      <p style="margin-top:8px"><a href="adventurer-map.html">Into Breadventure Land →</a></p>
     </div>
   </div>
 
-  <div class="quick card">
-    <p><b>Just want a quick quiz?</b> Tick the parts of the spec you want and play solo, or as a team game on the board. No adventurer needed and nothing is saved.</p>
-    <a class="btn alt" href="quiz.html">Make a quiz →</a>
-  </div>
 
 </main>
 <script src="/js/firebase-config.js"></script>
@@ -100,6 +95,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
@@ -116,7 +112,7 @@ const sec = ADV.securedTotal();
 $('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">💪 ${s.str}</span><span class="chip" style="color:var(--hp)">❤ ${s.hp}</span><span class="chip" style="color:var(--mag)">✨ ${s.mag}</span>`
   + `<span class="chip">🔒 ${sec} spec point${sec === 1 ? '' : 's'} secured</span>`
   + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`);
-$('storyNow').innerHTML = `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. <b>Breadventure Land</b>, where the class sets out together to free him, opens soon. Until then: get strong.`;
+$('storyNow').innerHTML = `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. Win them together in <b>Breadventure Land</b>. Every spec point you secure makes you stronger.`;
 
 /* sign-in prompt */
 const signDraw = () => { $('signin').hidden = !(QE.known && QE.online && !QE.user); };

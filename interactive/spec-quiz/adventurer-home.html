@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Base camp - Cakebread Questing</title>
+<title>Cakelab - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,10 +25,11 @@
 .me .links{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .me .links .btn{padding:5px 10px;font-size:14px}
 .today h2{margin-bottom:4px}
+.todo .tick[hidden]{display:none}
 .todo{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;margin-top:10px}
 .todo .ic{width:64px;height:64px;display:grid;place-items:center;border:2px solid var(--ink);background:var(--soft)}
 .todo .ic img{width:48px;height:48px}
-.todo b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1;display:block}
+.todo .h{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1;display:block}
 .todo p{font-size:15px;color:var(--muted);margin-top:2px}
 .todo.main{border-left:10px solid #b45309}
 .todo.done{opacity:.65}
@@ -44,17 +45,31 @@
 .sci .bar{height:14px}
 .sci small{color:var(--muted);font-size:12px}
 .loot{display:flex;gap:12px;align-items:center;margin-top:6px}
-.quest{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center;border-left:10px solid #7c3aed;margin-bottom:10px;background:#fbf7ff}
-.quest .cage{position:relative;width:86px;height:96px;background:#e8edf3;border:2px solid #111;display:grid;place-items:end center}
-.quest .cage img{width:70px;image-rendering:pixelated}
-.quest .cage i{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 11px,#334155 11px 14px)}
-.quest .k{font-size:22px;letter-spacing:4px;margin:4px 0}
-.quest .mk{font-size:12px;color:#777;margin-top:4px}.quest .mk button{font:inherit;background:none;border:1px solid #aaa;padding:1px 6px;cursor:pointer}
+.todo.slim{padding:8px 14px;gap:12px}.todo.slim .ic{width:42px;height:42px;font-size:24px}
+.todo.slim .h{display:inline;font-size:20px;margin-right:6px}.todo.slim p{display:inline;font-size:14px}
+.land{display:block;padding:0;text-decoration:none;color:var(--ink);border-left:10px solid var(--green);margin-bottom:10px;overflow:hidden}
+.land:hover .btn{background:#0a7a32}
+.scene{position:relative;height:150px;background:linear-gradient(#a9dbff 0,#dff1ff 62%,#7cc46b 62%,#5aa64b 100%);display:flex;align-items:flex-end;gap:2%;padding:0 3% 10px;overflow:hidden}
+.scene img{image-rendering:pixelated;display:block}
+.scene .me{height:124px;margin-bottom:-4px}
+.scene .foe{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
+.scene .foe img{height:74px}
+.scene .foe.down img{filter:grayscale(1);opacity:.45}
+.scene .hp{width:64px;height:7px;border:2px solid var(--ink);background:#fff}.scene .hp i{display:block;height:100%;background:var(--red)}
+.scene .foe span{font:700 11px Barlow,Arial;background:#fffd;padding:0 4px;white-space:nowrap}
+.scene .cage{position:relative;height:84px;width:72px;background:#e8edf3cc;border:2px solid #111;display:grid;place-items:end center}
+.scene .cage img{width:60px}.scene .cage i{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 9px,#334155 9px 12px)}
+.scene .drag{position:absolute;right:2%;top:6px;height:52px;opacity:.85}
+.land .txt{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 16px}
+.land .h2{font:900 30px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase}
+.land .st{font-size:15px;color:#333;margin-top:4px}
+.land .mk{font-size:12px;margin-top:6px}.land .mk button{font:inherit;background:none;border:1px solid #aaa;padding:1px 6px;cursor:pointer}
+@media(max-width:560px){.scene{height:118px}.scene .me{height:76px}.scene .foe img{height:52px}.scene .cage{height:64px;width:54px}.scene .cage img{width:44px}.scene .hp{width:46px}.scene .foe span{display:none}.scene .drag{height:38px}.land .txt{grid-template-columns:1fr}}
 .loot img{width:72px;height:72px;background:var(--soft);border-radius:10px;padding:4px;flex:none}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Cakebread Questing · Base camp</span></header>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Cakebread Questing · Cakelab</span></header>
 <main class="wrap">
   <div class="camp">
     <div class="card me">
@@ -71,16 +86,18 @@
     <div>
       <div class="today">
         <h2 id="dayTitle">Today</h2>
-        <div class="card quest" id="quest"></div>
+        <a class="card land" id="tMap" href="adventurer-map.html"><div class="scene" id="scene"></div>
+          <div class="txt"><div><span class="kick" id="landKick" style="color:var(--green)"></span><div class="h2">Breadventure Land</div><div class="st" id="landSt"></div>
+          <div class="mk"><button id="replayIntro" type="button">Replay the story</button></div></div><span class="btn green big">Play →</span></div></a>
         <div class="card todo main" id="tMission">
           <div class="ic"><img class="px" id="enemyIc" alt=""></div>
-          <div><b>Today's mission <span class="tick" id="mDone" hidden>Done</span></b><p id="mText"></p></div>
+          <div><b class="h">Today's mission <span class="tick" id="mDone" hidden>Done</span></b><p id="mText"></p></div>
           <a class="btn gold big" href="adventurer-mission.html" id="mBtn">Start →</a>
         </div>
-        <div class="card todo" id="tMap">
-          <div class="ic"><img class="px" id="mapIc" alt=""></div>
-          <div><b>Breadventure Land · opens soon</b><p>The map where your class sets out to free the Professor. Take a look around the preview; your strength, health and magic will count there.</p></div>
-          <a class="btn green" href="adventurer-map.html">Preview →</a>
+        <div class="card todo slim" id="tCards">
+          <div class="ic">🃏</div>
+          <div><b class="h">Flashcards <span class="tick" id="cDone" hidden>Done</span></b><p id="cText"></p></div>
+          <a class="btn alt" href="/Flashcards/" id="cBtn">Flashcards →</a>
         </div>
       </div>
 
@@ -88,15 +105,15 @@
         <div class="card">
           <h3 style="margin-top:0">Spec points secured</h3>
           <div id="sci"></div>
-          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days. Each one adds 1 to its stat for good.</p>
-          <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="showMe"> Show me on the class leaderboards</label>
+          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days — flashcards rated Good on two different days count too. Each one adds 1 to its stat for good.</p>
+          <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="showMe"> Show me on the leaderboards</label>
         </div>
         <div class="card">
           <h3 style="margin-top:0" id="lootTitle">Newest loot</h3>
           <div id="loot"></div>
           <h3>Brews</h3>
           <div id="brews" style="font-size:15px"></div>
-          <p class="small">🪙 <span id="coins"></span> coins from missions. Brews and the Tuck Shop arrive with Breadventure Land.</p>
+          <p class="small">🪙 <span id="coins"></span> coins · spend them on brews at the Tuck Shop in Breadventure Land.</p>
         </div>
       </div>
     </div>
@@ -110,9 +127,11 @@
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
+<script src="bland.js"></script>
 <script src="adventurer-shell.js"></script>
 <script>
 ADV.nav('home');
@@ -126,35 +145,43 @@ $('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
 const toNextCap = 8 - ADV.securedTotal() % 8;
 $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
   : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
-$('stats').innerHTML = [['💪 Strength', s.str, 'str', `Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
-  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
-  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · spells coming`, s.mag / 70]]
+$('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
+  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
+  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · more Magic = more mana`, s.mag / 70],
+  ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
 
 $('dayTitle').textContent = `Today · day ${S.day}`;
-function renderQuest() {
-  const k = ADV.keys(), q = $('quest');
-  if (S.chapter < 2) q.innerHTML = `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>
-    <div><span class="kick" style="color:#7c3aed">Chapter 1 · The class quest</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">Free the Professor</b>
-    <div class="k">${[0, 1, 2].map(i => `<span style="opacity:${i < k ? 1 : .22}">🔑</span>`).join('')}</div>
-    <div class="small" style="color:#333">${ADV.DRAGON} the dragon has the Professor locked in a cage in its lair. Win the key pieces from the <b>Spore Lord</b>, the <b>Stone Golem</b> and the <b>Acid Hydra</b> as a class, in Breadventure Land (opens soon). Get strong first: every spec point you secure counts.</div>
-    <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
-  else q.innerHTML = `<div class="cage" style="background:#fff7d6"><img src="${ADV.icon('prof')}" alt="The Professor"></div>
-    <div><span class="kick" style="color:#7c3aed">Chapter 2 · The monsters wake</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">The Professor is back</b>
-    <div class="small" style="color:#333;margin-top:4px"><i>“Right. The Superbug, the Rust Wyrm and whatever crawled out of that old reactor. Revise, then go and sort them out.”</i></div>
-    <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
-  $('replayIntro').onclick = () => ADV.storyIntro();
+function renderLand() {
+  const ch = S.chapter || 1, k = ADV.keys(), P = BL.PLACES, hp = S.boss || {};
+  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && (P[x].ch || 1) === Math.min(ch, 2));
+  const foe = x => { const h = hp[x] ?? P[x].max, down = h === 0;
+    return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon)}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
+  const prof = ch < 2 ? `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>`
+    : `<img src="${ADV.icon('prof')}" alt="The Professor" style="height:84px">`;
+  $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +
+    foes.slice(0, 2).map(foe).join('') + prof + foes.slice(2).map(foe).join('');
+  $('landKick').textContent = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 🔑` : 'Chapter 2 · the monsters wake';
+  const planned = (S.plan || []).length, mv = S.moves || 0;
+  $('landSt').innerHTML = (mv ? (planned ? `${planned} of ${mv} moves planned for tonight. ` : `<b>${mv} move${mv === 1 ? '' : 's'} to plan</b> before midnight. `) : 'No moves left today. ')
+    + `❤ ${S.health} Health · 🔮 ${S.mana} mana. Fight the guards together; every spec point you secure makes you stronger.`;
+  $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
-renderQuest();
+renderLand();
 if (!S.storySeen) ADV.storyIntro();
 $('enemyIc').src = ADV.icon('boss', '#d97706');
-$('mapIc').src = ADV.icon('crumbs');
 if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
   $('mBtn').textContent = 'Another →'; $('mBtn').classList.remove('gold', 'big');
 } else { const sg = QE.suggestion(); $('mText').textContent = `10 questions against a misconception. Get questions right first time on two different days to secure spec points.${sg ? ` Suggested: ${sg.subj} ${sg.key.slice(1)} ${sg.name}.` : ''}`; }
 
+{
+  const cd = QE.cardsToday(), target = QE.cardsTarget(), won = QE.revisedToday();
+  if (cd.done) { $('tCards').classList.add('done'); $('cDone').hidden = false; $('cText').textContent = `${cd.n} cards today: +${cd.xp} XP, ❤ +${cd.n}, 🔮 +${cd.n} and a loot drop.`; }
+  else $('cText').innerHTML = `${cd.n ? `${cd.n} of ${target} cards today. ` : ''}${target} cards → ${won ? 'a loot drop' : '+1 move and a loot drop'}.`;
+}
+$('mText').insertAdjacentHTML('beforeend', QE.revisedToday() ? '' : ' <b>Your first mission today also gives +1 move.</b>');
 $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], ['p', 'Physics', 'Strength']].map(([k, n, st]) =>
   `<div class="sci"><div class="top"><span style="color:var(--${k})">${n}</span><span>${S.secured[k]} / ${ADV.TOTAL[k]}</span></div><div class="bar"><i style="width:${S.secured[k] / ADV.TOTAL[k] * 100}%;background:var(--${k})"></i></div><small>→ ${st}</small></div>`).join('');
 

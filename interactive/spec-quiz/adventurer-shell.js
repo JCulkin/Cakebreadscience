@@ -1,8 +1,8 @@
 /* Cakebread Questing: shared bits for every Questing page.
    Top bar (with Google sign-in), the Adventurer's stats, story pop-ups and the 12×12 pixel icons.
    Real progress (XP, secured spec points, coins, loot, missions today) comes from questing-engine.js (QE), which
-   saves to the student's account. The map state (moves, plan, position, health, brews, bosses) is Breadventure
-   Land's own and stays in this browser until the shared class map is built.
+   saves to the student's account. The map state (moves, plan, position, health, brews, bosses) lives in the shared
+   Breadventure Land (bland.js, Realtime Database); ADV.S keeps a copy in this browser so every page can draw at once.
    Needs, first: questing-engine.js (and its scripts) and adventurer-pixel.js. */
 const ADV = (() => {
   const KEY = 'cbs.adventurer.state';
@@ -14,6 +14,7 @@ const ADV = (() => {
     v: 2, day: 1, health: null,
     moves: 6, plan: [], at: '7,4', visited: ['7,4'],   // map: 6 moves on day one, then 2 a day (+1 for the day's first mission)
     brews: {}, missionsSeen: 0, reportSeen: 0, report: null, chapter: 1, storySeen: false, rescueSeen: false,
+    mana: 0, bonusDay: null, shield: false,   // mana for spells; the day the +1 revision move was last given; Shield spell for tonight
   });
   const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
   /* real values live in the engine; the map state is plain data */
@@ -37,12 +38,13 @@ const ADV = (() => {
   /* look, name, gear (saved by the creator and wardrobe pages; the engine copies them into the account) */
   const look = () => load('cbs.adventurer.base') || PIXEL.DEFAULT;
   const hasLook = () => !!load('cbs.adventurer.base');
-  const nick = () => localStorage.getItem('cbs.adventurer.nick') || 'Brave Neutron';
+  const nick = () => { const n = localStorage.getItem('cbs.adventurer.nick'); return n && !QE.checkName(n) ? n : QE.user ? QE.googleName() : 'Adventurer'; };
   const eq = () => load('cbs.adventurer.eq') || Object.assign({}, STARTER);
 
   /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured. */
   const LV = { str: 2, hp: 3, mag: 1 };
   const GEAR = 2;
+  const BASE = { str: 8, hp: 15 };   // every adventurer starts with this, so a brand-new student can still win small fights
   const securedTotal = () => { const s = S.secured; return s.p + s.b + s.c; };
   const levelCap = () => 2 + Math.floor(securedTotal() / 8);
   const xpFor = l => 100 * l * (l - 1) / 2;
@@ -50,12 +52,30 @@ const ADV = (() => {
   const level = () => Math.min(rawLevel(), levelCap());
   const stats = () => {
     const l = level(), sec = S.secured;
-    const s = { l, str: sec.p + LV.str * l + GEAR, hp: sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
+    const s = { l, str: BASE.str + sec.p + LV.str * l + GEAR, hp: BASE.hp + sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
     if (S.health == null || S.health > s.hp) S.health = s.hp;
+    s.mana = 10 + s.mag;   // most mana a student can hold
+    if (S.mana == null) S.mana = 0;
+    if (S.mana > s.mana) S.mana = s.mana;
     return s;
   };
 
-  /* ---------- nav bar (one bar: brand, Base camp, the two big actions, then small links) ---------- */
+  /* ---------- revision → Breadventure Land: Health and mana earned by missions and flashcards wait in the engine's pool
+     until a Questing page opens; the day's first revision (mission or today's flashcards) gives +1 move once a day. ---------- */
+  const MOVE_CAP = 5;
+  function collect() {
+    const s = stats(), p = QE.takePool(), g = { hp: 0, mana: 0, move: false };
+    if (p.hp) { const b = S.health; S.health = Math.min(s.hp, S.health + p.hp); g.hp = S.health - b; }
+    if (p.mana) { const b = S.mana; S.mana = Math.min(s.mana, S.mana + p.mana); g.mana = S.mana - b; }
+    if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP, S.moves + 1); g.move = true; }
+    /* the shared Breadventure Land picks these up next time the map opens (it holds the real Health, mana and moves) */
+    if (p.hp || p.mana || g.move) { const o = S.out = S.out || { hp: 0, mana: 0, move: 0 }; o.hp += p.hp || 0; o.mana += p.mana || 0; if (g.move) o.move++; }
+    if (g.hp || g.mana || g.move || p.hp || p.mana) save();
+    return g;
+  }
+  let gained = { hp: 0, mana: 0, move: false };
+
+  /* ---------- nav bar (one bar: brand, Cakelab, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
   function nav(active) {
     const css = document.createElement('style');
@@ -85,15 +105,17 @@ const ADV = (() => {
 .advnav .soon{background:#111;color:#4ade80;border-radius:10px;font-size:11px;font-weight:900;padding:0 6px;line-height:17px;text-transform:uppercase;letter-spacing:.5px}
 @media(max-width:640px){.advnav{gap:4px;padding:6px 8px}.advnav .brand,.advnav .acct .nm,.advnav .acct .sv{display:none}.advnav .tab .lbl{display:none}.advnav .cta .lbl{display:inline}.advnav .cta{font-size:15px;padding:6px 10px}}`;
     document.head.appendChild(css);
-    const noMission = !S.missionsToday;
+    const noMission = !QE.revisedToday();   // the "!" goes once the day's revision is done: a mission or today's flashcards
     const n = document.createElement('nav');
     n.className = 'advnav';
     n.setAttribute('aria-label', 'Cakebread Questing');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
     n.innerHTML = `<a class="brand" href="index.html">Cakebread <b>Questing</b></a>`
-      + tab('home', 'adventurer-home.html', '🏠', 'Base camp')
+      + tab('home', 'adventurer-home.html', '🧁', 'Cakelab')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure', 'cta map', '<span class="soon">preview</span>')
+      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
+      + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
+      + tab('today', '/today/', '📅', 'My day')
       + `<span class="gap"></span>`
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
@@ -110,6 +132,14 @@ const ADV = (() => {
       acct.querySelector('#advOut').onclick = () => QE.signOut();
     };
     draw(); QE.onChange(draw);
+    gained = collect();
+    if (gained.hp || gained.mana || gained.move) {
+      const t = document.createElement('div');
+      t.setAttribute('role', 'status');
+      t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center;transition:opacity .5s';
+      t.textContent = 'From your revision: ' + [gained.hp && `❤ +${gained.hp} Health`, gained.mana && `🔮 +${gained.mana} mana`, gained.move && '+1 move on Breadventure Land'].filter(Boolean).join(' · ');
+      document.body.appendChild(t); setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 600); }, 4200);
+    }
   }
 
   /* ---------- story pop-ups (chapter 1: the Professor is taken; the rescue) ---------- */
@@ -138,14 +168,14 @@ const ADV = (() => {
       <div class="pics"><img src="${icon('crumbs')}" width="60" alt=""><img src="${icon('prof')}" width="110" alt="The Professor" style="opacity:.35;filter:grayscale(1)"><img src="${icon('dragonzz')}" width="110" alt="${DRAGON} the dragon"></div>
       <p>You arrive at the <b>Cakelab</b> and it's empty. The Professor's coffee is still warm. There are scorch marks on the ceiling and a trail of <b>cake crumbs</b> leading north.</p>
       <p><b>${DRAGON}</b>, a dragon with a very sweet tooth, has carried the Professor off to its lair in the Cold Store Hills and locked him in a cage. It handed one piece of the cage key to each of its three guards: <b>the Spore Lord</b>, <b>Granitus the Stone Golem</b> and <b>the Acid Hydra</b>.</p>
-      <p>No one can beat them alone. <b>Your whole class</b> has to win back all three key pieces to free the Professor. Revise to get stronger, then follow the crumbs.</p>`,
+      <p>No one can beat them alone. <b>Everyone who plays</b> has to win back all three key pieces to free the Professor. Revise to get stronger, then follow the crumbs.</p>`,
       'Follow the crumbs →', () => { S.storySeen = true; save(); onClose && onClose(); });
     return m;
   }
   function storyRescue(onClose) {
     return storyModal(`<div class="ch">Chapter 1 complete</div><h2>The Professor is free!</h2>
       <div class="pics"><img src="${icon('prof')}" width="120" alt="The Professor"></div>
-      <p>With all three key pieces the cage clicks open. ${DRAGON} snores on. The Professor dusts off his sprinkles, straightens his goggles and says: <i>“About time. I've been in there since Tuesday. Right — back to the Cakelab, there's science to do.”</i></p>
+      <p>With all three key pieces the cage clicks open. ${DRAGON} snores on. The Professor dusts off his sprinkles, straightens his lab coat and says: <i>“About time. I've been in there since Tuesday. Right — back to the Cakelab, there's science to do.”</i></p>
       <p><b>Chapter 2 begins:</b> new monsters are waking in the far corners of Breadventure Land — the <b>Superbug</b> in the Petri Swamp, the <b>Rust Wyrm</b> in Scrap Heap Hills and the <b>Half-Life Horror</b> at the old reactor.</p>`,
       'Back to the Cakelab →', () => { S.rescueSeen = true; save(); onClose && onClose(); });
   }
@@ -157,7 +187,8 @@ const ADV = (() => {
   const PAL = { K: '#1b1b1f', W: '#fff', R: '#e11d48', G: '#22c55e', g: '#166534', B: '#92400e', b: '#2563eb', Y: '#facc15', y: '#e9d48b',
     S: '#9ca3af', s: '#4b5563', P: '#7c3aed', O: '#f97316', C: '#67e8f9', c: '#bfe9f5', L: '#a3e635', D: '#475569', N: '#78350f', w: '#cbd5e1',
     E: '#7f1d1d', A: '#f59e0b', V: '#c4b5fd', Q: '#fde68a', T: '#0f766e', M: '#a21caf', U: '#57534e', Z: '#d6d3d1',
-    h: '#ecfccb', I: '#f9a8d4', H: '#2dd4bf', F: '#fbbf24' };
+    h: '#ecfccb', I: '#f9a8d4', H: '#2dd4bf', F: '#fbbf24',
+    e: '#fff6e3', J: '#f5b840', X: '#d4902a', p: '#f472b6' };
   const ICONS = {
     boss: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', 'KRRWWRRWWRRK', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRKWKKWKRRK', 'KRRRKWWKRRRK', '.KRRRRRRRRK.', '.KRKRRRRKRK.', '.KK.KKKK.KK.', '............'],
     ghost: ['....KKKK....', '..KKRRRRKK..', '.KRRRRRRRRK.', '.KRWWRRWWRK.', 'KRRWKRRWKRRK', 'KRRRRRRRRRRK', 'KRRRRKKRRRRK', 'KRRRKRRKRRRK', 'KRRRRRRRRRRK', 'KRRRRRRRRRRK', 'KRKRRKKRRKRK', 'KK.KK..KK.KK'],
@@ -181,8 +212,12 @@ const ADV = (() => {
     dragonzz: ['KK......K..K......KK', 'KRK.....KKKK.....KRK', 'KRRK...KRRRRK...KRRK', 'KRRRK.KRRRRRRK.KRRRK', 'KRRRRKRKKRRKKRKRRRRK', 'KERRRKRRRRRRRRKRRREK', '.KERRKRRRRRRRRKRREK.', '..KERKRRRRRRRRKREK..', '...KKKKRRRRRRKKKK...', '.....KRRQQQQRRK.....', '....KRRQQQQQQRRK....', '....KRRQQQQQQRRK....', '...KRRRKQQQQKRRRK...', '...KRRK.KKKK.KRRKKK.', '...KKK........KKERK.', '...............KKK..'],
     gate: ['....KKKKKKKK....', '...KUUUUUUUUK...', '..KUZZZZZZZZUK..', '..KUZKKKKKKZUK..', '..KUZKCCCCKZUK..', '..KUZKCWWCKZUK..', '..KUZKCCCCKZUK..', '..KUZKCCCCKZUK..', '..KUZKKKKKKZUK..', '.KKUUUUUUUUUUKK.', '.KUUUUUUUUUUUUK.'],
 
-    /* the Professor (cake-slice scientist mascot): icing + sprinkles, teal goggles, lab coat, flask */
-    prof: ['...............KKK..', '............KKKIIIK.', '.........KKKIIYIIbK.', '......KKKIIRIIIGIIK.', '...KKKIIbIIIIYIIIIK.', '..KIIIIIIIIIIIIIIIK.', '.KQQQQQQQQQQQQQQQQK.', '.KQQQTTTTQQTTTTQQQK.', '.KQQQTHHTTTTHHTQQQK.', '.KQQQTTTTQQTTTTQQQK.', '.KRRRRRRRRRRRRRRRRK.', '.KQQQQQQKQQQKQQQQQK.', '.KQQQQQQQKKKQQQQQQK.', '.KWWWWWWWKKWWWWWWWK.', 'KWWKWWWWWKWWWWWKWWHK', 'KQK.KWWWWKWWWWK.KHHK', '....KWWWWKWWWWK..KKK', '.....KQK...KQK......', '.....KKK...KKK......'],
+    /* the Professor (cake-slice scientist mascot, after the top-left pose on the user's sheet): frosting dome with sprinkles,
+       sponge rim, big eyes, blush, lab coat open over the jam layers, flask. prof = no goggles (current pick); B goggles pushed up; C goggles on; D happy. */
+    prof: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    profB: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKTHHHTTTTTTHHHTKXK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    profC: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJTTTTTJJJJJJTTTTTJK......', '.KJTHKHTTTTTTTTHKHTJK......', '.KJTTTTTJJJJJJTTTTTJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    profD: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKJJKJJJJJJKJJKJJK......', '.KJJJKKJJJJJJJJKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
     crumbs: ['............', '............', '............', '............', '...F........', '.......Q....', '..I.........', '.....F...Y..', '.Q......F...', '....Q.......', '............', '............'],
     superbug: ['..K..........K....', '.K.K..KKKKKK.K.K..', 'K...KKGGGGGGKK..K.', '...KGGGGGGGGGGK...', '..KGGLGGGGGLGGGK..', '.KGGWWKGGGWWKGGGK.', '.KGGWKKGGGWKKGGGK.', 'KGGGGGGGGGGGGGGGGK', 'KGGgGGKKKKKKGGgGGK', 'KGGGGKWKWKWKGGGGGK', '.KGGGGKKKKKKGGGGK.', '..KGGgGGGGGGGgGK..', '...KKGGGGGGGGKK...', '.K.K.KKKKKKKK.K.K.', 'K.........K......K'],
     rustwyrm: ['...........KKKK...', '..........KOOOOK..', '.........KOYOKOOK.', '.........KOOOOOOOK', '..........KOWKWKK.', '...........KOOK...', '....KKKK...KNOK...', '...KONNOK..KONK...', '..KOOKKOOK.KNOK...', '..KNK..KNOKKONK...', '..KOK...KONNOOK...', '..KNOK...KKKKK....', '...KOOK...........', '....KNOKKKK.......', '.....KOONNOK......', '......KKKKKK......'],
@@ -211,7 +246,12 @@ const ADV = (() => {
     heart: ['............', '.KK....KK...', 'KRRK..KRRK..', 'KRWRKKRRRK..', 'KRRRRRRRRK..', '.KRRRRRRK...', '..KRRRRK....', '...KRRK.....', '....KK......', '............', '............', '............'],
   };
   const cache = {};
+  // Sprites drawn from the mascot art (10 Nov 2026) are image files, not grids. icon() returns their URL.
+  const IMG = { prof: '/img/mascot/professor-pixel.png', profHead: '/img/mascot/head-pixel.png' };
+  // Professor reactions (smooth "pixel look" heads): happy, laugh, think, surprised, worried, determined
+  const face = f => `/img/mascot/head-${f}.webp`;
   function icon(name, swap) {
+    if (IMG[name]) return IMG[name];
     const k = name + (swap || '');
     if (cache[k]) return cache[k];
     const g = ICONS[name], c = document.createElement('canvas'), wd = Math.max(...g.map(r => r.length)); c.width = c.height = Math.max(wd, g.length);
@@ -221,5 +261,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, save, reset, look, hasLook, nick, eq, LV, GEAR, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

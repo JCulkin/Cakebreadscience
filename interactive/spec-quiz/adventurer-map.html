@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Breadventure Land (preview) - Cakebread Questing</title>
+<title>Breadventure Land - Cakebread Questing</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,6 +31,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* HUD */
+.gate{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.gate[hidden]{display:none}
 .preview{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:15px}
 .preview b{font-size:17px}
 .hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:#fff;border:2px solid var(--ink);border-bottom:0;padding:7px 10px}
@@ -110,7 +111,7 @@ table.st th{background:var(--soft)}
 <body>
 <header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Breadventure Land</span></header>
 <div class="wrap">
-  <div class="preview" role="note"><b>Preview: Breadventure Land opens soon.</b> This is where your class will set out together to free the Professor. For now you can explore, plan moves and try a night with “Try a night”. Nothing on the map is saved to your account, and the class battles aren't live yet. Your real progress comes from <a href="adventurer-mission.html">missions</a>.</div>
+  <div class="gate" id="gate" hidden></div>
   <div class="hud" id="hud"></div>
   <div class="mapwrap">
     <div class="questbar" id="questbar"></div>
@@ -121,50 +122,44 @@ table.st th{background:var(--soft)}
   <div class="legendbar" id="legend"></div>
 
   <details class="notes">
-    <summary>How Breadventure Land will work</summary>
+    <summary>How Breadventure Land works</summary>
     <div class="cols">
       <div>
         <ul>
-          <li><b>6 moves on your first day</b> (to get going), then <b>2 a day, +1 for finishing that day's first mission</b>. A move is one step to a neighbouring square, or staying put to fight or explore again. Unused moves bank, up to 4.</li><li><b>Nobody can skip ahead:</b> moves resolve once a day — the first visit to the site after midnight runs the night for everyone (no server needed). The “Mock: skip to morning” button exists only in this mock-up.</li>
-          <li><b>Everything happens at midnight.</b> Next login shows the morning report. No reason to be online at night.</li>
-          <li><b>Same square = same team.</b> Boss health carries over night to night, so a class can wear a boss down over a week. No fighting each other.</li>
-          <li><b>Losing is gentle.</b> Health 0 = knocked out, wake up in the Cakelab, nothing lost.</li>
-          <li><b>Water can't be crossed</b> (sea, Lost Property Lake, the River Tangent) except at the two bridges, so routes matter.</li>
-          <li><b>Fog of war:</b> you only see squares within 2 steps of somewhere you've been. Bosses show through the fog as shadows so there's always somewhere to head for. Exploring is its own reward.</li>
+          <li><b>One world for everyone who plays.</b> The other adventurers on the map are real players. Click a face to see who they are and where they're heading.</li>
+          <li><b>Plan, then sleep.</b> Tap a glowing square to plan a move. Everyone's moves happen together at midnight, and the morning report tells you what happened.</li>
+          <li><b>Moves:</b> 6 on your first day, then 2 a day, <b>+1 for the day's first revision</b> (a mission or today's flashcards). Unused moves bank, up to 4. A move is one step, or staying put to fight or explore again.</li>
+          <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together. Boss health carries over night to night and never goes back up.</li>
+          <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
+          <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
+          <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
+          <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
-        <h3>Brews</h3>
-        <table class="st"><tr><th>Brew</th><th>Effect</th></tr>
-          <tr><td>Bottled Aura</td><td>+3 Strength for 2 moves</td></tr>
-          <tr><td>Electrolyte Slushie</td><td>Refills Health</td></tr>
-          <tr><td>Fizzy Courage</td><td>Better luck rolls for 2 moves</td></tr>
-          <tr><td>Essence of Main Character</td><td>Bosses target you less for 2 moves</td></tr>
-          <tr><td>Decaf Panic</td><td>Run away from a fight without being knocked out</td></tr>
-        </table>
       </div>
       <div>
         <h3 style="margin-top:0">Stats</h3>
         <ul>
           <li><b>Strength</b> (damage) = Physics spec points secured + 2 per level + gear.</li>
           <li><b>Health</b> = Biology spec points secured + 3 per level.</li>
-          <li><b>Magic</b> = Chemistry spec points secured + 1 per level. Spells come later.</li>
-          <li><b>Level</b> comes from map XP but is capped by the quiz: 2 + 1 per 8 spec points secured. XP over the cap waits in the bank.</li>
+          <li><b>Magic</b> = Chemistry spec points secured + 1 per level. More Magic, more mana.</li>
+          <li><b>Level</b> comes from XP, capped by spec points secured: 2 + 1 per 8.</li>
         </ul>
-        <h3>Room to grow (on the map)</h3>
+        <h3>The quest</h3>
         <ul>
-          <li><b>The Broken Bridge</b> (west coast): leads off the map; a future map or a class repair event.</li>
-          <li><b>The Abandoned Mine</b> (Gravity Peaks): a later dungeon.</li>
-          <li><b>The Ancient Gate</b> (east): portal to Map 2.</li>
-          <li><b>Crumbmaw the Dragon</b> (north): took the Professor. Asleep; wakes for a year-group finale.</li>
-          <li><b>Chapter 1:</b> beat the Spore Lord, the Stone Golem and the Acid Hydra as a class to win the three key pieces and free the Professor. <b>Chapter 2</b> then wakes the Superbug, the Rust Wyrm and the Half-Life Horror (by the old reactor).</li>
+          <li><b>Chapter 1:</b> beat the Spore Lord, the Stone Golem and the Acid Hydra to win the three key pieces and free the Professor.</li>
+          <li><b>Chapter 2</b> wakes the Superbug, the Rust Wyrm and the Half-Life Horror.</li>
+          <li>The Ancient Gate, the Broken Bridge and the Abandoned Mine are for later chapters.</li>
         </ul>
       </div>
     </div>
   </details>
 </div>
 
+<div class="modal" id="spellModal" role="dialog" aria-modal="true" aria-label="Spells"><div class="box"><div id="spellBody"></div><button class="btn gold" id="spellClose">Back to the map →</button></div></div>
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="repTitle"><div class="box"><h2 id="repTitle">Morning report</h2><div class="day" id="report"></div><button class="btn gold" id="repClose">To the map →</button></div></div>
 
 <script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -172,87 +167,26 @@ table.st th{background:var(--soft)}
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
+<script src="bland.js"></script>
 <script src="adventurer-shell.js"></script>
 <script>
 ADV.nav('map');
 const S = ADV.S, icon = ADV.icon;
+const IS_ADMIN = () => !!(QE.user && (window.ADMIN_EMAILS || []).includes(QE.user.email));
 const $ = id => document.getElementById(id);
 
-/* ===================== the world ===================== */
-/* ~ sea, o lake, = river (all water: can't walk), B bridge over the river,
-   F woods, f meadow, P fields, M peaks, S snow, m marsh, d dunes, s beach, T town,
-   b Petri Swamp (bacteria), j Scrap Heap Hills (rust), r the Glowing Wastes (old reactor) */
-const ROWS_TXT = [
-  '~~~~~FSSSSM~~~~~~~~~',
-  '~~FFFFPSSSMMM~~~~~~~',
-  '~FFFFFPP=MMMMMM~~~~~',
-  '~FFooFPP=PMMMMjj~~~~',
-  '~sFoofPTBPPMMPjjjj~~',
-  '~sFFfPTP=PPdddPjjrr~',
-  '~smmPPfP=PddddPrrrr~',
-  '~~mmmmPPBPdddPPrrrr~',
-  '~~bmmmmP=PddPPrrrr~~',
-  '~~bbbmPs=sPPddrr~~~~',
-  '~bbbbbPP=PPPdd~~~~~~',
-  '~~bbbbPPBPPs~~~~~~~~',
-  '~~~~bb~~=~~~~~~~~~~~',
-];
-const COLS = 20, ROWS = 13, HEXR = 30, W3 = Math.sqrt(3) * HEXR;
+/* ===================== the world (shared data: bland.js) ===================== */
+const { ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS } = BL;
+const HEXR = 30, W3 = Math.sqrt(3) * HEXR;
 const VB_W = Math.ceil(W3 * (COLS + 0.5) + 8), VB_H = Math.ceil(HEXR * 1.5 * (ROWS - 1) + 2 * HEXR + 8);
-const T_AT = (c, r) => (ROWS_TXT[r] || '')[c] || '~';
-const WATER = new Set(['~', 'o', '=']);
-const LAND = {
-  F: { col: '#5a9e4b', name: 'Greenhouse Woods', decor: [['tree', 3], ['pine', 2], ['mushroom', .3]] },
-  f: { col: '#9fcf6e', name: 'Pollen Meadows', decor: [['flower', 2], ['tree', .5], ['grass', 1]] },
-  P: { col: '#b9d77f', name: 'The Open Fields', decor: [['grass', 1.4], ['flower', .4], ['rock', .3]] },
-  M: { col: '#b8b0a2', name: 'Gravity Peaks', decor: [['peak', 2], ['rock', .8]] },
-  S: { col: '#e8edf3', name: 'Cold Store Hills', decor: [['snowpeak', 2], ['pine', .4]] },
-  m: { col: '#7fa77a', name: 'Acid Marsh', decor: [['reeds', 1.5], ['bubble', .8], ['mushroom', .3]] },
-  d: { col: '#e8cf8f', name: 'Dry Lab Dunes', decor: [['cactus', 1], ['rock', .6]] },
-  s: { col: '#efe0b0', name: 'The Beach', decor: [['rock', .3]] },
-  T: { col: '#e7d3a1', name: 'Homeroom Town', decor: [['house', 2]] },
-  b: { col: '#79b4a3', name: 'The Petri Swamp', decor: [['germ', 1.5], ['reeds', .8], ['bubble', .6]] },
-  j: { col: '#b38b6d', name: 'Scrap Heap Hills', decor: [['cog', 1.2], ['rock', .8]] },
-  r: { col: '#c9cf7f', name: 'The Glowing Wastes', decor: [['barrel', 1], ['deadtree', .9], ['rock', .4]] },
-  B: { col: null, name: 'Bridge over the River Tangent', decor: [] },
-};
-const WATER_NAME = { '~': ['The Revision Sea', 'Endless. Salty. You cannot swim in a lab coat.'], o: ['Lost Property Lake', 'Full of single gloves and PE kits. Too deep to wade.'], '=': ['The River Tangent', 'Flows off in a direction nobody expected. Cross at a bridge.'] };
-
-const PLACES = {
-  '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
-  '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend coins on brews. Stock changes every Monday.', stock: ['Bottled Aura · 30 coins', 'Electrolyte Slushie · 20 coins', 'Fizzy Courage · 40 coins', 'Decaf Panic · 25 coins'] },
-  '6,6': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. A random event every night: a coin, a brew, or a very wet sock.' },
-  /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
-  '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
-    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', loot: ['🔑 Key piece 1 of 3', 'Spore Lord\'s Cap (Lowkey Legendary)', '+120 XP each'] },
-  '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 1000, power: 8,
-    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Legendary)', '+150 XP each'] },
-  '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
-    text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', loot: ['🔑 Key piece 3 of 3', 'Hydra Scale Shield (Rare)', '+130 XP each'] },
-  '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for one class. When it wakes, the whole year group fights it together.' },
-  '7,1': { type: 'cage', name: 'The Professor\'s Cage', icon: 'prof', text: 'The Professor is locked in here, looking cross and slightly crumbly. The lock needs all three key pieces — win them from the Spore Lord, the Stone Golem and the Acid Hydra.' },
-  /* chapter 2: wake up once the Professor is free */
-  '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 8,
-    text: 'A bacterium that has survived every antibiotic thrown at it, so now it is enormous and very smug. Lives in the Petri Swamp. Natural selection made it; your class will unmake it.', loot: ['Agar Plate Armour (Rare)', '2× Electrolyte Slushie', '+160 XP each'] },
-  '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 950, power: 9,
-    text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', loot: ['Galvanised Gauntlets (Rare)', 'Fizzy Courage', '+160 XP each'] },
-  '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
-    text: 'Something leaked out of the old reactor. Half of it has already decayed. The other half is very much still here.', loot: ['Lead Apron of Destiny (Lowkey Legendary)', 'Bottled Aura', '+180 XP each'] },
-  '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', text: 'A broken-down nuclear power station, cracked and humming. Explore it floor by floor (in a very sensible lead suit) for loot.' },
-  '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', text: 'Three floors deep. Each night inside explores one floor: small fights, random loot, sometimes a brew.' },
-  '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
-  '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
-  '18,7': { type: 'locked', name: 'The Ancient Gate', icon: 'gate', text: 'A stone gate humming with blue light at the far edge of the Glowing Wastes. Locked. It leads somewhere new — a later chapter.' },
-  '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a later chapter (the Professor has plans).' },
-  '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night. A later chapter.' },
-};
-/* the crumb trail from the Cakelab to the dragon's lair (shows through the fog) */
-const CRUMBS = ['7,3', '7,2'];
-S.boss = Object.assign({ '2,2': 600, '11,2': 340, '4,7': 820, '3,10': 1000, '16,4': 950, '17,6': 1100 }, S.boss || {});
-const TYPE = { cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
+if (!S.dens) S.dens = {};
+const denHp = k => { const d = S.dens[k]; if (!d) return PLACES[k].max; if (d.back) return d.back > S.day ? 0 : PLACES[k].max; return d.hp; };
+S.boss = Object.assign({}, BL.BOSS_MAX, S.boss || {});
+const TYPE = { monster: 'Small monster', cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
 
 /* ===================== geometry ===================== */
 const key = (c, r) => c + ',' + r, unkey = k => k.split(',').map(Number);
@@ -283,21 +217,23 @@ let revealAll = false;
 function visibleSet() {
   const v = new Set();
   const seen = S.visited.map(unkey);
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT)) v.add(key(c, r));
+  const lifted = (S.lifted || []).map(unkey);   // Lift the Fog spell: 4 steps round where it was cast
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT) || lifted.some(p => dist(p, [c, r]) <= 4)) v.add(key(c, r));
   return v;
 }
 
-/* ===================== classmates (none in the preview: they arrive with the shared class map) ===================== */
-const rnd = (() => { let s = 7 + S.day * 31; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
-const O = PIXEL.OPTIONS, pickO = l => l[Math.floor(rnd() * l.length)].id;
-const NAMES = [];
+/* ===================== other players (from the shared world) ===================== */
+let PEOPLE = [];
 S.people = [];
-const DOING = ['fighting', 'exploring', 'having a sit down', 'looking for crumbs', 'reading a map upside down'];
-const PEOPLE = NAMES.map((n, i) => {
-  const hair = O.hair[Math.floor(rnd() * O.hair.length)];
-  const base = { skin: pickO(O.skin), hair: hair.id, hc: pickO(hair.cloth ? O.cloth : O.hc), eyes: pickO(O.eyes), mouth: pickO(O.mouth), extras: rnd() < .3 ? ['glasses'] : [] };
-  return { nick: n, i, base, lvl: 2 + Math.floor(rnd() * 5), face: PIXEL.portrait(base) };
-});
+function buildPeople() {
+  PEOPLE = Object.entries(BL.pubs).filter(([u]) => u !== BL.uid && BL.states[u]).map(([u, p], i) => {
+    const base = p.look || PIXEL.DEFAULT;
+    let face; try { face = PIXEL.portrait(base, p.eq || {}); } catch (e) { face = PIXEL.portrait(PIXEL.DEFAULT); }
+    const planned = p.plan && p.plan.day === BL.world.day ? p.plan.steps.length : 0;
+    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, planned, at: BL.states[u].at || BL.HOME };
+  });
+  S.people = PEOPLE.map(p => p.at);
+}
 const ME_FACE = PIXEL.portrait(ADV.look());
 
 /* ===================== drawing ===================== */
@@ -358,7 +294,13 @@ function renderMap() {
     if (P && vis.has(k)) {
       const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
       const asleep = (P.ch || 1) > S.chapter, freed = P.type === 'cage' && S.chapter >= 2;
-      if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
+      if (P.type === 'monster') {
+        const hp = denHp(k), sz = 30;
+        things += `<ellipse cx="${x}" cy="${y + 10}" rx="11" ry="3" fill="#0003"/>` + img(icon(P.icon, P.col), x - sz / 2, y - sz / 2 - 4, sz, hp ? '' : 'opacity=".3"');
+        if (hp) things += `<rect x="${x - 13}" y="${y + 13}" width="26" height="5" fill="#fff" stroke="#111"/><rect x="${x - 12.5}" y="${y + 13.5}" width="${25 * hp / P.max}" height="4" fill="#f59e0b"/>`;
+        else things += `<text x="${x}" y="${y + 20}" text-anchor="middle" font-size="9" font-weight="700" fill="#111">back soon</text>`;
+      }
+      else if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
       if (P.type === 'cage') {   /* bars over the Professor (or an empty open cage once he's free) */
         const L = x - 18, T = y - 26;
         things += `<rect x="${L}" y="${T}" width="36" height="40" fill="none" stroke="#334155" stroke-width="3"/>` + (freed ? `<line x1="${L + 36}" y1="${T}" x2="${L + 50}" y2="${T + 8}" stroke="#334155" stroke-width="3"/>` : [1, 2, 3, 4, 5].map(i => `<line x1="${L + i * 6}" y1="${T}" x2="${L + i * 6}" y2="${T + 40}" stroke="#334155" stroke-width="2.2"/>`).join(''));
@@ -383,7 +325,7 @@ function renderMap() {
   /* fog also covers the sea round the edge of the map */
   const seen = S.visited.map(unkey);
   for (let r = -2; r <= ROWS + 1; r++) for (let c = -2; c <= COLS + 1; c++) {
-    if (inMap(c, r) || revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT)) continue;
+    if (inMap(c, r) || revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT) || (S.lifted || []).some(k => dist(unkey(k), [c, r]) <= 4)) continue;
     const [x, y] = center(c, r);
     fog += `<polygon points="${hexPts(x, y, HEXR * 1.35)}" fill="#dfe4ea"/>`;
   }
@@ -422,17 +364,56 @@ function renderMap() {
 function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
-    <div class="hp">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
+    <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
+    <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
-    <div class="day">Day ${S.day} · moves happen at midnight</div>
-    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button><button class="btn alt" id="fogBtn" title="Preview: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button><button class="btn green" id="sleep" title="Preview: see what happens overnight">🌙<span class="t"> Try a night</span></button></div>`;
-  $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · class quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
+    <div class="day">Day ${S.dayNo || 1} · moves happen at midnight</div>
+    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
+  $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
-  $('undo').onclick = () => { S.plan.pop(); ADV.save(); renderAll(); };
+  $('undo').onclick = () => { S.plan.pop(); persist(); renderAll(); };
   $('repBtn').onclick = () => showReport();
-  $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
-  $('sleep').onclick = overnight;
+  if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
+  $('spellBtn').onclick = showSpells;
+}
+
+/* ===================== spells (mana from flashcards and missions) ===================== */
+function brewRows() {
+  const have = Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0);
+  return `<h3 style="margin:14px 0 4px">🧪 Brews</h3>` + (have.length ? have.map(([id, b]) => { const on = b.when === 'night' && S[id];
+    return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:26px">${b.ic}</span><div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
+    : '<p class="small">None yet. Buy them at the Tuck Shop with coins from missions, flashcards and the map, or find them in dungeons.</p>');
+}
+const SPELLS = [
+  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.', ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.',
+    cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
+  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.', ok: () => !S.shield, why: 'Already up for tonight.',
+    cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
+  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.', ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.',
+    cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
+];
+function showSpells() {
+  $('spellClose').onclick = () => $('spellModal').classList.remove('on');
+  const m = $('spellModal'), s = ADV.stats();
+  const row = sp => { const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
+    <div style="flex:1"><b>${sp.name}</b> · ${sp.cost} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
+    <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
+  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
+    ${SPELLS.map(row).join('')}${brewRows()}`;
+  m.classList.add('on');
+  $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
+    const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
+    S.brews[id]--; let msg;
+    if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `🥤 Health refilled (+${S.health - b0}).`; }
+    else { S[id] = true; msg = `${br.ic} ${br.name}: ${br.what}`; }
+    persist(); renderAll(); showSpells();
+    $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
+  });
+  $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
+    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; const msg = sp.cast(); persist(); renderAll(); showSpells();
+    $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
+  });
 }
 
 function describe(k) {
@@ -440,9 +421,9 @@ function describe(k) {
   if (!vis) {
     if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) return { tp: 'Unexplored', name: 'Something big', text: 'You can hear it from here. Get within 2 squares to see what it is.' };
     if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'Cake crumbs in the fog', text: 'A trail of crumbs and sprinkles leads north into the fog. Follow it.' };
-    return { tp: 'Unexplored', name: 'Fog', text: 'Nobody in your party has been near here yet. Walk within 2 squares to see what\'s there.' };
+    return { tp: 'Unexplored', name: 'Fog', text: 'You haven\'t been near here yet. Walk within 2 squares to see what\'s there.' };
   }
-  if (P && P.type === 'cage' && S.chapter >= 2) return { tp: 'Empty cage', name: P.name, P, text: 'Empty now — the class set the Professor free. Someone has left a thank-you note and a single sprinkle.' };
+  if (P && P.type === 'cage' && S.chapter >= 2) return { tp: 'Empty cage', name: P.name, P, text: 'Empty now — everyone set the Professor free. Someone has left a thank-you note and a single sprinkle.' };
   if (P) return { tp: TYPE[P.type] + (P.science ? ' · ' + ADV.SCI[P.science] : '') + ((P.ch || 1) > S.chapter ? ' · Chapter ' + P.ch + ' (asleep)' : ''), name: P.name, P, text: P.text + ((P.ch || 1) > S.chapter ? ' <b>Asleep until the Professor is free.</b>' : '') };
   if (WATER.has(t)) return { tp: 'Water · can\'t cross', name: WATER_NAME[t][0], text: WATER_NAME[t][1], water: true };
   if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'A trail of cake crumbs', text: 'Crumbs, sprinkles and the odd scorch mark, leading north towards the Cold Store Hills…' };
@@ -457,32 +438,50 @@ function renderPanel() {
   let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
+  if (P && P.type === 'monster') {
+    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 2.5)));   // ~2.5 moves (= attacks) a day
+    h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits back for about ${P.power}</div><div class="loot">⚔ <b>You can beat this on your own</b> — about ${n} night${n > 1 ? 's' : ''}. Drops: +30 XP, coins, sometimes a brew.</div>`
+      : `<div class="cap">Beaten — it'll be back in a day or two.</div>`;
+  }
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
+    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / (str * 2.5)), team = Math.ceil(S.boss[sel] / ((str + 4 * 22) * 2.5));
+    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}.</div>`;
+  }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
-  if (P && P.stock) h += `<div class="loot"><b>In stock:</b><br>${P.stock.join('<br>')}</div>`;
+  if (P && P.stock) {
+    const here = S.at === sel && shared;
+    h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Stand here to buy (end a move on the Tuck Shop).</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
+      `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
+  }
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
   if (reach.has(sel)) {
     const n = S.plan.length + 1, stay = sel === last;
-    const what = P && P.type === 'boss' ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
+    const what = P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
   } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
-  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for the whole class the night the third boss falls.</div>`;
+  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
   else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">💤 Asleep until the Professor is free (chapter ${P.ch}).</div>`;
   else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
-  else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight — come back tomorrow.</div>`;
+  else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight. Come back tomorrow, or do a mission or your flashcards for an extra move.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">Too far for one move — you can step to the glowing squares.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
   $('pClose').onclick = () => { sel = null; renderAll(); };
-  if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(sel); ADV.save(); renderAll(); };
+  if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(sel); persist(); renderAll(); };
+  pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
+    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; persist(); renderAll();
+    toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
+  });
 }
 
 function renderPerson(who) {
   const me = who === 'me', p = me ? null : PEOPLE[who], at = me ? S.at : S.people[p.i], [c, r] = unkey(at), P = PLACES[at];
   const where = P ? P.name : LAND[T_AT(c, r)] ? LAND[T_AT(c, r)].name : '';
-  const fig = me ? PIXEL.figure(ADV.eq(), ADV.look()) : PIXEL.figure({ head: ['nocap', 'paperhat', null][who % 3], top: ['labcoat', 'jumper'][who % 2], bottom: 'joggers', shoes: 'oddsocks', lhand: null, rhand: null }, p.base);
-  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Classmate'} · level ${me ? ADV.stats().l : p.lvl}</div>
+  let fig; try { fig = me ? PIXEL.figure(ADV.eq(), ADV.look()) : PIXEL.figure(p.eq, p.base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
+  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? ADV.stats().l : p.lvl}</div>
     <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
-    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>${me ? '.' : ', ' + DOING[who % DOING.length] + '.'}</p>
-    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End your move here tonight to fight alongside them.</p>` : ''}`;
+    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : p.planned ? ` Has ${p.planned} move${p.planned > 1 ? 's' : ''} planned for tonight.` : ' No moves planned yet.'}</p>
+    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them.</p>` : ''}`;
   $('panel').classList.add('on');
   $('pClose').onclick = () => { $('panel').classList.remove('on'); };
 }
@@ -506,7 +505,8 @@ svg.addEventListener('pointermove', e => {
   if (k) {
   const D = describe(k), P = D.P;
   let extra = D.tp;
-  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health · best with friends`;
+  if (P && P.type === 'monster') extra += denHp(k) ? ` · ${denHp(k)}/${P.max} health · you can solo this` : ' · beaten, back soon';
   if (reachable().has(k)) extra += ' · click to plan a move';
   tip.innerHTML = `<b>${D.name}</b><small>${extra}</small>`;
   }
@@ -524,74 +524,100 @@ svg.addEventListener('click', e => {
   const k = e.target.dataset && e.target.dataset.k; if (!k) return;
   sel = sel === k ? null : k; renderAll();
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('modal').classList.remove('on'); sel = null; renderAll(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('modal').classList.remove('on'); $('spellModal').classList.remove('on'); sel = null; renderAll(); } });
 
-/* ===================== overnight ===================== */
-function overnight() {
-  const lines = [], dmgOf = s => Math.round(s * (0.6 + rnd() * 0.8)), visBefore = visibleSet();
-  let at = S.at;
-  const steps = S.plan.length ? S.plan : [S.at];
-  steps.forEach((k, i) => {
-    const P = PLACES[k], [c, r] = unkey(k);
-    lines.push(`<p>Move ${i + 1}: ${k === at ? 'You stay at' : 'You walk to'} <b>${P ? P.name : LAND[T_AT(c, r)].name}</b>.</p>`);
-    at = k;
-    if (!S.visited.includes(k)) S.visited.push(k);
-    if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
-      const team = PEOPLE.filter(p => S.people[p.i] === k);
-      const mine = dmgOf(ADV.stats().str), theirs = team.reduce(a => a + dmgOf(12 + rnd() * 20), 0), total = mine + theirs;
-      S.boss[k] = Math.max(0, S.boss[k] - total);
-      lines.push(`<p class="good">You${team.length ? ` and ${team.length} classmate${team.length === 1 ? '' : 's'}` : ''} attack ${P.name}: ${total} damage (you did ${mine}).</p>`);
-      const hit = Math.round(P.power * (0.5 + rnd()));
-      S.health = Math.max(0, S.health - hit);
-      lines.push(`<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`);
-      if (S.boss[k] === 0) lines.push(`<p class="lt">★ ${P.name} is defeated! Everyone who hit it this week gets: ${P.loot.join(', ')}.</p>`);
-      if (S.boss[k] === 0 && ADV.CH1.includes(k)) lines.push(`<p class="new">🔑 The class now has <b>${ADV.keys()}/3</b> key pieces.</p>`);
-      if (S.health === 0) { lines.push(`<p class="bad">You are knocked out and wake up in the Cakelab with a mild headache. Nothing lost.</p>`); at = '7,4'; S.health = ADV.stats().hp; }
-    } else if (P && P.type === 'dungeon') {
-      const finds = ['a Fizzy Courage', '12 coins', 'a single damp glove (useless)', 'a Bottled Aura'];
-      const f = finds[Math.floor(rnd() * finds.length)];
-      if (f === '12 coins') { /* preview: coins come from missions */ } else if (f.startsWith('a Fizzy')) S.brews['Fizzy Courage'] = (S.brews['Fizzy Courage'] || 0) + 1; else if (f.startsWith('a Bottled')) S.brews['Bottled Aura'] = (S.brews['Bottled Aura'] || 0) + 1;
-      lines.push(`<p>You explore floor ${1 + Math.floor(rnd() * 3)} of ${P.name} and find <span class="lt">${f}</span>.</p>`); 
-    } else if (P && P.type === 'event') {
-      lines.push(`<p>You poke the puddle. It pokes back. You lose a sock.</p>`);
-    } else if (P && P.type === 'shop') {
-      lines.push(`<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>`);
-    } else if (P && P.type === 'home') {
-      S.health = ADV.stats().hp; lines.push(`<p class="good">You rest in the Cakelab. Health refilled.</p>`);
-    }
-  });
-  const visAfter = visibleSet();
-  Object.entries(PLACES).forEach(([k, P]) => { if (visAfter.has(k) && !visBefore.has(k)) lines.push(`<p class="new">🗺 The fog clears: you can now see <b>${P.name}</b>.</p>`); });
-  S.people = S.people.map(k => { if (rnd() >= .35) return k; const n = neighbours(...unkey(k)).filter(([c, r]) => walkable(c, r)); const [c, r] = n[Math.floor(rnd() * n.length)]; return key(c, r); });
-  let rescued = false;
-  if (S.chapter < 2 && ADV.keys() === 3) { S.chapter = 2; rescued = true; lines.unshift('<p class="lt">🔓 With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>'); }
-  const used = S.plan.length;
-  S.at = at; S.plan = []; S.moves = Math.min(4, S.moves - used + 2); S.day++;   /* +1 move comes back with tomorrow's first mission */
-  S.report = lines; S.reportSeen = S.day - 1;
-  ADV.save(); sel = S.at; renderAll();
-  if (rescued) ADV.storyRescue(showReport); else showReport();
+/* ===================== the shared world: sync, the night, rewards ===================== */
+let shared = false;
+function persist() {
+  ADV.save();
+  if (!shared) return;
+  BL.savePlan(S.plan.slice()).catch(e => console.warn('plan not saved', e));
+  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
 }
-
+function fromShared() {
+  const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
+  S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
+  S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
+  Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: st.moves || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
+    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
+  S.plan = pub.plan && pub.plan.day === w.day && Array.isArray(pub.plan.steps) ? pub.plan.steps.slice(0, S.moves) : [];
+  buildPeople(); ADV.save();
+}
+const profile = () => { const s = ADV.stats(); return { name: QE.boardName(), look: ADV.look(), eq: ADV.eq(), lvl: s.l, str: s.str, hp: s.hp, mag: s.mag }; };
+function toast(msg) {
+  const t = document.createElement('div'); t.setAttribute('role', 'status');
+  t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center';
+  t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 5000);
+}
+async function claimPending() {
+  const p = BL.me().pending; if (!p) return;
+  const items = (p.items || []).filter(id => typeof ADV_ITEMS === 'undefined' || ADV_ITEMS.some(i => i.id === id));
+  const got = [];
+  QE.game.coins = (QE.game.coins || 0) + (p.coins || 0);
+  QE.game.bag = QE.game.bag || [];
+  items.forEach(id => { if (!QE.game.bag.includes(id)) { QE.game.bag.push(id); QE.game.lastLoot = id; got.push(ADV_ITEMS.find(i => i.id === id).name); } else QE.game.coins += 20; });
+  QE.gameChanged();
+  await BL.saveMine({ pending: null });
+  toast(`From Breadventure Land: 🪙 +${p.coins || 0} coins${got.length ? ' · ' + got.join(', ') : ''}`);
+}
+async function applyOutbox() {
+  const o = S.out; if (!o || !(o.hp || o.mana || o.move)) return;
+  const st = BL.me(), s = ADV.stats();
+  const f = { health: Math.min(s.hp, (st.health ?? s.hp) + (o.hp || 0)), mana: Math.min(s.mana, (st.mana || 0) + (o.mana || 0)), moves: Math.min(ADV.MOVE_CAP, (st.moves || 0) + (o.move || 0)) };
+  S.out = null; ADV.save();
+  await BL.saveMine(f);
+}
 const FIRST_REPORT = [
-  '<p class="lt">Welcome to the Breadventure Land preview! You get <b>6 moves</b> to try it out.</p>',
-  '<p>Every morning, a report like this one will tell you what you and your class did overnight. When the class map opens, you will see your classmates here too.</p>',
-  '<p class="new">Tip: follow the cake crumbs north from the Cakelab — and win the three key pieces to free the Professor.</p>'];
+  '<p class="lt">Welcome to Breadventure Land! You start in the Cakelab with <b>6 moves</b>.</p>',
+  '<p>Plan your moves on the map: tap a glowing square next to you. Everyone\'s moves happen together at midnight, and every morning a report like this one tells you what happened. Other adventurers on the map are real players.</p>',
+  '<p class="new">Tip: follow the cake crumbs north from the Cakelab, and win the three key pieces together to free the Professor. Missions and flashcards refill your Health and give an extra move each day.</p>'];
 function showReport() {
-  $('repTitle').textContent = `Morning report · day ${S.day}`;
+  $('repTitle').textContent = `Morning report · day ${S.dayNo || 1}`;
   $('report').innerHTML = (S.report || FIRST_REPORT).join('');
   $('modal').classList.add('on');
-  S.reportSeen = S.day; ADV.save();
+  S.seenRep = S.seenRep || {}; S.seenRep[BL.uid || 'anon'] = S.reportDay || 'first'; ADV.save();
   $('repClose').focus();
 }
 $('repClose').onclick = () => $('modal').classList.remove('on');
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); });
 
 function renderAll() { renderHud(); renderMap(); renderPanel(); }
-renderLegend(); renderAll();
-/* on phones the map scrolls sideways: start centred on you */
-{ const sc = $('scroll'); if (sc.scrollWidth > sc.clientWidth) { const [x] = center(...unkey(S.at)); sc.scrollLeft = x / VB_W * sc.scrollWidth - sc.clientWidth / 2; } }
-if (!S.storySeen) ADV.storyIntro(() => { if (S.reportSeen < S.day) showReport(); });
-else if (S.reportSeen < S.day) showReport();
+function centreOnMe() { const sc = $('scroll'); if (sc.scrollWidth > sc.clientWidth) { const [x] = center(...unkey(S.at)); sc.scrollLeft = x / VB_W * sc.scrollWidth - sc.clientWidth / 2; } }
+function gate(html) { const g = $('gate'); g.hidden = !html; g.innerHTML = html || ''; }
+renderLegend(); buildPeople(); renderAll(); centreOnMe();
+
+/* wait for the account, then join the shared world, run the night if it's due, and draw */
+async function start() {
+  if (!QE.online) { gate('<b>Breadventure Land needs the internet.</b> It\'s one world shared by every player, so it can\'t run offline.'); return; }
+  if (!QE.known || QE.status === 'loading') return;
+  if (!QE.user) {
+    shared = false;
+    gate('<b>Sign in to join Breadventure Land.</b> It\'s one world shared by everyone who plays: your moves, Health and key pieces are saved with your account. <button class="btn gold" id="gateIn">Sign in</button>');
+    $('gateIn').onclick = () => QE.signIn().catch(() => {});
+    return;
+  }
+  if (shared) return;
+  shared = true; gate('');
+  try {
+    BL.init(firebase.database(), QE.user);
+    await BL.load();
+    await BL.join(profile());
+    const night = await BL.runNightIfDue(false);
+    if (night) await BL.load();
+    await applyOutbox();
+    await claimPending();
+    fromShared(); renderAll(); centreOnMe();
+    const rescueNow = S.chapter >= 2 && !S.rescueSeen;
+    const showRep = () => { if ((S.seenRep || {})[BL.uid] !== (S.reportDay || 'first')) showReport(); };
+    if (!S.storySeen) ADV.storyIntro(() => rescueNow ? ADV.storyRescue(showRep) : showRep());
+    else if (rescueNow) ADV.storyRescue(showRep);
+    else showRep();
+  } catch (e) {
+    console.error('Breadventure Land', e); shared = false;
+    gate('<b>Breadventure Land couldn\'t load just now.</b> Your missions and flashcards still count. Try again in a minute.');
+  }
+}
+QE.onChange(start); start();
 </script>
 </body>
 </html>

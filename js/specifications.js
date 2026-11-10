@@ -155,6 +155,7 @@
                 await loadRemoteState();
                 applyStateToUI();
             }
+            loadQuesting();
         });
     };
 
@@ -446,6 +447,7 @@
             }
         });
         updateLandingProgress();
+        applyQuesting();
     };
 
     const setLandingMode = (mode) => {
@@ -516,11 +518,83 @@
         const cloned = item.cloneNode(true);
         cloned.classList.remove("is-expanded");
         modalBody.appendChild(cloned);
+        if (item.dataset.code) modalBody.insertAdjacentHTML("beforeend", revisePanel(item.dataset.code));
         document.body.appendChild(modal);
         modal.classList.add("is-visible");
         document.body.classList.add("modal-open");
         applyStateToUI();
     };
+
+    /* ---------- One spec (10 Nov 2026): every point links to what covers it, and shows what Cakebread Questing says ----------
+       The spec code (e.g. B2.27) comes from the number the point's text starts with; SPEC_INDEX is /js/spec-index.js
+       (built by tools/spec/build_index.js). Questing writes users/{uid}.specQuizSummary.points = { 'B2.27': 's'|'r'|'l' }. */
+    const LETTER = { biology: "B", chemistry: "C", physics: "P" }[subject];
+    const IDX = typeof SPEC_INDEX !== "undefined" ? SPEC_INDEX : null;
+    let questing = {};
+    const QUEST_LABEL = { s: ["Secured in Questing", "q-sec"], r: ["Gone rusty in Questing", "q-rust"], l: ["Learning in Questing", "q-learn"] };
+    const KIND = { lesson: ["📘", "Lessons"], sheet: ["📝", "Worksheets"], long: ["✍️", "6-mark questions"], eq: ["🧮", "Equations"] };
+    const codeOf = (item) => {
+        const text = (item.querySelector(".spec-item-content") || item).textContent.trim();
+        const m = text.match(/^(\d+)\.(\d+)/);
+        if (m && LETTER) return `${LETTER}${+m[1]}.${+m[2]}`;
+        /* practicals are listed without a number: pick the practical of this subject sharing the most words */
+        if (!LETTER || !IDX || !IDX.prac || !/^practical/i.test(text)) return null;
+        const words = new Set(text.toLowerCase().match(/[a-z]{4,}/g) || []);
+        let best = null, score = 0;
+        Object.entries(IDX.prac).forEach(([k, w]) => {
+            if (k[0] !== LETTER) return;
+            const ws = w.split(" "), hit = ws.filter((x) => words.has(x)).length / Math.sqrt(ws.length * words.size);
+            if (hit > score) { score = hit; best = k; }
+        });
+        return score > 0.3 ? best : null;
+    };
+    const missionUrl = (code) => `/interactive/spec-quiz/adventurer-mission.html?point=${encodeURIComponent(code)}`;
+    const cardsUrl = (code) => `/Flashcards/?spec=${encodeURIComponent(code)}`;
+    function addSpecLinks(item) {
+        const code = codeOf(item);
+        if (!code || !IDX || !IDX.pts[code]) return;
+        const p = IDX.pts[code];
+        item.dataset.code = code;
+        const strip = document.createElement("div");
+        strip.className = "spec-links";
+        strip.innerHTML = `<span class="q-badge" hidden></span>`
+            + `<a href="${missionUrl(code)}" title="A Cakebread Questing mission on ${code} — counts towards securing it">⚔️ Quiz me</a>`
+            + (p.c ? `<a href="${cardsUrl(code)}" title="Study the flashcards for ${code}">🃏 ${p.c} card${p.c === 1 ? "" : "s"}</a>` : "")
+            + (p.r.length ? `<button type="button" data-more title="Lessons, worksheets and more for ${code}">📚 ${p.r.length} more</button>` : "");
+        strip.addEventListener("click", (e) => { if (e.target.closest("a")) e.stopPropagation(); });
+        item.querySelector(".spec-item-content").appendChild(strip);
+    }
+    function revisePanel(code) {
+        const p = IDX && IDX.pts[code];
+        if (!p) return "";
+        const groups = {};
+        p.r.forEach((i) => { const [kind, title, url] = IDX.res[i]; (groups[kind] = groups[kind] || []).push(`<li><a href="${url}">${title}</a></li>`); });
+        const st = questing[code];
+        return `<div class="revise"><h3>Revise ${code}</h3>
+            ${st ? `<p class="q-line ${QUEST_LABEL[st][1]}">${QUEST_LABEL[st][0]}</p>` : currentUser ? `<p class="q-line">Not started in Cakebread Questing yet.</p>` : ""}
+            <div class="revise-main"><a class="go" href="${missionUrl(code)}">⚔️ Quiz me <small>(${p.n} questions · counts in Questing)</small></a>
+            ${p.c ? `<a class="go alt" href="${cardsUrl(code)}">🃏 Flashcards <small>(${p.c})</small></a>` : ""}</div>
+            ${Object.keys(KIND).filter((k) => groups[k]).map((k) => `<h4>${KIND[k][0]} ${KIND[k][1]}</h4><ul>${groups[k].join("")}</ul>`).join("")}</div>`;
+    }
+    function applyQuesting() {
+        document.querySelectorAll(".spec-item[data-code]").forEach((item) => {
+            const badge = item.querySelector(".q-badge"), st = questing[item.dataset.code];
+            const entry = state.items[item.dataset.specId] || {};
+            const saysGreen = entry.rag === "green" || entry.checkbox;
+            if (!badge) return;
+            if (st) { badge.hidden = false; badge.className = `q-badge ${QUEST_LABEL[st][1]}`; badge.textContent = { s: "✓ Secured", r: "Rusty", l: "Learning" }[st]; badge.title = QUEST_LABEL[st][0]; }
+            else if (saysGreen && currentUser) { badge.hidden = false; badge.className = "q-badge q-none"; badge.textContent = "Quiz: not tried"; badge.title = "You've marked this as known — prove it with a Quiz me mission"; }
+            else badge.hidden = true;
+        });
+    }
+    async function loadQuesting() {
+        if (!db || !currentUser) { questing = {}; applyQuesting(); return; }
+        try {
+            const snap = await db.collection("users").doc(currentUser.uid).get();
+            questing = (snap.exists && snap.data().specQuizSummary && snap.data().specQuizSummary.points) || {};
+        } catch (e) { questing = {}; }
+        applyQuesting();
+    }
 
     const closeModal = () => {
         modal.classList.remove("is-visible");
@@ -555,9 +629,10 @@
             item.appendChild(controls);
 
             const topicId = item.closest(".topic-card")?.querySelector(".topic-title")?.id || "topic";
-            const specId = `${subject}-${topicId}-${index + 1}`;
+            const specId = `${subject}-${topicId}-${index + 1}`;   // saved ticks use this id — never change it
             item.dataset.specId = specId;
             item.dataset.specReady = "true";
+            addSpecLinks(item);
         });
         scheduleSave();
     };
@@ -616,7 +691,7 @@
                 return;
             }
 
-            const scopeButton = event.target.closest("[data-scope]");
+            const scopeButton = event.target.closest("button[data-scope]");
             if (scopeButton) {
                 progressScope = scopeButton.dataset.scope;
                 updateProgressModalButtons();
@@ -624,7 +699,7 @@
                 return;
             }
 
-            const modalModeButton = event.target.closest("[data-progress-mode]");
+            const modalModeButton = event.target.closest("button[data-progress-mode]");
             if (modalModeButton) {
                 progressMode = modalModeButton.dataset.progressMode;
                 updateProgressModalButtons();
@@ -648,6 +723,7 @@
 
             const specItem = event.target.closest(".spec-item");
             if (!specItem) return;
+            if (event.target.closest("[data-more]") && !event.target.closest(".spec-modal")) { openModalForItem(specItem); return; }
             if (event.target.closest("a") || event.target.closest("button") || event.target.closest("input")) return;
 
             openModalForItem(specItem);

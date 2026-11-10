@@ -1,0 +1,22 @@
+{
+ "biology": {
+  "name": "Biology",
+  "subject": "B",
+  "cards": 367
+ },
+ "chemistry": {
+  "name": "Chemistry",
+  "subject": "C",
+  "cards": 234
+ },
+ "physics": {
+  "name": "Physics",
+  "subject": "P",
+  "cards": 287
+ },
+ "physics-eqns": {
+  "name": "Physics equations",
+  "subject": "P",
+  "cards": 26
+ }
+}

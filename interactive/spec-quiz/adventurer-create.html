@@ -36,7 +36,9 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .preview{text-align:center}
 .preview #fig{width:100%;max-width:250px;display:block;margin:6px auto}
 .nick{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1;display:flex;gap:8px;justify-content:center;align-items:center}
-.nick button{border:2px solid var(--ink);background:#fff;font-size:16px;width:34px;height:34px}
+.nick button{border:2px solid var(--ink);background:#fff;font-size:16px;width:34px;height:34px;flex:none}
+.nick input{font:inherit;text-transform:none;text-align:center;width:100%;max-width:300px;border:2px solid var(--ink);padding:4px 6px;background:#fff}
+.namerr{color:#b91c1c;font-size:14px;font-weight:700;min-height:18px}
 .small{font-size:13px;color:var(--muted)}
 .seg{display:inline-flex;border:2px solid var(--ink);margin:4px 0 8px}
 .seg button{border:0;background:#fff;padding:4px 10px;font-weight:700;font-size:13px}
@@ -65,8 +67,10 @@ details.why li{margin:6px 0 0 20px}
 
   <div class="layout">
     <div class="card preview">
-      <div class="nick"><span id="nick"></span><button id="reroll" title="New name" aria-label="New name">🎲</button></div>
-      <div class="small">Your adventurer name (what classmates see)</div>
+      <div class="nick"><input id="nick" maxlength="16" placeholder="Your first name + initial" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me">🎲</button></div>
+      <div class="small">Your name in Cakebread Questing: on the leaderboards and Breadventure Land. Type your own (2–16 letters) or press 🎲. Your teacher approves new names.</div>
+      <div class="small" id="namest" style="margin-top:4px"></div>
+      <div class="namerr" id="namerr" role="alert"></div>
       <img id="fig" class="px" alt="Your adventurer">
       <div class="seg" role="group" aria-label="Preview">
         <button data-view="starter" class="on">Starter outfit</button><button data-view="hat">With a hat</button><button data-view="base">No outfit</button>
@@ -88,19 +92,6 @@ details.why li{margin:6px 0 0 20px}
     </div>
   </div>
 
-  <details class="why">
-    <summary>For teachers: why there is no boy / girl choice</summary>
-    <ul>
-      <li><b>One body for everyone.</b> Every adventurer has the same small, chunky body. Hair, face, skin and extras are separate choices, and every option is open to everyone. Nobody has to pick a box, and nobody is told “that hair is for girls”.</li>
-      <li><b>We don't collect gender at all.</b> A quiz avatar doesn't need it, so storing it would be personal data with no purpose (data minimisation under GDPR). The saved look is just <code>{skin, hair, colour, eyes, mouth, extras}</code>.</li>
-      <li><b>No pronouns anywhere.</b> The game always says “you” or uses the adventurer name, so there is nothing to get wrong.</li>
-      <li><b>Clothes are never gendered.</b> Gear comes from the Campaign and anyone can wear anything (the kilt included).</li>
-      <li><b>Changing your look is free and unlimited</b>, so a student can change how they present without it costing them progress or drawing attention.</li>
-      <li><b>Faith and disability are built in:</b> hijab, turban/patka and kippah, glasses and a hearing aid. Hats sit on top of head coverings rather than replacing them.</li>
-      <li><b>Names:</b> the leaderboard currently shows first name + initial from the Google account, which can be a name a student doesn't use. The generated adventurer name (no typing, so nothing to moderate) avoids that — <i>your decision which one the boards show</i>.</li>
-      <li><b>Future-proof:</b> options are saved by id, so new hairstyles, tones or extras can be added later without breaking anyone's saved look. Skin tones are numbered, not named after ethnicities.</li>
-    </ul>
-  </details>
 </div>
 
 <script src="/js/firebase-config.js"></script>
@@ -111,6 +102,7 @@ details.why li{margin:6px 0 0 20px}
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-pixel.js"></script>
 <script src="adventurer-shell.js"></script>
@@ -119,7 +111,9 @@ ADV.nav('look');
 const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick';
 const O = PIXEL.OPTIONS;
 let base = load(KEY_BASE) || Object.assign({}, PIXEL.DEFAULT), view = 'starter';
-let nick = localStorage.getItem(KEY_NICK) || newNick();
+// the box shows the name waiting for approval if there is one, else the approved name ('-' or none = the Google name)
+const approved = () => { const n = QE.game.nick; return n && n !== '-' && !QE.checkName(n) ? n : ''; };
+let nick = QE.game.nickPending || approved();
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function newNick() {
   const A = ['Brave', 'Chaotic', 'Sleepy', 'Mighty', 'Curious', 'Sneaky', 'Cosmic', 'Turbo', 'Gentle', 'Unbothered', 'Sparkly', 'Lowkey', 'Valiant', 'Wobbly', 'Electric', 'Fizzy'];
@@ -136,7 +130,7 @@ function tile(group, opt, b, multi) {
 }
 function render() {
   document.getElementById('fig').src = PIXEL.figure(outfit(), base);
-  document.getElementById('nick').textContent = nick;
+  const ni = document.getElementById('nick'); if (document.activeElement !== ni) ni.value = nick === '-' ? '' : nick;
   document.getElementById('o-skin').innerHTML = O.skin.map(o => `<button class="sw ${base.skin === o.id ? 'on' : ''}" style="background:${o.c}" data-g="skin" data-v="${o.id}" aria-label="${o.name}" title="${o.name}"></button>`).join('');
   document.getElementById('o-hair').innerHTML = O.hair.map(o => {
     const cl = !!o.cloth, cur = colours();
@@ -164,20 +158,30 @@ document.addEventListener('click', e => {
   document.getElementById('saved').textContent = '';
   render();
 });
-document.getElementById('reroll').onclick = () => { nick = newNick(); render(); };
+document.getElementById('reroll').onclick = () => { nick = newNick(); document.getElementById('nick').value = nick; checkNick(); render(); };
+const checkNick = () => { const v = document.getElementById('nick').value.trim(), e = v ? QE.checkName(v) : ''; document.getElementById('namerr').textContent = e; return !e; };
+document.getElementById('nick').addEventListener('input', e => { nick = e.target.value; checkNick(); document.getElementById('saved').textContent = ''; });
 document.getElementById('rand').onclick = () => {
   const r = l => l[Math.random() * l.length | 0].id;
   base.skin = r(O.skin); base.hair = r(O.hair); base.hc = r(colours()); base.eyes = r(O.eyes); base.mouth = r(O.mouth);
   base.extras = O.extras.filter(() => Math.random() < .22).map(o => o.id);
   render();
 };
+function nameStatus() {
+  const p = QE.game.nickPending, shown = approved() || (QE.user ? QE.googleName() : 'your first name + initial');
+  document.getElementById('namest').innerHTML = p ? `⏳ <b>${p.replace(/</g, '&lt;')}</b> is waiting for your teacher to approve it. Until then you're shown as <b>${shown}</b>${QE.user ? '' : ' Sign in so it can be sent.'}` : '';
+}
+QE.onChange(() => { if (document.activeElement !== document.getElementById('nick')) nick = QE.game.nickPending || approved(); nameStatus(); render(); });
 document.getElementById('save').onclick = () => {
+  if (!checkNick()) { document.getElementById('nick').focus(); return; }
+  const want = QE.cleanName(nick), cur = approved();
+  if (want !== (QE.game.nickPending || cur)) QE.requestName(want || '-');
   base.v = 1;
-  try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
+  try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); } catch (e) {}
   QE.syncLook();
   setTimeout(() => { location.href = 'adventurer-home.html'; }, QE.user ? 700 : 0);
 };
-render();
+nameStatus(); render();
 </script>
 </body>
 </html>
