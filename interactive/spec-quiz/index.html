@@ -62,7 +62,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="mid">
       <span class="kick">New</span>
       <b class="t">Start your adventure</b>
-      <div class="desc">The Professor has been carried off by a dragon. Make a little pixel adventurer, then answer questions on the spec to make them stronger. Breadventure Land, where your class sets out to free him, opens soon.</div>
+      <div class="desc">The Professor has been carried off by a dragon. Make a little pixel adventurer, then answer questions on the spec to make them stronger. Then head into Breadventure Land, one world shared by every player, to free him together.</div>
     </div>
     <div class="go">Start →</div>
   </a>
@@ -81,7 +81,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="card">
       <h3>The story so far</h3>
       <p style="font-size:15px"><span id="storyNow"></span></p>
-      <p style="margin-top:8px"><a href="adventurer-map.html">Take a look at Breadventure Land (preview) →</a></p>
+      <p style="margin-top:8px"><a href="adventurer-map.html">Into Breadventure Land →</a></p>
     </div>
   </div>
 
@@ -112,7 +112,7 @@ const sec = ADV.securedTotal();
 $('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">💪 ${s.str}</span><span class="chip" style="color:var(--hp)">❤ ${s.hp}</span><span class="chip" style="color:var(--mag)">✨ ${s.mag}</span>`
   + `<span class="chip">🔒 ${sec} spec point${sec === 1 ? '' : 's'} secured</span>`
   + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`);
-$('storyNow').innerHTML = `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. <b>Breadventure Land</b>, where the class sets out together to free him, opens soon. Until then: get strong.`;
+$('storyNow').innerHTML = `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. Win them together in <b>Breadventure Land</b>. Every spec point you secure makes you stronger.`;
 
 /* sign-in prompt */
 const signDraw = () => { $('signin').hidden = !(QE.known && QE.online && !QE.user); };

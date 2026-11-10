@@ -85,8 +85,8 @@
         </div>
         <div class="card todo" id="tMap">
           <div class="ic"><img class="px" id="mapIc" alt=""></div>
-          <div><b>Breadventure Land · opens soon</b><p>The map where your class sets out to free the Professor. Take a look around the preview; your strength, health and magic will count there.</p></div>
-          <a class="btn green" href="adventurer-map.html">Preview →</a>
+          <div><b>Breadventure Land</b><p>One world shared by everyone who plays. Plan your moves; they happen at midnight. Your Strength, Health and Magic come from the spec points you secure.</p></div>
+          <a class="btn green" href="adventurer-map.html">Play →</a>
         </div>
       </div>
 
@@ -145,7 +145,7 @@ function renderQuest() {
   if (S.chapter < 2) q.innerHTML = `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>
     <div><span class="kick" style="color:#7c3aed">Chapter 1 · The class quest</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">Free the Professor</b>
     <div class="k">${[0, 1, 2].map(i => `<span style="opacity:${i < k ? 1 : .22}">🔑</span>`).join('')}</div>
-    <div class="small" style="color:#333">${ADV.DRAGON} the dragon has the Professor locked in a cage in its lair. Win the key pieces from the <b>Spore Lord</b>, the <b>Stone Golem</b> and the <b>Acid Hydra</b> as a class, in Breadventure Land (opens soon). Get strong first: every spec point you secure counts.</div>
+    <div class="small" style="color:#333">${ADV.DRAGON} the dragon has the Professor locked in a cage in its lair. Win the key pieces from the <b>Spore Lord</b>, the <b>Stone Golem</b> and the <b>Acid Hydra</b> together, in Breadventure Land. Every spec point you secure makes you stronger.</div>
     <div class="mk"><button id="replayIntro">Replay the story</button></div></div>`;
   else q.innerHTML = `<div class="cage" style="background:#fff7d6"><img src="${ADV.icon('prof')}" alt="The Professor"></div>
     <div><span class="kick" style="color:#7c3aed">Chapter 2 · The monsters wake</span><b style="display:block;font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;line-height:1">The Professor is back</b>

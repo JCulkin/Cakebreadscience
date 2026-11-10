@@ -1,8 +1,8 @@
 /* Cakebread Questing: shared bits for every Questing page.
    Top bar (with Google sign-in), the Adventurer's stats, story pop-ups and the 12×12 pixel icons.
    Real progress (XP, secured spec points, coins, loot, missions today) comes from questing-engine.js (QE), which
-   saves to the student's account. The map state (moves, plan, position, health, brews, bosses) is Breadventure
-   Land's own and stays in this browser until the shared class map is built.
+   saves to the student's account. The map state (moves, plan, position, health, brews, bosses) lives in the shared
+   Breadventure Land (bland.js, Realtime Database); ADV.S keeps a copy in this browser so every page can draw at once.
    Needs, first: questing-engine.js (and its scripts) and adventurer-pixel.js. */
 const ADV = (() => {
   const KEY = 'cbs.adventurer.state';
@@ -38,7 +38,7 @@ const ADV = (() => {
   /* look, name, gear (saved by the creator and wardrobe pages; the engine copies them into the account) */
   const look = () => load('cbs.adventurer.base') || PIXEL.DEFAULT;
   const hasLook = () => !!load('cbs.adventurer.base');
-  const nick = () => { const n = localStorage.getItem('cbs.adventurer.nick'); return n && !QE.checkName(n) ? n : n === '-' ? QE.googleName() : 'Brave Neutron'; };
+  const nick = () => { const n = localStorage.getItem('cbs.adventurer.nick'); return n && !QE.checkName(n) ? n : QE.user ? QE.googleName() : 'Adventurer'; };
   const eq = () => load('cbs.adventurer.eq') || Object.assign({}, STARTER);
 
   /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured. */
@@ -68,7 +68,9 @@ const ADV = (() => {
     if (p.hp) { const b = S.health; S.health = Math.min(s.hp, S.health + p.hp); g.hp = S.health - b; }
     if (p.mana) { const b = S.mana; S.mana = Math.min(s.mana, S.mana + p.mana); g.mana = S.mana - b; }
     if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP, S.moves + 1); g.move = true; }
-    if (g.hp || g.mana || g.move) save();
+    /* the shared Breadventure Land picks these up next time the map opens (it holds the real Health, mana and moves) */
+    if (p.hp || p.mana || g.move) { const o = S.out = S.out || { hp: 0, mana: 0, move: 0 }; o.hp += p.hp || 0; o.mana += p.mana || 0; if (g.move) o.move++; }
+    if (g.hp || g.mana || g.move || p.hp || p.mana) save();
     return g;
   }
   let gained = { hp: 0, mana: 0, move: false };
@@ -111,7 +113,7 @@ const ADV = (() => {
     n.innerHTML = `<a class="brand" href="index.html">Cakebread <b>Questing</b></a>`
       + tab('home', 'adventurer-home.html', '🏠', 'Base camp')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map', '<span class="soon">preview</span>')
+      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
       + `<span class="gap"></span>`
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
@@ -172,7 +174,7 @@ const ADV = (() => {
   function storyRescue(onClose) {
     return storyModal(`<div class="ch">Chapter 1 complete</div><h2>The Professor is free!</h2>
       <div class="pics"><img src="${icon('prof')}" width="120" alt="The Professor"></div>
-      <p>With all three key pieces the cage clicks open. ${DRAGON} snores on. The Professor dusts off his sprinkles, straightens his goggles and says: <i>“About time. I've been in there since Tuesday. Right — back to the Cakelab, there's science to do.”</i></p>
+      <p>With all three key pieces the cage clicks open. ${DRAGON} snores on. The Professor dusts off his sprinkles, straightens his lab coat and says: <i>“About time. I've been in there since Tuesday. Right — back to the Cakelab, there's science to do.”</i></p>
       <p><b>Chapter 2 begins:</b> new monsters are waking in the far corners of Breadventure Land — the <b>Superbug</b> in the Petri Swamp, the <b>Rust Wyrm</b> in Scrap Heap Hills and the <b>Half-Life Horror</b> at the old reactor.</p>`,
       'Back to the Cakelab →', () => { S.rescueSeen = true; save(); onClose && onClose(); });
   }

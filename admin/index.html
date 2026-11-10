@@ -84,7 +84,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Admin</span></h1><div class="who" id="who"></div></header>
 <nav class="tabs" id="tabs" hidden>
   <button data-t="overview" class="on">Overview</button><button data-t="students">Students</button><button data-t="map">Spec map</button>
-  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="backup">Backup</button>
+  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="backup">Backup</button>
 </nav>
 <main>
   <div class="gate" id="gate"><h2>Admin</h2><p id="gateMsg">Checking who you are…</p><div id="gateBtn"></div></div>
@@ -109,6 +109,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
     <div class="wrapx" id="qTable"></div>
   </section>
   <section class="panel" id="p-boards"></section>
+  <section class="panel" id="p-bland"></section>
   <section class="panel" id="p-backup">
     <div class="card"><h2>Back up everything</h2><p class="muted">Downloads every student's saved data (Questing, flashcards, trackers, long answers) as one file.</p>
       <div class="acts"><button class="btn" id="exp">💾 Download backup</button><button class="btn alt" id="impBtn">📂 Restore from a backup…</button><input type="file" id="imp" accept=".json" hidden></div><div class="msg" id="bMsg"></div></div>
@@ -129,6 +130,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/spec-quiz/gens.js"></script>
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
+<script src="/interactive/spec-quiz/bland.js"></script>
 <script>
 /* Admin console (rebuilt 10 Nov 2026): the whole site + Cakebread Questing. Reads Firestore users/*, specProgress/*,
    and Realtime Database specQuizBoard, specQuizReports, gameScores. Progress maths comes from QE.analyse (same rules as the game). */
@@ -205,7 +207,7 @@ async function load() {
   });
   students.sort((a, b) => b.last - a.last);
   D = { students, board: (board && board.val()) || {}, reps: (reps && reps.val()) || {}, games: (games && games.val()) || {}, at: Date.now(), rtOk: !!board };
-  drawOverview(); drawStudents(); drawMap(); drawQuestions(); drawBoards();
+  drawOverview(); drawStudents(); drawMap(); drawQuestions(); drawBoards(); loadBland();
   const h = location.hash.slice(1); if (h && $('p-' + h)) show(h);
 }
 
@@ -395,6 +397,53 @@ $('p-boards').addEventListener('click', async e => {
   try { await RT.ref(b.dataset.del).remove(); const p = b.dataset.del.split('/'); if (p[0] === 'specQuizBoard') delete D.board[p[1]]; else delete D.games[p[1]][p[2]]; drawBoards(); }
   catch (err) { $('lbMsg').className = 'msg err'; $('lbMsg').textContent = 'Not allowed: the Realtime Database rules need the admin line for ' + b.dataset.del.split('/')[0] + '.'; }
 });
+
+/* ---------- Breadventure Land (the shared world, bland.js) ---------- */
+async function loadBland() {
+  const el = $('p-bland');
+  try { BL.init(RT, ME); await BL.load(); drawBland(); }
+  catch (e) { el.innerHTML = `<div class="card" style="border-color:var(--bad)">Couldn't read Breadventure Land (${esc(e.code || e.message)}). Check the Realtime Database rules include the <code>bland</code> block.</div>`; }
+}
+const placeName = k => { const P = BL.PLACES[k]; if (P) return P.name; const [c, r] = BL.unkey(k); const L = BL.LAND[BL.T_AT(c, r)]; return L ? L.name : k; };
+function drawBland(msg) {
+  const el = $('p-bland'), w = BL.world;
+  if (!w) { el.innerHTML = '<div class="card"><h2>Breadventure Land</h2><p class="muted">Nobody has opened it yet. The world is created the first time a signed-in student opens the map.</p></div>'; return; }
+  const due = w.day < BL.TODAY;
+  const players = Object.entries(BL.states).map(([u, st]) => ({ u, st, p: BL.pubs[u] || {}, s: D && D.students.find(x => x.uid === u) }));
+  const bosses = Object.entries(BL.PLACES).filter(([, P]) => P.type === 'boss');
+  el.innerHTML = `${msg ? `<div class="msg ok" style="margin-bottom:10px">${msg}</div>` : ''}
+    <div class="kpis"><div class="kpi"><div class="big">${w.chapter}</div><small>chapter · ${BL.keysOf(w)}/3 key pieces</small></div>
+      <div class="kpi"><div class="big">${BL.dayNum(w.day) - BL.dayNum(w.started || w.day) + 1}</div><small>day · last night run ${esc(w.day)}</small></div>
+      <div class="kpi"><div class="big">${players.length}</div><small>players · ${players.filter(x => x.p.plan && x.p.plan.day === w.day && x.p.plan.steps.length).length} with moves planned tonight</small></div>
+      <div class="kpi"><div class="big" style="${due ? 'color:var(--bad)' : ''}">${due ? 'Due' : 'Done'}</div><small>tonight's night ${due ? 'runs when the next player opens the map' : 'has run'}</small></div></div>
+    <div class="cols">
+      <div class="card"><h2>Bosses</h2><table><thead><tr><th>Boss</th><th class="n">Health</th><th class="n">Fought by</th><th>Set health</th></tr></thead><tbody>
+        ${bosses.map(([k, P]) => `<tr><td><b>${esc(P.name)}</b><div class="small muted">${P.ch === 2 ? 'Chapter 2' : 'Chapter 1 · key piece'}</div></td><td class="n">${w.boss[k] ?? P.max} / ${P.max}</td><td class="n">${Object.keys((w.hit || {})[k] || {}).length}</td>
+          <td><input type="number" min="0" max="${P.max}" value="${w.boss[k] ?? P.max}" data-bhp="${k}" style="width:80px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"> <button class="btn alt sm" data-bset="${k}">Save</button></td></tr>`).join('')}</tbody></table></div>
+      <div class="card"><h2>World</h2>
+        <p>Chapter: <select id="blCh" style="font:inherit;padding:4px"><option value="1" ${w.chapter < 2 ? 'selected' : ''}>1 · Free the Professor</option><option value="2" ${w.chapter >= 2 ? 'selected' : ''}>2 · The monsters wake</option></select> <button class="btn alt sm" id="blChSave">Save</button></p>
+        <p style="margin-top:10px"><button class="btn sm" id="blRun" ${due ? '' : 'disabled'}>🌙 Run tonight's night now</button> <span class="small muted">${due ? 'Runs everyone\'s planned moves, as if a student had opened the map.' : 'Already run today. It runs again after midnight.'}</span></p>
+        ${(w.log || []).length ? `<h3>What's happened</h3><ul style="margin-left:18px">${w.log.slice(-8).map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+        <h3>Danger</h3><button class="btn warn sm" id="blReset">Reset the whole world</button> <span class="small muted">Bosses back to full, chapter 1, every player back to the Cakelab with 6 moves.</span></div>
+    </div>
+    <div class="card"><h2>Players</h2><div class="wrapx"><table><thead><tr><th>Player</th><th>Where</th><th class="n">Health</th><th class="n">Moves</th><th>Planned tonight</th><th>Waiting to collect</th><th></th></tr></thead><tbody>
+      ${players.map(({ u, st, p, s }) => { const planned = p.plan && p.plan.day === w.day ? p.plan.steps : [];
+        return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}</td>
+          <td class="small">${planned.length ? planned.map(placeName).map(esc).join(' → ') : '<span class="muted">nothing</span>'}</td><td class="small">${st.pending ? `🪙 ${st.pending.coins || 0}${(st.pending.items || []).length ? ' + ' + st.pending.items.length + ' item' : ''}` : ''}</td>
+          <td style="white-space:nowrap"><button class="btn alt sm" data-bheal="${u}">Heal + to Cakelab</button> <button class="btn alt sm" data-bdel="${u}">Remove</button></td></tr>`; }).join('') || '<tr><td colspan="7" class="muted">No players yet.</td></tr>'}</tbody></table></div></div>
+    <div class="msg" id="blMsg"></div>`;
+  const fail = e => { $('blMsg').className = 'msg err'; $('blMsg').textContent = 'Not saved: ' + (e.code || e.message) + '. Check the bland block in the Realtime Database rules.'; };
+  el.querySelectorAll('[data-bset]').forEach(b => b.onclick = async () => { const k = b.dataset.bset, v = Math.max(0, Math.min(BL.PLACES[k].max, +el.querySelector(`[data-bhp="${k}"]`).value || 0));
+    try { await RT.ref('bland/world/boss/' + k).set(v); await BL.load(); drawBland(`${BL.PLACES[k].name}: health set to ${v}.`); } catch (e) { fail(e); } });
+  $('blChSave').onclick = async () => { try { await RT.ref('bland/world/chapter').set(+$('blCh').value); await BL.load(); drawBland('Chapter saved.'); } catch (e) { fail(e); } };
+  $('blRun').onclick = async () => { try { const r = await BL.runNightIfDue(false); await BL.load(); drawBland(r ? `Night run for ${Object.keys(r.states).length} players.` : 'Someone else ran it just now.'); } catch (e) { fail(e); } };
+  $('blReset').onclick = async () => { if (!confirm('Reset Breadventure Land for everyone? Bosses, chapter, positions, fog and banked moves all start again. Coins and items already collected stay.')) return;
+    try { const upd = { world: BL.newWorld() }; Object.entries(BL.states).forEach(([u, st]) => { upd['state/' + u] = Object.assign(BL.newState((BL.pubs[u] || {}).hp || 15), { pending: st.pending || null }); });
+      await RT.ref('bland').update(upd); await BL.load(); drawBland('The world has been reset.'); } catch (e) { fail(e); } };
+  el.querySelectorAll('[data-bheal]').forEach(b => b.onclick = async () => { const u = b.dataset.bheal; try { await RT.ref('bland/state/' + u).update({ at: BL.HOME, health: (BL.pubs[u] || {}).hp || 15 }); await BL.load(); drawBland('Sent to the Cakelab with full Health.'); } catch (e) { fail(e); } });
+  el.querySelectorAll('[data-bdel]').forEach(b => b.onclick = async () => { const u = b.dataset.bdel; if (!confirm('Remove this player from Breadventure Land? They start again in the Cakelab next time they open the map.')) return;
+    try { await RT.ref('bland/state/' + u).remove(); await RT.ref('bland/pub/' + u).remove(); await BL.load(); drawBland('Player removed.'); } catch (e) { fail(e); } });
+}
 
 /* ---------- Backup ---------- */
 $('exp').onclick = async () => {
