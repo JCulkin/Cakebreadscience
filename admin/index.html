@@ -200,6 +200,7 @@ async function load() {
       d14: days14.map(d => Object.assign({ d }, day(d))), fc, trk, hide: !!(prog && prog.hide),
       used: !!(prog && Object.keys(prog.q || {}).length) || fc > 0 || trk.some(x => x != null) || !!(u.longAnswers),
       weak: prog ? Object.keys(prog.weak || {}) : [], coins: game.coins || 0, bag: (game.bag || []).length,
+      pending: game.nickPending && !QE.checkName(game.nickPending) ? game.nickPending : '', pendingAt: game.nickAt || 0,
     });
   });
   students.sort((a, b) => b.last - a.last);
@@ -226,7 +227,8 @@ function drawOverview() {
   const top = S.filter(s => s.wk).sort((a, b) => b.wk - a.wk).slice(0, 5);
   const rep = openReports();
   const kpi = (n, label, go) => `<div class="kpi ${go ? 'link' : ''}" ${go ? `data-go="${go}"` : ''}><div class="big">${n}</div><small>${label}</small></div>`;
-  $('p-overview').innerHTML = `
+  const waiting = S.filter(s => s.pending).sort((a, b) => a.pendingAt - b.pendingAt);
+  $('p-overview').innerHTML = `${waiting.length ? `<div class="card" style="border-color:#7c3aed"><h2>Names waiting for you (${waiting.length})</h2><table>${waiting.map(s => `<tr><td><b class="nick" style="font-size:15px">${esc(s.pending)}</b></td><td>${esc(s.name)} <span class="small muted">now shown as ${esc(s.nick || googleName(s))} · asked ${ago(s.pendingAt)}</span></td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></td></tr>`).join('')}</table><div class="msg" id="nqMsg"></div></div>` : ''}
     <div class="kpis">${kpi(act.length, 'students who have used the site', 'students')}${kpi(today, 'active today', 'students')}${kpi(week, 'active in the last 7 days', 'students')}
       ${kpi(players, 'play Cakebread Questing', 'students')}${kpi(m7, 'missions in the last 7 days')}${kpi(c7, 'flashcards reviewed, last 7 days')}${kpi(wk, 'right answers this week')}
       <a class="kpi link" href="/interactive/spec-quiz/reports.html" style="text-decoration:none;color:inherit${rep ? ';border-color:var(--bad)' : ''}"><div class="big" style="${rep ? 'color:var(--bad)' : ''}">${rep}</div><small>open question reports ⚑</small></a></div>
@@ -252,7 +254,7 @@ function drawStudents() {
   rows.sort((a, b) => { const x = a[sSort], y = b[sSort]; return (typeof x === 'string' ? x.localeCompare(y) : (x || 0) - (y || 0)) * sDir; });
   const th = (k, t, n) => `<th class="${n ? 'n' : ''}" data-k="${k}">${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
   $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right this week', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker ticked B / C / P</th></tr></thead><tbody>
-    ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>
+    ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.pending ? ` <span class="tag" style="background:#ede9fe">wants “${esc(s.pending)}”</span>` : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>
       <td class="small">${ago(s.last)}</td><td class="n">${s.level || '–'}</td><td class="n">${s.xp}</td><td class="n">${s.pts} ${s.pts ? sciChips(s.per) : ''}</td><td class="n">${s.wk}</td><td class="n">${s.m7}</td><td class="n">${s.c7}</td><td>${stripHtml(s.d14)}</td><td class="n">${s.fc}</td>
       <td class="small">${s.trk.map(x => x == null ? '–' : x + '%').join(' / ')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nobody matches.</div>';
 }
@@ -271,6 +273,7 @@ function openStudent(uid) {
   $('dBody').innerHTML = `<h2>${esc(s.name)}</h2><div class="small muted">${esc(s.email)} · last on ${ago(s.last)}</div>
     <div class="card" style="margin-top:12px"><h3 style="margin-top:0">Public name</h3>
       <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Cakebread Questing name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
+      ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
       <div class="acts"><input id="nn" placeholder="New name" maxlength="16" style="font:inherit;padding:5px 8px;border:2px solid var(--ink)"><button class="btn sm" id="ren">Rename</button><button class="btn alt sm" id="clr">Use their Google name</button>
       ${s.prog ? `<button class="btn alt sm" id="hid">${s.hide ? 'Hidden from boards ✓' : 'Hide from leaderboards'}</button>` : ''}</div><div class="msg" id="dMsg"></div></div>
     ${P ? `<div class="kpis" style="margin-top:4px"><div class="kpi"><div class="big">${s.level}</div><small>level · ${s.xp} XP</small></div><div class="kpi"><div class="big">${s.pts}</div><small>spec points secured ${sciChips(s.per)}</small></div>
@@ -286,10 +289,10 @@ function openStudent(uid) {
   const msg = (t, ok) => { $('dMsg').className = 'msg ' + (ok ? 'ok' : 'err'); $('dMsg').textContent = t; };
   const setNick = async nick => {
     try {
-      await DB.collection('users').doc(uid).update({ 'questing.nick': nick, 'questing.updatedAt': Date.now() });
+      await DB.collection('users').doc(uid).update({ 'questing.nick': nick, 'questing.nickPending': null, 'questing.updatedAt': Date.now() });
       let boardNote = '';
       if (D.board[uid]) { const shown = nick === '-' ? googleName(s) : nick; try { await RT.ref('specQuizBoard/' + uid + '/name').set(shown); D.board[uid].name = shown; } catch (e) { boardNote = ' The Questing board updates next time they play.'; } }
-      s.game.nick = nick; s.nick = nick === '-' ? '' : nick; s.badNick = '';
+      s.game.nick = nick; s.nick = nick === '-' ? '' : nick; s.badNick = ''; s.pending = '';
       msg('Saved.' + boardNote + ' Game leaderboards pick it up next time they play.', true); drawStudents(); drawBoards();
     } catch (e) { msg('Could not save: ' + (e.code || e.message) + '. The Firestore rules may not let admins edit students.'); }
   };
@@ -303,6 +306,20 @@ function openStudent(uid) {
     } catch (e) { msg('Could not save: ' + (e.code || e.message)); }
   };
 }
+/* name approvals (students' new names wait for the admin) */
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-ok],[data-no]'); if (!b) return;
+  const uid = b.dataset.ok || b.dataset.no, ok = !!b.dataset.ok, s = D.students.find(x => x.uid === uid); if (!s || !s.pending) return;
+  const out = $('dMsg') && $('drawer').classList.contains('on') ? $('dMsg') : $('nqMsg');
+  try {
+    const upd = { 'questing.nickPending': null, 'questing.updatedAt': Date.now() };
+    if (ok) upd['questing.nick'] = s.pending;
+    await DB.collection('users').doc(uid).update(upd);
+    if (ok) { try { if (D.board[uid]) { await RT.ref('specQuizBoard/' + uid + '/name').set(s.pending); D.board[uid].name = s.pending; } } catch (err) {} s.nick = s.pending; s.game.nick = s.pending; }
+    s.pending = ''; s.game.nickPending = null;
+    drawOverview(); drawStudents(); drawBoards(); if ($('drawer').classList.contains('on')) openStudent(uid);
+  } catch (err) { if (out) { out.className = 'msg err'; out.textContent = 'Could not save: ' + (err.code || err.message) + '. The Firestore rules may not let admins edit students.'; } }
+});
 const googleName = s => { const n = (s.raw.displayName || 'Student').trim().split(/\s+/); return n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : ''); };
 const closeD = () => { $('dim').classList.remove('on'); $('drawer').classList.remove('on'); };
 $('dx').onclick = closeD; $('dim').onclick = closeD; document.addEventListener('keydown', e => { if (e.key === 'Escape') closeD(); });

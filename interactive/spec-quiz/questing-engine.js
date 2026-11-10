@@ -61,7 +61,7 @@ const QE = (() => {
   };
   const UID_KEY = 'cbs.questing.uid';
   const blank = () => ({ v: 1, q: {}, cards: {}, weak: {}, xp: 0, correct: 0, hard: 0, subj: { Biology: 0, Chemistry: 0, Physics: 0 }, weeks: {}, ws: {}, missions: 0, unrusted: 0, earned: {}, hide: false, updatedAt: 0 });
-  const gblank = () => ({ coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, look: null, eq: null, nick: null, updatedAt: 0 });
+  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, look: null, eq: null, nick: null, updatedAt: 0 });
   const progKey = uid => 'specquiz.camp.' + (uid || 'anon');
   const gameKey = uid => 'cbs.questing.game.' + (uid || 'anon');
   const readProg = uid => Object.assign(blank(), ls.get(progKey(uid)) || {});
@@ -116,7 +116,8 @@ const QE = (() => {
   }
   function syncLookIntoGame() {
     const l = readLookLocal(); let changed = false;
-    for (const k of ['look', 'eq', 'nick']) if (l[k] && JSON.stringify(l[k]) !== JSON.stringify(GAME[k])) { GAME[k] = l[k]; changed = true; }
+    // the name is NOT taken from this browser: since 10 Nov a new name waits for the admin (requestName → GAME.nickPending)
+    for (const k of ['look', 'eq']) if (l[k] && JSON.stringify(l[k]) !== JSON.stringify(GAME[k])) { GAME[k] = l[k]; changed = true; }
     if (changed) GAME.updatedAt = Date.now();
     return changed;
   }
@@ -156,6 +157,15 @@ const QE = (() => {
     return '';
   }
   const cleanName = n => String(n || '').trim().replace(/\s+/g, ' ');
+  /* a student's new name goes to the admin for approval (user, 10 Nov: renames "go through me").
+     GAME.nickPending = the name asked for (shown nowhere public until approved), GAME.nickAt = when.
+     '-' (go back to the Google name) needs no approval. Returns '' or the reason it was refused. */
+  function requestName(raw) {
+    const n = cleanName(raw);
+    if (!n || n === '-') { GAME.nick = '-'; GAME.nickPending = null; }
+    else { const bad = checkName(n); if (bad) return bad; if (n === GAME.nick) GAME.nickPending = null; else { GAME.nickPending = n; GAME.nickAt = Date.now(); } }
+    GAME.updatedAt = Date.now(); writeLookLocal(GAME); save(true); return '';
+  }
   /* one letter per started spec point for the spec tracker (One spec, 10 Nov): s secured, r rusty, l learning */
   function pointSummary() { const o = {}; for (const k in POINT_QS) { const st = pointState(k); if (st.started) o[k] = st.rusty ? 'r' : st.secured ? 's' : 'l'; } return o; }
   const googleName = () => { const n = (FB.user && FB.user.displayName || 'Student').trim().split(/\s+/); return n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : ''); };
@@ -481,7 +491,7 @@ const QE = (() => {
   return {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },
     get online() { return FB.ok; }, set busy(v) { busy = !!v; }, get busy() { return busy; },
-    TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName,
+    TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName, requestName,
     signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,

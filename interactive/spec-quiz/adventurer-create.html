@@ -68,7 +68,8 @@ details.why li{margin:6px 0 0 20px}
   <div class="layout">
     <div class="card preview">
       <div class="nick"><input id="nick" maxlength="16" placeholder="Your first name + initial" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me">🎲</button></div>
-      <div class="small">Your name in Cakebread Questing: on the leaderboards and Breadventure Land. Type your own (2–16 letters) or press 🎲.</div>
+      <div class="small">Your name in Cakebread Questing: on the leaderboards and Breadventure Land. Type your own (2–16 letters) or press 🎲. Your teacher approves new names.</div>
+      <div class="small" id="namest" style="margin-top:4px"></div>
       <div class="namerr" id="namerr" role="alert"></div>
       <img id="fig" class="px" alt="Your adventurer">
       <div class="seg" role="group" aria-label="Preview">
@@ -110,7 +111,9 @@ ADV.nav('look');
 const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick';
 const O = PIXEL.OPTIONS;
 let base = load(KEY_BASE) || Object.assign({}, PIXEL.DEFAULT), view = 'starter';
-let nick = localStorage.getItem(KEY_NICK); nick = nick === '-' ? '' : nick || newNick();   // '-' = cleared by the admin: use the Google name
+// the box shows the name waiting for approval if there is one, else the approved name ('-' or none = the Google name)
+const approved = () => { const n = QE.game.nick; return n && n !== '-' && !QE.checkName(n) ? n : ''; };
+let nick = QE.game.nickPending || approved();
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function newNick() {
   const A = ['Brave', 'Chaotic', 'Sleepy', 'Mighty', 'Curious', 'Sneaky', 'Cosmic', 'Turbo', 'Gentle', 'Unbothered', 'Sparkly', 'Lowkey', 'Valiant', 'Wobbly', 'Electric', 'Fizzy'];
@@ -164,15 +167,21 @@ document.getElementById('rand').onclick = () => {
   base.extras = O.extras.filter(() => Math.random() < .22).map(o => o.id);
   render();
 };
+function nameStatus() {
+  const p = QE.game.nickPending, shown = approved() || (QE.user ? QE.googleName() : 'your first name + initial');
+  document.getElementById('namest').innerHTML = p ? `⏳ <b>${p.replace(/</g, '&lt;')}</b> is waiting for your teacher to approve it. Until then you're shown as <b>${shown}</b>${QE.user ? '' : ' Sign in so it can be sent.'}` : '';
+}
+QE.onChange(() => { if (document.activeElement !== document.getElementById('nick')) nick = QE.game.nickPending || approved(); nameStatus(); render(); });
 document.getElementById('save').onclick = () => {
   if (!checkNick()) { document.getElementById('nick').focus(); return; }
-  nick = QE.cleanName(nick) || '-';
+  const want = QE.cleanName(nick), cur = approved();
+  if (want !== (QE.game.nickPending || cur)) QE.requestName(want || '-');
   base.v = 1;
-  try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); localStorage.setItem(KEY_NICK, nick); } catch (e) {}
+  try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); } catch (e) {}
   QE.syncLook();
   setTimeout(() => { location.href = 'adventurer-home.html'; }, QE.user ? 700 : 0);
 };
-render();
+nameStatus(); render();
 </script>
 </body>
 </html>
