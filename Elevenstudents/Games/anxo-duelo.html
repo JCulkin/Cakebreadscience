@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Duelo de Campeones</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>
+:root{--bg:#101426;--panel:#1c2440;--a:#53d8fb;--b:#ff6685;--gold:#ffd166}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#27345d,#101426 65%);color:#f7f8ff;font-family:system-ui,Arial;min-height:100vh;display:grid;place-items:center;padding:18px}
+main{width:min(960px,100%);background:#151c32;border:1px solid #394566;border-radius:24px;padding:22px;box-shadow:0 20px 70px #0008}
+h1{text-align:center;margin:0;font-size:clamp(28px,5vw,44px);letter-spacing:1px}.sub{text-align:center;color:#bac5e5;margin:6px 0 18px}
+.hud{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.tag{background:#273252;padding:8px 13px;border-radius:999px;font-weight:700}.arena{height:310px;position:relative;overflow:hidden;border-radius:18px;border:2px solid #59688e;background:linear-gradient(#5d79a8 0 58%,#293d4e 58% 64%,#24334a 64%);isolation:isolate}
+.sun{position:absolute;width:75px;height:75px;border-radius:50%;background:#ffe49b;right:12%;top:12%;box-shadow:0 0 45px #ffe49b88}
+.mountains{position:absolute;bottom:36%;left:0;width:100%;height:120px;background:#465d7b;clip-path:polygon(0 100%,15% 30%,28% 75%,48% 10%,68% 75%,83% 25%,100% 100%);opacity:.8}
+.floor{position:absolute;bottom:0;height:36%;width:100%;background:repeating-linear-gradient(90deg,#283b50 0 48px,#30465c 48px 96px)}
+.fighter{position:absolute;bottom:32px;width:70px;height:130px;transition:left .07s linear;z-index:3}
+.head{position:absolute;top:0;left:19px;width:34px;height:34px;border-radius:50%;background:var(--skin);border:3px solid #151c32}
+.body{position:absolute;top:34px;left:14px;width:44px;height:58px;border-radius:13px;background:var(--shirt);border:3px solid #151c32}
+.leg{position:absolute;top:87px;width:18px;height:43px;border-radius:9px;background:var(--pants);border:3px solid #151c32}
+.leg.l{left:14px}.leg.r{right:12px}.arm{position:absolute;top:42px;width:17px;height:48px;border-radius:10px;background:var(--skin);border:3px solid #151c32}.arm.l{left:0;transform:rotate(22deg)}.arm.r{right:0;transform:rotate(-22deg)}
+.fighter.punch .arm.r{transform:rotate(-75deg) translateY(-10px)}.fighter.punch .arm.l{transform:rotate(65deg) translateY(-10px)}
+.fighter.flip{transform:scaleX(-1)}
+.barwrap{height:14px;background:#3a4260;border-radius:20px;overflow:hidden;margin:7px 0 2px}.bar{height:100%;width:100%;transition:width .15s;background:linear-gradient(90deg,#64e7a8,#b8f36a)}
+.players{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}.player{background:#202a47;padding:12px;border-radius:14px}.player strong{display:flex;justify-content:space-between}.p1{color:var(--a)}.p2{color:var(--b)}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;color:#c7d0e8;font-size:14px}.controls div{background:#202a47;padding:12px;border-radius:12px}
+button{border:0;border-radius:12px;padding:12px 18px;font-weight:800;background:var(--gold);color:#202033;cursor:pointer;font-size:15px}button:hover{filter:brightness(1.08)}.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px}
+#message{text-align:center;font-weight:800;color:var(--gold);min-height:26px;margin:12px}
+.back{display:inline-block;color:#bac5e5;text-decoration:none;font-size:14px;margin-bottom:8px}.back:hover{color:#fff}.by{color:var(--gold)}
+@media(max-width:560px){.arena{height:260px}.fighter{transform:scale(.85);transform-origin:bottom center}.fighter.flip{transform:scale(-.85,.85)}.controls{grid-template-columns:1fr}.players{gap:8px}.player{padding:9px}}
+</style>
+</head>
+<body><main>
+<a class="back" href="../index.html">← Volver a la galería</a>
+<h1>⚔️ DUELO DE CAMPEONES</h1><p class="sub">Dos jugadores · Combate local · ¡Supera todos los niveles! · <span class="by">por Anxo</span></p>
+<div class="hud"><span class="tag" id="level">Nivel 1 / 5</span><span class="tag" id="round">Ronda: 1</span><span class="tag" id="wins">Victorias: 🔵 0 — 0 🔴</span></div>
+<div class="arena" id="arena"><div class="sun"></div><div class="mountains"></div><div class="floor"></div>
+<div class="fighter" id="f1" style="left:12%;--skin:#e8b28b;--shirt:#42c7ee;--pants:#243d77"><div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div><div class="leg l"></div><div class="leg r"></div></div>
+<div class="fighter flip" id="f2" style="left:80%;--skin:#b97854;--shirt:#fa6684;--pants:#672d55"><div class="head"></div><div class="body"></div><div class="arm l"></div><div class="arm r"></div><div class="leg l"></div><div class="leg r"></div></div></div>
+<div class="players"><div class="player"><strong class="p1"><span>🔵 JUGADOR 1</span><span id="hp1txt">100%</span></strong><div class="barwrap"><div class="bar" id="hp1"></div></div></div><div class="player"><strong class="p2"><span>🔴 JUGADOR 2</span><span id="hp2txt">100%</span></strong><div class="barwrap"><div class="bar" id="hp2"></div></div></div></div>
+<div id="message">¡Preparados! Pulsa «Empezar duelo».</div>
+<div class="controls"><div><b class="p1">Jugador 1</b><br>W / A / D: saltar / mover<br>F: golpear</div><div><b class="p2">Jugador 2</b><br>↑ / ← / →: saltar / mover<br>L: golpear</div></div>
+<div class="actions"><button id="start">Empezar duelo</button><button id="next" hidden>Siguiente nivel →</button><button id="reset">Reiniciar</button></div>
+</main>
+<script>
+// Duelo de Campeones — por Anxo. Arreglos (Nov 2026): velocidad igual en todas las pantallas,
+// los luchadores se giran para mirarse, contador de rondas, mensaje final del nivel 5,
+// no se pueden saltar niveles, teclas que se quedaban pulsadas, el jugador 2 ya no se sale en el móvil.
+const $=id=>document.getElementById(id), f=[$('f1'),$('f2')], hp=[$('hp1'),$('hp2')], txt=[$('hp1txt'),$('hp2txt')];
+let x=[12,80], health=[100,100], level=1, wins=[0,0], active=false, round=1, jumping=[false,false], cooldown=[0,0];
+const keys={};
+// Right-hand limit so a fighter never hangs off the arena (phones have a narrow arena).
+const maxX=()=>Math.min(91,100-(f[0].offsetWidth+4)/$('arena').clientWidth*100);
+function update(){const mx=maxX();x=x.map(v=>Math.min(v,mx));f.forEach((el,i)=>el.style.left=x[i]+'%');const swapped=x[0]>x[1];f[0].classList.toggle('flip',swapped);f[1].classList.toggle('flip',!swapped);hp.forEach((el,i)=>el.style.width=health[i]+'%');txt.forEach((el,i)=>el.textContent=health[i]+'%');$('level').textContent=`Nivel ${level} / 5`;$('round').textContent=`Ronda: ${round}`;$('wins').textContent=`Victorias: 🔵 ${wins[0]} — ${wins[1]} 🔴`}
+function start(){if(active)return;active=true;$('message').textContent='¡A luchar!';$('start').textContent='Duelo en curso';$('next').hidden=true}
+function hit(i){if(!active||cooldown[i]>0)return;cooldown[i]=24;f[i].classList.add('punch');setTimeout(()=>f[i].classList.remove('punch'),180);let j=1-i;if(Math.abs(x[i]-x[j])<15){health[j]=Math.max(0,health[j]-(10+level*2));$('message').textContent=i===0?'¡Golpe del Jugador 1!':'¡Golpe del Jugador 2!';update();if(health[j]===0)finish(i)}}
+function finish(w){active=false;wins[w]++;$('message').textContent=`🏆 ¡Gana el Jugador ${w+1}!`; $('start').textContent='Otra ronda';$('next').hidden=false;update()}
+function resetRound(){health=[100,100];x=[12,80];active=false;cooldown=[0,0];$('next').hidden=true;update();$('start').textContent='Empezar duelo';$('message').textContent='¡Nueva ronda! Acercaos para golpear.'}
+// Speed is set per 1/60 s, so it is the same on 60 Hz and 120/144 Hz screens.
+let last=null;
+function loop(t){const k=last===null?1:Math.min(3,(t-last)/(1000/60));last=t;if(active){for(let i=0;i<2;i++){if(cooldown[i]>0)cooldown[i]=Math.max(0,cooldown[i]-k);let left=i===0?'a':'ArrowLeft',right=i===0?'d':'ArrowRight',jump=i===0?'w':'ArrowUp';if(keys[left])x[i]=Math.max(2,x[i]-0.7*k);if(keys[right])x[i]=Math.min(maxX(),x[i]+0.7*k);if(keys[jump]&&!jumping[i]){jumping[i]=true;f[i].style.bottom='85px';setTimeout(()=>{jumping[i]=false;f[i].style.bottom='32px'},420)}}update()}requestAnimationFrame(loop)}
+document.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;keys[e.key]=true;if([' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key))e.preventDefault();if(e.repeat)return;if(e.key.toLowerCase()==='f')hit(0);if(e.key.toLowerCase()==='l')hit(1)});
+document.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;keys[e.key]=false});
+// If the window loses focus while a key is held, its keyup never arrives: let go of everything.
+window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
+$('start').onclick=()=>{if(!active){if(health.some(v=>v===0)){round++;resetRound()}start()}};
+$('next').onclick=()=>{if(level<5){level++;round++;resetRound();$('message').textContent=`Nivel ${level}: ¡los golpes son más fuertes!`}else{const champ=wins[0]===wins[1]?`¡Empate ${wins[0]}–${wins[1]}!`:`Campeón: Jugador ${wins[0]>wins[1]?1:2} (${Math.max(...wins)}–${Math.min(...wins)})`;level=1;round=1;wins=[0,0];resetRound();$('message').textContent=`🎉 ¡Habéis completado los 5 niveles! ${champ}`}};
+$('reset').onclick=()=>{level=1;round=1;wins=[0,0];resetRound();$('message').textContent='Partida reiniciada. ¡A por todas!'};update();requestAnimationFrame(loop);
+</script></body></html>
