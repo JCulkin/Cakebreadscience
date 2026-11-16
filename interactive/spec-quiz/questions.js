@@ -5370,3 +5370,499 @@ M('P8.9-06', 'What is a nebula?',
   'A star begins as a nebula: a cloud of gas and dust pulled together by gravity.')
 T('P8.9-07', 'A star like the Sun will become a red giant before it becomes a white dwarf.', true,
   'True. The order is nebula, main sequence star, red giant, white dwarf.')
+
+/* ---- added 16 Nov 2026 (second batch): one more on every point that still had only four ---- */
+M('P1.7-05', 'On a velocity–time graph, what does a straight line sloping upwards show?',
+  ['Constant acceleration', 'Constant velocity', 'The object is stationary', 'Constant deceleration'],
+  'A steady upward slope means the velocity is increasing by the same amount each second.')
+MH('P1.8-05', 'A velocity–time graph falls from 12 m/s to 0 m/s in 3 s. What is the acceleration?',
+  ['−4 m/s²', '4 m/s²', '−36 m/s²', '−0.25 m/s²'],
+  'Acceleration = change in velocity ÷ time = (0 − 12) ÷ 3 = −4 m/s². The minus sign shows it is slowing down.')
+M('P1.9-05', 'A velocity–time graph is a triangle with a base of 6 s and a height of 10 m/s. What distance was travelled?',
+  ['30 m', '60 m', '16 m', '1.7 m'],
+  'Distance = area of the triangle = ½ × 6 × 10 = 30 m.')
+T('P1.10-04', 'In the equation v² = u² + 2as, the letter u stands for the final speed.', false,
+  'False. v is the final speed, u the initial speed, a the acceleration and s the distance moved.')
+MH('P1.11-05', 'A car hits a wall and its bonnet crumples. Which two effects of a force does this show?',
+  ['A change of speed and a change of shape', 'A change of mass and a change of shape', 'A change of direction and a change of mass', 'A change of colour and a change of speed'],
+  'The force from the wall slows the car (change of speed) and crumples the bonnet (change of shape).')
+M('P1.12-05', 'Which force pulls a dropped ball towards the ground?',
+  ['Gravitational force', 'Electrostatic force', 'Magnetic force', 'Friction'],
+  'The ball’s weight is the gravitational force of the Earth pulling on it.')
+M('P1.13-05', 'Which of these is a vector quantity?',
+  ['Velocity', 'Mass', 'Time', 'Temperature'],
+  'Velocity has a size and a direction. Mass, time and temperature only have a size.')
+M('P1.14-05', 'Two forces of 5 N act on a box in opposite directions. What is the resultant force?',
+  ['0 N', '10 N', '5 N', '25 N'],
+  'Force is a vector, so direction matters: equal forces in opposite directions cancel.')
+M('P1.15-04', 'A rocket’s engines push up with 5000 N and its weight is 3000 N. What is the resultant force?',
+  ['2000 N upwards', '8000 N upwards', '2000 N downwards', '8000 N downwards'],
+  'The forces act along a line in opposite directions: 5000 − 3000 = 2000 N upwards.')
+M('P1.16-05', 'A box slides across the floor and stops. Which force slowed it down?',
+  ['Friction', 'Weight', 'Upthrust', 'Magnetic force'],
+  'Friction opposes motion, so it acts against the sliding box and slows it.')
+MH('P1.19-05', 'A car’s thinking distance is 12 m and its braking distance is 24 m. What is its stopping distance?',
+  ['36 m', '12 m', '24 m', '288 m'],
+  'Stopping distance = thinking distance + braking distance = 12 + 24 = 36 m.')
+M('P1.20-05', 'A driver is using a phone. Which part of the stopping distance does this increase?',
+  ['Thinking distance only', 'Braking distance only', 'Both thinking and braking distance', 'Neither distance'],
+  'Distractions increase the reaction time, so the car travels further before the brakes go on. The braking distance is not affected.')
+M('P1.21-05', 'As a falling object speeds up, what happens to the air resistance on it?',
+  ['It increases', 'It decreases', 'It stays the same', 'It becomes zero'],
+  'Air resistance gets bigger as speed increases, until it balances the weight at terminal velocity.')
+T('P1.23-05', 'On a force–extension graph, the straight-line part is where Hooke’s law is obeyed.', true,
+  'True. In the initial linear region, extension is directly proportional to force.')
+MH('P1.24-05', 'A piece of modelling clay is squashed and stays squashed. Why is this not elastic behaviour?',
+  ['It does not recover its original shape', 'It did not need a force to change shape', 'Its mass changed when it was squashed', 'It changed shape too slowly'],
+  'Elastic behaviour means returning to the original shape when the force is removed. The clay does not.')
+MH('P2.5-04', 'A 6 V motor draws 2 A and transfers 360 J. How long was it running?',
+  ['30 s', '4320 s', '720 s', '180 s'],
+  'E = I × V × t, so t = E ÷ (I × V) = 360 ÷ (2 × 6) = 30 s.')
+T('P2.6-05', 'Mains electricity is direct current.', false,
+  'False. The mains supply is a.c.: the current keeps changing direction. Cells and batteries give d.c.')
+M('P2.7-05', 'What is a disadvantage of wiring decorative lights in series?',
+  ['If one lamp fails, they all go out', 'Each lamp needs its own switch', 'They use much more wire', 'Each lamp gets the full supply voltage'],
+  'In series there is only one path, so a break anywhere stops the current in every lamp.')
+M('P2.8-05', 'One of the lamps in a series circuit is replaced by a resistor with a much higher resistance. What happens to the current?',
+  ['It decreases', 'It increases', 'It stays the same', 'It reverses direction'],
+  'The current in a series circuit depends on the components in it: more resistance means less current.')
+T('P2.9-05', 'The current–voltage graph for a filament lamp is a straight line.', false,
+  'False. It curves, because the resistance of the filament increases as it gets hotter.')
+T('P2.10-05', 'Decreasing the resistance in a circuit decreases the current.', false,
+  'False. With less resistance (and the same voltage), the current increases.')
+MH('P2.11-05', 'Which component would you use in a circuit that switches on a heater when a room gets cold?',
+  ['A thermistor', 'An LDR', 'An LED', 'A fuse'],
+  'A thermistor’s resistance changes with temperature, so it can be used to sense when the room is cold.')
+M('P2.12-05', 'A “power on” light on a TV is usually which component?',
+  ['An LED', 'A thermistor', 'A fuse', 'An LDR'],
+  'LEDs are used as indicators: they light up when a current flows.')
+T('P2.14-05', 'Current is the amount of energy flowing per second.', false,
+  'False. Current is the rate of flow of charge. Power is the rate of transfer of energy.')
+MH('P2.15-04', 'A charge of 30 C flows in a circuit carrying a current of 0.5 A. How long does this take?',
+  ['60 s', '15 s', '30.5 s', '0.017 s'],
+  'Q = I × t, so t = Q ÷ I = 30 ÷ 0.5 = 60 s.')
+T('P2.16-05', 'The electrons in a metal wire carry a negative charge.', true,
+  'True. Current in a solid metal conductor is a flow of negatively charged electrons.')
+M('P2.17-05', 'Currents of 2 A and 3 A flow into a junction from two wires. What current flows out along the single wire leaving it?',
+  ['5 A', '1 A', '6 A', '2.5 A'],
+  'Current is conserved at a junction: 2 + 3 = 5 A.')
+T('P2.18-05', 'In a parallel circuit, the branch with the bigger resistance has the bigger voltage across it.', false,
+  'False. Components in parallel have the same voltage across them, whatever their resistance.')
+M('P4.3-05', 'A lamp is supplied with 100 J of energy and transfers 20 J as light. How much energy is transferred in other ways?',
+  ['80 J', '120 J', '20 J', '5 J'],
+  'Energy is conserved: 100 − 20 = 80 J, mostly heating the surroundings.')
+M('P4.6-05', 'By which method does thermal energy reach the Earth from the Sun?',
+  ['Radiation', 'Conduction', 'Convection', 'Evaporation'],
+  'Space is a vacuum, and only radiation can travel through a vacuum.')
+M('P4.7-05', 'Why is the freezer compartment at the top of an old-style fridge?',
+  ['Cold air sinks, cooling the whole fridge', 'Cold air rises, so it stays at the top', 'Heat cannot travel downwards', 'It keeps the motor away from the food'],
+  'Air cooled at the top becomes denser and sinks, and warmer air rises to be cooled: a convection current.')
+MH('P4.8-05', 'Why are solar heating panels painted dull black?',
+  ['Dull black surfaces are the best absorbers of radiation', 'Dull black surfaces are the best reflectors of radiation', 'Dull black paint stops conduction through the panel', 'Dull black paint is the cheapest colour to make'],
+  'Dull black surfaces absorb infrared radiation well, so the panel heats up more.')
+M('P4.10-05', 'Why does a foam jacket round a hot water tank reduce energy loss?',
+  ['It traps air, which is a poor conductor', 'It reflects infrared back into the tank', 'It stops the water from evaporating', 'It makes the water in the tank denser'],
+  'Foam contains pockets of trapped air. Air is a poor conductor, and trapped air cannot carry heat away by convection.')
+T('P4.12-05', 'If 200 J of work is done on an object, 200 J of energy is transferred.', true,
+  'True. Work done is equal to energy transferred.')
+MH('P4.13-04', 'A 0.5 kg ball gains 20 J of gravitational potential energy. How high was it lifted? (g = 10 N/kg)',
+  ['4 m', '100 m', '10 m', '40 m'],
+  'GPE = m × g × h, so h = GPE ÷ (m × g) = 20 ÷ (0.5 × 10) = 4 m.')
+M('P4.14-04', 'A 2 kg trolley moves at 5 m/s. What is its kinetic energy?',
+  ['25 J', '50 J', '10 J', '5 J'],
+  'KE = ½ × m × v² = ½ × 2 × 5² = 25 J.')
+MH('P4.15-05', 'A ball is thrown straight up. Ignoring air resistance, what is true at its highest point?',
+  ['All its kinetic energy has become gravitational potential energy', 'All its gravitational potential energy has become kinetic energy', 'Its kinetic and potential energy are both zero', 'Its kinetic energy is at its largest value'],
+  'As it rises it slows down: kinetic energy is transferred to its gravitational potential store, and at the top it is momentarily at rest.')
+M('P4.16-05', 'A motor transfers 600 J of energy in 20 s. What is its power?',
+  ['30 W', '12 000 W', '620 W', '0.033 W'],
+  'Power = energy transferred ÷ time = 600 ÷ 20 = 30 W.')
+M('P5.6-05', 'A balloon is pushed under water. In which directions does the water press on it?',
+  ['Equally from all directions', 'Only downwards from above', 'Only upwards from below', 'Only inwards from the sides'],
+  'Pressure at a point in a liquid at rest acts equally in all directions.')
+T('P5.15-05', 'The pressure of a gas is caused by its molecules colliding with the walls of the container.', true,
+  'True. Each collision exerts a tiny force, and many collisions over an area give a pressure.')
+M('P5.16-05', 'What is absolute zero on the Kelvin scale?',
+  ['0 K', '273 K', '−273 K', '100 K'],
+  'Absolute zero is 0 K, which is −273 °C.')
+T('P5.18-05', 'When a gas is heated, its molecules gain kinetic energy and move faster on average.', true,
+  'True. A higher temperature means a higher average speed of the molecules.')
+M('P5.19-05', 'At which of these temperatures do gas molecules have the smallest average kinetic energy?',
+  ['100 K', '0 °C', '300 K', '100 °C'],
+  '100 K is −173 °C, the coldest of the four. Kelvin temperature is proportional to average kinetic energy.')
+M('P5.21-04', 'A gas at 300 K has a pressure of 120 kPa. It is cooled to 150 K at constant volume. What is the new pressure?',
+  ['60 kPa', '240 kPa', '120 kPa', '30 kPa'],
+  'p₁ ÷ T₁ = p₂ ÷ T₂, so halving the Kelvin temperature halves the pressure.')
+M('P6.2-05', 'A north pole is brought near a south pole. What happens?',
+  ['They attract', 'They repel', 'Nothing happens', 'They both lose their magnetism'],
+  'Unlike poles attract. Like poles repel.')
+T('P6.3-05', 'A magnetically soft material is easy to magnetise and loses its magnetism easily.', true,
+  'True. That is why soft iron is used in electromagnets. Hard materials such as steel keep their magnetism.')
+M('P6.4-05', 'Where are the magnetic field lines of a bar magnet closest together?',
+  ['At the poles', 'At the middle of the magnet', 'Far away from the magnet', 'They are evenly spaced everywhere'],
+  'The field is strongest at the poles, so the lines are closest together there.')
+T('P6.5-05', 'A copper rod becomes an induced magnet when it is placed in a magnetic field.', false,
+  'False. Magnetism is only induced in magnetic materials such as iron and steel.')
+M('P6.7-05', 'How would you describe the strength of a uniform magnetic field?',
+  ['The same at every point', 'Strongest in the middle', 'Strongest at the edges', 'Changing all the time'],
+  'In a uniform field the lines are parallel and evenly spaced, so the field has the same strength and direction everywhere.')
+M('P6.8-05', 'What happens to the magnetic field around a wire when the current is switched off?',
+  ['It disappears', 'It gets stronger', 'It reverses direction', 'It stays exactly the same'],
+  'The field is produced by the current, so with no current there is no field.')
+MH('P6.13-05', 'In the left-hand rule, the first finger points left to right and the second finger points away from you. Which way does the thumb point?',
+  ['Upwards', 'Downwards', 'Towards you', 'To the left'],
+  'Hold your left hand with the first finger pointing right and the second finger pointing away: the thumb points up. That is the direction of the force.')
+M('P6.14-05', 'The current in a wire in a magnetic field is reversed. What happens to the force on the wire?',
+  ['It reverses direction', 'It doubles in size', 'It becomes zero', 'It stays the same'],
+  'Reversing either the current or the field reverses the direction of the force.')
+MH('P7.11-04', '1200 nuclei of a source decay in 60 s. What is its activity?',
+  ['20 Bq', '72 000 Bq', '1200 Bq', '0.05 Bq'],
+  'Activity is the number of decays per second: 1200 ÷ 60 = 20 Bq.')
+T('P7.17-05', 'Fission is the only nuclear reaction that can release energy.', false,
+  'False. Nuclear reactions, including fission, fusion and radioactive decay, can be a source of energy.')
+M('P7.25-05', 'Which process releases the energy that makes the Sun shine?',
+  ['Fusion of hydrogen nuclei', 'Fission of uranium nuclei', 'Burning of hydrogen gas', 'Radioactive decay of helium'],
+  'In the Sun’s core, small nuclei fuse to form larger ones, releasing energy. It is not burning.')
+T('P8.5-05', 'A comet’s orbit around the Sun is almost circular.', false,
+  'False. Planets have nearly circular orbits, while comets have highly elliptical ones.')
+M('P8.7-05', 'Two stars are seen in the night sky: one red and one blue-white. What can you say about them?',
+  ['They have different surface temperatures', 'They are at different distances from Earth', 'They must be different sizes', 'The red one is moving faster'],
+  'Stars are classified by colour, and colour is related to surface temperature.')
+TH('P8.8-05', 'A white star is hotter than a red star.', true,
+  'True. Red stars are the coolest. White and blue stars are hotter.')
+M('P8.10-05', 'Which stage does a star much more massive than the Sun go through that the Sun never will?',
+  ['Supernova', 'Main sequence', 'Nebula', 'Red giant'],
+  'A massive star becomes a red supergiant and then explodes as a supernova, leaving a neutron star or a black hole.')
+
+M('C2.3-05', 'Rubidium is below potassium in Group 1. What would you predict forms when it reacts with water?',
+  ['Rubidium hydroxide and hydrogen', 'Rubidium oxide and oxygen', 'Rubidium chloride and water', 'Rubidium carbonate and hydrogen'],
+  'Group 1 metals all react with water in the same way, giving the metal hydroxide and hydrogen.')
+M('C2.6-05', 'Astatine is below iodine in Group 7. Predict what happens when chlorine is bubbled through a solution of sodium astatide.',
+  ['Chlorine displaces the astatine', 'Astatine displaces the chlorine', 'There is no reaction at all', 'Sodium metal is produced'],
+  'Reactivity decreases down Group 7, so chlorine is more reactive than astatine and displaces it.')
+MH('C2.9-05', 'Which list gives the four most abundant gases in dry air, starting with the most abundant?',
+  ['Nitrogen, oxygen, argon, carbon dioxide', 'Oxygen, nitrogen, carbon dioxide, argon', 'Nitrogen, oxygen, carbon dioxide, argon', 'Nitrogen, argon, oxygen, carbon dioxide'],
+  'Nitrogen 78%, oxygen 21%, argon 0.9%, carbon dioxide 0.04%.')
+T('C2.11-05', 'When sulfur burns in oxygen it makes an alkaline gas.', false,
+  'False. Sulfur burns with a blue flame to form sulfur dioxide, which is acidic.')
+M('C2.12-05', 'Which equation shows the thermal decomposition of copper(II) carbonate?',
+  ['CuCO₃ → CuO + CO₂', 'CuCO₃ → Cu + CO₃', 'CuCO₃ + O₂ → CuO + CO₂', 'CuO + CO₂ → CuCO₃'],
+  'On heating, copper(II) carbonate breaks down into copper(II) oxide and carbon dioxide.')
+MH('C2.13-05', 'Why might more carbon dioxide in the atmosphere contribute to climate change?',
+  ['It traps more heat in the atmosphere', 'It blocks sunlight from reaching the ground', 'It destroys the oxygen in the air', 'It makes the air too thick to cool down'],
+  'Carbon dioxide is a greenhouse gas: it absorbs heat radiated from the Earth’s surface.')
+T('C2.17-05', 'Iron is more reactive than zinc.', false,
+  'False. Zinc is above iron. The order is potassium, sodium, lithium, calcium, magnesium, aluminium, zinc, iron, copper, silver, gold.')
+T('C2.18-05', 'Iron will rust in dry air.', false,
+  'False. Rusting needs both oxygen and water.')
+M('C2.28-05', 'What colour is methyl orange in an alkali?',
+  ['Yellow', 'Red', 'Pink', 'Blue'],
+  'Methyl orange is red in acid and yellow in alkali.')
+M('C2.30-05', 'Universal indicator turns red in a solution. What does this show?',
+  ['It is strongly acidic', 'It is weakly acidic', 'It is neutral', 'It is strongly alkaline'],
+  'Red shows a strongly acidic solution, with a pH of about 0–3.')
+T('C2.31-05', 'Sodium hydroxide solution is a source of hydroxide ions.', true,
+  'True. Alkalis in aqueous solution are a source of OH⁻ ions.')
+M('C2.32-05', 'Why is an alkali used to treat an acid spill?',
+  ['It neutralises the acid', 'It makes the acid evaporate', 'It turns the acid into a metal', 'It makes the acid stronger'],
+  'Alkalis neutralise acids, forming a salt and water.')
+MH('C2.35-05', 'When sulfuric acid reacts with copper(II) oxide, which substance accepts protons?',
+  ['The oxide ion in copper(II) oxide', 'The sulfate ion in sulfuric acid', 'The copper ion in copper(II) oxide', 'The water that is formed'],
+  'The acid donates protons (H⁺) and the base accepts them: the oxide ions accept protons to form water.')
+MH('C2.36-05', 'In the reaction NH₃ + HCl → NH₄Cl, which substance is the proton donor?',
+  ['Hydrogen chloride', 'Ammonia', 'Ammonium chloride', 'Neither of them'],
+  'HCl gives a proton (H⁺) to ammonia, so HCl is the acid and ammonia is the base.')
+M('C2.38-05', 'Which of these bases is an alkali?',
+  ['Sodium hydroxide', 'Copper(II) oxide', 'Iron(III) oxide', 'Copper(II) hydroxide'],
+  'An alkali is a base that dissolves in water. Sodium hydroxide is soluble; the others are not.')
+M('C2.39-05', 'In making a soluble salt from an insoluble base, how do you get dry crystals at the end?',
+  ['Filter off the crystals and pat them dry with filter paper', 'Boil the solution until nothing is left', 'Add more of the acid to the crystals', 'Wash the crystals with lots of hot water'],
+  'After crystallising, the crystals are filtered off and dried between filter papers or left in a warm place.')
+M('C2.45-05', 'What is used to hold the sample in the flame during a flame test?',
+  ['A clean platinum or nichrome wire', 'A wooden splint dipped in water', 'A glass rod', 'A copper wire'],
+  'A clean wire loop of an unreactive metal is used. Copper would colour the flame itself.')
+T('C2.49-05', 'Anhydrous copper(II) sulfate is blue.', false,
+  'False. It is white. It turns blue when water is added.')
+M('C2.50-05', 'At what temperature does pure water boil?',
+  ['100 °C', '0 °C', '102 °C', '78 °C'],
+  'Pure water boils at exactly 100 °C (and freezes at 0 °C). Impurities change these values.')
+T('C3.2-05', 'In a calorimetry experiment, the temperature is measured before and after the reaction.', true,
+  'True. The temperature change is needed to work out the heat energy change.')
+MH('C3.3-04', '100 g of solution rises in temperature from 20 °C to 26 °C. How much heat energy was released? (c = 4.2 J/g/°C)',
+  ['2520 J', '10 920 J', '420 J', '25.2 J'],
+  'Q = m × c × ΔT = 100 × 4.2 × 6 = 2520 J.')
+T('C3.4-04', 'An endothermic reaction has a positive value of ΔH.', true,
+  'True. Heat energy is taken in, so ΔH is positive. For exothermic reactions it is negative.')
+M('C3.12-05', '1.0 g of catalyst is added to a reaction. What mass of catalyst is left at the end?',
+  ['1.0 g', '0 g', '0.5 g', '2.0 g'],
+  'A catalyst is chemically unchanged at the end, so all of it is still there.')
+TH('C3.13-05', 'A catalyst gives the reacting particles more energy.', false,
+  'False. It provides an alternative pathway with a lower activation energy, so more collisions are successful.')
+T('C3.17-05', 'The symbol ⇌ shows that a reaction can go in both directions.', true,
+  'True. It is the symbol for a reversible reaction.')
+M('C3.18-05', 'What colour is anhydrous copper(II) sulfate?',
+  ['White', 'Blue', 'Green', 'Black'],
+  'Heating blue hydrated copper(II) sulfate drives off the water and leaves white anhydrous copper(II) sulfate.')
+M('C4.1-05', 'Which two elements are found in every hydrocarbon?',
+  ['Hydrogen and carbon', 'Hydrogen and oxygen', 'Carbon and oxygen', 'Carbon and nitrogen'],
+  'A hydrocarbon is a compound of hydrogen and carbon only.')
+M('C4.5-05', 'What are isomers?',
+  ['Molecules with the same molecular formula but different structures', 'Molecules with the same structure but different formulae', 'Atoms with the same protons but different neutrons', 'Molecules that differ by one CH₂ group'],
+  'Isomers have the same molecular formula but their atoms are arranged differently.')
+M('C4.7-05', 'What do all the compounds in crude oil have in common?',
+  ['They are hydrocarbons', 'They are all gases', 'They all contain oxygen', 'They have the same boiling point'],
+  'Crude oil is a mixture of hydrocarbons with different chain lengths and boiling points.')
+M('C4.8-05', 'What is done to crude oil before it enters the fractionating column?',
+  ['It is heated until most of it is vapour', 'It is cooled until it is solid', 'It is mixed with water', 'It is burned in air'],
+  'The crude oil is heated and the vapour rises up the column, condensing at different heights.')
+M('C4.10-05', 'Which fraction has the lowest boiling point?',
+  ['Refinery gases', 'Gasoline', 'Diesel', 'Bitumen'],
+  'Refinery gases have the shortest molecules and the lowest boiling points. Bitumen has the highest.')
+T('C4.11-05', 'Burning a fuel is an endothermic reaction.', false,
+  'False. It is exothermic: a fuel releases heat energy when it burns.')
+M('C4.12-05', 'What solid can be produced by the incomplete combustion of a hydrocarbon?',
+  ['Carbon (soot)', 'Sulfur', 'Carbon dioxide', 'Ice'],
+  'With too little oxygen, carbon monoxide and carbon (soot) can form as well as water.')
+T('C4.14-05', 'Oxides of nitrogen form in car engines because petrol contains a lot of nitrogen.', false,
+  'False. The nitrogen and oxygen come from the air, and they react at the high temperature in the engine.')
+M('C4.15-05', 'Which gas is formed when sulfur impurities in a fuel burn?',
+  ['Sulfur dioxide', 'Hydrogen sulfide', 'Carbon monoxide', 'Nitrogen dioxide'],
+  'The sulfur reacts with oxygen to form sulfur dioxide.')
+M('C4.16-05', 'Which two pollutants contribute to acid rain?',
+  ['Sulfur dioxide and oxides of nitrogen', 'Carbon monoxide and soot', 'Carbon dioxide and methane', 'Argon and water vapour'],
+  'Sulfur dioxide and oxides of nitrogen dissolve in rainwater to form acids.')
+T('C4.18-05', 'Cracking breaks long-chain hydrocarbons into shorter ones.', true,
+  'True. Long-chain fractions are in low demand, so they are cracked into more useful short-chain alkanes and alkenes.')
+M('C4.19-05', 'What is the formula of the alkane with 3 carbon atoms?',
+  ['C₃H₈', 'C₃H₆', 'C₃H₄', 'C₃H₁₀'],
+  'Using CₙH₂ₙ₊₂ with n = 3 gives C₃H₈ (propane).')
+T('C4.20-05', 'A saturated hydrocarbon contains at least one double bond.', false,
+  'False. Saturated means every carbon–carbon bond is a single bond.')
+M('C4.23-05', 'How many bonds are there between the two carbon atoms in ethene?',
+  ['Two', 'One', 'Three', 'Four'],
+  'Ethene has a C=C double bond, the functional group of the alkenes.')
+M('C4.24-05', 'An alkene has 4 carbon atoms. How many hydrogen atoms does it have?',
+  ['8', '10', '6', '4'],
+  'Using CₙH₂ₙ with n = 4 gives C₄H₈.')
+M('C4.25-05', 'What does “unsaturated” mean for a hydrocarbon?',
+  ['It contains a carbon–carbon double bond', 'It contains only single bonds', 'It will not dissolve in water', 'It has no hydrogen atoms'],
+  'Unsaturated molecules have a C=C double bond, so more atoms can add on.')
+M('C4.27-05', 'What is the formula of the product when ethene reacts with bromine?',
+  ['C₂H₄Br₂', 'C₂H₅Br', 'C₂H₂Br₂', 'C₂H₆Br₂'],
+  'Bromine adds across the double bond: C₂H₄ + Br₂ → C₂H₄Br₂ (1,2-dibromoethane).')
+M('C4.28-05', 'Two colourless liquids are hexane and hexene. Which test tells them apart?',
+  ['Shake each with bromine water', 'Add universal indicator to each', 'Test each with a glowing splint', 'Add anhydrous copper(II) sulfate'],
+  'Hexene (an alkene) turns bromine water from orange to colourless. Hexane (an alkane) does not.')
+T('C4.44-05', 'An addition polymer is one long molecule made from many monomers.', true,
+  'True. Many small monomer molecules join together to form the polymer chain.')
+M('C4.46-05', 'A polymer has the repeat unit –CF₂–CF₂–. What is its monomer?',
+  ['CF₂=CF₂', 'CF₃–CF₃', 'CH₂=CH₂', 'CF₂=CH₂'],
+  'Put a double bond between the two carbon atoms of the repeat unit: tetrafluoroethene, CF₂=CF₂.')
+
+M('B2.7-05', 'Which element is found in proteins but not in carbohydrates or lipids?',
+  ['Nitrogen', 'Carbon', 'Hydrogen', 'Oxygen'],
+  'All three contain carbon, hydrogen and oxygen. Proteins also contain nitrogen.')
+T('B2.10-05', 'Enzymes speed up metabolic reactions in cells.', true,
+  'True. Enzymes are biological catalysts: they speed up reactions without being used up.')
+M('B2.13-05', 'An enzyme is put in a solution far from its optimum pH. What happens to its active site?',
+  ['It changes shape, so the substrate no longer fits', 'It gets bigger, so more substrate fits', 'It moves faster and collides more often', 'It is used up by the acid or alkali'],
+  'A pH far from the optimum alters the shape of the active site: the enzyme is denatured.')
+T('B2.18-05', 'Photosynthesis converts light energy into chemical energy.', true,
+  'True. The chemical energy is stored in glucose.')
+T('B2.19-05', 'Oxygen is one of the reactants in photosynthesis.', false,
+  'False. It is a product. Carbon dioxide + water → glucose + oxygen.')
+M('B2.20-05', 'A plant is moved further away from a lamp. What happens to its rate of photosynthesis?',
+  ['It decreases', 'It increases', 'It stays the same', 'It stops completely'],
+  'Lower light intensity means less energy for photosynthesis, so the rate falls (if light is the limiting factor).')
+T('B2.26-05', 'A builder doing heavy work needs less energy from food than an office worker of the same age and size.', false,
+  'False. The more active you are, the more energy you need.')
+MH('B2.28-05', 'During peristalsis, what do the circular muscles just behind a ball of food do?',
+  ['Contract, squeezing the food forwards', 'Relax, letting the food slide back', 'Release enzymes onto the food', 'Absorb the food into the blood'],
+  'Circular muscles contract behind the food, narrowing the gut and pushing the food along.')
+MH('B2.30-05', 'What route does bile take?',
+  ['Liver → gall bladder → small intestine', 'Gall bladder → liver → stomach', 'Pancreas → gall bladder → small intestine', 'Liver → stomach → large intestine'],
+  'Bile is made in the liver, stored in the gall bladder and released into the small intestine.')
+T('B2.31-05', 'Bile neutralises the acid in food arriving from the stomach.', true,
+  'True. Bile is alkaline. This gives the right pH for the enzymes in the small intestine.')
+M('B2.32-05', 'What are villi?',
+  ['Tiny finger-like folds in the wall of the small intestine', 'Muscles that push food along the gut', 'Glands in the stomach that make acid', 'Air sacs in the lungs'],
+  'Villi line the small intestine and give a very large surface area for absorbing digested food.')
+T('B2.34-05', 'Respiration only happens in animal cells.', false,
+  'False. All living cells respire, including plant cells, to produce ATP.')
+T('B2.35-05', 'ATP is made during photosynthesis in order to store glucose.', false,
+  'False. ATP is produced in respiration and provides energy for cells.')
+M('B2.36-05', 'Which type of respiration needs oxygen?',
+  ['Aerobic', 'Anaerobic', 'Both types', 'Neither type'],
+  'Aerobic respiration uses oxygen. Anaerobic respiration happens without it.')
+MH('B2.37-05', 'In the balanced equation for aerobic respiration, how many molecules of oxygen react with one molecule of glucose?',
+  ['6', '1', '2', '12'],
+  'C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O.')
+T('B2.38-05', 'Anaerobic respiration in yeast produces ethanol and carbon dioxide.', true,
+  'True. glucose → ethanol + carbon dioxide. In animals the product is lactic acid.')
+M('B2.47-05', 'When you breathe in, what do the intercostal muscles do to the ribs?',
+  ['Pull them up and out', 'Pull them down and in', 'Hold them completely still', 'Push them into the lungs'],
+  'The intercostal muscles contract, moving the ribs up and out. This increases the volume of the chest.')
+T('B2.48-05', 'Alveoli have a rich supply of blood capillaries.', true,
+  'True. The blood carries oxygen away quickly, keeping a steep concentration gradient for diffusion.')
+T('B2.51-05', 'A single-celled organism needs a heart and blood vessels to move oxygen around.', false,
+  'False. It is so small that diffusion alone is fast enough.')
+M('B2.52-05', 'What is the transport system in a flowering plant made of?',
+  ['Xylem and phloem', 'Arteries and veins', 'Stomata and guard cells', 'Roots and petals'],
+  'Xylem carries water and mineral ions. Phloem carries sucrose and amino acids.')
+M('B2.53-05', 'Sucrose made in the leaves is needed by the roots. Which tissue carries it there?',
+  ['Phloem', 'Xylem', 'Epidermis', 'Root hair cells'],
+  'Phloem transports sucrose and amino acids between the leaves and the rest of the plant.')
+T('B2.54-05', 'Xylem carries mineral ions as well as water.', true,
+  'True. Water and mineral ions travel up from the roots in the xylem.')
+M('B2.59-05', 'Which part of the blood carries oxygen?',
+  ['Red blood cells', 'White blood cells', 'Platelets', 'Plasma'],
+  'Red blood cells contain haemoglobin, which carries oxygen.')
+T('B2.60-05', 'Most carbon dioxide is carried around the body dissolved in the plasma.', true,
+  'True. Plasma transports carbon dioxide, digested food, urea, hormones and heat energy.')
+M('B2.66-05', 'What happens to your heart rate when you start to exercise?',
+  ['It increases', 'It decreases', 'It stays the same', 'It stops for a moment'],
+  'Muscles need more oxygen and glucose, and make more carbon dioxide, so the heart beats faster.')
+T('B2.67-05', 'High blood pressure lowers the risk of coronary heart disease.', false,
+  'False. High blood pressure, smoking, a diet high in saturated fat and lack of exercise all increase the risk.')
+T('B2.68-05', 'Veins carry blood at a higher pressure than arteries.', false,
+  'False. Arteries carry blood at high pressure, which is why they have thick, muscular, elastic walls.')
+MH('B2.71-05', 'Which list gives the three organs of excretion?',
+  ['Lungs, kidneys and skin', 'Liver, stomach and skin', 'Lungs, heart and bladder', 'Kidneys, anus and lungs'],
+  'The lungs excrete carbon dioxide, the kidneys excrete urea, and the skin excretes sweat.')
+M('B2.80-05', 'A daisy closes its petals at night. What is this an example of?',
+  ['A response to a change in the environment', 'Excretion', 'Reproduction', 'A mutation'],
+  'The plant is responding to a change in light. All living organisms respond to their surroundings.')
+MH('B2.82-05', 'You see a ball coming and catch it. What is the receptor?',
+  ['The retina of the eye', 'The ball', 'The arm muscles', 'The spinal cord'],
+  'The receptor detects the stimulus (light from the ball). The arm muscles are the effectors.')
+T('B2.83-05', 'Plant shoots grow away from light.', false,
+  'False. They grow towards it. This is a response to a stimulus, and it helps the plant photosynthesise.')
+T('B2.84-05', 'Roots are positively phototropic.', false,
+  'False. Roots grow away from light. They are positively geotropic: they grow towards gravity.')
+M('B2.85-05', 'What does auxin do to the cells in a shoot?',
+  ['Makes them grow longer', 'Makes them shrink', 'Kills them', 'Turns them green'],
+  'Auxin makes shoot cells elongate. More auxin on the shaded side makes that side grow more.')
+M('B2.86-05', 'How are messages carried in the nervous system?',
+  ['As electrical impulses along neurones', 'As chemicals in the blood', 'As light along nerves', 'As gases by diffusion'],
+  'Nervous communication uses electrical impulses. Hormonal communication uses chemicals in the blood.')
+T('B2.87-05', 'The spinal cord is part of the central nervous system.', true,
+  'True. The CNS is the brain and the spinal cord.')
+MH('B2.89-05', 'A drug blocks the release of neurotransmitter at a synapse. What happens?',
+  ['The impulse is not passed to the next neurone', 'The impulse travels faster', 'The impulse goes backwards', 'More impulses are sent on'],
+  'Without neurotransmitter to diffuse across the gap, no new impulse starts in the next neurone.')
+M('B2.90-05', 'What is the correct order of neurones in a reflex arc?',
+  ['Sensory → relay → motor', 'Motor → relay → sensory', 'Relay → sensory → motor', 'Sensory → motor → relay'],
+  'The sensory neurone carries the impulse to the spinal cord, a relay neurone passes it on, and a motor neurone carries it to the effector.')
+M('B2.91-05', 'What is the pupil?',
+  ['The hole in the iris that lets light in', 'The coloured part of the eye', 'The clear layer at the front of the eye', 'The nerve at the back of the eye'],
+  'Light enters the eye through the pupil. The iris controls its size.')
+T('B2.92-05', 'To focus on a near object, the lens becomes fatter.', true,
+  'True. The ciliary muscles contract, the suspensory ligaments slacken and the lens becomes fatter, bending light more.')
+M('B3.1-05', 'How many parents are needed for asexual reproduction?',
+  ['One', 'Two', 'Three', 'None'],
+  'Asexual reproduction needs only one parent, and the offspring are genetically identical to it.')
+M('B3.4-05', 'After fertilisation in a flower, what does the ovary become?',
+  ['The fruit', 'The seed', 'The pollen tube', 'The petal'],
+  'The ovule becomes the seed and the ovary becomes the fruit around it.')
+T('B3.6-05', 'A seed that has just started to germinate gets its food by photosynthesis.', false,
+  'False. It uses its food reserves until it has leaves that can photosynthesise.')
+MH('B3.9-05', 'Which hormone repairs and thickens the uterus lining after menstruation?',
+  ['Oestrogen', 'Progesterone', 'Testosterone', 'Insulin'],
+  'Oestrogen rebuilds the lining. Progesterone then maintains it.')
+T('B3.11-05', 'Oxygen passes from the mother’s blood to the embryo’s blood in the placenta.', true,
+  'True. Oxygen and food diffuse to the embryo. Carbon dioxide and urea diffuse the other way.')
+T('B3.12-05', 'Amniotic fluid cushions the embryo against bumps.', true,
+  'True. The fluid surrounds the embryo and protects it from knocks.')
+T('B3.13-05', 'Oestrogen causes the voice to deepen in boys at puberty.', false,
+  'False. That is caused by testosterone. Oestrogen causes the female secondary sexual characteristics.')
+M('B3.15-05', 'What is a gene?',
+  ['A section of a chromosome', 'A type of cell', 'A whole nucleus', 'A kind of protein'],
+  'Genes are sections of DNA located on chromosomes, which are found in the nucleus.')
+MH('B3.19-05', 'A gene for flower colour has a version for red and a version for white. What are these versions called?',
+  ['Alleles', 'Gametes', 'Chromosomes', 'Phenotypes'],
+  'Alleles are alternative forms of the same gene.')
+T('B3.22-05', 'A polygenic characteristic is controlled by several genes.', true,
+  'True. Most phenotypic features, such as height, are polygenic.')
+M('B3.24-05', 'In a family pedigree, what does a circle usually represent?',
+  ['A female', 'A male', 'A carrier', 'A person who has died'],
+  'Circles are females and squares are males.')
+MH('B3.25-05', 'A homozygous dominant parent (TT) is crossed with a homozygous recessive parent (tt). What fraction of the offspring show the dominant feature?',
+  ['All of them', 'Half of them', 'A quarter of them', 'None of them'],
+  'Every offspring is Tt, so all show the dominant phenotype.')
+T('B3.26-05', 'A human female has the sex chromosomes XX.', true,
+  'True. Females are XX and males are XY.')
+M('B3.27-05', 'A sperm carrying a Y chromosome fertilises an egg. What is the sex of the baby?',
+  ['Male (XY)', 'Female (XX)', 'Male (YY)', 'It cannot be predicted'],
+  'Every egg carries an X, so X from the egg and Y from the sperm gives XY: a boy.')
+T('B3.28-05', 'The two cells made by mitosis are genetically different from each other.', false,
+  'False. Mitosis produces two cells with identical sets of chromosomes.')
+M('B3.29-05', 'A gardener grows new plants from cuttings. Which type of cell division makes the new plant’s cells?',
+  ['Mitosis', 'Meiosis', 'Fertilisation', 'Mutation'],
+  'Cloning, growth, repair and asexual reproduction all use mitosis.')
+T('B3.31-05', 'Random fertilisation means any sperm can fuse with any egg.', true,
+  'True. This is one reason offspring from sexual reproduction are genetically varied.')
+T('B3.32-05', 'A human egg cell contains 46 chromosomes.', false,
+  'False. Gametes are haploid: 23 chromosomes. Body cells are diploid: 46.')
+M('B3.33-05', 'Which of these is caused by genes only?',
+  ['Blood group', 'A suntan', 'The language you speak', 'A pierced ear'],
+  'Blood group is inherited and not changed by the environment.')
+T('B3.34-05', 'A mutation can be inherited.', true,
+  'True. A mutation in a gamete can be passed on to offspring.')
+MH('B3.38-05', 'A population of insects is sprayed with insecticide for many years. Why do most of them become resistant?',
+  ['Resistant insects survive and pass the allele on', 'The spray makes each insect change its genes', 'Insects learn to avoid the spray', 'The insects need to become resistant'],
+  'A few insects were already resistant by chance. They survive, breed and pass on the allele, so it becomes more common.')
+M('B4.5-05', 'A new predator arrives in a habitat. What is likely to happen to its prey population?',
+  ['It decreases', 'It increases', 'It stays the same', 'It doubles'],
+  'Predators are a biotic factor: more predators means more prey are eaten.')
+M('B4.8-05', 'In the food chain grass → rabbit → fox, how does the fox get its energy?',
+  ['By eating rabbits', 'By eating grass', 'Directly from sunlight', 'From the soil'],
+  'Energy and substances pass along a food chain when one organism eats another.')
+T('B4.9-05', 'Some energy is lost from a food chain in faeces.', true,
+  'True. Energy is also lost in respiration as heat, in urine, and in parts that are not eaten.')
+T('B4.12-05', 'Carbon monoxide reduces the amount of oxygen the blood can carry.', true,
+  'True. It combines with haemoglobin in place of oxygen.')
+T('B4.13-05', 'Nitrogen is a greenhouse gas.', false,
+  'False. The greenhouse gases are water vapour, carbon dioxide, nitrous oxide, methane and CFCs.')
+M('B4.14-05', 'Which human activity adds carbon dioxide to the atmosphere?',
+  ['Burning coal in power stations', 'Planting new forests', 'Using wind turbines', 'Recycling glass bottles'],
+  'Burning fossil fuels releases carbon dioxide.')
+MH('B4.16-05', 'What happens to the oxygen level in a river just downstream of a sewage outflow?',
+  ['It falls sharply', 'It rises sharply', 'It stays the same', 'It rises then stays high'],
+  'Bacteria feeding on the sewage multiply and use up oxygen in respiration.')
+M('B4.17-05', 'In eutrophication, what uses up the oxygen in the water?',
+  ['Bacteria decomposing dead plants and algae', 'Fish breathing faster', 'The fertiliser reacting with the water', 'Algae photosynthesising at the surface'],
+  'Decomposers feed on the dead plants and algae, and their respiration uses up the oxygen.')
+T('B5.1-05', 'A polythene tunnel protects crops from wind and frost.', true,
+  'True. Like a glasshouse, it keeps crops warm and sheltered, which increases yield.')
+M('B5.2-05', 'A glasshouse is kept much too hot. What happens to the yield?',
+  ['It falls, because enzymes are denatured', 'It rises, because reactions are faster', 'It stays the same', 'It rises, because the plants get more light'],
+  'Above the optimum temperature, the enzymes for photosynthesis start to denature.')
+MH('B5.3-05', 'A crop has yellow leaves and poor growth. Which mineral is most likely to be missing?',
+  ['Nitrate', 'Sodium', 'Chloride', 'Carbonate'],
+  'Nitrates are needed for making amino acids and proteins for growth. Fertiliser replaces them.')
+M('B5.4-05', 'Why do farmers control pests?',
+  ['Pests eat or damage crops, lowering the yield', 'Pests add too many minerals to the soil', 'Pests make the crops grow too fast', 'Pests remove carbon dioxide from the air'],
+  'Pests reduce the amount of crop that can be harvested.')
+M('B5.5-05', 'Which gas makes bread dough rise?',
+  ['Carbon dioxide', 'Oxygen', 'Nitrogen', 'Hydrogen'],
+  'Yeast respires and produces carbon dioxide, and the bubbles make the dough rise.')
+M('B5.7-05', 'What do Lactobacillus bacteria produce from the lactose in milk?',
+  ['Lactic acid', 'Ethanol', 'Carbon dioxide', 'Glucose'],
+  'The bacteria ferment lactose to lactic acid, which sours and thickens the milk.')
+MH('B5.10-05', 'A farmer wants a wheat variety with a short stem and large grain. What is the first step?',
+  ['Cross plants that have each of the desired features', 'Give all the plants extra fertiliser', 'Cut every plant’s stem short', 'Wait for a useful mutation to appear'],
+  'Selective breeding starts by choosing parents with the desired characteristics and breeding them together.')
+T('B5.11-05', 'In selective breeding, the best offspring are chosen and bred again over many generations.', true,
+  'True. Repeating the selection gradually makes the desired characteristic more common.')
+M('B5.12-05', 'Which enzyme would you use to join a human gene into a cut plasmid?',
+  ['Ligase', 'Restriction enzyme', 'Amylase', 'Protease'],
+  'Restriction enzymes cut DNA. Ligase joins pieces of DNA together.')
+T('B5.13-05', 'A plasmid can be used as a vector to carry a gene into a bacterium.', true,
+  'True. Plasmids and viruses can both act as vectors.')
+T('B5.14-05', 'Genetically modified bacteria can only make very small amounts of insulin.', false,
+  'False. Grown in a fermenter, they multiply quickly and make large amounts.')
+T('B5.15-05', 'Genetic modification can be used to make crop plants resistant to insect pests.', true,
+  'True. This can raise yield and reduce the need for pesticide.')
+M('B5.16-05', 'A sheep is given a human gene so that its milk contains a human protein. What word describes this sheep?',
+  ['Transgenic', 'Cloned', 'Selectively bred', 'Polygenic'],
+  'Transgenic means genetic material has been transferred from one species to a different species.')
