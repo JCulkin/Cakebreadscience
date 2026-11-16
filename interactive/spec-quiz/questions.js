@@ -4985,3 +4985,388 @@ M('B5.16-03', 'Which is an example of a transgenic organism?',
 MH('B5.16-04', 'A plant has a gene from a bacterium that makes it resistant to insects. Why is it described as transgenic?',
   ['Its genetic material includes DNA from a different species', 'It was produced by selective breeding of wheat plants', 'It is an exact clone of its parent, grown from a runner', 'It was grown in a polythene tunnel to protect it from pests'],
   'Trans- = across (species).');
+
+/* ---- added 16 Nov 2026: more depth on the big, thin spec points ---- */
+M('B1.1-06', 'A seedling bends towards a window over a few days. Which characteristic of living things does this show?',
+  ['Responding to the surroundings', 'Controlling internal conditions', 'Excreting waste products', 'Requiring nutrition'],
+  'Growing towards light is a response to a change in the surroundings (and it is also a slow movement).')
+M('B1.1-07', 'Which characteristic of living things releases energy from food?',
+  ['Respiration', 'Excretion', 'Nutrition', 'Reproduction'],
+  'Respiration is the chemical reaction in cells that releases energy from food. Nutrition is taking in or making the food.')
+T('B1.1-08', 'Growing and developing is one of the characteristics shared by all living organisms.', true,
+  'True. All living organisms grow and develop, as well as the other seven characteristics.')
+T('B1.1-09', 'A living organism only needs to show most of the eight characteristics, not all of them.', false,
+  'False. Living organisms share all eight characteristics. A virus, for example, is not counted as living.')
+MH('B1.1-10', 'A crystal in a solution gets bigger over time. Why is it not a living thing?',
+  ['It does not respire, reproduce or respond', 'It grows far too slowly to be alive', 'It is not made of any chemicals', 'Living things never have a regular shape'],
+  'Getting bigger is not enough. A living organism shows all the characteristics, such as respiration, reproduction and responding to its surroundings.')
+M('B2.8-05', 'Which large molecule is built from two different kinds of smaller unit?',
+  ['A lipid', 'Starch', 'Glycogen', 'A protein'],
+  'A lipid is made from fatty acids and glycerol. Starch and glycogen are made only from simple sugars, and proteins only from amino acids.')
+TH('B2.8-06', 'Starch and glycogen are both made from simple sugars joined together.', true,
+  'True. Both are large carbohydrate molecules built from many simple sugar units.')
+M('B2.12-05', 'In the amylase practical, which is the independent variable?',
+  ['The temperature of the water bath', 'The time taken to digest the starch', 'The volume of starch solution', 'The concentration of the amylase'],
+  'The temperature is the variable you change on purpose. The time taken for the starch to be digested is what you measure.')
+MH('B2.12-06', 'At 80 °C the iodine drops stay blue-black for the whole experiment. Why?',
+  ['The amylase is denatured, so the starch is never digested', 'The starch is destroyed by the heat before it can be tested', 'The iodine solution stops working when it is hot', 'The amylase works too quickly to be seen at 80 °C'],
+  'At high temperatures the shape of the active site changes (the enzyme is denatured), so the starch is not broken down and iodine still turns blue-black.')
+M('B2.16-05', 'Oxygen has to diffuse through a thicker wall to reach a cell. What happens to the rate of diffusion?',
+  ['It decreases', 'It increases', 'It stays the same', 'It stops completely'],
+  'The greater the distance, the slower the rate of diffusion. That is why exchange surfaces are thin.')
+T('B2.16-06', 'A cell with a large surface area to volume ratio exchanges substances with its surroundings quickly.', true,
+  'True. There is a lot of surface for substances to cross compared with the volume that needs supplying.')
+M('B2.17-05', 'A potato cylinder is left in pure water for an hour. What happens to its mass?',
+  ['It increases, because water enters by osmosis', 'It decreases, because water leaves by osmosis', 'It stays the same, because potato is not alive', 'It decreases, because sugar diffuses out of it'],
+  'Pure water is more dilute than the cell contents, so water moves into the potato cells by osmosis and the mass goes up.')
+MH('B2.17-06', 'In the potato practical, at one sugar concentration the cylinders show no change in mass. What does this tell you?',
+  ['The solution has the same concentration as the cell contents', 'The cell membranes have stopped letting any water pass through', 'The potato cells in that tube must have died', 'No water molecules are moving in either direction'],
+  'With no overall change, water is entering and leaving at the same rate, so the solution matches the concentration inside the cells.')
+M('B2.22-05', 'A plant is grown without nitrate ions. What is the most likely result?',
+  ['Stunted growth, because it cannot make enough amino acids', 'Yellow leaves, because it cannot make any chlorophyll', 'Wilting, because it cannot absorb any water', 'No change, because plants make their own nitrate'],
+  'Nitrate ions are needed to make amino acids, which build proteins for growth. Yellow leaves point to a lack of magnesium.')
+T('B2.22-06', 'Plants get the mineral ions they need from the air through their leaves.', false,
+  'False. Mineral ions such as nitrate and magnesium are taken up from the soil by the roots.')
+M('B2.23-06', 'In the pondweed experiment, how can you change the light intensity?',
+  ['Move the lamp closer to or further from the plant', 'Add more pondweed to the boiling tube', 'Change the temperature of the water', 'Swap the water for hydrogencarbonate solution'],
+  'Moving the lamp changes how much light reaches the pondweed. The other changes would alter a different variable.')
+MH('B2.23-07', 'Part of a leaf on a destarched plant is covered with foil, then the plant is left in light. What does the starch test show?',
+  ['Only the uncovered part turns blue-black', 'Only the covered part turns blue-black', 'The whole leaf turns blue-black', 'No part of the leaf turns blue-black'],
+  'Light is needed for photosynthesis, so starch is only made in the part of the leaf that received light.')
+M('B2.24-05', 'What is the role of dietary fibre in a balanced diet?',
+  ['It helps food move through the gut', 'It is the main source of energy', 'It is used for growth and repair', 'It is needed to make haemoglobin'],
+  'Fibre adds bulk to food, so the muscles of the gut can push it along and constipation is avoided.')
+T('B2.24-06', 'A balanced diet has to include some lipid.', true,
+  'True. A balanced diet includes appropriate proportions of carbohydrate, protein, lipid, vitamins, minerals, water and fibre.')
+M('B2.39-05', 'Germinating seeds are kept in a vacuum flask and the temperature rises. What does this show?',
+  ['Respiration releases energy as heat', 'Photosynthesis releases energy as heat', 'The seeds are absorbing heat from the air', 'The thermometer is warming the seeds'],
+  'Respiring seeds transfer some energy as heat. The flask keeps the heat in, so the thermometer reading goes up.')
+TH('B2.39-06', 'In the respiration experiment, boiled seeds should give the same temperature rise as living seeds.', false,
+  'False. Boiled seeds are dead and do not respire, so they act as a control and show no rise.')
+M('B2.46-05', 'Which structures are the site of gas exchange in the lungs?',
+  ['The alveoli', 'The bronchi', 'The trachea', 'The pleural membranes'],
+  'Gas exchange happens across the thin walls of the alveoli. The trachea, bronchi and bronchioles carry air to them.')
+M('B2.46-06', 'What is the job of the ribs in the thorax?',
+  ['To protect the lungs and heart', 'To carry air into the lungs', 'To exchange gases with the blood', 'To make the fluid between the lungs'],
+  'The ribs form a cage that protects the organs of the thorax, and they move during breathing.')
+M('B2.50-05', 'Which solution could you use to compare the carbon dioxide in inhaled and exhaled air?',
+  ['Hydrogencarbonate indicator', 'Iodine solution', 'Benedict’s solution', 'Sodium hydroxide solution'],
+  'Hydrogencarbonate indicator changes from red towards yellow as carbon dioxide increases. Limewater turning cloudy also works.')
+TH('B2.50-06', 'After exercise stops, breathing rate returns to its resting value straight away.', false,
+  'False. It stays high for a while and falls back gradually as the body recovers.')
+MH('B2.61-05', 'Why does the biconcave shape help a red blood cell do its job?',
+  ['It gives a large surface area for oxygen to diffuse in and out', 'It lets the cell make extra haemoglobin inside its large nucleus', 'It allows the cell to engulf pathogens in the blood', 'It makes the cell stick to the walls of capillaries'],
+  'The dished shape gives a large surface area compared with the volume, so oxygen diffuses in and out quickly.')
+T('B2.61-06', 'Haemoglobin is found in the plasma, not inside red blood cells.', false,
+  'False. Haemoglobin is packed inside red blood cells, where it carries oxygen.')
+M('B2.62-05', 'Which type of white blood cell releases antibodies?',
+  ['Lymphocytes', 'Phagocytes', 'Platelets', 'Red blood cells'],
+  'Lymphocytes release antibodies that are specific to a pathogen. Phagocytes ingest pathogens.')
+TH('B2.62-06', 'A phagocyte can ingest many different kinds of pathogen.', true,
+  'True. Phagocytes are not specific. It is the antibodies made by lymphocytes that are specific to one pathogen.')
+M('B2.69-05', 'Which blood vessel carries oxygenated blood from the lungs to the heart?',
+  ['The pulmonary vein', 'The pulmonary artery', 'The vena cava', 'The aorta'],
+  'The pulmonary vein returns oxygenated blood from the lungs to the left side of the heart.')
+M('B2.69-06', 'Which blood vessel carries blood away from the liver?',
+  ['The hepatic vein', 'The hepatic artery', 'The renal vein', 'The renal artery'],
+  'Hepatic means to do with the liver, and veins carry blood away from organs towards the heart.')
+M('B2.81-05', 'Which two conditions does the spec give as examples of homeostasis?',
+  ['Body water content and body temperature', 'Resting heart rate and breathing rate', 'Adult height and total body mass', 'Blood group and natural eye colour'],
+  'Body water content and body temperature are both kept constant: they are examples of homeostasis.')
+T('B2.81-06', 'Homeostasis means letting the conditions inside the body change to match the surroundings.', false,
+  'False. Homeostasis is the maintenance of a constant internal environment, whatever happens outside.')
+M('B2.88-05', 'Why are nervous responses so rapid?',
+  ['Information travels as electrical impulses along nerves', 'Information travels as chemicals in the blood', 'Receptors are found only in the brain', 'Impulses do not pass through the central nervous system'],
+  'Electrical impulses travel very quickly along neurones, so the response is fast.')
+MH('B2.88-06', 'What is the job of a receptor in a sense organ?',
+  ['To detect a stimulus and start an electrical impulse', 'To carry out the response, for example by contracting', 'To carry impulses from the CNS to a muscle', 'To decide which response the body should make'],
+  'Receptors detect changes (stimuli) and send electrical impulses along sensory nerves to the central nervous system.')
+M('B3.2-05', 'What is a gamete?',
+  ['A sex cell, such as a sperm or an egg', 'A fertilised egg cell', 'A ball of cells that becomes a baby', 'Any body cell with a nucleus'],
+  'Gametes are the sex cells. A male and a female gamete fuse at fertilisation.')
+T('B3.2-06', 'An embryo develops from a zygote by cell division.', true,
+  'True. The zygote divides again and again and develops into an embryo.')
+M('B3.5-05', 'In a germination experiment, one tube of seeds is put in a fridge and one is left in a warm room. Which condition is being tested?',
+  ['A suitable temperature', 'The presence of oxygen', 'The presence of water', 'The presence of light'],
+  'Only the temperature differs between the tubes, so the experiment tests whether warmth is needed.')
+MH('B3.5-06', 'Why is the water boiled in the “no oxygen” tube of the germination experiment?',
+  ['Boiling drives the dissolved oxygen out of the water', 'Boiling kills any microbes living on the seeds', 'Boiling makes the water easier for seeds to absorb', 'Boiling warms the seeds to a suitable temperature'],
+  'Boiling removes dissolved oxygen, and a layer of oil on top stops more from dissolving.')
+M('B3.7-05', 'Which is an advantage of growing plants from cuttings?',
+  ['All the new plants have the same desired features', 'The new plants show a lot of genetic variation', 'The new plants are resistant to every disease', 'It needs pollen from a second parent plant'],
+  'Cuttings are genetically identical to the parent, so a grower can copy a plant with good features.')
+T('B3.7-06', 'A runner is a natural method of asexual reproduction.', true,
+  'True. Plants such as strawberries send out runners, which root and grow into new, identical plants.')
+M('B3.14-05', 'What does a gene code for?',
+  ['A specific protein', 'A specific carbohydrate', 'A whole organism', 'A single cell'],
+  'A gene is a section of a DNA molecule that codes for a specific protein.')
+TH('B3.14-06', 'The genome is just one gene of an organism.', false,
+  'False. The genome is the entire DNA of an organism, containing all of its genes.')
+M('B3.30-05', 'A human cell with 46 chromosomes divides by meiosis. How many chromosomes are in each cell produced?',
+  ['23', '46', '92', '12'],
+  'Meiosis halves the chromosome number, so each gamete has 23.')
+T('B3.30-06', 'The cells produced by meiosis are genetically identical to each other.', false,
+  'False. Meiosis produces genetically different cells. Mitosis produces identical ones.')
+MH('B3.39-05', 'A patient stops taking antibiotics as soon as they feel better. Why can this increase resistance?',
+  ['The most resistant bacteria may survive and multiply', 'The antibiotic makes the bacteria mutate on purpose', 'The patient’s body becomes immune to the antibiotic', 'The bacteria learn to avoid the antibiotic next time'],
+  'The bacteria killed last are the most resistant. If they survive, they reproduce and pass on their resistance.')
+T('B3.39-06', 'Bacteria become resistant because the antibiotic causes the mutation.', false,
+  'False. Mutations are random. The antibiotic only kills the non-resistant bacteria, leaving resistant ones to reproduce.')
+M('B4.2-05', 'How would you compare the daisy populations of two areas fairly?',
+  ['Use the same size and number of quadrats in both', 'Use bigger quadrats in the area with more daisies', 'Place quadrats only where the daisies grow', 'Count one quadrat in each area and compare'],
+  'Keeping the quadrat size and number the same, and placing them randomly, makes it a fair comparison.')
+MH('B4.2-06', 'A quadrat is 0.25 m². Ten quadrats contain 30 dandelions in total. Estimate the number in a 200 m² lawn.',
+  ['2400', '600', '6000', '240'],
+  'Ten quadrats cover 2.5 m², so there are 30 ÷ 2.5 = 12 per m². 12 × 200 = 2400.')
+M('B4.15-05', 'What is meant by the enhanced greenhouse effect?',
+  ['Extra greenhouse gases trap more heat than before', 'The natural warming that makes life possible', 'A hole forming in the ozone layer', 'More sunlight reaching the Earth each year'],
+  'Human activities add greenhouse gases, so more heat is trapped. This enhanced effect may lead to global warming.')
+T('B4.15-06', 'Global warming could change where species are able to live.', true,
+  'True. As the climate changes, some species may have to move, and some may not survive.')
+M('B5.6-05', 'In the yeast practical, what gas is in the bubbles?',
+  ['Carbon dioxide', 'Oxygen', 'Hydrogen', 'Nitrogen'],
+  'Yeast respiring anaerobically produces carbon dioxide (and ethanol).')
+MH('B5.6-06', 'A student wants to test how sugar concentration affects respiration in yeast. What must be kept the same?',
+  ['The temperature and the amount of yeast', 'The sugar concentration in each tube', 'The number of bubbles in each tube', 'The time taken for the first bubble'],
+  'Only the sugar concentration should change. Temperature and the amount of yeast are control variables.')
+
+M('C1.4-06', 'Sugar is stirred into tea until it disappears. What is the sugar?',
+  ['The solute', 'The solvent', 'The solution', 'The saturated solution'],
+  'The solute is the substance that dissolves. The tea (mostly water) is the solvent.')
+MH('C1.4-07', 'More salt is added to a salt solution and it sinks to the bottom without dissolving, however long it is stirred. What does this show?',
+  ['The solution is saturated', 'The salt is not a solute', 'The water has evaporated', 'The solution is too dilute'],
+  'A saturated solution contains as much dissolved solute as it can hold at that temperature.')
+M('C1.10-06', 'Which method separates the coloured dyes in an ink?',
+  ['Paper chromatography', 'Filtration', 'Crystallisation', 'Simple distillation'],
+  'In paper chromatography the dyes travel different distances up the paper, so they separate.')
+MH('C1.10-07', 'In filtration, what are the residue and the filtrate?',
+  ['Residue: solid left in the paper. Filtrate: liquid that passes through', 'Residue: liquid that passes through. Filtrate: solid left in the paper', 'Residue: the filter paper. Filtrate: the funnel', 'Residue: the solute. Filtrate: the solvent'],
+  'The insoluble solid stays in the filter paper as the residue, and the liquid that runs through is the filtrate.')
+M('C2.10-05', 'About what percentage of the air is used up when iron rusts in a sealed tube?',
+  ['21%', '78%', '1%', '50%'],
+  'Rusting uses up the oxygen, which is about 21% of the air by volume.')
+MH('C2.10-06', 'Phosphorus burns in a bell jar of air over water. Why does the water level rise inside the jar?',
+  ['Oxygen is used up, so the gas takes up less space', 'Nitrogen is used up, so the gas takes up less space', 'The burning makes extra water inside the jar', 'The phosphorus pulls the water upwards as it burns'],
+  'The phosphorus reacts with the oxygen. With about a fifth of the gas gone, water moves in to fill the space.')
+M('C2.14-05', 'In the hot copper experiment, how do you know all the oxygen has reacted?',
+  ['The volume of gas stops going down', 'The copper turns back to pink', 'The syringes become too hot to hold', 'The gas in the syringes turns black'],
+  'When the reading no longer changes, there is no oxygen left to react with the copper.')
+T('C2.14-06', 'The copper in the experiment must be in excess, so that all the oxygen can react.', true,
+  'True. If the copper ran out, some oxygen would be left and the result would be too low.')
+M('C2.15-05', 'What gas is made when a metal reacts with dilute hydrochloric acid?',
+  ['Hydrogen', 'Oxygen', 'Chlorine', 'Carbon dioxide'],
+  'Metal + acid → salt + hydrogen.')
+MH('C2.15-06', 'Metal X fizzes steadily in cold water. Metal Y only reacts with dilute acid. Metal Z reacts with neither. What is the order of reactivity, most reactive first?',
+  ['X, Y, Z', 'Z, Y, X', 'Y, X, Z', 'X, Z, Y'],
+  'A metal that reacts with cold water is more reactive than one that needs acid, and one that reacts with neither is the least reactive.')
+M('C2.16-05', 'Zinc is heated with copper(II) oxide. What happens?',
+  ['Zinc oxide and copper are formed', 'Nothing, because zinc is less reactive', 'Copper oxide and zinc are formed', 'Zinc and copper join to make an alloy'],
+  'Zinc is more reactive than copper, so it takes the oxygen from the copper(II) oxide.')
+T('C2.16-06', 'Silver will displace copper from copper(II) sulfate solution.', false,
+  'False. Silver is less reactive than copper, so there is no reaction.')
+M('C2.20-06', 'What is an oxidising agent?',
+  ['A substance that oxidises something else', 'A substance that is itself oxidised', 'A substance that always contains oxygen', 'A substance that stops a redox reaction'],
+  'An oxidising agent oxidises another substance, and is itself reduced in the process.')
+TH('C2.20-07', 'When magnesium burns to form magnesium oxide, the magnesium is oxidised.', true,
+  'True. The magnesium gains oxygen and its atoms lose electrons to form Mg²⁺ ions.')
+M('C2.21-05', 'What would you see when zinc is added to dilute sulfuric acid?',
+  ['Bubbles of gas and the zinc slowly disappearing', 'A blue solution and a pink-brown solid forming', 'A white precipitate forming at once', 'No change at all, however long you wait'],
+  'Zinc reacts with the acid to give zinc sulfate solution and bubbles of hydrogen.')
+MH('C2.21-06', 'Why should the metals in the acid practical be in pieces of the same size?',
+  ['Surface area also affects how fast the bubbles form', 'Larger pieces are always more reactive', 'Smaller pieces make a different salt', 'The mass of metal decides which gas is given off'],
+  'To compare reactivity fairly, only the metal should change. Surface area changes the rate too.')
+M('C2.29-05', 'A solution has a pH of 5. How is it classified?',
+  ['Weakly acidic', 'Strongly acidic', 'Neutral', 'Weakly alkaline'],
+  'pH 4–6 is weakly acidic. pH 0–3 is strongly acidic.')
+T('C2.29-06', 'A solution with a pH of 12 is weakly alkaline.', false,
+  'False. pH 11–14 is strongly alkaline. Weakly alkaline is pH 8–10.')
+M('C2.34-06', 'Which of these compounds is insoluble in water?',
+  ['Calcium carbonate', 'Potassium carbonate', 'Sodium chloride', 'Ammonium nitrate'],
+  'Most carbonates are insoluble. Sodium, potassium and ammonium carbonates are the exceptions.')
+M('C2.34-07', 'Which sulfate is insoluble in water?',
+  ['Lead(II) sulfate', 'Copper(II) sulfate', 'Sodium sulfate', 'Zinc sulfate'],
+  'Common sulfates are soluble, except those of barium, calcium and lead(II).')
+TH('C2.34-08', 'All common ammonium compounds are soluble in water.', true,
+  'True. Common sodium, potassium and ammonium compounds are all soluble.')
+M('C2.42-05', 'In the copper(II) sulfate practical, how is the excess copper(II) oxide removed?',
+  ['By filtering the mixture', 'By evaporating all the water', 'By adding more sulfuric acid', 'By picking it out with tweezers'],
+  'The unreacted copper(II) oxide is an insoluble solid, so it is filtered off, leaving copper(II) sulfate solution.')
+MH('C2.42-06', 'Why is the copper(II) sulfate solution heated only until crystals start to form, then left to cool?',
+  ['Heating to dryness would drive off the water of crystallisation', 'The solution would explode if all the water boiled away', 'Copper(II) sulfate reacts with the evaporating basin when dry', 'Cooling is needed to turn the solution blue'],
+  'Slow cooling gives hydrated blue crystals. Heating to dryness would leave white anhydrous powder instead.')
+M('C2.44-06', 'A gas turns damp red litmus paper blue. Which gas is it?',
+  ['Ammonia', 'Chlorine', 'Carbon dioxide', 'Hydrogen'],
+  'Ammonia is the alkaline gas: it turns damp red litmus paper blue.')
+TH('C2.44-07', 'A glowing splint relights in carbon dioxide.', false,
+  'False. A glowing splint relights in oxygen. Carbon dioxide turns limewater cloudy.')
+M('C2.46-05', 'What colour flame does lithium give?',
+  ['Red', 'Yellow', 'Lilac', 'Blue-green'],
+  'Li⁺ gives a red flame. Na⁺ is yellow, K⁺ is lilac and Cu²⁺ is blue-green.')
+M('C2.46-06', 'A compound gives an orange-red flame. Which ion is present?',
+  ['Ca²⁺', 'Na⁺', 'K⁺', 'Cu²⁺'],
+  'Calcium ions give an orange-red flame.')
+T('C2.46-07', 'Potassium ions give a yellow flame.', false,
+  'False. Potassium gives a lilac flame. Yellow is sodium.')
+M('C2.47-05', 'What colour precipitate does Fe²⁺ give with sodium hydroxide solution?',
+  ['Green', 'Blue', 'Orange-brown', 'White'],
+  'Iron(II) ions give a green precipitate, copper(II) gives blue and iron(III) gives orange-brown.')
+TH('C2.47-06', 'When an ammonium compound is warmed with sodium hydroxide solution, the gas given off turns damp red litmus blue.', true,
+  'True. Ammonia gas is given off, and ammonia is alkaline.')
+M('C3.8-05', 'Ammonium nitrate dissolves in water and the temperature falls. What type of change is this?',
+  ['Endothermic', 'Exothermic', 'Neutralisation', 'Combustion'],
+  'A fall in temperature means heat energy has been taken in from the surroundings: an endothermic change.')
+M('C3.8-06', 'Why is a polystyrene cup used instead of a glass beaker for temperature-change experiments?',
+  ['It is a good insulator, so less heat is lost', 'It is a good conductor, so heat spreads evenly', 'It does not react with acids, unlike glass', 'It is transparent, so the colour can be seen'],
+  'Polystyrene is a good insulator, so less heat escapes to the surroundings and the result is more accurate.')
+T('C3.8-07', 'When an acid neutralises an alkali, the temperature of the mixture rises.', true,
+  'True. Neutralisation is exothermic, so heat is given out.')
+MH('C3.8-08', 'When heating water with a burning fuel, the measured temperature rise is much smaller than expected. What is the main reason?',
+  ['Much of the heat is lost to the surrounding air', 'The fuel takes in heat as it burns', 'The thermometer absorbs most of the heat given out', 'Water cannot be heated by a flame'],
+  'In simple combustion experiments a lot of heat warms the air and the apparatus instead of the water.')
+M('C3.9-05', 'Magnesium ribbon reacts with acid. Which measurement could you use to compare rates at different temperatures?',
+  ['The time taken for the magnesium to disappear', 'The colour of the acid at the end', 'The mass of the empty flask', 'The length of the ribbon before it is added'],
+  'The shorter the time for the reaction to finish, the faster the rate.')
+MH('C3.9-06', 'In the “disappearing cross” experiment, why must the same cross and the same depth of solution be used every time?',
+  ['So the same amount of precipitate hides the cross each time', 'So the solution stays at the same temperature each time', 'So the same volume of gas is made each time', 'So the reaction finishes at the same moment'],
+  'The cross must disappear at the same point in each reaction, or the times cannot be compared fairly.')
+M('C3.10-05', 'What does a catalyst do to the rate of a reaction?',
+  ['It increases it', 'It decreases it', 'It has no effect', 'It stops the reaction'],
+  'A catalyst speeds up a reaction and is chemically unchanged at the end.')
+TH('C3.10-06', 'Raising the concentration of a solution slows down its reaction.', false,
+  'False. A higher concentration increases the rate of reaction.')
+M('C3.11-05', 'Why does increasing the pressure of a gas increase the rate of reaction?',
+  ['The particles are closer together, so they collide more often', 'The particles move faster, so they hit harder', 'The particles get bigger, so they are much easier to hit', 'The activation energy of the reaction is lowered'],
+  'At higher pressure there are more gas particles in the same volume, so collisions are more frequent.')
+T('C3.11-06', 'Every collision between reacting particles leads to a reaction.', false,
+  'False. Only collisions with enough energy (at least the activation energy) are successful.')
+M('C3.15-05', 'In the marble chips practical, which gas is collected?',
+  ['Carbon dioxide', 'Hydrogen', 'Oxygen', 'Chlorine'],
+  'Calcium carbonate reacts with hydrochloric acid to give calcium chloride, water and carbon dioxide.')
+M('C3.15-06', 'How do you know when the reaction between marble chips and acid has finished?',
+  ['No more gas is given off', 'The acid changes colour', 'The flask feels cold', 'The marble chips turn black'],
+  'When one reactant is used up, the fizzing stops and the gas volume (or the mass) no longer changes.')
+MH('C3.15-07', 'The same mass of marble is used as large chips and then as powder, with excess acid. How do the two gas–time graphs compare?',
+  ['Powder is steeper at the start; both end at the same volume', 'Powder is steeper at the start and ends at a larger volume', 'Both have the same slope, but powder ends higher', 'Chips are steeper at the start; both end at the same volume'],
+  'Powder has a larger surface area, so it reacts faster. The mass of marble is the same, so the final volume of gas is the same.')
+M('C3.16-05', 'Which solid is commonly used as a catalyst for the decomposition of hydrogen peroxide?',
+  ['Manganese(IV) oxide', 'Sodium chloride', 'Calcium carbonate', 'Copper(II) sulfate'],
+  'Manganese(IV) oxide is the usual catalyst for this reaction.')
+TH('C3.16-06', 'At the end of the experiment, the mass of the catalyst is less than at the start.', false,
+  'False. A catalyst is not used up, so its mass is unchanged.')
+M('C4.6-05', 'Methane burns in air to form carbon dioxide and water. What type of reaction is this?',
+  ['Combustion', 'Addition', 'Substitution', 'Polymerisation'],
+  'Burning a fuel in oxygen is combustion.')
+T('C4.6-06', 'In an addition reaction, two molecules join to form a single product.', true,
+  'True. For example, ethene and bromine join to form one product, 1,2-dibromoethane.')
+M('C4.13-05', 'When is carbon monoxide formed from a hydrocarbon fuel?',
+  ['When it burns in a limited supply of oxygen', 'When it burns in a plentiful supply of oxygen', 'When it is stored in a sealed container', 'When it is mixed with water vapour'],
+  'Incomplete combustion, when there is not enough oxygen, can produce carbon monoxide.')
+T('C4.13-06', 'Carbon monoxide reduces the amount of oxygen the blood can carry.', true,
+  'True. That is why it is poisonous.')
+M('C4.21-05', 'What is the molecular formula of butane?',
+  ['C₄H₁₀', 'C₄H₈', 'C₃H₈', 'C₅H₁₂'],
+  'Alkanes have the general formula CₙH₂ₙ₊₂, and butane has four carbon atoms.')
+T('C4.21-06', 'The structural formula of propane is CH₃CH₂CH₃.', true,
+  'True. Propane has three carbon atoms in a chain: CH₃CH₂CH₃.')
+M('C4.22-05', 'Bromine is mixed with methane and left in the dark. What happens?',
+  ['Nothing: ultraviolet radiation is needed', 'Bromomethane forms straight away', 'The mixture explodes after a while', 'The methane slowly turns into ethene'],
+  'Alkanes only react with halogens in the presence of ultraviolet radiation.')
+TH('C4.22-06', 'When methane reacts with chlorine in ultraviolet light, hydrogen chloride is one of the products.', true,
+  'True. CH₄ + Cl₂ → CH₃Cl + HCl.')
+M('C4.26-05', 'What is the molecular formula of propene?',
+  ['C₃H₆', 'C₃H₈', 'C₂H₄', 'C₄H₈'],
+  'Alkenes have the general formula CₙH₂ₙ, and propene has three carbon atoms.')
+TH('C4.26-06', 'But-1-ene and but-2-ene have the same molecular formula.', true,
+  'True. Both are C₄H₈: the double bond is just in a different position, so they are isomers.')
+M('C4.45-05', 'Which monomer is used to make poly(chloroethene)?',
+  ['Chloroethene', 'Ethene', 'Chloroethane', 'Tetrafluoroethene'],
+  'An addition polymer is named after its monomer: poly(chloroethene) is made from chloroethene.')
+T('C4.45-06', 'When ethene polymerises, the double bond in each monomer becomes a single bond.', true,
+  'True. The double bond opens so that the monomers can join into a long chain.')
+M('C4.47-05', 'Why is burying plastic waste in landfill a long-term problem?',
+  ['The polymers do not biodegrade, so they stay for many years', 'The polymers dissolve and pollute the groundwater at once', 'The polymers react violently with the soil', 'The polymers quickly turn into toxic gases'],
+  'Addition polymers are inert, so microorganisms cannot break them down.')
+TH('C4.47-06', 'Burning addition polymers is a completely clean way to dispose of them.', false,
+  'False. Burning them can produce toxic gases.')
+M('P1.5-05', 'A toy car travels 2.0 m down a ramp in 4.0 s. What is its average speed?',
+  ['0.5 m/s', '2.0 m/s', '8.0 m/s', '6.0 m/s'],
+  'Average speed = distance ÷ time = 2.0 ÷ 4.0 = 0.5 m/s.')
+MH('P1.5-06', 'A student wants to see how the height of a ramp affects the speed of a toy car. Which variable should she keep the same?',
+  ['The distance the car travels', 'The height of the ramp', 'The time the car takes', 'The speed of the car'],
+  'The ramp height is changed and the time is measured, so the distance (and the car) must stay the same.')
+M('P1.22-05', 'A spring gives a straight-line force–extension graph through the origin. What does this show?',
+  ['The extension is directly proportional to the force', 'The spring has been permanently stretched out of shape', 'The spring gets stiffer as it stretches', 'The force does not affect the extension'],
+  'A straight line through the origin means the spring obeys Hooke’s law.')
+T('P1.22-06', 'A spring stretched beyond its elastic limit returns to its original length when the load is removed.', false,
+  'False. Past the elastic limit, it stays permanently stretched.')
+M('P2.3-05', 'Which domestic appliance is designed to use the heating effect of a current?',
+  ['An electric kettle', 'A radio', 'A doorbell', 'A phone charger'],
+  'A kettle uses a heating element: the current in its resistance transfers energy by heating.')
+MH('P2.3-06', 'How does a fuse use the heating effect of a current?',
+  ['Too large a current heats the fuse wire until it melts', 'The fuse wire glows to warn that the current is too big', 'The fuse cools the circuit when the current is too big', 'The fuse stores the extra thermal energy safely'],
+  'A current that is too large heats the thin fuse wire so much that it melts and breaks the circuit.')
+M('P2.20-05', 'Which unit is the same as a volt?',
+  ['A joule per coulomb', 'A coulomb per second', 'A joule per second', 'A coulomb per joule'],
+  'Voltage is the energy transferred per unit charge, so 1 V = 1 J/C.')
+MH('P2.20-06', '24 J of energy is transferred when 4 C of charge passes through a lamp. What is the voltage across it?',
+  ['6 V', '96 V', '28 V', '0.17 V'],
+  'Voltage = energy ÷ charge = 24 ÷ 4 = 6 V.')
+M('P4.5-05', 'A motor is supplied with 200 J of energy and transfers 150 J usefully. How much energy is wasted?',
+  ['50 J', '350 J', '150 J', '75 J'],
+  'Energy is conserved: 200 J − 150 J = 50 J wasted.')
+T('P4.5-06', 'In a Sankey diagram, the widths of the output arrows add up to the width of the input arrow.', true,
+  'True. Energy is conserved, so the total output equals the input.')
+M('P4.9-05', 'In the Leslie cube experiment, which surface gives the highest reading on the infrared detector?',
+  ['Matt black', 'Shiny silver', 'Shiny white', 'Polished copper'],
+  'Dull black surfaces are the best emitters of infrared radiation.')
+MH('P4.9-06', 'A purple crystal is dropped into one side of a beaker of water, which is then heated gently below the crystal. What do you see?',
+  ['Purple streaks rise, move across and sink: a convection current', 'The purple colour stays at the bottom of the beaker', 'The purple colour spreads evenly in all directions at once', 'The purple colour sinks further as the water warms'],
+  'Warm water is less dense and rises, cooler water sinks, and the colour shows the convection current.')
+M('P5.4-05', 'A block has a mass of 120 g and a volume of 40 cm³. What is its density?',
+  ['3 g/cm³', '0.33 g/cm³', '4800 g/cm³', '80 g/cm³'],
+  'Density = mass ÷ volume = 120 ÷ 40 = 3 g/cm³.')
+MH('P5.4-06', 'A stone is lowered into a measuring cylinder and the water level rises from 50 cm³ to 62 cm³. Its mass is 30 g. What is its density?',
+  ['2.5 g/cm³', '0.48 g/cm³', '0.4 g/cm³', '360 g/cm³'],
+  'Volume = 62 − 50 = 12 cm³. Density = 30 ÷ 12 = 2.5 g/cm³.')
+M('P5.20-05', 'A fixed amount of gas at constant volume is cooled. What happens to its pressure?',
+  ['It decreases', 'It increases', 'It stays the same', 'It drops to zero at once'],
+  'Cooler molecules move more slowly and hit the walls less hard and less often, so the pressure falls.')
+MH('P5.20-06', 'The Kelvin temperature of a fixed amount of gas is doubled at constant volume. What happens to the pressure?',
+  ['It doubles', 'It halves', 'It stays the same', 'It increases by 273'],
+  'At constant volume, pressure is proportional to Kelvin temperature.')
+M('P6.6-05', 'In which direction do magnetic field lines point around a bar magnet?',
+  ['From the north pole to the south pole', 'From the south pole to the north pole', 'In circles around the middle', 'Straight out from both poles'],
+  'Field lines show the direction a north pole would move: away from north and towards south.')
+TH('P6.6-06', 'The field lines are closest together where the magnetic field is strongest.', true,
+  'True. The lines are most crowded near the poles, where the field is strongest.')
+M('P6.15-05', 'Which change would increase the voltage induced when a magnet is moved into a coil?',
+  ['Using a coil with more turns', 'Using a weaker magnet', 'Moving the magnet more slowly', 'Using a coil with fewer turns'],
+  'More turns, a stronger magnet or faster movement all increase the induced voltage.')
+T('P6.15-06', 'A voltage is induced in a wire that is held still in a steady magnetic field.', false,
+  'False. The wire must move through the field, or the field through it must change.')
+M('P6.16-05', 'Which change would not increase the voltage from a generator?',
+  ['Using thinner wire for the coil', 'Using a stronger magnet', 'Using more turns on the coil', 'Spinning the coil faster'],
+  'A stronger magnet, more turns and faster rotation all increase the induced voltage.')
+T('P6.16-06', 'Electricity can be generated by rotating a magnet inside a coil of wire.', true,
+  'True. The changing magnetic field through the coil induces a voltage.')
+M('P8.2-05', 'What is the universe?',
+  ['A large collection of billions of galaxies', 'A large collection of billions of stars', 'A star with planets in orbit around it', 'The eight planets and the Sun'],
+  'The universe is a large collection of billions of galaxies. A galaxy is a large collection of billions of stars.')
+T('P8.2-06', 'The Milky Way is our solar system.', false,
+  'False. The Milky Way is the galaxy that our solar system is in.')
+M('P8.4-05', 'What keeps a comet in orbit around the Sun?',
+  ['The gravitational force of the Sun', 'The heat given out by the Sun', 'The comet’s own tail', 'The magnetic field of the Earth'],
+  'Gravitational force causes comets, like planets, to orbit the Sun.')
+M('P8.4-06', 'What does the Moon orbit?',
+  ['The Earth', 'The Sun directly', 'Mars', 'The Milky Way'],
+  'Gravitational force causes moons to orbit planets. Our Moon orbits the Earth.')
+TH('P8.4-07', 'Artificial satellites stay in orbit because there is no gravity where they are.', false,
+  'False. It is the Earth’s gravitational force that keeps them in orbit.')
+M('P8.9-05', 'Which stage is the Sun in now?',
+  ['Main sequence', 'Nebula', 'Red giant', 'White dwarf'],
+  'The Sun is a stable main sequence star.')
+M('P8.9-06', 'What is a nebula?',
+  ['A cloud of gas and dust', 'A small, hot, dense star', 'A very large, cool star', 'A group of billions of stars'],
+  'A star begins as a nebula: a cloud of gas and dust pulled together by gravity.')
+T('P8.9-07', 'A star like the Sun will become a red giant before it becomes a white dwarf.', true,
+  'True. The order is nebula, main sequence star, red giant, white dwarf.')
