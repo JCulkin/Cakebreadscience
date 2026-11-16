@@ -113,6 +113,7 @@ const QE = (() => {
     o.days = {}; for (const src of [a.days || {}, b.days || {}]) for (const k in src) o.days[k] = Math.max(o.days[k] || 0, src[k]);
     o.coins = Math.max(a.coins || 0, b.coins || 0);
     o.cd = {}; for (const src of [a.cd || {}, b.cd || {}]) for (const k in src) if (!o.cd[k] || (src[k].n || 0) > (o.cd[k].n || 0)) o.cd[k] = src[k];
+    o.best = {}; for (const src of [a.best || {}, b.best || {}]) for (const k in src) { const x = o.best[k] || { r: 0, w: 0 }; o.best[k] = { r: Math.max(x.r, src[k].r || 0), w: x.w || src[k].w ? 1 : 0 }; }   // best score and 'busted' per mission (17 Nov)
     o.pool = Object.assign({ hp: 0, mana: 0 }, newer.pool);   // the newer copy: the map may already have taken what was waiting
     for (const k of ['look', 'eq', 'nick']) if (!o[k]) o[k] = a[k] || b[k] || null;
     return o;

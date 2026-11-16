@@ -101,6 +101,13 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(locatio
 .repbox .rr button{border:2px solid var(--ink);background:#fff;border-radius:14px;padding:2px 10px;font:600 14px Barlow,Arial;cursor:pointer}
 .repbox .rr button.on{background:#fde047}
 .repbox textarea{width:100%;min-height:54px;font:inherit;font-size:15px;padding:6px}
+.weak #foeFig{animation:wob .45s ease-in-out infinite;filter:saturate(.55)}@keyframes wob{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg) translateY(2px)}}
+.streak{position:absolute;left:10px;top:8px;background:#111;color:#fde047;font:900 16px 'Barlow Condensed',Arial,sans-serif;letter-spacing:.5px;padding:2px 9px;border-radius:12px;animation:pop .35s cubic-bezier(.3,1.6,.6,1)}
+.progress i.fix{background:repeating-linear-gradient(45deg,#86efac 0 4px,#fff 4px 7px)}
+.wind{margin-top:10px;padding:8px 12px;border:2px solid var(--ink);background:#fde047;font-size:15px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.wind b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:19px}.wind button{margin-left:auto}
+.tile .bust{font-size:11px;font-weight:700;color:#15803d;white-space:nowrap}
+.bustbar{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:14px;font-weight:700}.bustbar .pb{flex:1;max-width:260px;height:10px;border:2px solid var(--ink);background:#fff}.bustbar .pb i{display:block;height:100%;background:#111}
+.opt .key{position:relative}
 .campnote{margin-top:6px;font-size:.92em;color:#333}
 .savenote{text-align:center;font-size:14px;color:var(--muted);margin-top:12px}
 /* results */
@@ -129,7 +136,7 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(locatio
     <div class="prof" id="prof"></div>
     <div class="choices" id="choices"></div>
     <div class="all"><h2>All missions</h2><p class="small" style="margin:-4px 0 8px">One mission for each part of the spec. The bar shows how many of its spec points you've secured.</p>
-      <div class="scitabs" id="sciTabs"></div><div id="allTopics"></div></div>
+      <div class="bustbar" id="bustBar"></div><div class="scitabs" id="sciTabs"></div><div id="allTopics"></div></div>
   </section>
 
   <section id="fight" class="hidden">
@@ -137,8 +144,9 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(locatio
       <div class="side"><img class="px" id="youFig" alt="You"><div class="n" id="youName"></div></div>
       <div class="vs">VS</div>
       <div class="side"><img class="px" id="foeFig" alt=""><div class="n" id="foeName"></div><div class="bar"><i id="foeHp" style="background:#e11d48;width:100%;transition:width .4s"></i></div></div>
-      <div class="quote" id="quote"></div>
+      <div class="quote" id="quote"></div><div class="streak hidden" id="streak"></div>
     </div>
+    <div class="wind hidden" id="wind"></div>
     <div class="progress" id="prog"></div>
     <div class="card qcard">
       <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
@@ -183,7 +191,7 @@ const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><su
 
 /* the Professor's briefing (chapter 1: his notes, found in the Cakelab) */
 $('prof').innerHTML = S.chapter < 2 ? `<img src="${ADV.icon('prof')}" alt="" style="filter:grayscale(1);opacity:.6"><p><b>Found pinned up in the empty Cakelab:</b> <i>“Misconceptions are everywhere. Knock them out with real science and you'll be strong enough to come and get me. — The Professor. P.S. Bring snacks.”</i></p>`
-  : `<img src="${ADV.icon('prof')}" alt=""><p><b>The Professor:</b> <i>“Today's suggestion is waves. Get seven right and that misconception is toast. Lightly buttered.”</i></p>`;
+  : `<img src="${ADV.icon('prof')}" alt=""><p><b>The Professor:</b> <i>“Seven right answers and a misconception is toast. Lightly buttered. Miss a few and you get a second go at them.”</i></p>`;
 /* choose screen */
 const TAGCOL = { Suggested: '#b45309', Rusty: '#2563eb', 'Ready to secure': '#7c3aed', Fresh: '#16a34a', 'Keep going': '#475569' };
 const PICKS = QE.picks().filter(p => subBy(p.sub.key));
@@ -192,7 +200,10 @@ $('choices').innerHTML = PICKS.map(({ sub, tag, why }) => { const sb = subBy(sub
 const TINT = { B: '#effaf2', C: '#fdf0f0', P: '#fdf6ea' };
 const topicName = t => { const sc = SPEC.find(x => x.name[0] === t[0]); const tp = sc && sc.topics.find(x => x.n === +t.slice(1)); return tp ? tp.name : t; };
 let SCI = (PICKS[0] && PICKS[0].sub.key[0]) || 'B';
+/* your record on each mission (17 Nov): best score first time, and whether you've ever busted it. Saved with the game data. */
+const BEST = k => ((QE.game.best || {})[k]) || { r: 0, w: 0 };
 function drawAll() {
+  { const n = SUBS.filter(s => BEST(s.key).w).length; $('bustBar').innerHTML = `<span>💥 Misconceptions busted: ${n} of ${SUBS.length}</span><span class="pb"><i style="width:${n / SUBS.length * 100}%"></i></span>`; }
   $('sciTabs').innerHTML = [['B', 'Biology'], ['C', 'Chemistry'], ['P', 'Physics']].map(([L, n]) => { const xs = SUBS.filter(s => s.L === L), sec = xs.reduce((a, s) => a + s.st.secured, 0), tot = xs.reduce((a, s) => a + s.st.n, 0);
     return `<button type="button" data-sci="${L}" class="${SCI === L ? 'on' : ''}" style="--sc:${SCI_COL[L]}">${n} <span>${sec}/${tot}</span></button>`; }).join('');
   const topics = [...new Set(SUBS.filter(s => s.L === SCI).map(s => s.topic))];
@@ -201,7 +212,7 @@ function drawAll() {
       <div class="tiles">${xs.map(s => { const st = s.st, pc = st.n ? Math.round(st.secured / st.n * 100) : 0;
         const tag = st.done ? ['All secured', '#15803d'] : st.rusty ? ['Rusty', '#2563eb'] : st.ready ? ['Ready', '#7c3aed'] : !st.started ? ['New', '#475569'] : null;
         const f = foeOf(s);
-        return `<button class="tile ${st.done ? 'done' : ''}" data-sub="${s.key}"><span class="top"><img class="px" src="${f.img}" alt=""><span><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><span class="vs2">vs “${esc(f.name)}”</span></span></span><span class="mt"><span class="pb"><i style="width:${pc}%"></i></span>${st.secured}/${st.n}${tag ? ` <span class="st" style="color:${tag[1]}">${tag[0]}</span>` : ''}</span></button>`; }).join('')}</div></div>`; }).join('');
+        return `<button class="tile ${st.done ? 'done' : ''}" data-sub="${s.key}"><span class="top"><img class="px" src="${f.img}" alt=""><span><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><span class="vs2">vs “${esc(f.name)}”</span></span></span><span class="mt"><span class="pb"><i style="width:${pc}%"></i></span>${st.secured}/${st.n}${tag ? ` <span class="st" style="color:${tag[1]}">${tag[0]}</span>` : ''}${BEST(s.key).w ? ' <span class="bust">💥 busted</span>' : BEST(s.key).r ? ` <span class="bust" style="color:var(--muted)">best ${BEST(s.key).r}/10</span>` : ''}</span></button>`; }).join('')}</div></div>`; }).join('');
 }
 drawAll();
 $('sciTabs').addEventListener('click', e => { const b = e.target.closest('[data-sci]'); if (b) { SCI = b.dataset.sci; drawAll(); } });
@@ -220,25 +231,27 @@ function start(k, point) {
   MS = { sub, foe, qs, point, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
   QE.busy = true;
   $('choose').classList.add('hidden'); $('fight').classList.remove('hidden');
-  $('arena').classList.remove('dead', 'hit', 'ouch');
+  $('arena').classList.remove('dead', 'hit', 'ouch', 'weak'); $('streak').classList.add('hidden'); $('wind').classList.add('hidden');
   $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
   $('youName').textContent = ADV.nick();
   $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
   $('quote').textContent = `“${foe.o}”` + (point ? ` · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : '');
-  MS.nh = 0; MS.nw = 0;
+  MS.nh = 0; MS.nw = 0; MS.streak = 0; MS.top = 0; MS.retry = null; MS.ri = 0; MS.fixed = 0; MS.fixedIds = new Set();
   scrollTo(0, 0); show();
 }
 /* ?point=B2.27 (from the spec tracker): go straight into a mission on that point */
 {
-  const pt = new URLSearchParams(location.search).get('point');
+  const qs = new URLSearchParams(location.search), pt = qs.get('point');
   const sb = pt && SUBS.find(x => x.keys.has(pt));
   if (sb) setTimeout(() => start(sb.key, pt), 0);
+  else if (subBy(qs.get('sub'))) setTimeout(() => start(qs.get('sub')), 0);   // ?sub=B2e: straight into that mission (the results page's buttons)
 }
 const DMG = 100 / 7;   // 7 right answers defeat it
+const cur = () => MS.retry ? MS.retry[MS.ri] : MS.qs[MS.i];
 function show() {
-  const q = MS.qs[MS.i];
-  $('prog').innerHTML = MS.qs.map((_, j) => `<i class="${j < MS.res.length ? (MS.res[j].ok ? 'ok' : 'no') : j === MS.i ? 'now' : ''}"></i>`).join('');
-  $('qnum').textContent = `Question ${MS.i + 1} of ${MS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
+  const q = cur();
+  $('prog').innerHTML = MS.qs.map((x, j) => `<i class="${MS.retry && x === q ? 'now' : j < MS.res.length ? (MS.res[j].ok ? 'ok' : MS.fixedIds.has(x.id) ? 'fix' : 'no') : j === MS.i ? 'now' : ''}"></i>`).join('');
+  $('qnum').textContent = MS.retry ? `Second wind · ${MS.ri + 1} of ${MS.retry.length} · ${q.tf !== undefined ? 'quarter' : 'half'} a hit` : `Question ${MS.i + 1} of ${MS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)} · ${MS.sub.subj}`;
   $('qtext').innerHTML = q.tf !== undefined ? `True or false? ${q.q}` : q.q;
   const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0]));
@@ -251,17 +264,21 @@ function show() {
 }
 $('opts').addEventListener('click', e => {
   const b = e.target.closest('.opt'); if (!b || b.disabled) return;
-  const q = MS.qs[MS.i], ok = b.dataset.ok === '1';
+  const q = cur(), ok = b.dataset.ok === '1', again = !!MS.retry;
   [...$('opts').children].forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); });
   if (!ok) b.classList.add('wrong');
   MS.picked = [...$('opts').children].indexOf(b);
-  MS.res.push({ q, ok });
-  const notes = QE.recordAnswer(q, ok);
+  /* second wind: not recorded (only first-time answers count towards securing), half damage */
+  if (!again) MS.res.push({ q, ok });
+  const notes = again ? [ok ? 'Corrected. It only counts towards securing when you get it right first time, on another day.' : 'Read the explanation once more: this one will come round again in a later mission.'] : QE.recordAnswer(q, ok);
+  if (again && ok) { MS.fixed++; MS.fixedIds.add(q.id); }
+  if (!again) { MS.streak = ok ? MS.streak + 1 : 0; MS.top = Math.max(MS.top, MS.streak); const sk = $('streak'); sk.classList.toggle('hidden', MS.streak < 3); if (MS.streak >= 3) { sk.textContent = `🔥 ${MS.streak} in a row`; sk.style.animation = 'none'; void sk.offsetWidth; sk.style.animation = ''; } }
+  const HIT = DMG * (again ? (q.tf !== undefined ? .25 : .5) : q.hard ? 1.5 : 1);   // a true/false is a coin flip second time round: quarter hit
   const ar = $('arena');
   ar.classList.remove('hit', 'ouch'); void ar.offsetWidth;
   if (ok) {
-    const d = Math.round(DMG * (q.hard ? 1.5 : 1));
-    MS.hp = MS.hp - DMG * (q.hard ? 1.5 : 1); if (MS.hp < .5) MS.hp = 0; /* exactly 7 normal hits (rounding used to leave 2% after 7) */ $('foeHp').style.width = MS.hp + '%';
+    const d = Math.round(HIT);
+    MS.hp = MS.hp - HIT; if (MS.hp < .5) MS.hp = 0; ar.classList.toggle('weak', MS.hp > 0 && MS.hp <= 30); /* exactly 7 normal hits (rounding used to leave 2% after 7) */ $('foeHp').style.width = MS.hp + '%';
     ar.classList.add('hit');
     if (!MS.hp) { ar.classList.add('dead'); const fr = $('foeFig').getBoundingClientRect(), a0 = ar.getBoundingClientRect();
       for (let i = 0; i < 8; i++) { const p = document.createElement('i'), an = i / 8 * Math.PI * 2; p.className = 'puff'; p.style.left = (fr.left - a0.left + fr.width / 2 - 7) + 'px'; p.style.top = (fr.top - a0.top + fr.height / 2 - 7) + 'px';
@@ -272,14 +289,15 @@ $('opts').addEventListener('click', e => {
     ar.classList.add('ouch');
     { const ws = MS.foe.w.concat([`See? ${MS.foe.name}!`]); $('quote').textContent = `“${ws[MS.nw++ % ws.length]}”`; }
   }
-  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><img class="face" src="${ADV.face(ok ? (q.hard ? 'laugh' : 'happy') : 'worried')}" alt=""><span class="t">${ok ? 'Right — hit!' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
-  $('nextBtn').textContent = MS.i + 1 < MS.qs.length ? 'Next →' : 'Finish the fight →';
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><img class="face" src="${ADV.face(ok ? (q.hard ? 'laugh' : 'happy') : 'worried')}" alt=""><span class="t">${ok ? (again ? `Corrected — ${q.tf !== undefined ? 'quarter of' : 'half'} a hit!` : 'Right — hit!') : again ? 'Still not quite.' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
+  const more = again ? MS.ri + 1 < MS.retry.length && MS.hp > 0 : MS.i + 1 < MS.qs.length;
+  $('nextBtn').textContent = more ? 'Next →' : !again && MS.hp > 0 && MS.res.some(r => !r.ok) ? 'Second wind →' : 'Finish the fight →';
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
 });
 /* ⚑ report this question (goes to the teacher's reports page) */
 const REPORTED = new Set();
 $('repBtn').onclick = () => {
-  const q = MS.qs[MS.i], box = $('repBox');
+  const q = cur(), box = $('repBox');
   if ($('repBtn').disabled) return;
   box.classList.toggle('hidden'); if (box.innerHTML) return;
   box.innerHTML = `<b>What's wrong with this question?</b><div class="rr">${QE.REPORT_REASONS.map((r, i) => `<button type="button" data-r="${i}">${r}</button>`).join('')}</div>
@@ -298,7 +316,28 @@ $('repBtn').onclick = () => {
     $('repBtn').disabled = true; $('repBtn').textContent = '⚑ Reported, thank you';
   };
 };
-$('nextBtn').onclick = () => { MS.i++; if (MS.i < MS.qs.length) show(); else finish(); };
+/* after question 10, if the misconception is still standing: one more go at the ones you missed (half a hit for each you now get right) */
+$('nextBtn').onclick = () => {
+  if (MS.retry) { MS.ri++; if (MS.ri < MS.retry.length && MS.hp > 0) show(); else finish(); return; }
+  MS.i++; if (MS.i < MS.qs.length) return show();
+  const missed = MS.res.filter(r => !r.ok).map(r => r.q);
+  if (!MS.hp || !missed.length) return finish();
+  MS.retry = shuffle(missed); MS.ri = 0; $('streak').classList.add('hidden');
+  const can = MS.hp <= missed.reduce((a, q) => a + DMG * (q.tf !== undefined ? .25 : .5), 0) + .5;
+  $('wind').innerHTML = `<span><b>Second wind</b> ${esc(MS.foe.name)} is still standing. Here are the ${missed.length === 1 ? 'one' : missed.length} you missed, once more: each one you get right now is half a hit (a quarter for true or false)${can ? ', and that is enough to finish it' : ''}.</span><button type="button" class="btn alt" id="windSkip">Skip to the results</button>`;
+  $('wind').classList.remove('hidden'); $('windSkip').onclick = finish;
+  $('quote').textContent = '“You again? I thought we were done.”';
+  show();
+};
+/* keys: A–D or 1–4 to answer (T / F for true-false), Enter or → for next */
+document.addEventListener('keydown', e => {
+  if ($('fight').classList.contains('hidden') || e.ctrlKey || e.metaKey || e.altKey || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
+  const os = [...$('opts').children], k = e.key.toLowerCase();
+  let i = 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k);
+  if (os.length === 2 && (k === 't' || k === 'f')) i = k === 't' ? 0 : 1;
+  if (i >= 0 && i < os.length && !os[i].disabled) { e.preventDefault(); os[i].click(); }
+  else if ((k === 'arrowright' || (k === 'enter' && document.activeElement !== $('nextBtn') && !/BUTTON|A/.test(document.activeElement.tagName))) && !$('nextBtn').classList.contains('hidden')) { e.preventDefault(); $('nextBtn').click(); }
+});
 
 /* results: real progress (saved), plus loot and coins for the adventurer */
 function verdict(right, won) {   // the Professor's reaction (mascot heads, 10 Nov)
@@ -311,7 +350,14 @@ function verdict(right, won) {   // the Professor's reaction (mascot heads, 10 N
 function finish() {
   const right = MS.res.filter(r => r.ok).length, won = MS.hp === 0;
   const before = MS.before, capBefore = MS.cap0, [statName, sk, cssk] = STAT[MS.sub.L];
-  const coins = 10 + (won ? 10 : 0);
+  const flawless = right === MS.qs.length, coins = 10 + (won ? 10 : 0) + (flawless ? 10 : 0);
+  /* your record on this mission (not for single-point missions from "Quiz me") */
+  let record = '';
+  if (!MS.point) { const g = QE.game; g.best = g.best || {}; const b = g.best[MS.sub.key] || { r: 0, w: 0 };
+    if (won && !b.w) record = `<li class="up">💥 First time you've busted this one: ${SUBS.filter(s => BEST(s.key).w).length + 1} of ${SUBS.length} misconceptions busted.</li>`;
+    else if (right > b.r && b.r) record = `<li class="up">🏅 New best on this mission: ${right}/10 (was ${b.r}/10).</li>`;
+    g.best[MS.sub.key] = { r: Math.max(b.r, right), w: b.w || won ? 1 : 0 }; }
+  $('wind').classList.add('hidden');
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
   const drop = pool[Math.floor(Math.random() * pool.length)];
   const firstRev = !QE.revisedToday();
@@ -326,7 +372,7 @@ function finish() {
   $('done').innerHTML = `<div class="victory">
     <img class="px" src="${won ? PIXEL.figure(ADV.eq(), ADV.look()) : MS.foe.img}" style="width:${won ? 130 : 110}px" alt="">
     <h1>${won ? `${MS.foe.name}: defeated!` : `${MS.foe.name} got away`}</h1>
-    <div class="score">${right} of ${MS.qs.length} right first time${won ? '' : ' — it needed 7 hits. It will be back.'}</div></div>
+    <div class="score">${right} of ${MS.qs.length} right first time${MS.fixed ? ` · ${MS.fixed} more corrected in the second wind` : ''}${won ? '' : ' — it needed 7 hits. It will be back.'}</div></div>
     ${verdict(right, won)}
     ${MS.foe.t ? `<div class="card truth"><span class="kick">${won ? 'Misconception busted' : 'The misconception'}: “${esc(MS.foe.name)}”</span><p><b>What's actually true:</b> ${esc(MS.foe.t)}</p></div>` : ''}
     <div class="rewards">
@@ -335,12 +381,13 @@ function finish() {
         <li>⭐ +${xp} XP · ${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b>` : 'questions you got right today secure when you get them right again on another day'}</li>
         ${gainP > 0 ? `<li class="up">📌 ${gainP} spec point${gainP === 1 ? '' : 's'} secured${statUps.length ? ' → ' + statUps.map(([, n, c]) => `<b>${n} ${before[c]} → ${after[c]}</b>`).join(', ') : ''}</li>` : `<li>Secure ${MS.sub.subj} spec points to raise your ${statName}.</li>`}
         ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! XP you had banked now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
-        <li>🪙 +${coins} coins${won ? ' (defeat bonus)' : ''}</li>
+        ${record}<li>🪙 +${coins} coins${flawless ? ' (defeat and flawless bonuses)' : won ? ' (defeat bonus)' : ''}${MS.top >= 3 ? ` · 🔥 best run ${MS.top} in a row` : ''}</li>
         <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><a class="btn gold big" href="adventurer-mission.html">⚔ Another mission</a><a class="btn alt" href="adventurer-home.html">🧁 Cakelab</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
+    <div class="acts">${(() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
+      return (won ? '' : `<a class="btn gold big" href="adventurer-mission.html?sub=${MS.sub.key}">⚔ Fight it again</a>`) + (nx ? `<a class="btn ${won ? 'gold big' : 'alt'}" href="adventurer-mission.html?sub=${nx.key}">Next: ${esc(foeOf(nx).name)} →</a>` : ''); })()}<a class="btn alt" href="adventurer-mission.html">All missions</a><a class="btn alt" href="adventurer-home.html">🧁 Cakelab</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
     <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe and get on the leaderboards.'}</p>`;
   if (QE.user) QE.onChange(() => { const n = $('saveNote'); if (n) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent; });
   scrollTo(0, 0);
