@@ -51,6 +51,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .hud .day{font-size:13px;color:var(--muted);font-weight:700}
 .questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
+.questbar .ev{display:block;margin-top:3px;padding-top:3px;border-top:1px dashed #bbb;font-size:12px;font-weight:600;max-width:270px;line-height:1.25}.questbar .ev u{text-decoration:none;font-weight:900;color:#b45309}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
 @media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px}}
 #map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:2}
@@ -140,7 +141,8 @@ table.st th{background:var(--soft)}
           <li><b>One world for everyone who plays.</b> The other adventurers on the map are real players. Click a face to see who they are and where they're heading.</li>
           <li><b>Plan, then sleep.</b> Tap a glowing square to plan a move. Everyone's moves happen together at midnight, and the morning report tells you what happened.</li>
           <li><b>Moves:</b> 6 on your first day, then 2 a day, <b>+1 for the day's first revision</b> (a mission or today's flashcards). Unused moves bank, up to 4. A move is one step, or staying put to fight or explore again.</li>
-          <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together. Boss health carries over night to night and never goes back up.</li>
+          <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together, with a <b>rally bonus</b> of +10% damage for each ally. On the same square as another player you can tap them to patch them up (3 mana) or give them a brew. <b>Each week has an event</b> (shown under the quest).</li>
+          <li><b>Bosses:</b>  Boss health carries over night to night and never goes back up.</li>
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
           <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
@@ -397,6 +399,7 @@ function renderHud() {
     <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
+  { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
   $('undo').onclick = () => { S.plan.pop(); persist(); renderAll(); };
   $('repBtn').onclick = () => showReport();
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
@@ -513,6 +516,8 @@ function renderPanel() {
   let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
+    h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
   if (P && P.type === 'monster') {
     const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 2.5)));   // ~2.5 moves (= attacks) a day
     h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits back for about ${P.power}</div><div class="loot">⚔ <b>You can beat this on your own</b> — about ${n} night${n > 1 ? 's' : ''}. Drops: +30 XP, coins, sometimes a brew.</div>`
@@ -520,7 +525,7 @@ function renderPanel() {
   }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
     const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / (str * 2.5)), team = Math.ceil(S.boss[sel] / ((str + 4 * 22) * 2.5));
-    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}.</div>`;
+    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}. 📣 <b>Rally:</b> +10% damage for each player on the square with you at the same move.</div>`;
   }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
   if (P && P.stock) {
@@ -562,7 +567,19 @@ function renderPerson(who) {
   $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? ADV.stats().l : p.lvl}</div>
     <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
     <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : p.planned ? ` Has ${p.planned} move${p.planned > 1 ? 's' : ''} planned for tonight.` : ' No moves planned yet.'}</p>
-    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them.</p>` : ''}`;
+    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them (rally: +10% damage each).</p>` : ''}
+    ${!me && shared && at === S.at ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
+      <button class="btn ${S.mana >= 3 ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= 3 ? '' : 'disabled'}>🩹 Patch them up (3 mana, +5 Health)</button>
+      ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${b.ic} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
+      : !me && shared ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
+  $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
+    try {
+      if (id === 'heal') { if (S.mana < 3) return; S.mana -= 3; await BL.aid(p.uid, { heal: 5 }, ADV.nick()); }
+      else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
+      persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +5 Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
+    } catch (e) { $('aidMsg').textContent = 'That did not go through. Try again.'; }
+  });
   $('panel').classList.add('on');
   $('pClose').onclick = () => { $('panel').classList.remove('on'); };
 }
@@ -687,6 +704,7 @@ async function start() {
     if (night) await BL.load();
     await applyOutbox();
     await claimPending();
+    { const inbox = BL.me().inbox; if (inbox && inbox.length) { await BL.saveMine({ inbox: null }); inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); } }
     fromShared(); renderAll(); centreOnMe();
     const rescueNow = S.chapter >= 2 && !S.rescueSeen;
     const showRep = () => { if ((S.seenRep || {})[BL.uid] !== (S.reportDay || 'first')) showReport(); };

@@ -136,6 +136,40 @@ const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.a
 const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, visited: [HOME], lifted: [], shield: false, dens: {}, brews: {},
   report: null, reportDay: null, pending: null, joined: TODAY });
 
+/* ---------- boss stories (16 Nov): a few lines each, used in the morning report and the map panel.
+   meet = the first time you fight it, taunt = when it is hit, low = when it drops under a third, fall = its defeat.
+   Each boss is built on a misconception from its science; keep the science inside the Double Award spec. ---------- */
+const BOSS_STORY = {
+  '2,2': { meet: 'The Spore Lord looms out of the mist. “Fungi are just plants that forgot to be green,” it booms. (They are not: no chlorophyll, no photosynthesis, walls of chitin.)',
+    taunt: ['“I feed on the dead. You look tired.”', '“Chop away. My hyphae go for miles.”', '“Spores! Spores for everyone!”'],
+    low: 'The Spore Lord’s cap is sagging and it has stopped making speeches.', fall: 'The Spore Lord folds up like a wet umbrella. In the mush where it stood, something glints: a piece of a key.' },
+  '11,2': { meet: 'Granitus opens two amber eyes. “I DO NOT MOVE. THINGS ONLY MOVE WHEN PUSHED, AND STOP WHEN THE PUSHING STOPS.” (Newton would like a word about that second part.)',
+    taunt: ['“BALANCED FORCES. I STAY PUT.”', '“YOUR FORCE IS SMALL. MY MASS IS NOT.”', '“THAT TICKLED. SLIGHTLY.”'],
+    low: 'Cracks are spreading across Granitus. An unbalanced force is doing exactly what unbalanced forces do.', fall: 'Granitus topples, very slowly, and then all at once. A piece of a key rolls out of the rubble.' },
+  '4,7': { meet: 'Three heads rise from the marsh. “All acids burn through anything,” hisses one. “Even lemon juice?” asks another. They start arguing. (Weak acids are in your lunch.)',
+    taunt: ['“pH 1 and proud of it!”', '“Neutralise THIS.” (Spits. Misses.)', 'Two heads blame the third for that one.'],
+    low: 'The Acid Hydra is down to hissing with one head at a time. The marsh around it has gone suspiciously neutral.', fall: 'The Hydra fizzes, bubbles and dissolves into salt and water. Bobbing in the puddle: a piece of a key.' },
+  '3,10': { meet: 'The Superbug swaggers over. “Antibiotics made me STRONGER. I mutated on purpose!” (It did not: the mutation was random. The antibiotic just killed off its rivals.)',
+    taunt: ['“I’ve survived penicillin. You’re nothing.”', '“Resistance is… well, me.”', '“Divide and conquer! Mostly divide.”'],
+    low: 'The Superbug has stopped dividing and started sweating.', fall: 'The Superbug pops. Natural selection giveth, and you lot taketh away.' },
+  '16,4': { meet: 'A long iron shape uncoils from the scrap. “Rust is just dirt,” the Wyrm rasps. “It wipes off.” (It does not: rusting is a chemical reaction of iron with water and oxygen.)',
+    taunt: ['“I’m not flaking. YOU’RE flaking.”', '“Oxidation is a lifestyle.”', 'A bit falls off. It pretends not to notice.'],
+    low: 'The Rust Wyrm is more orange powder than serpent now.', fall: 'The Rust Wyrm crumbles into a heap of iron(III) oxide. Somebody should have galvanised it.' },
+  '17,6': { meet: 'A flickering shape drifts out of the reactor. “After one half-life I’ll be gone,” it whispers. (No: after one half-life, half of it is left. And half of that after the next.)',
+    taunt: ['“You can’t rush decay.”', '“Half of me didn’t feel that.”', '“Tick. Tick. Tick.”'],
+    low: 'The Half-Life Horror keeps halving. There is not much left to halve.', fall: 'The Horror halves one last time, and then there is nothing left to count.' },
+};
+/* ---------- weekly events (16 Nov): one a week, the same for everyone, picked from the date ---------- */
+const EVENTS = [
+  { id: 'coins', ic: '🪙', name: 'Market week', text: 'Small monsters and the puddle pay double coins.' },
+  { id: 'rage', ic: '😡', name: 'Boss rage week', text: 'Bosses hit half as hard again, but they get careless: your attacks do 25% more damage.' },
+  { id: 'quiet', ic: '🌿', name: 'Quiet week', text: 'The wild critters are staying home. Nothing jumps you on open land.' },
+  { id: 'rest', ic: '🛏', name: 'Cosy week', text: 'A night’s rest in the Cakelab heals twice as much.' },
+  { id: 'rally', ic: '📣', name: 'Rally week', text: 'Fighting a boss side by side gives double the rally bonus.' },
+];
+const eventOf = day => EVENTS[Math.floor((dayNum(day) + 3) / 7) % EVENTS.length];   // weeks run Monday to Sunday
+const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same step (max +40%)
+
 /* ===================== the night =====================
    resolve(world, pubs, states, today) → { world, states } (new objects). Everyone's planned steps happen in order, step by step:
    players on the same boss square at the same step fight it together; small monsters are per player (your own copy);
@@ -145,7 +179,9 @@ function resolve(w0, pubs, st0, today) {
   let seed = 7; for (const ch of today) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const elapsed = Math.max(1, Math.min(7, dayNum(today) - dayNum(w.day || today)));
-  const tNum = dayNum(today);
+  const tNum = dayNum(today), EV = eventOf(w0.day || today).id;   // the event of the day the plans were made
+  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0], did = {};
+  const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   w.boss = Object.assign({}, BOSS_MAX, w.boss || {}); w.hit = w.hit || {};
   const P_ = uid => pubs[uid] || {};
   const ids = Object.keys(S);
@@ -190,10 +226,10 @@ function resolve(w0, pubs, st0, today) {
         say(u, `<p class="good">You take on the ${P.name}: ${dmg} damage.</p>`);
         const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit);
         say(u, `<p class="bad">It fights back: −${hit} Health.</p>`);
-        if (!hp) { st.dens[k] = { back: tNum + 2 }; give(u, 8); say(u, `<p class="lt">★ ${P.name} beaten! +8 coins. It'll be back in two days.</p>`); }
+        if (!hp) { const c = EV === 'coins' ? 16 : 8; st.dens[k] = { back: tNum + 2 }; give(u, c); did[u] = `beat the ${P.name}`; say(u, `<p class="lt">★ ${P.name} beaten! +${c} coins${EV === 'coins' ? ' (Market week)' : ''}. It'll be back in two days.</p>`); }
         else { st.dens[k] = { hp }; say(u, `<p>The ${P.name} limps off with ${hp} health left. Come back to finish it.</p>`); }
         if (st.health === 0) knockout(u);
-      } else if (!P && rnd() < .3 && WILD[T_AT(c, r)]) {
+      } else if (!P && EV !== 'quiet' && rnd() < .3 && WILD[T_AT(c, r)]) {
         const hit = ouch(u, 1 + Math.floor(rnd() * 3)); hurt(u, hit);
         say(u, `<p>On the way you're jumped by <b>${WILD[T_AT(c, r)]}</b>. You see it off (−${hit} Health).</p>`);
         if (st.health === 0) knockout(u);
@@ -201,25 +237,30 @@ function resolve(w0, pubs, st0, today) {
         /* dungeons are played awake (16 Nov): the floors are question rooms on the map page; the night only gets you to the door */
         if (i === plans[u].length - 1) say(u, `<p class="new">You make camp at the door of <b>${P.name}</b>. Open the map and go in: every floor is a room of questions, with loot for each one you clear.</p>`);
       } else if (P && P.type === 'event') {
-        if (rnd() < .4) { give(u, 5); say(u, '<p>You poke the puddle and fish out <span class="lt">5 coins</span>.</p>'); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
+        if (rnd() < .4) { const c = EV === 'coins' ? 10 : 5; give(u, c); say(u, `<p>You poke the puddle and fish out <span class="lt">${c} coins</span>.</p>`); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
       } else if (P && P.type === 'shop') say(u, '<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>');
-      else if (P && P.type === 'home') { const b = st.health; st.health = Math.min(P_(u).hp || 15, st.health + HEAL.rest); say(u, `<p class="good">You rest in the Cakelab: +${st.health - b} Health.</p>`); }
+      else if (P && P.type === 'home') { const b = st.health; st.health = Math.min(P_(u).hp || 15, st.health + HEAL.rest * (EV === 'rest' ? 2 : 1)); say(u, `<p class="good">You rest in the Cakelab: +${st.health - b} Health.</p>`); }
     });
     /* bosses: everyone on the square this step fights together */
     Object.entries(fights).forEach(([k, team]) => {
-      const P = PLACES[k];
-      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8))), total = dmg.reduce((a, b) => a + b, 0);
+      const P = PLACES[k], ST = BOSS_STORY[k] || {}, before = w.boss[k];
+      const bonus = Math.min(4, team.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
+      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult)), total = dmg.reduce((a, b) => a + b, 0);
       w.boss[k] = Math.max(0, w.boss[k] - total);
       const hk = w.hit[k] = w.hit[k] || {};
+      const taunt = ST.taunt ? ST.taunt[Math.floor(rnd() * ST.taunt.length)] : '';
       team.forEach((u, j) => {
-        hk[u] = true;
-        const others = team.length - 1;
-        say(u, `<p class="good">You${others ? ` and ${others} other${others > 1 ? 's' : ''}` : ''} attack ${P.name}: ${total} damage (you did ${dmg[j]}).</p>`);
-        if (w.boss[k] > 0) { const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
+        if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`);
+        hk[u] = true; did[u] = `fought ${P.name}`;
+        const mates = team.filter(x => x !== u).map(nameOf);
+        say(u, `<p class="good">${mates.length ? `You and ${list(mates)} attack ${P.name} together` : `You attack ${P.name}`}: ${total} damage${mates.length ? ` (you did ${dmg[j]})` : ''}.${bonus ? ` 📣 Rally: +${Math.round(bonus * 100)}% for fighting side by side.` : ''}</p>`);
+        if (w.boss[k] > 0) {
+          if (before > P.max / 3 && w.boss[k] <= P.max / 3 && ST.low) say(u, `<p class="new">${ST.low}</p>`); else if (taunt) say(u, `<p>${P.name}: <i>${taunt}</i></p>`);
+          const hit = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
       });
       if (w.boss[k] === 0) {
         const coins = (P.ch || 1) > 1 ? 50 : 40;
-        Object.keys(hk).forEach(u => { if (S[u]) { give(u, coins, P.item); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
+        Object.keys(hk).forEach(u => { if (S[u]) { give(u, coins, P.item); if (ST.fall) lines[u].push(`<p class="new">${ST.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
         (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
         if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
       }
@@ -240,6 +281,10 @@ function resolve(w0, pubs, st0, today) {
     st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - used[u]) + DAILY_MOVES * elapsed);
     if (!plans[u].length) lines[u].push(`<p>You didn't plan any moves${elapsed > 1 ? ' for a while' : ''}, so you stayed at ${PLACES[st.at] ? PLACES[st.at].name : 'your spot'}.</p>`);
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
+    /* what everyone else got up to (the shared world should feel shared) */
+    const others = ids.filter(x => x !== u && plans[x].length).map(x => `<b>${nameOf(x)}</b> ${did[x] || `walked to ${PLACES[S[x].at] ? PLACES[S[x].at].name : LAND[T_AT(...unkey(S[x].at))].name}`}${out[x] ? ' and was knocked out' : ''}`);
+    if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
+    const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
     st.report = lines[u]; st.reportDay = today;
   });
   w.day = today; delete w.lock;
@@ -273,6 +318,13 @@ function publish(profile, plan) {
   return ref('pub/' + uid).set(p);
 }
 const savePlan = steps => publish({}, steps);
+/* teamwork (16 Nov): give a brew to, or patch up, another player (their state is writable by any signed-in player) */
+async function aid(to, what, from) {
+  if (what.brew) await ref(`state/${to}/brews/${what.brew}`).transaction(n => (n || 0) + 1);
+  if (what.heal) await ref(`state/${to}/health`).transaction(h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal));
+  await ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5));
+  if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
+}
 function saveMine(fields) { Object.assign(states[uid], fields); return ref('state/' + uid).update(fields); }
 /* the night: run if the world's day is before today. A transaction on the lock stops two visitors running it at once. */
 async function runNightIfDue(force) {
@@ -293,6 +345,6 @@ const me = () => states[uid];
 
 return { ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
   BREWS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
-  newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, runNightIfDue, me,
+  newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, aid, runNightIfDue, me, BOSS_STORY, EVENTS, eventOf, RALLY,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();
