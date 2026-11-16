@@ -133,6 +133,7 @@
 <script src="adventurer-pixel.js"></script>
 <script src="bland.js"></script>
 <script src="adventurer-shell.js"></script>
+<script src="misconceptions.js"></script>
 <script>
 ADV.nav('home');
 const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats();
@@ -169,7 +170,7 @@ function renderLand() {
 }
 renderLand();
 if (!S.storySeen) ADV.storyIntro();
-$('enemyIc').src = ADV.icon('boss', '#d97706');
+{ const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#16a34a', C: '#dc2626', P: '#d97706' }[sg.key[0]] : '#d97706'); }
 if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
