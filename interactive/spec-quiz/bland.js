@@ -71,24 +71,24 @@ const PLACES = {
     text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', item: 'chainmail', loot: ['Chainmail of Covalent Bonds (Rare)', 'Fizzy Courage', '+50 coins each'] },
   '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
     text: 'Something leaked out of the old reactor. Half of it has already decayed. The other half is very much still here.', item: 'kilt', loot: ['Kilt of Kinetic Energy (Rare)', 'Bottled Aura', '+50 coins each'] },
-  '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', text: 'A broken-down nuclear power station, cracked and humming. Explore it floor by floor (in a very sensible lead suit) for loot.' },
-  '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', text: 'Three floors deep. Each night inside explores one floor: small fights, random loot, sometimes a brew.' },
-  '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
-  '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
+  '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', subs: ['P7b', 'P7c'], rooms: ['the control room', 'the turbine hall', 'the reactor core'], text: 'A broken-down nuclear power station, cracked and humming. Three floors of radioactivity questions (wear a very sensible lead suit).' },
+  '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', subs: ['B1b', 'B2b', 'B2c', 'B5a', 'B5c'], rooms: ['the agar slopes', 'the colony caves', 'the incubator'], text: 'Three floors deep and faintly warm. Every floor is a room of questions on cells, microbes and enzymes.' },
+  '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', subs: ['P8b', 'P8c', 'P1c'], rooms: ['the orbit stairs', 'the red giant gallery', 'the event horizon'], text: 'Things go in. Some come out. Three floors of questions on gravity, orbits and stars.' },
+  '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', subs: ['C2e', 'C2f', 'C2g', 'C3b'], rooms: ['the reagent shelves', 'the titration tunnel', 'the back of the cupboard'], text: 'Keep the sash down. Three floors of questions on acids, salts, tests and rates.' },
   '18,7': { type: 'locked', name: 'The Ancient Gate', icon: 'gate', text: 'A stone gate humming with blue light at the far edge of the Glowing Wastes. Locked. It leads somewhere new — a later chapter.' },
   '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a later chapter (the Professor has plans).' },
   '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night. A later chapter.' },
 };
 /* small monsters you can beat on your own in a night or two (respawn 2 days after they're beaten) */
 const DENS = {
-  '5,3': ['Fruit Fly Swarm', 'boss', '#a16207', 'b', 30, 2, 'A buzzing cloud that came for the cake and stayed for the fight.'],
-  '3,1': ['Slime Mould', 'boss', '#65a30d', 'b', 38, 3, 'Not quite a fungus, not quite an animal, definitely sticky.'],
-  '12,3': ['Rogue Electron', 'ghost', '#38bdf8', 'p', 35, 3, 'Escaped from a shell and is very negative about it.'],
-  '3,6': ['Acid Frog', 'cube', '#84cc16', 'c', 38, 3, 'pH 2 and proud. Don\'t lick it.'],
-  '11,7': ['Static Sandling', 'ghost', '#eab308', 'p', 42, 3, 'Rubbed against too many sand dunes. Now it zaps.'],
-  '2,9': ['Germ Gang', 'boss', '#10b981', 'b', 48, 4, 'Three bacteria in a trench coat. Divides when nervous.'],
-  '17,4': ['Rust Mite', 'cube', '#c2410c', 'c', 48, 4, 'Eats iron, leaves flakes. Keep your sword dry.'],
-  '16,8': ['Glow Rat', 'ghost', '#bef264', 'p', 55, 4, 'Lives near the reactor. Glows faintly. Nobody pets it.'],
+  '5,3': ['Fruit Fly Swarm', 'bat', '#a16207', 'b', 30, 2, 'A buzzing cloud that came for the cake and stayed for the fight.'],
+  '3,1': ['Slime Mould', 'slime', '#65a30d', 'b', 38, 3, 'Not quite a fungus, not quite an animal, definitely sticky.'],
+  '12,3': ['Rogue Electron', 'star', '#38bdf8', 'p', 35, 3, 'Escaped from a shell and is very negative about it.'],
+  '3,6': ['Acid Frog', 'jelly', '#84cc16', 'c', 38, 3, 'pH 2 and proud. Don\'t lick it.'],
+  '11,7': ['Static Sandling', 'cloud', '#eab308', 'p', 42, 3, 'Rubbed against too many sand dunes. Now it zaps.'],
+  '2,9': ['Germ Gang', 'spike', '#10b981', 'b', 48, 4, 'Three bacteria in a trench coat. Divides when nervous.'],
+  '17,4': ['Rust Mite', 'crab', '#c2410c', 'c', 48, 4, 'Eats iron, leaves flakes. Keep your sword dry.'],
+  '16,8': ['Glow Rat', 'imp', '#bef264', 'p', 55, 4, 'Lives near the reactor. Glows faintly. Nobody pets it.'],
 };
 Object.entries(DENS).forEach(([k, [name, shape, col, sci, max, power, text]]) => { PLACES[k] = { type: 'monster', name, icon: shape, col, science: sci, max, power, text }; });
 const WILD = { F: 'a Grumpy Woodlouse', f: 'a Pollen Sprite', P: 'a Lost Proton', M: 'a Falling Rock', S: 'a Frostbite Imp', m: 'a Bog Bubble', d: 'a Dust Devil', b: 'a Stray Bacterium', j: 'a Loose Bolt', r: 'a Two-Headed Pigeon', T: 'a Runaway Shopping Trolley', s: 'a Crabby Crab' };
@@ -198,10 +198,8 @@ function resolve(w0, pubs, st0, today) {
         say(u, `<p>On the way you're jumped by <b>${WILD[T_AT(c, r)]}</b>. You see it off (−${hit} Health).</p>`);
         if (st.health === 0) knockout(u);
       } else if (P && P.type === 'dungeon') {
-        const roll = rnd();
-        if (roll < .35) { give(u, 12); say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">12 coins</span>.</p>`); }
-        else if (roll < .65) { const b = rnd() < .5 ? 'fizz' : 'aura'; st.brews[b] = (st.brews[b] || 0) + 1; say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">a ${BREWS[b].name}</span>.</p>`); }
-        else say(u, `<p>You explore a floor of ${P.name} and find a single damp glove. Useless.</p>`);
+        /* dungeons are played awake (16 Nov): the floors are question rooms on the map page; the night only gets you to the door */
+        if (i === plans[u].length - 1) say(u, `<p class="new">You make camp at the door of <b>${P.name}</b>. Open the map and go in: every floor is a room of questions, with loot for each one you clear.</p>`);
       } else if (P && P.type === 'event') {
         if (rnd() < .4) { give(u, 5); say(u, '<p>You poke the puddle and fish out <span class="lt">5 coins</span>.</p>'); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
       } else if (P && P.type === 'shop') say(u, '<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>');

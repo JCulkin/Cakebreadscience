@@ -518,6 +518,6 @@ const QE = (() => {
     signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,
-    analyse, isoWeek, last7, boardLast7, dayCounts, LAST7, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,
+    inst, analyse, isoWeek, last7, boardLast7, dayCounts, LAST7, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,
   };
 })();

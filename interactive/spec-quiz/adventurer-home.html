@@ -54,7 +54,7 @@
 .scene .me{height:124px;margin-bottom:-4px}
 .scene .foe{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
 .scene .foe img{height:74px}
-.scene .foe.down img{filter:grayscale(1);opacity:.45}
+.scene .foe.down img{opacity:.7}
 .scene .hp{width:64px;height:7px;border:2px solid var(--ink);background:#fff}.scene .hp i{display:block;height:100%;background:var(--red)}
 .scene .foe span{font:700 11px Barlow,Arial;background:#fffd;padding:0 4px;white-space:nowrap}
 .scene .cage{position:relative;height:84px;width:72px;background:#e8edf3cc;border:2px solid #111;display:grid;place-items:end center}
@@ -157,7 +157,7 @@ function renderLand() {
   const ch = S.chapter || 1, k = ADV.keys(), P = BL.PLACES, hp = S.boss || {};
   const foes = Object.keys(P).filter(x => P[x].type === 'boss' && (P[x].ch || 1) === Math.min(ch, 2));
   const foe = x => { const h = hp[x] ?? P[x].max, down = h === 0;
-    return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon)}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
+    return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon + (down ? '_down' : h <= P[x].max * .34 ? '_hurt' : ''))}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
   const prof = ch < 2 ? `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>`
     : `<img src="${ADV.icon('prof')}" alt="The Professor" style="height:84px">`;
   $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +

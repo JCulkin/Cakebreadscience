@@ -53,7 +53,10 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
 @media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px}}
-#map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:3}
+#map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:2}
+#map .shake{transform-box:fill-box;transform-origin:center;animation:bshake .5s 3}
+@keyframes bshake{20%{transform:translateX(-4px) rotate(-5deg)}40%{transform:translateX(4px) rotate(4deg)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+#map .dmgup{animation:dmgup 1.5s forwards}@keyframes dmgup{to{transform:translateY(-16px);opacity:0}}
 .panel .fig{display:block;width:96px;margin:4px auto 0}
 @media(max-width:1460px){.hud .day{display:none}}
 @media(max-width:1400px){.hud .tools .t{display:none}.hud .tools #sleep .t{display:inline}}
@@ -97,6 +100,14 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .modal .day p{margin:5px 0}
 .modal .good{color:#86efac}.modal .bad{color:#fca5a5}.modal .lt{color:#fde047}.modal .new{color:#93c5fd}
 .modal .btn{margin-top:12px}
+#dunBody .dq{font-size:19px;font-weight:600;color:#fff;margin:10px 0}
+#dunBody .dopts{display:grid;gap:7px}
+#dunBody .dopt{font:700 16px Barlow,Arial;text-align:left;padding:9px 11px;background:#222;color:#fff;border:2px solid #666;cursor:pointer}
+#dunBody .dopt:hover:not(:disabled){border-color:#facc15}
+#dunBody .dopt.right{background:#14532d;border-color:#22c55e}#dunBody .dopt.wrong{background:#7f1d1d;border-color:#ef4444;text-decoration:line-through}
+#dunBody .pips{display:flex;gap:5px;margin:6px 0}#dunBody .pips i{width:16px;height:16px;border:2px solid #facc15;border-radius:50%}#dunBody .pips i.ok{background:#22c55e;border-color:#22c55e}#dunBody .pips i.no{background:#ef4444;border-color:#ef4444}
+#dunBody .dx{font-size:14px;margin-top:8px;padding:7px 10px;background:#1c1917;border-left:4px solid #facc15}
+#dunBody .stairs{display:flex;gap:6px;margin-bottom:6px}#dunBody .stairs span{flex:1;text-align:center;font:700 12px Barlow,Arial;text-transform:uppercase;padding:3px;border:1.5px solid #555;color:#888}#dunBody .stairs span.on{border-color:#facc15;color:#facc15}#dunBody .stairs span.done{border-color:#22c55e;color:#22c55e}
 
 details.notes{margin-top:16px;background:#fff;border:2px solid var(--ink);padding:10px 14px}
 details.notes summary{font-weight:700;cursor:pointer}
@@ -133,6 +144,7 @@ table.st th{background:var(--soft)}
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
           <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
+          <li><b>Dungeons</b> are played awake. End a move at a dungeon door, then open the map and go in: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
           <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
       </div>
@@ -155,6 +167,7 @@ table.st th{background:var(--soft)}
   </details>
 </div>
 
+<div class="modal" id="dunModal" role="dialog" aria-modal="true" aria-label="Dungeon"><div class="box" id="dunBody"></div></div>
 <div class="modal" id="spellModal" role="dialog" aria-modal="true" aria-label="Spells"><div class="box"><div id="spellBody"></div><button class="btn gold" id="spellClose">Back to the map →</button></div></div>
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="repTitle"><div class="box"><h2 id="repTitle">Morning report</h2><div class="day" id="report"></div><button class="btn gold" id="repClose">To the map →</button></div></div>
 
@@ -230,11 +243,21 @@ function buildPeople() {
     const base = p.look || PIXEL.DEFAULT;
     let face; try { face = PIXEL.portrait(base, p.eq || {}); } catch (e) { face = PIXEL.portrait(PIXEL.DEFAULT); }
     const planned = p.plan && p.plan.day === BL.world.day ? p.plan.steps.length : 0;
-    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, planned, at: BL.states[u].at || BL.HOME };
+    let fig; try { fig = PIXEL.figure(p.eq || {}, base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
+    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: BL.states[u].at || BL.HOME };
   });
   S.people = PEOPLE.map(p => p.at);
 }
 const ME_FACE = PIXEL.portrait(ADV.look());
+let ME_FIG; try { ME_FIG = PIXEL.figure(ADV.eq(), ADV.look()); } catch (e) { ME_FIG = PIXEL.figure({}, PIXEL.DEFAULT); }
+/* bosses: hurt frame when damaged since your last look (with a shake) or under a third health; defeated frame at 0 */
+let HITNOW = {};
+const bossIcon = (k, P) => { const hp = S.boss[k]; return icon(P.icon + (hp === 0 ? '_down' : (HITNOW[k] || hp <= P.max * .34) && ADV.ICONS[P.icon + '_hurt'] ? '_hurt' : '')); };
+function noteBossHits() {
+  S.bossSeen = S.bossSeen || {}; HITNOW = {};
+  for (const k in S.boss) { const was = S.bossSeen[k]; if (was != null && S.boss[k] < was) HITNOW[k] = was - S.boss[k]; S.bossSeen[k] = S.boss[k]; }
+  ADV.save(); if (Object.keys(HITNOW).length) setTimeout(() => { for (const k in HITNOW) HITNOW[k] = -1; }, 1600);
+}
 
 /* ===================== drawing ===================== */
 let sel = null;
@@ -292,15 +315,16 @@ function renderMap() {
         + `<line x1="${-W3 / 2 - 4}" y1="-10" x2="${W3 / 2 + 4}" y2="-10" stroke="#451a03" stroke-width="2"/><line x1="${-W3 / 2 - 4}" y1="10" x2="${W3 / 2 + 4}" y2="10" stroke="#451a03" stroke-width="2"/></g>`;
     }
     if (P && vis.has(k)) {
-      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
+      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 52 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
       const asleep = (P.ch || 1) > S.chapter, freed = P.type === 'cage' && S.chapter >= 2;
       if (P.type === 'monster') {
-        const hp = denHp(k), sz = 30;
+        const hp = denHp(k), sz = 34;
         things += `<ellipse cx="${x}" cy="${y + 10}" rx="11" ry="3" fill="#0003"/>` + img(icon(P.icon, P.col), x - sz / 2, y - sz / 2 - 4, sz, hp ? '' : 'opacity=".3"');
         if (hp) things += `<rect x="${x - 13}" y="${y + 13}" width="26" height="5" fill="#fff" stroke="#111"/><rect x="${x - 12.5}" y="${y + 13.5}" width="${25 * hp / P.max}" height="4" fill="#f59e0b"/>`;
         else things += `<text x="${x}" y="${y + 20}" text-anchor="middle" font-size="9" font-weight="700" fill="#111">back soon</text>`;
       }
-      else if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
+      else if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(P.type === 'boss' && !asleep ? bossIcon(k, P) : icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : HITNOW[k] > 0 ? 'class="shake"' : '')
+        + (HITNOW[k] > 0 ? `<text class="dmgup" x="${x}" y="${y - 22}" text-anchor="middle" font-size="15" font-weight="900" fill="#e11d48" paint-order="stroke" stroke="#fff" stroke-width="3">−${HITNOW[k]}</text>` : '');
       if (P.type === 'cage') {   /* bars over the Professor (or an empty open cage once he's free) */
         const L = x - 18, T = y - 26;
         things += `<rect x="${L}" y="${T}" width="36" height="40" fill="none" stroke="#334155" stroke-width="3"/>` + (freed ? `<line x1="${L + 36}" y1="${T}" x2="${L + 50}" y2="${T + 8}" stroke="#334155" stroke-width="3"/>` : [1, 2, 3, 4, 5].map(i => `<line x1="${L + i * 6}" y1="${T}" x2="${L + i * 6}" y2="${T + 40}" stroke="#334155" stroke-width="2.2"/>`).join(''));
@@ -337,8 +361,9 @@ function renderMap() {
   Object.entries(here).forEach(([k, list]) => {
     const [x, y] = center(...unkey(k)), show = list.slice(0, 3);
     show.forEach((who, i) => {
-      const fx = x - 25 + i * 13, fy = y - 32, me = who === 'me';
-      ppl += `<g class="pp" data-p="${who}"><rect x="${fx - 1.5}" y="${fy - 1.5}" width="19" height="19" rx="3" fill="${me ? '#00a03a' : '#fff'}" stroke="#111" stroke-width="1.5"/>` + img(me ? ME_FACE : PEOPLE[who].face, fx, fy, 16) + `</g>`;
+      const busy = PLACES[k] && vis.has(k), fx = (busy ? x - 34 : x - 12 - (show.length - 1) * 6) + i * 12, fy = y - 24, me = who === 'me';   // full figure, so outfits show
+      ppl += `<g class="pp" data-p="${who}"><ellipse cx="${fx + 12}" cy="${fy + 31}" rx="9" ry="3" fill="${me ? '#00a03a' : '#0004'}"/><rect x="${fx + 2}" y="${fy + 2}" width="20" height="30" rx="3" fill="#fff0" stroke="#0000" stroke-width="2"/>`
+        + `<image href="${me ? ME_FIG : PEOPLE[who].fig}" x="${fx}" y="${fy}" width="24" height="30.9" style="image-rendering:pixelated"/>` + (me ? `<path d="M${fx + 8} ${fy - 4}h8l-4 5z" fill="#00a03a" stroke="#111" stroke-width="1"/>` : '') + `</g>`;
     });
     if (list.length > 3) ppl += `<g class="pp" data-k2="${k}"><rect x="${x + 14}" y="${y - 32}" width="18" height="16" rx="3" fill="#111"/><text x="${x + 23}" y="${y - 20}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">+${list.length - 3}</text></g>`;
   });
@@ -393,6 +418,56 @@ const SPELLS = [
   { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.', ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.',
     cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
 ];
+/* ---------- dungeons (16 Nov): three floors of themed questions, played awake, once a day per dungeon ----------
+   floor = up to 4 questions; 3 right clears it (coins; floor 3 also a brew and a loot item); 2 wrong ends the run.
+   Answers go through QE.recordAnswer, so they count towards securing spec points like a mission. */
+const FLOOR_COINS = [8, 12, 15];
+function delve(k) {
+  const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
+  const all = QUESTIONS.filter(q => keys.has(q.s)), sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const easy = sh(all.filter(q => !q.hard)), hard = sh(all.filter(q => q.hard));
+  const take = n => { const f = n === 2 ? hard.splice(0, 2).concat(easy.splice(0, 2)) : n === 1 ? hard.splice(0, 1).concat(easy.splice(0, 3)) : easy.splice(0, 4); return sh(f.concat(easy.splice(0, 4 - f.length))).map(QE.inst); };
+  const D = { k, P, floor: 0, qs: take(0), i: 0, ok: 0, no: 0, coins: 0, got: [], right: 0 };
+  S.delve = S.delve || {}; S.delve[k] = QE.TODAY; QE.busy = true; persist();
+  const body = $('dunBody'), m = $('dunModal'); m.classList.add('on');
+  const stairs = () => `<div class="stairs">${[0, 1, 2].map(f => `<span class="${f < D.floor ? 'done' : f === D.floor ? 'on' : ''}">Floor ${f + 1}</span>`).join('')}</div>`;
+  const close = () => { m.classList.remove('on'); QE.busy = false; if (D.right) QE.earn({ mana: Math.floor(D.right / 3) }); QE.gameChanged(); persist(); renderAll(); };
+  function ask() {
+    const q = D.qs[D.i], opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    body.innerHTML = `${stairs()}<h2 style="margin:0">${P.name}</h2><div class="small">Floor ${D.floor + 1}: ${P.rooms[D.floor]} · 3 right to clear it${q.hard ? ' · ★ harder' : ''}</div>
+      <div class="pips">${[0, 1, 2].map(j => `<i class="${j < D.ok ? 'ok' : ''}"></i>`).join('')}<span style="width:10px"></span>${[0, 1].map(j => `<i class="${j < D.no ? 'no' : ''}" style="border-color:#ef4444"></i>`).join('')}</div>
+      <div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+    body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
+      const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
+      QE.recordAnswer(q, ok); let hurt = 0;
+      if (ok) { D.ok++; D.right++; } else { D.no++; hurt = Math.min(2, Math.max(0, S.health - 1)); S.health -= hurt; }
+      const cleared = D.ok >= 3, out = D.no >= 2;
+      $('dunFb').innerHTML = `<div class="dx"><b class="${ok ? 'good' : 'bad'}">${ok ? 'Right.' : `Wrong${hurt ? `: a trap nips you (−${hurt} Health)` : ''}.`}</b> ${q.x || ''}</div><button class="btn gold" id="dunNext">${cleared ? 'Floor cleared →' : out ? 'Uh oh →' : 'Next →'}</button>`;
+      $('dunNext').onclick = () => { if (cleared) floorDone(); else if (out) end(false); else { D.i++; ask(); } }; $('dunNext').focus();
+    });
+  }
+  function floorDone() {
+    const c = FLOOR_COINS[D.floor]; D.coins += c; S.coins += c; let extra = '';
+    if (D.floor === 2) {
+      const b = Math.random() < .5 ? 'fizz' : 'aura'; S.brews[b] = (S.brews[b] || 0) + 1; D.got.push(BL.BREWS[b].ic + ' ' + BL.BREWS[b].name);
+      const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !(QE.game.bag || []).includes(i.id));
+      if (pool.length) { const it = pool[Math.floor(Math.random() * pool.length)]; QE.game.bag = (QE.game.bag || []).concat(it.id); QE.game.lastLoot = it.id; D.got.push('🎁 ' + it.name); }
+      else { S.coins += 10; D.coins += 10; }
+      return end(true);
+    }
+    body.innerHTML = `${stairs()}<h2 style="margin:0">Floor ${D.floor + 1} cleared</h2><p class="lt">+${c} coins.</p><p>Stairs lead down to <b>${P.rooms[D.floor + 1]}</b>. The questions get harder${D.floor === 1 ? ', and the bottom floor hides a brew and something to wear' : ''}. What you've found is yours either way.</p>
+      <button class="btn gold" id="dunDeeper">Go deeper →</button> <button class="btn alt" id="dunLeave" style="background:#333;color:#fff">Leave with your loot</button>`;
+    $('dunDeeper').onclick = () => { D.floor++; D.qs = take(D.floor); D.i = 0; D.ok = 0; D.no = 0; ask(); };
+    $('dunLeave').onclick = () => end(null);
+  }
+  function end(won) {
+    body.innerHTML = `<h2 style="margin:0">${won ? `${P.name}: all three floors cleared!` : won === false ? `Floor ${D.floor + 1} throws you out` : 'Back in the daylight'}</h2>
+      <p>${won === false ? 'Two wrong on one floor and the room resets. ' : ''}You got <b>${D.right}</b> right${D.coins ? ` and carried out <span class="lt">${D.coins} coins</span>${D.got.length ? ', ' + D.got.map(g => `<span class="lt">${g}</span>`).join(', ') : ''}` : ''}. Right answers here count towards securing spec points, like a mission.</p>
+      <p class="small">The rooms refill overnight: you can go in again tomorrow.</p><button class="btn gold" id="dunOut">Back to the map →</button>`;
+    $('dunOut').onclick = close;
+  }
+  ask();
+}
 function showSpells() {
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
@@ -435,7 +510,7 @@ function renderPanel() {
   if (!sel) { pn.classList.remove('on'); return; }
   const D = describe(sel), P = D.P, reach = reachable(), last = lastStop();
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
-  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon)}" alt="">` : ''}${D.name}</div>`;
+  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
   if (P && P.type === 'monster') {
@@ -453,10 +528,15 @@ function renderPanel() {
     h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Stand here to buy (end a move on the Tuck Shop).</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
       `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
   }
+  if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
+    const done = (S.delve || {})[sel] === QE.TODAY;
+    h += mine && shared ? (done ? `<div class="loot">🕯 You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>3 floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">Enter ${P.name} →</button></div>`)
+      : `<div class="loot"><b>3 floors of questions</b>, loot on every floor. End a move here, then come back in the morning to go in.</div>`;
+  }
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
   if (reach.has(sel)) {
     const n = S.plan.length + 1, stay = sel === last;
-    const what = P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
+    const what = P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Stay at the door' : 'Go to the door') : stay ? 'Stay here' : 'Go here';
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
   } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
   else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
@@ -465,6 +545,7 @@ function renderPanel() {
   else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight. Come back tomorrow, or do a mission or your flashcards for an extra move.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">Too far for one move — you can step to the glowing squares.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
+  if ($('dunGo')) $('dunGo').onclick = () => delve(sel);
   $('pClose').onclick = () => { sel = null; renderAll(); };
   if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(sel); persist(); renderAll(); };
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
@@ -532,16 +613,16 @@ function persist() {
   ADV.save();
   if (!shared) return;
   BL.savePlan(S.plan.slice()).catch(e => console.warn('plan not saved', e));
-  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
+  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
   S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
   Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: st.moves || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
-    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
+    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
   S.plan = pub.plan && pub.plan.day === w.day && Array.isArray(pub.plan.steps) ? pub.plan.steps.slice(0, S.moves) : [];
-  buildPeople(); ADV.save();
+  buildPeople(); ADV.save(); noteBossHits();
 }
 const profile = () => { const s = ADV.stats(); return { name: QE.boardName(), look: ADV.look(), eq: ADV.eq(), lvl: s.l, str: s.str, hp: s.hp, mag: s.mag }; };
 function toast(msg) {

@@ -61,7 +61,13 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(locatio
 .side .bar{height:12px;margin-top:4px}
 .vs{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:#fff;-webkit-text-stroke:1.5px #111;align-self:center}
 .quote{position:absolute;top:8px;right:12px;left:auto;max-width:min(60%,420px);background:#fff;border:2px solid var(--ink);border-radius:10px;padding:4px 10px;font-size:14px;font-weight:700;font-style:italic}
-.hit #foeFig{animation:shake .4s}
+.hit #foeFig{animation:shake .4s,hitflash .4s}
+@keyframes hitflash{0%,40%{filter:brightness(3) saturate(0)}100%{filter:none}}
+.hit::after{content:'';position:absolute;inset:0;background:#fff;pointer-events:none;animation:scrflash .25s forwards}@keyframes scrflash{from{opacity:.55}to{opacity:0}}
+.dead #foeFig{animation:poof .8s forwards}
+@keyframes poof{0%{filter:brightness(3) saturate(0)}35%{transform:scale(1.25) rotate(8deg);filter:brightness(2)}100%{transform:translateY(18px) rotate(90deg) scale(.8);filter:grayscale(1);opacity:.35}}
+.puff{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid #111;pointer-events:none;animation:puff .8s ease-out forwards}
+@keyframes puff{to{transform:translate(var(--dx),var(--dy)) scale(2.2);opacity:0}}
 @keyframes shake{20%{transform:translateX(-8px) rotate(-6deg)}40%{transform:translateX(8px) rotate(5deg)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
 .ouch #youFig{animation:flash .5s}
 @keyframes flash{30%{filter:brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)}}
@@ -214,6 +220,7 @@ function start(k, point) {
   MS = { sub, foe, qs, point, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
   QE.busy = true;
   $('choose').classList.add('hidden'); $('fight').classList.remove('hidden');
+  $('arena').classList.remove('dead', 'hit', 'ouch');
   $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
   $('youName').textContent = ADV.nick();
   $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
@@ -254,8 +261,11 @@ $('opts').addEventListener('click', e => {
   ar.classList.remove('hit', 'ouch'); void ar.offsetWidth;
   if (ok) {
     const d = Math.round(DMG * (q.hard ? 1.5 : 1));
-    MS.hp = Math.max(0, MS.hp - d); $('foeHp').style.width = MS.hp + '%';
+    MS.hp = MS.hp - DMG * (q.hard ? 1.5 : 1); if (MS.hp < .5) MS.hp = 0; /* exactly 7 normal hits (rounding used to leave 2% after 7) */ $('foeHp').style.width = MS.hp + '%';
     ar.classList.add('hit');
+    if (!MS.hp) { ar.classList.add('dead'); const fr = $('foeFig').getBoundingClientRect(), a0 = ar.getBoundingClientRect();
+      for (let i = 0; i < 8; i++) { const p = document.createElement('i'), an = i / 8 * Math.PI * 2; p.className = 'puff'; p.style.left = (fr.left - a0.left + fr.width / 2 - 7) + 'px'; p.style.top = (fr.top - a0.top + fr.height / 2 - 7) + 'px';
+        p.style.setProperty('--dx', Math.cos(an) * 60 + 'px'); p.style.setProperty('--dy', Math.sin(an) * 44 + 'px'); ar.appendChild(p); setTimeout(() => p.remove(), 850); } }
     const n = document.createElement('div'); n.className = 'dmg'; n.textContent = '−' + d; n.style.right = '18%'; n.style.top = '30%'; ar.appendChild(n); setTimeout(() => n.remove(), 900);
     { const hs = MS.foe.h.concat(['Ow. Lucky guess.', 'Stop learning things!']); $('quote').textContent = `“${MS.hp ? hs[MS.nh++ % hs.length] : MS.foe.d}”`; }
   } else {
