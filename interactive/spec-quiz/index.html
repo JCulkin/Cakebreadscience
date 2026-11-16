@@ -69,14 +69,14 @@ body.new .returning{display:none}body.new .newbie{display:grid}
 
   <div class="row3">
     <div class="card">
-      <h3>This week · most correct</h3>
+      <h3>Last 7 days · most correct</h3>
       <ol class="lb" id="lbWeek"></ol>
       <p class="small" style="margin-top:8px"><a href="/leaderboards/">All leaderboards →</a></p>
     </div>
     <div class="card">
-      <h3>Legendaries this week</h3>
+      <h3>Legendaries</h3>
       <div id="legs"></div>
-      <p class="small" style="margin-top:6px">Held by whoever has the most correct answers in that science this week (Monday to Sunday).</p>
+      <p class="small" style="margin-top:6px">Held by whoever has the most correct answers in that science over the last 7 days.</p>
     </div>
     <div class="card">
       <h3>The story so far</h3>
@@ -119,23 +119,23 @@ const signDraw = () => { $('signin').hidden = !(QE.known && QE.online && !QE.use
 $('signinBtn').onclick = () => QE.signIn().catch(e => { if (e && e.code !== 'auth/popup-closed-by-user') alert('Sign-in did not work: ' + (e.message || e)); });
 signDraw(); QE.onChange(signDraw);
 
-/* the class board (this week) and legendaries, from the real leaderboard */
+/* the last-7-days board and legendaries, from the real leaderboard (row.l7 = {B, C, P, t}) */
 const face = r => r.look ? PIXEL.portrait(r.look) : PIXEL.portrait(PIXEL.DEFAULT);
-const LEG = [['syringe', 'Biology', 'wb'], ['pebble', 'Chemistry', 'wc'], ['dodgeball', 'Physics', 'wp']];
+const LEG = [['syringe', 'Biology', 'B'], ['pebble', 'Chemistry', 'C'], ['dodgeball', 'Physics', 'P']];
 let drawnFor;
 function drawBoard() {
   if (!QE.known) return;
   const who = QE.user ? QE.user.uid : '-'; if (who === drawnFor) return; drawnFor = who;
-  if (!QE.user) { $('lbWeek').innerHTML = '<li class="small">Sign in to see this week\'s board.</li>'; $('legs').innerHTML = '<p class="small">Sign in to see who holds them.</p>'; return; }
+  if (!QE.user) { $('lbWeek').innerHTML = '<li class="small">Sign in to see the board.</li>'; $('legs').innerHTML = '<p class="small">Sign in to see who holds them.</p>'; return; }
   QE.board().then(rows => {
-    const week = rows.filter(r => r.wk === QE.WEEK && r.wkCorrect > 0).sort((a, b) => b.wkCorrect - a.wkCorrect);
+    const week = rows.filter(r => r.l7.t > 0).sort((a, b) => b.l7.t - a.l7.t);
     const top = week.slice(0, 5), me = week.findIndex(r => r.me);
-    const li = (r, i) => `<li class="${r.me ? 'you' : ''}"><b>${i + 1}</b><img class="px" src="${face(r)}" alt=""><span class="n">${esc(r.name)}${r.me ? ' (you)' : ''}</span><span class="v">${r.wkCorrect}</span></li>`;
+    const li = (r, i) => `<li class="${r.me ? 'you' : ''}"><b>${i + 1}</b><img class="px" src="${face(r)}" alt=""><span class="n">${esc(r.name)}${r.me ? ' (you)' : ''}</span><span class="v">${r.l7.t}</span></li>`;
     $('lbWeek').innerHTML = top.length ? top.map(li).join('') + (me >= 5 ? `<li class="small" style="justify-content:center">…</li>` + li(week[me], me) : '')
-      : '<li class="small">No correct answers yet this week. Be the first!</li>';
+      : '<li class="small">No correct answers in the last 7 days. Be the first!</li>';
     $('legs').innerHTML = LEG.map(([id, sci, f]) => {
-      const it = ADV_ITEMS.find(i => i.id === id), best = week.filter(r => r[f] > 0).sort((a, b) => b[f] - a[f])[0];
-      return `<div class="leg"><img class="px" src="${PIXEL.item(id)}" alt=""><div><b>${it ? esc(it.name) : id}</b><br><span class="small">${sci} · ${best ? `held by <b>${esc(best.name)}${best.me ? ' (you!)' : ''}</b> · ${best[f]} correct` : 'nobody yet this week'}</span></div></div>`;
+      const it = ADV_ITEMS.find(i => i.id === id), best = week.filter(r => r.l7[f] > 0).sort((a, b) => b.l7[f] - a.l7[f])[0];
+      return `<div class="leg"><img class="px" src="${PIXEL.item(id)}" alt=""><div><b>${it ? esc(it.name) : id}</b><br><span class="small">${sci} · ${best ? `held by <b>${esc(best.name)}${best.me ? ' (you!)' : ''}</b> · ${best.l7[f]} correct` : 'nobody in the last 7 days'}</span></div></div>`;
     }).join('');
   }).catch(() => { $('lbWeek').innerHTML = '<li class="small">The leaderboard can\'t be reached right now.</li>'; $('legs').innerHTML = ''; });
 }

@@ -23,8 +23,29 @@
 .choice b{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
 .choice .topic{font-size:14px;color:var(--muted)}
 .prof{display:flex;gap:12px;align-items:center;margin-top:12px;background:#fffaf0;border:2px solid var(--ink);padding:8px 12px}.prof img{width:60px;image-rendering:pixelated;flex:none}.prof p{font-size:15px}
-.other{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.other select{font:inherit;padding:7px;border:2px solid var(--ink);max-width:100%}
+.all{margin-top:22px}
+.all h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:26px;margin:0 0 8px}
+.scitabs{display:flex;gap:6px;flex-wrap:wrap}
+.scitabs button{font:700 16px Barlow,Arial,sans-serif;padding:7px 14px;border:2px solid var(--ink);background:#fff;cursor:pointer;color:var(--sc)}
+.scitabs button.on{background:var(--sc);color:#fff}
+.scitabs button span{font-weight:400;font-size:13px;opacity:.85}
+.tblock{border:2px solid var(--ink);border-left:10px solid var(--sc);background:#fff;margin-top:10px;padding:10px 12px}
+.thead{display:flex;align-items:center;gap:10px}
+.thead img{width:44px;height:44px;flex:none}
+.thead b{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:20px;line-height:1}
+.thead .foe{font-size:13px;color:var(--muted)}
+.thead .tp{margin-left:auto;font-size:13px;font-weight:700;color:var(--sc);white-space:nowrap}
+.thead>div{flex:1;min-width:0}
+@media(max-width:560px){.thead{flex-wrap:wrap}.thead .tp{width:100%;margin-left:54px}.thead b{font-size:18px}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:8px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:4px;padding:8px 10px;border:2px solid var(--sc);background:var(--tint);min-height:64px}
+.tile:hover,.tile:focus-visible{background:#fff8d6;outline:none}
+.tile .nm{font-weight:700;font-size:15px;line-height:1.2}
+.tile .nm small{color:var(--sc);font-weight:900;margin-right:4px}
+.tile .mt{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.tile .pb{flex:1;height:8px;border:1.5px solid var(--ink);background:#fff}.tile .pb i{display:block;height:100%;background:var(--sc)}
+.tile .st{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:0 5px;border:1.5px solid currentColor}
+.tile.done{background:#fff;border-style:dashed}
 /* fight */
 .arena{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:10px;background:linear-gradient(#bfe3f6 0 66%,#b9d77f 66% 100%);border:2px solid var(--ink);padding:52px 14px 10px;position:relative;overflow:hidden}
 .side{text-align:center;position:relative}
@@ -97,7 +118,8 @@
     <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, right answers count towards securing spec points (which make you stronger), and a question you get right first time on two different days is secured for good.</p>
     <div class="prof" id="prof"></div>
     <div class="choices" id="choices"></div>
-    <div class="other"><label for="pick"><b>Or pick any topic:</b></label><select id="pick"></select><button class="btn" id="pickGo">Fight →</button></div>
+    <div class="all"><h2>All missions</h2><p class="small" style="margin:-4px 0 8px">One mission for each part of the spec. The bar shows how many of its spec points you've secured.</p>
+      <div class="scitabs" id="sciTabs"></div><div id="allTopics"></div></div>
   </section>
 
   <section id="fight" class="hidden">
@@ -160,9 +182,24 @@ $('prof').innerHTML = S.chapter < 2 ? `<img src="${ADV.icon('prof')}" alt="" sty
 const TAGCOL = { Suggested: '#b45309', Rusty: '#2563eb', 'Ready to secure': '#7c3aed', Fresh: '#16a34a', 'Keep going': '#475569' };
 const PICKS = QE.picks().filter(p => subBy(p.sub.key));
 $('choices').innerHTML = PICKS.map(({ sub, tag, why }) => { const sb = subBy(sub.key), f = foeOf(sb); return `<button class="choice" data-sub="${sb.key}"><span class="why" style="color:${TAGCOL[tag] || '#b45309'}">${tag}</span><img class="px" src="${f.img}" alt=""><b>${f.name}</b><span class="topic">${sb.subj} ${sb.key.slice(1)} · ${esc(sb.name)}</span><span class="small">${why}</span></button>`; }).join('');
-$('pick').innerHTML = ['Biology', 'Chemistry', 'Physics'].map(n => `<optgroup label="${n}">${SUBS.filter(s => s.subj === n).map(s => `<option value="${s.key}">${s.key.slice(1)} ${s.name}</option>`).join('')}</optgroup>`).join('');
+/* all missions: science tabs → topics (with their misconception) → sub-topic tiles with progress */
+const TINT = { B: '#effaf2', C: '#fdf0f0', P: '#fdf6ea' };
+const topicName = t => { const sc = SPEC.find(x => x.name[0] === t[0]); const tp = sc && sc.topics.find(x => x.n === +t.slice(1)); return tp ? tp.name : t; };
+let SCI = (PICKS[0] && PICKS[0].sub.key[0]) || 'B';
+function drawAll() {
+  $('sciTabs').innerHTML = [['B', 'Biology'], ['C', 'Chemistry'], ['P', 'Physics']].map(([L, n]) => { const xs = SUBS.filter(s => s.L === L), sec = xs.reduce((a, s) => a + s.st.secured, 0), tot = xs.reduce((a, s) => a + s.st.n, 0);
+    return `<button type="button" data-sci="${L}" class="${SCI === L ? 'on' : ''}" style="--sc:${SCI_COL[L]}">${n} <span>${sec}/${tot}</span></button>`; }).join('');
+  const topics = [...new Set(SUBS.filter(s => s.L === SCI).map(s => s.topic))];
+  $('allTopics').innerHTML = topics.map(t => { const xs = SUBS.filter(s => s.topic === t), f = foeOf(xs[0]), sec = xs.reduce((a, s) => a + s.st.secured, 0), tot = xs.reduce((a, s) => a + s.st.n, 0);
+    return `<div class="tblock" style="--sc:${SCI_COL[SCI]};--tint:${TINT[SCI]}"><div class="thead"><img class="px" src="${f.img}" alt=""><div><b>${t.slice(1)} · ${esc(topicName(t))}</b><div class="foe">Misconception: ${esc(f.name)}</div></div><span class="tp">${sec}/${tot} secured</span></div>
+      <div class="tiles">${xs.map(s => { const st = s.st, pc = st.n ? Math.round(st.secured / st.n * 100) : 0;
+        const tag = st.done ? ['All secured', '#15803d'] : st.rusty ? ['Rusty', '#2563eb'] : st.ready ? ['Ready', '#7c3aed'] : !st.started ? ['New', '#475569'] : null;
+        return `<button class="tile ${st.done ? 'done' : ''}" data-sub="${s.key}"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><span class="mt"><span class="pb"><i style="width:${pc}%"></i></span>${st.secured}/${st.n}${tag ? ` <span class="st" style="color:${tag[1]}">${tag[0]}</span>` : ''}</span></button>`; }).join('')}</div></div>`; }).join('');
+}
+drawAll();
+$('sciTabs').addEventListener('click', e => { const b = e.target.closest('[data-sci]'); if (b) { SCI = b.dataset.sci; drawAll(); } });
+$('allTopics').addEventListener('click', e => { const b = e.target.closest('[data-sub]'); if (b) start(b.dataset.sub); });
 $('choices').addEventListener('click', e => { const b = e.target.closest('[data-sub]'); if (b) start(b.dataset.sub); });
-$('pickGo').onclick = () => start($('pick').value);
 
 /* fight */
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };

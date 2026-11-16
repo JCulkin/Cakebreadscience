@@ -9,7 +9,7 @@
 
    SAVED DATA
    Firestore users/{uid}.specQuiz = PROG, users/{uid}.specQuizSummary (+ points: {'B2.27': 's'|'r'|'l'} for the spec tracker), users/{uid}.questing = GAME
-   Realtime Database specQuizBoard/{uid} = { name, xp, rank, pts, wk, wkCorrect, bio, chem, phys, wb, wc, wp (this week per science), look, eq, hide, t }
+   Realtime Database specQuizBoard/{uid} = { name, xp, rank, pts, wk, wkCorrect, bio, chem, phys, wb, wc, wp (this week per science), d7 { 'YYYY-MM-DD': { b, c, p } } (last 7 days, 16 Nov), look, eq, hide, t }
    PROG = { v, q: { id: { c: 0|1|2, d, l, n, r } }, xp, correct, hard, subj, weeks, missions, unrusted, earned, hide, updatedAt }
    GAME = { coins, bag: [itemId], lastLoot, days: { 'YYYY-MM-DD': missions finished }, look, eq, nick, updatedAt }
    Local copies: localStorage specquiz.camp.<uid|anon> (PROG, same key as the old Campaign) and cbs.questing.game.<uid|anon>.
@@ -48,6 +48,25 @@ const QE = (() => {
     return d.getUTCFullYear() + '-W' + String(Math.ceil(((d - y0) / 864e5 + 1) / 7)).padStart(2, '0');
   }
   const WEEK = isoWeek(TODAY);
+  /* rolling 7 days: today and the 6 days before (user, 16 Nov: "a running last 7 days" instead of Monday–Sunday) */
+  const dstrOf = n => { const d = new Date(n * 864e5); return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0'); };
+  const LAST7 = [...Array(7)].map((_, i) => dstrOf(dayNum(TODAY) - i));
+  /* right answers per day per science { 'YYYY-MM-DD': { B, C, P } }; days before PROG.dc existed are
+     backfilled from each question's last-correct date (a lower bound), taking the larger of the two */
+  function dayCounts(p) {
+    const o = {}, add = (d, k, v) => { o[d] = o[d] || {}; o[d][k] = Math.max(o[d][k] || 0, v); };
+    const bf = {}; for (const id in (p && p.q) || {}) { const l = p.q[id].l, k = id[0]; if (l && LAST7.includes(l) && 'BCP'.includes(k)) { bf[l] = bf[l] || {}; bf[l][k] = (bf[l][k] || 0) + 1; } }
+    for (const src of [bf, (p && p.dc) || {}]) for (const d in src) for (const k in src[d]) add(d, k, src[d][k]);
+    return o;
+  }
+  const sum7 = dc => { const o = { B: 0, C: 0, P: 0, t: 0 }; for (const d of LAST7) for (const k of 'BCP') { const v = ((dc || {})[d] || {})[k] || 0; o[k] += v; o.t += v; } return o; };
+  const last7 = p => sum7(dayCounts(p));
+  /* a board row's last 7 days: rows saved before 16 Nov have no d7, so fall back to this week's numbers */
+  function boardLast7(r) {
+    if (r && r.d7) { const dc = {}; for (const d in r.d7) dc[d] = { B: r.d7[d].b || 0, C: r.d7[d].c || 0, P: r.d7[d].p || 0 }; return sum7(dc); }
+    if (r && r.wk === WEEK) return { B: r.wb || 0, C: r.wc || 0, P: r.wp || 0, t: r.wkCorrect || 0 };
+    return { B: 0, C: 0, P: 0, t: 0 };
+  }
 
   /* ranks only for the leaderboard record (Questing shows levels instead) */
   const RANK_XP = [0, 60, 150, 300, 500, 800, 1200, 1700, 2300, 3000, 4000, 5200, 6600, 8200, 10000];
@@ -60,7 +79,7 @@ const QE = (() => {
     del(k) { try { localStorage.removeItem(k); } catch (e) {} },
   };
   const UID_KEY = 'cbs.questing.uid';
-  const blank = () => ({ v: 1, q: {}, cards: {}, weak: {}, xp: 0, correct: 0, hard: 0, subj: { Biology: 0, Chemistry: 0, Physics: 0 }, weeks: {}, ws: {}, missions: 0, unrusted: 0, earned: {}, hide: false, updatedAt: 0 });
+  const blank = () => ({ v: 1, q: {}, cards: {}, weak: {}, xp: 0, correct: 0, hard: 0, subj: { Biology: 0, Chemistry: 0, Physics: 0 }, weeks: {}, ws: {}, dc: {}, missions: 0, unrusted: 0, earned: {}, hide: false, updatedAt: 0 });
   const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, look: null, eq: null, nick: null, updatedAt: 0 });
   const progKey = uid => 'specquiz.camp.' + (uid || 'anon');
   const gameKey = uid => 'cbs.questing.game.' + (uid || 'anon');
@@ -82,6 +101,7 @@ const QE = (() => {
     for (const k in o.subj) o.subj[k] = Math.max((a.subj || {})[k] || 0, (b.subj || {})[k] || 0);
     for (const src of [a.weeks || {}, b.weeks || {}]) for (const k in src) o.weeks[k] = Math.max(o.weeks[k] || 0, src[k]);
     for (const src of [a.ws || {}, b.ws || {}]) for (const w in src) { o.ws[w] = o.ws[w] || {}; for (const k in src[w]) o.ws[w][k] = Math.max(o.ws[w][k] || 0, src[w][k]); }
+    o.dc = {}; for (const src of [a.dc || {}, b.dc || {}]) for (const d in src) { o.dc[d] = o.dc[d] || {}; for (const k in src[d]) o.dc[d][k] = Math.max(o.dc[d][k] || 0, src[d][k]); }
     for (const src of [a.earned || {}, b.earned || {}]) for (const k in src) o.earned[k] = o.earned[k] && o.earned[k] < src[k] ? o.earned[k] : src[k];
     o.hide = !!(a.hide || b.hide);
     return o;
@@ -188,6 +208,7 @@ const QE = (() => {
         await FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set({ name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
           bio: PROG.subj.Biology || 0, chem: PROG.subj.Chemistry || 0, phys: PROG.subj.Physics || 0,
           wb: ((PROG.ws || {})[WEEK] || {}).B || 0, wc: ((PROG.ws || {})[WEEK] || {}).C || 0, wp: ((PROG.ws || {})[WEEK] || {}).P || 0,
+          d7: (() => { const dc = dayCounts(PROG), o = {}; for (const d of LAST7) if (dc[d]) o[d] = { b: dc[d].B || 0, c: dc[d].C || 0, p: dc[d].P || 0 }; return o; })(),
           look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() });
       } catch (e) { console.warn('Leaderboard save failed', e); }
     }
@@ -327,6 +348,8 @@ const QE = (() => {
       PROG.correct++; PROG.weeks[WEEK] = (PROG.weeks[WEEK] || 0) + 1;
       const subj = POINTS[q.s] ? POINTS[q.s].subject : 'Physics'; PROG.subj[subj] = (PROG.subj[subj] || 0) + 1;
       PROG.ws = PROG.ws || {}; const w = PROG.ws[WEEK] = PROG.ws[WEEK] || {}; w[subj[0]] = (w[subj[0]] || 0) + 1;
+      PROG.dc = PROG.dc || {}; const dd = PROG.dc[TODAY] = PROG.dc[TODAY] || {}; dd[subj[0]] = (dd[subj[0]] || 0) + 1;
+      for (const d in PROG.dc) if (dayNum(d) < dayNum(TODAY) - 13) delete PROG.dc[d];
       const xp = q.hard ? 10 : 5; PROG.xp += xp; if (q.hard) PROG.hard++;
       notes.push(`+${xp} XP`);
       if (s.c === 0) { s.c = 1; s.d = TODAY; notes.push('Get it right again <b>on another day</b> to secure it.'); }
@@ -454,7 +477,7 @@ const QE = (() => {
     if (!FB.rtdb || !FB.user) return Promise.reject(new Error(FB.user ? 'offline' : 'signin'));
     return FB.rtdb.ref('specQuizBoard').once('value').then(s => {
       const v = s.val() || {};
-      return Object.entries(v).filter(([, x]) => x && !x.hide).map(([uid, x]) => Object.assign({ uid, me: uid === FB.user.uid }, x));
+      return Object.entries(v).filter(([, x]) => x && !x.hide).map(([uid, x]) => Object.assign({ uid, me: uid === FB.user.uid }, x, { l7: uid === FB.user.uid ? last7(PROG) : boardLast7(x) }));
     });
   }
 
@@ -495,6 +518,6 @@ const QE = (() => {
     signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,
-    analyse, isoWeek, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,
+    analyse, isoWeek, last7, boardLast7, dayCounts, LAST7, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,
   };
 })();
