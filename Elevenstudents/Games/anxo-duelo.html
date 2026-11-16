@@ -67,4 +67,5 @@ window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false});
 $('start').onclick=()=>{if(!active){if(health.some(v=>v===0)){round++;resetRound()}start()}};
 $('next').onclick=()=>{if(level<5){level++;round++;resetRound();$('message').textContent=`Nivel ${level}: ¡los golpes son más fuertes!`}else{const champ=wins[0]===wins[1]?`¡Empate ${wins[0]}–${wins[1]}!`:`Campeón: Jugador ${wins[0]>wins[1]?1:2} (${Math.max(...wins)}–${Math.min(...wins)})`;level=1;round=1;wins=[0,0];resetRound();$('message').textContent=`🎉 ¡Habéis completado los 5 niveles! ${champ}`}};
 $('reset').onclick=()=>{level=1;round=1;wins=[0,0];resetRound();$('message').textContent='Partida reiniciada. ¡A por todas!'};update();requestAnimationFrame(loop);
-</script></body></html>
+</script><script src="/js/home-link.js" data-mode="float"></script>
+</body></html>

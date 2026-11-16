@@ -464,5 +464,6 @@ $('imp').onchange = e => { const f = e.target.files[0]; if (!f) return; const rd
   } catch (err) { $('bMsg').className = 'msg err'; $('bMsg').textContent = 'Restore failed: ' + err.message; } e.target.value = ''; };
   rd.readAsText(f); };
 </script>
+<script src="/js/home-link.js"></script>
 </body>
 </html>

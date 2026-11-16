@@ -16,6 +16,7 @@ function header(){
   const st = body.dataset.status || 'draft', upd = body.dataset.updated, ver = body.dataset.version;
   const nav = $('.lhead .navrow');
   if(nav){
+    if(!nav.querySelector('a[href="/"]')) nav.insertAdjacentHTML('afterbegin', `<a href="/" title="Cakebread Science home">🏠 Home</a>`);
     const badge = st === 'checked' ? `<span class="status checked">Checked · ${fmtDate(ver)}</span>` : `<span class="status draft">Draft · updated ${fmtDate(upd)}</span>`;
     nav.insertAdjacentHTML('beforeend', badge + `<button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
   }

@@ -85,6 +85,9 @@ const ADV = (() => {
 .advnav a{text-decoration:none;white-space:nowrap}
 .advnav .brand{font:900 21px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:#eeeae0;letter-spacing:-.5px;margin-right:8px;line-height:1}
 .advnav .brand b{color:#00a03a}
+.advnav .site{flex:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#eeeae0;border:2px solid #555;margin-right:2px}
+.advnav .site:hover{border-color:#facc15}
+.advnav .site img{width:26px;height:26px;object-fit:contain;display:block}
 .advnav .tab{color:#ccc;font-weight:700;font-size:15px;padding:7px 11px;border-radius:7px;border:2px solid transparent;display:inline-flex;align-items:center;gap:6px}
 .advnav .tab:hover{color:#fff;background:#ffffff14}
 .advnav .tab.on{background:#eeeae0;color:#111}
@@ -110,7 +113,8 @@ const ADV = (() => {
     n.className = 'advnav';
     n.setAttribute('aria-label', 'Cakebread Questing');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
-    n.innerHTML = `<a class="brand" href="index.html">Cakebread <b>Questing</b></a>`
+    n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""></a>`
+      + `<a class="brand" href="index.html" title="Cakebread Questing menu">Cakebread <b>Questing</b></a>`
       + tab('home', 'adventurer-home.html', '🧁', 'Cakelab')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
