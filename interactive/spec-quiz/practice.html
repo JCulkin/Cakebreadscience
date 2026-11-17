@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
 <title>Practice - Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -98,7 +97,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
     <h2>The whole spec</h2>
     <div class="scitabs" id="tabs"></div>
     <div id="topics"></div>
-    <label class="setting"><input type="checkbox" id="plain"> <span>Always use plain practice: “Quiz me” links on the spec trackers and My day open here instead of a Questing mission.</span></label>
+    <label class="setting"><input type="checkbox" id="plain"> <span>Always use plain practice: “Quiz me” links on the spec trackers and To do open here instead of a Questing mission.</span></label>
   </section>
 
   <section id="quiz" class="hidden">
@@ -259,7 +258,7 @@ function finish() {
         <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">My day</a></div>
+    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">To do</a></div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe.'}</p>`;
   $('again').onclick = () => start(PS.sub.key, PS.point);
   scrollTo(0, 0);

@@ -633,7 +633,7 @@ function drawTeach(msg) {
     + `<div class="toolbar">${S.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
       <span class="small muted">${D.students.filter(s => !s.year && s.used).length} active students haven't chosen a year yet (Students tab → filter "No year yet").</span></div>`
     + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
-    + `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on My day. ${nT} of ${nAll} sub-topics ticked.</p>
+    + `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on To do. ${nT} of ${nAll} sub-topics ticked.</p>
         <div class="acts"><select id="tCopy"><option value="">Copy ticks from…</option>${S.YEARS.filter(n => n !== y).map(n => `<option value="${n}">Year ${n}</option>`).join('')}</select></div>${tree('taught')}</div></div>
       <div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}
         ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set for Year ${y}.</p></div>`}</div></div>`;

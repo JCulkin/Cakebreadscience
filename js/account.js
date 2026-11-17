@@ -31,7 +31,7 @@
   function draw(u) {
     if (u) {
       const admin = (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).includes(u.email);
-      box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">My day →</a>'}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
+      box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
       box.querySelector('.out').onclick = () => auth.signOut();
     } else {
       box.innerHTML = `<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;

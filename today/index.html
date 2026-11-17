@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>My day | Cakebread Science</title>
+<title>To do | Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
@@ -86,7 +86,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 <script src="/js/year.js"></script>
 <script src="/js/school.js"></script>
 <script>
-/* My day (10 Nov 2026): one page that answers "what should I do today?" across the site — the v4 "one revision journey".
+/* To do (10 Nov 2026): one page that answers "what should I do today?" across the site — the v4 "one revision journey".
    Reads Cakebread Questing (QE), the account doc (flashcard reviews due, spec tracker ticks) and Breadventure Land (bland/). */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -236,7 +236,7 @@ async function drawSchool() {
 /* never leave a student on "Loading your day…": if anything above throws (odd saved data), show a simple page instead */
 function safeDraw() {
   draw().catch(e => {
-    console.error('My day', e);
+    console.error('To do', e);
     if (!QE.user) return;
     $('main').innerHTML = `<div class="hello"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div>
       <div id="school"></div>

@@ -4,6 +4,8 @@
 
 ## [4.1.2] - 2026-11-17
 ### Added
+- **Practice** on the homepage's Cakebread Questing banner (the questions with no game, progress saved); Quick quiz described as the team/board game
+- **My day is now called To do** (header button, Questing bar, page title)
 - A red **Admin** button in the header next to My day, for admin accounts only (replaces the small floating button at the bottom of the homepage)
 
 ### Fixed
