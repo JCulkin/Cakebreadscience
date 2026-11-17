@@ -50,6 +50,16 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .tline a{padding:5px 10px;border:2px solid #111;text-decoration:none;color:#111;font-weight:700;font-size:14px;background:#fef3c7}
 .tline a.ok{background:#dcfce7;border-color:#15803d;color:#15803d}
 .tline a.go{margin-left:auto;background:#111;color:#fff}
+.yr{background:#111;color:#fff;border:0;font:700 13px Barlow,Arial;padding:2px 9px;margin-left:6px;cursor:pointer;vertical-align:2px}
+.setw .a{border-top:1px solid var(--line);padding:9px 0}.setw .a:first-of-type{border-top:0}
+.setw .a h3{font-size:19px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.setw .a h3 small{font:600 13px Barlow,Arial;color:var(--muted);text-transform:none}
+.setw .a h3 .done{background:#dcfce7;color:#15803d;border:1px solid #15803d;font:700 12px Barlow,Arial;padding:0 6px;text-transform:uppercase}
+.setw .a h3 .late{background:#fee2e2;color:#991b1b;border:1px solid #991b1b;font:700 12px Barlow,Arial;padding:0 6px;text-transform:uppercase}
+.setw .items{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);padding:3px 9px;font-size:14px;font-weight:700;text-decoration:none;color:var(--ink)}
+.chip:hover{background:#fef3c7}.chip i{font-style:normal;font-weight:600;color:var(--muted);font-size:12px}
+.chip.B{border-color:var(--bio)}.chip.C{border-color:var(--chem)}.chip.P{border-color:var(--phys)}
+.covered h3{font-size:16px;margin:10px 0 6px}.covered h3:first-of-type{margin-top:0}
 @media(max-width:560px){.tline a.go{margin-left:0}}
 </style>
 </head>
@@ -72,6 +82,9 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
 <script src="/interactive/spec-quiz/bland.js"></script>
 <script src="/interactive/spec-quiz/adventurer-shell.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="/js/year.js"></script>
+<script src="/js/school.js"></script>
 <script>
 /* My day (10 Nov 2026): one page that answers "what should I do today?" across the site — the v4 "one revision journey".
    Reads Cakebread Questing (QE), the account doc (flashcard reviews due, spec tracker ticks) and Breadventure Land (bland/). */
@@ -150,6 +163,7 @@ async function draw() {
       <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} card${due > 1 ? 's' : ''} due` : 'New cards'}</a>
       <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
       <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a></div>
+    <div id="school"></div>
     <h2 style="font-size:22px;margin:4px 0 8px">What to revise</h2>
     <div class="cols">
       <div>
@@ -165,8 +179,36 @@ async function draw() {
         <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Plain practice</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
       </div>
     </div>`;
+  drawSchool();
 }
-QE.onChange(draw); draw();
+/* from your teacher (17 Nov 2026): work set for your year + what's been covered in class (js/school.js, js/year.js) */
+let SCHOOL = null;
+async function drawSchool() {
+  const box = $('school'); if (!box || !QE.user) return;
+  const y = window.CBSYear && CBSYear.year;
+  const yrBtn = `<button class="yr" id="yrBtn">${y ? 'Year ' + y + ' · change' : 'Choose your year'}</button>`;
+  const hp = document.querySelector('.hello p'); if (hp && !$('yrBtn')) hp.insertAdjacentHTML('beforeend', yrBtn); else if ($('yrBtn')) $('yrBtn').textContent = y ? 'Year ' + y + ' · change' : 'Choose your year';
+  if ($('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
+  if (!y) { box.innerHTML = ''; return; }
+  if (!SCHOOL) { try { SCHOOL = await CBSSchool.load(firebase.database()); } catch (e) { SCHOOL = { taught: {}, assign: {} }; } }
+  const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
+  const set = S.forYear(SCHOOL.assign, y);
+  const secured = k => QE.pointState(k).secured;
+  const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+  const chip = k => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length} secured</i></a>`; };
+  const setHtml = set.map(a => { const p = S.progress(prog, a), late = a.due && a.due < today && !p.done;
+    return `<div class="a"><h3>${esc(a.title || 'Work set')} ${p.done ? '<span class="done">Done ✓</span>' : late ? '<span class="late">Overdue</span>' : ''}<small>${a.due ? 'due ' + fmt(a.due) : ''}</small></h3>
+      ${a.note ? `<p class="small">${esc(a.note)}</p>` : ''}
+      <div class="bar" style="margin-top:6px" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%;background:${p.done ? 'var(--s)' : 'var(--l)'}"></i></div>
+      <p class="small muted">${p.got} of ${p.target} questions right since it was set. Practise any of these:</p><div class="items">${(a.items || []).map(chip).join('')}</div></div>`; }).join('');
+  const taught = Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]);
+  const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
+  box.innerHTML = (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${setHtml}</div>` : '')
+    + (taught.length ? `<div class="card covered"><h2>Covered in class</h2><p class="small muted" style="margin-bottom:8px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</div>` : '');
+}
+QE.onChange(() => { draw(); drawSchool(); }); draw(); drawSchool();
+if (window.CBSYear) CBSYear.onChange(() => drawSchool());
 </script>
 </body>
 </html>

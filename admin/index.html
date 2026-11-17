@@ -76,6 +76,9 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 .qtext{max-width:520px}.qtext .ans{color:var(--dk);font-weight:700}
 .pct{font-weight:700}.pct.low{color:var(--bad)}
 .empty{padding:30px;text-align:center;color:var(--muted)}
+.tsci h3{margin:14px 0 4px}.ttop{margin:6px 0 8px}.ttop b{display:block;font-size:14px;margin-bottom:2px}
+.tsub{display:block;font-size:14px;padding:2px 0 2px 6px;cursor:pointer}.tsub:hover{background:#fffbe6}
+.tpick{max-height:320px;overflow:auto;border:2px solid var(--ink);padding:4px 10px;margin-top:4px;background:var(--soft)}
 .links a{display:block;padding:4px 0}
 .nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle} .nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.55em;line-height:1.05;margin-right:1px} 
 </style>
@@ -83,7 +86,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <body>
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Admin</span></h1><div class="who" id="who"></div></header>
 <nav class="tabs" id="tabs" hidden>
-  <button data-t="overview" class="on">Overview</button><button data-t="students">Students</button><button data-t="map">Spec map</button>
+  <button data-t="overview" class="on">Overview</button><button data-t="students">Students</button><button data-t="map">Spec map</button><button data-t="teach">Teaching</button>
   <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="games" id="gTab">Games</button><button data-t="backup">Backup</button>
 </nav>
 <main>
@@ -91,7 +94,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 
   <section class="panel on" id="p-overview"></section>
   <section class="panel" id="p-students">
-    <div class="toolbar"><input id="sq" placeholder="Search name, email or Questing name" size="34"><label class="small"><input type="checkbox" id="sAll"> Include people who never used Questing, Flashcards or the trackers</label><button class="btn alt sm" data-reload>↻ Reload data</button></div>
+    <div class="toolbar"><input id="sq" placeholder="Search name, email or Questing name" size="34"><select id="sYear"><option value="">Every year</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option><option value="11">Year 11</option><option value="0">No year yet</option></select><label class="small"><input type="checkbox" id="sAll"> Include people who never used Questing, Flashcards or the trackers</label><button class="btn alt sm" data-reload>↻ Reload data</button></div>
     <div class="wrapx" id="sTable"></div>
   </section>
   <section class="panel" id="p-map">
@@ -100,6 +103,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
     <div class="legend"><span style="--c:var(--s)">Secured</span><span style="--c:var(--r)">Rusty</span><span style="--c:var(--l)">Learning</span><span style="--c:var(--n)">Not started</span><span class="muted">Topic cells: % of points secured. Click a topic to see its points.</span></div>
     <div class="wrapx" id="mTable"></div>
   </section>
+  <section class="panel" id="p-teach"></section>
   <section class="panel" id="p-questions">
     <div class="toolbar"><select id="qSci"><option value="">All sciences</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option></select>
       <label class="small">At least <select id="qMin"><option>1</option><option>2</option><option selected>3</option><option>5</option><option>10</option></select> answers</label>
@@ -132,6 +136,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/interactive/spec-quiz/bland.js"></script>
+<script src="/js/school.js"></script>
 <script>
 /* Admin console (rebuilt 10 Nov 2026): the whole site + Cakebread Questing. Reads Firestore users/*, specProgress/*,
    and Realtime Database specQuizBoard, specQuizReports, gameScores. Progress maths comes from QE.analyse (same rules as the game). */
@@ -192,7 +197,7 @@ async function load() {
     const st = a ? a.stats : { securedP: 0, securedQ: 0, per: { Biology: 0, Chemistry: 0, Physics: 0 } };
     students.push({
       uid: doc.id, raw: u, prog, game, a,
-      name: u.displayName || u.email || doc.id, email: u.email || '',
+      name: u.displayName || u.email || doc.id, email: u.email || '', year: [8, 9, 10, 11].includes(u.year) ? u.year : 0,
       nick: game.nick && !QE.checkName(game.nick) ? game.nick : '', badNick: game.nick && game.nick !== '-' && QE.checkName(game.nick) ? game.nick : '',
       last: times.length ? Math.max(...times) : 0,
       xp: prog ? prog.xp || 0 : 0, pts: st.securedP, secQ: st.securedQ, per: st.per,
@@ -208,7 +213,7 @@ async function load() {
   });
   students.sort((a, b) => b.last - a.last);
   D = { students, board: (board && board.val()) || {}, reps: (reps && reps.val()) || {}, games: (games && games.val()) || {}, at: Date.now(), rtOk: !!board };
-  drawOverview(); drawStudents(); drawMap(); drawQuestions(); drawBoards(); loadBland(); loadGames();
+  drawOverview(); drawStudents(); drawMap(); drawQuestions(); drawBoards(); loadBland(); loadGames(); loadTeach();
   const h = location.hash.slice(1); if (h && $('p-' + h)) show(h);
 }
 
@@ -253,15 +258,16 @@ const sciChips = p => `<span class="sci"><b class="B">${p.Biology}</b><b class="
 const stripHtml = d14 => `<span class="strip" title="Last 14 days: green = mission, blue = flashcards">${d14.map(d => `<i class="${d.m && d.c ? 'mc' : d.m ? 'm' : d.c ? 'c' : ''}" title="${d.d}: ${d.m} mission${d.m === 1 ? '' : 's'}, ${d.c} card${d.c === 1 ? '' : 's'}"></i>`).join('')}</span>`;
 function drawStudents() {
   const q = $('sq').value.trim().toLowerCase();
-  let rows = D.students.filter(s => ($('sAll').checked || s.used) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
+  const yf = $('sYear').value;
+  let rows = D.students.filter(s => ($('sAll').checked || s.used || yf !== '') && (yf === '' || s.year === +yf) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
   rows.sort((a, b) => { const x = a[sSort], y = b[sSort]; return (typeof x === 'string' ? x.localeCompare(y) : (x || 0) - (y || 0)) * sDir; });
   const th = (k, t, n) => `<th class="${n ? 'n' : ''}" data-k="${k}">${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
-  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker ticked B / C / P</th></tr></thead><tbody>
+  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('year', 'Year', 1)}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker ticked B / C / P</th></tr></thead><tbody>
     ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.pending ? ` <span class="tag" style="background:#ede9fe">wants “${esc(s.pending)}”</span>` : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>
-      <td class="small">${ago(s.last)}</td><td class="n">${s.level || '–'}</td><td class="n">${s.xp}</td><td class="n">${s.pts} ${s.pts ? sciChips(s.per) : ''}</td><td class="n">${s.wk}</td><td class="n">${s.m7}</td><td class="n">${s.c7}</td><td>${stripHtml(s.d14)}</td><td class="n">${s.fc}</td>
+      <td class="n">${s.year || '–'}</td><td class="small">${ago(s.last)}</td><td class="n">${s.level || '–'}</td><td class="n">${s.xp}</td><td class="n">${s.pts} ${s.pts ? sciChips(s.per) : ''}</td><td class="n">${s.wk}</td><td class="n">${s.m7}</td><td class="n">${s.c7}</td><td>${stripHtml(s.d14)}</td><td class="n">${s.fc}</td>
       <td class="small">${s.trk.map(x => x == null ? '–' : x + '%').join(' / ')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nobody matches.</div>';
 }
-$('sq').oninput = drawStudents; $('sAll').onchange = drawStudents;
+$('sq').oninput = drawStudents; $('sAll').onchange = drawStudents; $('sYear').onchange = drawStudents;
 $('sTable').addEventListener('click', e => { const h = e.target.closest('th[data-k]'); if (h) { const k = h.dataset.k; sDir = sSort === k ? -sDir : (k === 'name' ? 1 : -1); sSort = k; drawStudents(); } });
 document.addEventListener('click', e => { const r = e.target.closest('tr[data-uid]'); if (r && !e.target.closest('button,a')) openStudent(r.dataset.uid); });
 
@@ -274,6 +280,7 @@ function openStudent(uid) {
   const s = D.students.find(x => x.uid === uid); if (!s) return;
   const P = s.prog, missed = P ? Object.entries(P.q || {}).filter(([, x]) => x.n - (x.r || 0) >= 1).sort((a, b) => (b[1].n - (b[1].r || 0)) - (a[1].n - (a[1].r || 0))).slice(0, 8) : [];
   $('dBody').innerHTML = `<h2>${esc(s.name)}</h2><div class="small muted">${esc(s.email)} · last on ${ago(s.last)}</div>
+    <div class="acts" style="align-items:center"><b>Year</b><select id="dYear" style="font:inherit;padding:4px 8px;border:2px solid var(--ink)"><option value="">not chosen</option>${[8, 9, 10, 11].map(y => `<option value="${y}"${s.year === y ? ' selected' : ''}>Year ${y}</option>`).join('')}</select><span class="small muted" id="dYearMsg">${s.raw.yearBy === 'admin' ? 'set by you' : s.year ? 'chosen by the student' : ''}</span></div>
     <div class="card" style="margin-top:12px"><h3 style="margin-top:0">Public name</h3>
       <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Cakebread Questing name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
       ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
@@ -299,6 +306,9 @@ function openStudent(uid) {
       msg('Saved.' + boardNote + ' Game leaderboards pick it up next time they play.', true); drawStudents(); drawBoards();
     } catch (e) { msg('Could not save: ' + (e.code || e.message) + '. The Firestore rules may not let admins edit students.'); }
   };
+  $('dYear').onchange = async e => { const y = e.target.value ? +e.target.value : null;
+    try { await DB.collection('users').doc(s.uid).set({ year: y, yearAt: Date.now(), yearBy: 'admin' }, { merge: true }); s.year = y || 0; s.raw.year = y; s.raw.yearBy = 'admin'; $('dYearMsg').textContent = 'Saved ✓'; drawStudents(); }
+    catch (err) { $('dYearMsg').textContent = 'Could not save: ' + (err.code || err.message); } };
   $('ren').onclick = () => { const n = QE.cleanName($('nn').value), bad = QE.checkName(n); if (bad) return msg(bad); setNick(n); };
   $('clr').onclick = () => setNick('-');
   if ($('hid')) $('hid').onclick = async () => {
@@ -530,6 +540,78 @@ function drawGames(msg) {
   $('gWho').onchange = e => { GM.filt.who = e.target.value; drawGames(); };
   $('gGame').onchange = e => { GM.filt.game = e.target.value; drawGames(); };
   $('gRe').onclick = loadGames;
+}
+
+/* ---------- Teaching (17 Nov 2026): what each year has been taught, and work set for a year (js/school.js) ---------- */
+const TCH = { y: 10, data: null, form: false, showArch: false, err: '' };
+async function loadTeach() {
+  try { TCH.data = await CBSSchool.load(RT); TCH.err = ''; } catch (e) { TCH.data = { taught: {}, assign: {} }; TCH.err = e.code || e.message; }
+  drawTeach();
+}
+function drawTeach(msg) {
+  const el = $('p-teach'), S = CBSSchool, y = TCH.y, Y = 'Y' + y, d = TCH.data;
+  if (!d) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
+  const taught = d.taught[Y] || {}, kids = D.students.filter(s => s.year === y);
+  const subsBy = {}; Object.values(S.SUBS).forEach(sb => { (subsBy[sb.L] = subsBy[sb.L] || {}); (subsBy[sb.L][sb.topic] = subsBy[sb.L][sb.topic] || { name: sb.topicName, subs: [] }).subs.push(sb); });
+  const nT = Object.keys(taught).filter(k => S.SUBS[k]).length, nAll = Object.keys(S.SUBS).length;
+  const tree = (mode) => ['B', 'C', 'P'].map(L => `<div class="tsci"><h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3>${Object.entries(subsBy[L]).map(([n, t]) => `<div class="ttop"><b>${n}. ${esc(t.name)}</b>${t.subs.map(sb => {
+      const on = mode === 'taught' ? !!taught[sb.key] : false;
+      return `<label class="tsub"><input type="checkbox" ${mode === 'taught' ? `data-taught="${sb.key}"` : `data-pick="${sb.key}"`}${on ? ' checked' : ''}> ${n}${sb.l} ${esc(sb.name)}${on ? ` <span class="small muted">${esc(taught[sb.key])}</span>` : ''}</label>`; }).join('')}</div>`).join('')}</div>`).join('');
+  const list = S.forYear(d.assign, y).concat(TCH.showArch ? Object.entries(d.assign).filter(([, a]) => a && a.archived && a.years && a.years[Y]).map(([id, a]) => Object.assign({ id }, a)) : []);
+  const fmt = x => x ? new Date(x + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+  const aCard = a => { const rows = kids.map(s => ({ s, p: S.progress(s.prog, a) })).sort((x, z) => z.p.got - x.p.got);
+    const done = rows.filter(r => r.p.done).length;
+    return `<div class="card"><h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">${esc(a.title || 'Work set')}${a.archived ? ' <span class="tag">archived</span>' : ''}<span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">set ${fmt(a.set)}${a.due ? ' · due ' + fmt(a.due) : ''} · ${Object.keys(a.years || {}).map(k => 'Year ' + k.slice(1)).join(', ')}</span></h2>
+      <p class="small">${(a.items || []).map(k => esc(S.label(k))).join(' · ')}</p>${a.note ? `<p class="small muted">${esc(a.note)}</p>` : ''}
+      <p class="small" style="margin:6px 0"><b>${done} of ${kids.length}</b> Year ${y} students done (${a.target || 10} questions right since it was set).</p>
+      ${rows.length ? `<div class="wrapx"><table>${rows.map(({ s, p }) => `<tr class="click" data-uid="${s.uid}"><td class="sname">${esc(s.name)}</td><td style="width:45%"><div class="bar"><i class="${p.done ? 's' : 'l'}" style="width:${p.got / p.target * 100}%"></i></div></td><td class="n">${p.got}/${p.target}${p.done ? ' ✓' : ''}</td><td class="small">${ago(s.last)}</td></tr>`).join('')}</table></div>` : `<p class="muted small">No students have chosen Year ${y} yet.</p>`}
+      <div class="acts"><button class="btn alt sm" data-arch="${a.id}">${a.archived ? 'Unarchive' : 'Archive'}</button><button class="btn warn sm" data-adel="${a.id}">Delete</button></div></div>`; };
+  const form = TCH.form ? `<div class="card" id="aForm"><h2>Set new work</h2>
+      <div class="acts" style="flex-direction:column;align-items:stretch">
+        <input id="aTitle" placeholder="Title, e.g. States of matter revision" maxlength="80" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
+        <div><b>For</b> ${S.YEARS.map(n => `<label class="small" style="margin-right:10px"><input type="checkbox" data-ay="${n}"${n === y ? ' checked' : ''}> Year ${n}</label>`).join('')}</div>
+        <div><b>Sub-topics</b> <span class="small muted">tick any number</span><div class="tpick">${tree('pick')}</div></div>
+        <input id="aPts" placeholder="Extra spec points, e.g. C2.5, P3.12 (optional)" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
+        <div class="small"><label>Questions to get right <input id="aTarget" type="number" min="1" max="100" value="10" style="width:70px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label>
+          <label style="margin-left:12px">Due <input id="aDue" type="date" style="font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label></div>
+        <input id="aNote" placeholder="Note for students (optional)" maxlength="200" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
+      </div><div class="acts"><button class="btn" id="aSave">Set it</button><button class="btn alt" id="aCancel">Cancel</button></div><div class="msg err" id="aMsg"></div></div>` : '';
+  el.innerHTML = (TCH.err ? `<div class="card"><h2>Teaching isn't switched on yet</h2><p class="muted">Couldn't read <code>school</code> (${esc(TCH.err)}). Publish the new Realtime Database rule first.</p></div>` : '')
+    + `<div class="toolbar">${S.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
+      <span class="small muted">${D.students.filter(s => !s.year && s.used).length} active students haven't chosen a year yet (Students tab → filter "No year yet").</span></div>`
+    + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
+    + `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on My day. ${nT} of ${nAll} sub-topics ticked.</p>
+        <div class="acts"><select id="tCopy"><option value="">Copy ticks from…</option>${S.YEARS.filter(n => n !== y).map(n => `<option value="${n}">Year ${n}</option>`).join('')}</select></div>${tree('taught')}</div></div>
+      <div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}
+        ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set for Year ${y}.</p></div>`}</div></div>`;
+  const fail = e => drawTeach('Could not save: ' + (e.code || e.message));
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-taught]').forEach(c => c.onchange = async () => { const k = c.dataset.taught;
+    try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (d.taught[Y] = d.taught[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (d.taught[Y]) delete d.taught[Y][k]; } drawTeach(); } catch (e) { fail(e); } });
+  $('tCopy').onchange = async e => { const from = e.target.value; if (!from) return; const src = d.taught['Y' + from] || {}, upd = {};
+    Object.keys(src).forEach(k => { if (!taught[k]) upd[k] = src[k]; });
+    try { if (Object.keys(upd).length) await RT.ref('school/taught/' + Y).update(upd); d.taught[Y] = Object.assign({}, taught, upd); drawTeach(`Copied ${Object.keys(upd).length} ticks from Year ${from}.`); } catch (err) { fail(err); } };
+  $('aNew').onclick = () => { TCH.form = true; drawTeach(); };
+  $('aArch').onchange = e => { TCH.showArch = e.target.checked; drawTeach(); };
+  el.querySelectorAll('[data-arch]').forEach(b => b.onclick = async () => { const a = d.assign[b.dataset.arch]; try { await RT.ref('school/assign/' + b.dataset.arch + '/archived').set(!a.archived); a.archived = !a.archived; drawTeach(); } catch (e) { fail(e); } });
+  el.querySelectorAll('[data-adel]').forEach(b => b.onclick = async () => { if (!confirm('Delete this work? Students\' answers are kept; only the task goes.')) return; try { await RT.ref('school/assign/' + b.dataset.adel).remove(); delete d.assign[b.dataset.adel]; drawTeach('Deleted.'); } catch (e) { fail(e); } });
+  if (TCH.form) {
+    $('aCancel').onclick = () => { TCH.form = false; drawTeach(); };
+    $('aSave').onclick = async () => {
+      const m = t => { $('aMsg').textContent = t; };
+      const years = {}; el.querySelectorAll('[data-ay]:checked').forEach(c => years['Y' + c.dataset.ay] = true);
+      const items = [...el.querySelectorAll('[data-pick]:checked')].map(c => c.dataset.pick);
+      const extra = $('aPts').value.split(/[\s,;]+/).map(x => x.trim().toUpperCase()).filter(Boolean);
+      const badPts = extra.filter(k => !S.POINT[k] || !S.qsOf(k).length);
+      if (badPts.length) return m('No quiz questions for: ' + badPts.join(', ') + ' (use e.g. C2.5).');
+      extra.forEach(k => { if (!items.includes(k)) items.push(k); });
+      if (!$('aTitle').value.trim()) return m('Give it a title.');
+      if (!Object.keys(years).length) return m('Choose at least one year.');
+      if (!items.length) return m('Tick at least one sub-topic or add a spec point.');
+      const a = { title: $('aTitle').value.trim(), years, items, target: Math.max(1, Math.min(100, +$('aTarget').value || 10)), set: TODAY, due: $('aDue').value || '', note: $('aNote').value.trim(), by: ME.email, t: Date.now() };
+      try { const r = RT.ref('school/assign').push(); await r.set(a); d.assign[r.key] = a; TCH.form = false; drawTeach('Set for ' + Object.keys(years).map(k => 'Year ' + k.slice(1)).join(', ') + '.'); } catch (e) { m('Could not save: ' + (e.code || e.message)); }
+    };
+  }
 }
 </script>
 <script src="/js/home-link.js"></script>
