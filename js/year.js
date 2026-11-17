@@ -1,9 +1,10 @@
-/* Year group (user, 17 Nov 2026): every account picks Year 8, 9, 10 or 11; the admin console can change it.
+/* Year group (user, 17 Nov 2026): every account picks Year 8, 9, 10 or 11 ONCE; after that only the admin console can change it
+   (the Firestore rules refuse a student changing users/{uid}.year once set).
    Saved on Firestore users/{uid} as {year: 8|9|10|11, yearAt: ms, yearBy: 'self'|'admin'}.
    Load after firebase-config + firebase app/auth compat (Firestore compat is loaded here if the page lacks it):
      <script src="/js/year.js"></script>
    Signed in with no year → a "Which year are you in?" box (admins are never asked).
-   API: CBSYear.year (number or null), CBSYear.ask() opens the box, CBSYear.onChange(fn). Event 'cbs-year' on window. */
+   API: CBSYear.year (number or null), CBSYear.ask() opens the box (only while no year is set), CBSYear.onChange(fn). Event 'cbs-year' on window. */
 (function () {
   if (window.CBSYear) return;
   const subs = [];
@@ -31,17 +32,16 @@
     s.onload = cb; document.head.appendChild(s);
   }
   function ask() {
-    if (!Y.uid || document.querySelector('.cbs-year-bg')) return;
+    if (!Y.uid || Y.year || document.querySelector('.cbs-year-bg')) return;
     if (!css.isConnected) document.head.appendChild(css);
     const bg = document.createElement('div');
     bg.className = 'cbs-year-bg';
     bg.innerHTML = `<div class="cbs-year" role="dialog" aria-modal="true" aria-labelledby="cbsYh"><img src="/img/mascot/head-think.webp" alt="">
-      <h2 id="cbsYh">Which year are you in?</h2><p>So you see the work set for your year and what's been covered in class.</p>
+      <h2 id="cbsYh">Which year are you in?</h2><p>So you see the work set for your year and what's been covered in class. Choose carefully: only your teacher can change it afterwards.</p>
       <div class="ys">${[8, 9, 10, 11].map(n => `<button type="button" data-y="${n}"${Y.year === n ? ' class="on"' : ''}>Year ${n}</button>`).join('')}</div>
-      ${Y.year ? '<button type="button" class="x">Keep Year ' + Y.year + '</button>' : ''}<div class="err" hidden></div></div>`;
+      <div class="err" hidden></div></div>`;
     document.body.appendChild(bg);
     const close = () => bg.remove();
-    const x = bg.querySelector('.x'); if (x) x.onclick = close;
     bg.querySelectorAll('[data-y]').forEach(b => b.onclick = () => {
       const y = +b.dataset.y;
       fs.collection('users').doc(Y.uid).set({ year: y, yearAt: Date.now(), yearBy: 'self' }, { merge: true })

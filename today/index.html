@@ -186,9 +186,9 @@ let SCHOOL = null;
 async function drawSchool() {
   const box = $('school'); if (!box || !QE.user) return;
   const y = window.CBSYear && CBSYear.year;
-  const yrBtn = `<button class="yr" id="yrBtn">${y ? 'Year ' + y + ' · change' : 'Choose your year'}</button>`;
-  const hp = document.querySelector('.hello p'); if (hp && !$('yrBtn')) hp.insertAdjacentHTML('beforeend', yrBtn); else if ($('yrBtn')) $('yrBtn').textContent = y ? 'Year ' + y + ' · change' : 'Choose your year';
-  if ($('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
+  const hp = document.querySelector('.hello p'), old = $('yrBtn'); if (old) old.remove();
+  if (hp) hp.insertAdjacentHTML('beforeend', y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>');
+  if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
   if (!y) { box.innerHTML = ''; return; }
   if (!SCHOOL) { try { SCHOOL = await CBSSchool.load(firebase.database()); } catch (e) { SCHOOL = { taught: {}, assign: {} }; } }
   const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
