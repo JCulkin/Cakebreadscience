@@ -261,7 +261,7 @@ function buildPeople() {
   PEOPLE = Object.entries(BL.pubs).filter(([u]) => u !== BL.uid && BL.states[u]).map(([u, p], i) => {
     const base = p.look || PIXEL.DEFAULT;
     let face; try { face = PIXEL.portrait(base, p.eq || {}); } catch (e) { face = PIXEL.portrait(PIXEL.DEFAULT); }
-    const planned = p.plan && p.plan.day === BL.world.day ? p.plan.steps.length : 0;
+    const planned = p.plan && p.plan.day === BL.world.day ? (p.plan.steps || []).length : 0;
     let fig; try { fig = PIXEL.figure(p.eq || {}, base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
     return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: BL.states[u].at || BL.HOME };
   });
