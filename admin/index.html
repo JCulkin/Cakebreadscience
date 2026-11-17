@@ -79,6 +79,10 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 .tsci h3{margin:14px 0 4px}.ttop{margin:6px 0 8px}.ttop b{display:block;font-size:14px;margin-bottom:2px}
 .tsub{display:block;font-size:14px;padding:2px 0 2px 6px;cursor:pointer}.tsub:hover{background:#fffbe6}
+.tall td.c,.tall th.c{text-align:center;width:84px}.tall input[type=checkbox]{width:18px;height:18px;cursor:pointer}
+.tall tr.tsc th{background:#111;color:#fff;font-size:15px;text-transform:uppercase;cursor:default;position:static}
+.tall tr.ttp td{background:var(--soft)}.tall td.tsn{padding-left:18px}
+.tall thead th{position:sticky;top:0;z-index:1}
 .tpick{max-height:320px;overflow:auto;border:2px solid var(--ink);padding:4px 10px;margin-top:4px;background:var(--soft)}
 .links a{display:block;padding:4px 0}
 .nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle} .nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.55em;line-height:1.05;margin-right:1px} 
@@ -590,7 +594,46 @@ async function loadTeach() {
   try { TCH.data = await CBSSchool.load(RT); TCH.err = ''; } catch (e) { TCH.data = { taught: {}, assign: {} }; TCH.err = e.code || e.message; }
   drawTeach();
 }
+function teachBar(y) {
+  return `<div class="toolbar">${CBSSchool.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
+    <button class="btn ${y === 'all' ? '' : 'alt'} sm" data-ty="all">All years · taught</button>
+    <span class="small muted">${D.students.filter(s => !s.year && s.used).length} active students haven't chosen a year yet (Students tab → filter "No year yet").</span></div>`;
+}
+/* "All years" (user, 17 Nov): every sub-topic × Year 8–11 tick boxes in one table, to compare and fill in everyone at once */
+function drawTeachAll(msg) {
+  const el = $('p-teach'), S = CBSSchool, d = TCH.data, YS = S.YEARS, T = d.taught;
+  const on = (n, k) => !!(T['Y' + n] && T['Y' + n][k]);
+  const subsBy = {}; Object.values(S.SUBS).forEach(sb => { (subsBy[sb.L] = subsBy[sb.L] || {}); (subsBy[sb.L][sb.topic] = subsBy[sb.L][sb.topic] || { name: sb.topicName, subs: [] }).subs.push(sb); });
+  const all = Object.keys(S.SUBS), cnt = n => all.filter(k => on(n, k)).length;
+  let rows = '';
+  ['B', 'C', 'P'].forEach(L => {
+    rows += `<tr class="tsc"><th colspan="${YS.length + 2}">${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</th></tr>`;
+    Object.entries(subsBy[L]).forEach(([n, t]) => {
+      rows += `<tr class="ttp"><td><b>${n}. ${esc(t.name)}</b></td>${YS.map(y => `<td class="c small muted">${t.subs.filter(sb => on(y, sb.key)).length}/${t.subs.length}</td>`).join('')}<td></td></tr>`;
+      t.subs.forEach(sb => {
+        const k = sb.key, n4 = YS.filter(y => on(y, k)).length;
+        rows += `<tr><td class="tsn">${n}${sb.l} ${esc(sb.name)}</td>${YS.map(y => `<td class="c"><input type="checkbox" data-ty2="${y}" data-k="${k}"${on(y, k) ? ` checked title="Taught ${esc(T['Y' + y][k])}"` : ` title="Year ${y}: not taught yet"`}></td>`).join('')}
+          <td class="c"><input type="checkbox" data-allk="${k}"${n4 === YS.length ? ' checked' : ''}${n4 && n4 < YS.length ? ' data-mixed="1"' : ''} title="Every year"></td></tr>`;
+      });
+    });
+  });
+  el.innerHTML = (TCH.err ? `<div class="card"><h2>Teaching isn't switched on yet</h2><p class="muted">Couldn't read <code>school</code> (${esc(TCH.err)}). Publish the new Realtime Database rule first.</p></div>` : '')
+    + teachBar('all') + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
+    + `<div class="card"><h2>Taught in class · all years</h2><p class="small muted">Tick what each year has done in lessons; students see these as "Covered in class" on To do. The last column ticks or unticks a sub-topic for every year.</p>
+      <div class="wrapx"><table class="tall"><thead><tr><th>Sub-topic</th>${YS.map(y => `<th class="c">Year ${y}<div class="small">${cnt(y)}/${all.length}</div></th>`).join('')}<th class="c">All</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  el.querySelectorAll('[data-mixed]').forEach(c => c.indeterminate = true);
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = b.dataset.ty === 'all' ? 'all' : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  const keepScroll = f => async () => { const y0 = scrollY; await f(); scrollTo(0, y0); };
+  el.querySelectorAll('[data-ty2]').forEach(c => c.onchange = keepScroll(async () => { const Y = 'Y' + c.dataset.ty2, k = c.dataset.k;
+    try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (T[Y] = T[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (T[Y]) delete T[Y][k]; } drawTeachAll(); }
+    catch (e) { drawTeachAll('Could not save: ' + (e.code || e.message)); } }));
+  el.querySelectorAll('[data-allk]').forEach(c => c.onchange = keepScroll(async () => { const k = c.dataset.allk, upd = {};
+    YS.forEach(y => { upd[`Y${y}/${k}`] = c.checked ? ((T['Y' + y] || {})[k] || TODAY) : null; });
+    try { await RT.ref('school/taught').update(upd); YS.forEach(y => { const Y = 'Y' + y; if (c.checked) { T[Y] = T[Y] || {}; if (!T[Y][k]) T[Y][k] = TODAY; } else if (T[Y]) delete T[Y][k]; }); drawTeachAll(); }
+    catch (e) { drawTeachAll('Could not save: ' + (e.code || e.message)); } }));
+}
 function drawTeach(msg) {
+  if (TCH.y === 'all' && TCH.data) return drawTeachAll(msg);
   const el = $('p-teach'), S = CBSSchool, y = TCH.y, Y = 'Y' + y, d = TCH.data;
   if (!d) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
   const taught = d.taught[Y] || {}, kids = D.students.filter(s => s.year === y);
@@ -630,15 +673,14 @@ function drawTeach(msg) {
         <input id="aNote" placeholder="Note for students (optional)" maxlength="200" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
       </div><div class="acts"><button class="btn" id="aSave">Set it</button><button class="btn alt" id="aCancel">Cancel</button></div><div class="msg err" id="aMsg"></div></div>` : '';
   el.innerHTML = (TCH.err ? `<div class="card"><h2>Teaching isn't switched on yet</h2><p class="muted">Couldn't read <code>school</code> (${esc(TCH.err)}). Publish the new Realtime Database rule first.</p></div>` : '')
-    + `<div class="toolbar">${S.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
-      <span class="small muted">${D.students.filter(s => !s.year && s.used).length} active students haven't chosen a year yet (Students tab → filter "No year yet").</span></div>`
+    + teachBar(y)
     + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
     + `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on To do. ${nT} of ${nAll} sub-topics ticked.</p>
         <div class="acts"><select id="tCopy"><option value="">Copy ticks from…</option>${S.YEARS.filter(n => n !== y).map(n => `<option value="${n}">Year ${n}</option>`).join('')}</select></div>${tree('taught')}</div></div>
       <div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}
         ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set for Year ${y}.</p></div>`}</div></div>`;
   const fail = e => drawTeach('Could not save: ' + (e.code || e.message));
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = b.dataset.ty === 'all' ? 'all' : +b.dataset.ty; TCH.form = false; drawTeach(); });
   el.querySelectorAll('[data-taught]').forEach(c => c.onchange = async () => { const k = c.dataset.taught;
     try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (d.taught[Y] = d.taught[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (d.taught[Y]) delete d.taught[Y][k]; } drawTeach(); } catch (e) { fail(e); } });
   $('tCopy').onchange = async e => { const from = e.target.value; if (!from) return; const src = d.taught['Y' + from] || {}, upd = {};

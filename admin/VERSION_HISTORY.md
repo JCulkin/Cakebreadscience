@@ -6,6 +6,7 @@
 ### Added
 - Homepage: **a new Cakebread Questing banner** showing Breadventure Land ("the revision game"); **Practice Questions** and **Flashcards** get their own cards; Quick quiz is now an admin-only **Team quiz** button in the header (opens straight into the team game)
 - **My day is now called To do** (header button, Questing bar, page title)
+- Admin Teaching tab: **All years** view — every sub-topic with a tick box for Year 8, 9, 10 and 11 (and one for all years), to compare and fill in every year at once
 - **Practice Questions shows "Set by your teacher"**: the student's unfinished work for their year at the top, with Start the test / Carry on and practise buttons
 - A red **Admin** button in the header next to My day, for admin accounts only (replaces the small floating button at the bottom of the homepage)
 
