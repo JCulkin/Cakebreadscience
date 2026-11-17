@@ -3,6 +3,9 @@
 ---
 
 ## [4.1.2] - 2026-11-17
+### Added
+- A red **Admin** button in the header next to My day, for admin accounts only (replaces the small floating button at the bottom of the homepage)
+
 ### Fixed
 - My day and set-work tests never wait forever: every database call has a time limit, the page always draws, and it says which part of Firebase couldn't be reached (to diagnose the school network)
 - Homepage footer → v4.1.2
