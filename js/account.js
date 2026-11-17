@@ -2,9 +2,34 @@
    One Google account across the site (same Firebase project as Cakebread Questing, the Spec Tracker, Long Answers and the leaderboards):
    signing in here signs you in on those pages too.
    Use: <div id="cbs-account"></div> anywhere, then load, in order: /js/firebase-config.js,
-   firebase-app-compat.js and firebase-auth-compat.js (9.22.2), then this file. */
+   firebase-app-compat.js and firebase-auth-compat.js (9.22.2), then this file.
+   One sign-in box everywhere (user, 17 Nov 2026):
+     <div id="cbs-account"></div>                 in a dark header (homepage style)
+     <div id="cbs-account" class="light"></div>   in a pale header (spec trackers)
+     <script src="/js/account.js" data-bar></script> with no box on the page: adds a slim black site bar at the top
+       (Cakebread Science home link on the left, the box on the right) and replaces /js/home-link.js's pill.
+   Shows: Sign in · or · (admins: ⚙️ Admin, 👥 Team quiz) To do → · first name · Sign out. Never the email address. */
 (function () {
-  const box = document.getElementById('cbs-account');
+  let box = document.getElementById('cbs-account');
+  const me = document.currentScript;
+  if (!box && me && me.hasAttribute('data-bar') && document.body) {
+    window.__cbsHomeLink = true;   // the bar has the home link; stop home-link.js adding its pill
+    document.querySelectorAll('.cbs-home-bar').forEach(n => n.remove());
+    const bar = document.createElement('div');
+    bar.className = 'cbs-sitebar';
+    bar.innerHTML = '<a class="h" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <b>Science</b></a><div id="cbs-account"></div>';
+    document.body.insertBefore(bar, document.body.firstChild);
+    box = bar.querySelector('#cbs-account');
+    /* pages whose body is a flex/grid layout (e.g. Flashcards, centred) would put the bar beside the content:
+       pin it to the top instead and push the page down by its height */
+    const bd = getComputedStyle(document.body).display;
+    if (/flex|grid/.test(bd)) {
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0';
+      const pad0 = parseFloat(getComputedStyle(document.body).paddingTop) || 0;
+      const fit = () => { document.body.style.paddingTop = (pad0 + bar.offsetHeight) + 'px'; };
+      fit(); if (window.ResizeObserver) new ResizeObserver(fit).observe(bar); else addEventListener('resize', fit);
+    }
+  }
   if (!box) return;
   const css = document.createElement('style');
   css.textContent = `#cbs-account{display:flex;align-items:center;gap:8px;font-family:Barlow,Arial,sans-serif;font-size:15px;color:#ddd;white-space:nowrap}
@@ -21,6 +46,14 @@
 #cbs-account .tq{background:#2563eb;color:#fff;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}
 #cbs-account .tq:hover{background:#1d4ed8}
 #cbs-account{flex-wrap:wrap;justify-content:flex-end}
+#cbs-account.light{color:#333}#cbs-account.light .who{color:#111}#cbs-account.light .who small{color:#777}
+#cbs-account.light .in{background:#111;color:#fff;border-color:#111}#cbs-account.light .in:hover{background:#333}
+#cbs-account.light .out{color:#555;border-color:#999}#cbs-account.light .out:hover{color:#111;border-color:#111}
+.cbs-sitebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#111;padding:7px 14px;position:relative;z-index:1000;font-family:Barlow,Arial,sans-serif;text-align:left}
+.cbs-sitebar .h{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#eeeae0;font:900 19px 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase}
+.cbs-sitebar .h b{color:#00a03a}.cbs-sitebar .h img{width:28px;height:28px;object-fit:contain}
+.cbs-sitebar #cbs-account{margin-left:auto}
+@media print{.cbs-sitebar,#cbs-account{display:none!important}}
 #cbs-account .day{background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}`;
   document.head.appendChild(css);
   const G = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';

@@ -3,19 +3,14 @@ Chart.defaults.font.family = 'Poppins';
 Chart.defaults.color = '#fff';
 
 
-// --- FIREBASE CONFIGURATION (REPLACE THIS WITH YOUR ACTUAL KEYS) ---
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_DOMAIN.firebaseapp.com",
-    projectId: "YOUR-PROJECT-ID",
-    storageBucket: "YOUR-BUCKET.appspot.com",
-    messagingSenderId: "SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
+// --- FIREBASE CONFIGURATION ---
+// The site's own Firebase project (/js/firebase-config.js), so it's the same Google sign-in as the rest of
+// Cakebread Science (17 Nov 2026: this used to be an unfilled placeholder, so sign-in never worked).
+const firebaseConfig = window.firebaseConfig;
 
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
+const app = firebase.apps.length ? firebase.app() : firebase.initializeApp(firebaseConfig);
 const auth = app.auth();
 const db = app.firestore();
 

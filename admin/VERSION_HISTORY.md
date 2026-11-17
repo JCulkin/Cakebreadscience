@@ -4,6 +4,7 @@
 
 ## [4.1.2] - 2026-11-17
 ### Added
+- **One sign-in box everywhere:** the same top-right box (Sign in, or To do → · first name · Sign out, plus Admin and Team quiz for admins) on the spec trackers, Physics 6-markers and learning bank, leaderboards, Quick quiz, Practice, Flashcards and tests; the old per-page sign-in buttons are gone, and no page shows a student's email address any more
 - Homepage: **a new Cakebread Questing banner** showing Breadventure Land ("the revision game"); **Practice Questions** and **Flashcards** get their own cards; Quick quiz is now an admin-only **Team quiz** button in the header (opens straight into the team game)
 - **My day is now called To do** (header button, Questing bar, page title)
 - Admin Teaching tab: **All years** view — every sub-topic with a tick box for Year 8, 9, 10 and 11 (and one for all years), to compare and fill in every year at once
@@ -11,6 +12,7 @@
 - A red **Admin** button in the header next to My day, for admin accounts only (replaces the small floating button at the bottom of the homepage)
 
 ### Fixed
+- Pablo's game (Elevenstudents) had an unfilled Firebase setup, so its sign-in never worked; it now uses the site's account
 - **Restricted games fail safe:** a game stays hidden until the player's approval is confirmed; if it can't be confirmed within 10 seconds (e.g. the network blocks Firebase) the player goes to the sign-in page instead of playing (a student had played Wholesome Snake without approval)
 - My day and set-work tests never wait forever: every database call has a time limit, the page always draws, and it says which part of Firebase couldn't be reached (to diagnose the school network)
 - Homepage footer → v4.1.2

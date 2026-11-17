@@ -76,8 +76,8 @@
   <div class="account">
     <span id="status"></span>
     <select id="student" hidden></select>
-    <button id="signIn" type="button" hidden>Sign in with Google</button>
-    <button id="signOut" type="button" hidden>Sign out</button>
+    <button id="signIn" type="button" hidden style="display:none!important">Sign in with Google</button>
+    <button id="signOut" type="button" hidden style="display:none!important">Sign out</button>
     <button id="print" type="button">Print</button>
   </div>
 
@@ -92,6 +92,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="/js/account.js" data-bar></script>
 <script src="questions-data.js"></script>
 <script src="tracker.js"></script>
 <script>
