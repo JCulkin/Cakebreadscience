@@ -425,7 +425,7 @@ function drawBland(msg) {
   el.innerHTML = `${msg ? `<div class="msg ok" style="margin-bottom:10px">${msg}</div>` : ''}
     <div class="kpis"><div class="kpi"><div class="big">${w.chapter}</div><small>chapter · ${BL.keysOf(w)}/3 key pieces</small></div>
       <div class="kpi"><div class="big">${BL.dayNum(w.day) - BL.dayNum(w.started || w.day) + 1}</div><small>day · last night run ${esc(w.day)}</small></div>
-      <div class="kpi"><div class="big">${players.length}</div><small>players · ${players.filter(x => x.p.plan && x.p.plan.day === w.day && x.p.plan.steps.length).length} with moves planned tonight</small></div>
+      <div class="kpi"><div class="big">${players.length}</div><small>players · ${players.filter(x => x.p.plan && x.p.plan.day === w.day && (x.p.plan.steps || []).length).length} with moves planned tonight</small></div>
       <div class="kpi"><div class="big" style="${due ? 'color:var(--bad)' : ''}">${due ? 'Due' : 'Done'}</div><small>tonight's night ${due ? 'runs when the next player opens the map' : 'has run'}</small></div></div>
     <div class="cols">
       <div class="card"><h2>Bosses</h2><table><thead><tr><th>Boss</th><th class="n">Health</th><th class="n">Fought by</th><th>Set health</th></tr></thead><tbody>
@@ -438,7 +438,7 @@ function drawBland(msg) {
         <h3>Danger</h3><button class="btn warn sm" id="blReset">Reset the whole world</button> <span class="small muted">Bosses back to full, chapter 1, every player back to the Cakelab with 6 moves.</span></div>
     </div>
     <div class="card"><h2>Players</h2><div class="wrapx"><table><thead><tr><th>Player</th><th>Where</th><th class="n">Health</th><th class="n">Moves</th><th>Planned tonight</th><th>Waiting to collect</th><th></th></tr></thead><tbody>
-      ${players.map(({ u, st, p, s }) => { const planned = p.plan && p.plan.day === w.day ? p.plan.steps : [];
+      ${players.map(({ u, st, p, s }) => { const planned = p.plan && p.plan.day === w.day ? (p.plan.steps || []) : [];
         return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}</td>
           <td class="small">${planned.length ? planned.map(placeName).map(esc).join(' → ') : '<span class="muted">nothing</span>'}</td><td class="small">${st.pending ? `🪙 ${st.pending.coins || 0}${(st.pending.items || []).length ? ' + ' + st.pending.items.length + ' item' : ''}` : ''}</td>
           <td style="white-space:nowrap"><button class="btn alt sm" data-bheal="${u}">Heal + to Cakelab</button> <button class="btn alt sm" data-bdel="${u}">Remove</button></td></tr>`; }).join('') || '<tr><td colspan="7" class="muted">No players yet.</td></tr>'}</tbody></table></div></div>

@@ -205,6 +205,9 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-11-17 - v4.1.1 Fix
+- My day no longer hangs for students who cleared their Breadventure Land moves, so set work shows up
+
 ### 2026-11-17 - v4.1.0 Teaching by Year Group
 - **Year groups**, an admin **Teaching** tab (what each year has been taught, and set work: scored tests or practise-until-N-right) and "Set by your teacher" / "Covered in class" on My day
 - **Games need sign-in and teacher approval**, with every play logged in the admin console
