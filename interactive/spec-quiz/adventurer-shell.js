@@ -58,6 +58,27 @@ const ADV = (() => {
   const xpFor = l => 100 * l * (l - 1) / 2;
   const rawLevel = () => { let l = 1; while (xpFor(l + 1) <= S.xp) l++; return l; };
   const level = () => Math.min(rawLevel(), levelCap());
+  /* ---------- unlocks (17 Nov, user: "the game should look simpler at first"): features open as you level up.
+     Level is capped by spec points secured, so every unlock is earned by revision. Nothing a player already owns is
+     taken away: worn items stay worn and held brews stay held, they just can't be changed or used until the level. ---------- */
+  const UNLOCKS = [
+    { lv: 1, id: 'clothes', ic: '👕', name: 'Tops, bottoms and shoes', what: 'Change your outfit in the Wardrobe.' },
+    { lv: 2, id: 'spells', ic: '🔮', name: 'Mana and your first spell', what: 'Patch Up: +5 Health on Breadventure Land. Flashcards and missions fill your mana.' },
+    { lv: 3, id: 'hats', ic: '🎩', name: 'Hats', what: 'Wear anything you have found for your head.' },
+    { lv: 4, id: 'shop', ic: '🥤', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
+    { lv: 4, id: 'events', ic: '📅', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
+    { lv: 5, id: 'dungeons', ic: '🕯', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
+    { lv: 5, id: 'hands', ic: '🧤', name: 'Things to hold', what: 'Wear items in both hands.' },
+    { lv: 6, id: 'shield', ic: '🛡', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
+    { lv: 6, id: 'help', ic: '🩹', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
+    { lv: 7, id: 'fog', ic: '🌫', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
+    { lv: 7, id: 'mine', ic: '⛏', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
+    { lv: 8, id: 'legend', ic: '🏆', name: 'Legendary items', what: 'Wear a legendary when you top a science for the week.' },
+  ];
+  const unlockLv = id => (UNLOCKS.find(u => u.id === id) || { lv: 1 }).lv;
+  const can = id => level() >= unlockLv(id);
+  const nextUnlock = () => UNLOCKS.find(u => u.lv > level()) || null;
+  const SLOT_LOCK = { head: 'hats', lhand: 'hands', rhand: 'hands' };
   const stats = () => {
     const l = level(), sec = S.secured;
     const s = { l, str: BASE.str + sec.p + LV.str * l + GEAR, hp: BASE.hp + sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
@@ -85,7 +106,22 @@ const ADV = (() => {
 
   /* ---------- nav bar (one bar: brand, Cakelab, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
+  /* level-up pop-up: once per level, on any Questing page with the nav bar (never mid-mission) */
+  let navOn = false;
+  function levelCheck() {
+    if (!navOn || !QE.known || QE.busy || document.querySelector('.advstory')) return;
+    const l = level();
+    if (S.lvSeen == null || S.lvSeen > l) { S.lvSeen = l; save(); return; }   // first time on this account: no flood of pop-ups
+    if (l === S.lvSeen) return;
+    const news = UNLOCKS.filter(u => u.lv > S.lvSeen && u.lv <= l), nx = UNLOCKS.find(u => u.lv > l);
+    S.lvSeen = l; save();
+    storyModal(`<div class="ch">Level up</div><h2>Level ${l}!</h2><div class="pics"><img src="${PIXEL.figure(eq(), look())}" width="100" alt=""></div>
+      ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${u.ic} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
+      ${nx ? `<p style="color:#666;font-size:15px">Next: ${nx.ic} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
+  }
+  QE.onChange(levelCheck);
   function nav(active) {
+    navOn = true; setTimeout(levelCheck, 50);
     const css = document.createElement('style');
     css.textContent = `body>header{display:none}
 .advnav{position:sticky;top:0;z-index:50;background:#151518;border-bottom:3px solid #00a03a;display:flex;align-items:center;gap:6px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;font-family:Barlow,Arial,sans-serif}
@@ -315,5 +351,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

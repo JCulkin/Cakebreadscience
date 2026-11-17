@@ -41,6 +41,8 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .me a{color:var(--green);font-weight:700;font-size:14px}
 /* slot bar */
 .slots{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.slot.lk{opacity:.5}.slot.lk .lock{display:block;font-size:11px;color:#b45309}
+.locked{padding:14px;border:2px dashed var(--line);text-align:center;font-size:15px}.locked .pb{height:10px;border:2px solid #111;background:#fff;margin:8px auto 0;max-width:260px}.locked .pb i{display:block;height:100%;background:#facc15}
 .slot{border:2px solid var(--line);background:var(--soft);border-radius:10px;padding:4px 2px;text-align:center;font-size:12px;font-weight:700;line-height:1.1}
 .slot img{width:100%;max-width:56px;aspect-ratio:1;display:block;margin:0 auto 2px;object-fit:contain}
 .slot .empty{width:56px;max-width:100%;aspect-ratio:1;margin:0 auto 2px;display:grid;place-items:center;color:#bbb;font-size:22px}
@@ -84,7 +86,6 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
       <div class="nm" id="nm"></div>
       <div class="ttl" id="ttl"></div>
       <img id="fig" class="px" alt="Your adventurer wearing the chosen items">
-      <div class="stats" id="stats"></div>
       <div class="set" id="set"></div>
       <div style="margin-top:10px"><a href="adventurer-create.html">✏️ Change my look</a> · <a href="adventurer-home.html">🧁 Cakelab</a></div>
     </div>
@@ -133,7 +134,7 @@ QE.onChange(() => {
     render();
   }).catch(() => {});
 });
-let slot = 'head', sel = eq.head || null, showHints = false;
+let slot = 'top', sel = eq.top || null, showHints = false;   // tops first: hats unlock at level 3
 const PIC = {}; const pic = id => PIC[id] || (PIC[id] = PIXEL.item(id));
 const SUBJ = {b: 'Biology', c: 'Chemistry', p: 'Physics'};
 const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
@@ -151,15 +152,23 @@ function render() {
   const sb = setBonus();
   document.getElementById('ttl').textContent = '“' + (sb.title || 'Side Quest Enjoyer') + '”';
   document.getElementById('set').innerHTML = sb.txt;
-  const t = {aura: 0, brain: 0, vibes: 0}; Object.values(eq).forEach(id => { if (id) for (const k in t) t[k] += byId[id].st[k]; });
-  document.getElementById('stats').innerHTML = `<span>✨ Aura ${t.aura}</span><span>🧠 Brain ${t.brain}</span><span>🌀 Vibes ${t.vibes}</span>`;
 
   document.getElementById('slots').innerHTML = ADV_SLOTS.map(s => {
-    const id = eq[s.k];
-    return `<button class="slot ${slot === s.k ? 'on' : ''}" role="tab" aria-selected="${slot === s.k}" data-slot="${s.k}">
-      ${id ? `<img class="px" src="${pic(id)}" alt="">` : '<div class="empty">＋</div>'}${s.name}</button>`;
+    const id = eq[s.k], lk = ADV.SLOT_LOCK[s.k] && !ADV.can(ADV.SLOT_LOCK[s.k]);
+    return `<button class="slot ${slot === s.k ? 'on' : ''} ${lk ? 'lk' : ''}" role="tab" aria-selected="${slot === s.k}" data-slot="${s.k}">
+      ${id ? `<img class="px" src="${pic(id)}" alt="">` : '<div class="empty">＋</div>'}${s.name}${lk ? `<span class="lock">🔒 Lv ${ADV.unlockLv(ADV.SLOT_LOCK[s.k])}</span>` : ''}</button>`;
   }).join('');
 
+  /* a slot that isn't unlocked yet: show what's coming and how far away it is (anything already worn there stays on) */
+  if (ADV.SLOT_LOCK[slot] && !ADV.can(ADV.SLOT_LOCK[slot])) {
+    const u = ADV.UNLOCKS.find(x => x.id === ADV.SLOT_LOCK[slot]), xp = ADV.S.xp, need = ADV.xpFor(u.lv), cap = ADV.levelCap() < u.lv;
+    document.getElementById('slotName').textContent = ADV_SLOTS.find(s => s.k === slot).name;
+    document.getElementById('count').textContent = '';
+    document.getElementById('grid').innerHTML = `<div class="locked" style="grid-column:1/-1">🔒 <b>${u.name} unlock at level ${u.lv}.</b><br>${cap ? `Secure more spec points to raise your level cap (${ADV.securedTotal()} secured; level ${u.lv} needs ${(u.lv - 2) * 8}).` : `${xp} / ${need} XP`}
+      <div class="pb"><i style="width:${Math.min(100, (cap ? ADV.securedTotal() / ((u.lv - 2) * 8) : xp / need) * 100)}%"></i></div>${eq[slot] ? '<p class="small" style="margin-top:8px">You can keep wearing what you have on.</p>' : ''}</div>`;
+    document.getElementById('detail').innerHTML = ''; document.getElementById('hints').innerHTML = '';
+    return;
+  }
   const all = ADV_ITEMS.filter(i => i.slot === slot), mine = all.filter(i => OWNED.has(i.id)), missing = all.filter(i => !OWNED.has(i.id));
   document.getElementById('slotName').textContent = ADV_SLOTS.find(s => s.k === slot).name;
   document.getElementById('count').textContent = `${mine.length} of ${all.length} found`;
@@ -172,8 +181,8 @@ function render() {
       <img class="px" src="${pic(it.id)}" alt="">
       <div><div class="rar" style="color:var(--${it.r})">${ADV_RARITY[it.r]}</div>
         <div class="dn">${it.name}</div><div class="dd">${it.d}</div>
-        <div class="ds">Aura ${sgn(it.st.aura)} · Brain ${sgn(it.st.brain)} · Vibes ${sgn(it.st.vibes)}<br>Got it from: ${it.legend ? 'top of the ' + it.legend + ' board over the last 7 days — keep practising to keep it!' : it.from}</div>
-        <div class="acts">${eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>` : `<button class="btn" data-wear="${it.id}">Wear it</button>`}</div></div></div>` : '';
+        <div class="ds">Got it from: ${it.legend ? 'top of the ' + it.legend + ' board over the last 7 days — keep practising to keep it!' : it.from}</div>
+        <div class="acts">${it.legend && !ADV.can('legend') ? `<span class="small">🔒 Legendaries can be worn from level ${ADV.unlockLv('legend')}.</span>` : eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>` : `<button class="btn" data-wear="${it.id}">Wear it</button>`}</div></div></div>` : '';
 
   document.getElementById('hints').innerHTML = showHints && missing.length ? `<div class="hints"><b>Still to find in this slot:</b><ul>${missing.map(i =>
       `<li>${i.legend ? `A legendary — held right now by <b>${HOLDERS[i.id] || 'nobody yet'}</b> (most correct ${i.legend} answers in the last 7 days)` : `??? — ${i.from}`}</li>`).join('')}</ul></div>` : '';

@@ -50,6 +50,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .hud .tools .btn{padding:4px 10px;font-size:14px}
 .hud .day{font-size:13px;color:var(--muted);font-weight:700}
 .questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
+.hud .mana.lk{opacity:.55;font-size:13px}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
 .questbar .ev{display:block;margin-top:3px;padding-top:3px;border-top:1px dashed #bbb;font-size:12px;font-weight:600;max-width:270px;line-height:1.25}.questbar .ev u{text-decoration:none;font-weight:900;color:#b45309}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
@@ -153,6 +154,7 @@ table.st th{background:var(--soft)}
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
           <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
+          <li><b>New things open as you level up</b> (and you level up by securing spec points): mana and spells at level 2, hats at 3, the Tuck Shop and weekly events at 4, dungeons at 5, the Abandoned Mine at 7. Locked places show a padlock and the level.</li>
           <li><b>Dungeons</b> are played awake. End a move at a dungeon door, then open the map and go in: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
           <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
@@ -404,6 +406,8 @@ function renderMap() {
         things += `<rect x="${x - 20}" y="${y + 16}" width="40" height="6" fill="#fff" stroke="#111" stroke-width="1.2"/><rect x="${x - 19.4}" y="${y + 16.6}" width="${38.8 * hp / P.max}" height="4.8" fill="#e11d48"/>`;
       }
       if (P.type === 'locked') things += img(icon('lock'), x + 7, y - 24, 14);
+      { const need = P.type === 'dungeon' ? (k === MINE ? 'mine' : 'dungeons') : P.stock ? 'shop' : null;   // not yet for you: padlock + level
+        if (need && !ADV.can(need) && (P.ch || 1) <= S.chapter) things += img(icon('lock'), x + 6, y - 26, 15) + `<text x="${x + 13}" y="${y + 21}" text-anchor="middle" font-size="9" font-weight="900" fill="#111" paint-order="stroke" stroke="#fff" stroke-width="2.5">Lv ${ADV.unlockLv(need)}</text>`; }
       if (P.type === 'worldboss') things += `<text x="${x + 18}" y="${y - 18}" font-size="12" font-weight="900" fill="#334155">z</text><text x="${x + 25}" y="${y - 26}" font-size="9" font-weight="900" fill="#334155">z</text>`;
     }
     if (!vis.has(k)) {
@@ -465,20 +469,20 @@ function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>
-    <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
+    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
+    <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span>${ADV.can('shop') ? `<span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span>` : ''}</div>
     <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves - S.plan.length} left</b> <span class="small">of ${S.moves}</span>` : [...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}${S.bonus ? ' 🎁' : ''}</div>
     <div class="day">Day ${S.dayNo || 1} · moves happen at midnight</div>
     <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
-  { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
+  if (ADV.can('events')) { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
   $('undo').onclick = () => { S.plan.pop(); persist(); renderAll(); };
   $('repBtn').onclick = () => showReport();
   $('meBtn').onclick = () => { const m = document.querySelector('#map .pp[data-p="me"]'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
   if ($('peekBtn')) $('peekBtn').onclick = () => { const other = LAYER ? 0 : 1; peek = other === layerOf(S.at) ? null : other; sel = null; renderMap(); renderHud(); renderPanel(); renderLegend(); };
-  $('spellBtn').onclick = showSpells;
+  if ($('spellBtn')) $('spellBtn').onclick = showSpells;
 }
 
 /* ===================== spells (mana from flashcards and missions) ===================== */
@@ -551,11 +555,13 @@ function delve(k) {
 function showSpells() {
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
-  const row = sp => { const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
+  const LK = { heal: 'spells', shield: 'shield', fog: 'fog' };
+  const row = sp => { if (!ADV.can(LK[sp.id])) return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0;opacity:.5"><span style="font-size:28px;filter:grayscale(1)">${sp.ic}</span><div style="flex:1"><b>${sp.name}</b><br><span class="small">${sp.what}</span></div><b>🔒 Level ${ADV.unlockLv(LK[sp.id])}</b></div>`;
+    const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
     <div style="flex:1"><b>${sp.name}</b> · ${sp.cost} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
     <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
   $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
-    ${SPELLS.map(row).join('')}${brewRows()}`;
+    ${SPELLS.map(row).join('')}${ADV.can('shop') ? brewRows() : `<h3 style="margin:14px 0 4px;opacity:.5">🧪 Brews · 🔒 Level ${ADV.unlockLv('shop')}</h3><p class="small">Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.${Object.values(S.brews).some(n => n > 0) ? ' The ones you have are kept for you.' : ''}</p>`}`;
   m.classList.add('on');
   $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
     const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
@@ -605,12 +611,15 @@ function renderPanel() {
     h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}. 📣 <b>Rally:</b> +10% damage for each player on the square with you at the same move.</div>`;
   }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
-  if (P && P.stock) {
+  if (P && P.stock && !ADV.can('shop')) h += `<div class="no">🔒 The shutters are down for you. The Tuck Shop opens at level ${ADV.unlockLv('shop')}.</div>`;
+  else if (P && P.stock) {
     const here = S.at === sel && shared;
     h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Stand here to buy (end a move on the Tuck Shop).</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
       `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
   }
-  if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
+  const dLock = P && P.type === 'dungeon' ? (sel === MINE ? 'mine' : 'dungeons') : null;
+  if (dLock && !ADV.can(dLock)) h += `<div class="no">🔒 ${sel === MINE ? 'The boards are nailed back on for you.' : 'The door won\'t budge yet.'} ${sel === MINE ? 'The mine' : 'Dungeons'} open at level ${ADV.unlockLv(dLock)}.</div>`;
+  else if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
     const done = (S.delve || {})[sel] === QE.TODAY, NF = P.rooms.length, dep = P.keep ? Math.min((S.depth || {})[sel] || 0, NF - 1) : 0;
     if (P.keep) h += `<div class="loot">⛏ <b>You've dug down to floor ${dep + 1} of ${NF}.</b> ${S.under ? 'The lift at the bottom is open.' : 'You keep your place from day to day. Clear the bottom floor and you break through to whatever is making those noises.'}</div>`;
     h += mine && shared ? (done ? `<div class="loot">🕯 You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>${NF} floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">${dep ? `Carry on from floor ${dep + 1}` : `Enter ${P.name}`} →</button></div>`)
@@ -651,10 +660,11 @@ function renderPerson(who) {
     <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
     <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : p.planned ? ` Has ${p.planned} move${p.planned > 1 ? 's' : ''} planned for tonight.` : ' No moves planned yet.'}</p>
     ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them (rally: +10% damage each).</p>` : ''}
-    ${!me && shared && at === S.at ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
+    ${!me && shared && at === S.at && !ADV.can('help') ? `<p class="cap">🔒 Helping other players opens at level ${ADV.unlockLv('help')}.</p>` : ''}
+    ${!me && shared && at === S.at && ADV.can('help') ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
       <button class="btn ${S.mana >= 3 ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= 3 ? '' : 'disabled'}>🩹 Patch them up (3 mana, +5 Health)</button>
       ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${b.ic} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
-      : !me && shared ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
+      : !me && shared && at !== S.at && ADV.can('help') ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
   $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
     const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
     try {

@@ -212,7 +212,7 @@ function build() {
     <p class="lede">This page reads the same files the game runs on, so anything added to the game appears here automatically. It writes nothing. Click a picture on a map to jump to that place.</p>
     <div class="kpis">${kpi(2, 'maps (surface + Underworld)', 'maps')}${kpi(places.length, 'places on the maps', 'places')}${kpi(bosses.length + 1, 'bosses + the dragon', 'bosses')}${kpi(dens.length, 'small monsters', 'monsters')}
       ${kpi(dungeons.length, 'dungeons', 'dungeons')}${kpi(misc.length, 'misconceptions (one per mission)', 'missions')}${kpi(ADV_ITEMS.length, 'items to wear', 'items')}${kpi(Object.keys(BL.BREWS).length + BL.SPELL_INFO.length, 'brews and spells', 'brews')}
-      ${kpi(BL.EVENTS.length, 'weekly events', 'brews')}${kpi(Object.keys(BL.LAND).length - 1, 'kinds of land', 'land')}${kpi(icons.length, 'pixel sprites', 'icons')}${kpi(qs.length.toLocaleString(), 'questions in the bank', 'rules')}</div>`);
+      ${kpi(BL.EVENTS.length, 'weekly events', 'brews')}${kpi(Object.keys(BL.LAND).length - 1, 'kinds of land', 'land')}${kpi(icons.length, 'pixel sprites', 'icons')}${kpi(qs.length.toLocaleString(), 'questions in the bank', 'rules')}${kpi(ADV.UNLOCKS.length, 'level unlocks', 'unlocks')}</div>`);
 
   /* ---------- story ---------- */
   const grab = f => { const m = f(); const bx = m.querySelector('.bx'); bx.querySelector('.go') && bx.querySelector('.go').remove(); const h = bx.innerHTML; m.remove(); return h; };
@@ -278,7 +278,7 @@ function build() {
   sec('dungeons', 'Dungeons', 'question floors, played awake on the map', `
     <p class="lede">End a move on the door, then go in the next day. A floor = up to 4 questions: 3 right clears it, 2 wrong ends the run (a wrong answer costs 2 Health, never below 1). Floor coins: ${BL.FLOOR_COINS.map((c, i) => `floor ${i + 1} ${c}`).join(', ')}. The bottom floor also gives a brew and an unowned Common/Uncommon item. Once a day per dungeon.</p>
     <div class="grid" style="--w:420px">${dungeons.map(([k, P]) => `<div class="card" id="pl-${k.replace(',', '-')}"><div class="mon"><img class="px" src="${ic(P.icon)}" alt="" style="background:${layerOf(k) === 'Underworld' ? '#6b6475' : '#b9d77f'}"><div><b>${esc(P.name)}</b>
-      ${P.science ? `<span class="tag" style="color:${SCOL[P.science]}">${SNAME[P.science]}</span>` : '<span class="tag">Mixed</span>'}<span class="tag">${layerOf(k)} · ${k}</span>${P.ch > 1 ? `<span class="tag">Chapter ${P.ch}</span>` : ''}${P.keep ? '<span class="tag" style="color:#b45309">keeps your depth</span>' : ''}
+      ${P.science ? `<span class="tag" style="color:${SCOL[P.science]}">${SNAME[P.science]}</span>` : '<span class="tag">Mixed</span>'}<span class="tag">${layerOf(k)} · ${k}</span>${P.ch > 1 ? `<span class="tag">Chapter ${P.ch}</span>` : ''}${P.keep ? '<span class="tag" style="color:#b45309">keeps your depth</span>' : ''}<span class="tag" style="color:#7c3aed">🔓 level ${ADV.unlockLv(k === BL.MINE ? 'mine' : 'dungeons')}</span>
       <p class="small" style="margin-top:4px">${esc(P.text)}</p></div></div>
       <dl class="kv"><dt>Floors</dt><dd>${P.rooms.map((r, i) => `${i + 1}. ${esc(r)}`).join('<br>')}</dd><dt>Questions on</dt><dd>${P.subs.map(s => `<span class="tag" style="color:${SCOL[s[0]]}">${s.slice(1)}</span>${esc(subName(s))}`).join('<br>')}</dd>
         <dt>Pool</dt><dd>${(() => { const keys = new Set(); P.subs.forEach(s => SUBS[s] && SUBS[s].keys.forEach(x => keys.add(x))); const n = qs.filter(q => keys.has(q.s)); return `${n.length} questions (${n.filter(q => q.hard).length} ★)`; })()}</dd>
@@ -288,7 +288,7 @@ function build() {
   const others = places.filter(([, P]) => !['boss', 'monster', 'dungeon', 'worldboss'].includes(P.type));
   sec('places', 'Every other place', 'safe places, shops, mysteries and locked doors', `
     <div class="grid" style="--w:330px">${others.map(([k, P]) => `<div class="card mon" id="pl-${k.replace(',', '-')}"><img class="px" src="${ic(P.icon)}" alt="" style="background:${layerOf(k) === 'Underworld' ? '#6b6475' : '#b9d77f'}"><div><b>${esc(P.name)}</b>
-      <span class="tag">${esc({ home: 'Safe place', shop: 'Shop', event: 'Mystery', cage: 'Rescue', locked: 'Locked', lift: 'Lift' }[P.type] || P.type)}</span><span class="tag">${layerOf(k)} · ${k}</span>
+      ${P.stock ? `<span class="tag" style="color:#7c3aed">🔓 level ${ADV.unlockLv('shop')}</span>` : ''}<span class="tag">${esc({ home: 'Safe place', shop: 'Shop', event: 'Mystery', cage: 'Rescue', locked: 'Locked', lift: 'Lift' }[P.type] || P.type)}</span><span class="tag">${layerOf(k)} · ${k}</span>
       <p class="small" style="margin-top:4px">${esc(P.text)}</p></div></div>`).join('')}
       <div class="card mon"><img class="px" src="${ic('crumbs')}" alt="" style="background:#b9d77f"><div><b>The crumb trail</b><span class="tag">Clue</span><span class="tag">${BL.CRUMBS.join(' → ')}</span><p class="small" style="margin-top:4px">Shows through the fog in chapter 1, leading from the Cakelab towards the dragon's lair.</p></div></div></div>`);
 
@@ -317,12 +317,12 @@ function build() {
   const one = it => { const fig = PIXEL.figure({ [it.slot]: it.id }, PIXEL.DEFAULT);
     return `<div class="card item"><img class="px ic" src="${PIXEL.item(it.id)}" alt=""><img class="px fig" src="${fig}" alt="">
       <div><b>${esc(it.name)}</b><span class="tag r-${it.r}">${ADV_RARITY[it.r]}</span>${it.s ? `<span class="tag" style="color:${SCOL[it.s]}">${SNAME[it.s]}</span>` : ''}<span class="tag">${SLOT[it.slot]}</span>
-      <div class="stats"><span>✨ aura ${it.st.aura}</span><span>🧠 brain ${it.st.brain}</span><span>😎 vibes ${it.st.vibes}</span></div>
+      ${ADV.SLOT_LOCK[it.slot] || it.legend ? `<span class="tag" style="color:#7c3aed">🔓 level ${ADV.unlockLv(it.legend ? 'legend' : ADV.SLOT_LOCK[it.slot])}</span>` : ''}
       <p class="small" style="margin-top:3px"><i>${esc(it.d)}</i></p><p class="small muted">From: ${esc(it.from)}</p></div></div>`; };
   const starter = Object.fromEntries(ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => [i.slot, i.id]));
   const legend = Object.fromEntries(ADV_ITEMS.filter(i => i.r === 'legend' || i.r === 'unhinged').map(i => [i.slot, i.id]));
   sec('items', 'Items', `${ADV_ITEMS.length} things to wear, in ${ADV_SLOTS.length} slots`, `
-    <p class="lede">Stats are jokes and change nothing; Strength from gear is a flat +${ADV.GEAR}. Rarity: ${Object.entries(ADV_RARITY).map(([r, n]) => `<span class="tag r-${r}">${n} · ${ADV_ITEMS.filter(i => i.r === r).length}</span>`).join('')}</p>
+    <p class="lede">Strength from gear is a flat +${ADV.GEAR} (the old joke stats are no longer shown to students). Tops, bottoms and shoes from level 1, hats from level ${ADV.unlockLv('hats')}, hands from ${ADV.unlockLv('hands')}, legendaries from ${ADV.unlockLv('legend')}. Rarity: ${Object.entries(ADV_RARITY).map(([r, n]) => `<span class="tag r-${r}">${n} · ${ADV_ITEMS.filter(i => i.r === r).length}</span>`).join('')}</p>
     <div class="faces" style="margin-bottom:10px"><figure><img class="px" src="${PIXEL.figure(starter, PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>Starter outfit</figcaption></figure>
       <figure><img class="px" src="${PIXEL.figure(legend, PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>Rarest of each slot</figcaption></figure></div>
     ${ADV_SLOTS.map(sl => `<h3>${sl.name} <small class="cnt">${ADV_ITEMS.filter(i => i.slot === sl.k).length}</small></h3><div class="grid" style="--w:360px">${ADV_ITEMS.filter(i => i.slot === sl.k).map(one).join('')}</div>`).join('')}`);
@@ -357,6 +357,12 @@ function build() {
         <dt>Sight</dt><dd>${BL.SIGHT} squares round anywhere visited (Lift the Fog: 4)</dd><dt>Healing</dt><dd>+${BL.HEAL.rest} a night resting in the Cakelab (double in Cosy week)</dd><dt>Knocked out</dt><dd>back to the Cakelab on a quarter of Health; nothing lost</dd><dt>Puddle</dt><dd>40%: 5 coins</dd></dl></div>
       <div class="card"><h3 style="margin-top:0">The question bank</h3><dl class="kv"><dt>Questions</dt><dd>${qs.length.toLocaleString()}</dd><dt>Biology</dt><dd>${bySci('B')}</dd><dt>Chemistry</dt><dd>${bySci('C')}</dd><dt>Physics</dt><dd>${bySci('P')}</dd><dt>★ harder</dt><dd>${qs.filter(q => q.hard).length}</dd>
         <dt>True/false</dt><dd>${qs.filter(q => q.tf !== undefined).length}</dd><dt>Generated</dt><dd>${qs.filter(q => q.gen || /-g\d/.test(q.id)).length} (new numbers every time)</dd><dt>Spec points</dt><dd>${Object.keys(QE.POINT_QS).length} with questions</dd></dl></div></div>`);
+
+  /* ---------- level unlocks ---------- */
+  sec('unlocks', 'Level unlocks', 'the game starts simple; these open as students level up', `
+    <p class="lede">Level comes from XP but is capped at 2 + 1 per 8 spec points secured, so every unlock is earned by revision. Nothing a student already owns is taken away: worn items stay on and brews stay in the bag; they just can't be changed or used until the level. A pop-up shows what's new at each level.</p>
+    <div class="wrapx"><table><thead><tr><th class="n">Level</th><th class="n">XP</th><th class="n">Spec points</th><th>Unlocks</th></tr></thead><tbody>
+      ${[...new Set(ADV.UNLOCKS.map(u => u.lv))].map(lv => `<tr><td class="n"><b>${lv}</b></td><td class="n">${ADV.xpFor(lv)}</td><td class="n">${Math.max(0, (lv - 2) * 8)}</td><td>${ADV.UNLOCKS.filter(u => u.lv === lv).map(u => `${u.ic} <b>${esc(u.name)}</b> <span class="small muted">${esc(u.what)}</span>`).join('<br>')}</td></tr>`).join('')}</tbody></table></div>`);
 
   /* ---------- every sprite ---------- */
   const bySize = {}; icons.forEach(n => { const g = ADV.ICONS[n], s = Math.max(g.length, ...g.map(r => r.length)); (bySize[s] = bySize[s] || []).push(n); });
