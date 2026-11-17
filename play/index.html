@@ -51,6 +51,8 @@ function go(u) {
   show(face('happy') + `<h1>You're in!</h1><p>Your account can play the games.</p>` + links + whoLine(u)); bindOut();
 }
 
+const why = new URLSearchParams(location.search).get('why');
+const offline = () => show(face('worried') + `<h1>Can't check your account</h1><p>The games need to check your sign-in with Google, and this network isn't letting the check through. Try again later or on another network.</p><p style="margin-top:12px"><button class="btn" onclick="location.reload()">Try again</button></p>` + links);
 if (!window.firebase) show(face('worried') + `<h1>Can't connect</h1><p>The games need Google sign-in, and this network is blocking it. Try again later or on another network.</p>` + links);
 else {
   firebase.initializeApp(window.firebaseConfig);
@@ -64,7 +66,9 @@ else {
     }
     if ((window.ADMIN_EMAILS || []).includes(u.email)) { go(u); return; }
     const ref = firebase.database().ref('gameAccess/' + u.uid);
+    let heard = false; setTimeout(() => { if (!heard) offline(); }, 10000);
     const cb = ref.on('value', snap => {
+      heard = true;
       const v = snap.val();
       if (!v) {   // first time: ask for access
         ref.set({ status: 'pending', name: u.displayName || '', email: u.email || '', t: firebase.database.ServerValue.TIMESTAMP })
@@ -75,7 +79,7 @@ else {
       try { localStorage.removeItem(KEY); } catch (e) {}
       if (v.status === 'blocked') { show(face('worried') + `<h1>Games are off for you</h1><p>Your account can't play the games at the moment. Ask your teacher if you think this is a mistake.</p>` + links + whoLine(u)); bindOut(); return; }
       show(face('think') + `<h1>Waiting for your teacher</h1><p><span class="wait"></span>Your teacher needs to approve your account once. This page opens the game by itself as soon as they do.</p>` + links + whoLine(u)); bindOut();
-    }, e => { show(face('worried') + `<h1>Not set up yet</h1><p>The games' sign-in isn't switched on yet. Ask your teacher.</p><p class="small">${esc(e.code || e.message)}</p>` + links + whoLine(u)); bindOut(); });
+    }, e => { heard = true; show(face('worried') + `<h1>Not set up yet</h1><p>The games' sign-in isn't switched on yet. Ask your teacher.</p><p class="small">${esc(e.code || e.message)}</p>` + links + whoLine(u)); bindOut(); });
     off = () => ref.off('value', cb);
   });
 }

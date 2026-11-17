@@ -18,7 +18,7 @@
   function tell(msg) { try { parent.postMessage({ cbsGate: msg }, location.origin); } catch (e) {} }
   function setOk(uid) { try { localStorage.setItem(KEY, JSON.stringify({ uid: uid, t: Date.now() })); } catch (e) {} }
   function clearOk() { try { localStorage.removeItem(KEY); } catch (e) {} }
-  if (!window.firebase) { tell('ok'); return; }   // SDK blocked (e.g. school filter): don't lock anyone out
+  if (!window.firebase) { tell(mode === 'gate' ? 'offline' : 'ok'); return; }   // SDK blocked: can't confirm the player, so restricted games stay shut (17 Nov)
   var app = firebase.apps.length ? firebase.app() : firebase.initializeApp(window.firebaseConfig);
   var auth = firebase.auth(), rt = firebase.database();
   var logged = false;

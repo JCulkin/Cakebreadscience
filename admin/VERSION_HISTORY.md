@@ -11,6 +11,7 @@
 - A red **Admin** button in the header next to My day, for admin accounts only (replaces the small floating button at the bottom of the homepage)
 
 ### Fixed
+- **Restricted games fail safe:** a game stays hidden until the player's approval is confirmed; if it can't be confirmed within 10 seconds (e.g. the network blocks Firebase) the player goes to the sign-in page instead of playing (a student had played Wholesome Snake without approval)
 - My day and set-work tests never wait forever: every database call has a time limit, the page always draws, and it says which part of Firebase couldn't be reached (to diagnose the school network)
 - Homepage footer → v4.1.2
 
