@@ -591,17 +591,105 @@
         .loot-pop .box { background: #fff; border: 3px solid #111; border-radius: 14px; padding: 22px; max-width: 360px; text-align: center; }
         .loot-pop img { width: 96px; height: 96px; image-rendering: pixelated; }
         .loot-pop button { margin-top: 12px; }
-    </style>
+    
+/* ===== Site look (17 Nov 2026): cream, black borders, hard shadows, Barlow, subject colours. Overrides the older rules above. ===== */
+body{background:#eeeae0;color:#111;font-family:'Barlow',Arial,sans-serif;align-items:flex-start}
+.container{max-width:980px;width:100%;padding:22px 16px 60px}
+.container > div > .card{background:none;border:0;box-shadow:none;padding:0;border-radius:0}
+.login-screen .card{background:#fff!important;border:3px solid #111!important;box-shadow:0 5px 0 #111!important;padding:28px 24px!important;max-width:460px;margin:30px auto;text-align:center;border-radius:0!important}
+.fc-prof{width:84px;height:84px;object-fit:contain}
+h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;color:#111;letter-spacing:-.5px}
+.fc-head{margin:0 0 14px}
+.fc-kick{font:900 14px 'Barlow Condensed',Arial;letter-spacing:2px;text-transform:uppercase;color:#d08000}
+.fc-h1{font-size:54px;line-height:.95;margin:2px 0 6px;text-align:left}
+.fc-sub{color:#444;font-size:16px;max-width:640px}
+.btn,.btn-google{font:900 19px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;background:#facc15;color:#111;border:2px solid #111;border-radius:0;box-shadow:0 3px 0 #000;padding:9px 18px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover,.btn-google:hover{background:#fde047;transform:none;box-shadow:0 3px 0 #000}
+.btn.alt{background:#fff}.btn.alt:hover{background:#fff8e1}
+.top-buttons{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px}
+.top-buttons .sp{flex:1}
+.top-btn{font:700 15px Barlow,Arial,sans-serif;background:#fff;color:#111;border:2px solid #111;border-radius:0;padding:6px 12px;cursor:pointer;text-decoration:none;box-shadow:0 2px 0 #111}
+.top-btn:hover{background:#fef3c7;transform:none}
+.top-btn.link{background:#111;color:#fff}.top-btn.link:hover{background:#333}
+/* Questing panel = a small dark game banner */
+.quest{background:#151518;border:3px solid #111;box-shadow:0 4px 0 #111;border-radius:0;color:#eeeae0;padding:14px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center}
+.quest img.px{width:64px;height:64px;image-rendering:pixelated;background:#2a2a30;border:2px solid #444}
+.quest .q-kick{color:#facc15;font:900 13px 'Barlow Condensed',Arial;letter-spacing:2px;text-transform:uppercase}
+.quest .q-title{color:#fff;font-size:17px;font-weight:600;line-height:1.3}
+.quest .q-title b{color:#4ade80}
+.quest .q-bar{background:#2a2a30;border:1.5px solid #555;border-radius:0;height:10px;margin:6px 0}
+.quest .q-bar i{background:#facc15;border-radius:0}.quest .q-bar.done i{background:#4ade80}
+.quest .q-earned{color:#aaa;font-size:13px}
+.quest a.q-go{background:#4ade80;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;border-radius:0;font:900 18px 'Barlow Condensed',Arial;text-transform:uppercase;padding:8px 14px;text-decoration:none;white-space:nowrap}
+/* total due */
+.fc-total{display:flex!important;align-items:baseline;gap:10px;margin:0 0 12px;text-align:left}
+.fc-total[style*="none"]{display:none!important}
+.fc-total .tdc{font:900 46px/1 'Barlow Condensed',Arial;color:#111}
+.fc-total .tdl{font:900 20px 'Barlow Condensed',Arial;text-transform:uppercase}
+.fc-total .tdt{color:#666;font-size:14px}
+/* decks: a 2-column grid of bold tiles in the subject colour */
+.deck-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:640px){.deck-list{grid-template-columns:1fr}.fc-h1{font-size:42px}.quest{flex-wrap:wrap}.quest a.q-go{width:100%;text-align:center}}
+.deck-item,.deck-item.deck-biology,.deck-item.deck-chemistry,.deck-item.deck-physics,.deck-item.deck-physics-eqns{background:#fff;border:2px solid #111;border-top:8px solid var(--dc,#111);border-left:2px solid #111;border-radius:0;box-shadow:0 4px 0 #111;padding:14px 16px;margin:0;cursor:pointer;transition:transform .08s}
+.deck-item:hover,.deck-item.deck-biology:hover,.deck-item.deck-chemistry:hover,.deck-item.deck-physics:hover,.deck-item.deck-physics-eqns:hover{background:#fffdf6;transform:translateY(-2px);box-shadow:0 6px 0 #111}
+.d-top{display:flex;align-items:center;gap:10px}
+.d-ic{font-size:28px}
+.deck-item h3{font:900 24px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:#111;margin:0;flex:1}
+.d-right{text-align:right}
+.d-due{font:900 40px/1 'Barlow Condensed',Arial;color:var(--dc)}
+.d-duel{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:1px}
+.d-none{font-weight:700;color:#15803d}
+.d-go{margin-top:10px;font:900 17px 'Barlow Condensed',Arial;text-transform:uppercase;color:var(--dc)}
+.progress-bar-container{height:12px;border:1.5px solid #111;border-radius:0;background:#fff;margin-top:12px;overflow:hidden}
+.progress-segment{border-radius:0}
+.progress-unseen{background:#e7e2d6}.progress-learning{background:#facc15}.progress-mastered{background:var(--dc,#16a34a)}
+.progress-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#555;margin-top:5px}
+.study-more-btn{font:700 13px Barlow,Arial;background:#fff;border:1.5px solid #111;border-radius:0;color:#111;padding:3px 9px;margin-top:4px;box-shadow:0 2px 0 #111}
+.study-more-btn:hover{background:#fef3c7}
+/* study screen */
+.study-screen .card{max-width:720px;margin-left:auto!important;margin-right:auto!important;width:100%}
+.back-btn{all:unset;cursor:pointer;font:900 16px 'Barlow Condensed',Arial;text-transform:uppercase;color:#111;border:2px solid #111;background:#fff;padding:5px 12px;box-shadow:0 2px 0 #111;margin-bottom:12px;display:inline-block}
+.back-btn:hover{background:#fef3c7}
+.fc-decktitle{font:900 30px 'Barlow Condensed',Arial;text-transform:uppercase;color:var(--dc,#111)!important;text-align:left!important;margin:4px 0 10px!important}
+.stats{display:flex;gap:8px;background:none;border:0;padding:0;margin:0 0 14px;justify-content:flex-start}
+.stat-item{background:#fff;border:2px solid #111;padding:6px 14px;flex:0 0 auto;text-align:left;display:flex;align-items:baseline;gap:6px}
+.stat-value{font:900 26px/1 'Barlow Condensed',Arial;color:#111}
+.stat-label{font-size:13px;color:#555;text-transform:uppercase;letter-spacing:1px}
+.flashcard,.flashcard.flipped{position:relative;background:#fff;border:3px solid #111;border-top:10px solid var(--dc,#111);border-radius:0;box-shadow:0 6px 0 #111;min-height:260px;padding:40px 28px 30px;font-size:24px;line-height:1.35;color:#111;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transform:none}
+.flashcard:hover{box-shadow:0 8px 0 #111;transform:translateY(-1px)}
+.flashcard.flipped{background:#fffdf3}
+.flashcard .face{position:absolute;top:10px;left:14px;font:900 13px 'Barlow Condensed',Arial;letter-spacing:2px;text-transform:uppercase;color:var(--dc,#111)}
+.flashcard.flipped .face{color:#15803d}
+.hint{color:#666;font-size:13px;text-align:center;margin-top:10px}
+.rating-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.rating-btn{font:900 18px 'Barlow Condensed',Arial;text-transform:uppercase;border:2px solid #111;border-radius:0;box-shadow:0 3px 0 #111;padding:8px 4px;color:#111;cursor:pointer}
+.rating-btn:hover{transform:translateY(-1px);box-shadow:0 4px 0 #111}
+.rating-btn div{font-size:13px!important;font-family:Barlow,Arial;opacity:.7}
+.rating-btn-1{background:#fecaca}.rating-btn-2{background:#fde68a}.rating-btn-3{background:#bbf7d0}.rating-btn-4{background:#bfdbfe}
+.fc-done{text-align:center;padding:24px;background:#fff;border:3px solid #111;box-shadow:0 5px 0 #111}
+.fc-done img{width:90px}.fc-done h2{font:900 34px 'Barlow Condensed',Arial;text-transform:uppercase;margin:6px 0}
+.fc-done p{color:#444;margin-bottom:14px}.fc-done-acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+/* guide / settings / progress panels */
+.settings-panel{background:#fff;border:3px solid #111;border-radius:0;box-shadow:0 6px 0 #111}
+.settings-panel h2{font-family:'Barlow Condensed',Arial;font-weight:900;text-transform:uppercase;color:#111}
+.save-settings{background:#facc15;color:#111;border:2px solid #111;border-radius:0;font-weight:700}
+.cancel-settings{background:#fff;color:#111;border:2px solid #111;border-radius:0;font-weight:700}
+.reset-button{border-radius:0;border:2px solid #991b1b}
+.setting-item input[type="number"]{border:2px solid #111;border-radius:0}
+.badge-chip{border-radius:0;border:1.5px solid #111}
+.loot-pop .box{border:3px solid #111;border-radius:0;box-shadow:0 6px 0 #111}
+.loot-pop button{border:2px solid #111;border-radius:0;background:#facc15;color:#111;font-weight:700}
+.gain{border-radius:0;border:2px solid #111;box-shadow:0 3px 0 #111}
+</style>
 </head>
 <body>
     <div class="container">
         <!-- Login Screen -->
         <div class="login-screen active">
             <div class="card">
-                <h1>🎓 Cakebread Science Flashcards</h1>
-                <p style="text-align: center; margin-bottom: 30px; font-size: 1.1em; color: #666;">
-                    Master IGCSE Science with spaced repetition
-                </p>
+                <img class="fc-prof" src="/img/mascot/head-happy.webp" alt="">
+                <h1>Flashcards</h1>
+                <p class="fc-sub" style="text-align:center;margin-bottom:22px">Key facts and definitions with spaced repetition. Sign in so your cards, and your Cakebread Questing progress, are saved.</p>
                 <button class="btn btn-google" onclick="loginWithGoogle()">
                     Sign in with Google
                 </button>
@@ -611,8 +699,12 @@
         <!-- Deck Selector -->
         <div class="deck-selector">
             <div class="card">
+                <div class="fc-head"><div class="fc-kick">🃏 Cakebread Questing</div><h1 class="fc-h1">Flashcards</h1>
+                  <p class="fc-sub">Key facts and definitions, with spaced repetition: the cards you find hard come back sooner. Every card counts in the game.</p></div>
                 <div class="top-buttons">
-                    <a href="../index.html" class="top-btn" style="text-decoration: none; margin-right: auto;">← Home</a>
+                    <a href="/today/" class="top-btn link">✅ To do</a>
+                    <a href="/interactive/spec-quiz/practice.html" class="top-btn link">📝 Practice Questions</a>
+                    <span class="sp"></span>
                     <button class="top-btn" onclick="openGuide()">📖 Guide</button>
 <button class="top-btn" onclick="openProgress()">📊 Progress</button>
                     <button class="top-btn" onclick="openSettings()">⚙️ Settings</button>
@@ -620,10 +712,10 @@
                 <div class="user-info" id="userInfo" hidden></div>
                 <div class="quest" id="questPanel"></div>
                 <div class="badges-row" id="badgesRow"></div>
-                <div id="totalDueToday" style="text-align: center; margin-bottom: 20px; display: none;">
-                    <div style="font-size: 3em; font-weight: bold; color: #111; line-height: 1;" id="totalDueCount">0</div>
-                    <div style="font-size: 0.95em; color: #888;">cards due today</div>
-                    <div style="font-size: 0.85em; color: #aaa; margin-top: 4px;" id="totalDueTime"></div>
+                <div id="totalDueToday" class="fc-total" style="display: none;">
+                    <div class="tdc" id="totalDueCount">0</div>
+                    <div class="tdl">cards due today</div>
+                    <div class="tdt" id="totalDueTime"></div>
                 </div>
                 <div class="deck-list" id="deckList">
                     <div class="loading">Loading decks...</div>
@@ -636,7 +728,7 @@
             <div class="card">
                 <button class="btn back-btn" onclick="backToDecks()">← Back to Decks</button>
                 
-                <h2 id="deckTitle" style="text-align: center; color: #005e22; margin-bottom: 20px;"></h2>
+                <h2 id="deckTitle" class="fc-decktitle"></h2>
                 
                 <div class="stats">
                     <div class="stat-item">
@@ -1215,24 +1307,27 @@
                 return;
             }
 
-            const DECK_COLORS = { biology: '#27ae60', chemistry: '#e74c3c', physics: '#f39c12', 'physics-eqns': '#f39c12' };
+            const DECK_COLORS = { biology: '#005e22', chemistry: '#c8001e', physics: '#d08000', 'physics-eqns': '#d08000' };
+            const DECK_ICON = { biology: '🌿', chemistry: '🧪', physics: '🚀', 'physics-eqns': '🧮' };
 
             deckList.innerHTML = decks.map(deck => {
                 const dueCount = getDueCount(deck.id);
                 const deckColor = DECK_COLORS[deck.id] || '#005e22';
                 const dueHTML = dueCount > 0
-                    ? `<div style="font-size: 2.2em; font-weight: bold; color: ${deckColor}; line-height: 1;">${dueCount}</div>
-                       <div style="font-size: 0.75em; color: #888;">due today</div>`
-                    : `<div style="font-size: 0.85em; color: #95a5a6; line-height: 1.3;">None due</div>
+                    ? `<div class="d-due">${dueCount}</div>
+                       <div class="d-duel">due today</div>`
+                    : `<div class="d-none">None due ✓</div>
                        <button class="study-more-btn" onclick="event.stopPropagation(); studyFiveMore('${deck.id}');">Study +5 more</button>`;
                 return `
-                <div class="deck-item deck-${deck.id}" onclick="selectDeck('${deck.id}')">
-                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                        <h3 style="margin: 0;">${deck.name}</h3>
-                        <div style="text-align: center;">${dueHTML}</div>
+                <div class="deck-item deck-${deck.id}" style="--dc:${deckColor}" onclick="selectDeck('${deck.id}')">
+                    <div class="d-top">
+                        <span class="d-ic">${DECK_ICON[deck.id] || '🃏'}</span>
+                        <h3>${deck.name.replace(/^IGCSE\s+/, '')}</h3>
+                        <div class="d-right">${dueHTML}</div>
                     </div>
-                    <div class="progress-bar-container" id="progressBar_${deck.id}" style="margin-top: 10px;"></div>
-                    <div class="progress-legend" id="progressLegend_${deck.id}" style="margin-top: 4px; font-size: 0.75em; color: #888; display: flex; gap: 12px;"></div>
+                    <div class="progress-bar-container" id="progressBar_${deck.id}"></div>
+                    <div class="progress-legend" id="progressLegend_${deck.id}"></div>
+                    ${dueCount > 0 ? '<div class="d-go">Study →</div>' : ''}
                 </div>
             `}).join('');
 
@@ -1590,10 +1685,11 @@
         function showNextCard() {
             if (studyQueue.length === 0) {
                 document.getElementById('flashcardContainer').innerHTML = `
-                    <div style="text-align: center; padding: 40px;">
-                        <h2 style="color: #005e22;">🎉 All done for today!</h2>
-                        <p style="color: #666; margin-top: 20px;">Great work! Come back tomorrow for more reviews.</p>
-                        <button class="btn" onclick="backToDecks()">Back to Decks</button>
+                    <div class="fc-done">
+                        <img src="/img/mascot/head-laugh.webp" alt="">
+                        <h2>All done for today!</h2>
+                        <p>Great work. Come back tomorrow for more reviews, or keep going in Cakebread Questing.</p>
+                        <div class="fc-done-acts"><button class="btn" onclick="backToDecks()">Back to decks</button><a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a><a class="btn alt" href="/interactive/spec-quiz/practice.html">📝 Practice Questions</a></div>
                     </div>
                 `;
                 return;
@@ -1602,10 +1698,12 @@ updateDeckProgress(currentDeck);
             
             currentCard = studyQueue[0];
             if (currentCard.deck) currentDeck = currentCard.deck;   // a spec-point session mixes decks
+            { const DC = { biology: '#005e22', chemistry: '#c8001e', physics: '#d08000', 'physics-eqns': '#d08000' }; const st = document.querySelector('.study-screen'); if (st) st.style.setProperty('--dc', DC[currentDeck] || '#111'); }
             isFlipped = false;
 
             document.getElementById('flashcardContainer').innerHTML = `
                 <div class="flashcard" onclick="flipCard()">
+                    <div class="face" id="cardFace">Question</div>
                     <div id="cardContent">${currentCard.front}</div>
                 </div>
                 <div class="hint">Click card or press SPACE to flip</div>
@@ -1639,6 +1737,7 @@ updateDeckProgress(currentDeck);
             isFlipped = true;
             
             document.getElementById('cardContent').innerHTML = currentCard.back;
+            { const f = document.getElementById('cardFace'); if (f) f.textContent = 'Answer'; }
             document.querySelector('.flashcard').classList.add('flipped');
             document.getElementById('ratingButtons').style.display = 'block';
         };

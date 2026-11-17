@@ -4,6 +4,7 @@
 
 ## [4.1.2] - 2026-11-17
 ### Added
+- **Flashcards redesigned in the site's look:** big heading, the Cakebread Questing panel as a dark game banner, decks as bold tiles in their subject colours (Biology green, Chemistry red, Physics amber) with a Study button, a bolder card with Question / Answer labels in the deck's colour, clear rating buttons, an end screen with links to the Cakelab and Practice; links to To do and Practice Questions; the duplicate Home button removed
 - **One sign-in box everywhere:** the same top-right box (Sign in, or To do → · first name · Sign out, plus Admin and Team quiz for admins) on the spec trackers, Physics 6-markers and learning bank, leaderboards, Quick quiz, Practice, Flashcards and tests; the old per-page sign-in buttons are gone, and no page shows a student's email address any more
 - Homepage: **a new Cakebread Questing banner** showing Breadventure Land ("the revision game"); **Practice Questions** and **Flashcards** get their own cards; Quick quiz is now an admin-only **Team quiz** button in the header (opens straight into the team game)
 - **My day is now called To do** (header button, Questing bar, page title)
