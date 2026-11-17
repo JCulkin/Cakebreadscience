@@ -546,8 +546,9 @@ function delve(k) {
     });
   }
   function floorDone() {
-    const c = FLOOR_COINS[D.floor]; D.coins += c; S.coins += c; let extra = '';
+    const c = FLOOR_COINS[D.floor]; D.coins += c; S.coins += c; let extra = ''; QE.tally('floors');
     if (P.keep) { S.depth = S.depth || {}; S.depth[k] = Math.min(NF - 1, Math.max(S.depth[k] || 0, D.floor + 1)); }
+    if (D.floor === NF - 1) QE.mark('d:' + k);
     if (D.floor === NF - 1 && k === MINE && S.under) return end(true);   // the bottom of the mine only pays out its treasure once
     if (D.floor === NF - 1) {
       if (k === MINE) { S.under = true; D.broke = true; }
@@ -583,14 +584,14 @@ function showSpells() {
   m.classList.add('on');
   $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
     const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
-    S.brews[id]--; let msg;
+    S.brews[id]--; QE.tally('brews'); let msg;
     if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `🥤 Health refilled (+${S.health - b0}).`; }
     else { S[id] = true; msg = `${br.ic} ${br.name}: ${br.what}`; }
     persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
   $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
-    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; const msg = sp.cast(); persist(); renderAll(); showSpells();
+    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; QE.tally('spells'); const msg = sp.cast(); persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
 }
@@ -674,7 +675,7 @@ function renderPanel() {
   if ($('goBtn')) $('goBtn').onclick = () => walk(path.slice(0, left));
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
     const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
-    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; persist(); renderAll();
+    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); persist(); renderAll();
     toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
   });
 }
@@ -695,6 +696,7 @@ function renderPerson(who) {
   $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
     const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
     try {
+      QE.tally('helped');
       if (id === 'heal') { if (S.mana < 3) return; S.mana -= 3; await BL.aid(p.uid, { heal: 5 }, ADV.nick()); }
       else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
       persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +5 Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
@@ -756,7 +758,7 @@ function spendMove() {   // normal moves first, then the teacher's extra ones
   S.moves--; return true;
 }
 function knockOut(where) {
-  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4));
+  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); QE.tally('knockouts');
   toast(`💫 ${where} knocks you out. You wake up in the Cakelab on ${S.health} Health. Missions and flashcards heal you.`);
 }
 const hurtMe = h => { h = S.shield ? Math.ceil(h / 2) : h; S.health = Math.max(S.calm ? 1 : 0, S.health - h); return h; };
@@ -768,6 +770,7 @@ async function walk(steps) {
   try {
     for (const k of steps) {
       if (!spendMove()) break;
+      QE.tally('steps');
       const from = S.at, stop = await arrive(k, from);
       persist(); renderAll(); if (k !== from) centreOnMe();
       if (stop) break;
@@ -783,22 +786,22 @@ async function arrive(k, from) {
   if (chestAt(k)) { await openChest(k); return true; }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
     S.camp = { k, n: (S.camp && S.camp.k === k ? S.camp.n : 0) + 1, day: BL.world.day };
-    toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
+    QE.tally('attacks'); toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
     return true;
   }
   if (P && P.type === 'monster' && denHp(k) > 0) { await fightMonster(k); return true; }
   if (P && P.type === 'home') {
-    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1)); S.restDay = QE.TODAY; toast(`🛏 You rest in the Cakelab: +${S.health - b} Health.`); }
+    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1)); S.restDay = QE.TODAY; QE.tally('rests'); toast(`🛏 You rest in the Cakelab: +${S.health - b} Health.`); }
     return true;
   }
   if (P && P.type === 'event') {
     if (S.puddleDay === QE.TODAY) toast('The puddle has nothing more for you today.');
-    else { S.puddleDay = QE.TODAY; if (Math.random() < .4) { const n = EVNOW() === 'coins' ? 10 : 5; S.coins = S.coins + n; toast(`You poke the puddle and fish out 🪙 ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
+    else { S.puddleDay = QE.TODAY; QE.tally('puddles'); if (Math.random() < .4) { const n = EVNOW() === 'coins' ? 10 : 5; S.coins = S.coins + n; toast(`You poke the puddle and fish out 🪙 ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
     return true;
   }
   if (P) return k === from;   // shop, dungeon, lift…: you've arrived
   if (EVNOW() !== 'quiet' && Math.random() < .3 && BL.WILD[T_AT(c, r)]) {
-    const h = hurtMe(1 + Math.floor(Math.random() * 3)); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
+    const h = hurtMe(1 + Math.floor(Math.random() * 3)); QE.tally('critters'); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
     if (S.health === 0) { knockOut(BL.WILD[T_AT(c, r)].replace(/^an? /, 'A ')); return true; }
   }
   return false;
@@ -825,7 +828,7 @@ async function openChest(k) {
   S.coins = S.coins + L.coins;
   if (L.item) { QE.game.bag = QE.game.bag || []; QE.game.bag.push(L.item.id); QE.game.lastLoot = L.item.id; QE.gameChanged(); }
   if (L.brew) { S.brews = S.brews || {}; S.brews[L.brew] = (S.brews[L.brew] || 0) + 1; }
-  let bit = 0; if (L.mimic) { bit = hurtMe(3); }
+  let bit = 0; if (L.mimic) { bit = hurtMe(3); QE.tally('mimics'); } else QE.tally('chest_' + ch.t);
   persist();   // saved before the pop-up, in case they head straight to the Wardrobe
   BL.logFind({ n: (QE.boardName() || 'Someone').split(' ')[0], t: ch.t, it: L.mimic ? 'it was a mimic' : L.item ? L.item.name : '', day: BL.world.day }).catch(() => {});
   const eq = Object.assign({}, ADV.eq()); if (L.item) eq[L.item.slot] = L.item.id;
@@ -857,12 +860,12 @@ function fightMonster(k) {
       <div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
     body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
       const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
-      QE.recordAnswer(q, ok);
+      QE.recordAnswer(q, ok); QE.tally('monsterQs');
       let msg, done = false, out = false;
       if (ok) {
         const d = Math.round(fightStr() * (1.2 + Math.random() * 0.6) * (q.hard ? 1.25 : 1)), hp = Math.max(0, hp0 - d);
         S.dens[k] = hp ? { hp } : { back: S.day + 2 }; $('mHp').style.width = (hp / P.max * 100) + '%';
-        if (!hp) { S.coins = S.coins + monsterCoins(); done = true; }
+        if (!hp) { S.coins = S.coins + monsterCoins(); done = true; QE.tally('monsters'); QE.mark('m:' + k); }
         msg = `<b class="good">Right: you hit it for ${d}!</b> ${hp ? `${P.name} has ${hp} health left.` : `<span class="lt">★ ${P.name} beaten! +${monsterCoins()} coins.</span> It'll be back in two days.`}`;
       } else {
         const h = hurtMe(Math.round(P.power * (0.5 + Math.random())));

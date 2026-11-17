@@ -165,6 +165,7 @@ const ADV = (() => {
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
       + tab('today', '/today/', '✅', 'To do')
       + `<span class="gap"></span>`
+      + tab('stats', 'adventurer-stats.html', '📊', 'Stats', 'sm')
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
       + `<span class="acct" id="advAcct"></span>`;

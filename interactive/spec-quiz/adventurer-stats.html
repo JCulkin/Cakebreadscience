@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Stats - Cakebread Questing</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* Stats (17 Nov, user: "a stats screen in GTA … squares stepped on, items, monsters fought etc." and "go for completion").
+   Everything is counted from what's already saved (PROG, GAME, the shared world) plus GAME.tally / GAME.seen. */
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--gold:#facc15}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:#0b0b0f;color:#e5e7eb;line-height:1.4;font-size:16px}
+header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;border-bottom:2px solid #222}
+@media(min-width:700px){header{padding:22px 40px 18px}}
+header a{text-decoration:none}
+header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
+header .brand span{color:var(--green2)}
+header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+.wrap{max-width:1000px;margin:0 auto;padding:18px 14px 64px}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95;color:#fff}
+.top{display:flex;gap:16px;align-items:center;margin:14px 0 16px;flex-wrap:wrap}
+.top img{width:84px;image-rendering:pixelated;background:#1c1c24;border:2px solid #333;padding:4px}
+.top .who{flex:1;min-width:200px}
+.top .nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;text-transform:uppercase;color:#fff;line-height:1}
+.big{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(40px,9vw,64px);color:var(--gold);line-height:1}
+.bigl{font-size:13px;text-transform:uppercase;letter-spacing:2px;color:#9ca3af}
+.bar{height:10px;background:#1f2937;border:1px solid #374151;margin-top:6px;position:relative}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#16a34a,#facc15)}
+.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:2px solid #333;margin-bottom:0;scrollbar-width:none}
+.tabs button{font:700 15px 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;background:none;border:none;color:#9ca3af;padding:9px 12px;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px}
+.tabs button.on{color:#fff;border-bottom-color:var(--gold)}
+.panel{background:#121218;border:2px solid #262630;border-top:none;padding:6px 0}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 16px;border-bottom:1px solid #1d1d26;align-items:center}
+.row:last-child{border-bottom:none}
+.row .l{font-weight:600}
+.row .v{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;color:#fff;text-align:right;white-space:nowrap}
+.row .v small{color:#9ca3af;font-size:15px}
+.row .bar{grid-column:1/-1;margin-top:2px;height:6px}
+.row .n{grid-column:1/-1;font-size:13px;color:#9ca3af}
+.row.done .v{color:#4ade80}
+.row.sub{padding-left:32px}.row.sub .l{font-weight:400;color:#cbd5e1}
+.h{padding:12px 16px 4px;font:900 14px 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:2px;color:var(--gold)}
+.note{font-size:13px;color:#9ca3af;margin-top:12px}
+.gate{background:#121218;border:2px solid #333;padding:16px;margin-top:14px}
+.btn{background:var(--gold);color:#111;border:2px solid #000;padding:8px 14px;font:700 15px Barlow,Arial;cursor:pointer}
+</style>
+</head>
+<body>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Stats</span></header>
+<div class="wrap">
+  <h1>Stats</h1>
+  <div class="top"><img id="fig" alt=""><div class="who"><div class="nm" id="nm"></div><div id="lv" style="color:#9ca3af"></div></div>
+    <div style="min-width:220px;flex:1"><div class="bigl">Game completion</div><div class="big" id="pct">–</div><div class="bar"><i id="pctBar" style="width:0"></i></div></div></div>
+  <div class="tabs" id="tabs" role="tablist"></div>
+  <div class="panel" id="panel"></div>
+  <p class="note" id="note"></p>
+</div>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="cards.js"></script>
+<script src="questing-engine.js"></script>
+<script src="adventurer-items.js"></script>
+<script src="adventurer-pixel.js"></script>
+<script src="bland.js"></script>
+<script src="adventurer-shell.js"></script>
+<script>
+ADV.nav('stats');
+const $ = id => document.getElementById(id);
+let LAND_ = null;   // { w, st } from the shared world once read
+let tab = 'all';
+const fmt = n => (n || 0).toLocaleString('en-GB');
+
+/* the shared world: read once the account is known (like the Cakelab) */
+async function readLand() {
+  if (!QE.known || !QE.user || readLand.done) return; readLand.done = true;
+  try { const rt = firebase.database(), u = QE.user.uid;
+    const [w, st] = await Promise.all(['bland/world', 'bland/state/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
+    LAND_ = { w: w || {}, st: st || {} }; render();
+  } catch (e) { console.warn('Stats: shared world not read', e); }
+}
+
+function build() {
+  const P = QE.prog, G = QE.game, T = G.tally || {}, SEEN = G.seen || {}, st = QE.stats(), s = ADV.stats();
+  /* rows: [label, value, of (→ a bar, counts towards completion), note, sub] */
+  const sec = {};
+  const R = (cat, label, v, of, note, sub) => (sec[cat] = sec[cat] || []).push({ label, v, of, note, sub });
+  const H = (cat, label) => (sec[cat] = sec[cat] || []).push({ head: label });
+
+  /* ---- revision ---- */
+  const pts = Object.keys(QE.POINT_QS), perTot = { Biology: 0, Chemistry: 0, Physics: 0 };
+  pts.forEach(k => { const sj = QE.POINTS[k] ? QE.POINTS[k].subject : 'Physics'; perTot[sj] = (perTot[sj] || 0) + 1; });
+  const cardTot = Object.values(typeof CARD_COUNTS !== 'undefined' ? CARD_COUNTS : {}).reduce((a, b) => a + b, 0);
+  const cardSec = Object.values(P.cards || {}).filter(c => c.s && c.c === 2).length;
+  const subs = QE.allSubs(), busted = subs.filter(x => ((G.best || {})[x.key] || {}).w).length;
+  const days = new Set([...Object.keys(P.dc || {}), ...Object.keys(G.days || {}), ...Object.keys(G.cd || {}).filter(d => (G.cd[d].n || 0) > 0)]);
+  R('rev', 'Spec points secured', st.securedP, pts.length, st.rustyP ? `${st.rustyP} gone rusty right now: one right answer polishes each` : '');
+  ['Biology', 'Chemistry', 'Physics'].forEach(sj => R('rev', sj, st.per[sj], perTot[sj], '', true));
+  R('rev', 'Questions secured', st.securedQ, st.totalQ, 'Right first time on two different days');
+  if (cardTot) R('rev', 'Flashcards secured', cardSec, cardTot, 'Good or Easy on two different days');
+  R('rev', 'Misconceptions busted', busted, subs.length, 'Beat a mission\'s monster to bust its misconception');
+  R('rev', 'Missions finished', P.missions || 0);
+  R('rev', 'Right answers, all time', P.correct || 0);
+  R('rev', '★ harder questions right', P.hard || 0, null, '', true);
+  R('rev', 'Days you revised', days.size);
+
+  /* ---- you ---- */
+  const lvMax = Math.max(...ADV.UNLOCKS.map(u => u.lv));
+  R('you', 'Level', s.l, null, s.l >= ADV.levelCap() ? `Capped at ${ADV.levelCap()} until you secure more spec points` : '');
+  R('you', 'Level unlocks', ADV.UNLOCKS.filter(u => ADV.can(u.id)).length, ADV.UNLOCKS.length, (ADV.nextUnlock() ? `Next: ${ADV.nextUnlock().name} at level ${ADV.nextUnlock().lv}` : 'Everything unlocked'));
+  R('you', 'XP', s.xp != null ? s.xp : ADV.S.xp);
+  R('you', '💪 Strength', s.str, null, '', true); R('you', '❤ Health', s.hp, null, '', true); R('you', '✨ Magic', s.mag, null, '', true);
+  R('you', '🪙 Coins in your pocket', ADV.S.coins);
+
+  /* ---- Breadventure Land ---- */
+  if (LAND_ && LAND_.st && LAND_.st.at) {
+    const w = LAND_.w, me = LAND_.st, uid = QE.user.uid;
+    const all = []; for (let r = 0; r < BL.ROWS; r++) for (let c = 0; c < BL.COLS; c++) if (!BL.isWater(c, r)) all.push(BL.key(c, r));
+    const surf = all.filter(k => !BL.isUnder(k)), under = all.filter(k => BL.isUnder(k));
+    const walked = new Set((me.visited || []).filter(k => all.includes(k))), seen = BL.visibleOf(me);
+    const landName = k => { const [c, r] = BL.unkey(k), L = BL.LAND[BL.T_AT(c, r)]; return L && L.name; };
+    const area = me.under ? all : surf, inArea = k => me.under || !BL.isUnder(k);   // the Underworld counts once you can get there
+    const regions = new Set(area.map(landName).filter(Boolean)), regSeen = new Set([...walked].map(landName).filter(Boolean));
+    const places = Object.entries(BL.PLACES).filter(([k, p]) => p.type !== 'locked' && inArea(k));
+    const bosses = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'boss'), dens = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'monster');
+    const dungeons = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'dungeon'), hit = w.hit || {}, boss = BL.bossNow(w);
+    const fought = bosses.filter(([k]) => (hit[k] || {})[uid]), beat = bosses.filter(([k]) => (hit[k] || {})[uid] && boss[k] === 0);
+    H('land', 'Exploring');
+    R('land', 'Squares stepped on', walked.size, me.under ? all.length : surf.length, me.under ? '' : 'The Underworld adds ' + under.length + ' more once you dig through the mine');
+    R('land', 'Squares uncovered from the fog', all.filter(k => seen.has(k)).length, me.under ? all.length : surf.length, '', true);
+    R('land', 'Regions walked in', regSeen.size, regions.size);
+    R('land', 'Places found', places.filter(([k]) => seen.has(k)).length, places.length);
+    R('land', 'Reached the Underworld', me.under ? 1 : 0, 1);
+    R('land', 'Moves made', T.steps || 0);
+    H('land', 'Fighting');
+    R('land', 'Bosses fought', fought.length, bosses.length);
+    R('land', 'Bosses beaten (you were in the fight)', beat.length, bosses.length);
+    R('land', 'Boss attacks made', T.attacks || 0, null, '', true);
+    R('land', 'Kinds of small monster beaten', dens.filter(([k]) => SEEN['m:' + k]).length, dens.length);
+    R('land', 'Small monsters beaten', T.monsters || 0, null, '', true);
+    R('land', 'Monster questions answered', T.monsterQs || 0, null, '', true);
+    R('land', 'Wild critters fended off', T.critters || 0);
+    R('land', 'Times knocked out', T.knockouts || 0);
+    H('land', 'Dungeons and treasure');
+    R('land', 'Dungeons cleared to the bottom', dungeons.filter(([k]) => SEEN['d:' + k]).length, dungeons.length);
+    R('land', 'Dungeon floors cleared', T.floors || 0, null, '', true);
+    const chests = ['wood', 'silver', 'gold', 'cursed'].reduce((a, t) => a + (T['chest_' + t] || 0), 0);
+    R('land', 'Treasure chests opened', chests);
+    [['wood', 'Wooden'], ['silver', 'Silver'], ['gold', 'Golden'], ['cursed', 'Cursed']].forEach(([t, n]) => { if (T['chest_' + t]) R('land', n, T['chest_' + t], null, '', true); });
+    R('land', 'Mimics that bit you', T.mimics || 0, null, '', true);
+    H('land', 'Odds and ends');
+    R('land', 'Rests in the Cakelab', T.rests || 0);
+    R('land', 'Puddle pokes', T.puddles || 0);
+    R('land', 'Spells cast', T.spells || 0);
+    R('land', 'Brews bought', T.bought || 0);
+    R('land', 'Brews drunk', T.brews || 0);
+    R('land', 'Times you helped another player', T.helped || 0);
+  }
+
+  /* ---- collection ---- */
+  const bag = new Set([...(G.bag || []), ...ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id)]);
+  const items = ADV_ITEMS.filter(i => i.r !== 'legend');
+  R('items', 'Items collected', items.filter(i => bag.has(i.id)).length, items.length, 'Missions, flashcards, dungeons, bosses and treasure chests');
+  ADV_SLOTS.forEach(sl => { const a = items.filter(i => i.slot === sl.k); R('items', sl.name, a.filter(i => bag.has(i.id)).length, a.length, '', true); });
+  H('items', 'By rarity');
+  Object.entries(ADV_RARITY).filter(([r]) => r !== 'legend').forEach(([r, n]) => { const a = items.filter(i => i.r === r); R('items', n, a.filter(i => bag.has(i.id)).length, a.length, '', true); });
+  return sec;
+}
+
+const CATS = [['all', 'Summary'], ['rev', 'Revision'], ['land', 'Breadventure Land'], ['items', 'Collection'], ['you', 'Your adventurer']];
+function rowHTML(x) {
+  if (x.head) return `<div class="h">${x.head}</div>`;
+  const has = x.of != null, done = has && x.v >= x.of;
+  return `<div class="row${x.sub ? ' sub' : ''}${done ? ' done' : ''}"><span class="l">${x.label}</span><span class="v">${fmt(x.v)}${has ? ` <small>/ ${fmt(x.of)}</small>` : ''}</span>`
+    + (has ? `<div class="bar"><i style="width:${Math.min(100, x.of ? x.v / x.of * 100 : 0)}%"></i></div>` : '') + (x.note ? `<div class="n">${x.note}</div>` : '') + `</div>`;
+}
+function render() {
+  const sec = build();
+  /* completion = the average of every top-level bar (sub-rows are breakdowns, so they don't count twice) */
+  const bars = Object.values(sec).flat().filter(x => x.of != null && !x.sub);
+  const pct = bars.length ? bars.reduce((a, x) => a + Math.min(1, x.of ? x.v / x.of : 0), 0) / bars.length * 100 : 0;
+  $('pct').textContent = pct.toFixed(1) + '%'; $('pctBar').style.width = pct + '%';
+  $('nm').textContent = ADV.nick(); const s = ADV.stats(); $('lv').textContent = `Level ${s.l} · ${fmt(ADV.S.xp)} XP`;
+  try { $('fig').src = PIXEL.figure(ADV.eq(), ADV.look()); } catch (e) {}
+  $('tabs').innerHTML = CATS.map(([k, n]) => `<button role="tab" class="${tab === k ? 'on' : ''}" data-t="${k}">${n}</button>`).join('');
+  let h;
+  if (tab === 'all') h = CATS.slice(1).map(([k, n]) => (sec[k] || []).filter(x => x.of != null && !x.sub).length ? `<div class="h">${n}</div>` + sec[k].filter(x => x.of != null && !x.sub).map(rowHTML).join('') : '').join('')
+    + (sec.land ? '' : `<div class="h">Breadventure Land</div><div class="row"><span class="l">${QE.user ? 'Open Breadventure Land once to start your map stats.' : 'Sign in to see your Breadventure Land stats.'}</span></div>`);
+  else h = (sec[tab] || []).map(rowHTML).join('') || `<div class="row"><span class="l">${tab === 'land' ? (QE.user ? 'Open Breadventure Land once to start your map stats.' : 'Sign in to see your Breadventure Land stats.') : 'Nothing yet.'}</span></div>`;
+  $('panel').innerHTML = h;
+  $('note').textContent = tab === 'all' ? 'Game completion is the average of every bar on this page. The other tabs have the full counts.' : '';
+  $('tabs').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
+}
+render(); readLand(); QE.onChange(() => { readLand(); render(); });
+</script>
+</body>
+</html>

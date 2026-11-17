@@ -169,12 +169,11 @@ function render() {
     document.getElementById('detail').innerHTML = ''; document.getElementById('hints').innerHTML = '';
     return;
   }
-  const all = ADV_ITEMS.filter(i => i.slot === slot), mine = all.filter(i => OWNED.has(i.id)), missing = all.filter(i => !OWNED.has(i.id));
+  const mine = ADV_ITEMS.filter(i => i.slot === slot && OWNED.has(i.id));   // only what you've got (user, 17 Nov: no "still to find"; completion lives on the Stats page)
   document.getElementById('slotName').textContent = ADV_SLOTS.find(s => s.k === slot).name;
-  document.getElementById('count').textContent = `${mine.length} of ${all.length} found`;
+  document.getElementById('count').textContent = '';
   document.getElementById('grid').innerHTML = mine.map(i => `<button class="it r-${i.r} ${sel === i.id ? 'sel' : ''}" data-id="${i.id}">
-      ${eq[slot] === i.id ? '<span class="wearing">ON</span>' : ''}<img class="px" src="${pic(i.id)}" alt=""><span class="lbl">${i.name}</span></button>`).join('')
-    + (missing.length ? `<button class="it more" data-hints="1"><b>+${missing.length}</b>still to find</button>` : '');
+      ${eq[slot] === i.id ? '<span class="wearing">ON</span>' : ''}<img class="px" src="${pic(i.id)}" alt=""><span class="lbl">${i.name}</span></button>`).join('');
 
   const it = sel && byId[sel] && byId[sel].slot === slot ? byId[sel] : null;
   document.getElementById('detail').innerHTML = it ? `<div class="detail r-${it.r}">
@@ -184,8 +183,7 @@ function render() {
         <div class="ds">Got it from: ${it.legend ? 'top of the ' + it.legend + ' board over the last 7 days — keep practising to keep it!' : it.from}</div>
         <div class="acts">${it.legend && !ADV.can('legend') ? `<span class="small">🔒 Legendaries can be worn from level ${ADV.unlockLv('legend')}.</span>` : eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>` : `<button class="btn" data-wear="${it.id}">Wear it</button>`}</div></div></div>` : '';
 
-  document.getElementById('hints').innerHTML = showHints && missing.length ? `<div class="hints"><b>Still to find in this slot:</b><ul>${missing.map(i =>
-      `<li>${i.legend ? `A legendary — held right now by <b>${HOLDERS[i.id] || 'nobody yet'}</b> (most correct ${i.legend} answers in the last 7 days)` : `??? — ${i.from}`}</li>`).join('')}</ul></div>` : '';
+  document.getElementById('hints').innerHTML = '';
 }
 document.addEventListener('click', e => {
   const s = e.target.closest('[data-slot]');
