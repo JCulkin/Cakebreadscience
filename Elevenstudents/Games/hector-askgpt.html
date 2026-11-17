@@ -2,12 +2,24 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="/js/game-gate.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AskGPT</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>html,body{margin:0;padding:0;overflow:hidden;background:#202123}canvas{display:block}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
 <body>
 <script>
+/* AskGPT by Hector. Fixes (Cakebread Science, 17 Nov 2026):
+   - On phones and tablets one tap counted twice (touch + mouse), so tapping a start button
+     also answered question 1 (or "Volver a Jugar" started a new game straight away).
+     Clicks within 0.4 s of a screen change are now ignored.
+   - On narrow screens the points move under the question counter (they overlapped the title),
+     and the title and hearts moved right to make room for the home button.
+   - Page margins removed so the game fills the screen without scrollbars.
+   - Added the site's sign-in gate, favicon and home button. */
+let lastStateChange = 0;
 
 let gameState = "START"; // START, PLAYING, END
 let difficulty = "FACIL"; // FACIL, MEDIO, DIFICIL
@@ -126,7 +138,7 @@ function drawQuizScreen() {
   textAlign(LEFT, TOP);
   fill(172, 172, 190);
   textSize(18);
-  text("AskGPT • " + difficulty, 30, 25);
+  text("AskGPT • " + difficulty, 52, 25);
  
   // Dibujar vidas con corazones
   let hearts = "";
@@ -135,7 +147,7 @@ function drawQuizScreen() {
   }
   fill(226, 27, 60);
   textSize(26);
-  text(hearts, 30, 52);
+  text(hearts, 52, 52);
 
   // Contador de preguntas (1 a 100)
   textAlign(RIGHT, TOP);
@@ -144,11 +156,11 @@ function drawQuizScreen() {
   text("Pregunta: " + (currentQuestionIndex + 1) + " / 100", width - 30, 25);
  
   // Puntos en el centro superior
-  textAlign(CENTER, TOP);
+  // on narrow screens the points go under the question counter, so the top line doesn't overlap
   fill(16, 163, 127);
-  textSize(24);
   textStyle(BOLD);
-  text("Puntos: " + score, width / 2, 22);
+  if (width < 640) { textAlign(RIGHT, TOP); textSize(20); text("Puntos: " + score, width - 30, 54); }
+  else { textAlign(CENTER, TOP); textSize(24); text("Puntos: " + score, width / 2, 22); }
   textStyle(NORMAL);
  
   // Temporizador circular
@@ -248,6 +260,12 @@ text(label, x + 15, y, w - 30, h);
 pop();
 }
 function mousePressed() {
+if (millis() - lastStateChange < 400) return;
+const stateBefore = gameState;
+handlePress();
+if (gameState !== stateBefore) lastStateChange = millis();
+}
+function handlePress() {
 if (feedbackTimer > 0) return;
 if (gameState === "START") {
 if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150) {
@@ -371,5 +389,6 @@ function windowResized() {
 resizeCanvas(windowWidth, windowHeight);
 }
 </script>
+<script src="/js/home-link.js" data-mode="float"></script>
 </body>
 </html>
