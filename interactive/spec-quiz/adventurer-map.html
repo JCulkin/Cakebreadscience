@@ -65,7 +65,11 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #map .wv{animation:wv 5s ease-in-out infinite alternate}@keyframes wv{from{transform:translateX(-3px)}to{transform:translateX(4px)}}
 #map .idle,#map .mebob{transform-box:fill-box;animation:bob 1.6s steps(2,jump-none) infinite alternate}#map .mebob{animation-duration:1.1s}@keyframes bob{to{transform:translateY(-2px)}}
 #map .lava{animation:lava 2.4s ease-in-out infinite alternate}@keyframes lava{from{opacity:.15}to{opacity:.75}}
-@media(prefers-reduced-motion:reduce){#map .lava,#map .wv,#map .idle,#map .mebob{animation:none}}
+#map .glint{animation:glint 1.8s ease-in-out infinite alternate}@keyframes glint{from{opacity:.45}to{opacity:1}}
+#map .chestbob{transform-box:fill-box;animation:bob 1.2s steps(2,jump-none) infinite alternate}
+#dunBody .chestwin{display:flex;gap:14px;align-items:center;justify-content:center;margin:8px 0}#dunBody .chestwin img{image-rendering:pixelated}
+#dunBody .prize{background:#1c1917;border:2px solid #facc15;padding:8px 10px;margin-top:8px;font-size:15px}#dunBody .prize .rar{font:800 12px Barlow,Arial;text-transform:uppercase;letter-spacing:.04em}
+@media(prefers-reduced-motion:reduce){#map .lava,#map .wv,#map .idle,#map .mebob,#map .glint,#map .chestbob{animation:none}}
 @media(max-width:1460px){.hud .day{display:none}}
 @media(max-width:1400px){.hud .tools .t{display:none}.hud .tools #sleep .t{display:inline}}
 @media(max-width:760px){.hud{gap:6px 10px;padding:6px 8px}.hud .who img{width:32px;height:32px}.hud .nm{font-size:17px}.hud .hp .bar{width:70px}.hud .tools{margin-left:0;width:100%}.hud .tools .t{display:none}.hud .tools #sleep{margin-left:auto}.hud .tools #sleep .t{display:inline}}
@@ -280,6 +284,11 @@ function noteBossHits() {
   ADV.save(); if (Object.keys(HITNOW).length) setTimeout(() => { for (const k in HITNOW) HITNOW[k] = -1; }, 1600);
 }
 
+/* treasure chests (17 Nov): from the shared world, seen by everyone even through the fog */
+const chestAt = k => (S.chests || {})[k];
+const chestKind = k => BL.CHESTS[(chestAt(k) || {}).t] || BL.CHESTS.wood;
+const chestLeft = k => Math.max(1, BL.CHEST_DAYS - (BL.dayNum(QE.TODAY) - (chestAt(k).d || BL.dayNum(QE.TODAY))));
+
 /* ===================== drawing ===================== */
 let sel = null;
 const svg = $('map');
@@ -302,12 +311,12 @@ function reachable() {
 /* shortest way from your last planned stop to k, through squares you can see; never walks through a live monster or boss on the way */
 function pathTo(k) {
   const start = lastStop(); if (k === start) return [];
-  const vis = visibleSet(), prev = { [start]: null }, q = [start];
+  const vis = visibleSet(), prev = { [start]: null }, q = [start], fogOK = !vis.has(k) && !!chestAt(k);   // a chest glints through the fog: you can head for it
   const fight = kk => { const P = PLACES[kk]; return !!P && (P.type === 'boss' ? S.boss[kk] > 0 : P.type === 'monster' && denHp(kk) > 0); };
   while (q.length) {
     const cur = q.shift(); if (cur === k) break;
     if (cur !== start && fight(cur)) continue;
-    for (const [c, r] of neighbours(...unkey(cur))) { const nk = key(c, r); if (nk in prev || !walkable(c, r) || !vis.has(nk)) continue; prev[nk] = cur; q.push(nk); }
+    for (const [c, r] of neighbours(...unkey(cur))) { const nk = key(c, r); if (nk in prev || !walkable(c, r) || (!vis.has(nk) && !fogOK)) continue; prev[nk] = cur; q.push(nk); }
   }
   if (!(k in prev)) return null;
   const out = []; for (let x = k; x !== start; x = prev[x]) out.unshift(x);
@@ -425,6 +434,12 @@ function renderMap() {
       if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) fogTop += img(icon('shadow'), x - 18, y - 22, 36, 'opacity=".75"') + `<text x="${x}" y="${y + 21}" text-anchor="middle" font-size="11" font-weight="900" fill="${DARK ? '#cbd5e1' : '#475569'}">?</text>`;
     }
     if (CRUMBS.includes(k) && S.chapter < 2) fogTop += img(icon('crumbs'), x - 22, y - 18, 44) + img(icon('crumbs'), x - 8, y - 4, 34);
+    if (chestAt(k)) {   /* treasure: drawn over the fog too, with a glowing outline in the chest's colour */
+      const C = chestKind(k), seenIt = vis.has(k);
+      const ring = `<polygon class="glint" points="${hexPts(x, y, HEXR - 3)}" fill="${C.glow}22" stroke="${C.glow}" stroke-width="${seenIt ? 2.5 : 3.5}" stroke-dasharray="${seenIt ? '4 3' : 'none'}"/>`;
+      const spr = `<ellipse cx="${x}" cy="${y + 11}" rx="11" ry="3" fill="#0004"/>` + img(icon('chest', C.col), x - 14, y - 17, 28, 'class="chestbob"') + `<text class="glint" x="${x + 13}" y="${y - 12}" font-size="12" fill="#fff" paint-order="stroke" stroke="${C.glow}" stroke-width="2">✦</text>`;
+      fogTop += ring + spr;
+    }
     hits += `<polygon class="hit" data-k="${k}" points="${hexPts(x, y)}"/>`;
   }
   /* fog also covers the sea round the edge of the map */
@@ -582,6 +597,8 @@ function showSpells() {
 
 function describe(k) {
   const [c, r] = unkey(k), t = T_AT(c, r), P = PLACES[k], vis = visibleSet().has(k);
+  if (chestAt(k)) { const C = chestKind(k), n = chestLeft(k);
+    return { tp: 'Treasure' + (vis ? '' : ' · glinting through the fog'), name: C.name, chest: true, text: `${vis ? 'A' : 'You can just make out a'} ${C.name.toLowerCase()} ${vis ? 'sitting on ' + (LAND[t] ? 'the ' + LAND[t].name.replace(/^The /, '') : 'the ground') : 'in the ' + (layerOf(k) ? 'darkness' : 'fog')}. The first adventurer to reach it opens it. It'll vanish in ${n} day${n > 1 ? 's' : ''} if nobody does.` }; }
   if (!vis) {
     if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) return { tp: 'Unexplored', name: 'Something big', text: 'You can hear it from here. Get within 2 squares to see what it is.' };
     if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'Cake crumbs in the fog', text: 'A trail of crumbs and sprinkles leads north into the fog. Follow it.' };
@@ -599,10 +616,12 @@ function renderPanel() {
   if (!sel) { pn.classList.remove('on'); return; }
   const D = describe(sel), P = D.P, last = S.at;
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
-  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
+  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : D.chest ? `<img class="px" src="${icon('chest', chestKind(sel).col)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && P.tier) h += `<div class="cap" style="margin-top:2px"><b style="color:${{ Starter: '#16a34a', 'Next step': '#0284c7', Tough: '#b45309', 'Very tough': '#dc2626', Hardest: '#7c3aed' }[P.tier] || '#111'}">${P.tier === 'Starter' ? '★ Starter boss: you can beat this one on your own' : P.tier}</b>${S.boss[sel] === 0 && P.respawn && BL.world && (BL.world.back || {})[sel] ? ` · beaten, back in ${Math.max(1, BL.world.back[sel] - BL.dayNum(QE.TODAY))} day${BL.world.back[sel] - BL.dayNum(QE.TODAY) > 1 ? 's' : ''}` : ''}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
+  if (D.chest) { const C = chestKind(sel); h += `<div class="loot">✨ <b>Might hold:</b> ${C.coins[0]}–${C.coins[1]} coins and a ${C.odds}. Walking onto it opens it straight away (no extra move).${chestAt(sel).t === 'wood' ? ' Not every wooden chest is what it seems…' : ''}</div>`
+    + (layerOf(sel) && !S.under && layerOf(S.at) === 0 ? `<div class="cap">It's in the Underworld: you'll need to dig through the Abandoned Mine first.</div>` : ''); }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
     h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
   if (P && P.type === 'monster') {
@@ -687,7 +706,7 @@ function renderPerson(who) {
 function renderLegend() {
   if (LAYER) { $('legend').innerHTML = [['#6b6475', 'Hollow Road'], ['#3f6b63', 'Glowshroom Grove'], ['#5b6aa8', 'Crystal Gallery'], ['#8a7f6a', 'Fossil Beds'], ['#7a4a3a', 'Ember Flats'], ['#2b2733', 'Rock (no way through)'], ['#ea580c', 'Lava (can\'t cross)'], ['#17384a', 'Sunless Lake (can\'t cross)'], ['#0e0d14', 'Darkness (unexplored)']].map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>The Underworld, under Breadventure Land. The Mine Lift takes you back up.</span>`; return; }
   $('legend').innerHTML = [['#5a9e4b', 'Woods'], ['#9fcf6e', 'Meadow'], ['#b9d77f', 'Fields'], ['#b8b0a2', 'Peaks'], ['#e8edf3', 'Snow'], ['#7fa77a', 'Marsh'], ['#e8cf8f', 'Dunes'], ['#79b4a3', 'Petri Swamp'], ['#b38b6d', 'Scrap Heap'], ['#c9cf7f', 'Glowing Wastes'], ['#4f9fd1', 'Water (can\'t cross)'], ['#dfe4ea', 'Fog (unexplored)']]
-    .map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>Hover or tap a square for details.</span>`;
+    .map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span><img src="${icon('chest', BL.CHESTS.gold.col)}" width="16" style="image-rendering:pixelated;vertical-align:-3px"> Treasure chest (you can see them through the fog)</span><span>Hover or tap a square for details.</span>`;
 }
 
 /* tooltip on hover (mouse only) */
@@ -761,6 +780,7 @@ async function arrive(k, from) {
   const P = PLACES[k], [c, r] = unkey(k);
   if (S.camp && S.camp.k !== k) { const n = S.camp.n; S.moves += n; S.camp = null; toast(`⛺ You break camp: ${n} move${n > 1 ? 's' : ''} back.`); }
   S.at = k; if (!S.visited.includes(k)) S.visited.push(k);
+  if (chestAt(k)) { await openChest(k); return true; }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
     S.camp = { k, n: (S.camp && S.camp.k === k ? S.camp.n : 0) + 1, day: BL.world.day };
     toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
@@ -782,6 +802,45 @@ async function arrive(k, from) {
     if (S.health === 0) { knockOut(BL.WILD[T_AT(c, r)].replace(/^an? /, 'A ')); return true; }
   }
   return false;
+}
+/* a treasure chest: the first player there gets it (transaction in bland.js), then the loot is rolled here */
+const BOSS_ITEMS = new Set(Object.values(PLACES).map(P => P.item).filter(Boolean));
+function chestLoot(ch) {
+  const C = BL.CHESTS[ch.t] || BL.CHESTS.wood, owned = new Set([...(QE.game.bag || []), ...ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id)]);
+  if (ch.m) return { mimic: true, coins: 5 };
+  const ok = i => i.r !== 'legend' && i.from !== 'Starter outfit' && i.id !== 'calc67' && !BOSS_ITEMS.has(i.id) && !owned.has(i.id);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  let pool = C.dark ? ADV_ITEMS.filter(i => i.dark && ok(i)) : [];
+  if (!pool.length) { const r = pick(C.rar); pool = ADV_ITEMS.filter(i => i.r === r && ok(i)); }
+  if (!pool.length) pool = ADV_ITEMS.filter(i => C.rar.includes(i.r) && ok(i));   // you own everything of that rarity
+  const item = pool.length ? pick(pool) : null, coins = C.coins[0] + Math.floor(Math.random() * (C.coins[1] - C.coins[0] + 1));
+  return { coins: coins + (item ? 0 : 20), item, brew: Math.random() < C.brew ? pick(Object.keys(BL.BREWS)) : null };
+}
+async function openChest(k) {
+  const C = chestKind(k);
+  delete S.chests[k];
+  let ch = null; try { ch = await BL.claimChest(k); } catch (e) { console.warn('chest', e); }
+  if (!ch) { toast(`The ${C.name.toLowerCase()} is gone: someone got here first.`); return; }
+  const L = chestLoot(ch), m = $('dunModal'), body = $('dunBody'), RC = { common: '#9ca3af', uncommon: '#4ade80', rare: '#60a5fa', lowkey: '#a78bfa', unhinged: '#f472b6' };
+  S.coins = S.coins + L.coins;
+  if (L.item) { QE.game.bag = QE.game.bag || []; QE.game.bag.push(L.item.id); QE.game.lastLoot = L.item.id; QE.gameChanged(); }
+  if (L.brew) { S.brews = S.brews || {}; S.brews[L.brew] = (S.brews[L.brew] || 0) + 1; }
+  let bit = 0; if (L.mimic) { bit = hurtMe(3); }
+  persist();   // saved before the pop-up, in case they head straight to the Wardrobe
+  BL.logFind({ n: (QE.boardName() || 'Someone').split(' ')[0], t: ch.t, it: L.mimic ? 'it was a mimic' : L.item ? L.item.name : '', day: BL.world.day }).catch(() => {});
+  const eq = Object.assign({}, ADV.eq()); if (L.item) eq[L.item.slot] = L.item.id;
+  const lock = L.item && ADV.SLOT_LOCK[L.item.slot] && !ADV.can(ADV.SLOT_LOCK[L.item.slot]) ? ADV.unlockLv(ADV.SLOT_LOCK[L.item.slot]) : 0;
+  return new Promise(res => {
+    QE.busy = true; m.classList.add('on');
+    body.innerHTML = L.mimic
+      ? `<h2 style="margin:0;text-align:center">It's a mimic!</h2><div class="chestwin"><img src="${icon('mimic', C.col)}" width="110" alt=""></div><div class="dx">The chest grows teeth and bites you (−${bit} Health), then coughs up 🪙 ${L.coins} coins and scuttles off, embarrassed.</div>`
+      : `<h2 style="margin:0;text-align:center">${C.name}!</h2><div class="chestwin"><img src="${icon('chest_open', C.col)}" width="96" alt="">${L.item ? `<img src="${PIXEL.figure(eq, ADV.look())}" width="88" alt="">` : ''}</div>
+        ${L.item ? `<div class="prize"><span class="rar" style="color:${RC[L.item.r] || '#facc15'}">${ADV_RARITY[L.item.r]} · ${ADV_SLOTS.find(x => x.k === L.item.slot).name}</span><br><b>${L.item.name}</b><br><span class="small">${L.item.d}</span>${lock ? `<br><span class="small">🔒 You can wear it from level ${lock}. It waits in your bag till then.</span>` : ''}</div>` : `<div class="prize">You already own everything this chest could hold, so it's full of extra coins instead.</div>`}
+        <div class="dx">🪙 +${L.coins} coins${L.brew ? ` · ${BL.BREWS[L.brew].ic} ${BL.BREWS[L.brew].name}` : ''}</div>`;
+    body.innerHTML += `<div class="act" style="display:flex;gap:8px;margin-top:10px">${L.item ? `<a class="btn alt" href="adventurer-wardrobe.html">Wardrobe →</a>` : ''}<button class="btn gold" id="dunNext">Back to the map →</button></div>`;
+    $('dunNext').focus();
+    $('dunNext').onclick = () => { m.classList.remove('on'); QE.busy = false; if (S.health === 0) knockOut('A mimic'); res(); };
+  });
 }
 /* a small monster: one question from its science. Right = you hit it; wrong = it hits you. */
 function fightMonster(k) {
@@ -832,7 +891,7 @@ function ride(to) {
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
-  S.chapter = w.chapter; S.boss = BL.bossNow(w);
+  S.chapter = w.chapter; S.boss = BL.bossNow(w); S.chests = Object.assign({}, w.chests || {});
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
   Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: BL.movesOf(st), bonus: st.bonus || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
     shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, depth: st.depth || {}, under: !!st.under, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null, big: !!st.big,
@@ -908,7 +967,7 @@ async function start() {
     fromShared(); renderAll(); centreOnMe();
     const rescueNow = S.chapter >= 2 && !S.rescueSeen;
     const showRep = () => { if ((S.seenRep || {})[BL.uid] === (S.reportDay || 'first')) return;
-      if (S.report && !S.big) { S.seenRep = S.seenRep || {}; S.seenRep[BL.uid] = S.reportDay; ADV.save(); toast((S.report[S.report.length - 1] || '').replace(/<\/?p[^>]*>/g, '')); }   // a quiet night: just the new moves
+      if (S.report && !S.big) { S.seenRep = S.seenRep || {}; S.seenRep[BL.uid] = S.reportDay; ADV.save(); toast((S.report[S.report.length - 1] || '').replace(/<\/?p[^>]*>/g, '') + (S.report.some(l => /chests? ha(s|ve) appeared/.test(l)) ? '<br>✨ New treasure on the map!' : '')); }   // a quiet night: just the new moves
       else showReport(); };
     if (!S.storySeen) ADV.storyIntro(() => rescueNow ? ADV.storyRescue(showRep) : showRep());
     else if (rescueNow) ADV.storyRescue(showRep);

@@ -359,7 +359,7 @@ function finish() {
     g.best[MS.sub.key] = { r: Math.max(b.r, right), w: b.w || won ? 1 : 0 }; }
   $('wind').classList.add('hidden');
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
-  const drop = pool[Math.floor(Math.random() * pool.length)];
+  const drop = Math.random() < 1 / 67 && ADV_ITEMS.find(i => i.id === 'calc67') || pool[Math.floor(Math.random() * pool.length)];   // the 6-7 Calculator: 1 in 67, as its card always said
   const firstRev = !QE.revisedToday();
   QE.finishMission({ coins, loot: drop.id, right });
   QE.busy = false;

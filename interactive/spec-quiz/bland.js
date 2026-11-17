@@ -236,6 +236,39 @@ const EVENTS = [
 const eventOf = day => EVENTS[Math.floor((dayNum(day) + 3) / 7) % EVENTS.length];   // weeks run Monday to Sunday
 const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same step (max +40%)
 
+/* ===================== treasure chests (17 Nov, user: "treasure chests … that spawn on the map at some periodicity …
+   Everyone should see it even with fog") =====================
+   world.chests = { k: { t: kind, d: dayNum it appeared, m: 1 if it is secretly a mimic } }. Each night tops the surface up
+   to CHEST_TARGET (at most 2 new a night) and, half the time, the Underworld to CHEST_UNDER. A chest lasts CHEST_DAYS days.
+   Everyone sees every chest, even through the fog (map page). The first player to step on one opens it: claimChest() deletes
+   it in a transaction, so only one person gets it. What's inside is rolled on the map page (items live in adventurer-items.js):
+   coins in the range, an item of one of the rarities (dark items first in cursed chests; one you don't own yet), maybe a brew.
+   world.finds = the last few openings [{ n, t, it, day }] (written by the player who opened it); the morning report tells everyone. */
+const CHESTS = {
+  wood: { name: 'Wooden chest', col: '#57534e', glow: '#fbbf24', coins: [8, 15], rar: ['common', 'uncommon'], brew: 0, odds: 'Common or Uncommon item' },
+  silver: { name: 'Silver chest', col: '#cbd5e1', glow: '#f1f5f9', coins: [15, 25], rar: ['uncommon', 'rare', 'rare'], brew: .3, odds: 'Uncommon or Rare item, maybe a brew' },
+  gold: { name: 'Golden chest', col: '#facc15', glow: '#fde047', coins: [30, 45], rar: ['rare', 'lowkey', 'lowkey', 'unhinged'], brew: 1, odds: 'Rare, Lowkey Legendary or (very rarely) Absolutely Unhinged item, plus a brew' },
+  cursed: { name: 'Cursed chest', col: '#7c3aed', glow: '#c084fc', coins: [20, 30], rar: ['uncommon', 'rare', 'lowkey'], dark: true, brew: .5, under: true, odds: 'one of the dark items, maybe a brew' },
+};
+const CHEST_TARGET = 3, CHEST_UNDER = 1, CHEST_DAYS = 5, MIMIC = 0.15;
+const isUnder = k => unkey(k)[1] >= UNDER0;
+/* tidy up old chests and make new ones; n = drop exactly n on the surface now (admin), kind optional. Returns the new keys. */
+function spawnChests(w, states, today, rnd, n, kind) {
+  w.chests = w.chests || {}; const now = dayNum(today), made = [];
+  if (!n) Object.keys(w.chests).forEach(k => { if (now - (w.chests[k].d || now) >= CHEST_DAYS) delete w.chests[k]; });
+  const taken = new Set([...Object.keys(w.chests), ...Object.values(states || {}).map(st => st && st.at), HOME, ...CRUMBS]);
+  const spots = under => { const out = []; for (let r = under ? UNDER0 : 0; r < (under ? ROWS : SURF_ROWS); r++) for (let c = 0; c < COLS; c++) { const k = key(c, r);
+    if (!PLACES[k] && !taken.has(k) && T_AT(c, r) !== 'B' && walkableIn(w, c, r) && (under || dist([c, r], unkey(HOME)) >= 2)) out.push(k); } return out; };
+  const add = (under, t) => { const sp = spots(under); if (!sp.length) return; const k = sp[Math.floor(rnd() * sp.length)], r = rnd();
+    t = t || (under ? (r < .6 ? 'cursed' : r < .85 ? 'silver' : 'gold') : (r < .6 ? 'wood' : r < .9 ? 'silver' : 'gold'));
+    w.chests[k] = { t, d: now }; if (t === 'wood' && rnd() < MIMIC) w.chests[k].m = 1; taken.add(k); made.push(k); };
+  const count = under => Object.keys(w.chests).filter(k => isUnder(k) === under).length;
+  if (n) { for (let i = 0; i < n; i++) add(kind === 'cursed', kind); return made; }
+  for (let i = 0; i < 2 && count(false) < CHEST_TARGET; i++) add(false);
+  if (count(true) < CHEST_UNDER && rnd() < .5) add(true);
+  return made;
+}
+
 /* ===================== the night (rewritten 17 Nov: moves now happen when you make them) =====================
    Walking, small monsters, critters, the puddle, resting, shops and dungeons all happen at once on the map page.
    Only boss fights wait: stepping onto a living boss makes camp (state.camp = {k, n, day}); every move spent there is one
@@ -294,6 +327,9 @@ function resolve(w0, pubs, st0, today) {
       if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
     }
   });
+  /* treasure chests: who found what yesterday, then tonight's new ones */
+  const finds = (w0.finds || []).filter(f => f && f.day === w0.day);
+  const newChests = spawnChests(w, S, today, rnd);
   /* chapter 2: the cage opens for everyone the night the third key piece is won */
   let rescued = false;
   if (w.chapter < 2 && keysOf(w) === 3) { w.chapter = 2; rescued = true; (w.log = w.log || []).push('All three key pieces won: the Professor is free! Chapter 2 begins.'); }
@@ -310,6 +346,8 @@ function resolve(w0, pubs, st0, today) {
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
     const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
     if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
+    if (finds.length) lines[u].push(`<p>✨ Treasure found yesterday: ${finds.map(f => `<b>${f.n}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${f.it})` : ''}`).join('; ')}.</p>`);
+    if (newChests.length) lines[u].push(`<p class="new">✨ ${newChests.length === 1 ? 'A new treasure chest has' : newChests.length + ' new treasure chests have'} appeared in the night${newChests.some(isUnder) ? ' (one of them in the Underworld)' : ''}. You can see chests glinting even through the fog. First to reach one gets what's inside.</p>`);
     const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
     lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}.</p>`);
     st.report = lines[u]; st.reportDay = today; st.big = !!(fought[u] || rescued || lines[u].some(l => /defeated!/.test(l)));   // big = worth a pop-up
@@ -352,6 +390,22 @@ async function aid(to, what, from) {
   await ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5));
   if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
 }
+/* treasure: the first to step on a chest gets it. Returns the chest if you got it, null if someone else already had. */
+async function claimChest(k) {
+  let took = null;
+  const r = await ref('world/chests/' + k).transaction(cur => { took = cur; return cur ? null : cur; });
+  if (world && world.chests) delete world.chests[k];
+  return r.committed && took ? took : null;
+}
+const logFind = f => ref('world/finds').transaction(a => (Array.isArray(a) ? a : []).concat(f).slice(-10));
+/* admin: drop chests on the surface now (or one cursed chest in the Underworld) */
+async function dropChests(n, kind) {
+  await load(); if (!world) return [];
+  const w = { chests: Object.assign({}, world.chests || {}), chapter: world.chapter, boss: world.boss };
+  const made = spawnChests(w, states, TODAY, Math.random, n, kind), upd = {};
+  made.forEach(k => { upd['world/chests/' + k] = w.chests[k]; }); if (made.length) await ref().update(upd);
+  world.chests = w.chests; return made;
+}
 function saveMine(fields) { Object.assign(states[uid], fields); return ref('state/' + uid).update(fields); }
 /* the night: run if the world's day is before today. A transaction on the lock stops two visitors running it at once. */
 async function runNightIfDue(force) {
@@ -362,7 +416,11 @@ async function runNightIfDue(force) {
   if (!force && world.day >= TODAY) return null;
   if (force && world.day >= TODAY) world.day = dstr(new Date(Date.parse(TODAY + 'T12:00:00') - 864e5));   // admin: replay tonight
   const res = resolve(world, pubs, states, TODAY);
-  const upd = { world: res.world };
+  const upd = {}, c0 = world.chests || {}, c1 = res.world.chests || {};
+  Object.keys(res.world).forEach(f => { if (f !== 'chests' && f !== 'finds') upd['world/' + f] = res.world[f]; });
+  Object.keys(world).forEach(f => { if (!(f in res.world)) upd['world/' + f] = null; });   // e.g. the lock
+  Object.keys(c0).forEach(k => { if (!c1[k]) upd['world/chests/' + k] = null; });
+  Object.keys(c1).forEach(k => { if (!c0[k]) upd['world/chests/' + k] = c1[k]; });
   const NIGHT_FIELDS = ['at', 'health', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews'];
   Object.entries(res.states).forEach(([u, st]) => { if (!st || !st.at) return; NIGHT_FIELDS.forEach(f => { upd[`state/${u}/${f}`] = st[f] === undefined ? null : st[f]; }); });
   await ref().update(upd);
@@ -372,7 +430,7 @@ async function runNightIfDue(force) {
 const me = () => states[uid];
 
 return { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
-  FIRST_MOVES, DAILY_MOVES, movesOf, BREWS, SPELL_INFO, FLOOR_COINS, bossNow, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
+  FIRST_MOVES, DAILY_MOVES, movesOf, CHESTS, CHEST_TARGET, CHEST_UNDER, CHEST_DAYS, MIMIC, isUnder, spawnChests, claimChest, logFind, dropChests, BREWS, SPELL_INFO, FLOOR_COINS, bossNow, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
   newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, aid, runNightIfDue, me, BOSS_STORY, EVENTS, eventOf, RALLY,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();

@@ -316,10 +316,19 @@ function build() {
   const one = it => { const fig = PIXEL.figure({ [it.slot]: it.id }, PIXEL.DEFAULT);
     return `<div class="card item"><img class="px ic" src="${PIXEL.item(it.id)}" alt=""><img class="px fig" src="${fig}" alt="">
       <div><b>${esc(it.name)}</b><span class="tag r-${it.r}">${ADV_RARITY[it.r]}</span>${it.s ? `<span class="tag" style="color:${SCOL[it.s]}">${SNAME[it.s]}</span>` : ''}<span class="tag">${SLOT[it.slot]}</span>
-      ${ADV.SLOT_LOCK[it.slot] || it.legend ? `<span class="tag" style="color:#7c3aed">🔓 level ${ADV.unlockLv(it.legend ? 'legend' : ADV.SLOT_LOCK[it.slot])}</span>` : ''}
+      ${it.dark ? '<span class="tag" style="color:#7c3aed">☠ cursed chests</span>' : ''}${ADV.SLOT_LOCK[it.slot] || it.legend ? `<span class="tag" style="color:#7c3aed">🔓 level ${ADV.unlockLv(it.legend ? 'legend' : ADV.SLOT_LOCK[it.slot])}</span>` : ''}
       <p class="small" style="margin-top:3px"><i>${esc(it.d)}</i></p><p class="small muted">From: ${esc(it.from)}</p></div></div>`; };
   const starter = Object.fromEntries(ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => [i.slot, i.id]));
   const legend = Object.fromEntries(ADV_ITEMS.filter(i => i.r === 'legend' || i.r === 'unhinged').map(i => [i.slot, i.id]));
+  /* ---------- treasure chests (17 Nov) ---------- */
+  const chestPool = C => { const no = new Set([...Object.values(BL.PLACES).map(P => P.item).filter(Boolean), 'calc67']);
+    return ADV_ITEMS.filter(i => i.r !== 'legend' && i.from !== 'Starter outfit' && !no.has(i.id) && (C.dark ? i.dark : C.rar.includes(i.r))); };
+  sec('chests', 'Treasure chests', 'appear on the map every night; everyone can see them through the fog', `
+    <p class="lede">Each night tops the surface up to ${BL.CHEST_TARGET} chests (at most 2 new a night) and, half the time, the Underworld up to ${BL.CHEST_UNDER}. A chest lasts ${BL.CHEST_DAYS} days. Every player sees every chest, even through the fog, with a glowing outline in the chest's colour, and can head straight for it. <b>The first player to step on it opens it</b> (no extra move); the next morning's report tells everyone who found what. Loot is one item you don't own yet (coins instead if you own them all), coins, and sometimes a brew. About 1 in ${Math.round(1 / BL.MIMIC)} wooden chests is a mimic: it bites for 3 and coughs up 5 coins. Admins can drop a chest from the admin Breadventure Land tab.</p>
+    <div class="grid" style="--w:300px">${Object.entries(BL.CHESTS).map(([id, C]) => `<div class="card" style="text-align:center"><div style="display:flex;justify-content:center;gap:10px;background:${id === 'cursed' ? '#2b2733' : '#b9d77f'};padding:8px;border:2px solid ${C.glow}"><img class="px" src="${ADV.icon('chest', C.col)}" style="width:64px" alt=""><img class="px" src="${ADV.icon('chest_open', C.col)}" style="width:64px" alt="">${id === 'wood' ? `<img class="px" src="${ADV.icon('mimic', C.col)}" style="width:64px" alt="">` : ''}</div>
+      <h3>${esc(C.name)}</h3><p class="small">${id === 'cursed' ? 'Underworld only (60%), ' : id === 'wood' ? '60% of surface chests, ' : id === 'silver' ? '30% on top, 25% below, ' : '10% on top, 15% below, '}🪙 ${C.coins[0]}–${C.coins[1]} · ${esc(C.odds)}${C.brew ? ` · brew ${Math.round(C.brew * 100)}%` : ''}</p>
+      <p class="small muted">${chestPool(C).length} items can come out of it</p></div>`).join('')}</div>`);
+
   sec('items', 'Items', `${ADV_ITEMS.length} things to wear, in ${ADV_SLOTS.length} slots`, `
     <p class="lede">Strength from gear is a flat +${ADV.GEAR} (the old joke stats are no longer shown to students). Tops, bottoms and shoes from level 1, hats from level ${ADV.unlockLv('hats')}, hands from ${ADV.unlockLv('hands')}, legendaries from ${ADV.unlockLv('legend')}. Rarity: ${Object.entries(ADV_RARITY).map(([r, n]) => `<span class="tag r-${r}">${n} · ${ADV_ITEMS.filter(i => i.r === r).length}</span>`).join('')}</p>
     <div class="faces" style="margin-bottom:10px"><figure><img class="px" src="${PIXEL.figure(starter, PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>Starter outfit</figcaption></figure>

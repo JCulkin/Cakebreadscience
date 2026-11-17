@@ -460,6 +460,16 @@ function grantWire(el, fail) {
     } catch (e) { fail(e); $('gGo').disabled = false; }
   };
 }
+/* treasure chests (17 Nov): bland/world/chests/{k} = { t, d, m }; the night tops them up; the first player there opens one */
+function chestCard(w) {
+  const ch = Object.entries(w.chests || {}), now = BL.dayNum(BL.TODAY), finds = (w.finds || []).slice().reverse();
+  return `<div class="card"><h2>Treasure chests</h2>
+    <p class="small muted">Every night tops the surface up to ${BL.CHEST_TARGET} chests (2 new at most) and, half the time, puts ${BL.CHEST_UNDER} in the Underworld. Each lasts ${BL.CHEST_DAYS} days. Everyone sees them through the fog; the first student to step on one opens it. About 1 in ${Math.round(1 / BL.MIMIC)} wooden chests is a mimic (bites for 3, gives 5 coins).</p>
+    <table><thead><tr><th>Chest</th><th>Where</th><th class="n">Days left</th><th></th></tr></thead><tbody>
+    ${ch.map(([k, c]) => `<tr><td><b>${esc((BL.CHESTS[c.t] || {}).name || c.t)}</b>${c.m ? ' <span class="tag" title="a mimic">mimic</span>' : ''}</td><td>${esc(placeName(k))}${BL.isUnder(k) ? ' <span class="small muted">(Underworld)</span>' : ''} <span class="small muted">${k}</span></td><td class="n">${Math.max(0, BL.CHEST_DAYS - (now - (c.d || now)))}</td><td><button class="btn alt sm" data-chdel="${k}">Remove</button></td></tr>`).join('') || '<tr><td colspan="4" class="muted">No chests on the map right now.</td></tr>'}</tbody></table>
+    <p style="margin-top:10px">Drop a chest now: <select id="chKind" style="font:inherit;padding:4px"><option value="">Random (wooden, silver or golden)</option><option value="wood">Wooden</option><option value="silver">Silver</option><option value="gold">Golden</option><option value="cursed">Cursed (in the Underworld)</option></select> <button class="btn sm" id="chDrop">✨ Drop it</button></p>
+    ${finds.length ? `<h3>Recently opened</h3><ul style="margin-left:18px">${finds.map(f => `<li>${esc(f.n || '?')} · ${esc((BL.CHESTS[f.t] || {}).name || f.t)}${f.it ? ' · ' + esc(f.it) : ''} <span class="small muted">${esc(f.day || '')}</span></li>`).join('')}</ul>` : ''}</div>`;
+}
 function drawBland(msg) {
   const el = $('p-bland'), w = BL.world;
   if (!w) { el.innerHTML = '<div class="card"><h2>Breadventure Land</h2><p class="muted">Nobody has opened it yet. The world is created the first time a signed-in student opens the map.</p></div>'; return; }
@@ -482,6 +492,7 @@ function drawBland(msg) {
         <h3>Danger</h3><button class="btn warn sm" id="blReset">Reset the whole world</button> <span class="small muted">Bosses back to full, chapter 1, every player back to the Cakelab with 6 moves.</span></div>
     </div>
     ${grantCard()}
+    ${chestCard(w)}
     <div class="card"><h2>Players</h2><div class="wrapx"><table><thead><tr><th>Player</th><th>Where</th><th class="n">Health</th><th class="n">Moves</th><th>Camped for tonight</th><th>Waiting to collect</th><th></th></tr></thead><tbody>
       ${players.map(({ u, st, p, s }) => { const camp = st.camp && st.camp.day === w.day && BL.PLACES[st.camp.k];
         return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}${st.bonus ? ` <span class="tag green" title="extra moves from you, kept until used">+${st.bonus}</span>` : ''}</td>
@@ -497,6 +508,8 @@ function drawBland(msg) {
     try { const upd = { world: BL.newWorld() }; Object.entries(BL.states).forEach(([u, st]) => { upd['state/' + u] = Object.assign(BL.newState((BL.pubs[u] || {}).hp || 15), { pending: st.pending || null }); });
       await RT.ref('bland').update(upd); await BL.load(); drawBland('The world has been reset.'); } catch (e) { fail(e); } };
   grantWire(el, fail);
+  if ($('chDrop')) $('chDrop').onclick = async () => { try { const made = await BL.dropChests(1, $('chKind').value || undefined); await BL.load(); drawBland(made.length ? `Dropped a ${(BL.CHESTS[BL.world.chests[made[0]].t] || {}).name.toLowerCase()} at ${placeName(made[0])}.` : 'No free square for a chest.'); } catch (e) { fail(e); } };
+  el.querySelectorAll('[data-chdel]').forEach(b => b.onclick = async () => { try { await RT.ref('bland/world/chests/' + b.dataset.chdel).remove(); await BL.load(); drawBland('Chest removed.'); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-bheal]').forEach(b => b.onclick = async () => { const u = b.dataset.bheal; try { await RT.ref('bland/state/' + u).update({ at: BL.HOME, health: (BL.pubs[u] || {}).hp || 15 }); await BL.load(); drawBland('Sent to the Cakelab with full Health.'); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-bdel]').forEach(b => b.onclick = async () => { const u = b.dataset.bdel; if (!confirm('Remove this player from Breadventure Land? They start again in the Cakelab next time they open the map.')) return;
     try { await RT.ref('bland/state/' + u).remove(); await RT.ref('bland/pub/' + u).remove(); await BL.load(); drawBland('Player removed.'); } catch (e) { fail(e); } });
