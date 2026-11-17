@@ -77,6 +77,10 @@
             overflow: hidden;
         }
 
+        @media (max-width: 600px) {
+            .nav-tab { padding: 10px 14px; font-size: 0.95em; }
+        }
+
         .nav-tab:hover {
             background: rgba(255, 255, 255, 0.1);
         }
@@ -416,11 +420,6 @@
             background: rgba(50, 150, 200, 0.3);
         }
 
-        /* Different color for maths emojis */
-        .maths-card .project-preview {
-            background: rgba(200, 150, 50, 0.3);
-        }
-
         /* Placeholder card styling for essays section */
         .placeholder-card {
             opacity: 0.7;
@@ -608,9 +607,6 @@
                 </div>
                 <div class="nav-tab" onclick="showSection('simulations')">
                     <span>🔬</span> Simulations
-                </div>
-                <div class="nav-tab" onclick="showSection('maths')">
-                    <span>🧮</span> Maths
                 </div>
                 <div class="nav-tab" onclick="showSection('essays')">
                     <span>📝</span> Essays
@@ -988,25 +984,6 @@
                 </div>
             </section>
 
-            <!-- Maths Section -->
-            <section id="maths" class="content-section">
-                <h2 class="section-title">🧮 Maths</h2>
-                <div class="gallery">
-                    <div class="project-card maths-card" onclick="window.location.href='Maths/Jamie-maths.html'">
-                        <div class="project-preview">
-                            <div class="emoji-container">🧮</div>
-                            <div class="line-count">919 lines</div>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Jamie's Maths Challenge</div>
-                            <div class="project-author">by Jamie</div>
-                            <div class="project-description">
-                                Test your mathematical skills with this exciting challenge game!
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             <!-- Essays Section -->
             <section id="essays" class="content-section">
