@@ -84,7 +84,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Admin</span></h1><div class="who" id="who"></div></header>
 <nav class="tabs" id="tabs" hidden>
   <button data-t="overview" class="on">Overview</button><button data-t="students">Students</button><button data-t="map">Spec map</button>
-  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="backup">Backup</button>
+  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="games" id="gTab">Games</button><button data-t="backup">Backup</button>
 </nav>
 <main>
   <div class="gate" id="gate"><h2>Admin</h2><p id="gateMsg">Checking who you are…</p><div id="gateBtn"></div></div>
@@ -110,6 +110,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
   </section>
   <section class="panel" id="p-boards"></section>
   <section class="panel" id="p-bland"></section>
+  <section class="panel" id="p-games"></section>
   <section class="panel" id="p-backup">
     <div class="card"><h2>Back up everything</h2><p class="muted">Downloads every student's saved data (Questing, flashcards, trackers, long answers) as one file.</p>
       <div class="acts"><button class="btn" id="exp">💾 Download backup</button><button class="btn alt" id="impBtn">📂 Restore from a backup…</button><input type="file" id="imp" accept=".json" hidden></div><div class="msg" id="bMsg"></div></div>
@@ -207,7 +208,7 @@ async function load() {
   });
   students.sort((a, b) => b.last - a.last);
   D = { students, board: (board && board.val()) || {}, reps: (reps && reps.val()) || {}, games: (games && games.val()) || {}, at: Date.now(), rtOk: !!board };
-  drawOverview(); drawStudents(); drawMap(); drawQuestions(); drawBoards(); loadBland();
+  drawOverview(); drawStudents(); drawMap(); drawQuestions(); drawBoards(); loadBland(); loadGames();
   const h = location.hash.slice(1); if (h && $('p-' + h)) show(h);
 }
 
@@ -463,6 +464,73 @@ $('imp').onchange = e => { const f = e.target.files[0]; if (!f) return; const rd
     $('bMsg').className = 'msg ok'; $('bMsg').textContent = 'Restored.'; load();
   } catch (err) { $('bMsg').className = 'msg err'; $('bMsg').textContent = 'Restore failed: ' + err.message; } e.target.value = ''; };
   rd.readAsText(f); };
+
+/* ---------- Games: who may play, and every play (17 Nov 2026) ----------
+   RTDB gameAccess/{uid} = {status: 'pending'|'approved'|'blocked', name, email, t, by, at}   (written by /play/ and here)
+   RTDB gameLog/{id} = {uid, name, email, game, title, page, mode: 'gate'|'log', t, last}     (written by /play/check.html) */
+const GM = { access: {}, log: [], ok: true, err: '', filt: { who: '', game: '' } };
+const gameName = r => r.title || r.game || '?';
+const mins = r => Math.max(0, Math.round(((r.last || r.t) - r.t) / 60000));
+async function loadGames() {
+  $('p-games').innerHTML = '<div class="empty">Loading games…</div>';
+  try {
+    const [a, l] = await Promise.all([RT.ref('gameAccess').once('value'), RT.ref('gameLog').orderByChild('t').limitToLast(3000).once('value')]);
+    GM.access = a.val() || {}; GM.log = []; l.forEach(c => { const v = c.val(); if (v && v.t) GM.log.push(v); }); GM.log.reverse(); GM.ok = true;
+  } catch (e) { GM.ok = false; GM.err = e.code || e.message; }
+  drawGames();
+}
+async function setAccess(uid, status, extra) {
+  const cur = GM.access[uid] || {};
+  const v = Object.assign({ name: cur.name || '', email: cur.email || '', t: cur.t || Date.now() }, extra || {}, { status, by: ME.email, at: Date.now() });
+  await RT.ref('gameAccess/' + uid).set(v); GM.access[uid] = v;
+}
+function drawGames(msg) {
+  const el = $('p-games');
+  const pend = Object.entries(GM.access).filter(([, v]) => v && v.status === 'pending').sort((a, b) => (a[1].t || 0) - (b[1].t || 0));
+  $('gTab').textContent = pend.length ? `Games (${pend.length})` : 'Games';
+  const oldNote = $('gPendNote'); if (oldNote) oldNote.remove();
+  if (pend.length) $('p-overview').insertAdjacentHTML('afterbegin', `<div class="card" id="gPendNote" style="border-color:#ca8a04;background:#fffbe6"><h2>🎮 ${pend.length} waiting to play games</h2><p class="small">${pend.map(([u, v]) => esc(v.name || v.email || u)).join(', ')}</p><div class="acts"><button class="btn sm" data-go="games">Open Games →</button></div></div>`);
+  if (!GM.ok) { el.innerHTML = `<div class="card"><h2>Games aren't switched on yet</h2><p class="muted">Couldn't read <code>gameAccess</code> / <code>gameLog</code> (${esc(GM.err)}). Publish the new Realtime Database rules first.</p></div>`; return; }
+  const appr = Object.entries(GM.access).filter(([, v]) => v && v.status === 'approved');
+  const blk = Object.entries(GM.access).filter(([, v]) => v && v.status === 'blocked');
+  const since = Date.now() - 7 * DAY;
+  const byUid = {}; GM.log.forEach(r => { const b = byUid[r.uid] = byUid[r.uid] || { n: 0, n7: 0, m7: 0, last: 0 }; b.n++; b.last = Math.max(b.last, r.t); if (r.t >= since) { b.n7++; b.m7 += mins(r); } });
+  const nm = (uid, v) => esc((v && (v.name || v.email)) || (D.students.find(s => s.uid === uid) || {}).name || uid);
+  const em = v => v && v.email ? `<div class="small muted">${esc(v.email)}</div>` : '';
+  const play = uid => { const b = byUid[uid]; return b ? `${b.n7} plays · ${b.m7} min this week<div class="small muted">last ${ago(b.last)}</div>` : '<span class="muted">never played</span>'; };
+  const rowsP = pend.map(([u, v]) => `<tr><td class="sname">${nm(u, v)}${em(v)}</td><td>${ago(v.t)}</td><td><button class="btn sm" data-ga="${u}" data-s="approved">Approve</button> <button class="btn sm warn" data-ga="${u}" data-s="blocked">Block</button></td></tr>`).join('');
+  const rowsA = appr.sort((a, b) => ((byUid[b[0]] || {}).last || 0) - ((byUid[a[0]] || {}).last || 0)).map(([u, v]) => `<tr><td class="sname">${nm(u, v)}${em(v)}</td><td>${play(u)}</td><td><button class="btn sm warn" data-ga="${u}" data-s="blocked">Block</button></td></tr>`).join('');
+  const rowsB = blk.map(([u, v]) => `<tr><td class="sname">${nm(u, v)}${em(v)}</td><td>blocked ${ago(v.at)}</td><td><button class="btn sm alt" data-ga="${u}" data-s="approved">Unblock</button></td></tr>`).join('');
+  const others = D.students.filter(s => !GM.access[s.uid] && s.email && !(window.ADMIN_EMAILS || []).includes(s.email)).sort((a, b) => b.last - a.last);
+  const rowsO = others.map(s => `<tr><td class="sname">${esc(s.name)}<div class="small muted">${esc(s.email)}</div></td><td>on the site ${ago(s.last)}</td><td><button class="btn sm alt" data-gpre="${s.uid}">Approve</button></td></tr>`).join('');
+  // play log
+  const games = [...new Set(GM.log.map(gameName))].sort();
+  const people = [...new Set(GM.log.map(r => r.uid))].map(u => [u, (GM.log.find(r => r.uid === u) || {}).name || u]).sort((a, b) => String(a[1]).localeCompare(b[1]));
+  const L = GM.log.filter(r => (!GM.filt.who || r.uid === GM.filt.who) && (!GM.filt.game || gameName(r) === GM.filt.game));
+  const per = {}; GM.log.filter(r => r.t >= since).forEach(r => { const k = gameName(r); const b = per[k] = per[k] || { n: 0, m: 0, who: new Set(), gate: r.mode !== 'log' }; b.n++; b.m += mins(r); b.who.add(r.uid); });
+  const rowsG = Object.entries(per).sort((a, b) => b[1].n - a[1].n).map(([k, b]) => `<tr><td>${esc(k)} ${b.gate ? '<span class="tag">approval</span>' : '<span class="tag green">open</span>'}</td><td class="n">${b.n}</td><td class="n">${b.who.size}</td><td class="n">${b.m}</td></tr>`).join('');
+  const rowsL = L.slice(0, 300).map(r => `<tr><td>${new Date(r.t).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</td><td>${esc(r.name || r.email || r.uid)}</td><td><a href="/${esc(r.page || '').replace(/^\/+/, '')}" target="_blank">${esc(gameName(r))}</a></td><td class="n">${mins(r)}</td></tr>`).join('');
+  const tbl = (head, rows, empty) => rows ? `<div class="wrapx"><table><tr>${head}</tr>${rows}</table></div>` : `<p class="muted">${empty}</p>`;
+  el.innerHTML = (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
+    + `<div class="cols"><div>`
+    + `<div class="card"><h2>Waiting for you (${pend.length})</h2><p class="small muted">Students who signed in on a game and asked to play.</p>${pend.length > 1 ? '<div class="acts"><button class="btn sm" id="gAll">Approve all waiting</button></div>' : ''}${tbl('<th>Student</th><th>Asked</th><th></th>', rowsP, 'Nobody is waiting.')}</div>`
+    + `<div class="card"><h2>Approved (${appr.length})</h2>${tbl('<th>Student</th><th>Playing</th><th></th>', rowsA, 'Nobody approved yet.')}</div>`
+    + `<div class="card"><h2>Blocked (${blk.length})</h2>${tbl('<th>Student</th><th></th><th></th>', rowsB, 'Nobody is blocked.')}</div>`
+    + `<div class="card"><h2>Approve before they ask</h2><p class="small muted">Students who use the rest of the site but haven't asked to play yet.</p>${tbl('<th>Student</th><th></th><th></th>', rowsO, 'Everyone on the site already has an answer.')}</div>`
+    + `</div><div>`
+    + `<div class="card"><h2>Last 7 days by game</h2>${tbl('<th>Game</th><th class="n">Plays</th><th class="n">Students</th><th class="n">Minutes</th>', rowsG, 'No plays this week.')}</div>`
+    + `<div class="card"><h2>Every play</h2><div class="toolbar"><select id="gWho"><option value="">Everyone</option>${people.map(([u, n]) => `<option value="${esc(u)}"${u === GM.filt.who ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`
+    + `<select id="gGame"><option value="">Every game</option>${games.map(g => `<option${g === GM.filt.game ? ' selected' : ''}>${esc(g)}</option>`).join('')}</select><button class="btn alt sm" id="gRe">↻ Refresh</button></div>`
+    + `<p class="small muted">${L.length} plays${L.length > 300 ? ' (newest 300 shown)' : ''}. Minutes = time the game tab was open and in front.</p>${tbl('<th>When</th><th>Student</th><th>Game</th><th class="n">Min</th>', rowsL, 'No plays logged yet.')}</div>`
+    + `</div></div>`;
+  const fail = e => drawGames('Could not save: ' + (e.code || e.message));
+  el.querySelectorAll('[data-ga]').forEach(b => b.onclick = async () => { try { await setAccess(b.dataset.ga, b.dataset.s); drawGames(b.dataset.s === 'approved' ? 'Approved.' : 'Blocked.'); } catch (e) { fail(e); } });
+  el.querySelectorAll('[data-gpre]').forEach(b => b.onclick = async () => { const s = D.students.find(x => x.uid === b.dataset.gpre); try { await setAccess(s.uid, 'approved', { name: s.name, email: s.email }); drawGames('Approved ' + s.name + '.'); } catch (e) { fail(e); } });
+  if ($('gAll')) $('gAll').onclick = async () => { try { for (const [u] of pend) await setAccess(u, 'approved'); drawGames('Approved everyone who was waiting.'); } catch (e) { fail(e); } };
+  $('gWho').onchange = e => { GM.filt.who = e.target.value; drawGames(); };
+  $('gGame').onchange = e => { GM.filt.game = e.target.value; drawGames(); };
+  $('gRe').onclick = loadGames;
+}
 </script>
 <script src="/js/home-link.js"></script>
 </body>

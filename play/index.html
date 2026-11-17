@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Sign in to play | Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:#eeeae0;color:#111;min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}
+.box{background:#fff;border:3px solid #111;box-shadow:0 5px 0 #111;max-width:460px;width:100%;padding:26px 24px}
+.box img.prof{width:96px;height:96px;object-fit:contain}
+h1{font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(30px,7vw,40px);line-height:1;margin:10px 0 10px}
+p{font-size:17px;color:#444;margin:0 auto 14px}
+.btn{display:inline-block;background:#111;color:#eeeae0;border:2px solid #111;font:900 19px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;padding:9px 18px;text-decoration:none;margin:4px;cursor:pointer}
+.btn.alt{background:#fff;color:#111}
+.small{font-size:14px;color:#666}
+.who{font-size:14px;color:#666;margin-top:12px}
+.who button{background:none;border:0;color:#005e22;text-decoration:underline;font:inherit;cursor:pointer}
+.wait{display:inline-block;width:12px;height:12px;border-radius:50%;background:#facc15;margin-right:6px;animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.3}}
+</style>
+</head>
+<body>
+<div class="box" id="box"><img class="prof" src="/img/mascot/head-think.webp" alt=""><h1>Games</h1><p>Checking who you are…</p></div>
+
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+/* The sign-in / approval page for the games (see /js/game-gate.js). Writes gameAccess/{uid} = {status:'pending', name, email, t}
+   the first time; the admin console's Games tab sets 'approved' or 'blocked'. Approved → back to ?next. */
+const $box = document.getElementById('box');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+let next = new URLSearchParams(location.search).get('next') || '';
+if (!/^\/(?!\/)/.test(next) || next.startsWith('/play/')) next = '';
+const KEY = 'cbs.games.ok';
+const face = n => `<img class="prof" src="/img/mascot/head-${n}.webp" alt="">`;
+const links = `<p style="margin-top:16px"><a class="btn alt" href="/Elevenstudents/">Student games</a><a class="btn alt" href="/">Home</a></p>`;
+function show(html) { $box.innerHTML = html; }
+function whoLine(u) { return `<div class="who">Signed in as ${esc(u.displayName || u.email)} · <button id="out">Use another account</button></div>`; }
+function bindOut() { const b = document.getElementById('out'); if (b) b.onclick = () => firebase.auth().signOut(); }
+function signIn() { firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => { if (e && e.code !== 'auth/popup-closed-by-user') alert('Sign-in did not work: ' + (e.message || e)); }); }
+function go(u) {
+  try { localStorage.setItem(KEY, JSON.stringify({ uid: u.uid, t: Date.now() })); } catch (e) {}
+  if (next) { location.replace(next); return; }
+  show(face('happy') + `<h1>You're in!</h1><p>Your account can play the games.</p>` + links + whoLine(u)); bindOut();
+}
+
+if (!window.firebase) show(face('worried') + `<h1>Can't connect</h1><p>The games need Google sign-in, and this network is blocking it. Try again later or on another network.</p>` + links);
+else {
+  firebase.initializeApp(window.firebaseConfig);
+  let off = null;
+  firebase.auth().onAuthStateChanged(u => {
+    if (off) { off(); off = null; }
+    if (!u) {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      show(face('happy') + `<h1>Sign in to play</h1><p>The games are for Cakebread Science students. Sign in with your Google account; your teacher then approves it once.</p><button class="btn" id="si">Sign in with Google</button>` + links);
+      document.getElementById('si').onclick = signIn; return;
+    }
+    if ((window.ADMIN_EMAILS || []).includes(u.email)) { go(u); return; }
+    const ref = firebase.database().ref('gameAccess/' + u.uid);
+    const cb = ref.on('value', snap => {
+      const v = snap.val();
+      if (!v) {   // first time: ask for access
+        ref.set({ status: 'pending', name: u.displayName || '', email: u.email || '', t: firebase.database.ServerValue.TIMESTAMP })
+          .catch(e => show(face('worried') + `<h1>Not set up yet</h1><p>The games' sign-in isn't switched on yet. Ask your teacher.</p><p class="small">${esc(e.code || e.message)}</p>` + links + whoLine(u)));
+        return;
+      }
+      if (v.status === 'approved') { go(u); return; }
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      if (v.status === 'blocked') { show(face('worried') + `<h1>Games are off for you</h1><p>Your account can't play the games at the moment. Ask your teacher if you think this is a mistake.</p>` + links + whoLine(u)); bindOut(); return; }
+      show(face('think') + `<h1>Waiting for your teacher</h1><p><span class="wait"></span>Your teacher needs to approve your account once. This page opens the game by itself as soon as they do.</p>` + links + whoLine(u)); bindOut();
+    }, e => { show(face('worried') + `<h1>Not set up yet</h1><p>The games' sign-in isn't switched on yet. Ask your teacher.</p><p class="small">${esc(e.code || e.message)}</p>` + links + whoLine(u)); bindOut(); });
+    off = () => ref.off('value', cb);
+  });
+}
+</script>
+<script src="/js/home-link.js" data-mode="float"></script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="robots" content="noindex, nofollow"><title>Game check</title></head>
+<body>
+<!-- Loaded in a hidden frame by /js/game-gate.js. Runs the site's own Firebase sign-in in its own window, so it never
+     clashes with the Firebase versions the games load themselves. Tells the game page 'ok' or 'deny', and logs the play
+     to Realtime Database gameLog/{id} = {uid, name, email, game, title, page, mode, t, last}. -->
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>
+(function () {
+  var P = new URLSearchParams(location.search);
+  var mode = P.get('mode') === 'log' ? 'log' : 'gate';
+  var game = (P.get('page') || '').replace(/^\/+/, '').replace(/\.html$/, '').replace(/\/index$/, '') || 'unknown';
+  var KEY = 'cbs.games.ok';
+  function tell(msg) { try { parent.postMessage({ cbsGate: msg }, location.origin); } catch (e) {} }
+  function setOk(uid) { try { localStorage.setItem(KEY, JSON.stringify({ uid: uid, t: Date.now() })); } catch (e) {} }
+  function clearOk() { try { localStorage.removeItem(KEY); } catch (e) {} }
+  if (!window.firebase) { tell('ok'); return; }   // SDK blocked (e.g. school filter): don't lock anyone out
+  var app = firebase.apps.length ? firebase.app() : firebase.initializeApp(window.firebaseConfig);
+  var auth = firebase.auth(), rt = firebase.database();
+  var logged = false;
+
+  function log(u) {
+    if (logged) return; logged = true;
+    var ref = rt.ref('gameLog').push();
+    var now = firebase.database.ServerValue.TIMESTAMP;
+    ref.set({ uid: u.uid, name: u.displayName || '', email: u.email || '', game: game.slice(0, 120),
+      title: (P.get('title') || '').slice(0, 120), page: (P.get('page') || '').slice(0, 200), mode: mode, t: now, last: now })
+      .then(function () {
+        setInterval(function () { if (document.visibilityState === 'visible') ref.update({ last: firebase.database.ServerValue.TIMESTAMP }).catch(function () {}); }, 60000);
+      }).catch(function (e) { console.warn('game log', e); });
+  }
+
+  var first = true;
+  auth.onAuthStateChanged(function (u) {
+    if (!first) return; first = false;
+    if (mode === 'log') { if (u) log(u); return; }
+    if (!u) { clearOk(); tell('deny'); return; }
+    if ((window.ADMIN_EMAILS || []).indexOf(u.email) >= 0) { setOk(u.uid); tell('ok'); log(u); return; }
+    rt.ref('gameAccess/' + u.uid + '/status').once('value').then(function (s) {
+      if (s.val() === 'approved') { setOk(u.uid); tell('ok'); log(u); }
+      else { clearOk(); tell('deny'); }
+    }).catch(function (e) { console.warn('game access', e); clearOk(); tell('deny'); });
+  });
+})();
+</script>
+</body></html>
