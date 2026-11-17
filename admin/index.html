@@ -196,7 +196,8 @@ async function load() {
     const a = prog ? QE.analyse(prog) : null;
     const fc = Object.values(u.progress || {}).filter(p => p && p.repetitions > 0).length;
     const subj = (specMap[doc.id] && specMap[doc.id].subjects) || u.specSubjects || {};
-    const trk = ['biology', 'chemistry', 'physics'].map(k => { const s = subj[k]; if (!s) return null; const it = s.items || {}, tot = s.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; });
+    const cf = specMap[doc.id] && specMap[doc.id].conf;
+    const trk = ['biology', 'chemistry', 'physics'].map(k => { if (cf) { const L = k[0].toUpperCase(), all = Object.keys(QE.POINTS).filter(x => x[0] === L), n = all.filter(x => cf[x] === 3).length; return all.length ? Math.round(n / all.length * 100) : null; } const s = subj[k]; if (!s) return null; const it = s.items || {}, tot = s.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; });
     const times = [Date.parse(u.lastAccess), Date.parse(u.settings && u.settings.lastStudyDate), Date.parse(u.specQuizSummary && u.specQuizSummary.updatedAt), prog && prog.updatedAt, game.updatedAt].filter(x => x && !isNaN(x));
     const day = d => ({ m: (game.days || {})[d] || 0, c: ((game.cd || {})[d] || {}).n || 0 });
     const st = a ? a.stats : { securedP: 0, securedQ: 0, per: { Biology: 0, Chemistry: 0, Physics: 0 } };
@@ -267,7 +268,7 @@ function drawStudents() {
   let rows = D.students.filter(s => ($('sAll').checked || s.used || yf !== '') && (yf === '' || s.year === +yf) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
   rows.sort((a, b) => { const x = a[sSort], y = b[sSort]; return (typeof x === 'string' ? x.localeCompare(y) : (x || 0) - (y || 0)) * sDir; });
   const th = (k, t, n) => `<th class="${n ? 'n' : ''}" data-k="${k}">${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
-  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('year', 'Year', 1)}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker ticked B / C / P</th></tr></thead><tbody>
+  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('year', 'Year', 1)}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker: confident B / C / P</th></tr></thead><tbody>
     ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.pending ? ` <span class="tag" style="background:#ede9fe">wants “${esc(s.pending)}”</span>` : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>
       <td class="n">${s.year || '–'}</td><td class="small">${ago(s.last)}</td><td class="n">${s.level || '–'}</td><td class="n">${s.xp}</td><td class="n">${s.pts} ${s.pts ? sciChips(s.per) : ''}</td><td class="n">${s.wk}</td><td class="n">${s.m7}</td><td class="n">${s.c7}</td><td>${stripHtml(s.d14)}</td><td class="n">${s.fc}</td>
       <td class="small">${s.trk.map(x => x == null ? '–' : x + '%').join(' / ')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nobody matches.</div>';
@@ -299,7 +300,7 @@ function openStudent(uid) {
       ${s.weak.length ? `<div class="card"><h3 style="margin-top:0">Flashcards they found hard</h3><p>${s.weak.map(k => `<span class="tag">${k}</span>`).join(' ')}</p></div>` : ''}
       ${missed.length ? `<div class="card"><h3 style="margin-top:0">Questions they get wrong most</h3><table>${missed.map(([id, x]) => { const q = QBYID[id]; return `<tr><td class="small"><b>${id}</b> ${q ? esc(strip(q.q || '(calculation)')).slice(0, 140) : ''}</td><td class="n small">${(x.r || 0)}/${x.n} right</td></tr>`; }).join('')}</table></div>` : ''}`
     : '<p class="muted" style="margin:12px 0">Hasn\'t played Cakebread Questing yet.</p>'}
-    <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker ticked: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics ? esc(JSON.stringify(s.raw.longAnswersSummary.physics).slice(0, 120)) : 'none'}</p></div>`;
+    <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker, rated confident: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics ? esc(JSON.stringify(s.raw.longAnswersSummary.physics).slice(0, 120)) : 'none'}</p></div>`;
   $('dim').classList.add('on'); $('drawer').classList.add('on'); $('drawer').scrollTop = 0;
   const msg = (t, ok) => { $('dMsg').className = 'msg ' + (ok ? 'ok' : 'err'); $('dMsg').textContent = t; };
   const setNick = async nick => {

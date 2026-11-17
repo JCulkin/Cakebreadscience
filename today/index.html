@@ -126,7 +126,8 @@ async function draw() {
     within(fs.collection('specProgress').doc(u.uid).get(), 6000, 'the spec trackers (Firestore)'),
     within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => rt0.ref(p).once('value').then(x => x.val()))), 6000, 'Breadventure Land (Realtime Database)')]);
   if (dR.status === 'fulfilled') doc = dR.value.data() || {};
-  if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; } else spec = doc.specSubjects || {};
+  let conf = null;
+  if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; conf = (s.exists && s.data().conf) || null; } else spec = doc.specSubjects || {};
   const now = Date.now(), prog = doc.progress || {};
   const due = Object.values(prog).filter(p => p && p.repetitions > 0 && p.nextReview <= now).length;
   /* Breadventure Land */
@@ -163,9 +164,9 @@ async function draw() {
 
   /* the spec: Questing secured vs tracker ticks */
   const sec = QE.securedBySci();
-  const tick = sub => { const x = spec[sub]; if (!x) return null; const it = x.items || {}, tot = x.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; };
+  const tick = sub => { if (conf) { const L = sub[0].toUpperCase(), all = Object.keys(QE.POINTS).filter(k => k[0] === L); const n = all.filter(k => conf[k] === 3).length; return all.length && n ? Math.round(n / all.length * 100) : null; } const x = spec[sub]; if (!x) return null; const it = x.items || {}, tot = x.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; };
   const sciRow = (L, sub, col) => { const pc = Math.round(sec[L.toLowerCase()] / ADV.TOTAL[L.toLowerCase()] * 100), t = tick(sub);
-    return `<span><b>${ADV.SCI[L.toLowerCase()]}</b></span><div><div class="bar" title="${sec[L.toLowerCase()]} of ${ADV.TOTAL[L.toLowerCase()]} spec points secured"><i style="width:${pc}%;background:${col}"></i></div>${t != null ? `<div class="small muted">You've ticked ${t}% on the <a href="/specifications/${sub}.html">tracker</a></div>` : `<div class="small muted"><a href="/specifications/${sub}.html">Open the tracker</a></div>`}</div><span class="small"><b>${sec[L.toLowerCase()]}</b>/${ADV.TOTAL[L.toLowerCase()]}</span>`; };
+    return `<span><b>${ADV.SCI[L.toLowerCase()]}</b></span><div><div class="bar" title="${sec[L.toLowerCase()]} of ${ADV.TOTAL[L.toLowerCase()]} spec points secured"><i style="width:${pc}%;background:${col}"></i></div>${t != null ? `<div class="small muted">You rated ${t}% "confident" on the <a href="/specifications/${sub}.html">tracker</a></div>` : `<div class="small muted"><a href="/specifications/${sub}.html">Open the tracker</a></div>`}</div><span class="small"><b>${sec[L.toLowerCase()]}</b>/${ADV.TOTAL[L.toLowerCase()]}</span>`; };
 
   /* last 14 days of revision */
   const days = [...Array(14)].map((_, i) => { const d = new Date(Date.parse(QE.TODAY + 'T12:00:00') - (13 - i) * 864e5); return BL.dstr(d); });
