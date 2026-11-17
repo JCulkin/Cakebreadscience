@@ -33,6 +33,14 @@ const ADV = (() => {
   if (stored && stored.v !== 2) stored = null;   // the mock-up's pretend game: start again from the real numbers
   let S = attach(Object.assign(DEF(), stored || {}));
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  /* 17 Nov fix: this copy is one per browser, so on a shared school computer the next student saw the last one's moves
+     ("No moves left today") and lost their +1 revision move. It now belongs to one account and starts fresh for another. */
+  function claim() {
+    if (!QE.known || !QE.user || S.owner === QE.user.uid) return;
+    const keep = S.owner ? {} : { storySeen: S.storySeen, rescueSeen: S.rescueSeen, seenRep: S.seenRep, bossSeen: S.bossSeen };   // an older copy with no owner: probably theirs
+    Object.keys(S).forEach(k => delete S[k]); Object.assign(S, DEF(), keep, { owner: QE.user.uid }); save();
+  }
+  claim(); QE.onChange(claim);
   const reset = () => { try { localStorage.removeItem(KEY); } catch (e) {} S = attach(DEF()); };
 
   /* look, name, gear (saved by the creator and wardrobe pages; the engine copies them into the account) */

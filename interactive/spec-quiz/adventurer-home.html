@@ -170,6 +170,19 @@ function renderLand() {
   $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
 renderLand();
+/* the real moves, Health and mana live in the shared world: read them (the browser's copy is only as fresh as the last map visit) */
+async function landLive() {
+  if (!QE.known || !QE.user || landLive.done) return; landLive.done = true;
+  try {
+    const rt = firebase.database(), u = QE.user.uid;
+    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
+    if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
+    else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
+      S.plan = pb && pb.plan && pb.plan.day === w.day ? (pb.plan.steps || []).slice() : []; }
+    ADV.save(); document.querySelectorAll('#landKick ~ .small').forEach(x => x.remove()); renderLand();
+  } catch (e) { console.warn('Cakelab: shared world not read', e); }
+}
+landLive(); QE.onChange(landLive);
 if (!S.storySeen) ADV.storyIntro();
 { const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#16a34a', C: '#dc2626', P: '#d97706' }[sg.key[0]] : '#d97706'); }
 if (S.missionsToday) {

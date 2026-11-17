@@ -416,11 +416,50 @@ async function loadBland() {
   catch (e) { el.innerHTML = `<div class="card" style="border-color:var(--bad)">Couldn't read Breadventure Land (${esc(e.code || e.message)}). Check the Realtime Database rules include the <code>bland</code> block.</div>`; }
 }
 const placeName = k => { const P = BL.PLACES[k]; if (P) return P.name; const [c, r] = BL.unkey(k); const L = BL.LAND[BL.T_AT(c, r)]; return L ? L.name : k; };
+/* extra moves (17 Nov): the teacher gives (or takes back) moves to one student, a year group or everyone. They go into
+   bland/state/{uid}/bonus: no cap, kept until used, spent after the normal moves. A student who hasn't opened the map yet
+   gets them waiting (the state holds only bonus + inbox until they join). The student sees a toast next time they open the map. */
+function grantRows() {
+  const admins = window.ADMIN_EMAILS || [];
+  const list = (D ? D.students : []).filter(s => !admins.includes(s.email)).map(s => ({ s, st: BL.states[s.uid] || null }));
+  Object.keys(BL.states).forEach(u => { if (!list.some(x => x.s.uid === u)) list.push({ s: { uid: u, name: (BL.pubs[u] || {}).name || u, year: 0 }, st: BL.states[u] }); });
+  return list.sort((a, b) => (!!(b.st && b.st.at) - !!(a.st && a.st.at)) || (a.s.year || 99) - (b.s.year || 99) || a.s.name.localeCompare(b.s.name));
+}
+function grantCard() {
+  const rows = grantRows(), years = [8, 9, 10, 11].filter(y => rows.some(r => r.s.year === y));
+  return `<div class="card" id="grant"><h2>Give extra moves</h2>
+    <p class="small muted" style="margin-bottom:8px">Extra moves are on top of the normal 2 a day: no cap, kept until used, spent after the normal ones. Students who haven't opened the map yet get them waiting. Use a minus number to take extra moves back.</p>
+    <div class="toolbar"><b>Tick:</b> <button class="btn alt sm" data-gsel="map">Everyone on the map</button>${years.map(y => `<button class="btn alt sm" data-gsel="y${y}">Year ${y}</button>`).join('')}<button class="btn alt sm" data-gsel="all">Everyone</button><button class="btn alt sm" data-gsel="none">Nobody</button>
+      <span style="margin-left:auto"></span><label><b>Moves</b> <input type="number" id="gN" value="2" min="-20" max="20" style="width:64px"></label><button class="btn" id="gGo">🎁 Give to the ticked students</button></div>
+    <div class="wrapx" style="max-height:340px;overflow:auto"><table><thead><tr><th></th><th>Student</th><th class="n">Year</th><th>On the map?</th><th class="n">Moves now</th><th class="n">Extra</th></tr></thead><tbody>
+      ${rows.map(({ s, st }) => { const on = !!(st && st.at);
+        return `<tr><td><input type="checkbox" data-g="${esc(s.uid)}" data-gy="${s.year || 0}" data-gm="${on ? 1 : 0}"></td><td><b>${esc(s.name)}</b>${BL.pubs[s.uid] && BL.pubs[s.uid].name && BL.pubs[s.uid].name !== s.name ? ` <span class="nick">${esc(BL.pubs[s.uid].name)}</span>` : ''}</td><td class="n">${s.year || '–'}</td>
+          <td class="small">${on ? 'yes' : '<span class="muted">not yet</span>'}</td><td class="n">${on ? BL.movesOf(st) : '<span class="muted">6 on joining</span>'}</td><td class="n">${st && st.bonus ? `<span class="tag green">+${st.bonus}</span>` : ''}</td></tr>`; }).join('') || '<tr><td colspan="6" class="muted">No students yet.</td></tr>'}</tbody></table></div>
+    <div class="msg" id="gMsg"></div></div>`;
+}
+function grantWire(el, fail) {
+  const boxes = () => [...el.querySelectorAll('[data-g]')];
+  el.querySelectorAll('[data-gsel]').forEach(b => b.onclick = () => { const k = b.dataset.gsel;
+    boxes().forEach(x => { if (k === 'none') x.checked = false; else if (k === 'all') x.checked = true; else if (k === 'map') x.checked = x.checked || x.dataset.gm === '1'; else x.checked = x.checked || x.dataset.gy === k.slice(1); }); });
+  $('gGo').onclick = async () => {
+    const n = Math.round(+$('gN').value || 0), who = boxes().filter(x => x.checked).map(x => x.dataset.g);
+    if (!n || !who.length) { $('gMsg').className = 'msg err'; $('gMsg').textContent = !n ? 'Choose a number of moves.' : 'Tick at least one student.'; return; }
+    if (who.length > 5 && !confirm(`${n > 0 ? 'Give' : 'Take back'} ${Math.abs(n)} extra move${Math.abs(n) === 1 ? '' : 's'} ${n > 0 ? 'to' : 'from'} ${who.length} students?`)) return;
+    $('gGo').disabled = true;
+    try {
+      for (const u of who) {
+        await RT.ref(`bland/state/${u}/bonus`).transaction(b => Math.max(0, (b || 0) + n) || null);
+        if (n > 0) await RT.ref(`bland/state/${u}/inbox`).transaction(a => (a || []).concat(`🎁 Your teacher gave you ${n} extra move${n === 1 ? '' : 's'} on Breadventure Land. They're yours until you use them.`).slice(-5));
+      }
+      await BL.load(); drawBland(`${n > 0 ? 'Gave' : 'Took back'} ${Math.abs(n)} extra move${Math.abs(n) === 1 ? '' : 's'} ${n > 0 ? 'to' : 'from'} ${who.length} student${who.length === 1 ? '' : 's'}.`);
+    } catch (e) { fail(e); $('gGo').disabled = false; }
+  };
+}
 function drawBland(msg) {
   const el = $('p-bland'), w = BL.world;
   if (!w) { el.innerHTML = '<div class="card"><h2>Breadventure Land</h2><p class="muted">Nobody has opened it yet. The world is created the first time a signed-in student opens the map.</p></div>'; return; }
   const due = w.day < BL.TODAY;
-  const players = Object.entries(BL.states).map(([u, st]) => ({ u, st, p: BL.pubs[u] || {}, s: D && D.students.find(x => x.uid === u) }));
+  const players = Object.entries(BL.states).filter(([, st]) => st && st.at).map(([u, st]) => ({ u, st, p: BL.pubs[u] || {}, s: D && D.students.find(x => x.uid === u) }));
   const bosses = Object.entries(BL.PLACES).filter(([, P]) => P.type === 'boss');
   el.innerHTML = `${msg ? `<div class="msg ok" style="margin-bottom:10px">${msg}</div>` : ''}
     <div class="kpis"><div class="kpi"><div class="big">${w.chapter}</div><small>chapter · ${BL.keysOf(w)}/3 key pieces</small></div>
@@ -437,9 +476,10 @@ function drawBland(msg) {
         ${(w.log || []).length ? `<h3>What's happened</h3><ul style="margin-left:18px">${w.log.slice(-8).map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
         <h3>Danger</h3><button class="btn warn sm" id="blReset">Reset the whole world</button> <span class="small muted">Bosses back to full, chapter 1, every player back to the Cakelab with 6 moves.</span></div>
     </div>
+    ${grantCard()}
     <div class="card"><h2>Players</h2><div class="wrapx"><table><thead><tr><th>Player</th><th>Where</th><th class="n">Health</th><th class="n">Moves</th><th>Planned tonight</th><th>Waiting to collect</th><th></th></tr></thead><tbody>
       ${players.map(({ u, st, p, s }) => { const planned = p.plan && p.plan.day === w.day ? (p.plan.steps || []) : [];
-        return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}</td>
+        return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}${st.bonus ? ` <span class="tag green" title="extra moves from you, kept until used">+${st.bonus}</span>` : ''}</td>
           <td class="small">${planned.length ? planned.map(placeName).map(esc).join(' → ') : '<span class="muted">nothing</span>'}</td><td class="small">${st.pending ? `🪙 ${st.pending.coins || 0}${(st.pending.items || []).length ? ' + ' + st.pending.items.length + ' item' : ''}` : ''}</td>
           <td style="white-space:nowrap"><button class="btn alt sm" data-bheal="${u}">Heal + to Cakelab</button> <button class="btn alt sm" data-bdel="${u}">Remove</button></td></tr>`; }).join('') || '<tr><td colspan="7" class="muted">No players yet.</td></tr>'}</tbody></table></div></div>
     <div class="msg" id="blMsg"></div>`;
@@ -451,6 +491,7 @@ function drawBland(msg) {
   $('blReset').onclick = async () => { if (!confirm('Reset Breadventure Land for everyone? Bosses, chapter, positions, fog and banked moves all start again. Coins and items already collected stay.')) return;
     try { const upd = { world: BL.newWorld() }; Object.entries(BL.states).forEach(([u, st]) => { upd['state/' + u] = Object.assign(BL.newState((BL.pubs[u] || {}).hp || 15), { pending: st.pending || null }); });
       await RT.ref('bland').update(upd); await BL.load(); drawBland('The world has been reset.'); } catch (e) { fail(e); } };
+  grantWire(el, fail);
   el.querySelectorAll('[data-bheal]').forEach(b => b.onclick = async () => { const u = b.dataset.bheal; try { await RT.ref('bland/state/' + u).update({ at: BL.HOME, health: (BL.pubs[u] || {}).hp || 15 }); await BL.load(); drawBland('Sent to the Cakelab with full Health.'); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-bdel]').forEach(b => b.onclick = async () => { const u = b.dataset.bdel; if (!confirm('Remove this player from Breadventure Land? They start again in the Cakelab next time they open the map.')) return;
     try { await RT.ref('bland/state/' + u).remove(); await RT.ref('bland/pub/' + u).remove(); await BL.load(); drawBland('Player removed.'); } catch (e) { fail(e); } });

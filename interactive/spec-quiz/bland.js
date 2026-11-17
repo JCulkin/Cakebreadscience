@@ -143,6 +143,13 @@ const BREWS = {
   fizz: { name: 'Fizzy Courage', ic: '🫧', cost: 40, when: 'night', what: 'Your hits do half as much again tonight.' },
   calm: { name: 'Decaf Panic', ic: '☕', cost: 25, when: 'night', what: 'You can\'t be knocked out tonight (you stop at 1 Health).' },
 };
+/* spells (mana) and dungeon floor coins: the numbers live here so the map and the admin showcase read the same list (17 Nov) */
+const SPELL_INFO = [
+  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.' },
+  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.' },
+  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.' },
+];
+const FLOOR_COINS = [8, 12, 15, 18, 22];
 const BREW_OLD = { 'Fizzy Courage': 'fizz', 'Bottled Aura': 'aura', 'Electrolyte Slushie': 'slushie', 'Decaf Panic': 'calm' };   // dungeon finds before 10 Nov used names
 
 /* ===================== geometry ===================== */
@@ -172,6 +179,8 @@ const TODAY = (() => { const m = /[?&]today=(\d{4}-\d{2}-\d{2})/.exec(location.s
 const dayNum = s => Math.round(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) / 864e5);
 const BOSS_MAX = {}; Object.entries(PLACES).forEach(([k, P]) => { if (P.type === 'boss') BOSS_MAX[k] = P.max; });
 const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.assign({}, BOSS_MAX), hit: {}, log: [] });
+/* bonus = extra moves given by the teacher (admin console): no cap, kept until used, spent after the normal moves */
+const movesOf = st => ((st && st.moves) || 0) + ((st && st.bonus) || 0);
 const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, visited: [HOME], lifted: [], shield: false, dens: {}, brews: {},
   report: null, reportDay: null, pending: null, joined: TODAY });
 
@@ -226,7 +235,7 @@ function resolve(w0, pubs, st0, today) {
   const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   w.boss = Object.assign({}, BOSS_MAX, w.boss || {}); w.hit = w.hit || {};
   const P_ = uid => pubs[uid] || {};
-  const ids = Object.keys(S);
+  const ids = Object.keys(S).filter(u => S[u] && S[u].at);   // a state the admin made just to hold extra moves waits until its player joins
   const lines = {}, out = {}, used = {}, visBefore = {}, pos = {}, rewards = {};
   const say = (u, h) => lines[u].push(h);
   const ouch = (u, h) => (S[u].shield ? Math.ceil(h / 2) : h);
@@ -242,7 +251,7 @@ function resolve(w0, pubs, st0, today) {
     const pl = P_(u).plan, steps = [];
     if (pl && pl.day === w0.day && Array.isArray(pl.steps)) {   // check every step: adjacent (or staying), walkable, within moves
       let at = pos[u];
-      for (const k of pl.steps.slice(0, Math.max(0, st.moves || 0))) {
+      for (const k of pl.steps.slice(0, Math.max(0, movesOf(st)))) {
         const [c, r] = unkey(k);
         if (!(k === at || neighbours(...unkey(at)).some(([x, y]) => x === c && y === r)) || !walkableIn(w, c, r)) break;
         steps.push(k); at = k;
@@ -321,7 +330,10 @@ function resolve(w0, pubs, st0, today) {
     ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">${BREWS[b].ic} Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
     st.shield = false;
     Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
-    st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - used[u]) + DAILY_MOVES * elapsed);
+    { const norm = Math.min(used[u], st.moves || 0), extra = used[u] - norm;   // normal moves first, then the teacher's extra ones
+      if (extra) st.bonus = Math.max(0, (st.bonus || 0) - extra) || null;
+      /* someone who joined today keeps their 6 first-day moves (17 Nov fix: a first visit that ran the night cut them to 4) */
+      if (st.joined !== today) st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - norm) + DAILY_MOVES * elapsed); }
     if (!plans[u].length) lines[u].push(`<p>You didn't plan any moves${elapsed > 1 ? ' for a while' : ''}, so you stayed at ${PLACES[st.at] ? PLACES[st.at].name : 'your spot'}.</p>`);
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
     /* what everyone else got up to (the shared world should feel shared) */
@@ -350,7 +362,7 @@ async function join(profile) {
     const r = await ref('world').transaction(cur => cur || newWorld());
     world = Object.assign(newWorld(), r.snapshot.val());
   }
-  if (!states[uid]) { states[uid] = newState(profile.hp); await ref('state/' + uid).set(states[uid]); }
+  if (!states[uid] || !states[uid].at) { states[uid] = Object.assign(newState(profile.hp), states[uid] || {}); await ref('state/' + uid).set(states[uid]); }   // (may already hold extra moves from the teacher)
   await publish(profile);
 }
 function publish(profile, plan) {
@@ -387,7 +399,7 @@ async function runNightIfDue(force) {
 const me = () => states[uid];
 
 return { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
-  BREWS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
+  movesOf, BREWS, SPELL_INFO, FLOOR_COINS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
   newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, aid, runNightIfDue, me, BOSS_STORY, EVENTS, eventOf, RALLY,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();

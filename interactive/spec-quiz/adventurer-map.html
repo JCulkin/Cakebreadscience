@@ -467,7 +467,7 @@ function renderHud() {
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
     <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
-    <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
+    <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves - S.plan.length} left</b> <span class="small">of ${S.moves}</span>` : [...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}${S.bonus ? ' 🎁' : ''}</div>
     <div class="day">Day ${S.dayNo || 1} · moves happen at midnight</div>
     <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
@@ -488,18 +488,16 @@ function brewRows() {
     return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:26px">${b.ic}</span><div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
     : '<p class="small">None yet. Buy them at the Tuck Shop with coins from missions, flashcards and the map, or find them in dungeons.</p>');
 }
-const SPELLS = [
-  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.', ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.',
-    cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
-  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.', ok: () => !S.shield, why: 'Already up for tonight.',
-    cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
-  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.', ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.',
-    cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
-];
+const SPELL_FN = {
+  heal: { ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.', cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
+  shield: { ok: () => !S.shield, why: 'Already up for tonight.', cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
+  fog: { ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.', cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
+};
+const SPELLS = BL.SPELL_INFO.map(sp => Object.assign({}, sp, SPELL_FN[sp.id]));   // names and costs live in bland.js
 /* ---------- dungeons (16 Nov): three floors of themed questions, played awake, once a day per dungeon ----------
    floor = up to 4 questions; 3 right clears it (coins; floor 3 also a brew and a loot item); 2 wrong ends the run.
    Answers go through QE.recordAnswer, so they count towards securing spec points like a mission. */
-const FLOOR_COINS = [8, 12, 15, 18, 22];
+const FLOOR_COINS = BL.FLOOR_COINS;
 function delve(k) {
   const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
   const all = QUESTIONS.filter(q => keys.has(q.s)), sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -729,7 +727,7 @@ function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
   S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
-  Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: st.moves || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
+  Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: BL.movesOf(st), bonus: st.bonus || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
     shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, depth: st.depth || {}, under: !!st.under, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
   S.plan = pub.plan && pub.plan.day === w.day && Array.isArray(pub.plan.steps) ? pub.plan.steps.slice(0, S.moves) : [];
   buildPeople(); ADV.save(); noteBossHits();

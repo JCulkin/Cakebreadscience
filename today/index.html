@@ -129,12 +129,12 @@ async function draw() {
   if (land && land.st && land.w) {
     const planned = land.pb && land.pb.plan && land.pb.plan.day === land.w.day ? (land.pb.plan.steps || []).length : 0;
     const newRep = land.w.day < BL.TODAY ? 'Last night is waiting to happen: open the map to run it.' : land.st.reportDay === land.w.day && (ADV.S.seenRep || {})[u.uid] !== land.st.reportDay ? '📜 Your morning report is waiting.' : '';
-    landDone = planned > 0 && planned >= Math.min(land.st.moves || 0, 1);
-    landTxt = `${newRep ? newRep + ' ' : ''}${planned ? `${planned} move${planned > 1 ? 's' : ''} planned for tonight.` : `${land.st.moves || 0} move${land.st.moves === 1 ? '' : 's'} to plan for tonight.`} ❤ ${land.st.health ?? '–'}/${s.hp} Health${land.st.pending ? ' · 🎁 rewards to collect' : ''}.`;
+    landDone = planned > 0 && planned >= Math.min(BL.movesOf(land.st), 1);
+    landTxt = `${newRep ? newRep + ' ' : ''}${planned ? `${planned} move${planned > 1 ? 's' : ''} planned for tonight.` : `${BL.movesOf(land.st)} move${BL.movesOf(land.st) === 1 ? '' : 's'} to plan for tonight.`} ❤ ${land.st.health ?? '–'}/${s.hp} Health${land.st.pending ? ' · 🎁 rewards to collect' : ''}.`;
     landBtn = planned ? 'See the map →' : 'Plan your moves →';
   } else if (!land) landTxt = 'Breadventure Land couldn\'t load just now.';
   let landShort = 'Breadventure Land';
-  if (land && land.st && land.w) { const pl = land.pb && land.pb.plan && land.pb.plan.day === land.w.day ? (land.pb.plan.steps || []).length : 0, mv = land.st.moves || 0;
+  if (land && land.st && land.w) { const pl = land.pb && land.pb.plan && land.pb.plan.day === land.w.day ? (land.pb.plan.steps || []).length : 0, mv = BL.movesOf(land.st);
     landShort = land.st.pending ? '🎁 Rewards waiting' : pl ? `${pl} move${pl > 1 ? 's' : ''} planned` : mv ? `${mv} move${mv > 1 ? 's' : ''} to plan` : 'No moves left'; }
 
   /* nearly secured, rusty, weak flashcards */
