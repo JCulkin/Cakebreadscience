@@ -559,20 +559,31 @@ function drawTeach(msg) {
       return `<label class="tsub"><input type="checkbox" ${mode === 'taught' ? `data-taught="${sb.key}"` : `data-pick="${sb.key}"`}${on ? ' checked' : ''}> ${n}${sb.l} ${esc(sb.name)}${on ? ` <span class="small muted">${esc(taught[sb.key])}</span>` : ''}</label>`; }).join('')}</div>`).join('')}</div>`).join('');
   const list = S.forYear(d.assign, y).concat(TCH.showArch ? Object.entries(d.assign).filter(([, a]) => a && a.archived && a.years && a.years[Y]).map(([id, a]) => Object.assign({ id }, a)) : []);
   const fmt = x => x ? new Date(x + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const aCard = a => { const rows = kids.map(s => ({ s, p: S.progress(s.prog, a) })).sort((x, z) => z.p.got - x.p.got);
+  const aCard = a => { if (S.isTest(a)) return tCard(a); const rows = kids.map(s => ({ s, p: S.progress(s.prog, a) })).sort((x, z) => z.p.got - x.p.got);
     const done = rows.filter(r => r.p.done).length;
     return `<div class="card"><h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">${esc(a.title || 'Work set')}${a.archived ? ' <span class="tag">archived</span>' : ''}<span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">set ${fmt(a.set)}${a.due ? ' · due ' + fmt(a.due) : ''} · ${Object.keys(a.years || {}).map(k => 'Year ' + k.slice(1)).join(', ')}</span></h2>
       <p class="small">${(a.items || []).map(k => esc(S.label(k))).join(' · ')}</p>${a.note ? `<p class="small muted">${esc(a.note)}</p>` : ''}
       <p class="small" style="margin:6px 0"><b>${done} of ${kids.length}</b> Year ${y} students done (${a.target || 10} questions right since it was set).</p>
       ${rows.length ? `<div class="wrapx"><table>${rows.map(({ s, p }) => `<tr class="click" data-uid="${s.uid}"><td class="sname">${esc(s.name)}</td><td style="width:45%"><div class="bar"><i class="${p.done ? 's' : 'l'}" style="width:${p.got / p.target * 100}%"></i></div></td><td class="n">${p.got}/${p.target}${p.done ? ' ✓' : ''}</td><td class="small">${ago(s.last)}</td></tr>`).join('')}</table></div>` : `<p class="muted small">No students have chosen Year ${y} yet.</p>`}
       <div class="acts"><button class="btn alt sm" data-arch="${a.id}">${a.archived ? 'Unarchive' : 'Archive'}</button><button class="btn warn sm" data-adel="${a.id}">Delete</button></div></div>`; };
+  const tCard = a => { const n = (a.qids || []).length, rows = kids.map(s => ({ s, r: S.testOf(s.raw, a) }));
+    const order = { done: 0, started: 1, todo: 2 }; rows.sort((x, z) => order[x.r.state] - order[z.r.state] || z.r.score - x.r.score);
+    const fin = rows.filter(x => x.r.state === 'done'), avg = fin.length ? Math.round(fin.reduce((t, x) => t + x.r.score, 0) / fin.length * 10) / 10 : null;
+    const perQ = (a.qids || []).map(id => { const got = fin.filter(x => id in x.r.ans); const q = QBYID[id] || {}; return { id, q, n: got.length, r: got.filter(x => x.r.ans[id]).length }; });
+    return `<div class="card"><h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">${esc(a.title || 'Test')} <span class="tag">test</span>${a.archived ? ' <span class="tag">archived</span>' : ''}<span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">set ${fmt(a.set)}${a.due ? ' · due ' + fmt(a.due) : ''} · ${Object.keys(a.years || {}).map(k => 'Year ' + k.slice(1)).join(', ')}</span></h2>
+      <p class="small">${n} questions on ${(a.items || []).map(k => esc(S.label(k))).join(' · ')}</p>${a.note ? `<p class="small muted">${esc(a.note)}</p>` : ''}
+      <p class="small" style="margin:6px 0"><b>${fin.length} of ${kids.length}</b> Year ${y} students done${avg != null ? ` · average <b>${avg} / ${n}</b>` : ''}.</p>
+      ${rows.length ? `<div class="wrapx"><table>${rows.map(({ s, r }) => `<tr class="click" data-uid="${s.uid}"><td class="sname">${esc(s.name)}</td><td style="width:40%">${r.state === 'todo' ? '<span class="muted small">not started</span>' : `<div class="bar"><i class="${r.state === 'done' ? 's' : 'l'}" style="width:${(r.state === 'done' ? r.score : r.answered) / (r.n || 1) * 100}%"></i></div>`}</td><td class="n">${r.state === 'done' ? `<b>${r.score}/${r.n}</b>` : r.state === 'started' ? `${r.answered}/${r.n} answered` : ''}</td><td class="small">${r.at ? ago(r.at) : ''}</td></tr>`).join('')}</table></div>` : `<p class="muted small">No students have chosen Year ${y} yet.</p>`}
+      ${fin.length ? `<details style="margin-top:8px"><summary class="small" style="cursor:pointer"><b>Question by question</b> (% of finished students who got it right)</summary><div class="wrapx" style="margin-top:6px"><table>${perQ.map((x, j) => `<tr><td class="n">${j + 1}</td><td class="small">${esc(strip(x.q.gen ? (x.q.q || 'Calculation (random numbers)') : x.q.q || x.id)).slice(0, 140)}</td><td class="n"><b style="color:${x.n && x.r / x.n < .5 ? 'var(--bad)' : 'inherit'}">${x.n ? Math.round(x.r / x.n * 100) + '%' : '–'}</b></td></tr>`).join('')}</table></div></details>` : ''}
+      <div class="acts"><a class="btn alt sm" href="/work/?id=${a.id}" target="_blank">Preview</a><button class="btn alt sm" data-arch="${a.id}">${a.archived ? 'Unarchive' : 'Archive'}</button><button class="btn warn sm" data-adel="${a.id}">Delete</button></div></div>`; };
   const form = TCH.form ? `<div class="card" id="aForm"><h2>Set new work</h2>
       <div class="acts" style="flex-direction:column;align-items:stretch">
         <input id="aTitle" placeholder="Title, e.g. States of matter revision" maxlength="80" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
+        <div><b>Type</b> <label class="small" style="margin-right:12px"><input type="radio" name="aType" value="test" checked> Test: one go, scored (same questions for everyone)</label><label class="small"><input type="radio" name="aType" value="practise"> Practise until they get N right</label></div>
         <div><b>For</b> ${S.YEARS.map(n => `<label class="small" style="margin-right:10px"><input type="checkbox" data-ay="${n}"${n === y ? ' checked' : ''}> Year ${n}</label>`).join('')}</div>
         <div><b>Sub-topics</b> <span class="small muted">tick any number</span><div class="tpick">${tree('pick')}</div></div>
         <input id="aPts" placeholder="Extra spec points, e.g. C2.5, P3.12 (optional)" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
-        <div class="small"><label>Questions to get right <input id="aTarget" type="number" min="1" max="100" value="10" style="width:70px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label>
+        <div class="small"><label><span id="aTargetLbl">Number of questions</span> <input id="aTarget" type="number" min="1" max="100" value="10" style="width:70px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label>
           <label style="margin-left:12px">Due <input id="aDue" type="date" style="font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label></div>
         <input id="aNote" placeholder="Note for students (optional)" maxlength="200" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
       </div><div class="acts"><button class="btn" id="aSave">Set it</button><button class="btn alt" id="aCancel">Cancel</button></div><div class="msg err" id="aMsg"></div></div>` : '';
@@ -597,6 +608,7 @@ function drawTeach(msg) {
   el.querySelectorAll('[data-adel]').forEach(b => b.onclick = async () => { if (!confirm('Delete this work? Students\' answers are kept; only the task goes.')) return; try { await RT.ref('school/assign/' + b.dataset.adel).remove(); delete d.assign[b.dataset.adel]; drawTeach('Deleted.'); } catch (e) { fail(e); } });
   if (TCH.form) {
     $('aCancel').onclick = () => { TCH.form = false; drawTeach(); };
+    el.querySelectorAll('[name="aType"]').forEach(r => r.onchange = () => { $('aTargetLbl').textContent = r.value === 'test' && r.checked ? 'Number of questions' : 'Questions to get right'; });
     $('aSave').onclick = async () => {
       const m = t => { $('aMsg').textContent = t; };
       const years = {}; el.querySelectorAll('[data-ay]:checked').forEach(c => years['Y' + c.dataset.ay] = true);
@@ -608,7 +620,9 @@ function drawTeach(msg) {
       if (!$('aTitle').value.trim()) return m('Give it a title.');
       if (!Object.keys(years).length) return m('Choose at least one year.');
       if (!items.length) return m('Tick at least one sub-topic or add a spec point.');
-      const a = { title: $('aTitle').value.trim(), years, items, target: Math.max(1, Math.min(100, +$('aTarget').value || 10)), set: TODAY, due: $('aDue').value || '', note: $('aNote').value.trim(), by: ME.email, t: Date.now() };
+      const type = (el.querySelector('[name="aType"]:checked') || {}).value || 'test', num = Math.max(1, Math.min(100, +$('aTarget').value || 10));
+      const a = { title: $('aTitle').value.trim(), type, years, items, set: TODAY, due: $('aDue').value || '', note: $('aNote').value.trim(), by: ME.email, t: Date.now() };
+      if (type === 'test') { a.qids = S.pickTest(items, Math.min(num, 40)); if (!a.qids.length) return m('No questions in what you ticked.'); } else a.target = num;
       try { const r = RT.ref('school/assign').push(); await r.set(a); d.assign[r.key] = a; TCH.form = false; drawTeach('Set for ' + Object.keys(years).map(k => 'Year ' + k.slice(1)).join(', ') + '.'); } catch (e) { m('Could not save: ' + (e.code || e.message)); }
     };
   }

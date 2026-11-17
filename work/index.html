@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Set work | Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#5a5a5a;--line:#d8d3c4;--green:#16a34a;--red:#dc2626;--dk:#005e22}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:17px}
+a{color:var(--dk)}
+h1,h2,.btn{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
+header{background:#111;padding:12px 18px;display:flex;align-items:center;gap:10px}
+header img{width:40px}header a{font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:var(--cream);text-decoration:none}header a span{color:#00a03a}
+header .back{margin-left:auto;font:700 15px Barlow,Arial;text-transform:none;color:#ddd}
+main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
+.card{background:var(--paper);border:2px solid var(--ink);padding:16px 18px;margin-bottom:14px}
+h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
+.muted{color:var(--muted)}.small{font-size:14px}
+.btn{display:inline-block;background:#facc15;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;padding:9px 18px;font-size:21px;text-decoration:none;cursor:pointer}
+.btn.alt{background:var(--paper)}
+.prog{display:flex;gap:3px;margin:4px 0 12px}.prog i{flex:1;height:8px;background:#e7e2d6}.prog i.ok{background:var(--green)}.prog i.no{background:var(--red)}.prog i.now{background:#111}
+.q{font-size:20px;font-weight:600;margin:6px 0 14px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:10px;align-items:center;text-align:left;font:inherit;background:var(--paper);border:2px solid var(--ink);padding:10px 12px;cursor:pointer}
+.opt .key{font:900 16px 'Barlow Condensed',Arial;background:#111;color:#fff;min-width:26px;text-align:center;padding:2px 0}
+.opt:hover:not(:disabled){background:#fef3c7}.opt:disabled{cursor:default}
+.opt.right{background:#dcfce7;border-color:var(--green)}.opt.wrong{background:#fee2e2;border-color:var(--red)}
+.fb{margin-top:12px;padding:10px 12px;border-left:5px solid var(--green);background:#f0fdf4;font-size:15px}.fb.bad{border-color:var(--red);background:#fef2f2}
+.fb b{display:block;margin-bottom:2px}
+.next{margin-top:14px}
+.score{font:900 64px/1 'Barlow Condensed',Arial;margin:6px 0}
+.res{border-top:1px solid var(--line);padding:8px 0;font-size:15px}.res:first-child{border-top:0}
+.res .mk{font-weight:700}.res .mk.ok{color:var(--green)}.res .mk.no{color:var(--red)}
+.nuc{display:inline-flex;align-items:center}.nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.6em;line-height:1.05;margin-right:1px}.nuc .ns i{font-style:normal}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.chips a{border:2px solid #111;padding:3px 9px;font-weight:700;font-size:14px;text-decoration:none;color:#111;background:#fff}
+</style>
+</head>
+<body>
+<header><img src="/img/mascot/head-pixel-hd.webp" alt=""><a href="/">Cakebread <span>Science</span></a><a class="back" href="/today/">← My day</a></header>
+<main id="main"><p class="muted">Loading…</p></main>
+
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="/interactive/spec-quiz/spec.js"></script>
+<script src="/interactive/spec-quiz/questions.js"></script>
+<script src="/interactive/spec-quiz/gens.js"></script>
+<script src="/interactive/spec-quiz/cards.js"></script>
+<script src="/interactive/spec-quiz/questing-engine.js"></script>
+<script src="/js/year.js"></script>
+<script src="/js/school.js"></script>
+<script>
+/* Set work (17 Nov 2026). /work/?id=<school/assign id>.
+   type 'test': the fixed questions in a.qids, one go; answers saved as they go to users/{uid}.work[id] =
+   {ans: {qid: 1|0}, n, started, done, score, at} so leaving and coming back resumes (no retakes). Answers also count in
+   Cakebread Questing (QE.recordAnswer), and finishing counts as the day's revision (QE.finishMission).
+   type 'practise' (or old work with no type): links to Practice, progress = CBSSchool.progress. */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
+const ID = new URLSearchParams(location.search).get('id') || '';
+const QBY = {}; QUESTIONS.forEach(q => QBY[q.id] = q);
+let A = null, W = null, RUN = null, booted = false;
+const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+const ref = () => firebase.firestore().collection('users').doc(QE.user.uid);
+const saveW = () => ref().set({ work: { [ID]: W } }, { merge: true }).catch(e => console.warn('work save', e));
+
+async function boot() {
+  if (!QE.known || QE.status === 'loading') return;
+  if (!QE.user) { booted = false; $('main').innerHTML = `<div class="card"><h2>Sign in</h2><p>Sign in to do the work your teacher set.</p><p style="margin-top:12px"><button class="btn" id="si">Sign in with Google</button></p></div>`; $('si').onclick = () => QE.signIn().catch(() => {}); return; }
+  if (booted) return; booted = true;
+  try { A = (await firebase.database().ref('school/assign/' + ID).once('value')).val(); } catch (e) { A = null; }
+  if (!A) { $('main').innerHTML = `<div class="card"><h2>Not found</h2><p>This piece of work doesn't exist any more. <a href="/today/">Back to My day</a></p></div>`; return; }
+  try { W = (((await ref().get()).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
+  if (A.type === 'test') { if (W && W.done) results(); else intro(); }
+  else practise();
+}
+
+function head() {
+  return `<h1>${esc(A.title || 'Set work')}</h1><p class="muted small">${A.due ? 'Due ' + fmt(A.due) + ' · ' : ''}${(A.items || []).map(k => esc(CBSSchool.label(k))).join(' · ')}</p>${A.note ? `<p style="margin-top:8px">${esc(A.note)}</p>` : ''}`;
+}
+function practise() {
+  const p = CBSSchool.progress(QE.prog, A);
+  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>${p.got} of ${p.target}</b> different questions right since it was set${p.done ? ' · Done ✓' : ''}.</p>
+    <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
+}
+function intro() {
+  const qids = (A.qids || []).filter(id => QBY[id]), done = W ? Object.keys(W.ans || {}).length : 0;
+  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Cakebread Questing.</p>
+    ${done ? `<p style="margin-top:8px">You've answered ${done} of ${qids.length}. Carry on where you stopped.</p>` : ''}
+    <p style="margin-top:14px"><button class="btn" id="go">${done ? 'Carry on →' : 'Start the test →'}</button></p></div>`;
+  $('go').onclick = start;
+}
+function start() {
+  const qids = (A.qids || []).filter(id => QBY[id]);
+  W = W || { ans: {}, n: qids.length, started: Date.now() }; W.ans = W.ans || {}; W.n = qids.length;
+  RUN = { qids, i: qids.findIndex(id => !(id in W.ans)) };
+  if (RUN.i < 0) return finish();
+  QE.busy = true; show();
+}
+function show() {
+  const raw = QBY[RUN.qids[RUN.i]], q = QE.inst(raw); RUN.q = q;
+  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : QE.shuffle(q.o.map((o, j) => [o, j === 0]));
+  $('main').innerHTML = `<div class="card"><div class="small muted">${esc(A.title || 'Test')} · question ${RUN.i + 1} of ${RUN.qids.length}</div>
+    <div class="prog">${RUN.qids.map((id, j) => `<i class="${id in W.ans ? (W.ans[id] ? 'ok' : 'no') : j === RUN.i ? 'now' : ''}"></i>`).join('')}</div>
+    <div class="q">${nuc(q.tf !== undefined ? 'True or false? ' + q.q : q.q)}</div>
+    <div class="opts" id="opts">${opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${nuc(t)}</span></button>`).join('')}</div><div id="fb"></div></div>`;
+  $('opts').onclick = e => {
+    const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+    const ok = b.dataset.ok === '1';
+    [...$('opts').children].forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); });
+    if (!ok) b.classList.add('wrong');
+    W.ans[raw.id] = ok ? 1 : 0; saveW();
+    try { QE.recordAnswer(q, ok); } catch (err) {}
+    const last = Object.keys(W.ans).length >= RUN.qids.length;
+    $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><b>${ok ? 'Correct.' : 'Not quite.'}</b>${nuc(q.x || '')}</div><p class="next"><button class="btn" id="nx">${last ? 'See your score →' : 'Next →'}</button></p>`;
+    $('nx').focus();
+    $('nx').onclick = () => { RUN.i = RUN.qids.findIndex(id => !(id in W.ans)); if (RUN.i < 0) finish(); else show(); };
+  };
+}
+document.addEventListener('keydown', e => { const o = $('opts'); if (!o) return; const i = 'abcd'.indexOf(e.key.toLowerCase()), bs = [...o.children]; if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click(); });
+async function finish() {
+  const vals = Object.values(W.ans || {});
+  W.done = true; W.score = vals.filter(Boolean).length; W.at = Date.now();
+  await saveW();
+  try { QE.finishMission({ coins: 0, right: W.score }); } catch (e) {}
+  QE.busy = false;
+  results();
+}
+function results() {
+  const qids = (A.qids || []).filter(id => QBY[id]), ans = W.ans || {};
+  const plain = h => String(h || '').replace(/<[^>]+>/g, '');
+  $('main').innerHTML = `<div class="card">${head()}<div class="score">${W.score} / ${W.n || qids.length}</div><p class="muted">Done ${W.at ? new Date(W.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}. Your teacher can see this score.</p></div>
+    <div class="card"><h2>Your answers</h2>${qids.map((id, j) => { const q = QBY[id], ok = ans[id];
+      return `<div class="res"><span class="mk ${ok ? 'ok' : 'no'}">${ok ? '✓' : '✗'} ${j + 1}.</span> ${esc(plain(q.gen ? (q.q || 'Calculation question (different numbers each time)') : q.q)).slice(0, 160)}${!ok && !q.gen && q.o ? `<div class="small muted">Answer: ${esc(plain(q.o[0]))}</div>` : !ok && q.tf !== undefined ? `<div class="small muted">Answer: ${q.tf ? 'True' : 'False'}</div>` : ''}</div>`; }).join('')}
+      <p style="margin-top:12px" class="small">Practise these again: ${(A.items || []).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join(' · ')}</p></div>`;
+}
+QE.onChange(boot); boot();
+</script>
+</body>
+</html>

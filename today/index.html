@@ -191,16 +191,22 @@ async function drawSchool() {
   if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
   if (!y) { box.innerHTML = ''; return; }
   if (!SCHOOL) { try { SCHOOL = await CBSSchool.load(firebase.database()); } catch (e) { SCHOOL = { taught: {}, assign: {} }; } }
+  let udoc = {}; try { udoc = (await firebase.firestore().collection('users').doc(QE.user.uid).get()).data() || {}; } catch (e) {}
   const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
   const set = S.forYear(SCHOOL.assign, y);
   const secured = k => QE.pointState(k).secured;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
   const chip = k => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length} secured</i></a>`; };
-  const setHtml = set.map(a => { const p = S.progress(prog, a), late = a.due && a.due < today && !p.done;
+  const testHtml = a => { const r = S.testOf(udoc, a), late = a.due && a.due < today && r.state !== 'done';
+    return `<div class="a"><h3>${esc(a.title || 'Test')} ${r.state === 'done' ? '<span class="done">Done ✓</span>' : late ? '<span class="late">Overdue</span>' : ''}<small>Test · ${r.n} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small></h3>
+      ${a.note ? `<p class="small">${esc(a.note)}</p>` : ''}
+      <p class="small" style="margin:6px 0">${r.state === 'done' ? `You scored <b>${r.score} / ${r.n}</b>.` : r.state === 'started' ? `${r.answered} of ${r.n} answered.` : 'One go: your score goes to your teacher.'}</p>
+      <a class="btn ${r.state === 'done' ? 'alt' : ''}" style="font-size:17px;padding:5px 12px" href="/work/?id=${encodeURIComponent(a.id)}">${r.state === 'done' ? 'See your answers' : r.state === 'started' ? 'Carry on →' : 'Start the test →'}</a></div>`; };
+  const setHtml = set.map(a => { if (S.isTest(a)) return testHtml(a); const p = S.progress(prog, a), late = a.due && a.due < today && !p.done;
     return `<div class="a"><h3>${esc(a.title || 'Work set')} ${p.done ? '<span class="done">Done ✓</span>' : late ? '<span class="late">Overdue</span>' : ''}<small>${a.due ? 'due ' + fmt(a.due) : ''}</small></h3>
       ${a.note ? `<p class="small">${esc(a.note)}</p>` : ''}
       <div class="bar" style="margin-top:6px" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%;background:${p.done ? 'var(--s)' : 'var(--l)'}"></i></div>
-      <p class="small muted">${p.got} of ${p.target} questions right since it was set. Practise any of these:</p><div class="items">${(a.items || []).map(chip).join('')}</div></div>`; }).join('');
+      <p class="small muted">Practise until you've got ${p.target} different questions right (${p.got} so far). Any of these:</p><div class="items">${(a.items || []).map(chip).join('')}</div></div>`; }).join('');
   const taught = Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]);
   const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
