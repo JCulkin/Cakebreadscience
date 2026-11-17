@@ -35,4 +35,5 @@ let h='';for(const g of Object.keys(G)){const ps=(window.WIKI_PHOTOS||[]).filter
   h+=`<h2>${G[g]} (${ps.length})</h2><div class="grid">${ps.map(p=>`<div class="c"><img src="${p.src}" alt="${esc(p.cap)}" loading="lazy"><div><b>${esc(p.cap)}</b>${esc(p.title)}<br>By ${esc(p.artist)} · <a href="${esc(p.licUrl||p.page)}" target="_blank" rel="noopener">${esc(p.lic)}</a> · <a href="${esc(p.page)}" target="_blank" rel="noopener">source</a>${p.note?`<br><i>${esc(p.note)}</i>`:''}</div></div>`).join('')}</div>`;}
 document.getElementById('out').innerHTML=h;
 </script>
+<script src="/js/home-link.js" data-back="/interactive/cell-game/" data-back-label="What The Cell"></script>
 </body></html>

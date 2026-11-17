@@ -54,7 +54,7 @@
 .scene .me{height:124px;margin-bottom:-4px}
 .scene .foe{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1}
 .scene .foe img{height:74px}
-.scene .foe.down img{filter:grayscale(1);opacity:.45}
+.scene .foe.down img{opacity:.7}
 .scene .hp{width:64px;height:7px;border:2px solid var(--ink);background:#fff}.scene .hp i{display:block;height:100%;background:var(--red)}
 .scene .foe span{font:700 11px Barlow,Arial;background:#fffd;padding:0 4px;white-space:nowrap}
 .scene .cage{position:relative;height:84px;width:72px;background:#e8edf3cc;border:2px solid #111;display:grid;place-items:end center}
@@ -133,6 +133,7 @@
 <script src="adventurer-pixel.js"></script>
 <script src="bland.js"></script>
 <script src="adventurer-shell.js"></script>
+<script src="misconceptions.js"></script>
 <script>
 ADV.nav('home');
 const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats();
@@ -154,22 +155,23 @@ $('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + 
 $('dayTitle').textContent = `Today · day ${S.day}`;
 function renderLand() {
   const ch = S.chapter || 1, k = ADV.keys(), P = BL.PLACES, hp = S.boss || {};
-  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && (P[x].ch || 1) === Math.min(ch, 2));
+  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && !P[x].deep && (P[x].ch || 1) === Math.min(ch, 2));
   const foe = x => { const h = hp[x] ?? P[x].max, down = h === 0;
-    return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon)}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
+    return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon + (down ? '_down' : h <= P[x].max * .34 ? '_hurt' : ''))}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
   const prof = ch < 2 ? `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>`
     : `<img src="${ADV.icon('prof')}" alt="The Professor" style="height:84px">`;
   $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +
     foes.slice(0, 2).map(foe).join('') + prof + foes.slice(2).map(foe).join('');
   $('landKick').textContent = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 🔑` : 'Chapter 2 · the monsters wake';
   const planned = (S.plan || []).length, mv = S.moves || 0;
+  { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ev.ic} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
   $('landSt').innerHTML = (mv ? (planned ? `${planned} of ${mv} moves planned for tonight. ` : `<b>${mv} move${mv === 1 ? '' : 's'} to plan</b> before midnight. `) : 'No moves left today. ')
     + `❤ ${S.health} Health · 🔮 ${S.mana} mana. Fight the guards together; every spec point you secure makes you stronger.`;
   $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
 renderLand();
 if (!S.storySeen) ADV.storyIntro();
-$('enemyIc').src = ADV.icon('boss', '#d97706');
+{ const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#16a34a', C: '#dc2626', P: '#d97706' }[sg.key[0]] : '#d97706'); }
 if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;

@@ -29,11 +29,28 @@ const ROWS_TXT = [
   '~bbbbbPP=PPPdd~~~~~~',
   '~~bbbbPPBPPs~~~~~~~~',
   '~~~~bb~~=~~~~~~~~~~~',
+  /* rows 13–16: solid rock between the two layers (thick enough that nothing on top can see or reach below) */
+  '####################',
+  '####################',
+  '####################',
+  '####################',
+  /* rows 17–25: the Underworld (17 Nov 2026). Same grid, so moves, fog, fights and the night all work as on top.
+     # rock, L lava, u the Sunless Lake (none can be crossed) · c Hollow Road, g Glowshroom Grove, x Crystal Gallery, a Ember Flats, k Fossil Beds */
+  '###gg#####xxxx######',
+  '##gggcc##cxxxxc#aa##',
+  '#ggguucccccxxcccaaa#',
+  '#gguuucc#cc##ccLLaa#',
+  '##gcuccc##kkkccLLaaa',
+  '###ccc#ckkkkk#ccLaa#',
+  '####cccckkkk##cccaa#',
+  '#####c##kkk####ca###',
+  '####################',
 ];
-const COLS = 20, ROWS = 13, HEXR = 30, W3 = Math.sqrt(3) * HEXR;
+const SURF_ROWS = 13, UNDER0 = 17, MINE = '12,4', LIFT = '9,19';   // the lift joins the two layers: ride it from the mine once you've dug through
+const COLS = 20, ROWS = ROWS_TXT.length, HEXR = 30, W3 = Math.sqrt(3) * HEXR;
 const VB_W = Math.ceil(W3 * (COLS + 0.5) + 8), VB_H = Math.ceil(HEXR * 1.5 * (ROWS - 1) + 2 * HEXR + 8);
 const T_AT = (c, r) => (ROWS_TXT[r] || '')[c] || '~';
-const WATER = new Set(['~', 'o', '=']);
+const WATER = new Set(['~', 'o', '=', '#', 'L', 'u']);   // everything you can't walk on
 const LAND = {
   F: { col: '#5a9e4b', name: 'Greenhouse Woods', decor: [['tree', 3], ['pine', 2], ['mushroom', .3]] },
   f: { col: '#9fcf6e', name: 'Pollen Meadows', decor: [['flower', 2], ['tree', .5], ['grass', 1]] },
@@ -48,8 +65,14 @@ const LAND = {
   j: { col: '#b38b6d', name: 'Scrap Heap Hills', decor: [['cog', 1.2], ['rock', .8]] },
   r: { col: '#c9cf7f', name: 'The Glowing Wastes', decor: [['barrel', 1], ['deadtree', .9], ['rock', .4]] },
   B: { col: null, name: 'Bridge over the River Tangent', decor: [] },
+  c: { col: '#6b6475', name: 'The Hollow Road', decor: [['rock', .6], ['spire', .6]] },
+  g: { col: '#3f6b63', name: 'Glowshroom Grove', decor: [['glowcap', 2.2], ['spire', .3]] },
+  x: { col: '#5b6aa8', name: 'The Crystal Gallery', decor: [['gem', 2], ['rock', .3]] },
+  a: { col: '#7a4a3a', name: 'The Ember Flats', decor: [['ember', 1.5], ['rock', .5]] },
+  k: { col: '#8a7f6a', name: 'The Fossil Beds', decor: [['bone', 1.6], ['rock', .5]] },
 };
-const WATER_NAME = { '~': ['The Revision Sea', 'Endless. Salty. You cannot swim in a lab coat.'], o: ['Lost Property Lake', 'Full of single gloves and PE kits. Too deep to wade.'], '=': ['The River Tangent', 'Flows off in a direction nobody expected. Cross at a bridge.'] };
+const WATER_NAME = { '~': ['The Revision Sea', 'Endless. Salty. You cannot swim in a lab coat.'], o: ['Lost Property Lake', 'Full of single gloves and PE kits. Too deep to wade.'], '=': ['The River Tangent', 'Flows off in a direction nobody expected. Cross at a bridge.'],
+  '#': ['Solid rock', 'No way through. It has been here for 300 million years and is not moving for you.'], L: ['The Lava Lake', 'Molten rock. Hot enough to melt your shoes, your sword and your plans.'], u: ['The Sunless Lake', 'Black, still and very cold. Something ripples. Best not.'] };
 
 const PLACES = {
   '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
@@ -71,27 +94,43 @@ const PLACES = {
     text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', item: 'chainmail', loot: ['Chainmail of Covalent Bonds (Rare)', 'Fizzy Courage', '+50 coins each'] },
   '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
     text: 'Something leaked out of the old reactor. Half of it has already decayed. The other half is very much still here.', item: 'kilt', loot: ['Kilt of Kinetic Energy (Rare)', 'Bottled Aura', '+50 coins each'] },
-  '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', text: 'A broken-down nuclear power station, cracked and humming. Explore it floor by floor (in a very sensible lead suit) for loot.' },
-  '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', text: 'Three floors deep. Each night inside explores one floor: small fights, random loot, sometimes a brew.' },
-  '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', text: 'Things go in. Some come out. Explore floor by floor for loot.' },
-  '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', text: 'Keep the sash down. Explore for loot and the odd cursed test tube.' },
+  '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', subs: ['P7b', 'P7c'], rooms: ['the control room', 'the turbine hall', 'the reactor core'], text: 'A broken-down nuclear power station, cracked and humming. Three floors of radioactivity questions (wear a very sensible lead suit).' },
+  '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', subs: ['B1b', 'B2b', 'B2c', 'B5a', 'B5c'], rooms: ['the agar slopes', 'the colony caves', 'the incubator'], text: 'Three floors deep and faintly warm. Every floor is a room of questions on cells, microbes and enzymes.' },
+  '12,6': { type: 'dungeon', science: 'p', name: 'Black Hole Basement', icon: 'cave', subs: ['P8b', 'P8c', 'P1c'], rooms: ['the orbit stairs', 'the red giant gallery', 'the event horizon'], text: 'Things go in. Some come out. Three floors of questions on gravity, orbits and stars.' },
+  '5,8': { type: 'dungeon', science: 'c', name: 'Fume Cupboard of Doom', icon: 'cave', subs: ['C2e', 'C2f', 'C2g', 'C3b'], rooms: ['the reagent shelves', 'the titration tunnel', 'the back of the cupboard'], text: 'Keep the sash down. Three floors of questions on acids, salts, tests and rates.' },
   '18,7': { type: 'locked', name: 'The Ancient Gate', icon: 'gate', text: 'A stone gate humming with blue light at the far edge of the Glowing Wastes. Locked. It leads somewhere new — a later chapter.' },
   '0,4': { type: 'locked', name: 'The Broken Bridge', icon: 'bridge', text: 'Half a bridge, leading west into the sea mist. Someone will have to fix it one day — a later chapter (the Professor has plans).' },
-  '12,4': { type: 'locked', name: 'The Abandoned Mine', icon: 'mine', text: 'Boarded up. A sign says “Closed for safety (and plot reasons)”. Strange noises at night. A later chapter.' },
+  /* the mine (17 Nov): five floors, and your depth is kept from day to day. Clear the bottom floor once and the lift to the Underworld is yours. */
+  '12,4': { type: 'dungeon', keep: true, name: 'The Abandoned Mine', icon: 'mine', subs: ['C2a', 'C2d', 'C1f', 'C3a', 'P4b', 'P4c', 'P6b'],
+    rooms: ['the boarded-up entrance', 'the cart tracks', 'the flooded gallery', 'the old workings', 'the deep seam'],
+    text: 'Somebody has pulled the boards off. Five floors of questions on metals, energy and magnets, and you keep your place from one day to the next. Strange noises come up from the very bottom.' },
+  /* ---------- the Underworld ---------- */
+  '9,19': { type: 'lift', name: 'The Mine Lift', icon: 'lift', text: 'A rusty cage on a very long cable. It goes up to the Abandoned Mine and, more reluctantly, back down.' },
+  '18,21': { type: 'boss', ch: 1, deep: true, coins: 100, science: 'p', name: 'Magmaw', icon: 'magmaw', max: 1300, power: 11,
+    text: 'A boulder with a furnace for a mouth, sitting by the Lava Lake at the hot end of the Ember Flats. It has been warming the Underworld for a very long time and has opinions about heat.', brew: 'fizz', loot: ['+100 coins each', 'a Fizzy Courage each'] },
+  '9,23': { type: 'dungeon', science: 'b', name: 'The Bone Library', icon: 'cave', subs: ['B3a', 'B3b', 'B4b', 'B5b'], rooms: ['the fossil stacks', 'the family-tree room', 'the extinct wing'], text: 'Every shelf is a rock layer. Three floors of questions on reproduction, inheritance and energy in ecosystems.' },
+  '11,17': { type: 'dungeon', science: 'c', name: 'The Crystal Vault', icon: 'cave', subs: ['C1c', 'C1d', 'C1f', 'C1g'], rooms: ['the ionic hall', 'the covalent corridor', 'the giant lattice'], text: 'Everything in here has a very regular structure. Three floors of questions on atoms, the Periodic Table and bonding.' },
 };
 /* small monsters you can beat on your own in a night or two (respawn 2 days after they're beaten) */
 const DENS = {
-  '5,3': ['Fruit Fly Swarm', 'boss', '#a16207', 'b', 30, 2, 'A buzzing cloud that came for the cake and stayed for the fight.'],
-  '3,1': ['Slime Mould', 'boss', '#65a30d', 'b', 38, 3, 'Not quite a fungus, not quite an animal, definitely sticky.'],
-  '12,3': ['Rogue Electron', 'ghost', '#38bdf8', 'p', 35, 3, 'Escaped from a shell and is very negative about it.'],
-  '3,6': ['Acid Frog', 'cube', '#84cc16', 'c', 38, 3, 'pH 2 and proud. Don\'t lick it.'],
-  '11,7': ['Static Sandling', 'ghost', '#eab308', 'p', 42, 3, 'Rubbed against too many sand dunes. Now it zaps.'],
-  '2,9': ['Germ Gang', 'boss', '#10b981', 'b', 48, 4, 'Three bacteria in a trench coat. Divides when nervous.'],
-  '17,4': ['Rust Mite', 'cube', '#c2410c', 'c', 48, 4, 'Eats iron, leaves flakes. Keep your sword dry.'],
-  '16,8': ['Glow Rat', 'ghost', '#bef264', 'p', 55, 4, 'Lives near the reactor. Glows faintly. Nobody pets it.'],
+  '5,3': ['Fruit Fly Swarm', 'bat', '#a16207', 'b', 30, 2, 'A buzzing cloud that came for the cake and stayed for the fight.'],
+  '3,1': ['Slime Mould', 'slime', '#65a30d', 'b', 38, 3, 'Not quite a fungus, not quite an animal, definitely sticky.'],
+  '12,3': ['Rogue Electron', 'star', '#38bdf8', 'p', 35, 3, 'Escaped from a shell and is very negative about it.'],
+  '3,6': ['Acid Frog', 'jelly', '#84cc16', 'c', 38, 3, 'pH 2 and proud. Don\'t lick it.'],
+  '11,7': ['Static Sandling', 'cloud', '#eab308', 'p', 42, 3, 'Rubbed against too many sand dunes. Now it zaps.'],
+  '2,9': ['Germ Gang', 'spike', '#10b981', 'b', 48, 4, 'Three bacteria in a trench coat. Divides when nervous.'],
+  '17,4': ['Rust Mite', 'crab', '#c2410c', 'c', 48, 4, 'Eats iron, leaves flakes. Keep your sword dry.'],
+  '16,8': ['Glow Rat', 'imp', '#bef264', 'p', 55, 4, 'Lives near the reactor. Glows faintly. Nobody pets it.'],
+  /* the Underworld: tougher than anything on top */
+  '3,18': ['Glowshroom Gobbler', 'plant', '#2dd4bf', 'b', 60, 5, 'Makes its own light but not its own food: there is no photosynthesis down here.'],
+  '12,18': ['Lattice Lurker', 'crystal', '#67e8f9', 'c', 65, 5, 'A giant ionic lattice with a short temper. High melting point, low patience.'],
+  '6,21': ['Lodestone Lurker', 'magnet', '#ef4444', 'p', 68, 5, 'Only attracts iron, steel, nickel and cobalt. Takes that personally.'],
+  '10,22': ['Fossil Fidget', 'worm', '#d6d3d1', 'b', 70, 5, 'Extinct for 300 million years and still fidgeting.'],
+  '17,19': ['Convection Wisp', 'flame', '#fb923c', 'p', 75, 6, 'Hot, less dense and rising. Will not stop telling you about it.'],
 };
 Object.entries(DENS).forEach(([k, [name, shape, col, sci, max, power, text]]) => { PLACES[k] = { type: 'monster', name, icon: shape, col, science: sci, max, power, text }; });
-const WILD = { F: 'a Grumpy Woodlouse', f: 'a Pollen Sprite', P: 'a Lost Proton', M: 'a Falling Rock', S: 'a Frostbite Imp', m: 'a Bog Bubble', d: 'a Dust Devil', b: 'a Stray Bacterium', j: 'a Loose Bolt', r: 'a Two-Headed Pigeon', T: 'a Runaway Shopping Trolley', s: 'a Crabby Crab' };
+const WILD = { F: 'a Grumpy Woodlouse', f: 'a Pollen Sprite', P: 'a Lost Proton', M: 'a Falling Rock', S: 'a Frostbite Imp', m: 'a Bog Bubble', d: 'a Dust Devil', b: 'a Stray Bacterium', j: 'a Loose Bolt', r: 'a Two-Headed Pigeon', T: 'a Runaway Shopping Trolley', s: 'a Crabby Crab',
+  c: 'a Dripping Stalactite', g: 'a Spore Puff', x: 'a Sharp Reflection', a: 'a Spitting Ember', k: 'a Restless Trilobite' };
 const HEAL = { mission: 2, card: 1, rest: 5 };   // Health per correct mission answer, per due flashcard, per night resting in the Cakelab
 /* the crumb trail from the Cakelab to the dragon's lair (shows through the fog) */
 const CRUMBS = ['7,3', '7,2'];
@@ -136,6 +175,43 @@ const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.a
 const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, visited: [HOME], lifted: [], shield: false, dens: {}, brews: {},
   report: null, reportDay: null, pending: null, joined: TODAY });
 
+/* ---------- boss stories (16 Nov): a few lines each, used in the morning report and the map panel.
+   meet = the first time you fight it, taunt = when it is hit, low = when it drops under a third, fall = its defeat.
+   Each boss is built on a misconception from its science; keep the science inside the Double Award spec. ---------- */
+const BOSS_STORY = {
+  '2,2': { meet: 'The Spore Lord looms out of the mist. “Fungi are just plants that forgot to be green,” it booms. (They are not: no chlorophyll, no photosynthesis, walls of chitin.)',
+    taunt: ['“I feed on the dead. You look tired.”', '“Chop away. My hyphae go for miles.”', '“Spores! Spores for everyone!”'],
+    low: 'The Spore Lord’s cap is sagging and it has stopped making speeches.', fall: 'The Spore Lord folds up like a wet umbrella. In the mush where it stood, something glints: a piece of a key.' },
+  '11,2': { meet: 'Granitus opens two amber eyes. “I DO NOT MOVE. THINGS ONLY MOVE WHEN PUSHED, AND STOP WHEN THE PUSHING STOPS.” (Newton would like a word about that second part.)',
+    taunt: ['“BALANCED FORCES. I STAY PUT.”', '“YOUR FORCE IS SMALL. MY MASS IS NOT.”', '“THAT TICKLED. SLIGHTLY.”'],
+    low: 'Cracks are spreading across Granitus. An unbalanced force is doing exactly what unbalanced forces do.', fall: 'Granitus topples, very slowly, and then all at once. A piece of a key rolls out of the rubble.' },
+  '4,7': { meet: 'Three heads rise from the marsh. “All acids burn through anything,” hisses one. “Even lemon juice?” asks another. They start arguing. (Weak acids are in your lunch.)',
+    taunt: ['“pH 1 and proud of it!”', '“Neutralise THIS.” (Spits. Misses.)', 'Two heads blame the third for that one.'],
+    low: 'The Acid Hydra is down to hissing with one head at a time. The marsh around it has gone suspiciously neutral.', fall: 'The Hydra fizzes, bubbles and dissolves into salt and water. Bobbing in the puddle: a piece of a key.' },
+  '3,10': { meet: 'The Superbug swaggers over. “Antibiotics made me STRONGER. I mutated on purpose!” (It did not: the mutation was random. The antibiotic just killed off its rivals.)',
+    taunt: ['“I’ve survived penicillin. You’re nothing.”', '“Resistance is… well, me.”', '“Divide and conquer! Mostly divide.”'],
+    low: 'The Superbug has stopped dividing and started sweating.', fall: 'The Superbug pops. Natural selection giveth, and you lot taketh away.' },
+  '16,4': { meet: 'A long iron shape uncoils from the scrap. “Rust is just dirt,” the Wyrm rasps. “It wipes off.” (It does not: rusting is a chemical reaction of iron with water and oxygen.)',
+    taunt: ['“I’m not flaking. YOU’RE flaking.”', '“Oxidation is a lifestyle.”', 'A bit falls off. It pretends not to notice.'],
+    low: 'The Rust Wyrm is more orange powder than serpent now.', fall: 'The Rust Wyrm crumbles into a heap of iron(III) oxide. Somebody should have galvanised it.' },
+  '18,21': { meet: 'The boulder opens one glowing eye. “HEAT RISES,” Magmaw rumbles. “EVERYONE KNOWS THAT.” (Not quite: hot <i>fluids</i> rise, because they are less dense. Heat itself goes from hot to cold, in any direction.)',
+    taunt: ['“I AM A VERY GOOD CONDUCTOR.” (It is rock. It is not.)', '“COLD IS COMING IN!” (Cold does not move. Heat is going out.)', 'Magmaw radiates smugly. It is dull and black, so it is rather good at that.'],
+    low: 'Magmaw is glowing dull red instead of white. It is transferring energy to the surroundings faster than it would like.', fall: 'Magmaw cools, cracks and goes dark: just a boulder now. The Ember Flats are noticeably less ember.' },
+  '17,6': { meet: 'A flickering shape drifts out of the reactor. “After one half-life I’ll be gone,” it whispers. (No: after one half-life, half of it is left. And half of that after the next.)',
+    taunt: ['“You can’t rush decay.”', '“Half of me didn’t feel that.”', '“Tick. Tick. Tick.”'],
+    low: 'The Half-Life Horror keeps halving. There is not much left to halve.', fall: 'The Horror halves one last time, and then there is nothing left to count.' },
+};
+/* ---------- weekly events (16 Nov): one a week, the same for everyone, picked from the date ---------- */
+const EVENTS = [
+  { id: 'coins', ic: '🪙', name: 'Market week', text: 'Small monsters and the puddle pay double coins.' },
+  { id: 'rage', ic: '😡', name: 'Boss rage week', text: 'Bosses hit half as hard again, but they get careless: your attacks do 25% more damage.' },
+  { id: 'quiet', ic: '🌿', name: 'Quiet week', text: 'The wild critters are staying home. Nothing jumps you on open land.' },
+  { id: 'rest', ic: '🛏', name: 'Cosy week', text: 'A night’s rest in the Cakelab heals twice as much.' },
+  { id: 'rally', ic: '📣', name: 'Rally week', text: 'Fighting a boss side by side gives double the rally bonus.' },
+];
+const eventOf = day => EVENTS[Math.floor((dayNum(day) + 3) / 7) % EVENTS.length];   // weeks run Monday to Sunday
+const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same step (max +40%)
+
 /* ===================== the night =====================
    resolve(world, pubs, states, today) → { world, states } (new objects). Everyone's planned steps happen in order, step by step:
    players on the same boss square at the same step fight it together; small monsters are per player (your own copy);
@@ -145,7 +221,9 @@ function resolve(w0, pubs, st0, today) {
   let seed = 7; for (const ch of today) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const elapsed = Math.max(1, Math.min(7, dayNum(today) - dayNum(w.day || today)));
-  const tNum = dayNum(today);
+  const tNum = dayNum(today), EV = eventOf(w0.day || today).id;   // the event of the day the plans were made
+  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0], did = {};
+  const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   w.boss = Object.assign({}, BOSS_MAX, w.boss || {}); w.hit = w.hit || {};
   const P_ = uid => pubs[uid] || {};
   const ids = Object.keys(S);
@@ -190,38 +268,42 @@ function resolve(w0, pubs, st0, today) {
         say(u, `<p class="good">You take on the ${P.name}: ${dmg} damage.</p>`);
         const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit);
         say(u, `<p class="bad">It fights back: −${hit} Health.</p>`);
-        if (!hp) { st.dens[k] = { back: tNum + 2 }; give(u, 8); say(u, `<p class="lt">★ ${P.name} beaten! +8 coins. It'll be back in two days.</p>`); }
+        if (!hp) { const c = EV === 'coins' ? 16 : 8; st.dens[k] = { back: tNum + 2 }; give(u, c); did[u] = `beat the ${P.name}`; say(u, `<p class="lt">★ ${P.name} beaten! +${c} coins${EV === 'coins' ? ' (Market week)' : ''}. It'll be back in two days.</p>`); }
         else { st.dens[k] = { hp }; say(u, `<p>The ${P.name} limps off with ${hp} health left. Come back to finish it.</p>`); }
         if (st.health === 0) knockout(u);
-      } else if (!P && rnd() < .3 && WILD[T_AT(c, r)]) {
+      } else if (!P && EV !== 'quiet' && rnd() < .3 && WILD[T_AT(c, r)]) {
         const hit = ouch(u, 1 + Math.floor(rnd() * 3)); hurt(u, hit);
         say(u, `<p>On the way you're jumped by <b>${WILD[T_AT(c, r)]}</b>. You see it off (−${hit} Health).</p>`);
         if (st.health === 0) knockout(u);
       } else if (P && P.type === 'dungeon') {
-        const roll = rnd();
-        if (roll < .35) { give(u, 12); say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">12 coins</span>.</p>`); }
-        else if (roll < .65) { const b = rnd() < .5 ? 'fizz' : 'aura'; st.brews[b] = (st.brews[b] || 0) + 1; say(u, `<p>You explore a floor of ${P.name} and find <span class="lt">a ${BREWS[b].name}</span>.</p>`); }
-        else say(u, `<p>You explore a floor of ${P.name} and find a single damp glove. Useless.</p>`);
+        /* dungeons are played awake (16 Nov): the floors are question rooms on the map page; the night only gets you to the door */
+        if (i === plans[u].length - 1) say(u, `<p class="new">You make camp at the door of <b>${P.name}</b>. Open the map and go in: every floor is a room of questions, with loot for each one you clear.</p>`);
       } else if (P && P.type === 'event') {
-        if (rnd() < .4) { give(u, 5); say(u, '<p>You poke the puddle and fish out <span class="lt">5 coins</span>.</p>'); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
+        if (rnd() < .4) { const c = EV === 'coins' ? 10 : 5; give(u, c); say(u, `<p>You poke the puddle and fish out <span class="lt">${c} coins</span>.</p>`); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
       } else if (P && P.type === 'shop') say(u, '<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>');
-      else if (P && P.type === 'home') { const b = st.health; st.health = Math.min(P_(u).hp || 15, st.health + HEAL.rest); say(u, `<p class="good">You rest in the Cakelab: +${st.health - b} Health.</p>`); }
+      else if (P && P.type === 'lift') { if (i === plans[u].length - 1) say(u, '<p class="new">You wait by the Mine Lift. Open the map to ride it up.</p>'); }
+      else if (P && P.type === 'home') { const b = st.health; st.health = Math.min(P_(u).hp || 15, st.health + HEAL.rest * (EV === 'rest' ? 2 : 1)); say(u, `<p class="good">You rest in the Cakelab: +${st.health - b} Health.</p>`); }
     });
     /* bosses: everyone on the square this step fights together */
     Object.entries(fights).forEach(([k, team]) => {
-      const P = PLACES[k];
-      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8))), total = dmg.reduce((a, b) => a + b, 0);
+      const P = PLACES[k], ST = BOSS_STORY[k] || {}, before = w.boss[k];
+      const bonus = Math.min(4, team.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
+      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult)), total = dmg.reduce((a, b) => a + b, 0);
       w.boss[k] = Math.max(0, w.boss[k] - total);
       const hk = w.hit[k] = w.hit[k] || {};
+      const taunt = ST.taunt ? ST.taunt[Math.floor(rnd() * ST.taunt.length)] : '';
       team.forEach((u, j) => {
-        hk[u] = true;
-        const others = team.length - 1;
-        say(u, `<p class="good">You${others ? ` and ${others} other${others > 1 ? 's' : ''}` : ''} attack ${P.name}: ${total} damage (you did ${dmg[j]}).</p>`);
-        if (w.boss[k] > 0) { const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
+        if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`);
+        hk[u] = true; did[u] = `fought ${P.name}`;
+        const mates = team.filter(x => x !== u).map(nameOf);
+        say(u, `<p class="good">${mates.length ? `You and ${list(mates)} attack ${P.name} together` : `You attack ${P.name}`}: ${total} damage${mates.length ? ` (you did ${dmg[j]})` : ''}.${bonus ? ` 📣 Rally: +${Math.round(bonus * 100)}% for fighting side by side.` : ''}</p>`);
+        if (w.boss[k] > 0) {
+          if (before > P.max / 3 && w.boss[k] <= P.max / 3 && ST.low) say(u, `<p class="new">${ST.low}</p>`); else if (taunt) say(u, `<p>${P.name}: <i>${taunt}</i></p>`);
+          const hit = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
       });
       if (w.boss[k] === 0) {
-        const coins = (P.ch || 1) > 1 ? 50 : 40;
-        Object.keys(hk).forEach(u => { if (S[u]) { give(u, coins, P.item); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
+        const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
+        Object.keys(hk).forEach(u => { if (S[u]) { give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; } if (ST.fall) lines[u].push(`<p class="new">${ST.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
         (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
         if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
       }
@@ -242,6 +324,10 @@ function resolve(w0, pubs, st0, today) {
     st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - used[u]) + DAILY_MOVES * elapsed);
     if (!plans[u].length) lines[u].push(`<p>You didn't plan any moves${elapsed > 1 ? ' for a while' : ''}, so you stayed at ${PLACES[st.at] ? PLACES[st.at].name : 'your spot'}.</p>`);
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
+    /* what everyone else got up to (the shared world should feel shared) */
+    const others = ids.filter(x => x !== u && plans[x].length).map(x => `<b>${nameOf(x)}</b> ${did[x] || `walked to ${PLACES[S[x].at] ? PLACES[S[x].at].name : LAND[T_AT(...unkey(S[x].at))].name}`}${out[x] ? ' and was knocked out' : ''}`);
+    if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
+    const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
     st.report = lines[u]; st.reportDay = today;
   });
   w.day = today; delete w.lock;
@@ -275,6 +361,13 @@ function publish(profile, plan) {
   return ref('pub/' + uid).set(p);
 }
 const savePlan = steps => publish({}, steps);
+/* teamwork (16 Nov): give a brew to, or patch up, another player (their state is writable by any signed-in player) */
+async function aid(to, what, from) {
+  if (what.brew) await ref(`state/${to}/brews/${what.brew}`).transaction(n => (n || 0) + 1);
+  if (what.heal) await ref(`state/${to}/health`).transaction(h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal));
+  await ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5));
+  if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
+}
 function saveMine(fields) { Object.assign(states[uid], fields); return ref('state/' + uid).update(fields); }
 /* the night: run if the world's day is before today. A transaction on the lock stops two visitors running it at once. */
 async function runNightIfDue(force) {
@@ -293,8 +386,8 @@ async function runNightIfDue(force) {
 }
 const me = () => states[uid];
 
-return { ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
+return { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
   BREWS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
-  newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, runNightIfDue, me,
+  newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, aid, runNightIfDue, me, BOSS_STORY, EVENTS, eventOf, RALLY,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();

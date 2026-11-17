@@ -87,6 +87,32 @@
       }
     }
   }
+  // Force diagrams: <div class="fd" data-f='[["r",10,"10 N"],["l",4,"4 N"]]' data-obj="box|car|ball"></div>
+  // dir r/l/u/d, size sets arrow length (relative), label text.
+  function forces(root) {
+    (root || document).querySelectorAll(".fd[data-f]").forEach((el, n) => {
+      const F = JSON.parse(el.dataset.f), max = Math.max(1, ...F.map(f => f[1]));
+      const cx = 150, cy = 70, hw = 34, hh = 24;
+      let s = `<defs><marker id="fa${n}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7a4a00"/></marker></defs>`;
+      const obj = el.dataset.obj || "box";
+      if (obj === "car") s += `<path d="M${cx-46} ${cy+14}h92v-16l-16-4-14-14h-34l-16 14-12 4z" fill="#fef0cc" stroke="#111" stroke-width="2"/><circle cx="${cx-26}" cy="${cy+16}" r="9" fill="#333"/><circle cx="${cx+26}" cy="${cy+16}" r="9" fill="#333"/>`;
+      else if (obj === "ball") s += `<circle cx="${cx}" cy="${cy}" r="24" fill="#fef0cc" stroke="#111" stroke-width="2"/>`;
+      else s += `<rect x="${cx-hw}" y="${cy-hh}" width="${2*hw}" height="${2*hh}" rx="3" fill="#fef0cc" stroke="#111" stroke-width="2"/>`;
+      if (el.dataset.label) s += `<text x="${cx}" y="${cy + 5}" font-size="13" text-anchor="middle" fill="#7a4a00">${el.dataset.label}</text>`;
+      F.forEach(([d, size, lab]) => {
+        const L = 15 + 80 * size / max;
+        let x1, y1, x2, y2, tx, ty, ta = "middle";
+        if (d === "r") { x1 = cx + hw; y1 = cy; x2 = x1 + L; y2 = cy; tx = (x1 + x2) / 2; ty = cy - 8; }
+        if (d === "l") { x1 = cx - hw; y1 = cy; x2 = x1 - L; y2 = cy; tx = (x1 + x2) / 2; ty = cy - 8; }
+        if (d === "u") { x1 = cx; y1 = cy - hh; x2 = cx; y2 = y1 - L * .45; tx = cx + 8; ty = (y1 + y2) / 2 + 4; ta = "start"; }
+        if (d === "d") { x1 = cx; y1 = cy + hh; x2 = cx; y2 = y1 + L * .45; tx = cx + 8; ty = (y1 + y2) / 2 + 4; ta = "start"; }
+        s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#7a4a00" stroke-width="4" marker-end="url(#fa${n})"/>`;
+        s += `<text x="${tx}" y="${ty}" font-size="14" font-weight="bold" text-anchor="${ta}">${lab}</text>`;
+      });
+      el.innerHTML = `<svg viewBox="0 0 300 140" style="width:100%;height:100%" font-family="Segoe UI, Arial, sans-serif">${s}</svg>`;
+    });
+  }
+
   // Answer lines: <div class="lines" style="--n:3"></div> → 3 ruled lines.
   // Add class "fill" to the last lines block on a page to extend it to the bottom of the page.
   function lines(root) {
@@ -110,8 +136,8 @@
       for (let k = 0; k < extra; k++) f.appendChild(document.createElement("i"));
     });
   }
-  function all() { render(); lines(); (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => fill()); }
-  window.Booklet = { graph, render, lines, fill };
+  function all() { render(); forces(); lines(); (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(() => fill()); }
+  window.Booklet = { graph, render, forces, lines, fill };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", all);
   else all();
 })();

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Practice - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
+<style>
+/* Practice: the same questions and the same progress as Cakebread Questing, with no game on top */
+body{background:#f4f4f1}
+.bar0{background:#111;color:#fff;display:flex;align-items:center;gap:14px;padding:10px 16px;flex-wrap:wrap}
+.bar0 a.brand{color:#fff;text-decoration:none;font:900 22px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase}
+.bar0 a.brand span{color:#22c55e}
+.bar0 .sub{color:#bbb;font-size:14px}
+.bar0 .acct{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:14px}
+.bar0 button{font:600 14px Barlow,Arial;background:none;color:#fff;border:1.5px solid #777;padding:3px 10px;cursor:pointer}
+.wrap{max-width:900px}
+.hidden{display:none!important}
+h1{font:900 34px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin:0}
+h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin:20px 0 8px}
+.lede{color:var(--muted);margin-top:4px}
+.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.sum div{background:#fff;border:1.5px solid #bbb;padding:8px 10px;font-size:14px}
+.sum b{display:block;font-size:15px;color:var(--sc)}
+.pb{height:8px;border:1.5px solid #111;background:#fff;margin-top:4px}.pb i{display:block;height:100%;background:var(--sc)}
+.rowbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:10px;align-items:center;width:100%;background:#fff;border:1.5px solid #bbb;border-left:6px solid var(--sc);padding:8px 10px;margin-top:6px}
+.rowbtn:hover,.rowbtn:focus-visible{background:#fffbe0}
+.rowbtn .tag{font:700 11px Barlow,Arial;text-transform:uppercase;letter-spacing:.5px;color:var(--sc);min-width:96px}
+.rowbtn .go{margin-left:auto;font-weight:700;white-space:nowrap}
+.scitabs{display:flex;gap:6px;flex-wrap:wrap}
+.scitabs button{font:700 16px Barlow,Arial,sans-serif;padding:6px 14px;border:1.5px solid #111;background:#fff;cursor:pointer;color:var(--sc)}
+.scitabs button.on{background:var(--sc);color:#fff}
+.topic{margin-top:12px;background:#fff;border:1.5px solid #bbb}
+.topic>b{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-bottom:1.5px solid #ddd;font-size:16px}
+.topic>b span{color:var(--muted);font-weight:400;font-size:13px;white-space:nowrap}
+.sub{border-bottom:1px solid #e5e5e5}.sub:last-child{border-bottom:0}
+.subrow{display:grid;grid-template-columns:1fr 110px auto auto auto;gap:10px;align-items:center;padding:7px 10px}
+.subrow .nm{font-weight:600}.subrow .nm small{color:var(--sc);font-weight:900;margin-right:5px}
+.subrow .n{font-size:13px;color:var(--muted);white-space:nowrap}
+.subrow button{font:700 14px Barlow,Arial;cursor:pointer;border:1.5px solid #111;background:#fff;padding:4px 10px}
+.subrow button.go{background:#111;color:#fff}
+.pts{padding:0 10px 8px 10px}
+.pt{display:grid;grid-template-columns:54px 1fr auto auto;gap:8px;align-items:start;font-size:14px;padding:5px 0;border-top:1px dashed #ddd}
+.pt .id{font-weight:900;color:var(--sc)}
+.pt .st{justify-self:start;font:700 11px Barlow,Arial;text-transform:uppercase;padding:1px 6px;border:1.5px solid currentColor;white-space:nowrap}
+.pt button{font:700 13px Barlow,Arial;cursor:pointer;border:1.5px solid #111;background:#fff;padding:2px 8px;white-space:nowrap}
+.st.s{color:#15803d}.st.r{color:#2563eb}.st.l{color:#b45309}.st.n{color:#777}
+@media(max-width:600px){.subrow{grid-template-columns:1fr auto}.subrow .pb{grid-column:1/-1;order:3}.subrow .n{order:4}.subrow .tgl{order:5}.subrow .go{grid-row:1;grid-column:2}.pt{grid-template-columns:44px 1fr auto}.pt .st{grid-column:2}.sum{grid-template-columns:1fr}}
+.setting{margin-top:18px;font-size:14px;color:#333;display:flex;gap:8px;align-items:flex-start}
+/* quiz */
+.progress{display:flex;gap:4px;margin:10px 0 4px}
+.progress i{flex:1;height:8px;border:1.5px solid var(--ink);background:#fff}
+.progress i.ok{background:var(--green2)}.progress i.no{background:#f87171}.progress i.now{background:#fde047}
+.qmeta{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.qtext{font-size:21px;font-weight:600;margin:6px 0 12px;line-height:1.3}
+.opts{display:grid;gap:8px}
+@media(min-width:640px){.opts{grid-template-columns:1fr 1fr}}
+.opt{display:flex;align-items:center;gap:10px;background:var(--soft);border:2px solid var(--ink);padding:11px 13px;text-align:left;font-weight:700;font-size:18px;font-family:inherit;cursor:pointer}
+.opt .key{flex:none;display:inline-grid;place-items:center;min-width:28px;height:28px;background:var(--ink);color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:16px}
+.opt:hover:not(:disabled){background:#fff}
+.opt.right{background:#d8f0de;border-color:var(--green)}.opt.right .key{background:var(--green)}
+.opt.wrong{background:#f8d7d7;border-color:var(--red);text-decoration:line-through}.opt.wrong .key{background:var(--red)}
+.opt:disabled{cursor:default}
+.opts.n2 .opt{justify-content:center;font-size:24px}
+.fb{margin-top:12px;padding:10px 14px;border-left:6px solid var(--green);background:#f0f8f2;font-size:16px}
+.fb.bad{border-color:var(--red);background:#fdf0f0}
+.fb .t{display:block;font-weight:700}
+.note{margin-top:6px;font-size:.92em;color:#333}
+.next{margin-top:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.report{font-size:13px;color:var(--muted);background:none;border:0;cursor:pointer;font-family:inherit;padding:0;text-decoration:underline}
+.report:disabled{text-decoration:none;cursor:default}
+.repbox{margin-top:10px;padding:10px 12px;border:2px dashed var(--line);font-size:15px}
+.repbox .rr{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.repbox .rr button{border:2px solid var(--ink);background:#fff;border-radius:14px;padding:2px 10px;font:600 14px Barlow,Arial;cursor:pointer}
+.repbox .rr button.on{background:#fde047}
+.repbox textarea{width:100%;min-height:54px;font:inherit;font-size:15px;padding:6px}
+.score{font:900 44px/1 'Barlow Condensed',Arial,sans-serif}
+.gain{margin:8px 0 0 18px}.gain li{margin:3px 0}
+.review li{margin:8px 0}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="bar0"><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Practice</span><div class="acct" id="acct"></div></div>
+<main class="wrap">
+
+  <section id="pick">
+    <h1>Practice</h1>
+    <p class="lede">Ten questions at a time, straight from the spec. A question is <b>secured</b> when you get it right first time on two different days, and secured questions secure the spec point. Everything here counts exactly as it does in <a href="index.html">Cakebread Questing</a>.</p>
+    <div class="sum" id="sum"></div>
+    <h2>Suggested for you</h2>
+    <div id="sugg"></div>
+    <h2>The whole spec</h2>
+    <div class="scitabs" id="tabs"></div>
+    <div id="topics"></div>
+    <label class="setting"><input type="checkbox" id="plain"> <span>Always use plain practice: “Quiz me” links on the spec trackers and My day open here instead of a Questing mission.</span></label>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="qmeta"><b id="qtitle"></b><a href="practice.html" id="quit">← Stop and choose something else</a></div>
+    <div class="progress" id="prog"></div>
+    <div class="card qcard">
+      <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
+      <div class="qtext" id="qtext"></div>
+      <div class="opts" id="opts"></div>
+      <div id="fb"></div>
+      <div class="next"><button class="report" id="repBtn" type="button">⚑ Report this question</button><button class="btn gold big hidden" id="nextBtn">Next →</button></div>
+      <div class="repbox hidden" id="repBox"></div>
+    </div>
+  </section>
+
+  <section id="done" class="hidden"></section>
+</main>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="spec.js"></script>
+<script src="questions.js"></script>
+<script src="gens.js"></script>
+<script src="cards.js"></script>
+<script src="questing-engine.js"></script>
+<script src="/js/year.js"></script>
+<script>
+/* Practice (16 Nov 2026): a plain front door to the Questing engine. Same question bank, same securing rules,
+   same saved progress (users/{uid}.specQuiz); no adventurer, monsters or loot on screen. */
+const $ = id => document.getElementById(id);
+const COL = { B: '#15803d', C: '#c8001e', P: '#b45309' }, NAME = { B: 'Biology', C: 'Chemistry', P: 'Physics' };
+const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const strip = h => String(h || '').replace(/<[^>]+>/g, '');
+const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const PLAIN = 'cbs.plain';
+let SUBS = [], SCI = 'B', OPEN = new Set(), PS = null;
+const subBy = k => SUBS.find(s => s.key === k);
+const topicName = t => { const sc = SPEC.find(x => x.name[0] === t[0]); const tp = sc && sc.topics.find(x => x.n === +t.slice(1)); return tp ? tp.name : t; };
+
+/* account area */
+function drawAcct() {
+  const u = QE.user;
+  $('acct').innerHTML = !QE.known ? '' : u ? `<span>${esc((u.displayName || '').split(' ')[0])} · ${{ saved: 'Saved ✓', saving: 'Saving…', error: 'Not saved' }[QE.status] || ''}</span><button id="so">Sign out</button>`
+    : `<span>Progress is kept in this browser only</span><button id="si">Sign in</button>`;
+  if ($('si')) $('si').onclick = () => QE.signIn(); if ($('so')) $('so').onclick = () => QE.signOut();
+}
+
+/* choose screen */
+function drawPick() {
+  SUBS = QE.allSubs().filter(s => s.nq >= 4);
+  const sec = QE.securedBySci(), tot = {}; SUBS.forEach(s => { tot[s.L] = (tot[s.L] || 0) + s.st.n; });
+  $('sum').innerHTML = ['B', 'C', 'P'].map(L => `<div style="--sc:${COL[L]}"><b>${NAME[L]}</b>${sec[L.toLowerCase()]} of ${tot[L]} spec points secured<div class="pb"><i style="width:${sec[L.toLowerCase()] / tot[L] * 100}%"></i></div></div>`).join('');
+  const picks = QE.picks().filter(p => subBy(p.sub.key));
+  $('sugg').innerHTML = picks.map(({ sub, tag, why }) => { const s = subBy(sub.key); return `<button class="rowbtn" data-sub="${s.key}" style="--sc:${COL[s.L]}"><span class="tag">${esc(tag)}</span><span><b>${s.subj} ${s.key.slice(1)} · ${esc(s.name)}</b><br><span class="small">${esc(why)}</span></span><span class="go">Practise →</span></button>`; }).join('') || '<p class="small">Start anywhere below.</p>';
+  $('tabs').innerHTML = ['B', 'C', 'P'].map(L => `<button type="button" data-sci="${L}" class="${SCI === L ? 'on' : ''}" style="--sc:${COL[L]}">${NAME[L]}</button>`).join('');
+  const topics = [...new Set(SUBS.filter(s => s.L === SCI).map(s => s.topic))];
+  $('topics').innerHTML = topics.map(t => { const xs = SUBS.filter(s => s.topic === t), a = xs.reduce((n, s) => n + s.st.secured, 0), b = xs.reduce((n, s) => n + s.st.n, 0);
+    return `<div class="topic" style="--sc:${COL[SCI]}"><b>${t.slice(1)} · ${esc(topicName(t))}<span>${a}/${b} secured</span></b>${xs.map(s => {
+      const open = OPEN.has(s.key);
+      return `<div class="sub"><div class="subrow"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><div class="pb"><i style="width:${s.st.n ? s.st.secured / s.st.n * 100 : 0}%"></i></div><span class="n">${s.st.secured}/${s.st.n}${s.st.rusty ? ` · ${s.st.rusty} rusty` : ''}</span>
+        <button type="button" class="tgl" data-tgl="${s.key}" aria-expanded="${open}">Spec points ${open ? '▴' : '▾'}</button><button type="button" class="go" data-sub="${s.key}">Practise →</button></div>
+        ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = QE.POINTS[k]; if (!p.has) return '';
+          const [c, w] = p.rusty ? ['r', 'Rusty'] : p.secured ? ['s', 'Secured'] : p.started ? ['l', 'Learning'] : ['n', 'New'];
+          return `<div class="pt"><span class="id">${P.id}</span><span>${esc(strip(P.text))}${P.bullets ? ' ' + esc(P.bullets.map(strip).join('; ')) : ''}</span><span class="st ${c}">${w}</span><button type="button" data-point="${k}">Practise</button></div>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div>`; }).join('');
+}
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-sci]'); if (b) { SCI = b.dataset.sci; drawPick(); } });
+$('pick').addEventListener('click', e => {
+  const t = e.target.closest('[data-tgl]'); if (t) { OPEN.has(t.dataset.tgl) ? OPEN.delete(t.dataset.tgl) : OPEN.add(t.dataset.tgl); drawPick(); return; }
+  const p = e.target.closest('[data-point]'); if (p) { const sb = SUBS.find(x => x.keys.has(p.dataset.point)); start(sb.key, p.dataset.point); return; }
+  const b = e.target.closest('[data-sub]'); if (b) start(b.dataset.sub);
+});
+try { $('plain').checked = localStorage.getItem(PLAIN) === '1'; } catch (e) {}
+$('plain').onchange = () => { try { $('plain').checked ? localStorage.setItem(PLAIN, '1') : localStorage.removeItem(PLAIN); } catch (e) {} };
+
+/* ten questions: the engine picks ready-to-secure, then rusty, then ones you got wrong, then new */
+function start(k, point) {
+  const sub = subBy(k); if (!sub) return;
+  const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(y => topicKeys.add(y)));
+  const qs = point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
+  PS = { sub, point, qs, i: 0, res: [], st0: QE.stats(), xp0: QE.prog.xp };
+  QE.busy = true;
+  $('pick').classList.add('hidden'); $('done').classList.add('hidden'); $('quiz').classList.remove('hidden');
+  $('qtitle').textContent = `${sub.subj} ${sub.key.slice(1)} · ${sub.name}${point ? ` · spec point ${point.slice(1)}` : ''}`;
+  scrollTo(0, 0); show();
+}
+function show() {
+  const q = PS.qs[PS.i];
+  $('prog').innerHTML = PS.qs.map((_, j) => `<i class="${j < PS.res.length ? (PS.res[j].ok ? 'ok' : 'no') : j === PS.i ? 'now' : ''}"></i>`).join('');
+  $('qnum').textContent = `Question ${PS.i + 1} of ${PS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
+  $('qspec').textContent = `Spec ${q.s.slice(1)}`;
+  $('qtext').innerHTML = nuc(q.tf !== undefined ? `True or false? ${q.q}` : q.q);
+  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0]));
+  $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
+  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${nuc(t)}</span></button>`).join('');
+  $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
+  PS.opts = opts; PS.picked = -1;
+  $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
+  $('repBox').classList.add('hidden'); $('repBox').innerHTML = '';
+}
+$('opts').addEventListener('click', e => {
+  const b = e.target.closest('.opt'); if (!b || b.disabled) return;
+  const q = PS.qs[PS.i], ok = b.dataset.ok === '1';
+  [...$('opts').children].forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); });
+  if (!ok) b.classList.add('wrong');
+  PS.picked = [...$('opts').children].indexOf(b);
+  PS.res.push({ q, ok });
+  const notes = QE.recordAnswer(q, ok).filter(n => !/XP/.test(n) || /secured/i.test(n)).map(n => n.replace(/\s*\+\d+ XP/, ''));
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Correct.' : 'Not quite.'}</span>${nuc(q.x)}${notes.length ? `<div class="note">${notes.join(' · ')}</div>` : ''}</div>`;
+  $('nextBtn').textContent = PS.i + 1 < PS.qs.length ? 'Next →' : 'See your results →';
+  $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
+});
+document.addEventListener('keydown', e => {
+  if ($('quiz').classList.contains('hidden') || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
+  const i = 'abcd'.indexOf(e.key.toLowerCase()), bs = [...$('opts').children];
+  if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click();
+});
+$('nextBtn').onclick = () => { PS.i++; if (PS.i < PS.qs.length) show(); else finish(); };
+
+/* ⚑ report (same store as Questing) */
+const REPORTED = new Set();
+$('repBtn').onclick = () => {
+  const q = PS.qs[PS.i], box = $('repBox');
+  if ($('repBtn').disabled) return;
+  box.classList.toggle('hidden'); if (box.innerHTML) return;
+  box.innerHTML = `<b>What's wrong with this question?</b><div class="rr">${QE.REPORT_REASONS.map((r, i) => `<button type="button" data-r="${i}">${r}</button>`).join('')}</div>
+    <textarea maxlength="400" placeholder="Optional: tell us more (e.g. what you think the answer should be)"></textarea>
+    <div style="margin-top:6px;display:flex;gap:8px;align-items:center"><button type="button" class="btn gold" id="repSend" disabled>Send report</button><span id="repMsg" class="small"></span></div>`;
+  let reason = null;
+  box.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { reason = QE.REPORT_REASONS[+b.dataset.r]; box.querySelectorAll('[data-r]').forEach(x => x.classList.toggle('on', x === b)); $('repSend').disabled = false; });
+  $('repSend').onclick = () => {
+    if (!reason) return;
+    if (REPORTED.size >= 10) { $('repMsg').textContent = 'That is the limit for this visit. Thank you!'; return; }
+    REPORTED.add(q.id); $('repSend').disabled = true;
+    const opts = PS.opts || [];
+    QE.report(q, opts.map(o => o[0]), opts.findIndex(o => o[1]), PS.picked, reason, box.querySelector('textarea').value)
+      .then(() => { box.innerHTML = '<b>Thank you!</b> Your teacher will check this question.'; })
+      .catch(() => { box.innerHTML = 'It could not be sent right now. Please tell your teacher instead.'; });
+    $('repBtn').disabled = true; $('repBtn').textContent = '⚑ Reported, thank you';
+  };
+};
+
+/* results: saved through the engine like a mission (coins, Health and the day's revision build up quietly for Questing) */
+function finish() {
+  const right = PS.res.filter(r => r.ok).length;
+  QE.finishMission({ coins: 10, right });
+  QE.busy = false;
+  const st = QE.stats(), gainQ = st.securedQ - PS.st0.securedQ, gainP = st.securedP - PS.st0.securedP;
+  const wrong = PS.res.filter(r => !r.ok), sub = QE.allSubs().find(s => s.key === PS.sub.key) || PS.sub;
+  const ready = PS.res.filter(r => r.ok && QE.qState(r.q.id).c === 1).length;
+  $('quiz').classList.add('hidden'); $('done').classList.remove('hidden');
+  $('done').innerHTML = `<h1>${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}</h1>
+    <div class="card" style="margin-top:12px"><div class="score">${right} / ${PS.qs.length}</div>
+      <ul class="gain">
+        <li>${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b> today.` : 'No questions secured today.'}${ready ? ` ${ready} more will be secured if you get ${ready === 1 ? 'it' : 'them'} right again on another day.` : ''}</li>
+        <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.</li>
+      </ul></div>
+    ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
+    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">My day</a></div>
+    <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe.'}</p>`;
+  $('again').onclick = () => start(PS.sub.key, PS.point);
+  scrollTo(0, 0);
+}
+
+/* boot: draw from the cached copy at once, redraw when the account arrives; ?point= / ?sub= start straight away */
+let started = false;
+function boot() {
+  drawAcct();
+  const n = $('saveNote'); if (n && QE.user) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent;
+  if (!$('pick').classList.contains('hidden')) drawPick();
+  if (!started) { started = true; SUBS = QE.allSubs().filter(s => s.nq >= 4);
+    const u = new URLSearchParams(location.search), pt = u.get('point'), sb = pt ? SUBS.find(x => x.keys.has(pt)) : subBy(u.get('sub'));
+    if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
+    else { const p = QE.picks()[0]; if (p) SCI = p.sub.key[0]; drawPick(); } }
+}
+boot(); QE.onChange(boot);
+</script>
+</body>
+</html>

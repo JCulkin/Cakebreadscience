@@ -2,6 +2,28 @@
 
 ---
 
+## [4.1.0] - 2026-11-17
+### Teaching by year group, set work, games access and a way home from every page
+
+#### Added
+- **Year groups:** every student picks Year 8, 9, 10 or 11 once (only the teacher can change it afterwards)
+- **Admin Teaching tab:** tick what each year has been taught in class, and set work for a year — either a **test** (one go, scored, same questions for everyone; see each score, the average and how each question went) or **practise until N right**
+- **My day:** "Set by your teacher" (start / carry on a test, see your score, practise progress) and "Covered in class"
+- **Games need sign-in and the teacher's approval:** Elevenstudents games, extras and maths, and the Stock Market Challenge; new `/play/` sign-in page; admin **Games** tab to approve, block and see every play (simulations and our own science games stay open, plays logged)
+- **A way back to the homepage on every page**, phone and desktop (Professor-head button at the far left of the Questing bar)
+- Question bank: 328 new questions — every spec point now has at least five (2,133 total)
+- Breadventure Land: the Underworld (dig through the Abandoned Mine), boss stories, weekly events, rally bonus, helping other players, plan a whole route with one tap, region names, new dragon, redrawn bosses
+- Missions: a misconception per mission and 16 new monsters, second wind on missed questions, streaks, keyboard answers, fight again / next mission; plain **Practice** mode with no game; rolling last-7-days board and legendaries
+- Booklets: Forces and Motion (Physics) and Ionic & Covalent Bonding (Chemistry), with mark schemes
+- Worksheets: the Practice/Challenge sheets are live on the science worksheets page; Chemistry 1a States of Matter Practice sheet
+- Elevenstudents: Duelo de Campeones by Anxo (fixed)
+
+#### Changed
+- Type Fast or Perish: WPM counted like a standard typing test
+- Admin: Students tab shows and filters by year; "Gone quiet" moved to the bottom of the Overview
+
+---
+
 ## [4.0.0] - 2026-11-10
 ### One Revision Journey: Breadventure Land, Flashcards in Questing, My Day, the Professor
 

@@ -47,7 +47,7 @@ function runSprint(){const st=$('stage');
     if(v.length>G.prev.length){G.keys+=v.length-G.prev.length;if(!t.startsWith(lv)){G.errors++;G.dirty=true;inp.classList.remove('err');void inp.offsetWidth;inp.classList.add('err');}}
     G.prev=v;
     if(lv===t){const w=G.line[G.pos];const clean=!G.dirty;G.streak=clean?G.streak+1:0;const m=multOf(G.streak),pts=w.w.length*10*m;
-      G.score+=pts;G.chars+=w.w.length;G.done++;if(!clean&&w.t!=='s')G.missed[w.w]=w.t;
+      G.score+=pts;G.chars+=w.w.length+1;G.done++; // +1 = the space a typing test counts between wordsif(!clean&&w.t!=='s')G.missed[w.w]=w.t;
       const old=multOf(G.streak-1);if(clean&&m>old){toast($('stage'),'Combo ×'+m+'!','var(--green)',1);const c=$('combo');c.classList.add('pop');setTimeout(()=>c.classList.remove('pop'),200);}
       else if(w.t==='s')toast($('stage'),pick(QUIPS),null,1);
       G.pos++;if(G.pos>=G.line.length){newLine();const L=$('line');L.classList.remove('fresh');void L.offsetWidth;L.classList.add('fresh');}
@@ -93,7 +93,7 @@ function runStorm(){const st=$('stage');
     if(!tgt){const c=G.words.filter(o=>o.w.toLowerCase().startsWith(lv)).sort((a,b)=>a.dir===1?b.y-a.y:a.y-b.y);tgt=c[0]||null;}
     if(!tgt){G.errors++;G.streak=0;inp.value=G.prev;inp.classList.remove('err');void inp.offsetWidth;inp.classList.add('err');hud();return;}
     const old=G.lock;G.lock=tgt;if(old&&old!==tgt)paint(old);inp.value=v;G.prev=v;paint(tgt);
-    if(lv===tgt.w.toLowerCase()){G.streak++;const m=multOf(G.streak);G.score+=tgt.w.length*10*G.level*m;G.chars+=tgt.w.length;G.done++;
+    if(lv===tgt.w.toLowerCase()){G.streak++;const m=multOf(G.streak);G.score+=tgt.w.length*10*G.level*m;G.chars+=tgt.w.length+1;G.done++;
       if(tgt.gold){toast(st,'Towel deployed! Sky cleared','var(--gold)');G.words.slice().forEach(o=>{if(o!==tgt){G.score+=50;remove(o,true);}});}
       else if(tgt.t==='s'&&Math.random()<0.5)toast(st,pick(QUIPS));
       remove(tgt,true);const lv2=1+Math.floor(G.done/8);if(lv2>G.level){G.level=lv2;toast(st,'Level '+lv2,'#fff');}
@@ -123,6 +123,8 @@ document.addEventListener('keydown',e=>{if(G&&G.paused&&e.key!=='Escape'){e.prev
 function verdict(mode,score){const r=mode==='sprint'?[[9000,'Typing at the speed of improbability.'],[6000,'Fingers of lightning. Your keyboard needs a lie down.'],[3500,'Very respectable. The wombats are impressed.'],[1500,'A solid start. Practice makes perfect (and so do towels).'],[0,'The teapot believes in you.']]
   :[[15000,'Survived the storm. Legend.'],[8000,'Weathered it like a seasoned space hitchhiker.'],[4000,'Not bad at all. The sky fought back.'],[1500,'The words won this time.'],[0,'Squashed flatter than a crumpet.']];return r.find(x=>score>=x[0])[1];}
 function endGame(){if(!G)return;clearInterval(G.timer);cancelAnimationFrame(G.raf);G.over=true;const g=G;
+  // like a typing test, count the correctly typed letters of the word you were halfway through when time ran out
+  if(g.mode==='sprint'&&g.line&&g.line[g.pos]){const t=g.line[g.pos].w.toLowerCase(),v=(($('tb_in')||{}).value||'').toLowerCase();let k=0;while(k<v.length&&k<t.length&&v[k]===t[k])k++;g.chars+=k;}
   const el=g.mode==='sprint'?SPRINT_T/60:g.clock/60,wpm=el>0?Math.round(g.chars/5/el):0,acc=g.keys?Math.round((g.keys-g.errors)/g.keys*100):100;
   const key='best:'+g.mode,best=store.get(key)||0,nb=g.score>best;if(nb)store.set(key,g.score);
   const missed=Object.entries(g.missed);
@@ -130,7 +132,7 @@ function endGame(){if(!G)return;clearInterval(G.timer);cancelAnimationFrame(G.ra
     <h2>${g.mode==='sprint'?'Sixty-Second Sprint':'Hard mode'}${g.mode==='storm'?' · game over':''}</h2>
     <div class="heads"><div><small>Points</small><div class="bigscore">${g.score}</div></div><div><small>Typing speed</small><div class="bigscore wpm">${wpm}<span> wpm</span></div></div></div>
     <div class="small">${nb?'New personal best!':best?'Your best: '+best+' points':''}</div>
-    <p class="how">${g.mode==='sprint'?'Points: 10 for every letter you type, times your combo (×1, rising to ×4 after every 5 words in a row with no mistakes). Long words and clean typing score most.':'Points: 10 for every letter, times the level you were on, times your combo (up to ×4). Surviving longer at higher levels is what scores big.'} Speed (wpm) counts every 5 correct letters as one word, the standard way typing tests measure it.</p>
+    <p class="how">${g.mode==='sprint'?'Points: 10 for every letter you type, times your combo (×1, rising to ×4 after every 5 words in a row with no mistakes). Long words and clean typing score most.':'Points: 10 for every letter, times the level you were on, times your combo (up to ×4). Surviving longer at higher levels is what scores big.'} Speed (wpm) counts every 5 correct characters (letters and the spaces between words) as one word, the standard way typing tests measure it.</p>
     ${g.mode==='sprint'?speedScale(wpm):`<p class="verdict">${verdict(g.mode,g.score)}</p>`}
     <div class="statgrid"><div><small>Words</small><b>${g.done}</b></div><div><small>Accuracy</small><b>${acc}%</b></div>${g.mode==='storm'?`<div><small>Level reached</small><b>${g.level}</b></div><div><small>Survived</small><b>${Math.round(g.clock)} s</b></div>`:''}</div>
     ${missed.length?`<h3>Practise spelling these</h3><div class="missed">${missed.map(([w,t])=>`<span style="--k:${KCOL[t]}">${esc(w)}</span>`).join('')}</div>`:''}
@@ -144,7 +146,7 @@ function speedScale(w){const MAX=130,pc=v=>Math.min(100,v/MAX*100);
   const band=w>=120?'As fast as the very fastest typists in a study of 168,000 people. Remarkable.':w>=80?'Very fast: well above the average adult, heading for professional speeds.':w>=52?'Faster than the average adult typing on a keyboard (52 wpm).':w>=38?'Faster than the average person typing on a phone (38 wpm), but below the adult keyboard average of 52.':w>=20?'Below the average adult. Typing without looking at the keys is the quickest way to speed up.':'Just getting started. Keep going: everyone starts here.';
   const mk=(v,l,up)=>`<div class="mk ${up?'up':''}" style="left:${pc(v)}%"><i></i><span>${l}</span></div>`;
   return `<div class="scale"><h3>How fast is that?</h3><div class="track"><div class="fill" style="width:${pc(w)}%"></div>${mk(38,'Phone average 38',0)}${mk(52,'Adult average 52',1)}${mk(120,'Fastest 120',0)}<div class="you" style="left:${pc(w)}%"><b>You ${w}</b></div></div>
-    <p>${band}</p><p class="small">Averages are for adults on a typing test (studies by Aalto University and the University of Cambridge). This game is a bit harder than a typing test, because the science words are long and every mistake has to be fixed.</p></div>`;}
+    <p>${band}</p><p class="small">Averages are for adults on a typing test (studies by Aalto University and the University of Cambridge). Expect a lower speed here than on a typing test such as Monkeytype: those use short everyday words (about 5 letters), while words here average 11 letters, with tricky spellings like oesophagus, and every mistake has to be fixed.</p></div>`;}
 
 /* ===================== HIGH SCORES ===================== */
 function resultsBoard(board,score,wpm){const el=$('hsArea');if(!el||!window.LB)return;LB.panel(el,'typing_'+board,{score,extra:wpm+' wpm',title:'Leaderboard · '+(board==='sprint'?'Sixty-Second Sprint':'Hard mode')});}

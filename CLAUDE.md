@@ -1,5 +1,11 @@
 # Notes for Claude
 
-All of Claude's notes for this site live in ONE place: the Claude project **"School"**, document **`claude/website-workflow.md`**.
-Read it before working here. Do not write notes, guides or READMEs in this repo; update that document instead
-(read it immediately before writing, change only your section, keep everything else).
+Claude's notes for this site live in the Claude project **"School"**, not in this repo:
+
+- `claude/notes-shared.md` — read by every website chat (written only by the main chat)
+- your own area doc: `claude/notes-main.md`, `notes-questing.md`, `notes-lessons.md`,
+  `notes-worksheets.md`, `notes-interactives.md` or `notes-elevenstudents.md`
+
+Read both before working here. Write only to your own area doc (`project_read` it immediately before
+`project_write`). `claude/website-workflow.md` is a frozen archive: never write to it.
+Do not write notes, guides or READMEs in this repo.

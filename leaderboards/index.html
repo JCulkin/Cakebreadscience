@@ -65,7 +65,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 (function(){
 const $=id=>document.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const COL={elements:'#b45309',cell:'#2e7d32',typing:'#c2185b',quiz:'#1d4ed8'};
-const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Cakebread Questing',url:'/interactive/spec-quiz/',boards:{quiz_xp:'XP (all time)',quiz_week:'Correct answers this week'}}});
+const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Cakebread Questing',url:'/interactive/spec-quiz/',boards:{quiz_xp:'XP (all time)',quiz_week:'Correct answers, last 7 days'}}});
 let game=(location.hash||'#elements').slice(1);if(!TABS[game])game='elements';let board=null;
 function bar(){const el=$('bar');if(!window.LB||!LB.online()){el.textContent='Leaderboards need an internet connection.';return;}
   const u=LB.user;el.innerHTML=u?`Signed in as <b>${esc(LB.nameOf(u))}</b> <button class="linkbtn" id="out">Sign out</button>`:`<button class="gsign" id="in">Sign in with Google</button><span>to put your scores on the leaderboards.</span>`;
@@ -77,10 +77,13 @@ function draw(){const G=TABS[game];const keys=Object.keys(G.boards);if(!keys.inc
   $('boards').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{board=b.dataset.b;draw();});
   if(game==='quiz')quiz();else LB.panel($('list'),board,{title:G.boards[board]});}
 // Cakebread Questing keeps its own board (specQuizBoard/{uid}); show it here read-only
+/* right answers over the last 7 days from the board's per-day counts (d7, since 16 Nov); older rows fall back to this week's total */
+const L7=(()=>{const n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),o=[];for(let i=0;i<7;i++)o.push(new Date((n-i)*864e5).toISOString().slice(0,10));return o;})();
+function last7(x,wk){if(x.d7)return L7.reduce((t,d)=>{const v=x.d7[d];return t+(v?(v.b||0)+(v.c||0)+(v.p||0):0);},0);return x.wk===wk?(x.wkCorrect||0):0;}
 function quiz(){const el=$('list');el.innerHTML='<div class="lbx"><p class="note">Loading…</p></div>';
   if(!window.firebase||!firebase.database){el.innerHTML='<p class="note">Needs an internet connection.</p>';return;}
   firebase.database().ref('specQuizBoard').once('value').then(s=>{const v=s.val()||{};const wk=Object.values(v).reduce((m,x)=>x&&x.wk>m?x.wk:m,'');
-    const rows=Object.entries(v).filter(([,x])=>x&&!x.hide).map(([uid,x])=>({uid,name:x.name,score:board==='quiz_xp'?(x.xp||0):(x.wk===wk?(x.wkCorrect||0):0)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
+    const rows=Object.entries(v).filter(([,x])=>x&&!x.hide).map(([uid,x])=>({uid,name:x.name,score:board==='quiz_xp'?(x.xp||0):last7(x,wk)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
     const me=LB.user&&LB.user.uid,idx=rows.findIndex(r=>r.uid===me);
     let html=rows.slice(0,10).map((r,i)=>`<li style="${r.uid===me?'background:#fff3c4':''}"><span style="font-family:'Barlow Condensed';font-weight:900;font-size:20px">${i+1}</span><b>${esc(r.name)}</b><span style="font-family:'Barlow Condensed';font-weight:900;font-size:22px;color:#005e22">${r.score}</span></li>`).join('');
     if(idx>=10)html+=`<li style="background:#fff3c4"><span>${idx+1}</span><b>${esc(rows[idx].name)}</b><span>${rows[idx].score}</span></li>`;

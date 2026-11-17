@@ -38,4 +38,5 @@ document.getElementById('go').onclick=async function(){this.disabled=true;const 
   files.push({name:'cell-images/credits.json',data:enc.encode(JSON.stringify(PACK.filter(p=>!failed.includes(p.file)),null,1))});
   const a=document.createElement('a');a.href=URL.createObjectURL(zip(files));a.download='cell-images.zip';document.body.appendChild(a);a.click();
   log.insertAdjacentHTML('afterend','<div class="ok"><b>Done.</b> '+(PACK.length-failed.length)+' photos saved in cell-images.zip in your Downloads folder.'+(failed.length?' '+failed.length+' could not be fetched: '+failed.join(', '):'')+' Go back to Claude and say it’s downloaded.</div>');};
-</script></div></body></html>
+</script></div><script src="/js/home-link.js" data-back="/interactive/cell-game/" data-back-label="What The Cell"></script>
+</body></html>

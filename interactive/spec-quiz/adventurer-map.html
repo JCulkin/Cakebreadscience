@@ -51,10 +51,20 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .hud .day{font-size:13px;color:var(--muted);font-weight:700}
 .questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
+.questbar .ev{display:block;margin-top:3px;padding-top:3px;border-top:1px dashed #bbb;font-size:12px;font-weight:600;max-width:270px;line-height:1.25}.questbar .ev u{text-decoration:none;font-weight:900;color:#b45309}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
-@media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px}}
-#map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:3}
+@media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px;padding:3px 8px 4px 4px}.questbar img{width:30px}.questbar small{display:none}.questbar b{display:inline;font-size:15px;margin-right:4px}.questbar span{font-size:12px}.questbar .ev{max-width:none;font-size:11.5px;margin-top:2px;padding-top:2px}}
+#map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:2}
+#map .shake{transform-box:fill-box;transform-origin:center;animation:bshake .5s 3}
+@keyframes bshake{20%{transform:translateX(-4px) rotate(-5deg)}40%{transform:translateX(4px) rotate(4deg)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+#map .dmgup{animation:dmgup 1.5s forwards}@keyframes dmgup{to{transform:translateY(-16px);opacity:0}}
 .panel .fig{display:block;width:96px;margin:4px auto 0}
+#map .rgn{font:900 12.5px 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:2.5px;fill:#fff;stroke:#1f2937;stroke-opacity:.6;stroke-width:2.6px;paint-order:stroke;pointer-events:none;opacity:.85}
+#map .rgn.wtr{fill:#e0f2fe;stroke:#1e5a85;font-style:italic;font-size:11.5px;letter-spacing:2px}
+#map .wv{animation:wv 5s ease-in-out infinite alternate}@keyframes wv{from{transform:translateX(-3px)}to{transform:translateX(4px)}}
+#map .idle,#map .mebob{transform-box:fill-box;animation:bob 1.6s steps(2,jump-none) infinite alternate}#map .mebob{animation-duration:1.1s}@keyframes bob{to{transform:translateY(-2px)}}
+#map .lava{animation:lava 2.4s ease-in-out infinite alternate}@keyframes lava{from{opacity:.15}to{opacity:.75}}
+@media(prefers-reduced-motion:reduce){#map .lava,#map .wv,#map .idle,#map .mebob{animation:none}}
 @media(max-width:1460px){.hud .day{display:none}}
 @media(max-width:1400px){.hud .tools .t{display:none}.hud .tools #sleep .t{display:inline}}
 @media(max-width:760px){.hud{gap:6px 10px;padding:6px 8px}.hud .who img{width:32px;height:32px}.hud .nm{font-size:17px}.hud .hp .bar{width:70px}.hud .tools{margin-left:0;width:100%}.hud .tools .t{display:none}.hud .tools #sleep{margin-left:auto}.hud .tools #sleep .t{display:inline}}
@@ -97,6 +107,14 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .modal .day p{margin:5px 0}
 .modal .good{color:#86efac}.modal .bad{color:#fca5a5}.modal .lt{color:#fde047}.modal .new{color:#93c5fd}
 .modal .btn{margin-top:12px}
+#dunBody .dq{font-size:19px;font-weight:600;color:#fff;margin:10px 0}
+#dunBody .dopts{display:grid;gap:7px}
+#dunBody .dopt{font:700 16px Barlow,Arial;text-align:left;padding:9px 11px;background:#222;color:#fff;border:2px solid #666;cursor:pointer}
+#dunBody .dopt:hover:not(:disabled){border-color:#facc15}
+#dunBody .dopt.right{background:#14532d;border-color:#22c55e}#dunBody .dopt.wrong{background:#7f1d1d;border-color:#ef4444;text-decoration:line-through}
+#dunBody .pips{display:flex;gap:5px;margin:6px 0}#dunBody .pips i{width:16px;height:16px;border:2px solid #facc15;border-radius:50%}#dunBody .pips i.ok{background:#22c55e;border-color:#22c55e}#dunBody .pips i.no{background:#ef4444;border-color:#ef4444}
+#dunBody .dx{font-size:14px;margin-top:8px;padding:7px 10px;background:#1c1917;border-left:4px solid #facc15}
+#dunBody .stairs{display:flex;gap:6px;margin-bottom:6px}#dunBody .stairs span{flex:1;text-align:center;font:700 12px Barlow,Arial;text-transform:uppercase;padding:3px;border:1.5px solid #555;color:#888}#dunBody .stairs span.on{border-color:#facc15;color:#facc15}#dunBody .stairs span.done{border-color:#22c55e;color:#22c55e}
 
 details.notes{margin-top:16px;background:#fff;border:2px solid var(--ink);padding:10px 14px}
 details.notes summary{font-weight:700;cursor:pointer}
@@ -106,6 +124,7 @@ details.notes .cols{display:grid;gap:16px;margin-top:6px}
 table.st{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
 table.st td,table.st th{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
 table.st th{background:var(--soft)}
+@media(max-width:760px){.hud{gap:3px 10px;padding:5px 8px}.hud .lv{display:none}.hud .hp .bar{width:48px}.hud .hp #spellBtn{font-size:12px!important}.hud .st{gap:8px}.hud .tools{width:auto;margin-left:auto}.hud .tools .btn{padding:3px 8px}}
 </style>
 </head>
 <body>
@@ -129,10 +148,12 @@ table.st th{background:var(--soft)}
           <li><b>One world for everyone who plays.</b> The other adventurers on the map are real players. Click a face to see who they are and where they're heading.</li>
           <li><b>Plan, then sleep.</b> Tap a glowing square to plan a move. Everyone's moves happen together at midnight, and the morning report tells you what happened.</li>
           <li><b>Moves:</b> 6 on your first day, then 2 a day, <b>+1 for the day's first revision</b> (a mission or today's flashcards). Unused moves bank, up to 4. A move is one step, or staying put to fight or explore again.</li>
-          <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together. Boss health carries over night to night and never goes back up.</li>
+          <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together, with a <b>rally bonus</b> of +10% damage for each ally. On the same square as another player you can tap them to patch them up (3 mana) or give them a brew. <b>Each week has an event</b> (shown under the quest).</li>
+          <li><b>Bosses:</b>  Boss health carries over night to night and never goes back up.</li>
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
           <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
+          <li><b>Dungeons</b> are played awake. End a move at a dungeon door, then open the map and go in: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
           <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
       </div>
@@ -148,13 +169,15 @@ table.st th{background:var(--soft)}
         <ul>
           <li><b>Chapter 1:</b> beat the Spore Lord, the Stone Golem and the Acid Hydra to win the three key pieces and free the Professor.</li>
           <li><b>Chapter 2</b> wakes the Superbug, the Rust Wyrm and the Half-Life Horror.</li>
-          <li>The Ancient Gate, the Broken Bridge and the Abandoned Mine are for later chapters.</li>
+          <li><b>The Abandoned Mine</b> is five floors deep and remembers how far down you got. Clear the bottom floor and its lift takes you to <b>the Underworld</b>: a second map under this one, with tougher monsters, two more dungeons and a boss of its own. Ride the lift from the mine (down) or the Mine Lift (up); it's free, but it cancels the moves you'd planned.</li>
+          <li>The Ancient Gate and the Broken Bridge are for later chapters.</li>
         </ul>
       </div>
     </div>
   </details>
 </div>
 
+<div class="modal" id="dunModal" role="dialog" aria-modal="true" aria-label="Dungeon"><div class="box" id="dunBody"></div></div>
 <div class="modal" id="spellModal" role="dialog" aria-modal="true" aria-label="Spells"><div class="box"><div id="spellBody"></div><button class="btn gold" id="spellClose">Back to the map →</button></div></div>
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="repTitle"><div class="box"><h2 id="repTitle">Morning report</h2><div class="day" id="report"></div><button class="btn gold" id="repClose">To the map →</button></div></div>
 
@@ -180,13 +203,13 @@ const IS_ADMIN = () => !!(QE.user && (window.ADMIN_EMAILS || []).includes(QE.use
 const $ = id => document.getElementById(id);
 
 /* ===================== the world (shared data: bland.js) ===================== */
-const { ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS } = BL;
+const { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS } = BL;
 const HEXR = 30, W3 = Math.sqrt(3) * HEXR;
-const VB_W = Math.ceil(W3 * (COLS + 0.5) + 8), VB_H = Math.ceil(HEXR * 1.5 * (ROWS - 1) + 2 * HEXR + 8);
+const VB_W = Math.ceil(W3 * (COLS + 0.5) + 8);
 if (!S.dens) S.dens = {};
 const denHp = k => { const d = S.dens[k]; if (!d) return PLACES[k].max; if (d.back) return d.back > S.day ? 0 : PLACES[k].max; return d.hp; };
 S.boss = Object.assign({}, BL.BOSS_MAX, S.boss || {});
-const TYPE = { monster: 'Small monster', cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', locked: 'Locked — for later' };
+const TYPE = { monster: 'Small monster', cage: 'Rescue', boss: 'Boss', worldboss: 'World boss', dungeon: 'Dungeon', shop: 'Shop', home: 'Safe place', event: 'Mystery', lift: 'The way up', locked: 'Locked — for later' };
 
 /* ===================== geometry ===================== */
 const key = (c, r) => c + ',' + r, unkey = k => k.split(',').map(Number);
@@ -199,6 +222,15 @@ function nb(c, r, dir) {
   return [[c + 1, r], [c + odd, r + 1], [c - 1 + odd, r + 1], [c - 1, r], [c - 1 + odd, r - 1], [c + odd, r - 1]][dir];
 }
 const inMap = (c, r) => c >= 0 && r >= 0 && c < COLS && r < ROWS;
+/* two layers on one grid: the surface (rows 0–12) and the Underworld (rows 17–25). The page draws the one you're standing in. */
+const layerOf = k => unkey(k)[1] >= UNDER0 ? 1 : 0;
+let LAYER = 0, R0 = 0, R1 = SURF_ROWS, peek = null;   // peek: admin looking at the other layer
+const inL = (c, r) => inMap(c, r) && r >= R0 && r < R1;
+function setLayer() {
+  LAYER = peek === null ? layerOf(S.at) : peek; R0 = LAYER ? UNDER0 : 0; R1 = LAYER ? ROWS : SURF_ROWS;
+  $('map').setAttribute('viewBox', `0 ${(HEXR * 1.5 * R0).toFixed(1)} ${VB_W} ${Math.ceil(HEXR * 1.5 * (R1 - R0 - 1) + 2 * HEXR + 8)}`);
+  $('map').setAttribute('aria-label', `Hex map of ${LAYER ? 'the Underworld, beneath Breadventure Land' : 'Breadventure Land'}. Tap a square for details.`);
+}
 const neighbours = (c, r) => [0, 1, 2, 3, 4, 5].map(d => nb(c, r, d)).filter(([x, y]) => inMap(x, y));
 const isWater = (c, r) => !inMap(c, r) || WATER.has(T_AT(c, r));
 const sealed = P => P && (['locked', 'worldboss'].includes(P.type) || (P.type === 'cage' && S.chapter < 2 && ADV.keys() < 3) || (P.ch || 1) > S.chapter);
@@ -230,16 +262,25 @@ function buildPeople() {
     const base = p.look || PIXEL.DEFAULT;
     let face; try { face = PIXEL.portrait(base, p.eq || {}); } catch (e) { face = PIXEL.portrait(PIXEL.DEFAULT); }
     const planned = p.plan && p.plan.day === BL.world.day ? p.plan.steps.length : 0;
-    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, planned, at: BL.states[u].at || BL.HOME };
+    let fig; try { fig = PIXEL.figure(p.eq || {}, base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
+    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: BL.states[u].at || BL.HOME };
   });
   S.people = PEOPLE.map(p => p.at);
 }
 const ME_FACE = PIXEL.portrait(ADV.look());
+let ME_FIG; try { ME_FIG = PIXEL.figure(ADV.eq(), ADV.look()); } catch (e) { ME_FIG = PIXEL.figure({}, PIXEL.DEFAULT); }
+/* bosses: hurt frame when damaged since your last look (with a shake) or under a third health; defeated frame at 0 */
+let HITNOW = {};
+const bossIcon = (k, P) => { const hp = S.boss[k]; return icon(P.icon + (hp === 0 ? '_down' : (HITNOW[k] || hp <= P.max * .34) && ADV.ICONS[P.icon + '_hurt'] ? '_hurt' : '')); };
+function noteBossHits() {
+  S.bossSeen = S.bossSeen || {}; HITNOW = {};
+  for (const k in S.boss) { const was = S.bossSeen[k]; if (was != null && S.boss[k] < was) HITNOW[k] = was - S.boss[k]; S.bossSeen[k] = S.boss[k]; }
+  ADV.save(); if (Object.keys(HITNOW).length) setTimeout(() => { for (const k in HITNOW) HITNOW[k] = -1; }, 1600);
+}
 
 /* ===================== drawing ===================== */
 let sel = null;
 const svg = $('map');
-svg.setAttribute('viewBox', `0 0 ${VB_W} ${VB_H}`);
 
 function lastStop() { return S.plan.length ? S.plan[S.plan.length - 1] : S.at; }
 function reachable() {
@@ -247,19 +288,68 @@ function reachable() {
   const [lc, lr] = unkey(lastStop());
   return new Set([...neighbours(lc, lr).filter(([c, r]) => walkable(c, r)).map(([c, r]) => key(c, r)), lastStop()]);
 }
+/* shortest way from your last planned stop to k, through squares you can see; never walks through a live monster or boss on the way */
+function pathTo(k) {
+  const start = lastStop(); if (k === start) return [];
+  const vis = visibleSet(), prev = { [start]: null }, q = [start];
+  const fight = kk => { const P = PLACES[kk]; return !!P && (P.type === 'boss' ? S.boss[kk] > 0 : P.type === 'monster' && denHp(kk) > 0); };
+  while (q.length) {
+    const cur = q.shift(); if (cur === k) break;
+    if (cur !== start && fight(cur)) continue;
+    for (const [c, r] of neighbours(...unkey(cur))) { const nk = key(c, r); if (nk in prev || !walkable(c, r) || !vis.has(nk)) continue; prev[nk] = cur; q.push(nk); }
+  }
+  if (!(k in prev)) return null;
+  const out = []; for (let x = k; x !== start; x = prev[x]) out.unshift(x);
+  return out;
+}
+/* region names, lettered across the map like an atlas (each shows once you've uncovered four squares of it) */
+const REGIONS = (() => {
+  const seen = new Set(), out = [];
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+    const t = T_AT(c, r); if (seen.has(key(c, r)) || 'BsT~='.includes(t)) continue;
+    const cells = [], q = [[c, r]]; seen.add(key(c, r));
+    while (q.length) { const [a, b] = q.pop(); cells.push(key(a, b)); for (const [x, y] of neighbours(a, b)) if (!seen.has(key(x, y)) && T_AT(x, y) === t) { seen.add(key(x, y)); q.push([x, y]); } }
+    if (cells.length >= 4) out.push({ cells, name: WATER.has(t) ? WATER_NAME[t][0] : LAND[t].name, water: WATER.has(t) });
+  }
+  return out;
+})();
+const mapLabel = (x, y, txt, water, rot) => `<text class="rgn${water ? ' wtr' : ''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle"${rot ? ` transform="rotate(${rot} ${x.toFixed(1)} ${y.toFixed(1)})"` : ''}>${txt}</text>`;
+function regionLabels(vis) {
+  let h = ''; const done = {};
+  REGIONS.slice().sort((a, b) => b.cells.length - a.cells.length).forEach(R => {   /* one label per name: its biggest patch */
+    const seen = R.cells.filter(k => vis.has(k)); if (layerOf(R.cells[0]) !== LAYER || seen.length < 4 || done[R.name]) return; done[R.name] = 1;
+    const pts = seen.map(k => center(...unkey(k))), cx = pts.reduce((a, p) => a + p[0], 0) / pts.length, cy = pts.reduce((a, p) => a + p[1], 0) / pts.length;
+    let best = null, bd = 1e9;
+    seen.forEach((k, i) => { if (PLACES[k] || k === S.at) return; const [c, r] = unkey(k), crowd = [-2, -1, 1, 2].filter(o => PLACES[key(c + o, r)] || key(c + o, r) === S.at).length;   /* keep clear of sprites on the same row */
+      const d = (pts[i][0] - cx) ** 2 + (pts[i][1] - cy) ** 2 + crowd * 6000; if (d < bd) { bd = d; best = pts[i]; } });
+    if (best) h += mapLabel(best[0], best[1] + 4, R.name, R.water);
+  });
+  if (LAYER) return h;
+  if (vis.has('8,9') && vis.has('8,10')) { const a = center(8, 9), b = center(8, 10); h += mapLabel((a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 3, 'River Tangent', true, -72); }
+  if (vis.has('16,11') && vis.has('17,11')) { const a = center(16, 11); h += mapLabel(a[0] + 20, a[1] + 4, WATER_NAME['~'][0], true); }
+  return h;
+}
 const img = (href, x, y, w, extra = '') => `<image href="${href}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w}" height="${w}" style="image-rendering:pixelated" ${extra}/>`;
 
 function renderMap() {
-  const vis = visibleSet(), reach = reachable();
+  setLayer();
+  const vis = visibleSet(), reach = reachable(), DARK = LAYER === 1, FOG = DARK ? '#0e0d14' : '#dfe4ea';
   let water = '', land = '', coast = '', decor = '', things = '', fog = '', fogTop = '', hits = '';
   /* water texture */
-  for (let r = -1; r <= ROWS; r++) for (let c = -1; c <= COLS; c++) {
+  for (let r = R0 - 1; r <= R1; r++) for (let c = -1; c <= COLS; c++) {
     if (!isWater(c, r)) continue;
     const [x, y] = center(c, r);
-    if (inMap(c, r) && T_AT(c, r) !== '~') water += `<polygon points="${hexPts(x, y, HEXR + .6)}" fill="#64b3dd"/>`;
-    if (hash(c, r, 1) < .45) water += img(icon('wave'), x - 12 + hash(c, r, 2) * 10, y - 14 + hash(c, r, 3) * 10, 24, 'opacity=".55"');
+    if (DARK) {   /* underground: rock walls, the Lava Lake and the Sunless Lake */
+      const t = inL(c, r) ? T_AT(c, r) : '#';
+      if (t === 'L') water += `<polygon points="${hexPts(x, y, HEXR + .6)}" fill="#ea580c"/><polygon class="lava" style="animation-delay:-${(hash(c, r, 5) * 3).toFixed(1)}s" points="${hexPts(x, y, HEXR - 7)}" fill="#fbbf24"/>`;
+      else if (t === 'u') water += `<polygon points="${hexPts(x, y, HEXR + .6)}" fill="#17384a"/>` + (hash(c, r, 1) < .6 ? img(icon('wave'), x - 12, y - 10, 24, 'opacity=".28" class="wv"') : '');
+      else { water += `<polygon points="${hexPts(x, y, HEXR + .6)}" fill="${shade('#2b2733', (hash(c, r, 4) - .5) * .06)}"/>`; if (hash(c, r, 1) < .3) water += img(icon('spire'), x - 11 + hash(c, r, 2) * 8, y - 13, 22, 'opacity=".35"'); }
+      continue;
+    }
+    if (inL(c, r) && T_AT(c, r) !== '~') water += `<polygon points="${hexPts(x, y, HEXR + .6)}" fill="#64b3dd"/>`;
+    if (hash(c, r, 1) < .45) water += img(icon('wave'), x - 12 + hash(c, r, 2) * 10, y - 14 + hash(c, r, 3) * 10, 24, `opacity=".55" class="wv" style="animation-delay:-${(hash(c, r, 5) * 5).toFixed(1)}s"`);
   }
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+  for (let r = R0; r < R1; r++) for (let c = 0; c < COLS; c++) {
     const t = T_AT(c, r), k = key(c, r), [x, y] = center(c, r), P = PLACES[k], L = LAND[t];
     if (L && L.col) {
       const fill = shade(L.col, (hash(c, r, 4) - .5) * .09);
@@ -269,6 +359,7 @@ function renderMap() {
         const [nc, nr] = nb(c, r, d);
         if (!isWater(nc, nr) || (inMap(nc, nr) && T_AT(nc, nr) === 'B')) continue;
         const a = corner(x, y, d), b = corner(x, y, (d + 1) % 6);
+        if (DARK) { const lv = inL(nc, nr) && T_AT(nc, nr) === 'L'; coast += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${lv ? '#fdba74' : '#15131a'}" stroke-width="${lv ? 3 : 5}" stroke-linecap="round"/>`; continue; }
         coast += `<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#f1e2b4" stroke-width="5" stroke-linecap="round"/>`;
         const a2 = corner(x, y, d, HEXR + 3.5), b2 = corner(x, y, (d + 1) % 6, HEXR + 3.5);
         coast += `<line x1="${a2[0].toFixed(1)}" y1="${a2[1].toFixed(1)}" x2="${b2[0].toFixed(1)}" y2="${b2[1].toFixed(1)}" stroke="#ffffff" stroke-opacity=".55" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="6 4"/>`;
@@ -292,15 +383,16 @@ function renderMap() {
         + `<line x1="${-W3 / 2 - 4}" y1="-10" x2="${W3 / 2 + 4}" y2="-10" stroke="#451a03" stroke-width="2"/><line x1="${-W3 / 2 - 4}" y1="10" x2="${W3 / 2 + 4}" y2="10" stroke="#451a03" stroke-width="2"/></g>`;
     }
     if (P && vis.has(k)) {
-      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 46 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
+      const big = P.type === 'worldboss' ? 58 : P.type === 'boss' ? 52 : P.type === 'cage' ? 40 : ['gate', 'reactor'].includes(P.icon) ? 40 : 32;
       const asleep = (P.ch || 1) > S.chapter, freed = P.type === 'cage' && S.chapter >= 2;
       if (P.type === 'monster') {
-        const hp = denHp(k), sz = 30;
-        things += `<ellipse cx="${x}" cy="${y + 10}" rx="11" ry="3" fill="#0003"/>` + img(icon(P.icon, P.col), x - sz / 2, y - sz / 2 - 4, sz, hp ? '' : 'opacity=".3"');
+        const hp = denHp(k), sz = 34;
+        things += `<ellipse cx="${x}" cy="${y + 10}" rx="11" ry="3" fill="#0003"/>` + img(icon(P.icon, P.col), x - sz / 2, y - sz / 2 - 4, sz, hp ? `class="idle" style="animation-delay:-${(hash(c, r, 6) * 2).toFixed(1)}s"` : 'opacity=".3"');
         if (hp) things += `<rect x="${x - 13}" y="${y + 13}" width="26" height="5" fill="#fff" stroke="#111"/><rect x="${x - 12.5}" y="${y + 13.5}" width="${25 * hp / P.max}" height="4" fill="#f59e0b"/>`;
         else things += `<text x="${x}" y="${y + 20}" text-anchor="middle" font-size="9" font-weight="700" fill="#111">back soon</text>`;
       }
-      else if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : '');
+      else if (!freed) things += `<ellipse cx="${x}" cy="${y + big / 2 - 6}" rx="${big / 2.6}" ry="4" fill="#0003"/>` + img(P.type === 'boss' && !asleep ? bossIcon(k, P) : icon(P.icon), x - big / 2, y - big / 2 - 4, big, asleep ? 'opacity=".55"' : HITNOW[k] > 0 ? 'class="shake"' : '')
+        + (HITNOW[k] > 0 ? `<text class="dmgup" x="${x}" y="${y - 22}" text-anchor="middle" font-size="15" font-weight="900" fill="#e11d48" paint-order="stroke" stroke="#fff" stroke-width="3">−${HITNOW[k]}</text>` : '');
       if (P.type === 'cage') {   /* bars over the Professor (or an empty open cage once he's free) */
         const L = x - 18, T = y - 26;
         things += `<rect x="${L}" y="${T}" width="36" height="40" fill="none" stroke="#334155" stroke-width="3"/>` + (freed ? `<line x1="${L + 36}" y1="${T}" x2="${L + 50}" y2="${T + 8}" stroke="#334155" stroke-width="3"/>` : [1, 2, 3, 4, 5].map(i => `<line x1="${L + i * 6}" y1="${T}" x2="${L + i * 6}" y2="${T + 40}" stroke="#334155" stroke-width="2.2"/>`).join(''));
@@ -315,30 +407,31 @@ function renderMap() {
       if (P.type === 'worldboss') things += `<text x="${x + 18}" y="${y - 18}" font-size="12" font-weight="900" fill="#334155">z</text><text x="${x + 25}" y="${y - 26}" font-size="9" font-weight="900" fill="#334155">z</text>`;
     }
     if (!vis.has(k)) {
-      fog += `<polygon points="${hexPts(x, y, HEXR * 1.35)}" fill="#dfe4ea"/>`;
-      if (hash(c, r, 40) < .6) fog += `<circle cx="${x + (hash(c, r, 41) - .5) * 20}" cy="${y + (hash(c, r, 42) - .5) * 16}" r="${12 + hash(c, r, 43) * 10}" fill="#ffffff"/>`;
-      if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) fogTop += img(icon('shadow'), x - 18, y - 22, 36, 'opacity=".75"') + `<text x="${x}" y="${y + 21}" text-anchor="middle" font-size="11" font-weight="900" fill="#475569">?</text>`;
+      fog += `<polygon points="${hexPts(x, y, HEXR * 1.35)}" fill="${FOG}"/>`;
+      if (hash(c, r, 40) < .6) fog += `<circle cx="${x + (hash(c, r, 41) - .5) * 20}" cy="${y + (hash(c, r, 42) - .5) * 16}" r="${12 + hash(c, r, 43) * 10}" fill="${DARK ? '#191722' : '#ffffff'}"/>`;
+      if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) fogTop += img(icon('shadow'), x - 18, y - 22, 36, 'opacity=".75"') + `<text x="${x}" y="${y + 21}" text-anchor="middle" font-size="11" font-weight="900" fill="${DARK ? '#cbd5e1' : '#475569'}">?</text>`;
     }
     if (CRUMBS.includes(k) && S.chapter < 2) fogTop += img(icon('crumbs'), x - 22, y - 18, 44) + img(icon('crumbs'), x - 8, y - 4, 34);
     hits += `<polygon class="hit" data-k="${k}" points="${hexPts(x, y)}"/>`;
   }
   /* fog also covers the sea round the edge of the map */
   const seen = S.visited.map(unkey);
-  for (let r = -2; r <= ROWS + 1; r++) for (let c = -2; c <= COLS + 1; c++) {
-    if (inMap(c, r) || revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT) || (S.lifted || []).some(k => dist(unkey(k), [c, r]) <= 4)) continue;
+  for (let r = R0 - 2; r <= R1 + 1; r++) for (let c = -2; c <= COLS + 1; c++) {
+    if (inL(c, r) || revealAll || seen.some(p => dist(p, [c, r]) <= SIGHT) || (S.lifted || []).some(k => dist(unkey(k), [c, r]) <= 4)) continue;
     const [x, y] = center(c, r);
-    fog += `<polygon points="${hexPts(x, y, HEXR * 1.35)}" fill="#dfe4ea"/>`;
+    fog += `<polygon points="${hexPts(x, y, HEXR * 1.35)}" fill="${FOG}"/>`;
   }
   /* people (only where you can see) — drawn above the hit layer so their heads can be clicked */
   const here = {};
-  PEOPLE.forEach(p => { const at = S.people[p.i]; if (vis.has(at)) (here[at] = here[at] || []).push(p.i); });
-  (here[S.at] = here[S.at] || []).unshift('me');
+  PEOPLE.forEach(p => { const at = S.people[p.i]; if (vis.has(at) && layerOf(at) === LAYER) (here[at] = here[at] || []).push(p.i); });
+  if (layerOf(S.at) === LAYER) (here[S.at] = here[S.at] || []).unshift('me');
   let ppl = '';
   Object.entries(here).forEach(([k, list]) => {
     const [x, y] = center(...unkey(k)), show = list.slice(0, 3);
     show.forEach((who, i) => {
-      const fx = x - 25 + i * 13, fy = y - 32, me = who === 'me';
-      ppl += `<g class="pp" data-p="${who}"><rect x="${fx - 1.5}" y="${fy - 1.5}" width="19" height="19" rx="3" fill="${me ? '#00a03a' : '#fff'}" stroke="#111" stroke-width="1.5"/>` + img(me ? ME_FACE : PEOPLE[who].face, fx, fy, 16) + `</g>`;
+      const busy = PLACES[k] && vis.has(k), fx = (busy ? x - 34 : x - 12 - (show.length - 1) * 6) + i * 12, fy = y - 24, me = who === 'me';   // full figure, so outfits show
+      ppl += `<g class="pp${me ? ' mebob' : ''}" data-p="${who}"><ellipse cx="${fx + 12}" cy="${fy + 31}" rx="9" ry="3" fill="${me ? '#00a03a' : '#0004'}"/><rect x="${fx + 2}" y="${fy + 2}" width="20" height="30" rx="3" fill="#fff0" stroke="#0000" stroke-width="2"/>`
+        + `<image href="${me ? ME_FIG : PEOPLE[who].fig}" x="${fx}" y="${fy}" width="24" height="30.9" style="image-rendering:pixelated"/>` + (me ? `<path d="M${fx + 8} ${fy - 4}h8l-4 5z" fill="#00a03a" stroke="#111" stroke-width="1"/>` : '') + `</g>`;
     });
     if (list.length > 3) ppl += `<g class="pp" data-k2="${k}"><rect x="${x + 14}" y="${y - 32}" width="18" height="16" rx="3" fill="#111"/><text x="${x + 23}" y="${y - 20}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">+${list.length - 3}</text></g>`;
   });
@@ -350,18 +443,25 @@ function renderMap() {
     S.plan.forEach((k, i) => { const [x, y] = center(...unkey(k)); route += `<circle cx="${x + 19}" cy="${y + 4}" r="9" fill="#facc15" stroke="#111" stroke-width="1.5"/><text x="${x + 19}" y="${y + 8}" font-size="11" font-weight="900" text-anchor="middle">${i + 1}</text>`; });
   }
   reach.forEach(k => { const [x, y] = center(...unkey(k)); route += `<polygon points="${hexPts(x, y, HEXR - 2.5)}" fill="#facc1522" stroke="#facc15" stroke-width="3" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="20" dur="1.2s" repeatCount="indefinite"/></polygon>`; });
+  if (sel && sel !== lastStop() && S.plan.length < S.moves) {   /* preview of the way there */
+    const pv = pathTo(sel);
+    if (pv && pv.length > 1) { const left = S.moves - S.plan.length, pts = k => center(...unkey(k)).map(v => v.toFixed(1)).join(',');
+      route += `<polyline points="${[lastStop(), ...pv.slice(0, left)].map(pts).join(' ')}" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 8" opacity=".95"/>`;
+      if (pv.length > left) route += `<polyline points="${pv.slice(left - 1).map(pts).join(' ')}" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 10" opacity=".5"/>`; }
+  }
   if (sel) { const [x, y] = center(...unkey(sel)); route += `<polygon points="${hexPts(x, y, HEXR - 1)}" fill="none" stroke="#fff" stroke-width="3.5"/><polygon points="${hexPts(x, y, HEXR - 1)}" fill="none" stroke="#111" stroke-width="1"/>`; }
 
-  svg.style.background = revealAll ? '#4f9fd1' : '#e4e8ed';   /* letterbox edges match the fog */
+  svg.style.background = DARK ? (revealAll ? '#2b2733' : '#0e0d14') : revealAll ? '#4f9fd1' : '#e4e8ed';   /* letterbox edges match the fog */
   svg.innerHTML = `<defs><filter id="fogblur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="9"/></filter>
 </defs>
-    <rect width="${VB_W}" height="${VB_H}" fill="#4f9fd1"/>${water}${land}${coast}<g>${decor}</g>${things}
+    <rect y="${HEXR * 1.5 * (R0 - 2)}" width="${VB_W}" height="${HEXR * 1.5 * (R1 - R0 + 4)}" fill="${DARK ? '#2b2733' : '#4f9fd1'}"/>${water}${land}${coast}<g>${decor}</g><g>${regionLabels(vis)}</g>${things}
     <g filter="url(#fogblur)" opacity=".97">${fog}</g>${fogTop}${route}
     ${hits}${ppl}`;
 }
 
 /* ===================== HUD, panel, tooltip ===================== */
 function renderHud() {
+  setLayer();
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
@@ -369,12 +469,15 @@ function renderHud() {
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
     <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
     <div class="day">Day ${S.dayNo || 1} · moves happen at midnight</div>
-    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
+    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
+  { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
   $('undo').onclick = () => { S.plan.pop(); persist(); renderAll(); };
   $('repBtn').onclick = () => showReport();
+  $('meBtn').onclick = () => { const m = document.querySelector('#map .pp[data-p="me"]'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
+  if ($('peekBtn')) $('peekBtn').onclick = () => { const other = LAYER ? 0 : 1; peek = other === layerOf(S.at) ? null : other; sel = null; renderMap(); renderHud(); renderPanel(); renderLegend(); };
   $('spellBtn').onclick = showSpells;
 }
 
@@ -393,6 +496,60 @@ const SPELLS = [
   { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.', ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.',
     cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
 ];
+/* ---------- dungeons (16 Nov): three floors of themed questions, played awake, once a day per dungeon ----------
+   floor = up to 4 questions; 3 right clears it (coins; floor 3 also a brew and a loot item); 2 wrong ends the run.
+   Answers go through QE.recordAnswer, so they count towards securing spec points like a mission. */
+const FLOOR_COINS = [8, 12, 15, 18, 22];
+function delve(k) {
+  const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
+  const all = QUESTIONS.filter(q => keys.has(q.s)), sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const easy = sh(all.filter(q => !q.hard)), hard = sh(all.filter(q => q.hard));
+  const take = n => { const f = n >= 2 ? hard.splice(0, 2).concat(easy.splice(0, 2)) : n === 1 ? hard.splice(0, 1).concat(easy.splice(0, 3)) : easy.splice(0, 4); return sh(f.concat(easy.splice(0, 4 - f.length))).map(QE.inst); };
+  const NF = P.rooms.length, first = P.keep ? Math.min((S.depth || {})[k] || 0, NF - 1) : 0;   // the mine remembers how deep you got
+  const D = { k, P, floor: first, qs: take(first), i: 0, ok: 0, no: 0, coins: 0, got: [], right: 0 };
+  S.delve = S.delve || {}; S.delve[k] = QE.TODAY; QE.busy = true; persist();
+  const body = $('dunBody'), m = $('dunModal'); m.classList.add('on');
+  const stairs = () => `<div class="stairs">${P.rooms.map((_, f) => `<span class="${f < D.floor ? 'done' : f === D.floor ? 'on' : ''}">${NF > 3 ? '' : 'Floor '}${f + 1}</span>`).join('')}</div>`;
+  const close = () => { m.classList.remove('on'); QE.busy = false; if (D.right) QE.earn({ mana: Math.floor(D.right / 3) }); QE.gameChanged(); persist(); renderAll(); };
+  function ask() {
+    const q = D.qs[D.i], opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    body.innerHTML = `${stairs()}<h2 style="margin:0">${P.name}</h2><div class="small">Floor ${D.floor + 1}: ${P.rooms[D.floor]} · 3 right to clear it${q.hard ? ' · ★ harder' : ''}</div>
+      <div class="pips">${[0, 1, 2].map(j => `<i class="${j < D.ok ? 'ok' : ''}"></i>`).join('')}<span style="width:10px"></span>${[0, 1].map(j => `<i class="${j < D.no ? 'no' : ''}" style="border-color:#ef4444"></i>`).join('')}</div>
+      <div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+    body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
+      const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
+      QE.recordAnswer(q, ok); let hurt = 0;
+      if (ok) { D.ok++; D.right++; } else { D.no++; hurt = Math.min(2, Math.max(0, S.health - 1)); S.health -= hurt; }
+      const cleared = D.ok >= 3, out = D.no >= 2;
+      $('dunFb').innerHTML = `<div class="dx"><b class="${ok ? 'good' : 'bad'}">${ok ? 'Right.' : `Wrong${hurt ? `: a trap nips you (−${hurt} Health)` : ''}.`}</b> ${q.x || ''}</div><button class="btn gold" id="dunNext">${cleared ? 'Floor cleared →' : out ? 'Uh oh →' : 'Next →'}</button>`;
+      $('dunNext').onclick = () => { if (cleared) floorDone(); else if (out) end(false); else { D.i++; ask(); } }; $('dunNext').focus();
+    });
+  }
+  function floorDone() {
+    const c = FLOOR_COINS[D.floor]; D.coins += c; S.coins += c; let extra = '';
+    if (P.keep) { S.depth = S.depth || {}; S.depth[k] = Math.min(NF - 1, Math.max(S.depth[k] || 0, D.floor + 1)); }
+    if (D.floor === NF - 1 && k === MINE && S.under) return end(true);   // the bottom of the mine only pays out its treasure once
+    if (D.floor === NF - 1) {
+      if (k === MINE) { S.under = true; D.broke = true; }
+      const b = Math.random() < .5 ? 'fizz' : 'aura'; S.brews[b] = (S.brews[b] || 0) + 1; D.got.push(BL.BREWS[b].ic + ' ' + BL.BREWS[b].name);
+      const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !(QE.game.bag || []).includes(i.id));
+      if (pool.length) { const it = pool[Math.floor(Math.random() * pool.length)]; QE.game.bag = (QE.game.bag || []).concat(it.id); QE.game.lastLoot = it.id; D.got.push('🎁 ' + it.name); }
+      else { S.coins += 10; D.coins += 10; }
+      return end(true);
+    }
+    body.innerHTML = `${stairs()}<h2 style="margin:0">Floor ${D.floor + 1} cleared</h2><p class="lt">+${c} coins.</p><p>Stairs lead down to <b>${P.rooms[D.floor + 1]}</b>. The questions get harder${D.floor === NF - 2 ? ', and the bottom floor hides a brew and something to wear' : ''}. What you've found is yours either way.</p>
+      <button class="btn gold" id="dunDeeper">Go deeper →</button> <button class="btn alt" id="dunLeave" style="background:#333;color:#fff">Leave with your loot</button>`;
+    $('dunDeeper').onclick = () => { D.floor++; D.qs = take(D.floor); D.i = 0; D.ok = 0; D.no = 0; ask(); };
+    $('dunLeave').onclick = () => end(null);
+  }
+  function end(won) {
+    body.innerHTML = `<h2 style="margin:0">${D.broke ? 'You break through!' : won ? `${P.name}: ${NF === 3 ? 'all three floors' : 'the bottom floor'} cleared!` : won === false ? `Floor ${D.floor + 1} throws you out` : 'Back in the daylight'}</h2>
+      ${D.broke ? `<p class="new">The last wall of the deep seam gives way. Behind it: a rusty lift cage, a very long cable, and warm air coming up from below. <b>The Underworld is open to you.</b> Stand at the mine and take the lift down whenever you like.</p>` : ''}<p>${won === false ? `Two wrong on one floor and the room resets. ${P.keep ? 'You keep your place: next time you start from this floor. ' : ''}` : ''}You got <b>${D.right}</b> right${D.coins ? ` and carried out <span class="lt">${D.coins} coins</span>${D.got.length ? ', ' + D.got.map(g => `<span class="lt">${g}</span>`).join(', ') : ''}` : ''}. Right answers here count towards securing spec points, like a mission.</p>
+      <p class="small">The rooms refill overnight: you can go in again tomorrow.</p><button class="btn gold" id="dunOut">Back to the map →</button>`;
+    $('dunOut').onclick = close;
+  }
+  ask();
+}
 function showSpells() {
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
@@ -421,11 +578,11 @@ function describe(k) {
   if (!vis) {
     if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) return { tp: 'Unexplored', name: 'Something big', text: 'You can hear it from here. Get within 2 squares to see what it is.' };
     if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'Cake crumbs in the fog', text: 'A trail of crumbs and sprinkles leads north into the fog. Follow it.' };
-    return { tp: 'Unexplored', name: 'Fog', text: 'You haven\'t been near here yet. Walk within 2 squares to see what\'s there.' };
+    return { tp: 'Unexplored', name: layerOf(k) ? 'Darkness' : 'Fog', text: 'You haven\'t been near here yet. Walk within 2 squares to see what\'s there.' };
   }
   if (P && P.type === 'cage' && S.chapter >= 2) return { tp: 'Empty cage', name: P.name, P, text: 'Empty now — everyone set the Professor free. Someone has left a thank-you note and a single sprinkle.' };
   if (P) return { tp: TYPE[P.type] + (P.science ? ' · ' + ADV.SCI[P.science] : '') + ((P.ch || 1) > S.chapter ? ' · Chapter ' + P.ch + ' (asleep)' : ''), name: P.name, P, text: P.text + ((P.ch || 1) > S.chapter ? ' <b>Asleep until the Professor is free.</b>' : '') };
-  if (WATER.has(t)) return { tp: 'Water · can\'t cross', name: WATER_NAME[t][0], text: WATER_NAME[t][1], water: true };
+  if (WATER.has(t)) return { tp: t === '#' ? 'Rock · no way through' : t === 'L' ? 'Lava · can\'t cross' : 'Water · can\'t cross', name: WATER_NAME[t][0], text: WATER_NAME[t][1], water: true };
   if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'A trail of cake crumbs', text: 'Crumbs, sprinkles and the odd scorch mark, leading north towards the Cold Store Hills…' };
   return { tp: 'Land', name: LAND[t].name, text: t === 'B' ? 'The only ways across the River Tangent are this bridge and the one further south.' : 'Walk through. Each night here has a small chance of a random event.' };
 }
@@ -435,9 +592,11 @@ function renderPanel() {
   if (!sel) { pn.classList.remove('on'); return; }
   const D = describe(sel), P = D.P, reach = reachable(), last = lastStop();
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
-  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${icon(P.icon)}" alt="">` : ''}${D.name}</div>`;
+  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
+    h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
   if (P && P.type === 'monster') {
     const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 2.5)));   // ~2.5 moves (= attacks) a day
     h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits back for about ${P.power}</div><div class="loot">⚔ <b>You can beat this on your own</b> — about ${n} night${n > 1 ? 's' : ''}. Drops: +30 XP, coins, sometimes a brew.</div>`
@@ -445,7 +604,7 @@ function renderPanel() {
   }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
     const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / (str * 2.5)), team = Math.ceil(S.boss[sel] / ((str + 4 * 22) * 2.5));
-    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}.</div>`;
+    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}. 📣 <b>Rally:</b> +10% damage for each player on the square with you at the same move.</div>`;
   }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
   if (P && P.stock) {
@@ -453,20 +612,32 @@ function renderPanel() {
     h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Stand here to buy (end a move on the Tuck Shop).</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
       `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
   }
+  if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
+    const done = (S.delve || {})[sel] === QE.TODAY, NF = P.rooms.length, dep = P.keep ? Math.min((S.depth || {})[sel] || 0, NF - 1) : 0;
+    if (P.keep) h += `<div class="loot">⛏ <b>You've dug down to floor ${dep + 1} of ${NF}.</b> ${S.under ? 'The lift at the bottom is open.' : 'You keep your place from day to day. Clear the bottom floor and you break through to whatever is making those noises.'}</div>`;
+    h += mine && shared ? (done ? `<div class="loot">🕯 You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>${NF} floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">${dep ? `Carry on from floor ${dep + 1}` : `Enter ${P.name}`} →</button></div>`)
+      : `<div class="loot"><b>${NF} floors of questions</b>, loot on every floor. End a move here, then come back in the morning to go in.</div>`;
+    if (sel === MINE && S.under) h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${LIFT}">🛗 Take the lift down to the Underworld ↓</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to take the lift down to the Underworld.</div>`;
+  }
+  if (P && P.type === 'lift') h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${MINE}">🛗 Ride the lift up to the surface ↑</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to ride back up to the Abandoned Mine.</div>`;
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
-  if (reach.has(sel)) {
-    const n = S.plan.length + 1, stay = sel === last;
-    const what = P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Explore another floor' : 'Go and explore') : stay ? 'Stay here' : 'Go here';
-    h += `<div class="act"><button class="btn gold" id="goBtn">${what} (move ${n})</button></div>`;
-  } else if (D.water) h += `<div class="no">🚫 Water — find a bridge.</div>`;
+  const left = S.moves - S.plan.length, stay = sel === last, path = stay ? [sel] : left > 0 ? pathTo(sel) : null;
+  if (left > 0 && path && path.length) {
+    const n = S.plan.length + 1, far = path.length > left;
+    const what = far ? 'Head that way' : P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Stay at the door' : 'Go to the door') : stay ? 'Stay here' : 'Go here';
+    h += `<div class="act"><button class="btn gold" id="goBtn">${what} (${far ? `${left} of ${path.length} moves tonight` : path.length > 1 ? `${path.length} moves` : `move ${n}`})</button></div>`
+      + (far ? `<div class="cap" style="margin-top:4px">It's ${path.length} squares away: you'll get part of the way tonight and can carry on tomorrow.</div>` : '');
+  } else if (D.water) h += `<div class="no">🚫 ${T_AT(...unkey(sel)) === '#' ? 'Solid rock — go round.' : T_AT(...unkey(sel)) === 'L' ? 'Lava — go round.' : layerOf(sel) ? 'Too deep and too cold — go round.' : 'Water — find a bridge.'}</div>`;
   else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
   else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">💤 Asleep until the Professor is free (chapter ${P.ch}).</div>`;
   else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
   else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight. Come back tomorrow, or do a mission or your flashcards for an extra move.</div>`;
-  else if (sel !== last) h += `<div class="cap" style="margin-top:8px">Too far for one move — you can step to the glowing squares.</div>`;
+  else if (sel !== last) h += `<div class="cap" style="margin-top:8px">No way there yet through the squares you've uncovered. Explore closer first.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
+  if ($('dunGo')) $('dunGo').onclick = () => delve(sel);
+  if ($('rideBtn')) $('rideBtn').onclick = () => ride($('rideBtn').dataset.to);
   $('pClose').onclick = () => { sel = null; renderAll(); };
-  if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(sel); persist(); renderAll(); };
+  if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(...path.slice(0, left)); persist(); renderAll(); };
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
     const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
     S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; persist(); renderAll();
@@ -481,11 +652,24 @@ function renderPerson(who) {
   $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? ADV.stats().l : p.lvl}</div>
     <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
     <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : p.planned ? ` Has ${p.planned} move${p.planned > 1 ? 's' : ''} planned for tonight.` : ' No moves planned yet.'}</p>
-    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them.</p>` : ''}`;
+    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them (rally: +10% damage each).</p>` : ''}
+    ${!me && shared && at === S.at ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
+      <button class="btn ${S.mana >= 3 ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= 3 ? '' : 'disabled'}>🩹 Patch them up (3 mana, +5 Health)</button>
+      ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${b.ic} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
+      : !me && shared ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
+  $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
+    const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
+    try {
+      if (id === 'heal') { if (S.mana < 3) return; S.mana -= 3; await BL.aid(p.uid, { heal: 5 }, ADV.nick()); }
+      else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
+      persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +5 Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
+    } catch (e) { $('aidMsg').textContent = 'That did not go through. Try again.'; }
+  });
   $('panel').classList.add('on');
   $('pClose').onclick = () => { $('panel').classList.remove('on'); };
 }
 function renderLegend() {
+  if (LAYER) { $('legend').innerHTML = [['#6b6475', 'Hollow Road'], ['#3f6b63', 'Glowshroom Grove'], ['#5b6aa8', 'Crystal Gallery'], ['#8a7f6a', 'Fossil Beds'], ['#7a4a3a', 'Ember Flats'], ['#2b2733', 'Rock (no way through)'], ['#ea580c', 'Lava (can\'t cross)'], ['#17384a', 'Sunless Lake (can\'t cross)'], ['#0e0d14', 'Darkness (unexplored)']].map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>The Underworld, under Breadventure Land. The Mine Lift takes you back up.</span>`; return; }
   $('legend').innerHTML = [['#5a9e4b', 'Woods'], ['#9fcf6e', 'Meadow'], ['#b9d77f', 'Fields'], ['#b8b0a2', 'Peaks'], ['#e8edf3', 'Snow'], ['#7fa77a', 'Marsh'], ['#e8cf8f', 'Dunes'], ['#79b4a3', 'Petri Swamp'], ['#b38b6d', 'Scrap Heap'], ['#c9cf7f', 'Glowing Wastes'], ['#4f9fd1', 'Water (can\'t cross)'], ['#dfe4ea', 'Fog (unexplored)']]
     .map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>Hover or tap a square for details.</span>`;
 }
@@ -507,7 +691,7 @@ svg.addEventListener('pointermove', e => {
   let extra = D.tp;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health · best with friends`;
   if (P && P.type === 'monster') extra += denHp(k) ? ` · ${denHp(k)}/${P.max} health · you can solo this` : ' · beaten, back soon';
-  if (reachable().has(k)) extra += ' · click to plan a move';
+  if (reachable().has(k)) extra += ' · click to plan a move'; else if (S.plan.length < S.moves && visibleSet().has(k) && walkable(...unkey(k))) extra += ' · click to plan a route';
   tip.innerHTML = `<b>${D.name}</b><small>${extra}</small>`;
   }
   tip.style.display = 'block';
@@ -532,16 +716,23 @@ function persist() {
   ADV.save();
   if (!shared) return;
   BL.savePlan(S.plan.slice()).catch(e => console.warn('plan not saved', e));
-  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
+  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
+}
+/* the lift between the mine and the Underworld: instant, free, and it cancels tonight's plan (your steps were from the other end) */
+function ride(to) {
+  S.at = to; if (!S.visited.includes(to)) S.visited.push(to); S.plan = []; sel = null; peek = null; ADV.save();
+  if (shared) { BL.saveMine({ at: to, visited: S.visited.slice() }).catch(e => console.warn('lift not saved', e)); BL.savePlan([]).catch(() => {}); }
+  renderAll(); renderLegend(); centreOnMe(); window.scrollTo({ top: 0 });
+  toast(layerOf(to) ? '🛗 The lift rattles down for a very long time. <b>Welcome to the Underworld.</b>' : '🛗 The lift hauls you back up into the daylight.');
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
   S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
   Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: st.moves || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
-    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
+    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, depth: st.depth || {}, under: !!st.under, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
   S.plan = pub.plan && pub.plan.day === w.day && Array.isArray(pub.plan.steps) ? pub.plan.steps.slice(0, S.moves) : [];
-  buildPeople(); ADV.save();
+  buildPeople(); ADV.save(); noteBossHits();
 }
 const profile = () => { const s = ADV.stats(); return { name: QE.boardName(), look: ADV.look(), eq: ADV.eq(), lvl: s.l, str: s.str, hp: s.hp, mag: s.mag }; };
 function toast(msg) {
@@ -606,6 +797,7 @@ async function start() {
     if (night) await BL.load();
     await applyOutbox();
     await claimPending();
+    { const inbox = BL.me().inbox; if (inbox && inbox.length) { await BL.saveMine({ inbox: null }); inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); } }
     fromShared(); renderAll(); centreOnMe();
     const rescueNow = S.chapter >= 2 && !S.rescueSeen;
     const showRep = () => { if ((S.seenRep || {})[BL.uid] !== (S.reportDay || 'first')) showReport(); };
