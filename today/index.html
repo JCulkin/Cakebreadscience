@@ -142,15 +142,15 @@ async function draw() {
   /* step 3: Breadventure Land */
   let landTxt = 'One world shared by everyone who plays. Plan your moves; they happen at midnight.', landDone = false, landBtn = 'Into Breadventure Land →';
   if (land && land.st && land.w) {
-    const planned = land.pb && land.pb.plan && land.pb.plan.day === land.w.day ? (land.pb.plan.steps || []).length : 0;
+    const camp = land.st.camp && land.st.camp.day === land.w.day && land.st.at === land.st.camp.k && BL.PLACES[land.st.camp.k], mv = BL.movesOf(land.st);   // moves happen at once now; only boss camps wait
     const newRep = land.w.day < BL.TODAY ? 'Last night is waiting to happen: open the map to run it.' : land.st.reportDay === land.w.day && (ADV.S.seenRep || {})[u.uid] !== land.st.reportDay ? '📜 Your morning report is waiting.' : '';
-    landDone = planned > 0 && planned >= Math.min(BL.movesOf(land.st), 1);
-    landTxt = `${newRep ? newRep + ' ' : ''}${planned ? `${planned} move${planned > 1 ? 's' : ''} planned for tonight.` : `${BL.movesOf(land.st)} move${BL.movesOf(land.st) === 1 ? '' : 's'} to plan for tonight.`} ❤ ${land.st.health ?? '–'}/${s.hp} Health${land.st.pending ? ' · 🎁 rewards to collect' : ''}.`;
-    landBtn = planned ? 'See the map →' : 'Plan your moves →';
+    landDone = mv === 0 || !!camp;
+    landTxt = `${newRep ? newRep + ' ' : ''}${camp ? `⛺ Camped at ${camp.name} for midnight. ` : ''}${mv ? `${mv} move${mv === 1 ? '' : 's'} to use today.` : 'No moves left today.'} ❤ ${land.st.health ?? '–'}/${s.hp} Health${land.st.pending ? ' · 🎁 rewards to collect' : ''}.`;
+    landBtn = mv ? 'Play your moves →' : 'See the map →';
   } else if (!land) landTxt = 'Breadventure Land couldn\'t load just now.';
   let landShort = 'Breadventure Land';
-  if (land && land.st && land.w) { const pl = land.pb && land.pb.plan && land.pb.plan.day === land.w.day ? (land.pb.plan.steps || []).length : 0, mv = BL.movesOf(land.st);
-    landShort = land.st.pending ? '🎁 Rewards waiting' : pl ? `${pl} move${pl > 1 ? 's' : ''} planned` : mv ? `${mv} move${mv > 1 ? 's' : ''} to plan` : 'No moves left'; }
+  if (land && land.st && land.w) { const camp = land.st.camp && land.st.camp.day === land.w.day && land.st.at === land.st.camp.k, mv = BL.movesOf(land.st);
+    landShort = land.st.pending ? '🎁 Rewards waiting' : mv ? `${mv} move${mv > 1 ? 's' : ''} to use` : camp ? '⛺ Camped' : 'No moves left'; }
 
   /* nearly secured, rusty, weak flashcards */
   const near = Object.keys(QE.POINT_QS).map(k => [k, QE.pointState(k)]).filter(([, p]) => p.started && !p.secured && p.need - (p.sec + p.cSec) <= 1.5)

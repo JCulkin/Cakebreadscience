@@ -166,9 +166,9 @@ function renderLand() {
   $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +
     foes.slice(0, 2).map(foe).join('') + prof + foes.slice(2).map(foe).join('');
   $('landKick').textContent = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 🔑` : 'Chapter 2 · the monsters wake';
-  const planned = (S.plan || []).length, mv = S.moves || 0;
+  const mv = S.moves || 0, camp = S.camp && BL.PLACES[S.camp.k];
   if (ADV.can('events')) { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ev.ic} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
-  $('landSt').innerHTML = (mv ? (planned ? `${planned} of ${mv} moves planned for tonight. ` : `<b>${mv} move${mv === 1 ? '' : 's'} to plan</b> before midnight. `) : 'No moves left today. ')
+  $('landSt').innerHTML = (camp ? `⛺ Camped at ${camp.name} with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} for midnight. ` : '') + (mv ? `<b>${mv} move${mv === 1 ? '' : 's'} to use</b> today. ` : 'No moves left today. ')
     + `❤ ${S.health} Health · 🔮 ${S.mana} mana. Fight the guards together; every spec point you secure makes you stronger.`;
   $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
@@ -181,7 +181,7 @@ async function landLive() {
     const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
     if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
     else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
-      S.plan = pb && pb.plan && pb.plan.day === w.day ? (pb.plan.steps || []).slice() : []; }
+      S.plan = []; S.camp = st.camp && st.camp.day === w.day && st.at === st.camp.k ? st.camp : null; }
     ADV.save(); document.querySelectorAll('#landKick ~ .small').forEach(x => x.remove()); renderLand();
   } catch (e) { console.warn('Cakelab: shared world not read', e); }
 }

@@ -221,129 +221,83 @@ const EVENTS = [
 const eventOf = day => EVENTS[Math.floor((dayNum(day) + 3) / 7) % EVENTS.length];   // weeks run Monday to Sunday
 const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same step (max +40%)
 
-/* ===================== the night =====================
-   resolve(world, pubs, states, today) → { world, states } (new objects). Everyone's planned steps happen in order, step by step:
-   players on the same boss square at the same step fight it together; small monsters are per player (your own copy);
-   knocked out = back to the Cakelab on a quarter of your Health, rest of your moves cancelled. Deterministic for a given day. */
+/* ===================== the night (rewritten 17 Nov: moves now happen when you make them) =====================
+   Walking, small monsters, critters, the puddle, resting, shops and dungeons all happen at once on the map page.
+   Only boss fights wait: stepping onto a living boss makes camp (state.camp = {k, n, day}); every move spent there is one
+   attack at midnight, and everyone camped at the same boss fights together, round by round (rally = the others in that round).
+   resolve(world, pubs, states, today) → { world, states, rescued } (new objects). Deterministic for a given day.
+   Also: refills moves, wears off tonight's brews and shield, writes each player's short morning report. */
 function resolve(w0, pubs, st0, today) {
   const w = JSON.parse(JSON.stringify(w0)), S = JSON.parse(JSON.stringify(st0 || {}));
   let seed = 7; for (const ch of today) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const elapsed = Math.max(1, Math.min(7, dayNum(today) - dayNum(w.day || today)));
-  const tNum = dayNum(today), EV = eventOf(w0.day || today).id;   // the event of the day the plans were made
-  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0], did = {};
+  const EV = eventOf(w0.day || today).id;   // the event of the day the camps were made
+  const P_ = uid => pubs[uid] || {};
+  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0];
   const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   w.boss = Object.assign({}, BOSS_MAX, w.boss || {}); w.hit = w.hit || {};
-  const P_ = uid => pubs[uid] || {};
   const ids = Object.keys(S).filter(u => S[u] && S[u].at);   // a state the admin made just to hold extra moves waits until its player joins
-  const lines = {}, out = {}, used = {}, visBefore = {}, pos = {}, rewards = {};
+  const lines = {}, out = {}, rewards = {}, fought = {};
   const say = (u, h) => lines[u].push(h);
   const ouch = (u, h) => (S[u].shield ? Math.ceil(h / 2) : h);
   const strOf = u => ((P_(u).str || 10) + (S[u].aura ? 5 : 0)) * (S[u].fizz ? 1.5 : 1);
   const hurt = (u, h) => { S[u].health = Math.max(S[u].calm ? 1 : 0, S[u].health - h); };
   const give = (u, coins, item) => { const r = rewards[u] = rewards[u] || { coins: 0, items: [] }; r.coins += coins || 0; if (item) r.items.push(item); };
-  const knockout = u => { out[u] = true; pos[u] = HOME; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4));
-    say(u, `<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Your other moves tonight are cancelled. Recharge with a mission (+${HEAL.mission} per right answer) or your flashcards (+${HEAL.card} per card).</p>`); };
-  const plans = {};
-  ids.forEach(u => {
-    const st = S[u]; lines[u] = []; used[u] = 0; pos[u] = st.at || HOME; visBefore[u] = visibleOf(st);
-    st.visited = st.visited || [HOME]; st.dens = st.dens || {}; st.brews = st.brews || {};
-    const pl = P_(u).plan, steps = [];
-    if (pl && pl.day === w0.day && Array.isArray(pl.steps)) {   // check every step: adjacent (or staying), walkable, within moves
-      let at = pos[u];
-      for (const k of pl.steps.slice(0, Math.max(0, movesOf(st)))) {
-        const [c, r] = unkey(k);
-        if (!(k === at || neighbours(...unkey(at)).some(([x, y]) => x === c && y === r)) || !walkableIn(w, c, r)) break;
-        steps.push(k); at = k;
-      }
+  ids.forEach(u => { lines[u] = []; S[u].dens = S[u].dens || {}; S[u].brews = S[u].brews || {}; });
+  /* the camps: by boss, each player with the number of attacks they queued */
+  const camps = {};
+  ids.forEach(u => { const c = S[u].camp, P = c && PLACES[c.k];
+    if (c && c.day === w0.day && S[u].at === c.k && P && P.type === 'boss' && (P.ch || 1) <= w.chapter && w.boss[c.k] > 0 && c.n > 0) (camps[c.k] = camps[c.k] || []).push([u, c.n]); });
+  Object.entries(camps).forEach(([k, team]) => {
+    const P = PLACES[k], ST = BOSS_STORY[k] || {}, hk = w.hit[k] = w.hit[k] || {}, start = w.boss[k];
+    const rounds = Math.max(...team.map(([, n]) => n)), dealt = {};
+    team.forEach(([u]) => { if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`); hk[u] = true; dealt[u] = 0; fought[u] = P.name; });
+    for (let i = 0; i < rounds && w.boss[k] > 0; i++) {
+      const now = team.filter(([u, n]) => n > i && !out[u]).map(([u]) => u); if (!now.length) break;
+      const bonus = Math.min(4, now.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
+      now.forEach(u => { const d = Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult); dealt[u] += d; w.boss[k] = Math.max(0, w.boss[k] - d); });
+      if (w.boss[k] > 0) now.forEach(u => { const h = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, h); dealt['hit_' + u] = (dealt['hit_' + u] || 0) + h;
+        if (S[u].health === 0) { out[u] = true; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4)); } });
     }
-    plans[u] = steps;
+    const total = start - w.boss[k], ST2 = BOSS_STORY[k] || {};
+    team.forEach(([u, n]) => {
+      const mates = team.filter(([x]) => x !== u).map(([x]) => nameOf(x));
+      say(u, `<p class="good">⚔ At midnight ${mates.length ? `you and ${list(mates)} attack ${P.name} together` : `you attack ${P.name}`}: ${total} damage in all${mates.length ? ` (you did ${dealt[u]})` : ''}.${mates.length ? ` 📣 Rally bonus for fighting side by side.` : ''}</p>`);
+      if (dealt['hit_' + u]) say(u, `<p class="bad">${P.name} hits back: −${dealt['hit_' + u]} Health.</p>`);
+      if (out[u]) say(u, `<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Missions (+${HEAL.mission} per right answer) and flashcards (+${HEAL.card} per card) heal you.</p>`);
+      else if (w.boss[k] > 0) say(u, w.boss[k] <= P.max / 3 && start > P.max / 3 && ST2.low ? `<p class="new">${ST2.low}</p>` : ST2.taunt ? `<p>${P.name}: <i>${ST2.taunt[Math.floor(rnd() * ST2.taunt.length)]}</i></p>` : '');
+    });
+    if (w.boss[k] === 0) {
+      const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
+      Object.keys(hk).forEach(u => { if (S[u]) { lines[u] = lines[u] || []; give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; }
+        if (ST2.fall) lines[u].push(`<p class="new">${ST2.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
+      (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
+      if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
+    }
   });
-  const maxSteps = Math.max(0, ...ids.map(u => plans[u].length));
-  for (let i = 0; i < maxSteps; i++) {
-    const fights = {};   // boss square → attackers this step
-    ids.forEach(u => {
-      if (out[u] || i >= plans[u].length) return;
-      const k = plans[u][i], P = PLACES[k], [c, r] = unkey(k), st = S[u];
-      used[u]++;
-      say(u, `<p>Move ${i + 1}: ${k === pos[u] ? 'You stay at' : 'You walk to'} <b>${P ? P.name : LAND[T_AT(c, r)].name}</b>.</p>`);
-      pos[u] = k; st.at = k;
-      if (!st.visited.includes(k)) st.visited.push(k);
-      if (P && P.type === 'boss' && (P.ch || 1) <= w.chapter && w.boss[k] > 0) (fights[k] = fights[k] || []).push(u);
-      else if (P && P.type === 'monster') {
-        const d = st.dens[k]; let hp = !d ? P.max : d.back ? (d.back > tNum ? 0 : P.max) : d.hp;
-        if (!hp) { say(u, `<p>The ${P.name} has gone to lick its wounds. Nothing to fight here tonight.</p>`); return; }
-        const dmg = Math.round(strOf(u) * (0.6 + rnd() * 0.8)); hp = Math.max(0, hp - dmg);
-        say(u, `<p class="good">You take on the ${P.name}: ${dmg} damage.</p>`);
-        const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit);
-        say(u, `<p class="bad">It fights back: −${hit} Health.</p>`);
-        if (!hp) { const c = EV === 'coins' ? 16 : 8; st.dens[k] = { back: tNum + 2 }; give(u, c); did[u] = `beat the ${P.name}`; say(u, `<p class="lt">★ ${P.name} beaten! +${c} coins${EV === 'coins' ? ' (Market week)' : ''}. It'll be back in two days.</p>`); }
-        else { st.dens[k] = { hp }; say(u, `<p>The ${P.name} limps off with ${hp} health left. Come back to finish it.</p>`); }
-        if (st.health === 0) knockout(u);
-      } else if (!P && EV !== 'quiet' && rnd() < .3 && WILD[T_AT(c, r)]) {
-        const hit = ouch(u, 1 + Math.floor(rnd() * 3)); hurt(u, hit);
-        say(u, `<p>On the way you're jumped by <b>${WILD[T_AT(c, r)]}</b>. You see it off (−${hit} Health).</p>`);
-        if (st.health === 0) knockout(u);
-      } else if (P && P.type === 'dungeon') {
-        /* dungeons are played awake (16 Nov): the floors are question rooms on the map page; the night only gets you to the door */
-        if (i === plans[u].length - 1) say(u, `<p class="new">You make camp at the door of <b>${P.name}</b>. Open the map and go in: every floor is a room of questions, with loot for each one you clear.</p>`);
-      } else if (P && P.type === 'event') {
-        if (rnd() < .4) { const c = EV === 'coins' ? 10 : 5; give(u, c); say(u, `<p>You poke the puddle and fish out <span class="lt">${c} coins</span>.</p>`); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
-      } else if (P && P.type === 'shop') say(u, '<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>');
-      else if (P && P.type === 'lift') { if (i === plans[u].length - 1) say(u, '<p class="new">You wait by the Mine Lift. Open the map to ride it up.</p>'); }
-      else if (P && P.type === 'home') { const b = st.health; st.health = Math.min(P_(u).hp || 15, st.health + HEAL.rest * (EV === 'rest' ? 2 : 1)); say(u, `<p class="good">You rest in the Cakelab: +${st.health - b} Health.</p>`); }
-    });
-    /* bosses: everyone on the square this step fights together */
-    Object.entries(fights).forEach(([k, team]) => {
-      const P = PLACES[k], ST = BOSS_STORY[k] || {}, before = w.boss[k];
-      const bonus = Math.min(4, team.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
-      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult)), total = dmg.reduce((a, b) => a + b, 0);
-      w.boss[k] = Math.max(0, w.boss[k] - total);
-      const hk = w.hit[k] = w.hit[k] || {};
-      const taunt = ST.taunt ? ST.taunt[Math.floor(rnd() * ST.taunt.length)] : '';
-      team.forEach((u, j) => {
-        if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`);
-        hk[u] = true; did[u] = `fought ${P.name}`;
-        const mates = team.filter(x => x !== u).map(nameOf);
-        say(u, `<p class="good">${mates.length ? `You and ${list(mates)} attack ${P.name} together` : `You attack ${P.name}`}: ${total} damage${mates.length ? ` (you did ${dmg[j]})` : ''}.${bonus ? ` 📣 Rally: +${Math.round(bonus * 100)}% for fighting side by side.` : ''}</p>`);
-        if (w.boss[k] > 0) {
-          if (before > P.max / 3 && w.boss[k] <= P.max / 3 && ST.low) say(u, `<p class="new">${ST.low}</p>`); else if (taunt) say(u, `<p>${P.name}: <i>${taunt}</i></p>`);
-          const hit = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
-      });
-      if (w.boss[k] === 0) {
-        const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
-        Object.keys(hk).forEach(u => { if (S[u]) { give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; } if (ST.fall) lines[u].push(`<p class="new">${ST.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
-        (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
-        if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
-      }
-    });
-  }
   /* chapter 2: the cage opens for everyone the night the third key piece is won */
   let rescued = false;
-  if (w.chapter < 2 && keysOf(w) === 3) { w.chapter = 2; rescued = true; w.log.push('All three key pieces won: the Professor is free! Chapter 2 begins.'); }
+  if (w.chapter < 2 && keysOf(w) === 3) { w.chapter = 2; rescued = true; (w.log = w.log || []).push('All three key pieces won: the Professor is free! Chapter 2 begins.'); }
   ids.forEach(u => {
     const st = S[u];
     if (rescued) lines[u].unshift('<p class="lt">🔓 With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>');
-    const vis = visibleOf(st);
-    Object.entries(PLACES).forEach(([k, P]) => { if (vis.has(k) && !visBefore[u].has(k)) lines[u].push(`<p class="new">🗺 The fog clears: you can now see <b>${P.name}</b>.</p>`); });
-    if (st.shield) lines[u].push('<p class="lt">🛡 Your Jam Shield took half of every hit tonight. It has worn off.</p>');
+    if (st.shield) lines[u].push('<p class="lt">🛡 Your Jam Shield has worn off.</p>');
     ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">${BREWS[b].ic} Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
-    st.shield = false;
+    st.shield = false; st.camp = null;
     Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
-    { const norm = Math.min(used[u], st.moves || 0), extra = used[u] - norm;   // normal moves first, then the teacher's extra ones
-      if (extra) st.bonus = Math.max(0, (st.bonus || 0) - extra) || null;
-      /* someone who joined today keeps their 6 first-day moves (17 Nov fix: a first visit that ran the night cut them to 4) */
-      if (st.joined !== today) st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - norm) + DAILY_MOVES * elapsed); }
-    if (!plans[u].length) lines[u].push(`<p>You didn't plan any moves${elapsed > 1 ? ' for a while' : ''}, so you stayed at ${PLACES[st.at] ? PLACES[st.at].name : 'your spot'}.</p>`);
+    /* new moves: moves were already spent as they were made. Someone who joined today keeps their 6 first-day moves. */
+    const before = st.moves || 0;
+    if (st.joined !== today) st.moves = Math.max(before, Math.min(MOVE_BANK, before + DAILY_MOVES * elapsed));
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
-    /* what everyone else got up to (the shared world should feel shared) */
-    const others = ids.filter(x => x !== u && plans[x].length).map(x => `<b>${nameOf(x)}</b> ${did[x] || `walked to ${PLACES[S[x].at] ? PLACES[S[x].at].name : LAND[T_AT(...unkey(S[x].at))].name}`}${out[x] ? ' and was knocked out' : ''}`);
+    const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
     if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
     const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
-    st.report = lines[u]; st.reportDay = today;
+    lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}.</p>`);
+    st.report = lines[u]; st.reportDay = today; st.big = !!(fought[u] || rescued || lines[u].some(l => /defeated!/.test(l)));   // big = worth a pop-up
   });
   w.day = today; delete w.lock;
-  w.lastNight = { day: today, players: ids.length, moved: ids.filter(u => plans[u].length).length };
+  w.lastNight = { day: today, players: ids.length, moved: Object.keys(fought).length };
   return { world: w, states: S, rescued };
 }
 
@@ -391,7 +345,8 @@ async function runNightIfDue(force) {
   if (force && world.day >= TODAY) world.day = dstr(new Date(Date.parse(TODAY + 'T12:00:00') - 864e5));   // admin: replay tonight
   const res = resolve(world, pubs, states, TODAY);
   const upd = { world: res.world };
-  Object.entries(res.states).forEach(([u, st]) => { upd['state/' + u] = st; });
+  const NIGHT_FIELDS = ['at', 'health', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews'];
+  Object.entries(res.states).forEach(([u, st]) => { if (!st || !st.at) return; NIGHT_FIELDS.forEach(f => { upd[`state/${u}/${f}`] = st[f] === undefined ? null : st[f]; }); });
   await ref().update(upd);
   world = res.world; states = res.states;
   return res;
