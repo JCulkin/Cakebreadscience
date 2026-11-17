@@ -318,6 +318,8 @@ function soloResults() {
 }
 
 /* ---------- team ---------- */
+/* ?team (the admin's "Team quiz" button, 17 Nov): team game only */
+if (new URLSearchParams(location.search).has('team')) { $('soloBtn').hidden = true; $('teamBtn').textContent = 'Set up the teams →'; $('teamBtn').classList.remove('alt'); $('teamBtn').classList.add('green'); }
 $('teamBtn').onclick = () => {
   const s = Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, hard: true, calc: false }, store.get('teamcfg') || {});
   const box = $('teamsetup');

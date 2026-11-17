@@ -4,7 +4,7 @@
 
 ## [4.1.2] - 2026-11-17
 ### Added
-- **Practice** on the homepage's Cakebread Questing banner (the questions with no game, progress saved); Quick quiz described as the team/board game
+- Homepage: **a new Cakebread Questing banner** showing Breadventure Land ("the revision game"); **Practice Questions** and **Flashcards** get their own cards; Quick quiz is now an admin-only **Team quiz** button in the header (opens straight into the team game)
 - **My day is now called To do** (header button, Questing bar, page title)
 - A red **Admin** button in the header next to My day, for admin accounts only (replaces the small floating button at the bottom of the homepage)
 
