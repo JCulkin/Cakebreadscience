@@ -97,7 +97,7 @@ main{min-width:0}
 </head>
 <body>
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Game <span>showcase</span></h1><a href="/admin/">← Admin console</a><a href="/interactive/spec-quiz/">Questing menu</a><div class="who" id="who"></div></header>
-<div class="gate" id="gate"><h2>Admin</h2><p id="gateMsg">Checking who you are…</p><div id="gateBtn"></div></div>
+<div class="gate" id="gate" style="display:none"></div>
 <div class="layout" id="layout" hidden>
   <nav class="toc" id="toc"></nav>
   <main id="main"></main>
@@ -106,7 +106,6 @@ main{min-width:0}
 <script src="/js/firebase-config.js"></script>
 <script src="/js/admin-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="/interactive/spec-quiz/spec.js"></script>
 <script src="/interactive/spec-quiz/questions.js"></script>
 <script src="/interactive/spec-quiz/gens.js"></script>
@@ -259,7 +258,7 @@ function build() {
     <p class="lede">Boss fights happen at midnight. Step onto a boss to make camp; each move spent there is one attack, and everyone camped at the same boss fights it together, round by round. Damage = each player's Strength × 0.6–1.4, +${Math.round(BL.RALLY * 100)}% for each ally on the square at the same move (rally, up to +40%). The boss hits back for about its power × 0.5–1.5. Health is fixed and never goes back up.</p>
     <div class="grid" style="--w:560px">${bosses.map(([k, P]) => `<div class="card boss" id="pl-${k.replace(',', '-')}">
       <div class="frames">${['', '_hurt', '_down'].map((f, i) => `<figure><img class="px" src="${ic(P.icon + f)}" alt=""><figcaption>${['Normal', 'Hurt', 'Defeated'][i]}</figcaption></figure>`).join('')}</div>
-      <div><h3 style="margin:0">${esc(P.name)}</h3><span class="tag" style="color:${SCOL[P.science]}">${SNAME[P.science]}</span><span class="tag">${P.deep ? 'Underworld' : 'Chapter ' + (P.ch || 1)}</span>${(BL.CH1 || []).includes(k) ? '<span class="tag" style="color:#b45309">🔑 key piece</span>' : ''}<span class="tag">square ${k}</span>
+      <div><h3 style="margin:0">${esc(P.name)}</h3><span class="tag" style="color:${SCOL[P.science]}">${SNAME[P.science]}</span><span class="tag">${P.deep ? 'Underworld' : P.starter ? 'Near the Cakelab' : 'Chapter ' + (P.ch || 1)}</span>${P.tier ? `<span class="tag" style="color:${{ Starter: '#16a34a', 'Next step': '#0284c7', Tough: '#b45309', 'Very tough': '#dc2626', Hardest: '#7c3aed' }[P.tier]}">${P.tier}</span>` : ''}${P.respawn ? `<span class="tag">back ${P.respawn} days after it falls</span>` : ''}${(BL.CH1 || []).includes(k) ? '<span class="tag" style="color:#b45309">🔑 key piece</span>' : ''}<span class="tag">square ${k}</span>
         <dl class="kv"><dt>Health</dt><dd>${P.max.toLocaleString()}</dd><dt>Power</dt><dd>${P.power} (hits for ${Math.round(P.power * .5)}–${Math.round(P.power * 1.5)})</dd><dt>Loot</dt><dd>${esc(P.loot.join(' · '))}</dd>${P.item ? `<dt>Item</dt><dd>${lootOf(P)}</dd>` : ''}</dl>
         <p class="small" style="margin-top:6px">${esc(P.text)}</p></div>
       <div style="grid-column:1/-1">${storyOf(k)}</div></div>`).join('')}
@@ -391,17 +390,9 @@ function render() {
   if (location.hash) { const t = document.querySelector(location.hash); if (t) t.scrollIntoView(); }
 }
 
-/* ===================== admins only ===================== */
-firebase.initializeApp(window.firebaseConfig);
-let drawn = false;
-firebase.auth().onAuthStateChanged(u => {
-  $('who').innerHTML = u ? esc(u.email) : '';
-  const ok = u && (window.ADMIN_EMAILS || []).includes(u.email);
-  $('gate').style.display = ok ? 'none' : ''; $('layout').hidden = !ok;
-  if (!u) { $('gateMsg').textContent = 'Sign in with your admin Google account.'; $('gateBtn').innerHTML = '<button class="btn" id="si">Sign in with Google</button>'; $('si').onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); return; }
-  if (!ok) { $('gateMsg').textContent = 'This account is not an admin.'; $('gateBtn').innerHTML = ''; return; }
-  if (!drawn) { drawn = true; render(); }
-});
+/* open to anyone with the link (user, 17 Nov: "let me access it without admin login"). It only shows game content
+   that is already public in the game's files; it reads and writes no student data. Still noindex and unlinked for students. */
+$('gate').style.display = 'none'; $('layout').hidden = false; render();
 </script>
 </body>
 </html>

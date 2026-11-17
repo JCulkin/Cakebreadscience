@@ -78,21 +78,25 @@ const PLACES = {
   '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
   '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend your coins on brews. Stand here to buy; drink them anywhere (Spells & brews).', stock: true },
   '6,6': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. A random event every night: a coin, a brew, or a very wet sock.' },
+  /* the starter boss (17 Nov balance pass): two squares from the Cakelab, beatable alone by a brand-new player in about
+     three nights without being knocked out, and back two days after it falls so every new player gets one */
+  '6,2': { type: 'boss', ch: 1, starter: true, respawn: 2, science: 'b', name: 'The Crumb Goblin', icon: 'goblin', max: 90, power: 2, tier: 'Starter', coins: 25, brew: 'slushie',
+    text: 'Crumbmaw\'s lookout, guarding the crumb trail with a stolen cake fork. Small, greedy and beatable on your own: a good first boss. It comes back two days after it falls.', loot: ['+25 coins each', 'an Electrolyte Slushie each'] },
   /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
-  '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
+  '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 650, power: 5, tier: 'Tough',
     text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', item: 'mito', loot: ['🔑 Key piece 1 of 3', 'Mitochondria Gauntlet (Lowkey Legendary)', '+40 coins each'] },
-  '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 1000, power: 8,
+  '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 800, power: 6, tier: 'Very tough',
     text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Legendary)', '+40 coins each'] },
-  '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
+  '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 450, power: 4, tier: 'Next step',
     text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', item: 'shield', loot: ['🔑 Key piece 3 of 3', 'Periodic Table Shield (Rare)', '+40 coins each'] },
   '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for anyone alone. When it wakes, everyone fights it together.' },
   '7,1': { type: 'cage', name: 'The Professor\'s Cage', icon: 'prof', text: 'The Professor is locked in here, looking cross and slightly crumbly. The lock needs all three key pieces — win them from the Spore Lord, the Stone Golem and the Acid Hydra.' },
   /* chapter 2: wake up once the Professor is free */
-  '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 8,
+  '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 6, tier: 'Tough',
     text: 'A bacterium that has survived every antibiotic thrown at it, so now it is enormous and very smug. Lives in the Petri Swamp. Natural selection made it; you lot will unmake it.', item: 'grass', loot: ['Touch-Grass Boots (Rare)', 'Electrolyte Slushie', '+50 coins each'] },
-  '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 950, power: 9,
+  '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 1000, power: 7, tier: 'Tough',
     text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', item: 'chainmail', loot: ['Chainmail of Covalent Bonds (Rare)', 'Fizzy Courage', '+50 coins each'] },
-  '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
+  '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1200, power: 8, tier: 'Very tough',
     text: 'Something leaked out of the old reactor. Half of it has already decayed. The other half is very much still here.', item: 'kilt', loot: ['Kilt of Kinetic Energy (Rare)', 'Bottled Aura', '+50 coins each'] },
   '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', subs: ['P7b', 'P7c'], rooms: ['the control room', 'the turbine hall', 'the reactor core'], text: 'A broken-down nuclear power station, cracked and humming. Three floors of radioactivity questions (wear a very sensible lead suit).' },
   '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', subs: ['B1b', 'B2b', 'B2c', 'B5a', 'B5c'], rooms: ['the agar slopes', 'the colony caves', 'the incubator'], text: 'Three floors deep and faintly warm. Every floor is a room of questions on cells, microbes and enzymes.' },
@@ -106,7 +110,7 @@ const PLACES = {
     text: 'Somebody has pulled the boards off. Five floors of questions on metals, energy and magnets, and you keep your place from one day to the next. Strange noises come up from the very bottom.' },
   /* ---------- the Underworld ---------- */
   '9,19': { type: 'lift', name: 'The Mine Lift', icon: 'lift', text: 'A rusty cage on a very long cable. It goes up to the Abandoned Mine and, more reluctantly, back down.' },
-  '18,21': { type: 'boss', ch: 1, deep: true, coins: 100, science: 'p', name: 'Magmaw', icon: 'magmaw', max: 1300, power: 11,
+  '18,21': { type: 'boss', ch: 1, deep: true, coins: 100, science: 'p', name: 'Magmaw', icon: 'magmaw', max: 1500, power: 9, tier: 'Hardest',
     text: 'A boulder with a furnace for a mouth, sitting by the Lava Lake at the hot end of the Ember Flats. It has been warming the Underworld for a very long time and has opinions about heat.', brew: 'fizz', loot: ['+100 coins each', 'a Fizzy Courage each'] },
   '9,23': { type: 'dungeon', science: 'b', name: 'The Bone Library', icon: 'cave', subs: ['B3a', 'B3b', 'B4b', 'B5b'], rooms: ['the fossil stacks', 'the family-tree room', 'the extinct wing'], text: 'Every shelf is a rock layer. Three floors of questions on reproduction, inheritance and energy in ecosystems.' },
   '11,17': { type: 'dungeon', science: 'c', name: 'The Crystal Vault', icon: 'cave', subs: ['C1c', 'C1d', 'C1f', 'C1g'], rooms: ['the ionic hall', 'the covalent corridor', 'the giant lattice'], text: 'Everything in here has a very regular structure. Three floors of questions on atoms, the Periodic Table and bonding.' },
@@ -178,7 +182,15 @@ const dstr = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '
 const TODAY = (() => { const m = /[?&]today=(\d{4}-\d{2}-\d{2})/.exec(location.search); return m ? m[1] : dstr(new Date()); })();
 const dayNum = s => Math.round(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) / 864e5);
 const BOSS_MAX = {}; Object.entries(PLACES).forEach(([k, P]) => { if (P.type === 'boss') BOSS_MAX[k] = P.max; });
-const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.assign({}, BOSS_MAX), hit: {}, log: [] });
+/* 17 Nov balance pass: bosses already hurt in the live world keep the same share of damage under their new maximum */
+const OLD_MAX = { '2,2': 900, '11,2': 1000, '4,7': 820, '3,10': 1000, '16,4': 950, '17,6': 1100, '18,21': 1300 };
+function bossNow(w) {
+  const b = Object.assign({}, BOSS_MAX, (w && w.boss) || {});
+  if (w && !w.bal) Object.keys(OLD_MAX).forEach(k => { if (w.boss && w.boss[k] != null && w.boss[k] > 0) b[k] = Math.max(1, Math.min(BOSS_MAX[k], Math.round(w.boss[k] * BOSS_MAX[k] / OLD_MAX[k]))); });
+  Object.keys(b).forEach(k => { if (BOSS_MAX[k] != null) b[k] = Math.min(b[k], BOSS_MAX[k]); });
+  return b;
+}
+const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.assign({}, BOSS_MAX), hit: {}, log: [], bal: 1 });
 /* bonus = extra moves given by the teacher (admin console): no cap, kept until used, spent after the normal moves */
 const movesOf = st => ((st && st.moves) || 0) + ((st && st.bonus) || 0);
 const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, visited: [HOME], lifted: [], shield: false, dens: {}, brews: {},
@@ -188,6 +200,9 @@ const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, vis
    meet = the first time you fight it, taunt = when it is hit, low = when it drops under a third, fall = its defeat.
    Each boss is built on a misconception from its science; keep the science inside the Double Award spec. ---------- */
 const BOSS_STORY = {
+  '6,2': { meet: 'A small green goblin with a cake fork jumps out. “Crumbs only spread if someone carries them,” it squeaks. (Not so: particles spread out on their own, from where there are lots to where there are few. That\'s diffusion, and it needs no energy.)',
+    taunt: ['“Mine! All the crumbs are MINE!”', '“Active transport? Far too much effort.”', 'It hides a crumb behind its back. Badly.'],
+    low: 'The Crumb Goblin is out of breath and nearly out of crumbs.', fall: 'The Crumb Goblin drops its fork and scarpers north. It\'ll be back for more crumbs in a couple of days.' },
   '2,2': { meet: 'The Spore Lord looms out of the mist. “Fungi are just plants that forgot to be green,” it booms. (They are not: no chlorophyll, no photosynthesis, walls of chitin.)',
     taunt: ['“I feed on the dead. You look tired.”', '“Chop away. My hyphae go for miles.”', '“Spores! Spores for everyone!”'],
     low: 'The Spore Lord’s cap is sagging and it has stopped making speeches.', fall: 'The Spore Lord folds up like a wet umbrella. In the mush where it stood, something glints: a piece of a key.' },
@@ -236,7 +251,9 @@ function resolve(w0, pubs, st0, today) {
   const P_ = uid => pubs[uid] || {};
   const nameOf = u => (P_(u).name || 'Someone').split(' ')[0];
   const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
-  w.boss = Object.assign({}, BOSS_MAX, w.boss || {}); w.hit = w.hit || {};
+  w.boss = bossNow(w); w.bal = 1; w.hit = w.hit || {}; w.back = w.back || {};
+  /* bosses that come back (the starter): full health again on the day they're due, with a fresh list of who hit them */
+  Object.entries(w.back).forEach(([k, d]) => { if (dayNum(today) >= d && PLACES[k]) { w.boss[k] = PLACES[k].max; w.hit[k] = {}; delete w.back[k]; } });
   const ids = Object.keys(S).filter(u => S[u] && S[u].at);   // a state the admin made just to hold extra moves waits until its player joins
   const lines = {}, out = {}, rewards = {}, fought = {};
   const say = (u, h) => lines[u].push(h);
@@ -272,6 +289,7 @@ function resolve(w0, pubs, st0, today) {
       const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
       Object.keys(hk).forEach(u => { if (S[u]) { lines[u] = lines[u] || []; give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; }
         if (ST2.fall) lines[u].push(`<p class="new">${ST2.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
+      if (P.respawn) w.back[k] = dayNum(today) + P.respawn;
       (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
       if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
     }
@@ -354,7 +372,7 @@ async function runNightIfDue(force) {
 const me = () => states[uid];
 
 return { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
-  FIRST_MOVES, DAILY_MOVES, movesOf, BREWS, SPELL_INFO, FLOOR_COINS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
+  FIRST_MOVES, DAILY_MOVES, movesOf, BREWS, SPELL_INFO, FLOOR_COINS, bossNow, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
   newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, aid, runNightIfDue, me, BOSS_STORY, EVENTS, eventOf, RALLY,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();

@@ -600,6 +600,7 @@ function renderPanel() {
   const D = describe(sel), P = D.P, last = S.at;
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
   let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && P.tier) h += `<div class="cap" style="margin-top:2px"><b style="color:${{ Starter: '#16a34a', 'Next step': '#0284c7', Tough: '#b45309', 'Very tough': '#dc2626', Hardest: '#7c3aed' }[P.tier] || '#111'}">${P.tier === 'Starter' ? '★ Starter boss: you can beat this one on your own' : P.tier}</b>${S.boss[sel] === 0 && P.respawn && BL.world && (BL.world.back || {})[sel] ? ` · beaten, back in ${Math.max(1, BL.world.back[sel] - BL.dayNum(QE.TODAY))} day${BL.world.back[sel] - BL.dayNum(QE.TODAY) > 1 ? 's' : ''}` : ''}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
@@ -610,9 +611,9 @@ function renderPanel() {
       : `<div class="cap">Beaten — it'll be back in a day or two.</div>`;
   }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
-    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / (str * 2.5)), team = Math.ceil(S.boss[sel] / ((str + 4 * 22) * 2.5));
+    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / str), team = Math.ceil(S.boss[sel] / ((str + 3 * 16) * 1.3));   // attacks: you alone / you + 3 others (rally +30%)
     const campers = Object.entries(BL.states || {}).filter(([u, st]) => u !== BL.uid && st && st.camp && st.camp.k === sel && st.at === sel && BL.world && st.camp.day === BL.world.day).map(([u]) => (BL.pubs[u] || {}).name || 'Someone');
-    h += `<div class="loot">⛺ <b>Boss fights happen at midnight.</b> Step here to make camp: every move you spend here is one attack tonight, alongside everyone else camped here (📣 +10% damage for each of them). Alone about ${solo} attacks to beat it · with 4 others about ${team} each.</div>`
+    h += `<div class="loot">⛺ <b>Boss fights happen at midnight.</b> Step here to make camp: every move you spend here is one attack tonight, alongside everyone else camped here (📣 +10% damage for each of them). Alone about ${solo} attack${solo > 1 ? 's' : ''} to beat it · with 3 others about ${team} each. It hits each camper back for about ${P.power} a round.</div>`
       + (S.camp && S.camp.k === sel ? `<div class="loot" style="background:#fef9c3;padding:4px 8px;border:2px solid #111">⛺ <b>You're camped here with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight.</b> Walking away breaks camp and gives those moves back.</div>` : '')
       + (campers.length ? `<div class="loot">👥 Also camped here tonight: <b>${campers.join(', ')}</b></div>` : '');
   }
@@ -831,7 +832,7 @@ function ride(to) {
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
-  S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
+  S.chapter = w.chapter; S.boss = BL.bossNow(w);
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
   Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: BL.movesOf(st), bonus: st.bonus || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
     shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, depth: st.depth || {}, under: !!st.under, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null, big: !!st.big,

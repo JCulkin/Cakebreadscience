@@ -158,7 +158,7 @@ $('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + 
 $('dayTitle').textContent = `Today · day ${S.dayNo || 1}`;   // S.day is the map's epoch day number, not the world's day
 function renderLand() {
   const ch = S.chapter || 1, k = ADV.keys(), P = BL.PLACES, hp = S.boss || {};
-  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && !P[x].deep && (P[x].ch || 1) === Math.min(ch, 2));
+  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && !P[x].deep && !P[x].starter && (P[x].ch || 1) === Math.min(ch, 2));
   const foe = x => { const h = hp[x] ?? P[x].max, down = h === 0;
     return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon + (down ? '_down' : h <= P[x].max * .34 ? '_hurt' : ''))}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
   const prof = ch < 2 ? `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>`
@@ -180,7 +180,7 @@ async function landLive() {
     const rt = firebase.database(), u = QE.user.uid;
     const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
     if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
-    else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
+    else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = BL.bossNow(w);
       S.plan = []; S.camp = st.camp && st.camp.day === w.day && st.at === st.camp.k ? st.camp : null; }
     ADV.save(); document.querySelectorAll('#landKick ~ .small').forEach(x => x.remove()); renderLand();
   } catch (e) { console.warn('Cakelab: shared world not read', e); }
