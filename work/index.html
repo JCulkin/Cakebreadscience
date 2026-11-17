@@ -68,17 +68,21 @@ const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><su
 const ID = new URLSearchParams(location.search).get('id') || '';
 const QBY = {}; QUESTIONS.forEach(q => QBY[q.id] = q);
 let A = null, W = null, RUN = null, booted = false;
+const within = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
 const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
 const ref = () => firebase.firestore().collection('users').doc(QE.user.uid);
 const saveW = () => ref().set({ work: { [ID]: W } }, { merge: true }).catch(e => console.warn('work save', e));
 
+let waited = false; setTimeout(() => { waited = true; boot(); }, 5000);
 async function boot() {
-  if (!QE.known || QE.status === 'loading') return;
+  if ((!QE.known || QE.status === 'loading') && !waited) return;
   if (!QE.user) { booted = false; $('main').innerHTML = `<div class="card"><h2>Sign in</h2><p>Sign in to do the work your teacher set.</p><p style="margin-top:12px"><button class="btn" id="si">Sign in with Google</button></p></div>`; $('si').onclick = () => QE.signIn().catch(() => {}); return; }
   if (booted) return; booted = true;
-  try { A = (await firebase.database().ref('school/assign/' + ID).once('value')).val(); } catch (e) { A = null; }
+  let failed = false;
+  try { A = (await within(firebase.database().ref('school/assign/' + ID).once('value'), 6000)).val(); } catch (e) { A = null; failed = true; }
+  if (failed) { booted = false; $('main').innerHTML = `<div class="card"><h2>Couldn't load the work</h2><p>The work your teacher set couldn't be reached just now (the school network may be blocking part of Firebase). Try reloading; if it keeps happening, tell your teacher.</p><p style="margin-top:12px"><button class="btn" onclick="location.reload()">Try again</button></p></div>`; return; }
   if (!A) { $('main').innerHTML = `<div class="card"><h2>Not found</h2><p>This piece of work doesn't exist any more. <a href="/today/">Back to My day</a></p></div>`; return; }
-  try { W = (((await ref().get()).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
+  try { W = (((await within(ref().get(), 5000)).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
   if (A.type === 'test') { if (W && W.done) results(); else intro(); }
   else practise();
 }

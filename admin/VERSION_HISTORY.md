@@ -2,6 +2,13 @@
 
 ---
 
+## [4.1.2] - 2026-11-17
+### Fixed
+- My day and set-work tests never wait forever: every database call has a time limit, the page always draws, and it says which part of Firebase couldn't be reached (to diagnose the school network)
+- Homepage footer → v4.1.2
+
+---
+
 ## [4.1.1] - 2026-11-17
 ### Fixed
 - My day no longer gets stuck on "Loading your day…" for students who had cleared their Breadventure Land moves (and now shows a short version instead of hanging if anything else goes wrong), so set work shows up

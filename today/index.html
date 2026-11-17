@@ -94,8 +94,22 @@ const strip = s => String(s || '').replace(/<[^>]+>/g, '');
 const Q = '/interactive/spec-quiz/';
 let drawn = false;
 
+/* nothing on this page may wait forever (17 Nov: students at school were stuck on "Loading your day…"):
+   every database call has a time limit, and what couldn't be reached is named at the bottom of the page */
+const SLOW = new Set();
+const within = (p, ms, label) => new Promise((ok, no) => {
+  const t = setTimeout(() => { SLOW.add(label); no(new Error('timeout: ' + label)); }, ms);
+  Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
+});
+let waited = false;
+setTimeout(() => { waited = true; if (!QE.known || QE.status === 'loading') SLOW.add('your account (Firestore)'); safeDraw(); drawSchool(); }, 5000);
+function slowNote() {
+  const n = $('slowNote'); if (n) n.remove();
+  if (!SLOW.size || !$('main')) return;
+  $('main').insertAdjacentHTML('beforeend', `<p id="slowNote" class="small muted" style="margin-top:16px">⚠️ Couldn't reach ${[...SLOW].join(', ')}. If this keeps happening at school, the school network is probably blocking part of Firebase — tell your teacher.</p>`);
+}
 async function draw() {
-  if (!QE.known || QE.status === 'loading') return;
+  if ((!QE.known || QE.status === 'loading') && !waited) return;
   const u = QE.user;
   if (!u) {
     $('main').innerHTML = `<div class="gate"><b>Sign in to see your day.</b> One Google account covers Cakebread Questing, Flashcards, the spec trackers and Breadventure Land. <button id="si">Sign in</button></div>
@@ -106,17 +120,18 @@ async function draw() {
   if (drawn) return; drawn = true;
   /* the account doc: flashcard reviews due + spec tracker ticks */
   let doc = {}, spec = {};
-  try { doc = (await firebase.firestore().collection('users').doc(u.uid).get()).data() || {}; } catch (e) {}
-  try { const s = await firebase.firestore().collection('specProgress').doc(u.uid).get(); spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; } catch (e) { spec = doc.specSubjects || {}; }
+  const fs = firebase.firestore(), rt0 = firebase.database();
+  const [dR, sR, lR] = await Promise.allSettled([
+    within(fs.collection('users').doc(u.uid).get(), 6000, 'your account (Firestore)'),
+    within(fs.collection('specProgress').doc(u.uid).get(), 6000, 'the spec trackers (Firestore)'),
+    within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => rt0.ref(p).once('value').then(x => x.val()))), 6000, 'Breadventure Land (Realtime Database)')]);
+  if (dR.status === 'fulfilled') doc = dR.value.data() || {};
+  if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; } else spec = doc.specSubjects || {};
   const now = Date.now(), prog = doc.progress || {};
   const due = Object.values(prog).filter(p => p && p.repetitions > 0 && p.nextReview <= now).length;
   /* Breadventure Land */
   let land = null;
-  try {
-    const rt = firebase.database();
-    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => rt.ref(p).once('value').then(x => x.val())));
-    land = { w, st, pb };
-  } catch (e) {}
+  if (lR.status === 'fulfilled') { const [w, st, pb] = lR.value; land = { w, st, pb }; }
 
   const st = QE.stats(), s = ADV.stats(), name = QE.boardName().split(' ')[0];
   const missionDone = QE.missionsToday() > 0, cd = QE.cardsToday(), cardsDone = !!(cd && cd.done);
@@ -179,7 +194,7 @@ async function draw() {
         <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Plain practice</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
       </div>
     </div>`;
-  drawSchool();
+  drawSchool(); slowNote();
 }
 /* from your teacher (17 Nov 2026): work set for your year + what's been covered in class (js/school.js, js/year.js) */
 let SCHOOL = null;
@@ -190,8 +205,11 @@ async function drawSchool() {
   if (hp) hp.insertAdjacentHTML('beforeend', y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>');
   if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
   if (!y) { box.innerHTML = ''; return; }
-  if (!SCHOOL) { try { SCHOOL = await CBSSchool.load(firebase.database()); } catch (e) { SCHOOL = { taught: {}, assign: {} }; } }
-  let udoc = {}; try { udoc = (await firebase.firestore().collection('users').doc(QE.user.uid).get()).data() || {}; } catch (e) {}
+  if (!SCHOOL) {
+    try { SCHOOL = await within(CBSSchool.load(firebase.database()), 6000, "your teacher's work (Realtime Database)"); }
+    catch (e) { console.warn('school', e); box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p>Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`; slowNote(); return; }
+  }
+  let udoc = {}; try { udoc = (await within(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000, 'your account (Firestore)')).data() || {}; } catch (e) {}
   const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
   const set = S.forYear(SCHOOL.assign, y);
   const secured = k => QE.pointState(k).secured;
@@ -212,6 +230,8 @@ async function drawSchool() {
   const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
   box.innerHTML = (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${setHtml}</div>` : '')
     + (taught.length ? `<div class="card covered"><h2>Covered in class</h2><p class="small muted" style="margin-bottom:8px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</div>` : '');
+  if (!set.length && !taught.length) box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p class="muted">Nothing set for Year ${y} right now.</p></div>`;
+  slowNote();
 }
 /* never leave a student on "Loading your day…": if anything above throws (odd saved data), show a simple page instead */
 function safeDraw() {
