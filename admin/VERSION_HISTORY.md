@@ -2,6 +2,14 @@
 
 ---
 
+## [4.1.1] - 2026-11-17
+### Fixed
+- My day no longer gets stuck on "Loading your day…" for students who had cleared their Breadventure Land moves (and now shows a short version instead of hanging if anything else goes wrong), so set work shows up
+- The same problem on the Breadventure Land map (other players' panel) and the admin Breadventure Land tab
+- Homepage footer → v4.1.1
+
+---
+
 ## [4.1.0] - 2026-11-17
 ### Teaching by year group, set work, games access and a way home from every page
 
