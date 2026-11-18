@@ -633,27 +633,24 @@ const DG = (() => {
     const [m, a, nm, na] = r.pick(r.hard ? pool : pool.concat(pool.filter(c => c[2] + c[3] === 2)));
     RING = r.pick(['pairs', 'pairs', 'single', 'spread']);
     const lose = EL[m].slice(-1)[0], gain = 8 - EL[a].slice(-1)[0], formula = fml(m, nm, a, na), tot = nm + na;
-    const mode = r.hard && tot <= 3 && r.f() < .5 ? 'form' : tot <= 3 && r.f() < .25 ? 'full' : 'outer';
+    const mode = r.hard && r.f() < .45 ? 'form' : tot <= 4 && r.f() < .25 ? 'full' : 'outer';
     const qMark = chg(lose, '+'), aMark = chg(gain, '−');
-    let svg, W;
-    if (mode === 'form') {   /* before → after: atoms with their outer electrons, an arrow, then the ions */
-      const atoms = [...Array(nm).fill(m), ...Array(na).fill(a)], gap = 14, before = atoms.map((s, i) => [s, i < nm]);
-      const wB = 39 * 2, wAm = 22 * 2 + 30, wAa = 39 * 2 + 30;
-      W = 30 + atoms.length * (wB + gap) + 70 + before.reduce((t, [, met]) => t + (met ? wAm : wAa) + gap, 0) + 10;
-      let g = '', x = 30;
-      before.forEach(([s, metal]) => { x += wB / 2; g += particle(x, 95, s, [EL[s].slice(-1)[0]], metal ? 0 : 1, 0, '', false).g; x += wB / 2 + gap; });
-      g += `<path d="M${x} 95h40" stroke="${INK}" stroke-width="2.5"/><path d="M${x + 48} 95l-10 -6v12z" fill="${INK}"/>`; x += 70;
-      before.forEach(([s, metal]) => { const ww = metal ? wAm : wAa; x += ww / 2 - 10; g += metal ? particle(x, 95, s, [0], 0, 0, qMark, false).g : particle(x, 95, s, [8], 1, gain, aMark, false).g; x += ww / 2 + 10 + gap; });
-      g += T(W - 10, 185, 'outer shells only', { size: 11, fill: '#555', a: 'end' });
-      svg = wrap(W, 195, g + `<g transform="translate(20 178)">${elec(0, -4, 0)}${T(8, 0, m, { size: 11, a: 'start' })}${elec(40, -4, 1)}${T(48, 0, a, { size: 11, a: 'start' })}</g>`);
-    } else {
-      const full = mode === 'full', big = nm >= na ? 'm' : 'a', small = big === 'm' ? 'a' : 'm', nb = Math.max(nm, na), ns = Math.min(nm, na), order = [];
-      for (let k = 0; k < nb; k++) { order.push(big); if (k < ns) order.push(small); }   // alternate, the bigger group first
-      const step = full ? 175 : 130; W = Math.max(380, order.length * step + 40); let g = '', x = W / 2 - (order.length - 1) * step / 2;
-      order.forEach(t => { const p = t === 'm' ? particle(x, 100, m, full ? EL[m].slice(0, -1) : [0], 0, 0, qMark, full) : particle(x, 100, a, full ? [...EL[a].slice(0, -1), 8] : [8], 1, gain, aMark, full); g += p.g; x += step; });
-      g += `<g transform="translate(${W / 2 - 110} ${full ? 205 : 185})">${elec(0, -4, 0)}${T(8, 0, `${m} electron`, { size: 11, a: 'start' })}${elec(110, -4, 1)}${T(118, 0, `${a} electron`, { size: 11, a: 'start' })}</g>`;
-      svg = wrap(W, full ? 215 : 195, g);
-    }
+    /* repeated ions are stacked in a column (3 Li⁺ one above another next to the N³⁻), so the picture stays big on a phone */
+    const ionM = () => particle(0, 0, m, mode === 'full' ? EL[m].slice(0, -1) : [0], 0, 0, qMark, mode === 'full'), ionA = () => particle(0, 0, a, mode === 'full' ? [...EL[a].slice(0, -1), 8] : [8], 1, gain, aMark, mode === 'full');
+    const atomM = () => particle(0, 0, m, [lose], 0, 0, '', false), atomA = () => particle(0, 0, a, [8 - gain], 1, 0, '', false);
+    /* two columns (metal, non-metal); a formation diagram puts the atoms above, an arrow, then the ions below, so it stays two columns wide */
+    const blocks = mode === 'form' ? [[[atomM, nm], [atomA, na]], [[ionM, nm], [ionA, na]]] : [[[ionM, nm], [ionA, na]]];
+    const Rk = blocks.map(bl => bl.map(([mk]) => mk().R)), colW = [0, 1].map(k => Math.max(...Rk.map(rr => 2 * rr[k] + 44)));
+    const blockH = blocks.map((bl, b) => Math.max(...bl.map(([, cnt], k) => cnt * (2 * Rk[b][k] + 18)))), Wd = colW[0] + colW[1] + 30, WW = Math.max(300, Wd);
+    let g = '', y = 14;
+    blocks.forEach((bl, b) => { const cy = y + blockH[b] / 2; let x = (WW - Wd) / 2 + 18;
+      bl.forEach(([mk, cnt], k) => { const st = 2 * Rk[b][k] + 18, cx = x + Rk[b][k] + 6; for (let i = 0; i < cnt; i++) g += `<g transform="translate(${cx.toFixed(1)} ${(cy + (i - (cnt - 1) / 2) * st).toFixed(1)})">${mk().g}</g>`; x += colW[k]; });
+      y += blockH[b];
+      if (b === 0 && blocks.length > 1) { g += `<path d="M${WW / 2} ${y + 6}v34" stroke="${INK}" stroke-width="2.5"/><path d="M${WW / 2} ${y + 48}l-7 -11h14z" fill="${INK}"/>`; y += 56; } });
+    const H0 = y - 14;
+    const legY = H0 + 40;
+    g += `<g transform="translate(${WW / 2 - 110} ${legY})">${elec(0, -4, 0)}${T(8, 0, `${m} electron`, { size: 12, a: 'start' })}${elec(110, -4, 1)}${T(118, 0, `${a} electron`, { size: 12, a: 'start' })}</g>` + (mode !== 'full' ? T(WW - 8, legY + 18, 'outer shells only', { size: 11, fill: '#555', a: 'end' }) : '');
+    const svg = wrap(WW, legY + 26, g);
     const q = r.int(0, 3), title = mode === 'form' ? 'Dot-and-cross: forming ions' : `Dot-and-cross: ionic${mode === 'full' ? ' (all shells)' : ''}`;
     const wrongF = [fml(m, 1, a, 1), fml(m, na, a, nm), fml(m, nm + 1, a, na), fml(m, nm, a, na + 1), fml(m, 1, a, 2), fml(m, 2, a, 1)].filter(f => f !== formula);
     if (q === 0) return { title, spec: 'C1.40', kind: 'diagram', svg, q: 'Which compound does this diagram show?', o: [formula, ...others(formula, [...new Set(wrongF)], r)], x: `${NAMES[m]} ${NAMES[a]}: each ${m} atom loses ${lose} electron${lose > 1 ? 's' : ''} and each ${a} atom gains ${gain}. Charges balance with ${nm} ${m}${qMark} to ${na} ${a}${aMark}: ${formula}.` };
@@ -678,8 +675,8 @@ const DG = (() => {
     'OF₂': { a: [['O', 2, 0], ['F', 3, 1], ['F', 3, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90]] }, 'SCl₂': { a: [['S', 2, 0], ['Cl', 3, 1], ['Cl', 3, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90]] },
     'CO₂': { a: [['C*', 0, 0], ['O', 2, 1], ['O', 2, 1]], b: [[0, 1, 2, 0], [0, 2, 2, 180]] },
     'HCN': { a: [['C', 0, 0], ['H', 0, 1], ['N', 1, 2]], b: [[0, 1, 1, 180], [0, 2, 3, 0]] },
-    'C₂H₄': { a: [['C', 0, 0], ['C', 0, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 2, 0], [0, 2, 1, 125], [0, 3, 1, 235], [1, 4, 1, 55], [1, 5, 1, 305]] },
-    'C₂H₆': { a: [['C', 0, 0], ['C', 0, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270], [1, 5, 1, 90], [1, 6, 1, 0], [1, 7, 1, 270]] },
+    'C₂H₄': { a: [['C', 0, 0], ['C', 0, 2], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 2, 0], [0, 2, 1, 125], [0, 3, 1, 235], [1, 4, 1, 55], [1, 5, 1, 305]] },
+    'C₂H₆': { a: [['C', 0, 0], ['C', 0, 2], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270], [1, 5, 1, 90], [1, 6, 1, 0], [1, 7, 1, 270]] },
     'CH₃Cl': { a: [['C', 0, 0], ['Cl', 3, 2], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270]] },
   };
   const MOL_NAME = { 'H₂': 'hydrogen', 'F₂': 'fluorine', 'Cl₂': 'chlorine', 'HF': 'hydrogen fluoride', 'HCl': 'hydrogen chloride', 'O₂': 'oxygen', 'N₂': 'nitrogen', 'H₂O': 'water', 'H₂S': 'hydrogen sulfide', 'NH₃': 'ammonia', 'PH₃': 'phosphine', 'CH₄': 'methane', 'SiH₄': 'silane', 'CCl₄': 'tetrachloromethane', 'SiCl₄': 'silicon tetrachloride', 'NCl₃': 'nitrogen trichloride', 'PCl₃': 'phosphorus trichloride', 'OF₂': 'oxygen difluoride', 'SCl₂': 'sulfur dichloride', 'CO₂': 'carbon dioxide', 'HCN': 'hydrogen cyanide', 'C₂H₄': 'ethene', 'C₂H₆': 'ethane', 'CH₃Cl': 'chloromethane' };
@@ -782,9 +779,553 @@ const DG = (() => {
     return { title, spec, kind: 'diagram', svg, q: `What do the arrows in a ${size === 'chain' ? 'food chain' : 'food web'} show?`, o: ['The direction energy is transferred', 'Which animal eats the arrow\'s target', 'The direction animals move', 'Where waste goes'], x: 'Arrows point from the food to the feeder: the direction biomass and energy are transferred.' };
   };
 
-  const MAKERS = [['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['fe', 'P1.23'], ['wave', 'P3.3'], ['reflect', 'P3.15'], ['ray', 'P3.16'], ['tir', 'P3.21'], ['sankey', 'P4.4'], ['circuit', 'P2.19'], ['iv', 'P2.10'], ['magnet', 'P6.4'], ['half', 'P7.13'],
-    ['atom', 'C1.22'], ['ionic', 'C1.40'], ['covalent', 'C1.46'], ['chrom', 'C1.12'], ['cool', 'C1.1'], ['rate', 'C3.10'], ['profile', 'C3.5'], ['table', 'C3.15'], ['displayed', 'C4.21'],
-    ['cell', 'B2.2'], ['enzyme', 'B2.10'], ['photo', 'B2.20'], ['punnett', 'B3.23'], ['pedigree', 'B3.24'], ['foodweb', 'B4.4'], ['pyramid', 'B4.7'], ['bars', '—']];
+  /* =================== round 7 (18 Nov evening): second set of diagrams, Double Award only =================== */
+  /* letters on parts: leader lines out to the left and right margins, lettered top to bottom so lines don't cross */
+  function letterParts(parts, keys, W, top, bot, opt = {}) {
+    const mid = opt.mid ?? W / 2, lx = opt.lx ?? 14, rx = opt.rx ?? W - 14, by = k => parts[k][1];
+    const left = keys.filter(k => parts[k][0] < mid).sort((a, b) => by(a) - by(b)), right = keys.filter(k => parts[k][0] >= mid).sort((a, b) => by(a) - by(b));
+    let g = '', li = 0; const letter = {};
+    [[left, lx, 1], [right, rx, -1]].forEach(([ks, x0, d]) => ks.forEach((k, i) => { const L = 'ABCDEFGH'[li++]; letter[k] = L; const ly = top + (i + .5) * (bot - top) / ks.length, [x, y] = parts[k];
+      g += `<line x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x0 + d * 13}" y2="${ly.toFixed(1)}" stroke="${INK}" stroke-width="1.2"/><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="${INK}"/>` + T(x0, ly + 6, L, { size: 16, w: 700 }); }));
+    return { g, letter };
+  }
+  /* the usual three questions on a labelled diagram: name the part, find the letter, or what it does */
+  function partQ(r, title, spec, svg, letter, keys, NAME, FN) {
+    const k = r.pick(keys), L = letter[k], q = r.int(0, FN && FN[k] ? 2 : 1), nm = NAME[k];
+    if (q === 0) return { title, spec, kind: 'diagram', svg, q: `What is part ${L}?`, o: [nm, ...others(nm, [...new Set(Object.values(NAME))], r)], x: `${L} is the ${nm}${FN && FN[k] ? ': ' + FN[k][0].toLowerCase() + FN[k].slice(1) : ''}.` };
+    if (q === 1) return { title, spec, kind: 'diagram', svg, q: `Which letter labels the ${nm}?`, o: [L, ...others(L, keys.map(x => letter[x]), r)], x: `The ${nm} is ${L}.` };
+    return { title, spec, kind: 'diagram', svg, q: `What does part ${L} do?`, o: [FN[k], ...others(FN[k], [...new Set(Object.values(FN))], r)], x: `${L} is the ${nm}.` };
+  }
+  /* a line graph that can go below zero */
+  function plot2({ xmin = 0, xmax, xstep, ymin = 0, ymax, ystep, xl, yl, series = [], marks = [], w = 400, h = 260, extra }) {
+    const L = 58, R = 16, Tp = 14, B = 42, px = x => L + (x - xmin) / (xmax - xmin) * (w - L - R), py = y => h - B - (y - ymin) / (ymax - ymin) * (h - Tp - B);
+    let g = '';
+    for (let k = 0; xmin + k * xstep / 2 <= xmax + 1e-9; k++) { const x = xmin + k * xstep / 2; g += `<line x1="${px(x)}" y1="${py(ymin)}" x2="${px(x)}" y2="${py(ymax)}" stroke="${GRID}" stroke-width="${k % 2 ? .5 : 1}"/>` + (k % 2 ? '' : T(px(x), py(ymin) + 15, n(x), { size: 11 })); }
+    for (let k = 0; ymin + k * ystep / 2 <= ymax + 1e-9; k++) { const y = ymin + k * ystep / 2; g += `<line x1="${px(xmin)}" y1="${py(y)}" x2="${px(xmax)}" y2="${py(y)}" stroke="${GRID}" stroke-width="${k % 2 ? .5 : 1}"/>` + (k % 2 ? '' : T(px(xmin) - 6, py(y) + 4, n(y), { size: 11, a: 'end' })); }
+    const y0 = ymin < 0 && ymax > 0 ? 0 : ymin;
+    g += `<line x1="${px(xmin)}" y1="${py(y0)}" x2="${px(xmax)}" y2="${py(y0)}" stroke="${INK}" stroke-width="1.6"/><line x1="${px(xmin)}" y1="${py(ymin)}" x2="${px(xmin)}" y2="${py(ymax)}" stroke="${INK}" stroke-width="1.6"/>`;
+    g += T((px(xmin) + px(xmax)) / 2, h - 8, xl, { size: 12, w: 600 }) + T(14, (py(ymin) + py(ymax)) / 2, yl, { size: 12, w: 600, rot: -90 });
+    series.forEach(s => { if (s.pts.length > 1 && !s.dotsOnly) g += `<polyline points="${s.pts.map(([x, y]) => px(x).toFixed(1) + ',' + py(y).toFixed(1)).join(' ')}" fill="none" stroke="${s.col || INK}" stroke-width="2.2"${s.dash ? ' stroke-dasharray="6 4"' : ''}/>`;
+      if (s.dots) s.dots.forEach(([x, y]) => { g += `<path d="M${px(x) - 4} ${py(y) - 4}l8 8M${px(x) + 4} ${py(y) - 4}l-8 8" stroke="${s.col || INK}" stroke-width="1.8"/>`; });
+      if (s.label) { const [x, y] = s.pts[s.lab ?? s.pts.length - 1]; g += T(px(x) + (s.dx || 6), py(y) - 7, s.label, { size: 13, w: 700, a: 'start', fill: s.col || INK }); } });
+    marks.forEach(([x, y, lab]) => { g += `<circle cx="${px(x)}" cy="${py(y)}" r="3.5" fill="${INK}"/>` + T(px(x) + 8, py(y) - 8, lab, { size: 13, w: 700, a: 'start' }); });
+    if (extra) g += extra(px, py);
+    return wrap(w, h, g);
+  }
+
+  /* ---------- particle diagrams: states of matter, or element / compound / mixture (C1.1, C1.8) ---------- */
+  M.particles = r => {
+    const box = (x, y, inner) => `<rect x="${x}" y="${y}" width="110" height="110" fill="#fff" stroke="${INK}" stroke-width="1.6"/>${inner}`;
+    const ball = (x, y, c, rad = 8) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad}" fill="${c}" stroke="${INK}"/>`;
+    const L = ['A', 'B', 'C', 'D'];
+    if (r.f() < .45) {   /* states */
+      const order = sh(['solid', 'liquid', 'gas'], r), col = r.pick(['#93c5fd', '#fca5a5', '#86efac', '#fde68a']); let g = '';
+      order.forEach((st, k) => { const x0 = 15 + k * 130, y0 = 15; let inner = '';
+        if (st === 'solid') for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) inner += ball(x0 + 19 + j * 18, y0 + 19 + i * 18, col);
+        else if (st === 'liquid') { const pts = []; for (let t = 0; pts.length < 18 && t < 3000; t++) { const p = [x0 + 12 + r.f() * 86, y0 + 50 + r.f() * 48]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 16.5 && Math.hypot(q[0] - p[0], q[1] - p[1]) < 60)) pts.push(p); } pts.forEach(p => { inner += ball(p[0], p[1], col); }); }
+        else { const pts = []; for (let t = 0; pts.length < 6 && t < 3000; t++) { const p = [x0 + 12 + r.f() * 86, y0 + 12 + r.f() * 86]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 34)) pts.push(p); } pts.forEach(p => { inner += ball(p[0], p[1], col); }); }
+        g += box(x0, y0, inner) + T(x0 + 55, y0 + 132, L[k], { size: 15, w: 700 }); });
+      const svg = wrap(405, 160, g), want = r.pick(['solid', 'liquid', 'gas']), ans = L[order.indexOf(want)], title = 'Particle diagrams: states';
+      if (r.int(0, 1)) return { title, spec: 'C1.1', kind: 'diagram', svg, q: `Which box shows a ${want}?`, o: [ans, ...L.slice(0, 3).filter(x => x !== ans)], x: { solid: 'A solid: particles touching in a regular pattern, vibrating in fixed positions.', liquid: 'A liquid: particles touching but arranged randomly, able to move past each other.', gas: 'A gas: particles far apart, moving quickly in all directions.' }[want] };
+      const from = r.pick(['solid', 'liquid']), to = from === 'solid' ? 'liquid' : 'gas', name = from === 'solid' ? 'melting' : 'boiling (or evaporating)';
+      return { title, spec: 'C1.2', kind: 'diagram', svg, q: `What is the change from box ${L[order.indexOf(from)]} to box ${L[order.indexOf(to)]} called?`, o: [name, ...others(name, ['melting', 'boiling (or evaporating)', 'freezing', 'condensing', 'subliming'], r)], x: `${from} → ${to} is ${name}: the particles gain energy and move further apart / more freely.` };
+    }
+    /* element / compound / mixture: four boxes of different kinds */
+    const C1 = '#60a5fa', C2 = '#f87171', C3 = '#374151';
+    const KINDS = { atoms: 'an element made of single atoms', diatomic: 'an element made of molecules', compound: 'a compound', mixEl: 'a mixture of two elements', mixElCpd: 'a mixture of an element and a compound', mixCpd: 'a mixture of two compounds' };
+    const fill = (x0, y0, kind) => { const units = []; const n0 = kind === 'atoms' ? 9 : 6;
+      for (let i = 0; i < n0; i++) units.push(kind === 'atoms' ? [[C1]] : kind === 'diatomic' ? [[C2, C2]] : kind === 'compound' ? [[C1, C3, C1]] : kind === 'mixEl' ? (i % 2 ? [[C1]] : [[C2, C2]]) : kind === 'mixElCpd' ? (i % 2 ? [[C2, C2]] : [[C1, C3]]) : (i % 2 ? [[C1, C3]] : [[C2, C2, C3]]));
+      const pts = []; for (let t = 0; pts.length < units.length && t < 4000; t++) { const p = [x0 + 22 + r.f() * 66, y0 + 16 + r.f() * 78]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 27)) pts.push(p); }
+      let s = ''; units.forEach((u, i) => { if (!pts[i]) return; const at0 = u[0], ang = r.f() * Math.PI, step = 12; at0.forEach((c, j) => { const off = (j - (at0.length - 1) / 2) * step; s += ball(pts[i][0] + Math.cos(ang) * off, pts[i][1] + Math.sin(ang) * off, c, 7.5); }); });
+      return s; };
+    const kinds = sh(Object.keys(KINDS), r).slice(0, 4); let g = '';
+    kinds.forEach((k, i) => { const x0 = 15 + i * 125, y0 = 15; g += box(x0, y0, fill(x0, y0, k)) + T(x0 + 55, y0 + 132, L[i], { size: 15, w: 700 }); });
+    const svg = wrap(520, 160, g), k = r.pick(kinds), ans = L[kinds.indexOf(k)];
+    return { title: 'Particle diagrams: elements, compounds, mixtures', spec: 'C1.8', kind: 'diagram', svg, q: `Each colour is a different kind of atom. Which box shows ${KINDS[k]}?`, o: [ans, ...L.filter(x => x !== ans)], x: { atoms: 'One kind of atom, not joined: an element.', diatomic: 'One kind of atom, joined in pairs: an element made of molecules.', compound: 'Every particle is the same, made of different atoms chemically joined: a compound.', mixEl: 'Two different elements, not joined to each other: a mixture.', mixElCpd: 'An element and a compound mixed but not joined: a mixture.', mixCpd: 'Two different compounds mixed together: a mixture.' }[k] };
+  };
+
+  /* ---------- separating mixtures: filtration, simple and fractional distillation, crystallisation (C1.10) ---------- */
+  function flask(x, y, rad) { return `<path d="M${x - 9} ${y - rad - 26}v24A${rad} ${rad} 0 1 0 ${x + 9} ${y - rad - 2}v-24" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M${x - rad * .93} ${y + 6}A${rad} ${rad} 0 0 0 ${x + rad * .93} ${y + 6}Z" fill="#bfdbfe" opacity=".8"/>`; }
+  function bunsen(x, y) { return `<path d="M${x - 16} ${y}h32l-4 -8h-24z" fill="#9ca3af" stroke="${INK}"/><rect x="${x - 5}" y="${y - 44}" width="10" height="36" fill="#d1d5db" stroke="${INK}"/><path d="M${x} ${y - 66}q-9 12 0 22q9 -10 0 -22z" fill="#60a5fa" stroke="#1d4ed8"/>`; }
+  function tripod(x, y, w = 70) { return `<path d="M${x - w / 2} ${y}h${w}M${x - w / 2 + 6} ${y}l-8 56M${x + w / 2 - 6} ${y}l8 56M${x} ${y}v56" stroke="${INK}" stroke-width="2"/><path d="M${x - w / 2 - 4} ${y - 3}h${w + 8}" stroke="#888" stroke-width="3" stroke-dasharray="3 2"/>`; }
+  M.separation = r => {
+    const kind = r.pick(['filtration', 'simple distillation', 'fractional distillation', 'crystallisation']);
+    let g = '', parts = {}, NAME = {}, FN = {}, W = 440, H = 300;
+    if (kind === 'filtration') {
+      g += `<path d="M150 60h100l-40 60v40h-20v-40z" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M160 66h80l-40 54z" fill="none" stroke="#888" stroke-dasharray="4 3"/><path d="M178 92q22 10 44 0l-22 28z" fill="#a16207" opacity=".7"/>`
+        + `<path d="M170 190h60v10l30 70h-120l30 -70z" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M146 252h108l8 18h-124z" fill="#bfdbfe"/><path d="M200 165v60" stroke="#60a5fa" stroke-width="2" stroke-dasharray="3 4"/>`;
+      parts = { funnel: [244, 70], paper: [168, 72], residue: [200, 100], filtrate: [205, 262], flask: [244, 240] };
+      NAME = { funnel: 'filter funnel', paper: 'filter paper', residue: 'residue', filtrate: 'filtrate', flask: 'conical flask' };
+      FN = { paper: 'Lets the liquid through but traps the insoluble solid', residue: 'The insoluble solid left behind', filtrate: 'The liquid (or solution) that passes through' };
+    } else if (kind === 'crystallisation') {
+      g += `<path d="M150 120q50 50 100 0z" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M160 128q40 32 80 0z" fill="#bfdbfe"/><path d="M188 131l4 -5 4 5zM205 133l4 -6 4 6z" fill="#3b82f6"/>` + tripod(200, 150) + bunsen(200, 270) + `<path d="M178 104q4 -10 -2 -20M200 100q4 -10 -2 -20M222 104q4 -10 -2 -20" fill="none" stroke="#9ca3af" stroke-width="1.5"/>`;
+      parts = { basin: [242, 124], solution: [215, 134], gauze: [158, 148], tripod: [240, 190], bunsen: [205, 238], steam: [221, 88] };
+      NAME = { basin: 'evaporating basin', solution: 'solution', gauze: 'gauze', tripod: 'tripod', bunsen: 'Bunsen burner', steam: 'water vapour' };
+      FN = { basin: 'Holds the solution while water evaporates', bunsen: 'Heats the solution to evaporate some of the water', steam: 'Water leaving as the solution is heated' };
+    } else {
+      const frac = kind === 'fractional distillation', fx = 110, fy = 200, topY = frac ? 70 : 125;
+      g += flask(fx, fy, 38) + `<path d="M${fx - 9} ${fy - 64}V${topY}h18V${fy - 64}" fill="#fff" stroke="${INK}" stroke-width="1.8"/>`;
+      if (frac) for (let i = 0; i < 9; i++) g += `<circle cx="${fx - 4 + (i % 2) * 8}" cy="${topY + 20 + i * 7}" r="3" fill="#e5e7eb" stroke="#888"/>`;
+      g += `<path d="M${fx} ${topY - 30}v52" stroke="#dc2626" stroke-width="2"/><rect x="${fx - 3}" y="${topY - 34}" width="6" height="8" fill="#fff" stroke="${INK}"/>`;   // thermometer
+      const sx = fx + 9, sy = topY + 8, ex = sx + 210, ey = sy + 90;   // side arm → condenser
+      const ang = Math.atan2(ey - sy, ex - sx), px = -Math.sin(ang) * 14, py = Math.cos(ang) * 14;
+      g += `<path d="M${sx} ${sy - 4}L${ex} ${ey - 4}M${sx} ${sy + 4}L${ex} ${ey + 4}" stroke="${INK}" stroke-width="1.8"/>`;
+      const c0 = .25, c1 = .8, P = t => [sx + (ex - sx) * t, sy + (ey - sy) * t];
+      const [a0, b0] = P(c0), [a1, b1] = P(c1);
+      g += `<path d="M${a0 + px} ${b0 + py}L${a1 + px} ${b1 + py}L${a1 - px} ${b1 - py}L${a0 - px} ${b0 - py}Z" fill="#dbeafe" stroke="${INK}" stroke-width="1.8" fill-opacity=".7"/>`;
+      g += `<path d="M${a1 + px} ${b1 + py}v18M${a0 - px} ${b0 - py}v-18" stroke="${INK}" stroke-width="5"/><path d="M${a1 + px} ${b1 + py}v18M${a0 - px} ${b0 - py}v-18" stroke="#fff" stroke-width="2"/>`;
+      g += `<path d="M${ex - 26} ${ey + 14}h52v48h-52z" fill="#fff" stroke="${INK}" stroke-width="1.8"/><rect x="${ex - 24}" y="${ey + 44}" width="48" height="17" fill="#bfdbfe"/>`;
+      g += tripod(fx, fy + 42, 80) + bunsen(fx, fy + 160);
+      const win = [a1 + px, b1 + py + 18], wout = [a0 - px, b0 - py - 18];
+      parts = { flask: [fx + 30, fy + 10], thermo: [fx + 2, topY - 26], condenser: [(a0 + a1) / 2 + px * .4, (b0 + b1) / 2 + py * .4], distillate: [ex + 10, ey + 52], bunsen: [fx + 4, fy + 120], win: win, wout: wout };
+      if (frac) parts.column = [fx + 9, topY + 40];
+      NAME = { flask: 'round-bottomed flask', thermo: 'thermometer', condenser: 'condenser', distillate: 'distillate', bunsen: 'Bunsen burner', win: 'cold water in', wout: 'water out', column: 'fractionating column' };
+      FN = { thermo: 'Measures the temperature of the vapour going into the condenser', condenser: 'Cools the vapour so it condenses back to a liquid', distillate: 'The liquid collected after condensing', column: 'Separates liquids with different boiling points', bunsen: 'Heats the mixture so the liquid boils' };
+      W = 460; H = 380;
+    }
+    let keys = sh(Object.keys(parts), r).slice(0, 4);
+    if (kind.includes('distillation') && r.f() < .5) keys = sh(['win', 'wout', ...keys.filter(k => k !== 'win' && k !== 'wout')].slice(0, 4), r);
+    const { g: lg, letter } = letterParts(parts, keys, W, 30, H - 20, { mid: kind.includes('distillation') ? 150 : W / 2 });
+    const svg = wrap(W, H, g + lg), title = 'Separating mixtures';
+    if (keys.includes('win') && keys.includes('wout') && r.f() < .6) return { title, spec: 'C1.10', kind: 'diagram', svg, q: 'Where should the cold water go into the condenser?', o: [letter.win, letter.wout, 'Either: it makes no difference', 'Through the top of the flask'], x: `Water goes in at the bottom (${letter.win}) and out at the top, so the condenser jacket stays completely full of cold water.` };
+    if (r.f() < .35) { const t = kind; return { title, spec: 'C1.10', kind: 'diagram', svg, q: 'Which separation technique does this apparatus show?', o: [t, ...others(t, ['filtration', 'simple distillation', 'fractional distillation', 'crystallisation', 'paper chromatography'], r)], x: { filtration: 'A funnel and filter paper: filtration separates an insoluble solid from a liquid.', crystallisation: 'Heating a solution in an evaporating basin to drive off water: crystallisation.', 'simple distillation': 'Boil, then condense the vapour: simple distillation separates a liquid from a solution.', 'fractional distillation': 'A fractionating column between the flask and condenser: fractional distillation separates liquids with different boiling points.' }[t] }; }
+    return partQ(r, title, 'C1.10', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- displacement results table → reactivity order (C2.16) ---------- */
+  M.displace = r => {
+    const names = r.pick([['W', 'X', 'Y', 'Z'], ['P', 'Q', 'R', 'S'], ['magnesium', 'zinc', 'iron', 'copper'], ['zinc', 'iron', 'copper', 'silver']]), real = names[0].length > 1;
+    const order = real ? names.slice() : sh(names, r);   // most reactive first
+    const salt = m => real ? { magnesium: 'magnesium sulfate', zinc: 'zinc sulfate', iron: 'iron(II) sulfate', copper: 'copper(II) sulfate', silver: 'silver nitrate' }[m] : `${m} nitrate`;
+    const cols = sh(names, r), rows = sh(names, r);
+    let g = ''; const cw = 92, x0 = 108, y0 = 10, rh = 30;
+    g += `<rect x="${x0 - 98}" y="${y0}" width="98" height="${rh * 1.4}" fill="#eeeae0" stroke="${INK}"/>` + T(x0 - 49, y0 + 18, 'metal ↓', { size: 10 }) + T(x0 - 49, y0 + 33, 'solution →', { size: 10 });
+    cols.forEach((c, j) => { g += `<rect x="${x0 + j * cw}" y="${y0}" width="${cw}" height="${rh * 1.4}" fill="#eeeae0" stroke="${INK}"/>` + T(x0 + j * cw + cw / 2, y0 + 18, salt(c).split(' ').slice(0, -1).join(' '), { size: 11, w: 700 }) + T(x0 + j * cw + cw / 2, y0 + 33, salt(c).split(' ').slice(-1)[0], { size: 10 }); });
+    rows.forEach((m, i) => { const y = y0 + rh * 1.4 + i * rh; g += `<rect x="${x0 - 98}" y="${y}" width="98" height="${rh}" fill="#eeeae0" stroke="${INK}"/>` + T(x0 - 49, y + 20, m, { size: 12, w: 700 });
+      cols.forEach((c, j) => { const v = m === c ? '—' : order.indexOf(m) < order.indexOf(c) ? '✓' : '✗'; g += `<rect x="${x0 + j * cw}" y="${y}" width="${cw}" height="${rh}" fill="#fff" stroke="${INK}"/>` + T(x0 + j * cw + cw / 2, y + 21, v, { size: 16, w: 700, fill: v === '✓' ? '#16a34a' : v === '✗' ? '#dc2626' : '#888' }); }); });
+    const svg = wrap(x0 + 4 * cw + 10, y0 + rh * 1.4 + 4 * rh + 22, g + T(x0 - 96, y0 + rh * 5.4 + 16, '✓ = reaction (the metal displaces the other metal)    ✗ = no reaction', { size: 10, a: 'start' })), title = 'Displacement reactions';
+    const ord = order.join(', '), q = r.int(0, 2);
+    if (q === 0) { const wrong = [order.slice().reverse().join(', '), [order[1], order[0], order[2], order[3]].join(', '), [order[0], order[2], order[1], order[3]].join(', '), [order[0], order[1], order[3], order[2]].join(', ')]; return { title, spec: 'C2.16', kind: 'table', svg, q: 'What is the order of reactivity, most reactive first?', o: [ord, ...others(ord, wrong, r)], x: `A metal displaces any metal less reactive than itself. ${order[0]} reacts with all three other solutions, ${order[3]} with none: ${ord}.` }; }
+    if (q === 1) return { title, spec: 'C2.16', kind: 'table', svg, q: 'Which metal is the least reactive?', o: [order[3], ...order.slice(0, 3)], x: `${order[3]} doesn't displace any of the others (all ✗).` };
+    const a = r.int(0, 2), b = r.int(a + 1, 3); return { title, spec: 'C2.16', kind: 'table', svg, q: `Will ${order[b]} react with a solution of ${salt(order[a])}?`, o: [`No: ${order[b]} is less reactive than ${order[a]}`, `Yes: ${order[b]} is more reactive than ${order[a]}`, 'Yes: all metals react with salt solutions', `Only if it is heated`], x: `Look along the ${order[b]} row: the ${salt(order[a])} column is ✗. A less reactive metal can't displace a more reactive one.` };
+  };
+
+  /* ---------- gas syringes: percentage of oxygen in air (C2.10, C2.14) ---------- */
+  function syringe(x, y, vol, max, step) {   // horizontal gas syringe; plunger at vol on a scale 0…max
+    const len = 220, px = v => x + v / max * len; let s = `<rect x="${x}" y="${y}" width="${len + 10}" height="30" fill="#f8fafc" stroke="${INK}" stroke-width="1.6"/><rect x="${x}" y="${y + 3}" width="${px(vol) - x}" height="24" fill="#e0f2fe"/>`;
+    const labEvery = [10, 20, 25, 50].find(L => max / L <= 6 && Math.abs(L / step - Math.round(L / step)) < 1e-9) || 50;
+    for (let k = 0; k * step <= max + 1e-9; k++) { const v = k * step, lab = Math.abs(v / labEvery - Math.round(v / labEvery)) < 1e-9, mid = k % 5 === 0; s += `<line x1="${px(v)}" y1="${y}" x2="${px(v)}" y2="${y + (lab ? 12 : mid ? 9 : 6)}" stroke="${INK}"/>` + (lab ? T(px(v), y - 4, n(v), { size: 11 }) : ''); }
+    s += `<rect x="${px(vol) - 3}" y="${y + 2}" width="6" height="26" fill="#475569"/><rect x="${px(vol)}" y="${y + 12}" width="${x + len + 40 - px(vol)}" height="6" fill="#94a3b8"/><rect x="${x + len + 40}" y="${y + 2}" width="8" height="26" fill="#475569"/>`;
+    return s;
+  }
+  M.airO2 = r => {
+    const max = r.pick([100, 100, 120, 150]), step = max === 150 ? 5 : r.pick([2, 5]), start = r.pick([80, 90, 100].filter(v => v < max)), pct = r.pick([20, 21]), end = Math.round(start * (100 - pct) / 100 / step) * step, used = start - end, p = used / start * 100;
+    let g = T(10, 26, 'Before heating the copper:', { size: 12, w: 700, a: 'start' }) + syringe(30, 46, start, max, step) + T(10, 118, 'After heating, cooled to room temperature:', { size: 12, w: 700, a: 'start' }) + syringe(30, 138, end, max, step) + T(310, 200, 'volume of air (cm³)', { size: 11, a: 'end' });
+    const svg = wrap(320, 210, g), title = 'Oxygen in the air';
+    return r.int(0, 1) ? { title, spec: 'C2.14', kind: 'diagram', svg, q: 'Air was passed over hot copper until the volume stopped changing. What percentage of the air was oxygen?', o: [n(p) + '%', ...uniq(n(p), [used, end / start * 100, used / end * 100, 100 - p].map(n)).map(v => v + '%')], x: `Oxygen used = ${start} − ${end} = ${used} cm³. ${used} ÷ ${start} × 100 = ${n(p)}%.` }
+      : { title, spec: 'C2.14', kind: 'diagram', svg, q: 'What volume of oxygen reacted with the copper?', o: [used + ' cm³', ...uniq(used, [end, start, start + end, used + step]).map(v => v + ' cm³')], x: `Read both syringes: ${start} cm³ − ${end} cm³ = ${used} cm³ of oxygen used up.` };
+  };
+
+  /* ---------- thermometers and calorimetry (C3.2, C3.3) ---------- */
+  function thermo(x, y, val, lo, hi, step, label) {   // vertical liquid thermometer, scale lo…hi, minor ticks every step
+    const h = 200, py = v => y + h - (v - lo) / (hi - lo) * h; let s = `<rect x="${x - 7}" y="${y - 8}" width="14" height="${h + 16}" rx="7" fill="#fff" stroke="${INK}" stroke-width="1.6"/><circle cx="${x}" cy="${y + h + 18}" r="12" fill="#dc2626" stroke="${INK}" stroke-width="1.6"/><rect x="${x - 2.5}" y="${py(val)}" width="5" height="${y + h + 10 - py(val)}" fill="#dc2626"/>`;
+    for (let k = 0; lo + k * step <= hi + 1e-9; k++) { const v = lo + k * step, big = k % 5 === 0; s += `<line x1="${x + 7}" y1="${py(v).toFixed(1)}" x2="${x + (big ? 17 : 12)}" y2="${py(v).toFixed(1)}" stroke="${INK}"/>` + (big ? T(x + 20, py(v) + 4, n(v), { size: 10, a: 'start' }) : ''); }
+    return s + (label ? T(x, y - 16, label, { size: 12, w: 700 }) : '');
+  }
+  M.calorim = r => {
+    const step = r.pick([0.5, 1, 2]), lo = r.pick([10, 15, 20]), hi = lo + step * 25, t0 = lo + step * r.int(3, 8), dir = r.f() < .7 ? 1 : -1, dT = step * r.int(4, 14) * dir, t1 = Math.min(hi, Math.max(lo, t0 + dT)), d = t1 - t0, m = r.pick([25, 50, 100]), c = 4.2;
+    const g = thermo(90, 40, t0, lo, hi, step, 'start') + thermo(240, 40, t1, lo, hi, step, dir > 0 ? 'highest' : 'lowest') + T(170, 296, '°C', { size: 12 });
+    const svg = wrap(340, 305, g), Q = m * c * Math.abs(d), title = 'Calorimetry', what = r.pick(['two solutions were mixed', 'a solid dissolved in the water', 'the acid was neutralised']), q = r.int(0, 2);
+    if (q === 0) return { title, spec: 'C3.2', kind: 'diagram', svg, q: `The thermometers show the temperature before and after ${what}. What was the temperature change?`, o: [(d > 0 ? '+' : '−') + n(Math.abs(d)) + ' °C', ...uniq(n(Math.abs(d)), [Math.abs(d) + step, Math.abs(d) - step, t1, Math.abs(d) * 2].map(n)).map(v => (d > 0 ? '+' : '−') + v + ' °C')], x: `${n(t1)} − ${n(t0)} = ${d > 0 ? '+' : '−'}${n(Math.abs(d))} °C. Each small division is ${step} °C.` };
+    if (q === 1) return { title, spec: 'C3.1', kind: 'diagram', svg, q: `Was the change exothermic or endothermic?`, o: [d > 0 ? 'Exothermic: the temperature went up' : 'Endothermic: the temperature went down', d > 0 ? 'Endothermic: the temperature went up' : 'Exothermic: the temperature went down', 'Neither: no energy was transferred', 'You can\'t tell from temperatures'], x: d > 0 ? 'Heat energy was given out to the water, so it got warmer: exothermic.' : 'Heat energy was taken in from the water, so it got colder: endothermic.' };
+    return { title, spec: 'C3.3', kind: 'diagram', svg, q: `${m} g of water was used (c = 4.2 J/g °C). How much heat energy was transferred?`, o: [n(Q) + ' J', ...uniq(n(Q), [m * Math.abs(d), Q / 1000, m * c * t1, Q * 2].map(n)).map(v => v + ' J')], x: `Q = mcΔT = ${m} × 4.2 × ${n(Math.abs(d))} = ${n(Q)} J.` };
+  };
+
+  /* ---------- fractional distillation of crude oil (C4.8, C4.9) ---------- */
+  M.fraccol = r => {
+    const F = [['refinery gases', 'bottled gas for heating and cooking'], ['gasoline', 'fuel for cars'], ['kerosene', 'fuel for aircraft'], ['diesel', 'fuel for some cars and trains'], ['fuel oil', 'fuel for ships and power stations'], ['bitumen', 'surfacing roads and roofs']];
+    const x = 170, top = 30, bot = 300; let g = `<path d="M${x - 40} ${bot}V${top + 20}q40 -30 80 0V${bot}z" fill="#f1f5f9" stroke="${INK}" stroke-width="2"/>`;
+    const ys = F.map((_, i) => top + 18 + i * (bot - top - 30) / 5);
+    ys.forEach((y, i) => { g += `<path d="M${x + 40} ${y}h70" stroke="${INK}" stroke-width="6"/><path d="M${x + 40} ${y}h70" stroke="#fff" stroke-width="3"/>` + arrowHead(x + 122, y, 0, INK, 9); if (i > 0 && i < 6) g += `<path d="M${x - 40} ${y - 14}h80" stroke="#94a3b8" stroke-dasharray="4 3"/>`; });
+    g += `<path d="M20 ${bot - 22}h${x - 60}" stroke="${INK}" stroke-width="7"/><path d="M20 ${bot - 22}h${x - 60}" stroke="#fde68a" stroke-width="4"/>` + T(22, bot - 32, 'crude oil vapour', { size: 11, a: 'start' }) + `<rect x="25" y="${bot - 12}" width="80" height="22" fill="#fca5a5" stroke="${INK}"/>` + T(65, bot + 3, 'heater', { size: 11 });
+    const showT = r.f() < .5; if (showT) g += T(x - 46, top + 30, '25 °C', { size: 11, a: 'end' }) + T(x - 46, bot - 62, '350 °C', { size: 11, a: 'end' });
+    const L = ['A', 'B', 'C', 'D', 'E', 'F']; ys.forEach((y, i) => { g += T(x + 136, y + 5, L[i], { size: 15, w: 700, a: 'start' }); });
+    const svg = wrap(340, 320, g), title = 'Fractional distillation of crude oil', i = r.int(0, 5), q = r.int(0, 3);
+    if (q === 0) return { title, spec: 'C4.9', kind: 'diagram', svg, q: `Which fraction is collected at ${L[i]}?`, o: [F[i][0], ...others(F[i][0], F.map(f => f[0]), r)], x: `From the top: refinery gases, gasoline, kerosene, diesel, fuel oil, bitumen. ${L[i]} is ${F[i][0]}.` };
+    if (q === 1) return { title, spec: 'C4.9', kind: 'diagram', svg, q: `What is the fraction collected at ${L[i]} used for?`, o: [F[i][1], ...others(F[i][1], F.map(f => f[1]), r)], x: `${L[i]} is ${F[i][0]}: ${F[i][1]}.` };
+    if (q === 2) return { title, spec: 'C4.8', kind: 'diagram', svg, q: 'Which fraction has the highest boiling point?', o: ['F', 'A', 'C', 'D'], x: 'The column is hottest at the bottom. Fractions with the biggest molecules and highest boiling points condense low down and leave at the bottom (F, bitumen).' };
+    return { title, spec: 'C4.8', kind: 'diagram', svg, q: 'Why do different fractions leave the column at different heights?', o: ['They have different boiling points, and the column is cooler higher up', 'Heavier molecules float to the top', 'Each fraction is made by a different reaction', 'The column is hottest at the top'], x: 'Vapour rises and cools. Each fraction condenses where the temperature drops below its boiling point.' };
+  };
+
+  /* ---------- pH and universal indicator (C2.29, C2.30) ---------- */
+  const UI = ['#dc2626', '#ef4444', '#f97316', '#fb923c', '#fbbf24', '#facc15', '#d9f99d', '#4ade80', '#22c55e', '#14b8a6', '#3b82f6', '#2563eb', '#4f46e5', '#6d28d9', '#7c3aed'];
+  const pHclass = p => p <= 3 ? 'strongly acidic' : p <= 6 ? 'weakly acidic' : p === 7 ? 'neutral' : p <= 10 ? 'weakly alkaline' : 'strongly alkaline';
+  M.ph = r => {
+    let g = ''; for (let p = 0; p <= 14; p++) g += `<rect x="${20 + p * 26}" y="20" width="26" height="30" fill="${UI[p]}" stroke="${INK}" stroke-width=".8"/>` + T(33 + p * 26, 66, p, { size: 11 });
+    g += T(20, 84, 'pH', { size: 11, a: 'start' });
+    const sols = sh([1, 2, 4, 5, 7, 9, 10, 12, 13, 14, 3, 6, 8, 11], r).slice(0, 4).sort((a, b) => a - b), tubes = sh(sols, r), L = ['A', 'B', 'C', 'D'];
+    tubes.forEach((p, i) => { const x = 60 + i * 85; g += `<path d="M${x - 14} 100v90a14 14 0 0 0 28 0v-90" fill="#fff" stroke="${INK}" stroke-width="1.6"/><path d="M${x - 12} 140v50a12 12 0 0 0 24 0v-50z" fill="${UI[p]}"/>` + T(x, 228, L[i], { size: 15, w: 700 }); });
+    const svg = wrap(430, 240, g), title = 'Universal indicator', want = r.pick(['strongly acidic', 'weakly acidic', 'neutral', 'weakly alkaline', 'strongly alkaline'].filter(c => tubes.some(p => pHclass(p) === c)));
+    const ansI = tubes.findIndex(p => pHclass(p) === want), ans = L[ansI];
+    if (r.int(0, 1)) return { title, spec: 'C2.29', kind: 'diagram', svg, q: `Universal indicator was added to four solutions. Which one is ${want}?`, o: [ans, ...L.filter(x => x !== ans)], x: `Match each colour to the chart: ${L[ansI]} is about pH ${tubes[ansI]}, which is ${want} (strongly acidic 0–3, weakly acidic 4–6, neutral 7, weakly alkaline 8–10, strongly alkaline 11–14).` };
+    const i = r.int(0, 3), p = tubes[i]; return { title, spec: 'C2.30', kind: 'diagram', svg, q: `What is the approximate pH of solution ${L[i]}?`, o: [String(p), ...uniq(p, [14 - p, p + 3, p - 3, 7].filter(v => v >= 0 && v <= 14 && Math.abs(v - p) > 1)).map(String)], x: `Match the colour of ${L[i]} to the chart: about pH ${p} (${pHclass(p)}).` };
+  };
+
+  /* ---------- atoms: protons, neutrons and electrons (C1.15, C1.16, P7.2, P7.3) ---------- */
+  const ISO = [['H', 1, [1, 2, 3]], ['He', 2, [4, 3]], ['Li', 3, [7, 6]], ['Be', 4, [9]], ['B', 5, [11, 10]], ['C', 6, [12, 13, 14]], ['N', 7, [14, 15]], ['O', 8, [16, 18]], ['F', 9, [19]], ['Ne', 10, [20, 22]]];
+  M.nucleus = r => {
+    const [sym, Z, As] = r.pick(ISO), A = r.pick(As), N = A - Z, cx = 160, cy = 140;
+    const nuc = sh([...Array(Z).fill('p'), ...Array(N).fill('n')], r); let g = '';
+    const rr = 7.5, pts = []; for (let i = 0; i < nuc.length; i++) { const a = i * 2.39996, d = rr * 1.16 * Math.sqrt(i); pts.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d]); }
+    const shells = config(Z); shells.forEach((c, k) => { const rad = 58 + k * 28; g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#999"/>`; for (let i = 0; i < c; i++) { const a = i / c * 2 * Math.PI - Math.PI / 2; g += `<circle cx="${(cx + Math.cos(a) * rad).toFixed(1)}" cy="${(cy + Math.sin(a) * rad).toFixed(1)}" r="5" fill="#1e3a8a"/>` + T((cx + Math.cos(a) * rad).toFixed(1), (cy + Math.sin(a) * rad + 3.5).toFixed(1), '−', { size: 9, w: 700, fill: '#fff' }); } });
+    nuc.forEach((t, i) => { const [x, y] = pts[i]; g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr}" fill="${t === 'p' ? '#ef4444' : '#d1d5db'}" stroke="${INK}"/>` + (t === 'p' ? T(x.toFixed(1), (y + 4).toFixed(1), '+', { size: 10, w: 700, fill: '#fff' }) : ''); });
+    g += `<g transform="translate(300 60)"><circle r="7" fill="#ef4444" stroke="${INK}"/>${T(0, 4, '+', { size: 10, w: 700, fill: '#fff' })}${T(14, 4, 'proton', { size: 12, a: 'start' })}<circle cy="26" r="7" fill="#d1d5db" stroke="${INK}"/>${T(14, 30, 'neutron', { size: 12, a: 'start' })}<circle cy="52" r="5" fill="#1e3a8a"/>${T(14, 56, 'electron', { size: 12, a: 'start' })}</g>`;
+    const svg = wrap(400, 280, g), title = 'Inside an atom', q = r.int(0, 3), ELEM = ELN[Z - 1];
+    if (q === 0) return { title, spec: 'C1.16', kind: 'diagram', svg, q: 'What is the mass number of this atom?', o: [String(A), ...uniq(A, [Z, N, A + Z, Z + shells.length, A - 1, A + 1, 2 * A, A + 2, A + 3]).map(String)], x: `Mass number = protons + neutrons = ${Z} + ${N} = ${A}.` };
+    if (q === 1) return { title, spec: 'C1.16', kind: 'diagram', svg, q: 'Which element is this?', o: [ELEM, ...others(ELEM, ISO.map(e => ELN[e[1] - 1]), r)], x: `${Z} proton${Z > 1 ? 's' : ''}: atomic number ${Z} is ${ELEM}. (The number of neutrons doesn't change the element.)` };
+    if (q === 2) { const ans = `<span class="nuc"><sup>${A}</sup><sub>${Z}</sub>${sym}</span>`; return { title, spec: 'P7.2', kind: 'diagram', svg, q: 'Which symbol describes this atom?', o: [ans, `<span class="nuc"><sup>${Z}</sup><sub>${A}</sub>${sym}</span>`, `<span class="nuc"><sup>${N}</sup><sub>${Z}</sub>${sym}</span>`, `<span class="nuc"><sup>${A + Z}</sup><sub>${Z}</sub>${sym}</span>`, `<span class="nuc"><sup>${A}</sup><sub>${A - Z || Z + 1}</sub>${sym}</span>`, `<span class="nuc"><sup>${A + 1}</sup><sub>${Z}</sub>${sym}</span>`].filter((v, k, a) => a.indexOf(v) === k).slice(0, 4), x: `Mass number (top) = ${A}, atomic number (bottom) = ${Z}.` }; }
+    const other = As.find(a => a !== A); if (!other) return { title, spec: 'C1.15', kind: 'diagram', svg, q: 'What is the overall charge of this atom?', o: ['0: equal numbers of protons and electrons', `+${Z}`, `−${Z}`, `+${A}`], x: `${Z} protons (+) and ${Z} electrons (−) cancel: the atom is neutral.` };
+    return { title, spec: 'C1.16', kind: 'diagram', svg, q: `Another atom of ${ELEM} has mass number ${other}. How many neutrons does it have?`, o: [String(other - Z), ...uniq(other - Z, [other, N, Z, other + Z]).map(String)], x: `Isotopes have the same number of protons (${Z}) but different numbers of neutrons: ${other} − ${Z} = ${other - Z}.` };
+  };
+  /* ---------- the heart, front view (B2.65, B2.69) ---------- */
+  M.heart = r => {
+    const plain = r.f() < .5, BL = plain ? '#e5e7eb' : '#bfdbfe', RD = plain ? '#e5e7eb' : '#fecaca', WALL = plain ? '#f8fafc' : '#fde2e4';
+    const shrink = (d, cx, cy, k) => `<path d="${d}" transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})"`;
+    const tube = (d, c, w = 22) => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 4}" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
+    const RA = 'M50 110Q50 84 76 84H150V178H50Z', LA = 'M210 84H284Q310 84 310 110V178H210Z';
+    const RV = 'M50 188H174V318Q122 312 82 272Q50 238 50 188Z', LV = 'M186 188H312Q312 262 264 300Q230 326 186 322Z';
+    let g = tube('M94 0V100', BL) + tube('M196 196V50Q196 22 228 22H300Q332 22 332 54V100', RD) + tube('M378 140H296', RD, 20) + tube('M163 196V60Q163 42 145 42H0', BL);
+    [[RA, 100, 131, .8, BL], [LA, 260, 131, .8, RD], [RV, 112, 240, .8, BL], [LV, 248, 244, .62, RD]].forEach(([d, cx, cy, k, c]) => { g += `<path d="${d}" fill="${WALL}" stroke="${INK}" stroke-width="2"/>` + shrink(d, cx, cy, k) + ` fill="${c}" stroke="${INK}" stroke-width="1.2"/>`; });
+    g += `<path d="M180 186v138" stroke="${INK}" stroke-width="7"/><path d="M180 186v138" stroke="${WALL}" stroke-width="4"/>`;   // septum
+    g += `<path d="M70 176l20 22M130 176l-20 22M230 176l20 22M290 176l-20 22" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;   // valves between atria and ventricles
+    if (!plain) g += arrow(94, 10, 94, 60, '#1d4ed8', 2) + arrow(163, 120, 163, 70, '#1d4ed8', 2) + arrow(60, 42, 20, 42, '#1d4ed8', 2) + arrow(372, 140, 330, 140, '#b91c1c', 2) + arrow(196, 120, 196, 66, '#b91c1c', 2) + arrow(332, 60, 332, 94, '#b91c1c', 2);
+    const parts = { ra: [90, 140], la: [268, 140], rv: [100, 250], lv: [258, 244], aorta: [270, 22], pa: [40, 42], vc: [94, 70], pv: [356, 140], septum: [180, 290], valve: [80, 187] };
+    const NAME = { ra: 'right atrium', la: 'left atrium', rv: 'right ventricle', lv: 'left ventricle', aorta: 'aorta', pa: 'pulmonary artery', vc: 'vena cava', pv: 'pulmonary vein', septum: 'septum', valve: 'valve' };
+    const FN = { aorta: 'Carries oxygenated blood from the heart to the body', pa: 'Carries deoxygenated blood from the heart to the lungs', vc: 'Brings deoxygenated blood back from the body', pv: 'Brings oxygenated blood back from the lungs', valve: 'Stops blood flowing backwards', septum: 'Keeps oxygenated and deoxygenated blood apart', lv: 'Pumps blood out to the whole body' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), W = 380, { g: lg, letter } = letterParts(parts, keys, W, 20, 310, { lx: -40, rx: 420, mid: 180 });
+    const svg = `<svg viewBox="-60 -4 500 334" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The heart';
+    if (plain && r.f() < .3) { const ox = keys.filter(k => ['la', 'lv', 'aorta', 'pv'].includes(k)), de = keys.filter(k => ['ra', 'rv', 'pa', 'vc'].includes(k)); if (ox.length && de.length >= 2) { const k = r.pick(ox); return { title, spec: 'B2.65', kind: 'diagram', svg, q: 'Which of these labels a part that carries oxygenated blood?', o: [letter[k], ...others(letter[k], de.map(x => letter[x]), r)], x: `The left side of the heart (on the right of the picture, as you face the person) carries oxygenated blood from the lungs: ${letter[k]} is the ${NAME[k]}.` }; } }
+    if (r.f() < .2) return { title, spec: 'B2.65', kind: 'diagram', svg, q: 'Why does the left ventricle have a thicker wall than the right ventricle?', o: ['It pumps blood all round the body, so it needs more force', 'It holds more blood', 'It carries deoxygenated blood', 'It pumps blood only to the lungs'], x: 'The left ventricle pumps blood to the whole body at high pressure; the right only pumps to the nearby lungs.' };
+    return partQ(r, title, 'B2.65', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- the eye, side section (B2.91, B2.92) ---------- */
+  M.eye = r => {
+    const flip = r.int(0, 1), W = 420, cx = 225, cy = 150, R = 105, X = x => flip ? W - x : x;
+    let g = `<circle cx="${X(cx)}" cy="${cy}" r="${R}" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M${X(cx - 72)} ${cy - 76}A${R - 7} ${R - 7} 0 1 ${flip ? 0 : 1} ${X(cx - 72)} ${cy + 76}" fill="none" stroke="#dc2626" stroke-width="3"/>`;   // sclera + retina
+    g += `<path d="M${X(cx - 92)} ${cy - 50}Q${X(cx - 140)} ${cy} ${X(cx - 92)} ${cy + 50}" fill="#e0f2fe" stroke="${INK}" stroke-width="2"/>`;   // cornea
+    g += `<path d="M${X(cx - 98)} ${cy - 46}L${X(cx - 98)} ${cy - 15}M${X(cx - 98)} ${cy + 15}L${X(cx - 98)} ${cy + 46}" stroke="#7c3aed" stroke-width="6"/>`;   // iris
+    g += `<ellipse cx="${X(cx - 75)}" cy="${cy}" rx="15" ry="38" fill="#fef9c3" stroke="${INK}" stroke-width="2"/>`;   // lens
+    g += `<path d="M${X(cx - 75)} ${cy - 38}L${X(cx - 72)} ${cy - 68}M${X(cx - 75)} ${cy + 38}L${X(cx - 72)} ${cy + 68}" stroke="#555" stroke-width="1.4" stroke-dasharray="2 2"/>`;   // suspensory ligaments
+    g += `<ellipse cx="${X(cx - 70)}" cy="${cy - 76}" rx="9" ry="7" fill="#fca5a5" stroke="${INK}"/><ellipse cx="${X(cx - 70)}" cy="${cy + 76}" rx="9" ry="7" fill="#fca5a5" stroke="${INK}"/>`;   // ciliary muscle
+    g += `<path d="M${X(cx + 98)} ${cy - 12}L${X(cx + 175)} ${cy - 16}L${X(cx + 175)} ${cy + 16}L${X(cx + 98)} ${cy + 12}" fill="#fde68a" stroke="${INK}" stroke-width="1.6"/>`;   // optic nerve
+    g += `<path d="M${X(cx + 101)} ${cy - 30}q-6 6 0 10" fill="none" stroke="${INK}"/>`;
+    const parts = { cornea: [X(cx - 128), cy - 8], iris: [X(cx - 98), cy - 30], pupil: [X(cx - 104), cy + 4], lens: [X(cx - 75), cy + 18], retina: [X(cx + 50), cy - 82], optic: [X(cx + 150), cy + 6], ciliary: [X(cx - 70), cy + 76], ligament: [X(cx - 73), cy - 56], sclera: [X(cx + 70), cy + 77] };
+    const NAME = { cornea: 'cornea', iris: 'iris', pupil: 'pupil', lens: 'lens', retina: 'retina', optic: 'optic nerve', ciliary: 'ciliary muscle', ligament: 'suspensory ligaments', sclera: 'sclera' };
+    const FN = { cornea: 'Refracts light entering the eye', iris: 'Controls the size of the pupil', pupil: 'Lets light into the eye', lens: 'Focuses light onto the retina', retina: 'Contains light-sensitive receptor cells', optic: 'Carries impulses from the retina to the brain', ciliary: 'Contracts or relaxes to change the shape of the lens', sclera: 'Tough outer coat that protects the eye' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 270, { lx: -30, rx: W + 30 });
+    const svg = `<svg viewBox="-50 0 ${W + 100} 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The eye';
+    if (r.f() < .2) { const bright = r.int(0, 1); return { title, spec: 'B2.92', kind: 'diagram', svg, q: `What happens to the pupil when the eye moves into ${bright ? 'bright' : 'dim'} light?`, o: [bright ? 'It gets smaller: the circular muscles of the iris contract' : 'It gets bigger: the radial muscles of the iris contract', bright ? 'It gets bigger: more light is needed' : 'It gets smaller: less light is needed', 'It stays the same: the lens adjusts instead', 'The retina moves closer to the lens'], x: bright ? 'In bright light the iris makes the pupil smaller to protect the retina.' : 'In dim light the iris makes the pupil bigger to let more light in.' }; }
+    return partQ(r, title, 'B2.91', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- leaf cross-section (B2.21, B2.70) ---------- */
+  M.leaf = r => {
+    const W = 420, x0 = 20, x1 = 400; let g = '';
+    g += `<rect x="${x0}" y="20" width="${x1 - x0}" height="6" fill="#d9f99d" stroke="${INK}" stroke-width=".8"/>`;   // upper cuticle
+    for (let x = x0; x < x1; x += 28) g += `<rect x="${x}" y="26" width="28" height="18" fill="#fff" stroke="${INK}"/>`;   // upper epidermis
+    for (let x = x0; x < x1; x += 20) { g += `<rect x="${x + 1}" y="46" width="18" height="58" rx="6" fill="#bbf7d0" stroke="${INK}"/>`; for (let k = 0; k < 4; k++) g += `<circle cx="${x + 6 + (k % 2) * 8}" cy="${54 + k * 13}" r="3" fill="#16a34a"/>`; }   // palisade
+    const vb = r.pick([140, 200, 260]), st = r.pick([90, 160, 320].filter(v => Math.abs(v - vb) > 50));
+    for (let x = x0 + 14; x < x1 - 8; x += 30) for (let y = 120; y < 175; y += 30) { const xx = x + (y % 60 ? 12 : 0) + r.int(-3, 3), yy = y + r.int(-3, 3); if (Math.hypot(xx - vb, yy - 140) < 40) continue; g += `<ellipse cx="${xx}" cy="${yy}" rx="12" ry="10" fill="#dcfce7" stroke="${INK}"/><circle cx="${xx - 3}" cy="${yy}" r="2.4" fill="#16a34a"/>`; }   // spongy, with air spaces between
+    g += `<circle cx="${vb}" cy="140" r="30" fill="#fef3c7" stroke="${INK}" stroke-width="1.6"/>`; for (let k = 0; k < 5; k++) g += `<circle cx="${vb - 14 + k * 7}" cy="${128 + (k % 2) * 6}" r="5" fill="#fff" stroke="${INK}" stroke-width="1.6"/>`; for (let k = 0; k < 4; k++) g += `<circle cx="${vb - 10 + k * 7}" cy="${154}" r="3.5" fill="#fde68a" stroke="${INK}"/>`;
+    for (let x = x0; x < x1; x += 28) if (Math.abs(x + 14 - st) > 20) g += `<rect x="${x}" y="190" width="28" height="16" fill="#fff" stroke="${INK}"/>`;   // lower epidermis with a gap for the stoma
+    g += `<ellipse cx="${st - 8}" cy="198" rx="8" ry="10" fill="#bbf7d0" stroke="${INK}"/><ellipse cx="${st + 8}" cy="198" rx="8" ry="10" fill="#bbf7d0" stroke="${INK}"/><rect x="${x0}" y="206" width="${x1 - x0}" height="4" fill="#d9f99d" stroke="${INK}" stroke-width=".6"/>`;
+    const parts = { cuticle: [x0 + 300, 23], upper: [x0 + 60, 35], palisade: [x0 + 125, 75], spongy: [x0 + 30, 165], air: [x0 + 48, 150], xylem: [vb - 7, 128], phloem: [vb + 4, 154], guard: [st + 9, 202], stoma: [st, 198], lower: [x0 + 220, 198] };
+    if (Math.abs(vb - 70) < 40) { parts.spongy = [x0 + 320, 165]; parts.air = [x0 + 300, 150]; }
+    const NAME = { cuticle: 'waxy cuticle', upper: 'upper epidermis', palisade: 'palisade mesophyll', spongy: 'spongy mesophyll', air: 'air space', xylem: 'xylem', phloem: 'phloem', guard: 'guard cell', stoma: 'stoma', lower: 'lower epidermis' };
+    const FN = { cuticle: 'Reduces water loss', upper: 'Thin and transparent, so light passes through', palisade: 'Packed with chloroplasts for photosynthesis', spongy: 'Has air spaces for gases to diffuse through', air: 'Lets gases diffuse to and from the cells', xylem: 'Carries water and mineral ions to the leaf', phloem: 'Carries sucrose and amino acids away from the leaf', guard: 'Opens and closes the stoma', stoma: 'Lets carbon dioxide in and oxygen and water vapour out' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 10, 220, { lx: -30, rx: W + 30 });
+    const svg = `<svg viewBox="-50 0 ${W + 100} 225" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`;
+    return partQ(r, 'Leaf cross-section', 'B2.21', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- insect- and wind-pollinated flowers (B3.3) ---------- */
+  M.flower = r => {
+    const wind = r.f() < .35, W = 400, cx = 200; let g = '';
+    g += `<path d="M${cx - 5} 300V210h10V300z" fill="#86efac" stroke="${INK}"/><path d="M${cx - 34} 214q34 -24 68 0q-34 10 -68 0z" fill="#bbf7d0" stroke="${INK}"/>`;   // stalk, receptacle
+    g += `<path d="M${cx - 30} 212q-40 -6 -52 -30q30 6 50 24zM${cx + 30} 212q40 -6 52 -30q-30 6 -50 24z" fill="#4ade80" stroke="${INK}"/>`;   // sepals
+    if (!wind) g += `<path d="M${cx - 26} 206q-80 -30 -96 -120q60 30 92 110zM${cx + 26} 206q80 -30 96 -120q-60 30 -92 110z" fill="${r.pick(['#f9a8d4', '#fde047', '#c4b5fd', '#fdba74'])}" stroke="${INK}" stroke-width="1.6"/>`;   // big petals
+    else g += `<path d="M${cx - 22} 206q-20 -14 -24 -40q14 10 22 38zM${cx + 22} 206q20 -14 24 -40q-14 10 -22 38z" fill="#d6d3d1" stroke="${INK}"/>`;   // small dull petals
+    g += `<path d="M${cx - 20} 208q-4 -40 20 -44q24 4 20 44z" fill="#fef3c7" stroke="${INK}" stroke-width="1.6"/><circle cx="${cx - 5}" cy="192" r="4" fill="#fff" stroke="${INK}"/><circle cx="${cx + 6}" cy="186" r="4" fill="#fff" stroke="${INK}"/>`;   // ovary + ovules
+    g += `<path d="M${cx} 164V${wind ? 40 : 96}" stroke="${INK}" stroke-width="5"/><path d="M${cx} 164V${wind ? 40 : 96}" stroke="#fde68a" stroke-width="2.5"/>`;   // style
+    if (wind) { for (let k = -3; k <= 3; k++) g += `<path d="M${cx} ${48 + Math.abs(k) * 4}l${k * 9} -22" stroke="${INK}" stroke-width="1.4"/>`; }   // feathery stigma outside
+    else g += `<ellipse cx="${cx}" cy="94" rx="12" ry="6" fill="#fde68a" stroke="${INK}"/>`;   // sticky stigma
+    const ns = r.int(2, 3); for (let i = 0; i < ns; i++) [-1, 1].forEach(s => { const bx = cx + s * (16 + i * 9), tx = cx + s * (wind ? 100 + i * 22 : 44 + i * 16), ty = wind ? 240 + i * 14 : 120 - i * 6;
+      g += `<path d="M${bx} 206Q${(bx + tx) / 2 + s * 10} ${wind ? 210 : 160} ${tx} ${ty}" fill="none" stroke="${INK}" stroke-width="1.6"/><ellipse cx="${tx}" cy="${ty + (wind ? 10 : -6)}" rx="6" ry="10" fill="#facc15" stroke="${INK}"/>`; });   // stamens: filament + anther (hanging outside if wind)
+    if (!wind) g += `<path d="M${cx - 12} 214q12 8 24 0" stroke="#16a34a" stroke-width="4" fill="none"/>`;   // nectary
+    const ax = cx + (wind ? 100 : 44), ay = wind ? 250 : 114;
+    const parts = { petal: [cx + (wind ? 40 : 100), wind ? 178 : 140], sepal: [cx - 70, 190], stigma: [cx + (wind ? 18 : 10), wind ? 34 : 92], style: [cx, wind ? 110 : 132], ovary: [cx + 14, 200], anther: [ax, ay], filament: [cx - (wind ? 70 : 34), wind ? 222 : 160], ovule: [cx - 5, 192] };
+    if (!wind) parts.nectary = [cx + 10, 216];
+    const NAME = { petal: 'petal', sepal: 'sepal', stigma: 'stigma', style: 'style', ovary: 'ovary', anther: 'anther', filament: 'filament', ovule: 'ovule', nectary: 'nectary' };
+    const FN = { petal: wind ? 'Small and dull: no need to attract insects' : 'Large and brightly coloured to attract insects', sepal: 'Protected the flower when it was a bud', stigma: wind ? 'Feathery, hanging outside to catch pollen from the air' : 'Sticky surface where pollen lands', anther: 'Makes pollen', ovary: 'Contains the ovules', ovule: 'Contains the female gamete; becomes a seed', nectary: 'Makes sugary nectar to attract insects', filament: 'Holds up the anther' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 290, { lx: -30, rx: W + 30 });
+    const svg = `<svg viewBox="-50 10 ${W + 100} 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = wind ? 'Wind-pollinated flower' : 'Insect-pollinated flower';
+    if (r.f() < .3) return { title: 'Flower', spec: 'B3.3', kind: 'diagram', svg, q: 'Is this flower pollinated by insects or by the wind?', o: wind ? ['Wind: anthers and feathery stigma hang outside, small dull petals', 'Insects: it has petals', 'Insects: the stigma is inside the flower', 'Wind: it has a nectary'] : ['Insects: large coloured petals, nectary, stigma and anthers inside', 'Wind: the anthers are inside the flower', 'Wind: it has a style', 'Insects: the anthers hang outside'], x: wind ? 'Wind-pollinated flowers have exposed anthers and big feathery stigmas, and don\'t need bright petals or nectar.' : 'Insect-pollinated flowers attract insects with bright petals, scent and nectar; anthers and stigma are inside where insects brush past.' };
+    return partQ(r, title, 'B3.3', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- the thorax (B2.46, B2.47) ---------- */
+  M.thorax = r => {
+    const W = 400, cx = 200; let g = '';
+    g += `<path d="M60 70q-30 80 -10 190h300q20 -110 -10 -190" fill="none" stroke="#aaa" stroke-width="2"/>`;   // chest outline
+    for (let k = 0; k < 5; k++) { const y = 92 + k * 32; g += `<path d="M58 ${y}q20 -12 50 -6M342 ${y}q-20 -12 -50 -6" stroke="${INK}" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M58 ${y}q20 -12 50 -6M342 ${y}q-20 -12 -50 -6" stroke="#f5f5f4" stroke-width="4" fill="none" stroke-linecap="round"/>`; if (k < 4) g += `<path d="M60 ${y + 16}l40 -4M340 ${y + 16}l-40 -4" stroke="#dc2626" stroke-width="2" stroke-dasharray="3 2"/>`; }   // ribs + intercostal muscles
+    g += `<path d="M${cx - 10} 20V100h20V20z" fill="#fff" stroke="${INK}" stroke-width="1.6"/>`; for (let y = 28; y < 100; y += 9) g += `<path d="M${cx - 10} ${y}h20" stroke="#999"/>`;   // trachea with rings
+    g += `<path d="M120 90q-30 60 -24 150q40 10 84 -10q10 -70 -6 -130q-30 -20 -54 -10zM280 90q30 60 24 150q-40 10 -84 -10q-10 -70 6 -130q30 -20 54 -10z" fill="#fecdd3" stroke="${INK}" stroke-width="1.6"/>`;   // lungs
+    g += `<path d="M118 86q-34 62 -26 160q44 12 92 -10q10 -74 -6 -136q-34 -24 -60 -14z" fill="none" stroke="#7c3aed" stroke-width="1.4" stroke-dasharray="5 3"/>`;   // pleural membrane
+    g += `<path d="M${cx} 100l-34 30M${cx} 100l34 30" stroke="${INK}" stroke-width="8"/><path d="M${cx} 100l-34 30M${cx} 100l34 30" stroke="#fff" stroke-width="5"/>`;   // bronchi
+    [[cx - 34, 130, -1], [cx + 34, 130, 1]].forEach(([x, y, s]) => { g += `<path d="M${x} ${y}l${s * 18} 30M${x} ${y}l${s * 4} 40M${x + s * 18} ${y + 30}l${s * 14} 18M${x + s * 18} ${y + 30}l${s * 2} 26" stroke="${INK}" stroke-width="2"/>`; [[x + s * 32, y + 48], [x + s * 20, y + 56], [x + s * 4, y + 40]].forEach(([ax, ay]) => { g += `<circle cx="${ax}" cy="${ay + 4}" r="5" fill="#fda4af" stroke="${INK}"/>`; }); });   // bronchioles + alveoli
+    g += `<path d="M50 262q150 -70 300 0" fill="none" stroke="#b45309" stroke-width="6"/>`;   // diaphragm
+    const parts = { trachea: [cx + 10, 50], bronchus: [cx + 22, 116], bronchiole: [cx - 52, 160], alveoli: [cx + 66, 182], rib: [330, 156], intercostal: [72, 140], diaphragm: [cx + 90, 236], pleura: [96, 200], lung: [280, 210] };
+    const NAME = { trachea: 'trachea', bronchus: 'bronchus', bronchiole: 'bronchiole', alveoli: 'alveoli', rib: 'rib', intercostal: 'intercostal muscles', diaphragm: 'diaphragm', pleura: 'pleural membranes', lung: 'lung' };
+    const FN = { trachea: 'Carries air down to the bronchi', alveoli: 'Where gas exchange happens', intercostal: 'Move the ribs up and out when breathing in', diaphragm: 'Contracts and flattens to help you breathe in', pleura: 'Reduce friction as the lungs move', rib: 'Protects the lungs and heart' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 20, 270, { lx: -30, rx: W + 30 });
+    const svg = `<svg viewBox="-50 10 ${W + 100} 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The thorax';
+    if (r.f() < .25) { const inn = r.int(0, 1); return { title, spec: 'B2.47', kind: 'diagram', svg, q: `What does the diaphragm do when you breathe ${inn ? 'in' : 'out'}?`, o: inn ? ['Contracts and flattens', 'Relaxes and moves up into a dome', 'Stays still: only the ribs move', 'Contracts and moves up'] : ['Relaxes and moves up into a dome', 'Contracts and flattens', 'Pushes the ribs up and out', 'Stays still: only the ribs move'], x: inn ? 'Breathing in: diaphragm contracts and flattens, external intercostals pull the ribs up and out, the volume of the thorax increases and pressure falls, so air rushes in.' : 'Breathing out: diaphragm relaxes and domes up, ribs move down and in, volume falls and pressure rises, so air is pushed out.' }; }
+    return partQ(r, title, 'B2.46', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- the alimentary canal (B2.27, B2.30) ---------- */
+  M.gut = r => {
+    const W = 360; let g = `<path d="M180 20q-30 0 -30 30q0 25 30 25q30 0 30 -25q0 -30 -30 -30z" fill="#fff" stroke="#aaa"/>`;   // head
+    g += `<path d="M180 64v100" stroke="${INK}" stroke-width="8"/><path d="M180 64v100" stroke="#fde2e4" stroke-width="5"/>`;   // oesophagus
+    g += `<path d="M180 160q50 -14 64 20q10 36 -30 50q-24 6 -34 -12q20 -6 26 -26q2 -18 -26 -20z" fill="#fecaca" stroke="${INK}" stroke-width="1.6"/>`;   // stomach (person's left = viewer's right)
+    g += `<path d="M100 150q50 -20 90 6q-10 40 -60 46q-40 2 -30 -52z" fill="#a16207" fill-opacity=".55" stroke="${INK}" stroke-width="1.6"/><ellipse cx="146" cy="200" rx="8" ry="6" fill="#4d7c0f" stroke="${INK}"/>`;   // liver + gall bladder
+    g += `<path d="M150 236q40 -8 76 2q-4 8 -20 8q-30 -4 -56 0z" fill="#fde68a" stroke="${INK}"/>`;   // pancreas
+    g += `<path d="M126 392V264Q126 248 142 248H232Q248 248 248 264V368Q248 386 228 388H190V422" fill="none" stroke="${INK}" stroke-width="13" stroke-linejoin="round"/><path d="M126 392V264Q126 248 142 248H232Q248 248 248 264V368Q248 386 228 388H190V422" fill="none" stroke="#fbcfe8" stroke-width="9" stroke-linejoin="round"/>`;   // large intestine round to the rectum
+    const coil = 'M196 226Q206 240 196 262Q150 262 150 280Q150 296 175 296Q215 296 220 314Q222 332 190 334Q152 334 152 352Q152 370 196 368';
+    g += `<path d="${coil}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round"/><path d="${coil}" fill="none" stroke="#fde68a" stroke-width="5.5" stroke-linecap="round"/>`;   // small intestine
+    const parts = { mouth: [180, 58], oesophagus: [180, 110], stomach: [236, 196], liver: [118, 168], gall: [146, 200], pancreas: [214, 240], small: [218, 312], large: [126, 320], rectum: [190, 410] };
+    const NAME = { mouth: 'mouth', oesophagus: 'oesophagus', stomach: 'stomach', liver: 'liver', gall: 'gall bladder', pancreas: 'pancreas', small: 'small intestine', large: 'large intestine', rectum: 'rectum' };
+    const FN = { oesophagus: 'Moves food to the stomach by peristalsis', stomach: 'Digests protein using protease in acid conditions', liver: 'Makes bile', gall: 'Stores bile', pancreas: 'Makes digestive enzymes (amylase, protease, lipase)', small: 'Absorbs digested food into the blood', large: 'Absorbs water from undigested food', rectum: 'Stores faeces' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 415, { lx: -30, rx: W + 30, mid: 180 });
+    const svg = `<svg viewBox="-50 10 ${W + 100} 425" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`;
+    return partQ(r, 'The alimentary canal', 'B2.27', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- reflex arc (B2.90) ---------- */
+  M.reflex = r => {
+    const W = 440; let g = `<circle cx="350" cy="110" r="66" fill="#f5f5f4" stroke="${INK}" stroke-width="2"/><path d="M322 74q28 28 0 72q28 -26 56 0q-28 -44 0 -72q-28 28 -56 0z" fill="#d6d3d1" stroke="#888"/>` + T(350, 196, 'spinal cord', { size: 11, fill: '#555' });
+    g += `<path d="M262 120L178 196Q170 206 160 206H58Q40 206 40 218Q40 230 58 230H170Q190 230 202 214L282 140Z" fill="#fde2d0" stroke="${INK}" stroke-width="1.6"/>`;   // arm: upper arm up to the shoulder, forearm out to the hand
+    g += `<ellipse cx="226" cy="160" rx="34" ry="13" transform="rotate(-42 226 160)" fill="#fca5a5" stroke="${INK}"/>`;   // biceps (effector)
+    g += `<path d="M14 232q-8 -16 4 -30q2 12 8 6q4 12 -2 24z" fill="#fb923c" stroke="#c2410c"/>` + T(18, 250, 'heat', { size: 10, fill: '#c2410c' });
+    g += `<circle cx="44" cy="218" r="4.5" fill="#2563eb"/><path d="M48 220H170Q200 220 230 200L300 150Q312 140 324 128" fill="none" stroke="#2563eb" stroke-width="3"/><circle cx="292" cy="156" r="7" fill="#93c5fd" stroke="${INK}"/>`;   // receptor + sensory neurone (cell body outside the cord)
+    g += `<path d="M328 124L362 102" stroke="#16a34a" stroke-width="3"/><circle cx="345" cy="113" r="5" fill="#86efac" stroke="${INK}"/>`;   // relay neurone
+    g += `<path d="M368 98Q330 40 280 70Q246 90 236 150" fill="none" stroke="#b91c1c" stroke-width="3"/><circle cx="362" cy="96" r="7" fill="#fca5a5" stroke="${INK}"/>`;   // motor neurone to the biceps
+    g += arrow(100, 228, 140, 228, '#2563eb', 2) + arrow(300, 52, 278, 62, '#b91c1c', 2) + `<circle cx="326" cy="126" r="3" fill="${INK}"/><circle cx="365" cy="100" r="3" fill="${INK}"/>`;
+    const parts = { receptor: [44, 218], sensory: [200, 214], relay: [345, 113], motor: [292, 58], effector: [218, 166], cord: [398, 140], synapse: [326, 126] };
+    const NAME = { receptor: 'receptor', sensory: 'sensory neurone', relay: 'relay neurone', motor: 'motor neurone', effector: 'effector (muscle)', cord: 'spinal cord', synapse: 'synapse' };
+    const FN = { receptor: 'Detects the stimulus (heat)', sensory: 'Carries impulses from the receptor to the spinal cord', relay: 'Passes impulses from the sensory to the motor neurone', motor: 'Carries impulses to the effector', effector: 'Contracts to pull the hand away', synapse: 'Gap where a chemical carries the signal to the next neurone' };
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 250, { lx: -30, rx: W + 30, mid: 250 });
+    const svg = `<svg viewBox="-50 20 ${W + 100} 245" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'Reflex arc';
+    if (r.f() < .3) { const ans = 'receptor → sensory neurone → relay neurone → motor neurone → effector'; return { title, spec: 'B2.90', kind: 'diagram', svg, q: 'In what order does the impulse travel?', o: [ans, 'receptor → motor neurone → relay neurone → sensory neurone → effector', 'effector → motor neurone → relay neurone → sensory neurone → receptor', 'receptor → relay neurone → sensory neurone → motor neurone → effector'], x: 'Stimulus → receptor → sensory neurone → relay neurone (spinal cord) → motor neurone → effector → response. The brain isn\'t needed, so it\'s fast.' }; }
+    return partQ(r, title, 'B2.90', svg, letter, keys, NAME, FN);
+  };
+
+  /* ---------- the carbon cycle (B4.10) ---------- */
+  M.carbon = r => {
+    const BOX = { air: ['carbon dioxide in the air', 270, 30], plants: ['plants', 70, 150], animals: ['animals', 410, 150], dead: ['dead matter and waste', 200, 262], decomp: ['decomposers', 410, 262], fossil: ['fossil fuels', 60, 30] };
+    const ARR = [['air', 'plants', 'photosynthesis'], ['plants', 'air', 'respiration'], ['animals', 'air', 'respiration'], ['plants', 'animals', 'feeding'], ['plants', 'dead', 'death'], ['animals', 'dead', 'death and waste'], ['dead', 'decomp', 'decay'], ['decomp', 'air', 'respiration (by decomposers)'], ['fossil', 'air', 'combustion']];
+    const bw = k => BOX[k][0].length * 6.6 + 18, bh = 26, clip = (k, dx, dy) => { const w = bw(k) / 2 + 2, h = bh / 2 + 2, t = Math.min(dx ? w / Math.abs(dx) : 1e9, dy ? h / Math.abs(dy) : 1e9); return [BOX[k][1] + dx * t, BOX[k][2] + dy * t]; };
+    let g = ''; const lab = sh(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J'], r), letterOf = {};
+    ARR.forEach(([a, b, p], i) => { const [x1, y1] = [BOX[a][1], BOX[a][2]], [x2, y2] = [BOX[b][1], BOX[b][2]], off = ARR.some(([c, d]) => c === b && d === a) ? 7 : 0, dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), nx = -dy / L * off, ny = dx / L * off;
+      const [ax, ay] = clip(a, dx, dy), [bx, by] = clip(b, -dx, -dy); g += arrow(ax + nx, ay + ny, bx + nx, by + ny, '#555', 1.8); const mx = (ax + bx) / 2 + nx * 2.4, my = (ay + by) / 2 + ny * 2.4; letterOf[i] = lab[i];
+      g += `<circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="9" fill="#fff" stroke="${INK}"/>` + T(mx.toFixed(1), (my + 4.5).toFixed(1), lab[i], { size: 12, w: 700 }); });
+    Object.entries(BOX).forEach(([k, [t, x, y]]) => { g += `<rect x="${x - bw(k) / 2}" y="${y - bh / 2}" width="${bw(k)}" height="${bh}" rx="6" fill="${k === 'air' ? '#e0f2fe' : k === 'plants' ? '#dcfce7' : k === 'fossil' ? '#e7e5e4' : '#fff'}" stroke="${INK}"/>` + T(x, y + 4, t, { size: 12, w: 600 }); });
+    const svg = wrap(480, 290, g), title = 'The carbon cycle', i = r.int(0, ARR.length - 1), proc = ARR[i][2].replace(' (by decomposers)', '').replace(' and waste', '');
+    if (r.f() < .55) return { title, spec: 'B4.10', kind: 'diagram', svg, q: `Which process is shown by arrow ${lab[i]}?`, o: [proc, ...others(proc, ['photosynthesis', 'respiration', 'combustion', 'feeding', 'decay', 'death', 'fossilisation'], r)], x: `Arrow ${lab[i]} goes from ${BOX[ARR[i][0]][0]} to ${BOX[ARR[i][1]][0]}: ${ARR[i][2]}.` };
+    const want = r.pick(['photosynthesis', 'combustion']), k = ARR.findIndex(a => a[2] === want), wrong = ARR.map((a, j) => j).filter(j => j !== k).map(j => lab[j]);
+    return { title, spec: 'B4.10', kind: 'diagram', svg, q: `Which arrow shows ${want}?`, o: [lab[k], ...others(lab[k], wrong, r)], x: want === 'photosynthesis' ? 'Photosynthesis is the only process that takes carbon dioxide out of the air: the arrow from the air to the plants.' : 'Combustion of fossil fuels releases carbon dioxide into the air.' };
+  };
+
+  /* ---------- osmosis: % change in mass against concentration (B2.17) ---------- */
+  M.osmosis = r => {
+    const tissue = r.pick(['potato', 'carrot', 'beetroot', 'apple']), x0 = r.pick([0.2, 0.25, 0.3, 0.35, 0.4]), k = r.pick([22, 28, 35]), unit = r.pick(['mol/dm³', 'M']);
+    const f = c => k * (x0 - c) / (0.3 + c * .6), cs = [0, 0.2, 0.4, 0.6, 0.8, 1.0], dots = cs.map(c => [c, Math.round((f(c) + (r.f() - .5) * 2) * 10) / 10]);
+    const hiV = Math.max(...dots.map(d => d[1])), loV = Math.min(...dots.map(d => d[1])), ys = hiV - loV > 50 ? 10 : 5, ymax = Math.ceil(hiV / ys) * ys + ys, ymin = Math.floor(loV / ys) * ys - ys;
+    const svg = plot2({ xmax: 1, xstep: 0.2, ymin, ymax, ystep: ys, xl: `Sugar solution concentration (${unit})`, yl: 'Change in mass (%)', series: [{ pts: curve(f, 0, 1, 40), dots }] }), title = `Osmosis in ${tissue}`;
+    const q = r.int(0, 2);
+    if (q === 0) return { title, spec: 'B2.17', kind: 'graph', svg, q: `At what concentration would the ${tissue} pieces neither gain nor lose mass?`, o: [n(x0) + ' ' + unit, ...uniq(n(x0), [0, x0 + 0.2, x0 / 2, 1].map(n)).map(v => v + ' ' + unit)], x: `Read where the line crosses 0% change: about ${n(x0)} ${unit}. There the solution has the same water concentration as the cells, so there's no net osmosis.` };
+    if (q === 1) return { title, spec: 'B2.15', kind: 'graph', svg, q: `Why did the ${tissue} pieces in 0 ${unit} (pure water) gain mass?`, o: ['Water moved into the cells by osmosis', 'Sugar moved into the cells by diffusion', 'Water moved out of the cells by osmosis', 'The cells grew by mitosis'], x: 'Pure water has a higher water concentration than the cells, so water moves in through the partially permeable membrane by osmosis.' };
+    const c = r.pick([0.6, 0.8, 1.0]), v = dots.find(d => d[0] === c)[1]; return { title, spec: 'B2.17', kind: 'graph', svg, q: `What was the percentage change in mass at ${c} ${unit}?`, o: [n(v) + '%', ...uniq(n(v), [-v, v / 2, v - ys, v + ys].map(n)).map(x => x + '%')], x: `Read the cross at ${c} ${unit}: ${n(v)}%. It's negative because water left the cells by osmosis.` };
+  };
+
+  /* ---------- menstrual cycle hormones (B3.9) ---------- */
+  M.menstrual = r => {
+    const len = r.pick([26, 28, 28, 30, 32]), ov = len - 14, A = r.pick(['A', 'X', 'P']), Bn = { A: 'B', X: 'Y', P: 'Q' }[A], oFirst = r.int(0, 1);
+    const oest = d => 10 + 70 * Math.exp(-(((d - (ov - 1)) / 3.2) ** 2)) + 25 * Math.exp(-(((d - (ov + 7)) / 4) ** 2)), prog = d => 6 + 74 * Math.exp(-(((d - (ov + 7)) / 3.8) ** 2));
+    const extra = (px, py) => `<rect x="${px(0)}" y="${py(100) + 2}" width="${px(5) - px(0)}" height="10" fill="#fca5a5"/>` + T(px(0) + 2, py(100) + 22, 'bleeding', { size: 10, a: 'start' });
+    const svg = plot2({ xmax: len, xstep: 4, ymax: 100, ystep: 20, xl: 'Day of cycle', yl: 'Hormone level (a.u.)', series: [{ pts: curve(oFirst ? oest : prog, 0, len, 80), label: A, lab: Math.round(80 * (oFirst ? ov - 1 : ov + 7) / len), col: '#2563eb' }, { pts: curve(oFirst ? prog : oest, 0, len, 80), label: Bn, lab: Math.round(80 * (oFirst ? ov + 7 : ov - 1) / len), col: '#dc2626', dash: 1 }], extra });
+    const title = 'Menstrual cycle hormones', pL = oFirst ? Bn : A, eL = oFirst ? A : Bn, q = r.int(0, 2);
+    if (q === 0) return { title, spec: 'B3.9', kind: 'graph', svg, q: 'Which line shows progesterone?', o: [pL, eL, 'Both', 'Neither'], x: `Progesterone rises after ovulation (around day ${ov}) and keeps the uterus lining thick; it peaks in the second half of the cycle. Oestrogen peaks just before ovulation.` };
+    if (q === 1) return { title, spec: 'B3.9', kind: 'graph', svg, q: 'On about which day does ovulation happen?', o: ['Day ' + ov, ...uniq(ov, [ov - 9, ov + 7, 1, len]).map(d => 'Day ' + d)], x: `Ovulation is just after the oestrogen peak, about day ${ov} (14 days before the end of a ${len}-day cycle).` };
+    return { title, spec: 'B3.9', kind: 'graph', svg, q: 'What happens when the progesterone level falls at the end of the cycle?', o: ['The uterus lining breaks down (menstruation)', 'An egg is released', 'The uterus lining thickens', 'Oestrogen stops being made for good'], x: 'Progesterone maintains the uterus lining. If no embryo implants, progesterone falls and the lining breaks down: the period starts.' };
+  };
+
+  /* ---------- quadrats: estimating a population (B4.2) ---------- */
+  M.quadrat = r => {
+    const Lm = r.pick([10, 20, 25, 50]), Wm = r.pick([10, 20, 40]), plant = r.pick(['daisies', 'dandelions', 'buttercups', 'clover plants']), dens = r.pick([2, 3, 4, 5, 6]);
+    /* the field with five numbered quadrats, then each quadrat enlarged underneath so the plants can be counted */
+    const fx = 20, fy = 20, fw = 400, fh = 150, scale = Math.min(fw / Lm, fh / Wm), FW = Lm * scale, FH = Wm * scale, qs = Math.max(8, scale);
+    let g = `<rect x="${fx}" y="${fy}" width="${FW}" height="${FH}" fill="#dcfce7" stroke="${INK}" stroke-width="1.6"/>`;
+    const nq = 5, quads = []; for (let t = 0; quads.length < nq && t < 3000; t++) { const gap = t < 1500 ? 14 : 2, q = [fx + 4 + r.f() * (FW - qs - 8), fy + 12 + r.f() * (FH - qs - 16)]; if (quads.every(p => Math.abs(p[0] - q[0]) > qs + gap || Math.abs(p[1] - q[1]) > qs + gap)) quads.push(q); }   // always five
+    const counts = quads.map(() => Math.max(0, dens + r.int(-2, 3)));
+    quads.forEach(([x, y], i) => { g += `<rect x="${x}" y="${y}" width="${qs}" height="${qs}" fill="#fff" stroke="${INK}" stroke-width="1.4"/>` + T(x + qs / 2, y - 3, i + 1, { size: 11, w: 700 }); });
+    g += T(fx + FW / 2, fy + FH + 16, `${Lm} m`, { size: 12, w: 700 }) + T(fx + FW + 14, fy + FH / 2, `${Wm} m`, { size: 12, w: 700, rot: 90 });
+    const by = fy + FH + 40, bs = 70;
+    quads.forEach((_, i) => { const x = 20 + i * 82; g += `<rect x="${x}" y="${by}" width="${bs}" height="${bs}" fill="#f0fdf4" stroke="${INK}" stroke-width="1.6"/>` + T(x + bs / 2, by + bs + 16, `quadrat ${i + 1}`, { size: 11 });
+      const pts = []; for (let t = 0; pts.length < counts[i] && t < 2000; t++) { const p = [x + 10 + r.f() * (bs - 20), by + 10 + r.f() * (bs - 20)]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 15)) pts.push(p); }
+      pts.forEach(([px, py]) => { for (let k = 0; k < 5; k++) { const a = k * 1.2566; g += `<circle cx="${(px + Math.cos(a) * 4).toFixed(1)}" cy="${(py + Math.sin(a) * 4).toFixed(1)}" r="3" fill="#fff" stroke="#a16207" stroke-width=".7"/>`; } g += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="2.6" fill="#facc15"/>`; }); });
+    g += T(20, by + bs + 34, `Each quadrat is 1 m × 1 m. Each ✿ is one of the ${plant}.`, { size: 11, a: 'start' });
+    const mean = counts.reduce((a, b) => a + b, 0) / nq, est = mean * Lm * Wm, svg = wrap(440, by + bs + 44, g), title = 'Quadrat sampling';
+    if (r.int(0, 1)) return { title, spec: 'B4.2', kind: 'diagram', svg, q: `What is the mean number of ${plant} per quadrat?`, o: [n(mean), ...uniq(n(mean), [Math.max(...counts), counts.reduce((a, b) => a + b, 0), mean + 1, Math.min(...counts) || mean / 2].map(n))], x: `Counts: ${counts.join(', ')}. Mean = ${counts.reduce((a, b) => a + b, 0)} ÷ ${nq} = ${n(mean)}.` };
+    return { title, spec: 'B4.2', kind: 'diagram', svg, q: `Estimate the number of ${plant} in the whole field.`, o: [n(est), ...uniq(n(est), [mean * (Lm + Wm), counts.reduce((a, b) => a + b, 0) * Lm, est / 2, mean * Lm].map(n))], x: `Mean per 1 m² quadrat = ${n(mean)}. Area = ${Lm} × ${Wm} = ${Lm * Wm} m². Estimate = ${n(mean)} × ${Lm * Wm} = ${n(est)}.` };
+  };
+  /* ---------- reading scales: measuring cylinder, thermometer, meter dial, newton meter, ruler ---------- */
+  function cylinder(x, y, val, max, step, h = 220) {   // measuring cylinder (cm³) with a meniscus; reading = bottom of the meniscus
+    const py = v => y + h - v / max * h; let s = `<path d="M${x - 24} ${y - 14}V${y + h + 6}h48V${y - 14}" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M${x - 34} ${y + h + 6}h68v8h-68z" fill="#e5e7eb" stroke="${INK}"/>`;
+    s += `<path d="M${x - 23} ${py(val) - 5}Q${x} ${py(val) + 5} ${x + 23} ${py(val) - 5}V${y + h + 5}h-46z" fill="#bfdbfe"/><path d="M${x - 23} ${py(val) - 5}Q${x} ${py(val) + 5} ${x + 23} ${py(val) - 5}" fill="none" stroke="#1d4ed8" stroke-width="1.4"/>`;
+    const labEvery = [1, 2, 5, 10, 20, 25, 50].find(L => max / L <= 10 && Math.abs(L / step - Math.round(L / step)) < 1e-9) || 50;
+    for (let k = 0; k * step <= max + 1e-9; k++) { const v = k * step, lab = Math.abs(v / labEvery - Math.round(v / labEvery)) < 1e-9, mid = k % 5 === 0; s += `<line x1="${x - 24}" y1="${py(v).toFixed(1)}" x2="${x - 24 + (lab ? 15 : mid ? 11 : 7)}" y2="${py(v).toFixed(1)}" stroke="${INK}"/>` + (lab && v > 0 ? T(x - 30, py(v) + 4, n(v), { size: 11, a: 'end' }) : ''); }
+    return s + T(x + 30, y + h, 'cm³', { size: 11, a: 'start' });
+  }
+  M.scales = r => {
+    const kind = r.pick(['cylinder', 'thermo', 'dial', 'newton', 'ruler']), title = 'Reading scales', spec = kind === 'thermo' ? 'C3.2' : kind === 'dial' ? 'P2.13' : kind === 'newton' ? 'P1.22' : kind === 'ruler' ? 'P1.22' : 'P5.4';
+    const opts = (ans, wrongs, unit) => [n(ans) + unit, ...uniq(n(ans), wrongs.map(n)).map(v => v + unit)];
+    if (kind === 'cylinder') { const [max, step] = r.pick([[50, 1], [100, 2], [100, 1], [250, 5], [10, 0.2]]), val = step * r.int(Math.round(max / step * .2), Math.round(max / step * .85)), svg = wrap(200, 270, cylinder(110, 30, val, max, step));
+      return { title, spec: 'P5.4', kind: 'diagram', svg, q: 'What volume of liquid is in the measuring cylinder?', o: opts(val, [val + step, val - step, val + step * 5, val * 2], ' cm³'), x: `Each small division is ${n(step)} cm³. Read at eye level from the bottom of the meniscus: ${n(val)} cm³.` }; }
+    if (kind === 'thermo') { const step = r.pick([0.5, 1, 2]), lo = r.pick([-10, 0, 10, 20]), hi = lo + step * 25, val = lo + step * r.int(2, 23), svg = wrap(200, 290, thermo(90, 40, val, lo, hi, step) + T(150, 296 - 8, '°C', { size: 12 }));
+      return { title, spec, kind: 'diagram', svg, q: 'What temperature does the thermometer show?', o: opts(val, [val + step, val - step, val + 5 * step, val + 1], ' °C'), x: `Each small division is ${n(step)} °C: the liquid is at ${n(val)} °C.` }; }
+    if (kind === 'dial') { const amm = r.int(0, 1), [max, step] = r.pick(amm ? [[1, 0.02], [5, 0.1], [10, 0.2], [3, 0.1]] : [[5, 0.1], [10, 0.2], [15, 0.5], [3, 0.1]]), val = step * r.int(Math.round(max / step * .15), Math.round(max / step * .9)), cx = 160, cy = 170, R = 120;
+      let g = `<path d="M${cx - R - 14} ${cy + 16}V${cy - R - 20}h${2 * R + 28}V${cy + 16}z" fill="#fff" stroke="${INK}" stroke-width="1.8"/>`; const ang = v => -60 + v / max * 120, nk = Math.round(max / step);
+      for (let k = 0; k <= nk; k++) { const v = k * step, big = k % 5 === 0, [x1, y1] = at(cx, cy, ang(v), R), [x2, y2] = at(cx, cy, ang(v), R - (big ? 14 : 8)); g += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${INK}"/>`; if (big && (nk <= 30 || k % 10 === 0)) { const [tx, ty] = at(cx, cy, ang(v), R + 12); g += T(tx.toFixed(1), (ty + 4).toFixed(1), n(v), { size: 11 }); } }
+      const [nx, ny] = at(cx, cy, ang(val), R - 4); g += `<line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}" stroke="#dc2626" stroke-width="2.4"/><circle cx="${cx}" cy="${cy}" r="6" fill="${INK}"/>` + T(cx, cy - 40, amm ? 'A' : 'V', { size: 22, w: 700 });
+      const svg = wrap(320, 200, g), u = amm ? ' A' : ' V';
+      return { title, spec, kind: 'diagram', svg, q: `What does the ${amm ? 'ammeter' : 'voltmeter'} read?`, o: opts(val, [val + step, val - step, val + 5 * step, val * 2], u), x: `Each small division is ${n(step)}${u}. The needle points to ${n(val)}${u}.` }; }
+    if (kind === 'newton') { const [max, step] = r.pick([[5, 0.1], [10, 0.2], [10, 0.5], [20, 0.5], [1, 0.02]]), val = step * r.int(Math.round(max / step * .15), Math.round(max / step * .9)), x = 120, y = 40, h = 220, py = v => y + v / max * h;
+      let g = `<rect x="${x - 26}" y="${y - 20}" width="52" height="${h + 40}" rx="6" fill="#fef3c7" stroke="${INK}" stroke-width="1.8"/><rect x="${x - 8}" y="${y - 6}" width="16" height="${h + 12}" fill="#fff" stroke="${INK}"/>`;
+      for (let k = 0; k * step <= max + 1e-9; k++) { const v = k * step, big = k % 5 === 0; g += `<line x1="${x + 8}" y1="${py(v).toFixed(1)}" x2="${x + (big ? 22 : 15)}" y2="${py(v).toFixed(1)}" stroke="${INK}"/>` + (big ? T(x + 30, py(v) + 4, n(v), { size: 10, a: 'start' }) : ''); }
+      g += `<path d="M${x - 6} ${py(val)}h12" stroke="#dc2626" stroke-width="3"/><path d="M${x} ${py(val)}V${y + h + 34}" stroke="${INK}" stroke-width="2"/><path d="M${x - 14} ${y + h + 34}h28v24h-28z" fill="#9ca3af" stroke="${INK}"/>` + T(x, y - 26, 'N', { size: 13, w: 700 });
+      return { title, spec, kind: 'diagram', svg: wrap(220, y + h + 66, g), q: 'What is the reading on the newton meter?', o: opts(val, [val + step, val - step, max - val, val + 5 * step], ' N'), x: `Each small division is ${n(step)} N. The red marker is at ${n(val)} N.` }; }
+    /* ruler: a spring's length, or an object's length that doesn't start at zero */
+    const mm = r.int(0, 1), start = r.pick([0, 0, 1, 2, 3]), len = r.int(25, 85) / 10, x0 = 30, px = v => x0 + v * 40;
+    let g = `<rect x="${x0 - 10}" y="80" width="${px(10) - x0 + 20}" height="40" fill="#fef9c3" stroke="${INK}"/>`;
+    for (let k = 0; k <= 100; k++) { const v = k / 10, big = k % 10 === 0, half = k % 5 === 0; g += `<line x1="${px(v)}" y1="80" x2="${px(v)}" y2="${80 + (big ? 16 : half ? 11 : 7)}" stroke="${INK}" stroke-width=".8"/>` + (big ? T(px(v), 112, k / 10, { size: 10 }) : ''); }
+    g += `<rect x="${px(start)}" y="46" width="${px(start + len) - px(start)}" height="26" rx="4" fill="#93c5fd" stroke="${INK}"/><path d="M${px(start)} 72V80M${px(start + len)} 72V80" stroke="${INK}" stroke-dasharray="2 2"/>` + T(x0 + 200, 136, 'cm', { size: 11 });
+    const ans = mm ? Math.round(len * 10) : len, u = mm ? ' mm' : ' cm', svg = wrap(470, 145, g);
+    return { title, spec, kind: 'diagram', svg, q: `How long is the bar${mm ? ', in mm' : ''}?`, o: opts(ans, mm ? [Math.round((start + len) * 10), ans + 1, ans - 1, ans + 10] : [start + len, len + .1, len - .1, len + 1], u), x: `Measure from the start of the bar (${start} cm) to its end (${n(start + len)} cm): ${n(len)} cm${mm ? ` = ${ans} mm` : ''}. ${start ? 'It doesn\'t start at 0, so subtract.' : ''}` };
+  };
+
+  /* ---------- density by displacement (P5.3, P5.4) ---------- */
+  M.density = r => {
+    const [max, step] = r.pick([[100, 2], [100, 1], [250, 5], [50, 1]]), v1 = step * r.int(Math.round(max / step * .3), Math.round(max / step * .5)), vol = step * r.int(Math.max(2, Math.round(max / step * .1)), Math.round(max / step * .35)), v2 = v1 + vol;
+    const rho = r.pick([2.5, 2.7, 3, 7.9, 8.9, 1.2, 0.8].filter(d => d * vol < 2000)), m = Math.round(rho * vol * 10) / 10, obj = r.pick(['a stone', 'a metal bolt', 'a lump of plasticine', 'a key']);
+    let g = T(95, 20, 'before', { size: 13, w: 700 }) + cylinder(95, 40, v1, max, step) + T(265, 20, 'after', { size: 13, w: 700 }) + cylinder(265, 40, v2, max, step) + `<path d="M255 ${40 + 220 - 14}l10 -10 12 6 -4 12z" fill="#78716c" stroke="${INK}"/>`;
+    g += `<rect x="330" y="200" width="100" height="56" rx="6" fill="#e5e7eb" stroke="${INK}"/><rect x="340" y="210" width="80" height="24" fill="#111"/>` + T(380, 228, `${m.toFixed(1)} g`, { size: 14, w: 700, fill: '#4ade80' }) + T(380, 270, 'mass of the object', { size: 10 });
+    const svg = wrap(440, 290, g), d = m / vol, title = 'Density by displacement';
+    if (r.int(0, 1)) return { title, spec: 'P5.4', kind: 'diagram', svg, q: `What is the volume of ${obj}?`, o: [n(vol) + ' cm³', ...uniq(n(vol), [v2, v1, v1 + v2, vol + step].map(n)).map(v => v + ' cm³')], x: `The water rose from ${n(v1)} cm³ to ${n(v2)} cm³: volume = ${n(v2)} − ${n(v1)} = ${n(vol)} cm³.` };
+    return { title, spec: 'P5.3', kind: 'diagram', svg, q: `What is the density of ${obj}?`, o: [n(d) + ' g/cm³', ...uniq(n(d), [m / v2, vol / m, m * vol / 100, m / v1].map(n)).map(v => v + ' g/cm³')], x: `Volume = ${n(v2)} − ${n(v1)} = ${n(vol)} cm³. ρ = m ÷ V = ${m.toFixed(1)} ÷ ${n(vol)} = ${n(d)} g/cm³.` };
+  };
+
+  /* ---------- stopping distances (P1.19, P1.20) ---------- */
+  M.stopping = r => {
+    const ALL = [[20, 6, 6], [30, 9, 14], [40, 12, 24], [50, 15, 38], [60, 18, 55], [70, 21, 75]], rows = sh(ALL, r).slice(0, r.pick([3, 4])).sort((a, b) => a[0] - b[0]), wet = r.f() < .25;
+    const data = rows.map(([s, t, b]) => [s, t, wet ? b * 2 : b]), maxD = Math.ceil(Math.max(...data.map(d => d[1] + d[2])) / 20) * 20, step = maxD > 120 ? 40 : 20, x0 = 80, W = 420, px = d => x0 + d / maxD * (W - x0 - 20);
+    let g = ''; for (let d = 0; d <= maxD; d += step / 2) g += `<line x1="${px(d)}" y1="10" x2="${px(d)}" y2="${30 + data.length * 44}" stroke="${GRID}" stroke-width="${d % step ? .5 : 1}"/>` + (d % step ? '' : T(px(d), 46 + data.length * 44, d, { size: 11 }));
+    data.forEach(([s, t, b], i) => { const y = 22 + i * 44; g += T(x0 - 8, y + 17, `${s} mph`, { size: 12, w: 700, a: 'end' }) + `<rect x="${px(0)}" y="${y}" width="${px(t) - px(0)}" height="24" fill="#fde68a" stroke="${INK}"/><rect x="${px(t)}" y="${y}" width="${px(t + b) - px(t)}" height="24" fill="#fca5a5" stroke="${INK}"/>`; });
+    g += T((x0 + W) / 2, 66 + data.length * 44, 'Distance (m)', { size: 12, w: 600 }) + `<rect x="${x0}" y="${76 + data.length * 44}" width="14" height="12" fill="#fde68a" stroke="${INK}"/>` + T(x0 + 20, 86 + data.length * 44, 'thinking distance', { size: 11, a: 'start' }) + `<rect x="${x0 + 150}" y="${76 + data.length * 44}" width="14" height="12" fill="#fca5a5" stroke="${INK}"/>` + T(x0 + 170, 86 + data.length * 44, `braking distance${wet ? ' (wet road)' : ''}`, { size: 11, a: 'start' });
+    const svg = wrap(W, 96 + data.length * 44, g), title = 'Stopping distances', [s, t, b] = r.pick(data), q = r.int(0, 2);
+    if (q === 0) return { title, spec: 'P1.19', kind: 'graph', svg, q: `What is the total stopping distance at ${s} mph?`, o: [t + b + ' m', ...uniq(t + b, [b, t, b - t, t + b + step / 2]).map(v => v + ' m')], x: `Stopping distance = thinking + braking = ${t} + ${b} = ${t + b} m.` };
+    if (q === 1) { const which = r.pick(['tired', 'icy', 'phone']); const ans = which === 'icy' ? 'Braking distance' : 'Thinking distance'; return { title, spec: 'P1.20', kind: 'graph', svg, q: which === 'icy' ? 'Which part of the stopping distance gets longer on an icy road?' : which === 'tired' ? 'Which part of the stopping distance gets longer if the driver is tired?' : 'Which part of the stopping distance gets longer if the driver is using a phone?', o: [ans, ans === 'Braking distance' ? 'Thinking distance' : 'Braking distance', 'Neither', 'Both by the same amount'], x: which === 'icy' ? 'Less friction between tyres and road: the brakes take longer to stop the car, so braking distance increases.' : 'The driver\'s reaction time is longer, so the car travels further before the brakes are applied: thinking distance increases.' }; }
+    return { title, spec: 'P1.20', kind: 'graph', svg, q: 'How does braking distance change as speed goes up?', o: ['It increases more and more quickly', 'It increases by the same amount each time', 'It stays the same', 'It decreases'], x: 'Thinking distance goes up steadily with speed, but braking distance rises much faster (it depends on the kinetic energy, which depends on speed squared).' };
+  };
+
+  /* ---------- the motor effect: Fleming's left-hand rule (P6.12–P6.14) ---------- */
+  M.motor = r => {
+    const vert = r.int(0, 1), nFirst = r.int(0, 1), mode = r.pick(['dot', 'dot', 'line']), W = 360, H = 260, cx = 180, cy = 130; let g = '';
+    const B = vert ? [0, nFirst ? -1 : 1, 0] : [nFirst ? 1 : -1, 0, 0];   // x right, y up, z out of the page; field goes N → S
+    const poles = vert ? [[cx - 70, 20, 140, 50, nFirst ? 'N' : 'S'], [cx - 70, 190, 140, 50, nFirst ? 'S' : 'N']] : [[20, cy - 70, 60, 140, nFirst ? 'N' : 'S'], [280, cy - 70, 60, 140, nFirst ? 'S' : 'N']];
+    poles.forEach(([x, y, w, h, p]) => { g += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${p === 'N' ? '#fecaca' : '#bfdbfe'}" stroke="${INK}" stroke-width="2"/>` + T(x + w / 2, y + h / 2 + 8, p, { size: 22, w: 700 }); });
+    for (let k = -2; k <= 2; k++) { if (k === 0) continue; const [x1, y1, x2, y2] = vert ? [cx + k * 26, 74, cx + k * 26, 186] : [84, cy + k * 26, 276, cy + k * 26]; g += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#94a3b8" stroke-dasharray="5 4"/>`; }
+    let I;
+    if (mode === 'dot') { const out = r.int(0, 1); I = [0, 0, out ? 1 : -1]; g += `<circle cx="${cx}" cy="${cy}" r="16" fill="#fff" stroke="${INK}" stroke-width="2.4"/>` + (out ? `<circle cx="${cx}" cy="${cy}" r="4.5" fill="${INK}"/>` : `<path d="M${cx - 10} ${cy - 10}l20 20M${cx + 10} ${cy - 10}l-20 20" stroke="${INK}" stroke-width="2.4"/>`) + T(cx, cy + (vert ? 36 : 40), out ? 'current out of the page' : 'current into the page', { size: 11 }); }
+    else { const s = r.pick([1, -1]); I = vert ? [s, 0, 0] : [0, s, 0]; const [x1, y1, x2, y2] = vert ? [cx - 120, cy, cx + 120, cy] : [cx, cy + 105, cx, cy - 105]; g += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b45309" stroke-width="6"/>` + arrow(...(vert ? (s > 0 ? [cx - 40, cy - 14, cx + 30, cy - 14] : [cx + 40, cy - 14, cx - 30, cy - 14]) : (s > 0 ? [cx + 16, cy + 40, cx + 16, cy - 30] : [cx + 16, cy - 40, cx + 16, cy + 30])), '#b45309', 2) + T(vert ? cx : cx + 24, vert ? cy - 22 : cy, 'I', { size: 14, w: 700, a: 'start', fill: '#b45309' }); }
+    const F = [I[1] * B[2] - I[2] * B[1], I[2] * B[0] - I[0] * B[2], I[0] * B[1] - I[1] * B[0]];   // F = I × B
+    const DIR = { '0,1,0': 'up', '0,-1,0': 'down', '1,0,0': 'to the right', '-1,0,0': 'to the left', '0,0,1': 'out of the page', '0,0,-1': 'into the page' }, ans = DIR[F.join(',')];
+    const svg = wrap(W, H, g), title = 'The motor effect';
+    if (r.f() < .75) return { title, spec: 'P6.13', kind: 'diagram', svg, q: 'Which way is the force on the wire?', o: [ans, ...others(ans, Object.values(DIR), r)], x: `Left hand: First finger = Field (N → S), seCond finger = Current, thuMb = Motion (force). Here the force is ${ans}.` };
+    return { title, spec: 'P6.14', kind: 'diagram', svg, q: 'What would make the force on the wire bigger?', o: ['A bigger current or a stronger magnet', 'Reversing the current', 'Swapping the magnets round', 'Using a thinner wire with the same current'], x: 'The force increases with the size of the current and the strength of the magnetic field. Reversing either one only reverses the direction.' };
+  };
+
+  /* ---------- alpha, beta, gamma penetration (P7.5, P7.6) ---------- */
+  M.penetration = r => {
+    const L = sh(['X', 'Y', 'Z'], r), rays = { alpha: L[0], beta: L[1], gamma: L[2] }, order = sh(['alpha', 'beta', 'gamma'], r), W = 440;
+    let g = `<rect x="10" y="40" width="44" height="150" rx="6" fill="#fde68a" stroke="${INK}"/>` + T(32, 120, 'source', { size: 11, rot: -90 });
+    const bars = [['paper', 150, 4, '#f5f5f4'], ['aluminium (a few mm)', 250, 10, '#cbd5e1'], ['lead (several cm)', 350, 26, '#6b7280']];
+    bars.forEach(([nm, x, w, c]) => { g += `<rect x="${x}" y="30" width="${w}" height="170" fill="${c}" stroke="${INK}"/>` + T(x + w / 2, 222, nm, { size: 11 }); });
+    order.forEach((ray, i) => { const y = 70 + i * 45, stop = ray === 'alpha' ? 150 : ray === 'beta' ? 250 : 376; g += `<path d="M54 ${y}H${stop}" stroke="#dc2626" stroke-width="2.4"${ray === 'gamma' ? '' : ''}/>` + arrowHead(ray === 'gamma' ? 430 : stop, y, 0, '#dc2626', 9) + (ray === 'gamma' ? `<path d="M376 ${y}H430" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4 3"/>` : '') + T(80, y - 8, rays[ray], { size: 14, w: 700 }); });
+    const svg = wrap(W, 235, g), title = 'Penetrating power', want = r.pick(['alpha', 'beta', 'gamma']), q = r.int(0, 1);
+    if (q === 0) return { title, spec: 'P7.5', kind: 'diagram', svg, q: `Which radiation is ${want === 'alpha' ? 'alpha (α)' : want === 'beta' ? 'beta (β⁻)' : 'gamma (γ)'}?`, o: [rays[want], ...L.filter(x => x !== rays[want])], x: 'Alpha is stopped by paper, beta by a few millimetres of aluminium, and gamma is only reduced by thick lead.' };
+    return { title, spec: 'P7.5', kind: 'diagram', svg, q: `What is radiation ${rays[want]}, and why does it ${want === 'gamma' ? 'get through so much' : 'stop where it does'}?`, o: { alpha: ['Alpha: big, heavily ionising helium nuclei, stopped by paper', 'Gamma: an electromagnetic wave', 'Beta: a fast electron', 'Alpha: it has no charge'], beta: ['Beta: fast electrons, stopped by a few mm of aluminium', 'Alpha: stopped by aluminium', 'Gamma: stopped by aluminium', 'Beta: a helium nucleus'], gamma: ['Gamma: an electromagnetic wave, weakly ionising, reduced by thick lead', 'Beta: passes through lead', 'Alpha: very penetrating', 'Gamma: a fast electron'] }[want], x: 'The more strongly a radiation ionises, the quicker it loses energy and the less it penetrates: alpha < beta < gamma.' };
+  };
+
+  /* ---------- the electromagnetic spectrum (P3.10, P3.11) ---------- */
+  M.emspec = r => {
+    const EM = ['radio waves', 'microwaves', 'infrared', 'visible light', 'ultraviolet', 'X-rays', 'gamma rays'], rev = r.int(0, 1), list = rev ? EM.slice().reverse() : EM.slice(), hide = sh([0, 1, 2, 3, 4, 5, 6], r).slice(0, r.pick([1, 2])), W = 470, w = 64;
+    let g = ''; list.forEach((nm, i) => { const x = 10 + i * w, hid = hide.includes(i); g += `<rect x="${x}" y="40" width="${w}" height="44" fill="${hid ? '#fff' : ['#e0e7ff', '#dbeafe', '#fee2e2', '#fef9c3', '#ede9fe', '#e5e7eb', '#d1fae5'][EM.indexOf(nm)]}" stroke="${INK}"/>` + (hid ? T(x + w / 2, 68, 'PQ'[hide.indexOf(i)], { size: 16, w: 700 }) : nm.split(' ').map((s, k, a) => T(x + w / 2, 66 + (k - (a.length - 1) / 2) * 13, s, { size: 11 })).join('')); });
+    g += arrow(rev ? W - 20 : 20, 110, rev ? 20 : W - 20, 110, INK, 2) + T(W / 2, 128, 'wavelength gets shorter, frequency gets higher', { size: 12, w: 600 });
+    g = g.replace(/<\/svg>$/, '');
+    const svg = wrap(W, 140, g), i = hide[0], ans = list[i], title = 'Electromagnetic spectrum';
+    if (r.int(0, 2)) return { title, spec: 'P3.11', kind: 'diagram', svg, q: `Which part of the spectrum is P?`, o: [ans, ...others(ans, EM, r)], x: `In order of decreasing wavelength: radio, microwaves, infrared, visible, ultraviolet, X-rays, gamma. P is ${ans}.` };
+    const k = r.int(0, 6); return { title, spec: 'P3.12', kind: 'diagram', svg, q: `What ${EM[k].endsWith('s') ? 'are' : 'is'} ${EM[k]} used for?`, o: [['broadcasting and communications', 'cooking and satellite transmissions', 'heaters and night-vision equipment', 'optical fibres and photography', 'fluorescent lamps and detecting forged bank notes', 'seeing inside bodies and objects', 'sterilising food and medical equipment'][k], ...others('', ['broadcasting and communications', 'cooking and satellite transmissions', 'heaters and night-vision equipment', 'optical fibres and photography', 'fluorescent lamps and detecting forged bank notes', 'seeing inside bodies and objects', 'sterilising food and medical equipment'].filter((_, j) => j !== k), r)], x: 'Radio: broadcasting · microwaves: cooking, satellites · infrared: heaters, night vision · visible: fibres, photography · UV: fluorescent lamps, security marks · X-rays: medical images · gamma: sterilising.' };
+  };
+
+  /* ---------- gas laws (P5.20–P5.22) ---------- */
+  M.gaslaw = r => {
+    const title = 'Gas pressure', kind = r.int(0, 1) ? 'pV' : 'pT';
+    if (kind === 'pV') { const k = r.pick([200, 300, 400, 600]), vmax = r.pick([40, 50, 60]), V1 = r.pick([10, 20].filter(v => v < vmax)), V2 = r.pick([20, 30, 40].filter(v => v !== V1 && v < vmax)), p = V => k / V, pmax = Math.ceil(p(5) / 20) * 20 / (k > 300 ? 1 : 1);
+      const ymax = Math.ceil(k / 8 / 10) * 10, svg = plot2({ xmax: vmax, xstep: 10, ymax, ystep: ymax > 50 ? 10 : 5, xl: 'Volume (cm³)', yl: 'Pressure (kPa)', series: [{ pts: curve(p, k / ymax, vmax, 80) }], marks: [[V1, p(V1), 'A']] });
+      if (r.int(0, 1)) return { title: 'Pressure and volume', spec: 'P5.22', kind: 'graph', svg, q: `The gas at A is squashed to ${V1 / 2} cm³ at the same temperature. What is its new pressure?`, o: [n(p(V1) * 2) + ' kPa', ...uniq(n(p(V1) * 2), [p(V1) / 2, p(V1), p(V1) + V1 / 2, p(V1) * 4].map(n)).map(v => v + ' kPa')], x: `p₁V₁ = p₂V₂: ${n(p(V1))} × ${V1} = p₂ × ${V1 / 2}, so p₂ = ${n(p(V1) * 2)} kPa. Halving the volume doubles the pressure.` };
+      return { title: 'Pressure and volume', spec: 'P5.20', kind: 'graph', svg, q: 'Why does the pressure go up when the volume is made smaller (same temperature)?', o: ['The molecules hit the walls more often', 'The molecules move faster', 'The molecules get bigger', 'There are more molecules'], x: 'Same number of molecules at the same speed, but in a smaller space they collide with the walls more often, so the pressure is higher.' }; }
+    const T1 = r.pick([250, 300, 350]), p1 = r.pick([80, 100, 120]), slope = p1 / T1, svg = plot2({ xmax: 400, xstep: 100, ymax: Math.ceil(slope * 400 / 20) * 20, ystep: 20, xl: 'Temperature (K)', yl: 'Pressure (kPa)', series: [{ pts: [[0, 0], [400, slope * 400]], dash: 0 }], marks: [[T1, p1, 'B']] });
+    const q = r.int(0, 2);
+    if (q === 0) { const T2 = r.pick([T1 * 2, T1 * 1.5, T1 / 2].filter(t => t <= 600 && t >= 100)); return { title: 'Pressure and temperature', spec: 'P5.21', kind: 'graph', svg, q: `The gas at B (${p1} kPa, ${T1} K) is heated to ${n(T2)} K at constant volume. What is the new pressure?`, o: [n(p1 * T2 / T1) + ' kPa', ...uniq(n(p1 * T2 / T1), [p1 * T1 / T2, p1 + T2 - T1, p1, p1 * 2 + 1].map(n)).map(v => v + ' kPa')], x: `p₁/T₁ = p₂/T₂: p₂ = ${p1} × ${n(T2)} ÷ ${T1} = ${n(p1 * T2 / T1)} kPa.` }; }
+    if (q === 1) return { title: 'Pressure and temperature', spec: 'P5.16', kind: 'graph', svg, q: 'The line goes through 0 K. What is 0 K in °C?', o: ['−273 °C', '0 °C', '−100 °C', '273 °C'], x: '0 K is absolute zero, −273 °C: the molecules would have no kinetic energy and exert no pressure.' };
+    return { title: 'Pressure and temperature', spec: 'P5.17', kind: 'graph', svg, q: `Point B is at ${T1} K. What is that in °C?`, o: [`${T1 - 273} °C`, `${T1 + 273} °C`, `${T1} °C`, `${273 - T1} °C`], x: `°C = K − 273 = ${T1} − 273 = ${T1 - 273} °C.` };
+  };
+
+  /* ---------- pressure in a liquid (P5.6, P5.7) ---------- */
+  M.pressure = r => {
+    const jets = r.f() < .4, W = 360, H = 300; let g = '';
+    if (jets) { g += `<path d="M60 40V260h120V40" fill="none" stroke="${INK}" stroke-width="2"/><rect x="62" y="60" width="116" height="198" fill="#bfdbfe"/>`;
+      const hs = sh([100, 160, 220], r), L = ['P', 'Q', 'R']; [100, 160, 220].forEach((y, i) => { const d = (y - 60) * 1.1; g += `<path d="M180 ${y}q${d * .6} 0 ${d} ${260 - y}" fill="none" stroke="#3b82f6" stroke-width="3"/>` + T(170, y - 6, L[i], { size: 13, w: 700, a: 'end' }); });
+      const svg = wrap(W, H, g); return { title: 'Pressure in a liquid', spec: 'P5.7', kind: 'diagram', svg, q: 'Why does water squirt furthest from hole R?', o: ['Pressure is greater deeper in the liquid', 'Hole R is bigger', 'Water is denser at the bottom', 'Air pressure pushes harder at the bottom'], x: 'Pressure difference = height × density × g: the deeper the hole, the greater the pressure pushing the water out.' }; }
+    const liquid = r.pick([['water', 1000], ['sea water', 1030], ['oil', 800]]), depthU = r.int(0, 1) ? 'm' : 'cm', depths = sh(depthU === 'm' ? [1, 2, 3, 4, 5] : [20, 30, 40, 50, 60, 80], r).slice(0, 3).sort((a, b) => a - b), dmax = depthU === 'm' ? 6 : 100, py = d => 40 + d / dmax * 220;
+    g += `<path d="M60 30V270h220V30" fill="none" stroke="${INK}" stroke-width="2"/><rect x="62" y="40" width="216" height="228" fill="#bfdbfe" opacity=".8"/>` + T(170, 34, 'surface', { size: 11 });
+    const L = sh(['A', 'B', 'C'], r); depths.forEach((d, i) => { const x = 110 + i * 60; g += `<circle cx="${x}" cy="${py(d)}" r="5" fill="${INK}"/>` + T(x + 9, py(d) + 4, L[i], { size: 13, w: 700, a: 'start' }) + `<path d="M${x - 14} 40V${py(d)}" stroke="#555" stroke-dasharray="3 3"/>` + T(x - 18, (40 + py(d)) / 2, `${d} ${depthU}`, { size: 10, a: 'end' }); });
+    g += T(300, 280, liquid[0], { size: 12, a: 'end' });
+    const svg = wrap(W, H, g), q = r.int(0, 1), deep = depths[2], i = r.int(0, 2), h = depthU === 'm' ? depths[i] : depths[i] / 100, dp = h * liquid[1] * 10;
+    if (q === 0) return { title: 'Pressure in a liquid', spec: 'P5.7', kind: 'diagram', svg, q: 'At which point is the pressure due to the liquid greatest?', o: [L[2], L[0], L[1], 'The same at all three'], x: `Pressure increases with depth (p = hρg), so the deepest point, ${L[2]}, has the greatest pressure.` };
+    return { title: 'Pressure in a liquid', spec: 'P5.7', kind: 'diagram', svg, q: `The density of ${liquid[0]} is ${liquid[1]} kg/m³ and g = 10 N/kg. What is the pressure due to the liquid at ${L[i]}?`, o: [n(dp) + ' Pa', ...uniq(n(dp), [depths[i] * liquid[1] * 10, dp / 10, h * liquid[1], dp * 10].map(n)).map(v => v + ' Pa')], x: `p = hρg = ${n(h)} m × ${liquid[1]} × 10 = ${n(dp)} Pa.${depthU === 'cm' ? ` (Convert ${depths[i]} cm to ${n(h)} m first.)` : ''}` };
+  };
+
+  const MAKERS = [
+    ['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['stopping', 'P1.19'], ['fe', 'P1.23'], ['scales', 'P5.4'], ['density', 'P5.3'], ['circuit', 'P2.19'], ['iv', 'P2.9'],
+    ['wave', 'P3.3'], ['emspec', 'P3.11'], ['reflect', 'P3.15'], ['ray', 'P3.16'], ['tir', 'P3.21'], ['sankey', 'P4.4'], ['pressure', 'P5.7'], ['gaslaw', 'P5.20'],
+    ['magnet', 'P6.4'], ['motor', 'P6.13'], ['penetration', 'P7.5'], ['half', 'P7.13'],
+    ['particles', 'C1.1'], ['cool', 'C1.1'], ['separation', 'C1.10'], ['chrom', 'C1.12'], ['nucleus', 'C1.16'], ['atom', 'C1.22'], ['ionic', 'C1.40'], ['covalent', 'C1.46'],
+    ['airO2', 'C2.14'], ['displace', 'C2.16'], ['ph', 'C2.29'], ['calorim', 'C3.3'], ['profile', 'C3.5'], ['rate', 'C3.10'], ['table', 'C3.15'], ['fraccol', 'C4.8'], ['displayed', 'C4.21'],
+    ['cell', 'B2.2'], ['enzyme', 'B2.11'], ['osmosis', 'B2.17'], ['photo', 'B2.20'], ['leaf', 'B2.21'], ['gut', 'B2.27'], ['thorax', 'B2.46'], ['heart', 'B2.65'], ['reflex', 'B2.90'], ['eye', 'B2.91'],
+    ['flower', 'B3.3'], ['menstrual', 'B3.9'], ['punnett', 'B3.23'], ['pedigree', 'B3.24'], ['quadrat', 'B4.2'], ['foodweb', 'B4.4'], ['pyramid', 'B4.7'], ['carbon', 'B4.10'], ['bars', '—']];
   function make(name, hard) { const r = rnd(); r.hard = !!hard; const q = M[name](r); q.o = q.o.slice(0, 4); return q; }
   return { make, MAKERS, M };
 })();
