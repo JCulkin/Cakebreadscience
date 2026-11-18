@@ -480,7 +480,7 @@ const DG = (() => {
     const nLeft = r.int(0, 1), askPole = r.int(0, 1), cx = 230, cy = 140, hw = 70, hh = 18, xL = cx - hw, xR = cx + hw;
     const dir = nLeft ? 0 : 180;   // along the top and bottom arcs the field runs N → S
     let g = '';
-    [[5, 30, 22], [10, 60, 52], [14, 95, 88], [17, 130, 125]].forEach(([dy, ex, hy]) => [-1, 1].forEach(s => {
+    [[5, 45, 26], [10, 100, 60], [14, 165, 98], [17, 235, 138]].forEach(([dy, ex, hy]) => [-1, 1].forEach(s => {
       const y = cy + s * dy, yc = cy + s * (dy + hy);
       g += `<path d="M${xL} ${y}C${xL - ex} ${yc} ${xR + ex} ${yc} ${xR} ${y}" fill="none" stroke="#444" stroke-width="1.6"/>`;
       g += arrowHead(cx + (dir ? -4 : 4), cy + s * (dy + .75 * hy), dir, '#444', 9);   // the top of a symmetric curve is at t = 0.5, 3/4 of the way to the control height
@@ -490,7 +490,7 @@ const DG = (() => {
     const lab = s => askPole ? '?' : s;
     g += `<rect x="${xL}" y="${cy - hh}" width="${hw}" height="${2 * hh}" fill="${askPole ? '#d1d5db' : nLeft ? '#fecaca' : '#bfdbfe'}" stroke="${INK}" stroke-width="2"/><rect x="${cx}" y="${cy - hh}" width="${hw}" height="${2 * hh}" fill="${askPole ? '#d1d5db' : nLeft ? '#bfdbfe' : '#fecaca'}" stroke="${INK}" stroke-width="2"/>`
       + T(cx - hw / 2, cy + 7, lab(nLeft ? 'N' : 'S'), { size: 20, w: 700 }) + T(cx + hw / 2, cy + 7, lab(nLeft ? 'S' : 'N'), { size: 20, w: 700 });
-    g += `<circle cx="${xL - 14}" cy="${cy - 26}" r="4.5" fill="${INK}"/>` + T(xL - 26, cy - 30, 'P', { size: 14, w: 700 }) + `<circle cx="${cx + 175}" cy="${cy - 105}" r="4.5" fill="${INK}"/>` + T(cx + 187, cy - 101, 'Q', { size: 14, w: 700, a: 'start' });
+    g += `<circle cx="${xL - 14}" cy="${cy - 26}" r="4.5" fill="${INK}"/>` + T(xL - 26, cy - 30, 'P', { size: 14, w: 700 }) + `<circle cx="${cx + 190}" cy="${cy - 110}" r="4.5" fill="${INK}"/>` + T(cx + 202, cy - 106, 'Q', { size: 14, w: 700, a: 'start' });
     const svg = wrap(460, 280, g);
     return askPole ? { title: 'Magnetic field of a bar magnet', spec: 'P6.4', kind: 'diagram', svg, q: 'Which end of the bar magnet is the north pole?', o: [nLeft ? 'The left end' : 'The right end', nLeft ? 'The right end' : 'The left end', 'Both ends', 'You can\'t tell from the field lines'], x: 'Field lines come out of the north pole and go into the south pole. Follow the arrows back to the end they leave from.' }
       : { title: 'Magnetic field of a bar magnet', spec: 'P6.4', kind: 'diagram', svg, q: 'Where is the magnetic field stronger, at P or at Q?', o: ['P: the field lines are closer together', 'Q: it is further from the magnet', 'The same everywhere', 'Q: the field lines are curved'], x: 'The closer together the field lines, the stronger the field. They are most crowded near the poles.' };
