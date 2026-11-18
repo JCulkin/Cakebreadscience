@@ -45,6 +45,10 @@ body.ps.bio { --ps-answer: #1a4f8a; --ps-answer-bg: #dde9f7; }
 .ps .foot { font-size: 7.5pt; color: #777; text-align: center; margin-top: auto; padding-top: 1mm; }
 .ps .screen-links { width: 210mm; margin: 6mm auto -4mm; font-size: 10pt; display: flex; gap: 6mm; }
 .ps .screen-links a { color: var(--primary-color); font-weight: bold; }
+/* "Under review" chip on new sheets (screen only). The text comes from CSS so adding or removing the chip
+   doesn't change the sheet's visible text, which the admin review portal fingerprints. */
+.ps .review-chip { margin-left: auto; font-size: 9pt; font-weight: bold; color: #8a5a00; background: #fff1c9; border: 1px solid #e3bd52; padding: 0 8px; }
+.ps .review-chip::after { content: "Under review"; }
 
 @media print {
     body.ps { background: #fff; padding: 0; }

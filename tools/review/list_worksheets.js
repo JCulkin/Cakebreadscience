@@ -12,13 +12,19 @@ const out = [];
 for (const folder of FOLDERS) {
   const dir = path.join(W, folder);
   if (!fs.existsSync(dir)) continue;
-  for (const f of fs.readdirSync(dir).filter(f => f.endsWith('.html') && !f.endsWith('_ms.html')).sort()) {
+  // top-level sheets plus the new KS4 / KS3 sets in {folder}/ks4 and {folder}/ks3 (worksheets chat, 19 Nov)
+  const files = [];
+  for (const sub of ['', 'ks4', 'ks3']) {
+    const d = path.join(dir, sub);
+    if (fs.existsSync(d)) for (const f of fs.readdirSync(d).filter(f => f.endsWith('.html') && !f.endsWith('_ms.html')).sort()) files.push(sub ? `${sub}/${f}` : f);
+  }
+  for (const f of files) {
     const p = `${folder}/${f}`, html = fs.readFileSync(path.join(dir, f), 'utf8');
     const ms = f.replace(/\.html$/, '_ms.html');
     const title = ((html.match(/<title>([^<]*)<\/title>/i) || [])[1] || f).replace(/\s*[|–-]\s*Cakebread Science\s*$/i, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&#39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
     out.push({
       p, t: title, subj: folder,
-      kind: /_challenge\b/.test(f) ? 'challenge' : /_practice\b/.test(f) ? 'practice' : 'sheet',
+      kind: f.startsWith('ks4/') ? 'KS4' : f.startsWith('ks3/') ? 'KS3' : /_challenge\b/.test(f) ? 'challenge' : /_practice\b/.test(f) ? 'practice' : 'sheet',
       live: linked.has(p),
       ms: fs.existsSync(path.join(dir, ms)) ? `${folder}/${ms}` : null
     });
