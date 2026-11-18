@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rompe Ladrillos</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+
+let ball;
+let paddle;
+let bricks = [];
+let score = 0;
+let gameOver = false;
+let gameWon = false;
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  resetGame();
+}
+
+function draw() {
+  background(20, 24, 35);
+ 
+  // Mostrar puntuación
+  fill(255);
+  textSize(24);
+  textAlign(LEFT, TOP);
+  text("Puntos: " + score, 20, 20);
+
+  if (gameOver) {
+    showEndScreen("¡FIN DEL JUEGO!", color(255, 50, 50));
+    return;
+  }
+
+  if (gameWon) {
+    showEndScreen("¡CONSEGUIDO!", color(50, 255, 50));
+    return;
+  }
+
+  // Actualizar y dibujar paleta
+  paddle.update();
+  paddle.display();
+
+  // Actualizar y dibujar bola
+  ball.update();
+  ball.checkPaddle(paddle);
+  ball.display();
+
+  // Comprobar si la bola cae
+  if (ball.y > height) {
+    gameOver = true;
+  }
+
+  // Actualizar y dibujar ladrillos
+  let allDestroyed = true;
+  for (let i = 0; i < bricks.length; i++) {
+    if (!bricks[i].destroyed) {
+      allDestroyed = false;
+      bricks[i].display();
+      if (bricks[i].checkCollision(ball)) {
+        ball.ySpeed *= -1;
+        bricks[i].destroyed = true;
+        score += 10;
+      }
+    }
+  }
+
+  if (allDestroyed) {
+    gameWon = true;
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+function mousePressed() {
+  if (gameOver || gameWon) {
+    resetGame();
+  }
+}
+
+function resetGame() {
+  score = 0;
+  gameOver = false;
+  gameWon = false;
+ 
+  // Crear paleta y bola
+  paddle = new Paddle();
+  ball = new Ball();
+ 
+  // Generar cuadrícula de ladrillos adaptada a la pantalla
+  bricks = [];
+  let rows = 5;
+  let cols = 10;
+  let brickWidth = (width - 60) / cols;
+  let brickHeight = 25;
+ 
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      let x = 30 + i * brickWidth;
+      let y = 60 + j * brickHeight;
+      // Colores degradados por fila
+      let brickColor = color(255 - (j * 40), 50 + (j * 30), 100 + (i * 15));
+      bricks.push(new Brick(x, y, brickWidth - 4, brickHeight - 4, brickColor));
+    }
+  }
+}
+
+function showEndScreen(message, textColor) {
+  textAlign(CENTER, CENTER);
+  fill(textColor);
+  textSize(48);
+  text(message, width / 2, height / 2 - 20);
+  fill(255);
+  textSize(20);
+  text("Haz clic en la pantalla para reiniciar", width / 2, height / 2 + 40);
+}
+
+// --- CLASE PALETA ---
+class Paddle {
+  constructor() {
+    this.w = 120;
+    this.h = 15;
+    this.y = height - 50;
+  }
+
+  update() {
+    // Sigue al ratón en el eje X manteniéndose dentro de la pantalla
+    this.x = constrain(mouseX - this.w / 2, 0, width - this.w);
+  }
+
+  display() {
+    fill(0, 200, 255);
+    noStroke();
+    rect(this.x, this.y, this.w, this.h, 5);
+  }
+}
+
+// --- CLASE BOLA ---
+class Ball {
+  constructor() {
+    this.r = 12;
+    this.reset();
+  }
+
+  reset() {
+    this.x = width / 2;
+    this.y = height / 2;
+    this.xSpeed = random(-4, 4);
+    this.ySpeed = 5;
+  }
+
+  update() {
+    this.x += this.xSpeed;
+    this.y += this.ySpeed;
+
+    // Rebotes en paredes laterales
+    if (this.x < this.r || this.x > width - this.r) {
+      this.xSpeed *= -1;
+    }
+    // Rebote en el techo
+    if (this.y < this.r) {
+      this.ySpeed *= -1;
+    }
+  }
+
+  checkPaddle(p) {
+    // Comprobar colisión con la parte superior de la paleta
+    if (this.y + this.r >= p.y && this.y - this.r <= p.y + p.h) {
+      if (this.x >= p.x && this.x <= p.x + p.w) {
+        // Calcular el ángulo de rebote según dónde golpee la paleta
+        let relativeHit = (this.x - (p.x + p.w / 2)) / (p.w / 2);
+        this.xSpeed = relativeHit * 6;
+        this.ySpeed = -abs(this.ySpeed);
+      }
+    }
+  }
+
+  display() {
+    fill(255, 230, 0);
+    ellipse(this.x, this.y, this.r * 2);
+  }
+}
+
+// --- CLASE LADRILLO ---
+class Brick {
+  constructor(x, y, w, h, c) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.color = c;
+    this.destroyed = false;
+  }
+
+  display() {
+    fill(this.color);
+    rect(this.x, this.y, this.w, this.h, 3);
+  }
+
+  checkCollision(b) {
+    // Detección básica de colisión AABB para la bola
+    return (b.x + b.r > this.x &&
+            b.x - b.r < this.x + this.w &&
+            b.y + b.r > this.y &&
+            b.y - b.r < this.y + this.h);
+  }
+}
+</script>
+</body>
+</html>
