@@ -99,21 +99,21 @@ C['cell'] = el => {
 
 /* ---------- kingdom explorer ---------- */
 const KINGDOMS = [
- {id:'plants', name:'Plants', col:'#2e7d32', cells:['plant'], rows:{
-   'Cells':'Multicellular', 'Nucleus':'Yes (eukaryotic)', 'Cell wall':'Yes: cellulose', 'Chloroplasts':'Yes: they photosynthesise (make their own food)',
-   'Carbohydrate store':'Starch or sucrose', 'Movement':'Generally can’t move from place to place; no nervous coordination', 'Examples':'Flowering plants: a cereal (maize) and a herbaceous legume (peas or beans)'}},
  {id:'animals', name:'Animals', col:'#c0392b', cells:['animal'], rows:{
    'Cells':'Multicellular', 'Nucleus':'Yes (eukaryotic)', 'Cell wall':'No', 'Chloroplasts':'No: they feed on other organisms',
    'Carbohydrate store':'Glycogen', 'Movement':'Usually move from place to place; have nervous coordination', 'Examples':'Mammals (humans), insects (housefly, mosquito)'}},
+ {id:'plants', name:'Plants', col:'#2e7d32', cells:['plant'], rows:{
+   'Cells':'Multicellular', 'Nucleus':'Yes (eukaryotic)', 'Cell wall':'Yes: cellulose', 'Chloroplasts':'Yes: they photosynthesise (make their own food)',
+   'Carbohydrate store':'Starch or sucrose', 'Movement':'Generally can’t move from place to place; no nervous coordination', 'Examples':'Flowering plants: a cereal (maize) and a herbaceous legume (peas or beans)'}},
  {id:'fungi', name:'Fungi', col:'#8d5524', cells:['hypha','yeast'], rows:{
    'Cells':'Mostly a mycelium of thread-like hyphae with many nuclei; some single-celled (yeast)', 'Nucleus':'Yes (eukaryotic)', 'Cell wall':'Yes: chitin', 'Chloroplasts':'No',
    'Nutrition':'Saprotrophic: secrete digestive enzymes onto food outside the body, then absorb the products', 'Carbohydrate store':'Glycogen', 'Examples':'Mucor (bread mould, hyphae), yeast (single-celled)'}},
- {id:'protoctists', name:'Protoctists', col:'#00838f', cells:['amoeba','chlorella'], rows:{
-   'Cells':'Microscopic, mostly single-celled', 'Nucleus':'Yes (eukaryotic)', 'Like animals':'Amoeba (lives in pond water)', 'Like plants':'Chlorella (has chloroplasts)',
-   'Pathogen':'Plasmodium causes malaria', 'Note':'The “dustbin” kingdom: organisms that don’t fit the other groups'}},
  {id:'bacteria', name:'Bacteria', col:'#6a1b9a', cells:['rod','coccus'], rows:{
    'Cells':'Microscopic, single-celled', 'Nucleus':'No (prokaryotic): one circular chromosome of DNA', 'Also has':'Cell wall, cell membrane, cytoplasm, plasmids (small loops of DNA)',
    'Nutrition':'Most feed off other living or dead organisms; some photosynthesise', 'Examples':'Lactobacillus bulgaricus (rod-shaped, makes yoghurt from milk); Pneumococcus (spherical, causes pneumonia)'}},
+ {id:'protoctists', name:'Protoctists', col:'#00838f', cells:['amoeba','chlorella'], rows:{
+   'Cells':'Microscopic, mostly single-celled', 'Nucleus':'Yes (eukaryotic)', 'Like animals':'Amoeba (lives in pond water)', 'Like plants':'Chlorella (has chloroplasts)',
+   'Pathogen':'Plasmodium causes malaria', 'Note':'The “dustbin” kingdom: organisms that don’t fit the other groups'}},
  {id:'viruses', name:'Viruses', col:'#555', cells:['virus'], rows:{
    'Living?':'No: not made of cells', 'Structure':'Protein coat around one type of genetic material: DNA or RNA', 'Size':'Smaller than bacteria',
    'Reproduce':'Only inside living cells (parasites); can infect every type of organism', 'Examples':'Tobacco mosaic virus (stops chloroplasts forming → discoloured leaves), influenza (flu), HIV (causes AIDS)'}}
