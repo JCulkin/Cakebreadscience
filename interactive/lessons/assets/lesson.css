@@ -240,3 +240,6 @@ img.soft{aspect-ratio:1;object-fit:cover;border-radius:50%;-webkit-mask-image:ra
 .ptwrap .blank{position:absolute;background:#fff;transition:opacity .4s}
 .ps.matched:not(.darkbg) .grey{color:rgba(0,0,0,.62)}
 .ps.darkbg .grey{color:rgba(255,255,255,.8)}
+.stype{display:inline-block;color:#fff;font-weight:700;font-size:.82em;padding:1px 8px;border-radius:3px;white-space:nowrap}
+.ps .mptab th,.ps .mptab td{padding:5px 12px;white-space:nowrap}
+.ps .mptab thead th{font-size:26px}
