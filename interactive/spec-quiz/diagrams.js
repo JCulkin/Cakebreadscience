@@ -128,7 +128,14 @@ const DG = (() => {
   const sh = (a, r) => a.slice().sort(() => r.f() - .5);
   const others = (ans, pool, r) => sh(pool.filter(x => x !== ans), r).slice(0, 3);
   /* up to 8 electrons in 4 pairs (top, right, bottom, left); 2 on a first shell sit top and bottom */
-  const ringXY = (cnt, i, rad) => { const ang = cnt <= 2 && rad < 30 ? [0, Math.PI][i] : [0, Math.PI / 2, Math.PI, 1.5 * Math.PI][Math.floor(i / 2) % 4] + (i % 2 ? .3 : -.3); return [Math.sin(ang) * rad, -Math.cos(ang) * rad]; };
+  /* how electrons sit on a shell: RING = 'pairs' (in pairs at top/right/bottom/left), 'single' (one at each of the four points first, then pairing up), 'spread' (evenly round the shell). Set by each maker. */
+  let RING = 'pairs';
+  const ringXY = (cnt, i, rad) => { const Q4 = [0, Math.PI / 2, Math.PI, 1.5 * Math.PI]; let ang;
+    if (cnt <= 2 && rad < 30) ang = [0, Math.PI][i];
+    else if (RING === 'spread') ang = i / cnt * 2 * Math.PI + (cnt % 4 === 0 ? Math.PI / cnt : 0);
+    else if (RING === 'single') { const slot = i % 4; ang = Q4[slot] + (cnt > slot + 4 ? (i < 4 ? -.3 : .3) : 0); }
+    else ang = Q4[Math.floor(i / 2) % 4] + (i % 2 ? .3 : -.3);
+    return [Math.sin(ang) * rad, -Math.cos(ang) * rad]; };
 
   /* ---------- ionic dot-and-cross: outer shells only (GCSE standard), sometimes full shells, and formation diagrams ---------- */
   const EL = { Li: [2, 1], Na: [2, 8, 1], K: [2, 8, 8, 1], Mg: [2, 8, 2], Ca: [2, 8, 8, 2], F: [2, 7], Cl: [2, 8, 7], O: [2, 6], S: [2, 8, 6] };
@@ -147,6 +154,7 @@ const DG = (() => {
   M.ionic = r => {
     const C = r.pick(r.hard ? [['Mg', 'Cl', 1, 2], ['Ca', 'Cl', 1, 2], ['Na', 'O', 2, 1], ['K', 'O', 2, 1], ['Li', 'O', 2, 1], ['Mg', 'O', 1, 1], ['Ca', 'S', 1, 1], ['Na', 'Cl', 1, 1]]
       : [['Na', 'Cl', 1, 1], ['K', 'Cl', 1, 1], ['Li', 'F', 1, 1], ['Mg', 'O', 1, 1], ['Ca', 'O', 1, 1], ['Na', 'F', 1, 1]]);
+    RING = r.pick(['pairs', 'pairs', 'single', 'spread']);
     const [m, a, nm, na] = C, lose = EL[m].slice(-1)[0], gain = 8 - EL[a].slice(-1)[0];
     const sub = k => k > 1 ? '₂' : '', formula = `${m}${sub(nm)}${a}${sub(na)}`;
     const mode = r.hard && r.f() < .5 ? 'form' : r.f() < .25 ? 'full' : 'outer';
@@ -185,11 +193,11 @@ const DG = (() => {
     'H₂O': { c: ['O', 2], lig: [['H', 0, 1, 0], ['H', 90, 1, 0]] }, 'NH₃': { c: ['N', 1], lig: [['H', 180, 1, 0], ['H', 0, 1, 0], ['H', 90, 1, 0]] },
     'CH₄': { c: ['C', 0], lig: [['H', 0, 1, 0], ['H', 90, 1, 0], ['H', 180, 1, 0], ['H', 270, 1, 0]] }, 'CO₂': { c: ['C', 0], lig: [['O', 0, 2, 2], ['O', 180, 2, 2]] },
   };
-  const RAD = s => s === 'H' ? 24 : 34;
+  const RAD = s => s === 'H' ? 24 : s === 'C*' ? 42 : 34;   // C* = a bigger central carbon for CO₂, so both double bonds have room
   function molecule(f) {
     const D = MOLS[f], at = [], bonds = [];
-    const dist = (a, b, o) => RAD(a) + RAD(b) - 20 - (o - 1) * 3;
-    if (D.c) { at.push({ s: D.c[0], x: 0, y: 0, lp: D.c[1], mark: 0 }); D.lig.forEach(([s, ang, o, lp]) => { const d = dist(D.c[0], s, o), t = ang * Math.PI / 180; at.push({ s, x: Math.cos(t) * d, y: Math.sin(t) * d, lp, mark: 1 }); bonds.push([0, at.length - 1, o]); }); }
+    const dist = (a, b, o) => RAD(a) + RAD(b) - [0, 22, 30, 38][o];   // overlap wide enough for o shared pairs side by side
+    if (D.c) { const cs = f === 'CO₂' ? 'C*' : D.c[0]; at.push({ s: cs, x: 0, y: 0, lp: D.c[1], mark: 0 }); D.lig.forEach(([s, ang, o, lp]) => { const d = dist(cs, s, o), t = ang * Math.PI / 180; at.push({ s, x: Math.cos(t) * d, y: Math.sin(t) * d, lp, mark: 1 }); bonds.push([0, at.length - 1, o]); }); }
     else { const d = dist(D.atoms[0][0], D.atoms[1][0], D.bonds[0][2]); D.atoms.forEach(([s, mk], i) => at.push({ s, x: i ? d : 0, y: 0, lp: D.lp[i], mark: mk })); bonds.push(...D.bonds); }
     const xs = at.map(a => a.x), ys = at.map(a => a.y), pad = 44, cxm = (Math.min(...xs) + Math.max(...xs)) / 2, cym = (Math.min(...ys) + Math.max(...ys)) / 2;
     const W = Math.max(230, Math.max(...xs) - Math.min(...xs) + 2 * pad), H = Math.max(150, Math.max(...ys) - Math.min(...ys) + 2 * pad), x0 = cxm - W / 2, y0 = cym - H / 2;
@@ -198,15 +206,15 @@ const DG = (() => {
     const dirs = at.map(() => []);
     bonds.forEach(([i, j, o]) => {
       const A = at[i], B = at[j], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d, px = -uy, py = ux;
-      const a = (d * d + RAD(A.s) ** 2 - RAD(B.s) ** 2) / (2 * d), mx = A.x + ux * a, my = A.y + uy * a;   // centre of the overlap
-      for (let k = 0; k < o; k++) { const off = (k - (o - 1) / 2) * 11; g += elec(mx - ux * 4.5 + px * off, my - uy * 4.5 + py * off, A.mark) + elec(mx + ux * 4.5 + px * off, my + uy * 4.5 + py * off, B.mark); }
+      const a = (d - RAD(B.s) + RAD(A.s)) / 2, mx = A.x + ux * a, my = A.y + uy * a;   // middle of the overlap, so nothing touches a shell line
+      for (let k = 0; k < o; k++) { const off = (k - (o - 1) / 2) * 11; g += elec(mx + ux * off + px * 5.5, my + uy * off + py * 5.5, A.mark) + elec(mx + ux * off - px * 5.5, my + uy * off - py * 5.5, B.mark); }
       dirs[i].push(Math.atan2(dy, dx)); dirs[j].push(Math.atan2(-dy, -dx));
     });
     at.forEach((a, i) => {
-      const R = RAD(a.s), base = dirs[i][0] || 0, slots = (dirs[i].length === 1 && a.lp === 2 ? [Math.PI / 2, -Math.PI / 2] : [Math.PI, Math.PI / 2, -Math.PI / 2, 0]).map(o => base + o).filter(t => dirs[i].every(b => Math.abs(Math.atan2(Math.sin(t - b), Math.cos(t - b))) > .6));
-      slots.slice(0, a.lp).forEach(t => { const cx = a.x + Math.cos(t) * R, cy = a.y + Math.sin(t) * R, px = -Math.sin(t) * 5.5, py = Math.cos(t) * 5.5; g += elec(cx + px, cy + py, a.mark) + elec(cx - px, cy - py, a.mark); });
-      const out = dirs[i].length === 1 ? (a.s === 'H' ? -8 : -10) : 0, t0 = dirs[i][0] || 0;
-      g += T(a.x + Math.cos(t0) * out, a.y + Math.sin(t0) * out + 6, a.s, { size: 17, w: 700 });
+      const R = RAD(a.s), base = dirs[i][0] || 0, slots = (dirs[i].length === 1 ? [Math.PI / 2, -Math.PI / 2, Math.PI] : [Math.PI, Math.PI / 2, -Math.PI / 2, 0]).map(o => base + o).filter(t => dirs[i].every(b => Math.abs(Math.atan2(Math.sin(t - b), Math.cos(t - b))) > .6));
+      slots.slice(0, a.lp).forEach(t => { const cx = a.x + Math.cos(t) * (R - 8), cy = a.y + Math.sin(t) * (R - 8), px = -Math.sin(t) * 5.5, py = Math.cos(t) * 5.5; g += elec(cx + px, cy + py, a.mark) + elec(cx - px, cy - py, a.mark); });
+      const ord = Math.max(1, ...bonds.filter(b => b[0] === i || b[1] === i).map(b => b[2])), out = dirs[i].length === 1 ? (a.s === 'H' ? -8 : -10 - 5 * (ord - 1)) : 0, t0 = dirs[i][0] || 0;
+      g += T(a.x + Math.cos(t0) * out, a.y + Math.sin(t0) * out + 6, a.s.replace('*', ''), { size: 17, w: 700 });
     });
     return `<svg viewBox="${x0} ${y0} ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:260px;background:#fff" preserveAspectRatio="xMidYMid meet">${g}</svg>`;
   }
@@ -354,9 +362,9 @@ const DG = (() => {
   const ELN = ['hydrogen', 'helium', 'lithium', 'beryllium', 'boron', 'carbon', 'nitrogen', 'oxygen', 'fluorine', 'neon', 'sodium', 'magnesium', 'aluminium', 'silicon', 'phosphorus', 'sulfur', 'chlorine', 'argon', 'potassium', 'calcium'];
   const config = z => { const s = []; let left = z; [2, 8, 8, 2].forEach(c => { if (left > 0) { s.push(Math.min(c, left)); left -= c; } }); return s; };
   M.atom = r => {
-    const z = r.int(r.hard ? 11 : 3, r.hard ? 20 : 18), sh0 = config(z), cx = 140, cy = 120;
+    const z = r.int(r.hard ? 11 : 3, r.hard ? 20 : 18), sh0 = config(z), cx = 140, cy = 120, mark = r.int(0, 1); RING = r.pick(['pairs', 'single', 'spread']);
     let g = `<circle cx="${cx}" cy="${cy}" r="14" fill="#fde68a" stroke="${INK}"/>` + T(cx, cy + 5, '?', { size: 14, w: 700 });
-    sh0.forEach((c, k) => { const rad = 28 + k * 22; g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#666"/>`; for (let i = 0; i < c; i++) { const [dx, dy] = ringXY(c, i, rad); g += elec(cx + dx, cy + dy, 1); } });
+    sh0.forEach((c, k) => { const rad = 28 + k * 22; g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#666"/>`; for (let i = 0; i < c; i++) { const [dx, dy] = ringXY(c, i, rad); g += elec(cx + dx, cy + dy, mark); } });
     const svg = wrap(280, 240, g), cfg = sh0.join('.'), grp = z === 2 ? 0 : sh0[sh0.length - 1] === 8 ? 0 : sh0[sh0.length - 1], q = r.int(0, 2);
     if (q === 0) return { title: 'Electron shells', spec: 'C1.22', kind: 'diagram', svg, q: 'Which element has this electronic configuration?', o: [ELN[z - 1], ...others(ELN[z - 1], [ELN[z - 2], ELN[z] || ELN[z - 3], ELN[(z + 7) % 20], ELN[(z + 9) % 20]].filter(Boolean), r)], x: `${z} electrons (${cfg}), so ${z} protons: ${ELN[z - 1]} (${ELS[z - 1]}).` };
     if (q === 1) return { title: 'Electron shells', spec: 'C1.22', kind: 'diagram', svg, q: 'What is the electronic configuration shown?', o: [cfg, ...others(cfg, [config(z - 1).join('.'), config(z + 1).join('.'), sh0.slice().reverse().join('.'), [Math.min(z, 2), z - 2].join('.')], r)], x: `Count the electrons in each shell from the inside: ${cfg}.` };
@@ -416,8 +424,8 @@ const DG = (() => {
     const L = r.pick([['grass', 'grasshoppers', 'frogs', 'snakes'], ['phytoplankton', 'zooplankton', 'small fish', 'seals'], ['oak tree leaves', 'caterpillars', 'blue tits', 'sparrowhawks']]);
     const [what, pu, pf] = r.pick([['biomass', 'g/m²', 1], ['biomass', 'g/m²', 1], ['biomass', 'kg/m²', .001], ['energy', 'kJ/m²/year', 10]]), scaled = r.f() < .4, levels = scaled ? 3 : 4;
     const b0 = r.pick([1000, 2000, 5000]), b = [b0, b0 * (scaled ? r.pick([20, 25, 40]) : r.pick([10, 10, 20])) / 100]; b.push(b[1] * (scaled ? r.pick([20, 25, 40]) : r.pick([10, 20])) / 100); if (!scaled) b.push(b[2] * 10 / 100);
-    let g = ''; const maxW = 320, hgt = 38, cx = 200, wOf = (v, i) => scaled ? Math.max(2, maxW * v / b0) : Math.max(L[i].length * 7.5 + 16, maxW * Math.pow(v / b0, .35));
-    b.forEach((v, i) => { const w = wOf(v, i), y = 210 - i * (hgt + 4), fits = w >= L[i].length * 7.5 + 12;
+    let g = ''; const maxW = 320, hgt = 38, cx = 200, wOf = (v, i) => scaled ? Math.max(2, maxW * v / b0) : Math.max(L[i].length * 7.5 + 16, (n(v * pf) + ' ' + pu).length * 6.2 + 14, maxW * Math.pow(v / b0, .35));
+    b.forEach((v, i) => { const w = wOf(v, i), y = 210 - i * hgt, fits = w >= Math.max(L[i].length * 7.5, (n(v * pf) + ' ' + pu).length * 6.2) + 10;
       g += `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${hgt}" fill="${['#86efac', '#fde68a', '#fdba74', '#fca5a5'][i]}" stroke="${INK}"/>`
         + (fits ? T(cx, y + 16, L[i], { size: 12, w: 700 }) + T(cx, y + 31, n(v * pf) + ' ' + pu, { size: 11 }) : `<line x1="${cx + w / 2 + 2}" y1="${y + hgt / 2}" x2="${cx + 40}" y2="${y + hgt / 2}" stroke="#888"/>` + T(cx + 44, y + 16, L[i], { size: 12, w: 700, a: 'start' }) + T(cx + 44, y + 31, n(v * pf) + ' ' + pu, { size: 11, a: 'start' })); });
     g += T(390, 22, scaled ? `Drawn to scale (bar width ∝ ${what})` : 'Not to scale', { size: 11, w: 700, a: 'end', fill: '#555' });
@@ -480,22 +488,24 @@ const DG = (() => {
     const [name, inT, useT, wasteT, [k0, k1]] = r.pick(SANKEY_DEV), N = 20, sq = 8, grid = r.f() < (r.hard ? .6 : .3);
     const unit = r.pick(['J', 'J', 'kJ', 'MJ']), v = r.pick(unit === 'MJ' ? [1, 2, 5] : unit === 'kJ' ? [1, 2, 5, 10] : [5, 10, 20, 50]);
     const ku = r.int(k0, k1), kw = wasteT.length === 2 ? (a => [a, N - ku - a])(Math.max(1, Math.min(N - ku - 1, Math.round((N - ku) * (.7 + r.f() * .15))))) : [N - ku];
-    const E = N * v, use = ku * v, ws = kw.map(k => k * v), waste = E - use, x0 = 20, y0 = 36, H = N * sq, xu = 380, ybot = y0 + H + 40;
-    const turn = kw.length === 2 ? [300, 180] : [196], hu = ku * sq, tipU = Math.min(18, hu / 2 + 4);
+    const E = N * v, use = ku * v, ws = kw.map(k => k * v), waste = E - use, x0 = 20, y0 = 36, H = N * sq, ybot = y0 + H + 40;
+    const turn = []; let xr = x0 + 15 * sq; for (let k = kw.length - 1; k >= 0; k--) { turn[k] = xr; xr += kw[k] * sq + 6 * sq; }   // lowest band turns first, each band clear of the one below
+    const xu = Math.max(xr - sq, x0 + 32 * sq), WD = xu + 130;
+    const hu = ku * sq, tipU = Math.min(18, hu / 2 + 4);
     let path = `M${x0} ${y0}H${xu}L${xu + tipU} ${y0 + hu / 2}L${xu} ${y0 + hu}`, a = y0 + hu; const tips = [];
     kw.forEach((k, i) => { const t = k * sq, xt = turn[i], tip = Math.min(16, t / 2 + 4); path += `H${xt + t}V${ybot}L${xt + t / 2} ${ybot + tip}L${xt} ${ybot}V${a + t}`; tips.push([xt + t / 2, ybot + tip]); a += t; });
     path += `H${x0}Z`;
     const hide = grid ? r.int(0, kw.length) : -1;   // on squared paper one value is left for the student to count
     const val = (x, i) => i === hide ? '?' : `${n(x)} ${unit}`;
     let g = '';
-    if (grid) { for (let x = x0 - 2 * sq; x <= 440; x += sq) g += `<line x1="${x}" y1="${y0 - 2 * sq}" x2="${x}" y2="${ybot + 3 * sq}" stroke="#d6e4f0" stroke-width="${(x - x0) % (5 * sq) ? .6 : 1.2}"/>`;
-      for (let y = y0 - 2 * sq; y <= ybot + 3 * sq; y += sq) g += `<line x1="${x0 - 2 * sq}" y1="${y}" x2="440" y2="${y}" stroke="#d6e4f0" stroke-width="${(y - y0) % (5 * sq) ? .6 : 1.2}"/>`; }
+    if (grid) { for (let x = x0 - 2 * sq; x <= WD - 60; x += sq) g += `<line x1="${x}" y1="${y0 - 2 * sq}" x2="${x}" y2="${ybot + 3 * sq}" stroke="#d6e4f0" stroke-width="${(x - x0) % (5 * sq) ? .6 : 1.2}"/>`;
+      for (let y = y0 - 2 * sq; y <= ybot + 3 * sq; y += sq) g += `<line x1="${x0 - 2 * sq}" y1="${y}" x2="${WD - 60}" y2="${y}" stroke="#d6e4f0" stroke-width="${(y - y0) % (5 * sq) ? .6 : 1.2}"/>`; }
     g += `<path d="${path}" fill="${grid ? 'rgba(255,255,255,.15)' : '#fff'}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`;
     g += T(x0 + 50, y0 + H / 2 - 2, `${E} ${unit}`, { size: 14, w: 700 }) + T(x0 + 50, y0 + H / 2 + 15, inT, { size: 12 });
     g += T(xu + tipU + 8, y0 + hu / 2, val(use, 0), { size: 13, w: 700, a: 'start' }) + T(xu + tipU + 8, y0 + hu / 2 + 15, useT, { size: 11, a: 'start' }) + T(xu + tipU + 8, y0 + hu / 2 + 29, '(useful)', { size: 11, a: 'start', fill: '#555' });
     kw.forEach((k, i) => { const [x, y] = tips[i]; g += T(x, y + 16, val(ws[i], i + 1), { size: 13, w: 700 }) + T(x, y + 31, wasteT[i], { size: 11 }) + T(x, y + 44, '(wasted)', { size: 11, fill: '#555' }); });
-    g += grid ? T(490, 18, `1 small square = ${v} ${unit}`, { size: 12, w: 700, a: 'end' }) : T(490, 18, 'Drawn to scale', { size: 11, a: 'end', fill: '#555' });
-    const svg = wrap(500, ybot + 76, g), eff = use / E * 100, title = 'Sankey diagram';
+    g += grid ? T(WD - 10, 18, `1 small square = ${v} ${unit}`, { size: 12, w: 700, a: 'end' }) : T(WD - 10, 18, 'Drawn to scale', { size: 11, a: 'end', fill: '#555' });
+    const svg = wrap(WD, ybot + 76, g), eff = use / E * 100, title = 'Sankey diagram';
     if (grid && hide >= 0) { const ans = hide === 0 ? use : ws[hide - 1], what = hide === 0 ? `usefully transferred as ${useT}` : `wasted as ${wasteT[hide - 1]}`, k = hide === 0 ? ku : kw[hide - 1];
       return { title, spec: 'P4.3', kind: 'diagram', svg, q: `How much energy is ${what}?`, o: [n(ans) + ' ' + unit, ...uniq(ans, [k, ans * 2, E - ans, ans + v, ans - v]).map(x => n(x) + ' ' + unit)], x: `Count the squares across that arrow: ${k} squares × ${v} ${unit} = ${n(ans)} ${unit}.` }; }
     const q = r.int(0, kw.length === 2 ? 2 : 1);
@@ -601,7 +611,7 @@ const DG = (() => {
       : { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'What is the magnetic field like in the middle of the gap?', o: ['Uniform: the same strength and direction everywhere', 'Strongest in the middle of the gap', 'Zero, because the poles cancel out', 'It points from S to N'], x: 'The lines are straight, parallel and evenly spaced, so the field is uniform. (It points from N to S and only spreads out at the edges.)' };
     const facing = kind === 'attract' ? 'opposite poles facing' : 'like poles facing';
     if (hidePoles || kind === 'attract') return { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'Will these two magnets attract or repel each other?', o: [kind === 'attract' ? 'Attract: field lines join one magnet to the other' : 'Repel: the field lines push apart and don\'t join', kind === 'attract' ? 'Repel: field lines join one magnet to the other' : 'Attract: the field lines push apart and don\'t join', 'Neither: magnets only affect iron', 'You can\'t tell without the pole labels'], x: kind === 'attract' ? `Lines go straight across the gap from one magnet into the other (${facing}), so they attract.` : `The lines from the two facing poles bend away from each other and leave a point with no field in the middle (${facing}), so they repel.` };
-    g += T(W / 2, H / 2 + 5, '×', { size: 18, w: 700, fill: '#dc2626' }) + T(W / 2 + 10, H / 2 - 8, 'X', { size: 13, w: 700, a: 'start', fill: '#dc2626' });
+    g += `<circle cx="${W / 2}" cy="${H / 2}" r="4" fill="#dc2626"/>` + T(W / 2 + 8, H / 2 - 8, 'X', { size: 14, w: 700, a: 'start', fill: '#dc2626' });
     return { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'What is at point X, halfway between the magnets?', o: ['A neutral point: the two fields cancel, so there is no magnetic field', 'The strongest part of the field', 'A third pole', 'A point where the field lines cross'], x: 'Like poles face each other, so their fields point in opposite directions and cancel at X. Field lines never cross.' };
   };
 
@@ -624,7 +634,89 @@ const DG = (() => {
     return { title, spec: 'B2.2', kind: 'diagram', svg, q: 'What kind of organism is this cell from?', o: [ans, ...others(ans, [...new Set(Object.values(CELL_KIND))], r)], x: `It has ${why}, so it's ${ans}.` };
   };
 
-  const MAKERS = [['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['fe', 'P1.23'], ['wave', 'P3.3'], ['ray', 'P3.16'], ['sankey', 'P4.4'], ['circuit', 'P2.19'], ['iv', 'P2.10'], ['magnet', 'P6.4'], ['half', 'P7.13'],
+  /* ---------- light: angle arcs measured clockwise from "up" ---------- */
+  const at = (ox, oy, a, L) => [ox + Math.sin(a * Math.PI / 180) * L, oy - Math.cos(a * Math.PI / 180) * L];
+  const angArc = (ox, oy, a0, a1, rad, lab, col = INK) => { const [x0, y0] = at(ox, oy, a0, rad), [x1, y1] = at(ox, oy, a1, rad), [mx, my] = at(ox, oy, (a0 + a1) / 2, rad + 13);
+    return `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${rad} ${rad} 0 0 ${a1 > a0 ? 1 : 0} ${x1.toFixed(1)} ${y1.toFixed(1)}" fill="none" stroke="${col}" stroke-width="1.3"/>` + (lab ? T(mx.toFixed(1), (my + 4).toFixed(1), lab, { size: 13, w: 700, fill: col }) : ''); };
+  /* a ray from P to Q with an arrowhead part-way along */
+  const rayLine = (P, Q, col = '#dc2626', dash) => { const mx = P[0] + (Q[0] - P[0]) * .55, my = P[1] + (Q[1] - P[1]) * .55;
+    return `<line x1="${P[0].toFixed(1)}" y1="${P[1].toFixed(1)}" x2="${Q[0].toFixed(1)}" y2="${Q[1].toFixed(1)}" stroke="${col}" stroke-width="2.4"${dash ? ' stroke-dasharray="6 4" opacity=".6"' : ''}/>` + arrowHead(mx, my, Math.atan2(Q[1] - P[1], Q[0] - P[0]) * 180 / Math.PI, col, 10); };
+  const normalLine = (ox, oy, a, L1, L2) => { const [x1, y1] = at(ox, oy, a, L1), [x2, y2] = at(ox, oy, a + 180, L2); return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#555" stroke-dasharray="5 4"/>`; };
+  const deg = x => x * 180 / Math.PI, sinD = a => Math.sin(a * Math.PI / 180);
+  const MEDIA = [['glass', 1.5], ['glass', 1.5], ['water', 1.33], ['Perspex', 1.49], ['diamond', 2.42]];
+
+  /* refraction: air → medium or medium → air, single boundary or a whole rectangular block, ray from either side */
+  M.ray = r => {
+    const [med, nn] = r.pick(MEDIA), kind = r.pick(['in', 'in', 'out', 'block']), s = r.pick([1, -1]), lab = r.pick([['a', 'b', 'c', 'd'], ['p', 'q', 'r', 's'], ['w', 'x', 'y', 'z']]);
+    const crit = deg(Math.asin(1 / nn)), title = 'Ray diagram: refraction';
+    let i = kind === 'out' ? r.pick([10, 15, 20, 25, 30, 35].filter(a => a < crit - 4)) : r.pick([20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70]);
+    const rr = kind === 'out' ? deg(Math.asin(nn * sinD(i))) : deg(Math.asin(sinD(i) / nn)), ox = 200, oy = kind === 'block' ? 70 : 115, L = 95;
+    let g = '';
+    if (kind === 'block') {
+      const H = 110, x2 = ox + s * Math.tan(rr * Math.PI / 180) * H, oy2 = oy + H;
+      g += `<rect x="40" y="${oy}" width="320" height="${H}" fill="#e0f2fe" stroke="${INK}"/>` + T(56, oy + H - 10, med, { size: 12, a: 'start' }) + T(56, oy - 46, 'air', { size: 12, a: 'start' });
+      g += normalLine(ox, oy, 0, 60, 40) + normalLine(x2, oy2, 0, 40, 60);
+      g += rayLine(at(ox, oy, -s * i, 80), [ox, oy]) + rayLine([ox, oy], [x2, oy2]) + rayLine([x2, oy2], at(x2, oy2, 180 - s * i, 70));
+      g += angArc(ox, oy, s > 0 ? -i : 0, s > 0 ? 0 : i, 30, lab[0]) + angArc(ox, oy, s > 0 ? 180 - rr : 180, s > 0 ? 180 : 180 + rr, 30, lab[1]) + angArc(x2, oy2, s > 0 ? 180 - i : 180, s > 0 ? 180 : 180 + i, 30, lab[2]);
+      const svg = wrap(400, oy2 + 80, g);
+      return r.int(0, 1) ? { title: 'Ray through a glass block', spec: 'P3.17', kind: 'diagram', svg, q: 'What is true about the ray that comes out of the bottom of the block?', o: ['It is parallel to the ray that went in', 'It bends back to where it started', 'It carries straight on inside the block\'s direction', 'It is reflected back into the block'], x: `It bends towards the normal going in and away from the normal by the same amount coming out, so angle ${lab[2]} = angle ${lab[0]} and the ray leaves parallel to the ray that went in (just shifted sideways).` }
+        : { title: 'Ray through a glass block', spec: 'P3.17', kind: 'diagram', svg, q: `Which angle is the angle of refraction where the ray enters the ${med}?`, o: [lab[1], lab[0], lab[2], 'none of them'], x: `Angles are measured from the normal. Inside the ${med}, between the ray and the normal, is ${lab[1]}.` };
+    }
+    const top = kind === 'in' ? 'air' : med, bot = kind === 'in' ? med : 'air', fillTop = kind === 'out';
+    g += `<rect x="40" y="${fillTop ? 10 : oy}" width="320" height="${fillTop ? oy - 10 : 115}" fill="#e0f2fe" stroke="none"/><line x1="40" y1="${oy}" x2="360" y2="${oy}" stroke="${INK}" stroke-width="1.6"/>` + T(56, oy - 12, top, { size: 12, a: 'start' }) + T(56, oy + 22, bot, { size: 12, a: 'start' });
+    g += normalLine(ox, oy, 0, 100, 105) + T(ox + 6, oy - 88, 'normal', { size: 11, a: 'start' });
+    g += rayLine(at(ox, oy, -s * i, L), [ox, oy]) + rayLine([ox, oy], at(ox, oy, 180 - s * rr, L));
+    g += angArc(ox, oy, s > 0 ? -i : 0, s > 0 ? 0 : i, 34, lab[0]) + angArc(ox, oy, s > 0 ? -90 : i, s > 0 ? -i : 90, 54, lab[1]) + angArc(ox, oy, s > 0 ? 180 - rr : 180, s > 0 ? 180 : 180 + rr, 34, lab[2]) + angArc(ox, oy, s > 0 ? 90 : 180 + rr, s > 0 ? 180 - rr : 270, 54, lab[3]);
+    const svg = wrap(400, 235, g), air = kind === 'in' ? i : rr, inMed = kind === 'in' ? rr : i, q = r.int(0, r.hard ? 3 : 2);
+    if (q === 0) return { title, spec: 'P3.16', kind: 'diagram', svg, q: 'Which angle is the angle of refraction?', o: [lab[2], lab[0], lab[3], lab[1]], x: `Angles are measured from the normal, not the surface. The refracted ray is the one after the boundary, so the angle of refraction is ${lab[2]}. (${lab[0]} is the angle of incidence.)` };
+    if (q === 1) return { title, spec: 'P3.16', kind: 'diagram', svg, q: `As the light goes from ${top} into ${bot}, how does it bend?`, o: [kind === 'in' ? 'Towards the normal: it slows down' : 'Away from the normal: it speeds up', kind === 'in' ? 'Away from the normal: it speeds up' : 'Towards the normal: it slows down', 'It doesn\'t bend: it goes straight through', 'Away from the normal: it slows down'], x: kind === 'in' ? `Light slows down going into the ${med}, so it bends towards the normal (angle of refraction smaller than angle of incidence).` : `Light speeds up going from the ${med} into air, so it bends away from the normal.` };
+    if (q === 2) { const ans = n(nn); return { title, spec: 'P3.18', kind: 'diagram', svg, q: `Angle ${lab[0]} = ${n(i)}° and angle ${lab[2]} = ${n(rr)}°. What is the refractive index of the ${med}?`, o: [ans, ...uniq(ans, [air / inMed, sinD(inMed) / sinD(air), inMed / air, 1 / nn + 1].map(n))], x: `n = sin(angle in air) ÷ sin(angle in the ${med}) = sin ${n(air)}° ÷ sin ${n(inMed)}° = ${ans}.` }; }
+    const ans = n(Math.round(rr * 10) / 10); return { title, spec: 'P3.18', kind: 'diagram', svg, q: `The refractive index of the ${med} is ${nn}. Angle ${lab[0]} = ${i}°. What is angle ${lab[2]}?`, o: [ans + '°', ...uniq(ans, [i / nn, i * nn, 90 - rr, i].map(v => n(Math.round(v * 10) / 10))).map(v => v + '°')], x: kind === 'in' ? `sin r = sin i ÷ n = sin ${i}° ÷ ${nn} = ${n(sinD(i) / nn)}, so r = ${ans}°.` : `sin r = n × sin i = ${nn} × sin ${i}° = ${n(nn * sinD(i))}, so r = ${ans}°.` };
+  };
+
+  /* reflection in a plane mirror: mirror flat, or upright on the left or right; angles to the normal or to the mirror */
+  M.reflect = r => {
+    const N = r.pick([0, 0, 90, 270]), i = r.pick([20, 25, 30, 35, 40, 45, 50, 55, 60, 65]), s = r.pick([1, -1]), lab = r.pick([['a', 'b', 'c', 'd'], ['p', 'q', 'r', 's'], ['w', 'x', 'y', 'z']]);
+    const [ox, oy] = N === 0 ? [200, 190] : N === 90 ? [70, 120] : [330, 120], W = 400, H = 235;
+    const [m1x, m1y] = at(ox, oy, N + 90, 130), [m2x, m2y] = at(ox, oy, N - 90, 130);
+    let g = `<line x1="${m1x}" y1="${m1y}" x2="${m2x}" y2="${m2y}" stroke="${INK}" stroke-width="4"/>`;
+    for (let k = -120; k <= 120; k += 14) { const [hx, hy] = at(ox, oy, N + 90, k), [ex, ey] = at(hx, hy, N + 180 + 35, 12); g += `<line x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${INK}"/>`; }
+    g += normalLine(ox, oy, N, 150, 0) + (() => { const [tx, ty] = at(ox, oy, N, 150); return T(tx + (N === 0 ? 6 : 0), ty + (N === 0 ? 14 : -6), 'normal', { size: 11, a: N === 0 ? 'start' : 'middle' }); })() + (N === 0 ? T(m1x - 10, m1y - 8, 'mirror', { size: 11, a: 'end' }) : T(ox + (N === 90 ? 8 : -8), H - 6, 'mirror', { size: 11, a: N === 90 ? 'start' : 'end' }));
+    g += rayLine(at(ox, oy, N - s * i, 150), [ox, oy]) + rayLine([ox, oy], at(ox, oy, N + s * i, 150));
+    g += angArc(ox, oy, s > 0 ? N - i : N, s > 0 ? N : N + i, 40, lab[0]) + angArc(ox, oy, s > 0 ? N : N - i, s > 0 ? N + i : N, 40, lab[1]) + angArc(ox, oy, s > 0 ? N - 90 : N + i, s > 0 ? N - i : N + 90, 64, lab[2]) + angArc(ox, oy, s > 0 ? N + i : N - 90, s > 0 ? N + 90 : N - i, 64, lab[3]);
+    const svg = wrap(W, H, g), title = 'Ray diagram: reflection', q = r.int(0, 2);
+    if (q === 0) return { title, spec: 'P3.16', kind: 'diagram', svg, q: 'Which angle is the angle of reflection?', o: [lab[1], lab[0], lab[3], lab[2]], x: `Angles are measured from the normal. The reflected ray is the one leaving the mirror, so the angle of reflection is ${lab[1]} (and ${lab[0]}, the angle of incidence, is equal to it).` };
+    if (q === 1) { const th = 90 - i; return { title, spec: 'P3.15', kind: 'diagram', svg, q: `Angle ${lab[2]}, between the ray and the mirror, is ${th}°. What is the angle of reflection?`, o: [i + '°', ...uniq(i, [th, 2 * th, 180 - 2 * th, 2 * i, 90 + i, i / 2]).map(v => v + '°')], x: `The angle of incidence is measured from the normal: 90° − ${th}° = ${i}°. Angle of reflection = angle of incidence = ${i}°.` }; }
+    return { title, spec: 'P3.15', kind: 'diagram', svg, q: `The angle of incidence is ${i}°. What is the angle between the incoming ray and the reflected ray?`, o: [2 * i + '°', ...uniq(2 * i, [i, 90 - i, 180 - 2 * i, 180 - i, 4 * i]).map(v => v + '°')], x: `Angle of reflection = angle of incidence = ${i}°, and both are measured from the normal, so the rays are ${i}° + ${i}° = ${2 * i}° apart.` };
+  };
+
+  /* total internal reflection in a semicircular block: the ray aims at the centre O of the flat face */
+  M.tir = r => {
+    const [med, nn] = r.pick(MEDIA), c = deg(Math.asin(1 / nn)), cR = Math.round(c), s = r.pick([1, -1]);
+    const kase = r.pick(['above', 'above', 'below', 'crit']), i = kase === 'crit' ? cR : kase === 'above' ? Math.min(80, cR + r.pick([8, 12, 18, 25])) : Math.max(10, cR - r.pick([10, 15, 20]));
+    const mode = r.pick(kase === 'crit' ? ['drawn'] : ['predict', 'drawn', 'drawn']), ox = 200, oy = 80, R = 130, x = r.pick(['i', 'x', 'θ']);
+    let g = `<path d="M${ox - R} ${oy}A${R} ${R} 0 0 0 ${ox + R} ${oy}Z" fill="#e0f2fe" stroke="${INK}" stroke-width="1.6"/>` + T(ox - R + 6, oy - 10, 'air', { size: 12, a: 'start' }) + T(ox - 40, oy + R - 22, med, { size: 12 });
+    g += normalLine(ox, oy, 0, 70, R + 10);
+    g += rayLine(at(ox, oy, 180 + s * i, R + 30), [ox, oy]) + angArc(ox, oy, s > 0 ? 180 : 180 - i, s > 0 ? 180 + i : 180, 44, x);
+    if (mode === 'drawn') {
+      const rout = kase === 'below' ? deg(Math.asin(Math.min(1, nn * sinD(i)))) : 90;
+      if (kase !== 'above') g += rayLine([ox, oy], at(ox, oy, s * (kase === 'crit' ? 89 : rout), kase === 'crit' ? R + 20 : 120));
+      g += rayLine([ox, oy], at(ox, oy, 180 - s * i, R), '#dc2626', kase !== 'above');   // dashed = the weak partial reflection
+    }
+    g += `<circle cx="${ox}" cy="${oy}" r="3" fill="${INK}"/>` + T(ox + s * -12, oy - 6, 'O', { size: 12, w: 700 });
+    const svg = wrap(400, oy + R + 50, g), title = 'Total internal reflection';
+    if (mode === 'predict') {
+      const ans = kase === 'above' ? 'It is totally internally reflected' : 'It refracts out into the air, bending away from the normal';
+      return { title, spec: 'P3.21', kind: 'diagram', svg, q: `The critical angle for ${med} is ${cR}°. Angle ${x} is ${i}°. What happens to the ray at O?`, o: [ans, ...others(ans, ['It is totally internally reflected', 'It refracts out into the air, bending away from the normal', 'It refracts out, bending towards the normal', 'It travels along the surface'], r)], x: kase === 'above' ? `${i}° is bigger than the critical angle (${cR}°), so all the light is reflected back into the ${med}.` : `${i}° is smaller than the critical angle (${cR}°), so most of the light refracts out (bending away from the normal) and a little is reflected.` };
+    }
+    if (kase === 'crit') return r.int(0, 1) || !r.hard ? { title, spec: 'P3.21', kind: 'diagram', svg, q: `The ray leaves O along the surface of the ${med}. What is angle ${x} called?`, o: ['The critical angle', 'The angle of refraction', 'The angle of reflection', 'The angle of total internal reflection'], x: 'When the angle of incidence makes the refracted ray travel along the boundary (angle of refraction 90°), it is the critical angle.' }
+      : { title, spec: 'P3.22', kind: 'diagram', svg, q: `The refractive index of ${med} is ${nn}. What is the critical angle?`, o: [n(Math.round(c * 10) / 10) + '°', ...uniq(n(Math.round(c * 10) / 10), [deg(Math.asin(1 / nn / 2)), deg(Math.atan(1 / nn)), 90 / nn, deg(Math.acos(1 / nn))].map(v => n(Math.round(v * 10) / 10))).map(v => v + '°')], x: `sin c = 1 ÷ n = 1 ÷ ${nn} = ${n(1 / nn)}, so c = ${n(Math.round(c * 10) / 10)}°.` };
+    if (kase === 'above') return r.int(0, 1) ? { title, spec: 'P3.21', kind: 'diagram', svg, q: 'What is happening to the ray at O?', o: ['Total internal reflection', 'Refraction', 'Diffraction', 'Dispersion'], x: `Angle ${x} (${i}°) is bigger than the critical angle for ${med} (${cR}°), so no light gets out: it is all reflected inside the ${med}.` }
+      : { title, spec: 'P3.21', kind: 'diagram', svg, q: `Which of these must be true for this to happen?`, o: [`Angle ${x} is bigger than the critical angle`, `Angle ${x} is smaller than the critical angle`, 'The light is going from air into the block', 'The surface is a mirror'], x: 'Total internal reflection needs light going from a denser medium towards a less dense one (here into air) and an angle of incidence bigger than the critical angle.' };
+    return { title, spec: 'P3.21', kind: 'diagram', svg, q: `The dashed ray is weak. Why does most of the light get out of the ${med}?`, o: [`Angle ${x} is less than the critical angle`, `Angle ${x} is more than the critical angle`, 'Light can never reflect inside glass', `The ${med} absorbs the reflected light`], x: `${i}° is below the critical angle (${cR}°): most of the light refracts out and only a little is reflected (the dashed ray).` };
+  };
+
+  const MAKERS = [['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['fe', 'P1.23'], ['wave', 'P3.3'], ['reflect', 'P3.15'], ['ray', 'P3.16'], ['tir', 'P3.21'], ['sankey', 'P4.4'], ['circuit', 'P2.19'], ['iv', 'P2.10'], ['magnet', 'P6.4'], ['half', 'P7.13'],
     ['atom', 'C1.22'], ['ionic', 'C1.40'], ['covalent', 'C1.46'], ['chrom', 'C1.12'], ['cool', 'C1.1'], ['rate', 'C3.10'], ['profile', 'C3.5'], ['table', 'C3.15'], ['displayed', 'C4.21'],
     ['cell', 'B2.2'], ['enzyme', 'B2.10'], ['photo', 'B2.20'], ['punnett', 'B3.23'], ['pedigree', 'B3.24'], ['foodweb', 'B4.4'], ['pyramid', 'B4.7'], ['bars', '—']];
   function make(name, hard) { const r = rnd(); r.hard = !!hard; const q = M[name](r); q.o = q.o.slice(0, 4); return q; }
