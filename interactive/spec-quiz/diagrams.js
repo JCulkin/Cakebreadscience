@@ -797,14 +797,14 @@ const DG = (() => {
     return { title, spec, kind: 'diagram', svg, q: `What does part ${L} do?`, o: [FN[k], ...others(FN[k], [...new Set(Object.values(FN))], r)], x: `${L} is the ${nm}.` };
   }
   /* a line graph that can go below zero */
-  function plot2({ xmin = 0, xmax, xstep, ymin = 0, ymax, ystep, xl, yl, series = [], marks = [], w = 400, h = 260, extra }) {
-    const L = 58, R = 16, Tp = 14, B = 42, px = x => L + (x - xmin) / (xmax - xmin) * (w - L - R), py = y => h - B - (y - ymin) / (ymax - ymin) * (h - Tp - B);
+  function plot2({ xmin = 0, xmax, xstep, ymin = 0, ymax, ystep, xl, yl, series = [], marks = [], w = 400, h = 260, extra, bot = 42 }) {
+    const L = 58, R = 16, Tp = 14, B = bot, px = x => L + (x - xmin) / (xmax - xmin) * (w - L - R), py = y => h - B - (y - ymin) / (ymax - ymin) * (h - Tp - B);
     let g = '';
     for (let k = 0; xmin + k * xstep / 2 <= xmax + 1e-9; k++) { const x = xmin + k * xstep / 2; g += `<line x1="${px(x)}" y1="${py(ymin)}" x2="${px(x)}" y2="${py(ymax)}" stroke="${GRID}" stroke-width="${k % 2 ? .5 : 1}"/>` + (k % 2 ? '' : T(px(x), py(ymin) + 15, n(x), { size: 11 })); }
     for (let k = 0; ymin + k * ystep / 2 <= ymax + 1e-9; k++) { const y = ymin + k * ystep / 2; g += `<line x1="${px(xmin)}" y1="${py(y)}" x2="${px(xmax)}" y2="${py(y)}" stroke="${GRID}" stroke-width="${k % 2 ? .5 : 1}"/>` + (k % 2 ? '' : T(px(xmin) - 6, py(y) + 4, n(y), { size: 11, a: 'end' })); }
     const y0 = ymin < 0 && ymax > 0 ? 0 : ymin;
     g += `<line x1="${px(xmin)}" y1="${py(y0)}" x2="${px(xmax)}" y2="${py(y0)}" stroke="${INK}" stroke-width="1.6"/><line x1="${px(xmin)}" y1="${py(ymin)}" x2="${px(xmin)}" y2="${py(ymax)}" stroke="${INK}" stroke-width="1.6"/>`;
-    g += T((px(xmin) + px(xmax)) / 2, h - 8, xl, { size: 12, w: 600 }) + T(14, (py(ymin) + py(ymax)) / 2, yl, { size: 12, w: 600, rot: -90 });
+    g += T((px(xmin) + px(xmax)) / 2, py(ymin) + 34, xl, { size: 12, w: 600 }) + T(14, (py(ymin) + py(ymax)) / 2, yl, { size: 12, w: 600, rot: -90 });
     series.forEach(s => { if (s.pts.length > 1 && !s.dotsOnly) g += `<polyline points="${s.pts.map(([x, y]) => px(x).toFixed(1) + ',' + py(y).toFixed(1)).join(' ')}" fill="none" stroke="${s.col || INK}" stroke-width="2.2"${s.dash ? ' stroke-dasharray="6 4"' : ''}/>`;
       if (s.dots) s.dots.forEach(([x, y]) => { g += `<path d="M${px(x) - 4} ${py(y) - 4}l8 8M${px(x) + 4} ${py(y) - 4}l-8 8" stroke="${s.col || INK}" stroke-width="1.8"/>`; });
       if (s.label) { const [x, y] = s.pts[s.lab ?? s.pts.length - 1]; g += T(px(x) + (s.dx || 6), py(y) - 7, s.label, { size: 13, w: 700, a: 'start', fill: s.col || INK }); } });
@@ -1061,7 +1061,8 @@ const DG = (() => {
   M.nucleus = r => {
     const [sym, Z, As] = r.pick(ISO), A = r.pick(As), N = A - Z, cx = 160, cy = 140;
     const nuc = sh([...Array(Z).fill('p'), ...Array(N).fill('n')], r); let g = '';
-    const rr = 7.5, pts = []; for (let i = 0; i < nuc.length; i++) { const a = i * 2.39996, d = rr * 1.16 * Math.sqrt(i); pts.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d]); }
+    const rr = 7.5, rot = r.f() * Math.PI, ox = (r.f() - .5) * rr, oy = (r.f() - .5) * rr, hex = []; for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) { const x = (i + j / 2) * 2 * rr + ox, y = j * Math.sqrt(3) * rr + oy; hex.push([x, y, Math.hypot(x, y) + r.f() * .5]); }
+    hex.sort((a, b) => a[2] - b[2]); const pts = hex.slice(0, nuc.length).map(([x, y]) => [cx + x * Math.cos(rot) - y * Math.sin(rot), cy + x * Math.sin(rot) + y * Math.cos(rot)]);   // nucleons touch but never overlap
     const shells = config(Z); shells.forEach((c, k) => { const rad = 58 + k * 28; g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#999"/>`; for (let i = 0; i < c; i++) { const a = i / c * 2 * Math.PI - Math.PI / 2; g += `<circle cx="${(cx + Math.cos(a) * rad).toFixed(1)}" cy="${(cy + Math.sin(a) * rad).toFixed(1)}" r="5" fill="#1e3a8a"/>` + T((cx + Math.cos(a) * rad).toFixed(1), (cy + Math.sin(a) * rad + 3.5).toFixed(1), '−', { size: 9, w: 700, fill: '#fff' }); } });
     nuc.forEach((t, i) => { const [x, y] = pts[i]; g += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr}" fill="${t === 'p' ? '#ef4444' : '#d1d5db'}" stroke="${INK}"/>` + (t === 'p' ? T(x.toFixed(1), (y + 4).toFixed(1), '+', { size: 10, w: 700, fill: '#fff' }) : ''); });
     g += `<g transform="translate(300 60)"><circle r="7" fill="#ef4444" stroke="${INK}"/>${T(0, 4, '+', { size: 10, w: 700, fill: '#fff' })}${T(14, 4, 'proton', { size: 12, a: 'start' })}<circle cy="26" r="7" fill="#d1d5db" stroke="${INK}"/>${T(14, 30, 'neutron', { size: 12, a: 'start' })}<circle cy="52" r="5" fill="#1e3a8a"/>${T(14, 56, 'electron', { size: 12, a: 'start' })}</g>`;
@@ -1072,26 +1073,41 @@ const DG = (() => {
     const other = As.find(a => a !== A); if (!other) return { title, spec: 'C1.15', kind: 'diagram', svg, q: 'What is the overall charge of this atom?', o: ['0: equal numbers of protons and electrons', `+${Z}`, `−${Z}`, `+${A}`], x: `${Z} protons (+) and ${Z} electrons (−) cancel: the atom is neutral.` };
     return { title, spec: 'C1.16', kind: 'diagram', svg, q: `Another atom of ${ELEM} has mass number ${other}. How many neutrons does it have?`, o: [String(other - Z), ...uniq(other - Z, [other, N, Z, other + Z]).map(String)], x: `Isotopes have the same number of protons (${Z}) but different numbers of neutrons: ${other} − ${Z} = ${other - Z}.` };
   };
-  /* ---------- the heart, front view (B2.65, B2.69) ---------- */
+  /* ---------- the heart, front view (B2.65, B2.69). User 18 Nov 21:28: \"too mechanical, especially the valves\" →
+     one rounded muscle outline, chambers as hollows in it (left ventricle wall thickest), flap valves with tendons,
+     cup-shaped valves at the base of the arteries ---------- */
   M.heart = r => {
-    const plain = r.f() < .5, BL = plain ? '#e5e7eb' : '#bfdbfe', RD = plain ? '#e5e7eb' : '#fecaca', WALL = plain ? '#f8fafc' : '#fde2e4';
-    const shrink = (d, cx, cy, k) => `<path d="${d}" transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})"`;
-    const tube = (d, c, w = 22) => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 4}" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
-    const RA = 'M50 110Q50 84 76 84H150V178H50Z', LA = 'M210 84H284Q310 84 310 110V178H210Z';
-    const RV = 'M50 188H174V318Q122 312 82 272Q50 238 50 188Z', LV = 'M186 188H312Q312 262 264 300Q230 326 186 322Z';
-    let g = tube('M94 0V100', BL) + tube('M196 196V50Q196 22 228 22H300Q332 22 332 54V100', RD) + tube('M378 140H296', RD, 20) + tube('M163 196V60Q163 42 145 42H0', BL);
-    [[RA, 100, 131, .8, BL], [LA, 260, 131, .8, RD], [RV, 112, 240, .8, BL], [LV, 248, 244, .62, RD]].forEach(([d, cx, cy, k, c]) => { g += `<path d="${d}" fill="${WALL}" stroke="${INK}" stroke-width="2"/>` + shrink(d, cx, cy, k) + ` fill="${c}" stroke="${INK}" stroke-width="1.2"/>`; });
-    g += `<path d="M180 186v138" stroke="${INK}" stroke-width="7"/><path d="M180 186v138" stroke="${WALL}" stroke-width="4"/>`;   // septum
-    g += `<path d="M70 176l20 22M130 176l-20 22M230 176l20 22M290 176l-20 22" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`;   // valves between atria and ventricles
-    if (!plain) g += arrow(94, 10, 94, 60, '#1d4ed8', 2) + arrow(163, 120, 163, 70, '#1d4ed8', 2) + arrow(60, 42, 20, 42, '#1d4ed8', 2) + arrow(372, 140, 330, 140, '#b91c1c', 2) + arrow(196, 120, 196, 66, '#b91c1c', 2) + arrow(332, 60, 332, 94, '#b91c1c', 2);
-    const parts = { ra: [90, 140], la: [268, 140], rv: [100, 250], lv: [258, 244], aorta: [270, 22], pa: [40, 42], vc: [94, 70], pv: [356, 140], septum: [180, 290], valve: [80, 187] };
-    const NAME = { ra: 'right atrium', la: 'left atrium', rv: 'right ventricle', lv: 'left ventricle', aorta: 'aorta', pa: 'pulmonary artery', vc: 'vena cava', pv: 'pulmonary vein', septum: 'septum', valve: 'valve' };
-    const FN = { aorta: 'Carries oxygenated blood from the heart to the body', pa: 'Carries deoxygenated blood from the heart to the lungs', vc: 'Brings deoxygenated blood back from the body', pv: 'Brings oxygenated blood back from the lungs', valve: 'Stops blood flowing backwards', septum: 'Keeps oxygenated and deoxygenated blood apart', lv: 'Pumps blood out to the whole body' };
-    const keys = sh(Object.keys(parts), r).slice(0, 5), W = 380, { g: lg, letter } = letterParts(parts, keys, W, 20, 310, { lx: -40, rx: 420, mid: 180 });
-    const svg = `<svg viewBox="-60 -4 500 334" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The heart';
+    const plain = r.f() < .5, BL = plain ? '#e5e7eb' : '#bfdbfe', RD = plain ? '#e5e7eb' : '#fecaca', WALL = plain ? '#f8f5f0' : '#f9d5d3';
+    const tube = (d, c, w = 20) => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 4}" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round"/>`;
+    const OUT = 'M98 84Q130 76 166 82H222Q270 76 306 84Q352 92 352 132V206Q350 292 280 342Q252 362 234 364Q200 362 152 332Q64 278 62 206V132Q62 92 98 84Z';
+    const RA = 'M80 120Q80 98 106 98H126Q146 98 146 118V166Q144 186 124 186H102Q80 184 80 160Z', LA = 'M238 118Q238 98 260 98H300Q328 98 328 124V160Q326 182 302 182H260Q238 182 238 164Z';
+    const RV = 'M84 212Q84 198 98 198H134Q152 196 154 176V84H178V196Q182 208 182 230V298Q150 308 118 284Q86 258 84 212Z', LV = 'M204 232Q204 212 203 200V84H229V176Q230 194 248 196H310Q326 196 324 216Q320 264 290 294Q260 322 206 322Z';
+    let g = `<path d="${OUT}" fill="${WALL}" stroke="${INK}" stroke-width="2.2"/>` + tube('M406 132H300', RD, 16) + tube('M-6 142H100', BL) + tube('M-6 172H96', BL, 16) + tube('M406 160H300', RD, 16);
+    g += tube('M216 100V48Q216 18 248 18H318Q350 18 350 50V74', RD, 22) + tube('M166 100V58Q166 40 146 40H-6', BL);   // arteries leave from the top
+    g += `<path d="${RA}" fill="${BL}" stroke="${INK}" stroke-width="1.4"/><path d="${LA}" fill="${RD}" stroke="${INK}" stroke-width="1.4"/><path d="${RV}" fill="${BL}" stroke="${INK}" stroke-width="1.4"/><path d="${LV}" fill="${RD}" stroke="${INK}" stroke-width="1.4"/>`;
+    g += `<rect x="157" y="70" width="18" height="24" fill="${BL}"/><rect x="206" y="70" width="20" height="24" fill="${RD}"/>`;   // open tops
+    g += `<rect x="98" y="178" width="30" height="26" fill="${BL}"/><rect x="258" y="174" width="40" height="28" fill="${RD}"/>`;   // openings between atrium and ventricle
+    g += `<path d="M96 184Q90 192 98 200M130 184Q136 192 128 200M256 180Q250 190 258 200M300 180Q306 190 298 200" fill="none" stroke="${INK}" stroke-width="1.4"/>`;
+    const flap = (x1, y1, x2, y2, bend) => `<path d="M${x1} ${y1}Q${(x1 + x2) / 2 + bend} ${(y1 + y2) / 2} ${x2} ${y2}" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M${x1} ${y1}Q${(x1 + x2) / 2 + bend} ${(y1 + y2) / 2} ${x2} ${y2}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`;
+    const cord = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${INK}" stroke-width=".9"/>`;
+    const pap = (x, y, rot) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="10" transform="rotate(${rot} ${x} ${y})" fill="${WALL}" stroke="${INK}" stroke-width="1.2"/>`;
+    g += cord(110, 224, 104, 262) + cord(114, 224, 122, 268) + cord(118, 222, 140, 270) + pap(103, 268, 20) + pap(140, 276, -25);
+    g += cord(270, 222, 258, 296) + cord(276, 224, 280, 298) + cord(282, 222, 300, 278) + pap(262, 302, 10) + pap(302, 284, -30);
+    g += flap(98, 196, 112, 226, -6) + flap(128, 196, 116, 226, 6) + flap(258, 194, 272, 224, -6) + flap(298, 194, 282, 224, 6);   // flap valves
+    const cups = (x, w, y, c) => { const k = w / 2; let s = ''; for (let i = 0; i < 2; i++) s += `<path d="M${x + i * k} ${y}q${k / 2} ${k * 1.2} ${k} 0" fill="#fff" fill-opacity=".6" stroke="${INK}" stroke-width="2"/>`; return s; };
+    g += cups(156, 20, 150, BL) + cups(205, 22, 150, RD);   // semilunar valves
+    if (!plain) g += arrow(20, 142, 70, 142, '#1d4ed8', 2) + arrow(166, 136, 166, 96, '#1d4ed8', 2) + arrow(120, 40, 40, 40, '#1d4ed8', 2) + arrow(390, 132, 336, 132, '#b91c1c', 2) + arrow(216, 136, 216, 96, '#b91c1c', 2) + arrow(350, 40, 350, 70, '#b91c1c', 2);
+    const parts = { ra: [112, 128], la: [296, 128], rv: [158, 266], lv: [240, 256], aorta: [286, 18], pa: [60, 40], vc: [40, 142], pv: [370, 160], septum: [194, 300], valve: [106, 212], semi: [162, 156] };
+    const NAME = { ra: 'right atrium', la: 'left atrium', rv: 'right ventricle', lv: 'left ventricle', aorta: 'aorta', pa: 'pulmonary artery', vc: 'vena cava', pv: 'pulmonary vein', septum: 'septum', valve: 'valve', semi: 'valve' };
+    const FN = { aorta: 'Carries oxygenated blood from the heart to the body', pa: 'Carries deoxygenated blood from the heart to the lungs', vc: 'Brings deoxygenated blood back from the body', pv: 'Brings oxygenated blood back from the lungs', valve: 'Stops blood flowing backwards', semi: 'Stops blood flowing backwards', septum: 'Keeps oxygenated and deoxygenated blood apart', lv: 'Pumps blood out to the whole body' };
+    let keys = sh(Object.keys(parts), r).slice(0, 5); if (keys.includes('valve') && keys.includes('semi')) keys = keys.filter(k => k !== 'semi');
+    const { g: lg, letter } = letterParts(parts, keys, 400, 14, 350, { lx: -40, rx: 440, mid: 196 });
+    const svg = `<svg viewBox="-60 -4 520 374" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The heart';
     if (plain && r.f() < .3) { const ox = keys.filter(k => ['la', 'lv', 'aorta', 'pv'].includes(k)), de = keys.filter(k => ['ra', 'rv', 'pa', 'vc'].includes(k)); if (ox.length && de.length >= 2) { const k = r.pick(ox); return { title, spec: 'B2.65', kind: 'diagram', svg, q: 'Which of these labels a part that carries oxygenated blood?', o: [letter[k], ...others(letter[k], de.map(x => letter[x]), r)], x: `The left side of the heart (on the right of the picture, as you face the person) carries oxygenated blood from the lungs: ${letter[k]} is the ${NAME[k]}.` }; } }
     if (r.f() < .2) return { title, spec: 'B2.65', kind: 'diagram', svg, q: 'Why does the left ventricle have a thicker wall than the right ventricle?', o: ['It pumps blood all round the body, so it needs more force', 'It holds more blood', 'It carries deoxygenated blood', 'It pumps blood only to the lungs'], x: 'The left ventricle pumps blood to the whole body at high pressure; the right only pumps to the nearby lungs.' };
-    return partQ(r, title, 'B2.65', svg, letter, keys, NAME, FN);
+    const q = partQ(r, title, 'B2.65', svg, letter, keys, NAME, FN);
+    if (q.q.startsWith('What is part') && q.o[0] === 'valve') q.o = ['valve', ...others('valve', ['septum', 'vena cava', 'aorta', 'atrium', 'tendon'], r)];
+    return q;
   };
 
   /* ---------- the eye, side section (B2.91, B2.92) ---------- */
@@ -1114,23 +1130,33 @@ const DG = (() => {
     return partQ(r, title, 'B2.91', svg, letter, keys, NAME, FN);
   };
 
-  /* ---------- leaf cross-section (B2.21, B2.70) ---------- */
+  /* ---------- leaf cross-section (B2.21, B2.70). User 18 Nov 21:28: labels pointed at odd places → every label point is
+     taken from a cell that was actually drawn (air space = the gap above the stoma, kept clear) ---------- */
   M.leaf = r => {
     const W = 420, x0 = 20, x1 = 400; let g = '';
-    g += `<rect x="${x0}" y="20" width="${x1 - x0}" height="6" fill="#d9f99d" stroke="${INK}" stroke-width=".8"/>`;   // upper cuticle
-    for (let x = x0; x < x1; x += 28) g += `<rect x="${x}" y="26" width="28" height="18" fill="#fff" stroke="${INK}"/>`;   // upper epidermis
-    for (let x = x0; x < x1; x += 20) { g += `<rect x="${x + 1}" y="46" width="18" height="58" rx="6" fill="#bbf7d0" stroke="${INK}"/>`; for (let k = 0; k < 4; k++) g += `<circle cx="${x + 6 + (k % 2) * 8}" cy="${54 + k * 13}" r="3" fill="#16a34a"/>`; }   // palisade
-    const vb = r.pick([140, 200, 260]), st = r.pick([90, 160, 320].filter(v => Math.abs(v - vb) > 50));
-    for (let x = x0 + 14; x < x1 - 8; x += 30) for (let y = 120; y < 175; y += 30) { const xx = x + (y % 60 ? 12 : 0) + r.int(-3, 3), yy = y + r.int(-3, 3); if (Math.hypot(xx - vb, yy - 140) < 40) continue; g += `<ellipse cx="${xx}" cy="${yy}" rx="12" ry="10" fill="#dcfce7" stroke="${INK}"/><circle cx="${xx - 3}" cy="${yy}" r="2.4" fill="#16a34a"/>`; }   // spongy, with air spaces between
-    g += `<circle cx="${vb}" cy="140" r="30" fill="#fef3c7" stroke="${INK}" stroke-width="1.6"/>`; for (let k = 0; k < 5; k++) g += `<circle cx="${vb - 14 + k * 7}" cy="${128 + (k % 2) * 6}" r="5" fill="#fff" stroke="${INK}" stroke-width="1.6"/>`; for (let k = 0; k < 4; k++) g += `<circle cx="${vb - 10 + k * 7}" cy="${154}" r="3.5" fill="#fde68a" stroke="${INK}"/>`;
-    for (let x = x0; x < x1; x += 28) if (Math.abs(x + 14 - st) > 20) g += `<rect x="${x}" y="190" width="28" height="16" fill="#fff" stroke="${INK}"/>`;   // lower epidermis with a gap for the stoma
-    g += `<ellipse cx="${st - 8}" cy="198" rx="8" ry="10" fill="#bbf7d0" stroke="${INK}"/><ellipse cx="${st + 8}" cy="198" rx="8" ry="10" fill="#bbf7d0" stroke="${INK}"/><rect x="${x0}" y="206" width="${x1 - x0}" height="4" fill="#d9f99d" stroke="${INK}" stroke-width=".6"/>`;
-    const parts = { cuticle: [x0 + 300, 23], upper: [x0 + 60, 35], palisade: [x0 + 125, 75], spongy: [x0 + 30, 165], air: [x0 + 48, 150], xylem: [vb - 7, 128], phloem: [vb + 4, 154], guard: [st + 9, 202], stoma: [st, 198], lower: [x0 + 220, 198] };
-    if (Math.abs(vb - 70) < 40) { parts.spongy = [x0 + 320, 165]; parts.air = [x0 + 300, 150]; }
+    const vb = r.pick([110, 210, 300]), st = r.pick([80, 160, 250, 340].filter(v => Math.abs(v - vb) > 60)), Y = { cut: 18, up: 23, pal: 46, sp: 112, lo: 196, end: 212 };
+    g += `<rect x="${x0}" y="${Y.cut}" width="${x1 - x0}" height="${Y.up - Y.cut}" fill="#ecfccb" stroke="${INK}" stroke-width=".8"/>`;   // waxy cuticle
+    const upCells = []; for (let x = x0; x < x1;) { const w = Math.min(x1 - x, r.int(22, 32)); upCells.push([x, w]); g += `<rect x="${x}" y="${Y.up}" width="${w}" height="${Y.pal - Y.up}" fill="#fff" stroke="${INK}"/>`; x += w; }   // upper epidermis: clear cells
+    const pal = []; for (let x = x0 + 1; x < x1 - 10; x += 19) { const h = r.int(56, 62); pal.push([x + 8.5, Y.pal + 2 + h / 2]); g += `<rect x="${x}" y="${Y.pal + 2}" width="17" height="${h}" rx="7" fill="#dcfce7" stroke="${INK}"/>`; for (let k = 0; k < 6; k++) g += `<ellipse cx="${x + (k % 2 ? 13 : 4.5)}" cy="${Y.pal + 10 + Math.floor(k / 2) * 18 + (k % 2) * 8}" rx="2.6" ry="3.6" fill="#16a34a"/>`; }   // palisade: tall, packed with chloroplasts
+    const vy = 140, vr = 26, chamber = [st, Y.lo - 18];
+    const cells = []; for (let t = 0; t < 3000 && cells.length < 70; t++) { const rx = r.int(10, 14), ry = r.int(7, 10), c = [x0 + rx + 2 + r.f() * (x1 - x0 - 2 * rx - 4), Y.sp + ry + 2 + r.f() * (Y.lo - Y.sp - 2 * ry - 4)];
+      if (Math.hypot(c[0] - vb, c[1] - vy) < vr + rx + 4) continue; if (Math.abs(c[0] - st) < 24 && c[1] > Y.lo - 34) continue;
+      if (cells.every(([x, y, a, b]) => Math.hypot((x - c[0]) / (a + rx + 1), (y - c[1]) / (b + ry + 1)) > 1)) cells.push([...c, rx, ry]); }
+    cells.forEach(([x, y, a, b]) => { g += `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${a}" ry="${b}" fill="#f0fdf4" stroke="${INK}"/><ellipse cx="${(x - a / 3).toFixed(1)}" cy="${y.toFixed(1)}" rx="2.2" ry="3" fill="#16a34a"/><ellipse cx="${(x + a / 3).toFixed(1)}" cy="${(y + 1).toFixed(1)}" rx="2.2" ry="3" fill="#16a34a"/>`; });   // spongy: loose, with air spaces
+    g += `<circle cx="${vb}" cy="${vy}" r="${vr}" fill="#fefce8" stroke="${INK}" stroke-width="1.8"/>`;   // vein (vascular bundle)
+    const xy = [[-11, -10], [0, -13], [11, -10], [-5, -1], [6, -1]]; xy.forEach(([dx, dy]) => { g += `<circle cx="${vb + dx}" cy="${vy + dy}" r="5" fill="#fff" stroke="${INK}" stroke-width="2"/>`; });   // xylem: wide, thick-walled
+    const ph = [[-10, 12], [-3, 14], [4, 14], [11, 11], [0, 7]]; ph.forEach(([dx, dy]) => { g += `<circle cx="${vb + dx}" cy="${vy + dy}" r="3.2" fill="#fde68a" stroke="${INK}" stroke-width=".8"/>`; });   // phloem: small
+    const loCells = []; for (let x = x0; x < x1;) { let w = Math.min(x1 - x, r.int(22, 32)); if (x < st - 14 && x + w > st - 14) w = st - 14 - x; if (x >= st - 14 && x < st + 14) { x = st + 14; continue; } loCells.push([x, w]); g += `<rect x="${x}" y="${Y.lo}" width="${w}" height="${Y.end - Y.lo}" fill="#fff" stroke="${INK}"/>`; x += w; }   // lower epidermis with a gap for the stoma
+    [-1, 1].forEach(s => { const cx = st + s * 8.5, top = Y.lo - 3, bot = Y.end + 3; g += `<path d="M${cx - s * 6} ${top + 3}Q${cx} ${top - 2} ${cx + s * 6} ${top + 4}Q${cx + s * 7} ${(top + bot) / 2} ${cx + s * 6} ${bot - 4}Q${cx} ${bot + 2} ${cx - s * 6} ${bot - 3}Q${cx - s * 3} ${(top + bot) / 2} ${cx - s * 6} ${top + 3}Z" fill="#bbf7d0" stroke="${INK}" stroke-width="1.3"/><path d="M${cx - s * 6} ${top + 4}Q${cx - s * 3.4} ${(top + bot) / 2} ${cx - s * 6} ${bot - 4}" fill="none" stroke="${INK}" stroke-width="2.6"/><circle cx="${cx + s * 1.5}" cy="${top + 7}" r="1.8" fill="#16a34a"/><circle cx="${cx + s * 2}" cy="${bot - 7}" r="1.8" fill="#16a34a"/>`; });   // guard cells, thick inner walls, round the stoma
+    g += `<rect x="${x0}" y="${Y.end}" width="${x1 - x0}" height="3" fill="#ecfccb" stroke="${INK}" stroke-width=".6"/>`;
+    const far = (list, avoid) => list.reduce((b, c) => Math.abs(c[0] + c[1] / 2 - avoid) > Math.abs(b[0] + b[1] / 2 - avoid) ? c : b), uc = r.pick(upCells.slice(2, -2)), lc = far(loCells, st), pc = r.pick(pal.slice(3, -3));
+    const sp = cells.filter(c => Math.abs(c[0] - vb) > 60 && Math.abs(c[0] - st) > 40).sort((a, b) => b[2] * b[3] - a[2] * a[3])[0] || cells[0];
+    const parts = { cuticle: [x0 + (vb > 200 ? 90 : 300), (Y.cut + Y.up) / 2], upper: [uc[0] + uc[1] / 2, (Y.up + Y.pal) / 2], palisade: pc, spongy: [sp[0], sp[1]], air: chamber, xylem: [vb, vy - 13], phloem: [vb + 4, vy + 14], guard: [st + 10, Y.lo + 4], stoma: [st, (Y.lo + Y.end) / 2], lower: [lc[0] + lc[1] / 2, (Y.lo + Y.end) / 2] };
     const NAME = { cuticle: 'waxy cuticle', upper: 'upper epidermis', palisade: 'palisade mesophyll', spongy: 'spongy mesophyll', air: 'air space', xylem: 'xylem', phloem: 'phloem', guard: 'guard cell', stoma: 'stoma', lower: 'lower epidermis' };
     const FN = { cuticle: 'Reduces water loss', upper: 'Thin and transparent, so light passes through', palisade: 'Packed with chloroplasts for photosynthesis', spongy: 'Has air spaces for gases to diffuse through', air: 'Lets gases diffuse to and from the cells', xylem: 'Carries water and mineral ions to the leaf', phloem: 'Carries sucrose and amino acids away from the leaf', guard: 'Opens and closes the stoma', stoma: 'Lets carbon dioxide in and oxygen and water vapour out' };
-    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 10, 220, { lx: -30, rx: W + 30 });
-    const svg = `<svg viewBox="-50 0 ${W + 100} 225" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`;
+    let keys = sh(Object.keys(parts), r).slice(0, 5); if (keys.includes('guard') && keys.includes('stoma')) keys = keys.filter(k => k !== (r.int(0, 1) ? 'guard' : 'stoma')).concat(sh(Object.keys(parts).filter(k => !keys.includes(k) && k !== 'guard' && k !== 'stoma'), r).slice(0, 1));
+    const { g: lg, letter } = letterParts(parts, keys, W, 8, 222, { lx: -30, rx: W + 30 });
+    const svg = `<svg viewBox="-50 4 ${W + 100} 226" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`;
     return partQ(r, 'Leaf cross-section', 'B2.21', svg, letter, keys, NAME, FN);
   };
 
@@ -1179,22 +1205,32 @@ const DG = (() => {
     return partQ(r, title, 'B2.46', svg, letter, keys, NAME, FN);
   };
 
-  /* ---------- the alimentary canal (B2.27, B2.30) ---------- */
+  /* ---------- the alimentary canal (B2.27, B2.30). User 18 Nov 21:28: show the oesophagus clearly leading into the stomach,
+     and the two intestines' relative sizes and character: a long, narrow, tightly coiled small intestine framed by a
+     wide, pouched large intestine ---------- */
   M.gut = r => {
-    const W = 360; let g = `<path d="M180 20q-30 0 -30 30q0 25 30 25q30 0 30 -25q0 -30 -30 -30z" fill="#fff" stroke="#aaa"/>`;   // head
-    g += `<path d="M180 64v100" stroke="${INK}" stroke-width="8"/><path d="M180 64v100" stroke="#fde2e4" stroke-width="5"/>`;   // oesophagus
-    g += `<path d="M180 160q50 -14 64 20q10 36 -30 50q-24 6 -34 -12q20 -6 26 -26q2 -18 -26 -20z" fill="#fecaca" stroke="${INK}" stroke-width="1.6"/>`;   // stomach (person's left = viewer's right)
-    g += `<path d="M100 150q50 -20 90 6q-10 40 -60 46q-40 2 -30 -52z" fill="#a16207" fill-opacity=".55" stroke="${INK}" stroke-width="1.6"/><ellipse cx="146" cy="200" rx="8" ry="6" fill="#4d7c0f" stroke="${INK}"/>`;   // liver + gall bladder
-    g += `<path d="M150 236q40 -8 76 2q-4 8 -20 8q-30 -4 -56 0z" fill="#fde68a" stroke="${INK}"/>`;   // pancreas
-    g += `<path d="M126 392V264Q126 248 142 248H232Q248 248 248 264V368Q248 386 228 388H190V422" fill="none" stroke="${INK}" stroke-width="13" stroke-linejoin="round"/><path d="M126 392V264Q126 248 142 248H232Q248 248 248 264V368Q248 386 228 388H190V422" fill="none" stroke="#fbcfe8" stroke-width="9" stroke-linejoin="round"/>`;   // large intestine round to the rectum
-    const coil = 'M196 226Q206 240 196 262Q150 262 150 280Q150 296 175 296Q215 296 220 314Q222 332 190 334Q152 334 152 352Q152 370 196 368';
-    g += `<path d="${coil}" fill="none" stroke="${INK}" stroke-width="9" stroke-linecap="round"/><path d="${coil}" fill="none" stroke="#fde68a" stroke-width="5.5" stroke-linecap="round"/>`;   // small intestine
-    const parts = { mouth: [180, 58], oesophagus: [180, 110], stomach: [236, 196], liver: [118, 168], gall: [146, 200], pancreas: [214, 240], small: [218, 312], large: [126, 320], rectum: [190, 410] };
+    const W = 360, tube = (d, c, w, cap = 'round') => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 3}" stroke-linecap="${cap}" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="${cap}" stroke-linejoin="round"/>`;
+    let g = `<path d="M180 14Q150 14 148 44Q146 70 166 78Q174 82 180 82Q186 82 194 78Q214 70 212 44Q210 14 180 14Z" fill="#fff" stroke="#aaa" stroke-width="1.5"/><path d="M168 62Q180 68 192 62" fill="none" stroke="${INK}" stroke-width="2"/>`;   // head and mouth
+    g += `<g transform="translate(-14 0)"><path d="M84 150Q130 128 190 140Q200 160 192 182Q166 214 112 214Q74 208 74 178Q74 158 84 150Z" fill="#c2884d" fill-opacity=".75" stroke="${INK}" stroke-width="1.6"/><ellipse cx="160" cy="210" rx="9" ry="7" fill="#4d7c0f" stroke="${INK}"/></g>`;   // liver + gall bladder
+    g += tube('M180 70Q180 100 186 128Q192 152 210 172', '#fde2e4', 9, 'butt');   // oesophagus, down into the top of the stomach
+    const STOM = 'M198 166Q214 150 246 152Q288 158 292 196Q294 236 262 254Q234 268 210 258Q196 252 194 240Q208 238 220 232Q246 220 244 198Q242 180 222 178Q206 178 198 166Z';
+    g += `<path d="${STOM}" fill="#fecaca" stroke="${INK}" stroke-width="1.8"/><path d="M226 170Q262 168 272 196M232 186Q254 192 252 214" fill="none" stroke="#f87171" stroke-width="1" opacity=".7"/>`;   // stomach with folds
+    g += `<path d="M200 270Q240 262 280 268Q284 278 268 280Q236 282 204 280Q194 276 200 270Z" fill="#fde68a" stroke="${INK}" stroke-width="1.4"/>`;   // pancreas
+    const LARGE = 'M100 432V306Q100 292 114 292H266Q280 292 280 306V404Q280 426 258 426H212Q194 426 194 444V470';
+    g += tube(LARGE, '#f9a8d4', 24, 'butt') + `<path d="${LARGE}" fill="none" stroke="${INK}" stroke-width="24" stroke-dasharray="1.6 11" opacity=".55"/>`;   // wide, with pouches
+    g += `<path d="M100 432Q100 448 90 452Q84 456 86 466" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round"/><path d="M100 432Q100 448 90 452Q84 456 86 466" fill="none" stroke="#f9a8d4" stroke-width="5" stroke-linecap="round"/>`;   // appendix
+    g += `<path d="M188 470H200" stroke="${INK}" stroke-width="3"/>`;
+    let si = 'M212 252Q236 262 246 280Q256 300 252 318', y = 318, x = 252, dir = -1; const rows = 7, sp = 13;
+    for (let i = 0; i < rows; i++) { const xe = dir < 0 ? 128 : 252; si += `Q190 ${y + (i % 2 ? 4 : -4)} ${xe} ${y}`; if (i < rows - 1) si += `Q${xe + dir * 10} ${y + sp / 2} ${xe} ${y + sp}`; y += sp; dir = -dir; }
+    si += 'Q112 396 108 412';
+    g += tube(si, '#fde68a', 6.5);   // small intestine: long, narrow, coiled
+    const parts = { mouth: [180, 64], oesophagus: [184, 116], stomach: [272, 212], liver: [92, 176], gall: [146, 210], pancreas: [240, 274], small: [190, 357], large: [280, 360], rectum: [194, 456] };
     const NAME = { mouth: 'mouth', oesophagus: 'oesophagus', stomach: 'stomach', liver: 'liver', gall: 'gall bladder', pancreas: 'pancreas', small: 'small intestine', large: 'large intestine', rectum: 'rectum' };
     const FN = { oesophagus: 'Moves food to the stomach by peristalsis', stomach: 'Digests protein using protease in acid conditions', liver: 'Makes bile', gall: 'Stores bile', pancreas: 'Makes digestive enzymes (amylase, protease, lipase)', small: 'Absorbs digested food into the blood', large: 'Absorbs water from undigested food', rectum: 'Stores faeces' };
-    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 415, { lx: -30, rx: W + 30, mid: 180 });
-    const svg = `<svg viewBox="-50 10 ${W + 100} 425" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`;
-    return partQ(r, 'The alimentary canal', 'B2.27', svg, letter, keys, NAME, FN);
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 470, { lx: -30, rx: W + 30, mid: 182 });
+    const svg = `<svg viewBox="-50 6 ${W + 100} 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The alimentary canal';
+    if (r.f() < .2) return { title, spec: 'B2.27', kind: 'diagram', svg, q: 'Why is the small intestine so long?', o: ['To give a large surface area for absorbing digested food', 'To store faeces until they leave the body', 'To absorb most of the water', 'So that bile can be made along it'], x: 'It is several metres long, coiled up, and lined with villi: a huge surface area for absorbing digested food into the blood. The wider, shorter large intestine mainly absorbs water.' };
+    return partQ(r, title, 'B2.27', svg, letter, keys, NAME, FN);
   };
 
   /* ---------- reflex arc (B2.90) ---------- */
@@ -1248,11 +1284,18 @@ const DG = (() => {
   M.menstrual = r => {
     const len = r.pick([26, 28, 28, 30, 32]), ov = len - 14, A = r.pick(['A', 'X', 'P']), Bn = { A: 'B', X: 'Y', P: 'Q' }[A], oFirst = r.int(0, 1);
     const oest = d => 10 + 70 * Math.exp(-(((d - (ov - 1)) / 3.2) ** 2)) + 25 * Math.exp(-(((d - (ov + 7)) / 4) ** 2)), prog = d => 6 + 74 * Math.exp(-(((d - (ov + 7)) / 3.8) ** 2));
-    const extra = (px, py) => `<rect x="${px(0)}" y="${py(100) + 2}" width="${px(5) - px(0)}" height="10" fill="#fca5a5"/>` + T(px(0) + 2, py(100) + 22, 'bleeding', { size: 10, a: 'start' });
-    const svg = plot2({ xmax: len, xstep: 4, ymax: 100, ystep: 20, xl: 'Day of cycle', yl: 'Hormone level (a.u.)', series: [{ pts: curve(oFirst ? oest : prog, 0, len, 80), label: A, lab: Math.round(80 * (oFirst ? ov - 1 : ov + 7) / len), col: '#2563eb' }, { pts: curve(oFirst ? prog : oest, 0, len, 80), label: Bn, lab: Math.round(80 * (oFirst ? ov + 7 : ov - 1) / len), col: '#dc2626', dash: 1 }], extra });
+    const per = r.pick([4, 5, 5, 6]), lin = d => d <= per ? 15 - 11 * d / per : d <= ov ? 4 + 14 * (d - per) / (ov - per) : 18 + 4 * Math.min(1, (d - ov) / 6);   // uterus lining thickness
+    const extra = (px, py) => { const base = py(0) + 84, pts = curve(lin, 0, len, 60).map(([d, t]) => `${px(d).toFixed(1)},${(base - t * 1.4).toFixed(1)}`);
+      let s = `<path d="M${px(0)} ${base}L${pts.join('L')}L${px(len)} ${base}Z" fill="#fbcfe8" stroke="${INK}" stroke-width="1.2"/>`;
+      const pp = curve(lin, 0, per, 12).map(([d, t]) => `${px(d).toFixed(1)},${(base - t * 1.4).toFixed(1)}`); s += `<path d="M${px(0)} ${base}L${pp.join('L')}L${px(per)} ${base}Z" fill="#dc2626" fill-opacity=".75"/>`;
+      s += T(px(0) - 6, base - 14, 'uterus', { size: 10, a: 'end' }) + T(px(0) - 6, base - 3, 'lining', { size: 10, a: 'end' });
+      s += `<path d="M${px(0)} ${base + 6}v5H${px(per)}v-5" fill="none" stroke="#b91c1c" stroke-width="1.4"/>` + T(px(0), base + 24, `period (bleeding), days 1–${per}`, { size: 10, a: 'start', fill: '#b91c1c', w: 600 });
+      return s; };
+    const svg = plot2({ h: 340, bot: 122, xmax: len, xstep: 4, ymax: 100, ystep: 20, xl: 'Day of cycle', yl: 'Hormone level (a.u.)', series: [{ pts: curve(oFirst ? oest : prog, 0, len, 80), label: A, lab: Math.round(80 * (oFirst ? ov - 1 : ov + 7) / len), col: '#2563eb' }, { pts: curve(oFirst ? prog : oest, 0, len, 80), label: Bn, lab: Math.round(80 * (oFirst ? ov + 7 : ov - 1) / len), col: '#dc2626', dash: 1 }], extra });
     const title = 'Menstrual cycle hormones', pL = oFirst ? Bn : A, eL = oFirst ? A : Bn, q = r.int(0, 2);
     if (q === 0) return { title, spec: 'B3.9', kind: 'graph', svg, q: 'Which line shows progesterone?', o: [pL, eL, 'Both', 'Neither'], x: `Progesterone rises after ovulation (around day ${ov}) and keeps the uterus lining thick; it peaks in the second half of the cycle. Oestrogen peaks just before ovulation.` };
     if (q === 1) return { title, spec: 'B3.9', kind: 'graph', svg, q: 'On about which day does ovulation happen?', o: ['Day ' + ov, ...uniq(ov, [ov - 9, ov + 7, 1, len]).map(d => 'Day ' + d)], x: `Ovulation is just after the oestrogen peak, about day ${ov} (14 days before the end of a ${len}-day cycle).` };
+    if (r.f() < .4) return { title, spec: 'B3.9', kind: 'graph', svg, q: `What is happening to the uterus lining between day ${per} and day ${ov}?`, o: ['It is thickening, ready for a fertilised egg', 'It is breaking down and leaving the body', 'It stays the same thickness', 'It is releasing an egg'], x: 'After the period, oestrogen makes the uterus lining build up again, ready for an embryo to implant.' };
     return { title, spec: 'B3.9', kind: 'graph', svg, q: 'What happens when the progesterone level falls at the end of the cycle?', o: ['The uterus lining breaks down (menstruation)', 'An egg is released', 'The uterus lining thickens', 'Oestrogen stops being made for good'], x: 'Progesterone maintains the uterus lining. If no embryo implants, progesterone falls and the lining breaks down: the period starts.' };
   };
 
