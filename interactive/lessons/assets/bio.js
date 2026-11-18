@@ -66,21 +66,21 @@ function partName(k, type){
 function labelled(type, opts){
   opts = opts || {}; const c = getCell(type, opts.style, opts.seed);
   const keys = (opts.labels || c.has).filter(k => c.parts[k]);
-  const fs = opts.big ? 30 : 15, gap = fs*1.45;
-  const items = keys.map(k => ({k, p:c.parts[k], name:partName(k, type)}));
+  const fs = opts.big ? 30 : 15, gap = fs*1.45, z = opts.zoom || 1, W = 400*z, Hh = 280*z;
+  const items = keys.map(k => ({k, p:[c.parts[k][0]*z, c.parts[k][1]*z], name:partName(k, type)}));
 
-  const sides = {L:[], R:[]}; items.forEach(it => sides[it.p[0] < 200 ? 'L' : 'R'].push(it));
+  const sides = {L:[], R:[]}; items.forEach(it => sides[it.p[0] < W/2 ? 'L' : 'R'].push(it));
   // balance sides
   while(sides.L.length > sides.R.length+1){ sides.L.sort((a,b)=>b.p[0]-a.p[0]); sides.R.push(sides.L.shift()); }
   while(sides.R.length > sides.L.length+1){ sides.R.sort((a,b)=>a.p[0]-b.p[0]); sides.L.push(sides.R.shift()); }
   let out = '', n = 0;
   for(const side of ['L','R']){
     const arr = sides[side].sort((a,b) => a.p[1]-b.p[1]);
-    arr.forEach(it => it.y = Math.max(14, Math.min(266, it.p[1])));
+    arr.forEach(it => it.y = Math.max(14, Math.min(Hh-14, it.p[1])));
     for(let i=1;i<arr.length;i++) arr[i].y = Math.max(arr[i].y, arr[i-1].y+gap);
-    for(let i=arr.length-1;i>=0;i--){ const lim = i===arr.length-1 ? 270 : arr[i+1].y-gap; arr[i].y = Math.min(arr[i].y, lim); }
+    for(let i=arr.length-1;i>=0;i--){ const lim = i===arr.length-1 ? Hh-10 : arr[i+1].y-gap; arr[i].y = Math.min(arr[i].y, lim); }
     arr.forEach(it => {
-      n++; const tx = side==='L' ? -12 : 412, lx = side==='L' ? -6 : 406;
+      n++; const tx = side==='L' ? -12 : W+12, lx = side==='L' ? -6 : W+6;
       const step = opts.steps ? ` data-s="${keys.indexOf(it.k)+1}"` : '';
       out += `<g class="lab"${step}><line x1="${lx}" y1="${f1(it.y)}" x2="${f1(it.p[0])}" y2="${f1(it.p[1])}" stroke="#111" stroke-width="${opts.big?2:1.4}"/><circle cx="${f1(it.p[0])}" cy="${f1(it.p[1])}" r="${opts.big?4:3}" fill="#111"/>
         <text x="${tx}" y="${f1(it.y + fs*0.35)}" text-anchor="${side==='L'?'end':'start'}" font-size="${fs}" font-weight="700" font-family="Barlow,Arial,sans-serif" fill="#111">${it.name}</text></g>`;
@@ -88,12 +88,13 @@ function labelled(type, opts){
   }
   const wid = arr => arr.length ? 30 + fs*0.53*Math.max(...arr.map(it => it.name.length)) : 10;
   const ML = wid(sides.L), MR = wid(sides.R);
-  return `<svg viewBox="${-ML} 0 ${400+ML+MR} 280" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><svg x="0" y="0" width="400" height="280" viewBox="0 0 400 280" overflow="hidden">${c.svg}</svg>${out}</svg>`;
+  return `<svg viewBox="${-ML} 0 ${W+ML+MR} ${Hh}" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><svg x="0" y="0" width="${W}" height="${Hh}" viewBox="0 0 400 280" overflow="hidden">${c.svg}</svg>${out}</svg>`;
 }
 L.cellSVG = labelled;
 C['cell'] = el => {
   const big = isDeck(el);
-  const draw = seed => { el.innerHTML = labelled(el.dataset.type, {labels: el.dataset.labels ? el.dataset.labels.split(',') : null, seed: seed, style: el.dataset.style, big, steps: el.dataset.steps==='1'}); };
+  const zoom = el.dataset.zoom ? +el.dataset.zoom : (big ? 1.6 : 1);
+  const draw = seed => { el.innerHTML = labelled(el.dataset.type, {labels: el.dataset.labels ? el.dataset.labels.split(',') : null, seed: seed, style: el.dataset.style, big, zoom, steps: el.dataset.steps==='1'}); };
   draw(+(el.dataset.seed || 7));
 };
 

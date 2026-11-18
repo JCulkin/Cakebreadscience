@@ -29,17 +29,26 @@
             {
               "code": "2a",
               "title": "Level of organisation",
-              "spec": "2.1"
+              "spec": "2.1",
+              "status": "draft",
+              "draftUpdated": "2026-11-19",
+              "versions": []
             },
             {
               "code": "2b",
               "title": "Cell structure",
-              "spec": "2.2–2.4"
+              "spec": "2.2–2.4",
+              "status": "draft",
+              "draftUpdated": "2026-11-19",
+              "versions": []
             },
             {
               "code": "2c",
               "title": "Biological molecules",
-              "spec": "2.7–2.13"
+              "spec": "2.7–2.13",
+              "status": "draft",
+              "draftUpdated": "2026-11-19",
+              "versions": []
             },
             {
               "code": "2d",
