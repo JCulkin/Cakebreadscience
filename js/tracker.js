@@ -102,7 +102,7 @@
     root.innerHTML = `
       <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE Science (Double Award)</div>
         <h1>${SUBJ[subject]}</h1>
-        <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it: get its questions right on two different days in <a href="${Q}practice.html">Practice Questions</a> (no game needed) or Cakebread Questing, or secure its flashcards. Your own rating shows how sure you feel; it doesn't change the colour.</p></div>
+        <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it: get its questions right on two different days in <a href="${Q}practice.html">Practice Questions</a> or Questing, or secure its flashcards. Your own rating just records how you feel.</p></div>
       <div class="tr-sum" id="trSum"></div>
       <div class="tr-filters" id="trFilters">${FILTERS.map(([k, t]) => `<button type="button" data-f="${k}"${k === 'all' ? ' class="on"' : ''}>${t}<span></span></button>`).join('')}</div>
       <nav class="tr-topics">${S.topics.map(t => `<a href="#t-${L}${t.n}">${t.n}. ${esc(t.name)}</a>`).join('')}</nav>
@@ -153,7 +153,7 @@
   function drawSummary() {
     const box = $('trSum'); if (!box) return;
     const c = counts(LET[subject]), q = c.total - c.na;
-    box.innerHTML = `${bar(c)}<div class="snums"><span><b class="c-secured">${c.secured}</b> secured</span><span><b class="c-learning">${c.learning}</b> learning</span><span><b class="c-rusty">${c.rusty}</b> rusty</span><span><b>${c.none}</b> not started</span><span class="muted">of ${q} points with questions${c.na ? ` · ${c.na} with no quiz yet` : ''}</span></div>
+    box.innerHTML = `${bar(c)}<div class="snums"><span><b class="c-secured">${c.secured}</b> secured</span><span><b class="c-learning">${c.learning}</b> learning</span><span><b class="c-rusty">${c.rusty}</b> rusty</span><span><b>${c.none}</b> not started</span></div>
       <div class="snote">${uid ? '' : '<b>Not signed in:</b> progress is kept in this browser only. Sign in (top right) to save it to your account. · '}You rated <b>${c.conf}</b> point${c.conf === 1 ? '' : 's'} "Confident"${c.check ? ` — <a href="#" data-goto="check"><b>${c.check} to check</b></a> (not proved yet)` : ''}.${YEAR ? ` Year ${YEAR}: <b>${Object.keys(TAUGHT).filter(k => k[0] === LET[subject]).length}</b> sub-topics covered in class.` : ''}</div>`;
     const g = box.querySelector('[data-goto]'); if (g) g.onclick = e => { e.preventDefault(); root.querySelector('[data-f="check"]').click(); };
     const F = { all: c.total, none: c.none, learning: c.learning, rusty: c.rusty, secured: c.secured, check: c.check, class: root.querySelectorAll('.tr-pt.taught').length };
