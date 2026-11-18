@@ -7,6 +7,10 @@
 #### Added
 - **Lessons: new presenting controls (trial on 1f Ionic bonding):** a **Next slide ⏭** button (Shift+→) that skips any remaining reveals and goes straight to the next slide, a **⏮ Slide** button (Shift+←), and **▦ All slides** (G) — a grid of every slide, fully revealed, to jump to any point. The normal Next (→, space, click, clicker Page Down) still steps through reveals. Other lessons get these once approved
 
+#### Changed
+- **Lessons:** the ✎ Review notes system is gone (feedback now goes straight into the lessons chat); lessons not yet checked show an **Under review** tag. Big images with a plain coloured background now set the slide/frame to the same colour, and photos can be shown as soft-edged circles (used for the "cat-ions" kittens)
+- **Lesson 1f Ionic bonding:** hydroxide (OH⁻) dot-and-cross with the extra electron in red replaces phosphate; the ion-charge periodic table first shows only Groups 1, 2 and 3–7; fuller "Ionic compounds" and "Ionic lattices" slides (including conductivity); a melting-point chart (water / NaCl / MgO) on "Why high melting points?"
+
 ---
 
 ## [5.0.0] - 2026-11-18
