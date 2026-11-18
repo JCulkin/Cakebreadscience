@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Diagram lab (test) - Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Test page (18 Nov 2026, user: "make me a test page with a bunch of diagrams of each type to see if you can do it").
+   Every picture is drawn in code by diagrams.js (DG) with new numbers each time. Nothing here is saved. */
+:root{--ink:#111;--cream:#eeeae0;--green:#005e22;--muted:#555}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Barlow,Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4}
+header{background:#111;color:var(--cream);padding:16px 20px}
+header h1{font:900 clamp(28px,6vw,44px)/1 'Barlow Condensed',sans-serif;text-transform:uppercase}
+header p{color:#bbb;margin-top:6px;max-width:760px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 20px;background:#fff;border-bottom:2px solid var(--ink);position:sticky;top:0;z-index:5}
+.bar button,.card button.nw{font:700 15px Barlow,Arial;border:2px solid var(--ink);background:#facc15;padding:6px 12px;cursor:pointer}
+.bar .f{background:#fff}.bar .f.on{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(440px,100%),1fr));gap:14px;padding:16px 20px 60px;max-width:1400px;margin:0 auto}
+.card{background:#fff;border:2px solid var(--ink);padding:12px;display:flex;flex-direction:column;gap:8px}
+.card .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card h2{font:900 21px 'Barlow Condensed',sans-serif;text-transform:uppercase}
+.tag{font-size:12px;font-weight:700;border:1.5px solid var(--ink);padding:0 6px;white-space:nowrap}
+.tag.k-graph{background:#dcfce7}.tag.k-diagram{background:#dbeafe}.tag.k-table{background:#fef9c3}
+.pic{border:1px solid #ddd}
+.q{font-weight:600}
+.opts{display:grid;gap:6px}
+.opts button{font:600 15px Barlow,Arial;text-align:left;padding:7px 10px;border:2px solid #bbb;background:#fafaf7;cursor:pointer}
+.opts button:hover:not(:disabled){border-color:var(--ink)}
+.opts button:disabled{color:var(--ink);cursor:default}.opts button.right{background:#dcfce7;border-color:#16a34a}.opts button.wrong{background:#fee2e2;border-color:#dc2626;text-decoration:line-through}
+.x{font-size:14px;background:#f6f4ee;border-left:4px solid var(--green);padding:6px 10px}
+.foot{display:flex;justify-content:flex-end}
+</style>
+</head>
+<body>
+<header><h1>Diagram lab</h1><p>Test page. Every graph and diagram below is drawn by the page itself with new random numbers each time (no image files), with a sample question. Press ↻ on a card for a fresh one.</p></header>
+<div class="bar"><button id="all">↻ Redraw everything</button><button class="f on" data-f="">All</button><button class="f" data-f="graph">Graphs</button><button class="f" data-f="diagram">Diagrams</button><button class="f" data-f="table">Tables</button>
+  <label style="margin-left:auto;font-weight:600"><input type="checkbox" id="ans"> Show answers</label></div>
+<main class="grid" id="grid"></main>
+<script src="diagrams.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let filt = '';
+function card(name) {
+  const el = document.createElement('section'); el.className = 'card'; el.dataset.m = name;
+  const draw = () => {
+    const q = DG.make(name);
+    el.dataset.kind = q.kind; el.hidden = !!filt && q.kind !== filt;
+    el.innerHTML = `<div class="hd"><h2>${q.title}</h2><span class="tag k-${q.kind}">${q.kind} · ${q.spec}</span></div><div class="pic">${q.svg}</div><div class="q">${q.q}</div>
+      <div class="opts">${sh(q.o.map((t, i) => [t, i === 0])).map(([t, ok]) => `<button data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div class="x" hidden>${q.x}</div><div class="foot"><button class="nw">↻ New one</button></div>`;
+    const reveal = () => { el.querySelectorAll('.opts button').forEach(b => { b.disabled = true; if (b.dataset.ok === '1') b.classList.add('right'); }); el.querySelector('.x').hidden = false; };
+    el.querySelectorAll('.opts button').forEach(b => b.onclick = () => { if (b.dataset.ok !== '1') b.classList.add('wrong'); reveal(); });
+    el.querySelector('.nw').onclick = draw;
+    if ($('ans').checked) reveal();
+  };
+  draw(); return el;
+}
+function all() { $('grid').innerHTML = ''; DG.MAKERS.forEach(([m]) => $('grid').appendChild(card(m))); }
+$('all').onclick = all;
+$('ans').onchange = all;
+document.querySelectorAll('.f').forEach(b => b.onclick = () => { filt = b.dataset.f; document.querySelectorAll('.f').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.card').forEach(c => c.hidden = !!filt && c.dataset.kind !== filt); });
+all();
+</script>
+</body>
+</html>
