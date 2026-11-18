@@ -3,6 +3,7 @@
 ---
 
 ## [Unreleased]
+- Lessons: Biology 1 Living organisms checked and frozen as v2026-11-18.
 - Lessons: removed mentions of Separate Science (Biology 1 course slide and paper 2; Chemistry 1a solubility note).
 
 #### Added
