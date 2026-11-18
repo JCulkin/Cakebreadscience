@@ -30,34 +30,34 @@ const DG = (() => {
 
   const M = {};
   /* ---------- graphs ---------- */
-  M.vt = r => { const v = r.pick([4, 6, 8, 10, 12, 15, 20]), t1 = r.pick([2, 4, 5]), t2 = t1 + r.pick([4, 5, 6]), t3 = t2 + r.pick([2, 3, 4, 5]);
-    const svg = chart({ xmax: t3 + 1, ymax: Math.ceil(v * 1.25 / 2) * 2, xstep: 2, ystep: v > 10 ? 5 : 2, xl: 'Time (s)', yl: 'Velocity (m/s)', series: [{ pts: [[0, 0], [t1, v], [t2, v], [t3, 0]] }] });
+  M.vt = r => { const [vu, au, du] = r.pick([['m/s', 'm/s²', 'm'], ['m/s', 'm/s²', 'm'], ['cm/s', 'cm/s²', 'cm']]), v = r.pick([4, 6, 8, 10, 12, 15, 20]), t1 = r.pick([2, 4, 5]), t2 = t1 + r.pick([4, 5, 6]), t3 = t2 + r.pick([2, 3, 4, 5]);
+    const svg = chart({ xmax: t3 + 1, ymax: Math.ceil(v * 1.25 / 2) * 2, xstep: 2, ystep: v > 10 ? 5 : 2, xl: 'Time (s)', yl: `Velocity (${vu})`, series: [{ pts: [[0, 0], [t1, v], [t2, v], [t3, 0]] }] });
     const dist = v * t1 / 2 + v * (t2 - t1) + v * (t3 - t2) / 2;
-    if (r.int(0, 1)) return { title: 'Velocity–time graph', spec: 'P1.8', kind: 'graph', svg, q: `What is the acceleration during the first ${t1} s?`, o: [n(v / t1) + ' m/s²', ...uniq(v / t1, [v * t1, t1 / v, v]).map(x => n(x) + ' m/s²')], x: `Acceleration = gradient = change in velocity ÷ time = ${v} ÷ ${t1} = ${n(v / t1)} m/s².` };
-    return { title: 'Velocity–time graph', spec: 'P1.9', kind: 'graph', svg, q: 'How far does the object travel in the whole journey?', o: [n(dist) + ' m', ...uniq(dist, [v * t3, v * (t2 - t1), dist / 2]).map(x => n(x) + ' m')], x: `Distance = area under the graph: triangle ${n(v * t1 / 2)} + rectangle ${v * (t2 - t1)} + triangle ${n(v * (t3 - t2) / 2)} = ${n(dist)} m.` }; };
-  M.dt = r => { const d = r.pick([20, 40, 60, 80, 100]), t1 = r.pick([4, 5, 10]), t2 = t1 + r.pick([4, 5, 6]), t3 = t2 + r.pick([5, 10]);
-    const svg = chart({ xmax: t3 + 2, ymax: d * 1.25, xstep: t3 > 20 ? 5 : 2, ystep: d / 4, xl: 'Time (s)', yl: 'Distance (m)', series: [{ pts: [[0, 0], [t1, d], [t2, d], [t3, 0]] }] });
-    return r.int(0, 1) ? { title: 'Distance–time graph', spec: 'P1.3', kind: 'graph', svg, q: `What is the speed during the first ${t1} s?`, o: [n(d / t1) + ' m/s', ...uniq(d / t1, [d * t1, t1 / d, d / t2]).map(x => n(x) + ' m/s')], x: `Speed = gradient = distance ÷ time = ${d} ÷ ${t1} = ${n(d / t1)} m/s.` }
-      : { title: 'Distance–time graph', spec: 'P1.3', kind: 'graph', svg, q: 'For how long is the object stationary?', o: [(t2 - t1) + ' s', ...uniq(t2 - t1, [t2, t1, t3 - t2, t3, t2 - t1 + 2]).map(v => v + ' s')], x: `A flat line means not moving: from ${t1} s to ${t2} s, so ${t2 - t1} s.` }; };
-  M.fe = r => { const k = r.pick([2, 4, 5]), lim = r.pick([6, 8, 10]), xmax = lim + 4, F0 = r.pick([2, 4, 6].filter(x => x < lim));
-    const ext = F => F <= lim ? F / k : lim / k + (F - lim) ** 1.6 / k * 0.6;   // straight (Hooke's law) up to P, then curving
-    const svg = chart({ xmax, ymax: Math.ceil(ext(xmax) + 0.5), xstep: 2, ystep: 1, xl: 'Force (N)', yl: 'Extension (cm)', series: [{ pts: curve(ext, 0, xmax) }], marks: [[lim, ext(lim), { t: 'P', dx: -10 }]] });
-    return r.int(0, 1) ? { title: 'Force–extension graph', spec: 'P1.23', kind: 'graph', svg, q: `What is the extension when the force is ${F0} N?`, o: [n(ext(F0)) + ' cm', ...uniq(ext(F0), [F0 * k, ext(F0) * 2, F0]).map(x => n(x) + ' cm')], x: `Read up from ${F0} N to the line, then across: ${n(ext(F0))} cm.` }
+    if (r.int(0, 1)) return { title: 'Velocity–time graph', spec: 'P1.8', kind: 'graph', svg, q: `What is the acceleration during the first ${t1} s?`, o: [n(v / t1) + ' ' + au, ...uniq(v / t1, [v * t1, t1 / v, v]).map(x => n(x) + ' ' + au)], x: `Acceleration = gradient = change in velocity ÷ time = ${v} ÷ ${t1} = ${n(v / t1)} ${au}.` };
+    return { title: 'Velocity–time graph', spec: 'P1.9', kind: 'graph', svg, q: 'How far does the object travel in the whole journey?', o: [n(dist) + ' ' + du, ...uniq(dist, [v * t3, v * (t2 - t1), dist / 2]).map(x => n(x) + ' ' + du)], x: `Distance = area under the graph: triangle ${n(v * t1 / 2)} + rectangle ${v * (t2 - t1)} + triangle ${n(v * (t3 - t2) / 2)} = ${n(dist)} ${du}.` }; };
+  M.dt = r => { const [du, tu, su] = r.pick([['m', 's', 'm/s'], ['m', 's', 'm/s'], ['km', 'h', 'km/h'], ['cm', 's', 'cm/s'], ['m', 'min', 'm/min'], ['km', 'min', 'km/min']]), d = r.pick([20, 40, 60, 80, 100]), t1 = r.pick([4, 5, 10]), t2 = t1 + r.pick([4, 5, 6]), t3 = t2 + r.pick([5, 10]);
+    const svg = chart({ xmax: t3 + 2, ymax: d * 1.25, xstep: t3 > 20 ? 5 : 2, ystep: d / 4, xl: `Time (${tu})`, yl: `Distance (${du})`, series: [{ pts: [[0, 0], [t1, d], [t2, d], [t3, 0]] }] });
+    return r.int(0, 1) ? { title: 'Distance–time graph', spec: 'P1.3', kind: 'graph', svg, q: `What is the speed during the first ${t1} ${tu}?`, o: [n(d / t1) + ' ' + su, ...uniq(d / t1, [d * t1, t1 / d, d / t2]).map(x => n(x) + ' ' + su)], x: `Speed = gradient = distance ÷ time = ${d} ÷ ${t1} = ${n(d / t1)} ${su}.` }
+      : { title: 'Distance–time graph', spec: 'P1.3', kind: 'graph', svg, q: 'For how long is the object stationary?', o: [(t2 - t1) + ' ' + tu, ...uniq(t2 - t1, [t2, t1, t3 - t2, t3, t2 - t1 + 2]).map(v => v + ' ' + tu)], x: `A flat line means not moving: from ${t1} ${tu} to ${t2} ${tu}, so ${t2 - t1} ${tu}.` }; };
+  M.fe = r => { const [eu, ef] = r.pick([['cm', 1], ['cm', 1], ['mm', 10]]), k = r.pick([2, 4, 5]), lim = r.pick([6, 8, 10]), xmax = lim + 4, F0 = r.pick([2, 4, 6].filter(x => x < lim));
+    const ext = F => ef * (F <= lim ? F / k : lim / k + (F - lim) ** 1.6 / k * 0.6);   // straight (Hooke's law) up to P, then curving
+    const svg = chart({ xmax, ymax: ef * Math.ceil(ext(xmax) / ef + 0.5), xstep: 2, ystep: ef, xl: 'Force (N)', yl: `Extension (${eu})`, series: [{ pts: curve(ext, 0, xmax) }], marks: [[lim, ext(lim), { t: 'P', dx: -10 }]] });
+    return r.int(0, 1) ? { title: 'Force–extension graph', spec: 'P1.23', kind: 'graph', svg, q: `What is the extension when the force is ${F0} N?`, o: [n(ext(F0)) + ' ' + eu, ...uniq(ext(F0), [F0 * k, ext(F0) * 2, F0, ext(F0) / 10]).map(x => n(x) + ' ' + eu)], x: `Read up from ${F0} N to the line, then across: ${n(ext(F0))} ${eu}.` }
       : { title: 'Force–extension graph', spec: 'P1.23', kind: 'graph', svg, q: 'What happens to the spring after point P?', o: ['It no longer obeys Hooke\'s law: extension is not proportional to force', 'It snaps', 'The extension stops increasing', 'It obeys Hooke\'s law more closely'], x: 'The straight, sloping part is where extension is proportional to force (Hooke\'s law). After P the line curves: the limit of proportionality has been passed.' }; };
-  M.half = r => { const A0 = r.pick([400, 800, 1200, 1600]), hl = r.pick([2, 3, 4, 5, 6]), u = r.pick(['hours', 'days', 'minutes']);
-    const svg = chart({ xmax: hl * 4, ymax: A0, xstep: hl, ystep: A0 / 4, xl: `Time (${u})`, yl: 'Activity (Bq)', series: [{ pts: curve(t => A0 * 0.5 ** (t / hl), 0, hl * 4) }] });
-    return { title: 'Radioactive decay curve', spec: 'P7.13', kind: 'graph', svg, q: 'What is the half-life of this isotope?', o: [`${hl} ${u}`, `${hl * 2} ${u}`, `${hl * 4} ${u}`, `${A0 / 2} ${u}`], x: `Half-life = time for the activity to halve: ${A0} → ${A0 / 2} Bq takes ${hl} ${u}.` }; };
-  M.rate = r => { const V = r.pick([40, 50, 60, 80]), a = r.pick([8, 10, 12]), b = a * r.pick([2, 3]), tm = b * 4;
-    const svg = chart({ xmax: tm, ymax: V * 1.2, xstep: tm / 6, ystep: V / 4, xl: 'Time (s)', yl: 'Volume of gas (cm³)', series: [{ pts: curve(t => V * (1 - Math.exp(-t / a)), 0, tm), label: 'A', lab: 12 }, { pts: curve(t => V * (1 - Math.exp(-t / b)), 0, tm), label: 'B', lab: 24, dash: 1 }] });
+  M.half = r => { const A0 = r.pick([400, 800, 1200, 1600]), hl = r.pick([2, 3, 4, 5, 6]), u = r.pick(['seconds', 'minutes', 'hours', 'days', 'years']), [au, al] = r.pick([['Bq', 'Activity (Bq)'], ['kBq', 'Activity (kBq)'], ['counts/min', 'Count rate (counts per minute)'], ['counts/s', 'Count rate (counts per second)']]);
+    const svg = chart({ xmax: hl * 4, ymax: A0, xstep: hl, ystep: A0 / 4, xl: `Time (${u})`, yl: al, series: [{ pts: curve(t => A0 * 0.5 ** (t / hl), 0, hl * 4) }] });
+    return { title: 'Radioactive decay curve', spec: 'P7.13', kind: 'graph', svg, q: 'What is the half-life of this isotope?', o: [`${hl} ${u}`, `${hl * 2} ${u}`, `${hl * 4} ${u}`, `${A0 / 2} ${u}`], x: `Half-life = time for the ${au.startsWith('count') ? 'count rate' : 'activity'} to halve: ${A0} → ${A0 / 2} ${au} takes ${hl} ${u}.` }; };
+  M.rate = r => { const mass = r.f() < .35, tu = r.pick(['s', 's', 'min']), V = mass ? r.pick([1.2, 1.6, 2, 2.4]) : r.pick([40, 50, 60, 80]), vu = mass ? 'g' : r.pick(['cm³', 'cm³', 'ml']), a = r.pick([8, 10, 12]), b = a * r.pick([2, 3]), tm = b * 4;
+    const svg = chart({ xmax: tm, ymax: V * 1.2, xstep: tm / 6, ystep: V / 4, xl: `Time (${tu})`, yl: mass ? 'Mass lost (g)' : `Volume of gas (${vu})`, series: [{ pts: curve(t => V * (1 - Math.exp(-t / a)), 0, tm), label: 'A', lab: 12 }, { pts: curve(t => V * (1 - Math.exp(-t / b)), 0, tm), label: 'B', lab: 24, dash: 1 }] });
     return r.int(0, 1) ? { title: 'Rate of reaction curves', spec: 'C3.10', kind: 'graph', svg, q: 'Which line shows the reaction with the more concentrated acid? (The same mass of marble chips each time.)', o: ['A: it is steeper at the start', 'B: it takes longer, so more reacts', 'A: it makes more gas in the end', 'Both are the same concentration'], x: 'More concentrated acid → more frequent collisions → faster rate → steeper curve at the start. Both end at the same volume because the same amount of marble reacts.' }
-      : { title: 'Rate of reaction curves', spec: 'C3.10', kind: 'graph', svg, q: 'What total volume of gas did each reaction produce?', o: [`${V} cm³`, ...uniq(V, [V * 1.2, V / 2, tm, V * 2]).map(v => `${n(v)} cm³`)], x: `Both lines level off at ${V} cm³: that's when the reaction has finished.` }; };
+      : { title: 'Rate of reaction curves', spec: 'C3.10', kind: 'graph', svg, q: mass ? 'What total mass of carbon dioxide was given off in each reaction?' : 'What total volume of gas did each reaction produce?', o: [`${V} ${vu}`, ...uniq(V, [V * 1.2, V / 2, tm, V * 2]).map(v => `${n(v)} ${vu}`)], x: `Both lines level off at ${V} ${vu}: that's when the reaction has finished.` }; };
   M.enzyme = r => { const opt = r.pick([30, 35, 37, 40, 45]);
     const act = T0 => T0 <= opt ? 100 * Math.exp(-(((T0 - opt) / 18) ** 2)) : Math.max(0, 100 * (1 - ((T0 - opt) / 14) ** 2));
     const svg = chart({ xmax: 70, ymax: 120, xstep: 10, ystep: 20, xl: 'Temperature (°C)', yl: 'Rate of reaction (a.u.)', series: [{ pts: curve(act, 0, 70, 70) }] });
     return { title: 'Enzyme activity and temperature', spec: 'B2.10', kind: 'graph', svg, q: 'What is the optimum temperature for this enzyme, and why does the rate fall so quickly above it?', o: [`${opt} °C; the active site changes shape (denatures)`, `${opt} °C; the enzyme is killed`, `${opt + 15} °C; the substrate runs out`, `70 °C; molecules move fastest`], x: `The peak is at ${opt} °C. Above it the enzyme denatures: the active site changes shape so the substrate no longer fits. Enzymes aren't alive, so they aren't "killed".` }; };
-  M.cool = r => { const mp = r.pick([45, 53, 62, 70, 80]), t0 = mp + r.pick([25, 35]), a = r.pick([3, 4, 5]), b = a + r.pick([5, 6, 8]);
+  M.cool = r => { const sec = r.f() < .4, tf = sec ? 60 : 1, mp = r.pick([45, 53, 62, 70, 80]), t0 = mp + r.pick([25, 35]), a = r.pick([3, 4, 5]), b = a + r.pick([5, 6, 8]);
     const f = t => t < a ? t0 - (t0 - mp) * t / a : t < b ? mp : mp - (t - b) * 4;
-    const svg = chart({ xmax: b + 5, ymax: Math.ceil((t0 + 10) / 20) * 20, xstep: 2, ystep: 20, xl: 'Time (min)', yl: 'Temperature (°C)', series: [{ pts: [[0, t0], [a, mp], [b, mp], [b + 5, f(b + 5)]] }], marks: [[0, t0, { t: 'A', dx: 12 }], [a, mp, 'B'], [b, mp, 'C'], [b + 5, f(b + 5), { t: 'D', dx: -8 }]] });
+    const svg = chart({ xmax: (b + 5) * tf, ymax: Math.ceil((t0 + 10) / 20) * 20, xstep: 2 * tf, ystep: 20, xl: sec ? 'Time (s)' : 'Time (min)', yl: 'Temperature (°C)', series: [{ pts: [[0, t0], [a * tf, mp], [b * tf, mp], [(b + 5) * tf, f(b + 5)]] }], marks: [[0, t0, { t: 'A', dx: 12 }], [a * tf, mp, 'B'], [b * tf, mp, 'C'], [(b + 5) * tf, f(b + 5), { t: 'D', dx: -8 }]] });
     return r.int(0, 1) ? { title: 'Cooling curve', spec: 'C1.1', kind: 'graph', svg, q: 'What is the melting point of the substance?', o: [`${mp} °C`, `${t0} °C`, `${n(f(b + 5))} °C`, `${b} °C`], x: `The flat section is where it freezes: the temperature stays at the melting point, ${mp} °C, while energy is released as bonds form.` }
       : { title: 'Cooling curve', spec: 'C1.1', kind: 'graph', svg, q: 'Between which two points is the substance a mixture of liquid and solid?', o: ['B and C', 'A and B', 'C and D', 'A and D'], x: 'B → C is the flat part: it is freezing, so liquid and solid are both there. A → B is liquid cooling, C → D is solid cooling.' }; };
   M.table = r => { const base = r.pick([12, 18, 24, 31]), vals = [0, 1, 2].map(() => base + r.int(-2, 2)), bad = r.int(0, 2), anom = vals[bad] + r.pick([9, 11, -8]); const all = vals.slice(); all[bad] = anom;
@@ -272,15 +272,15 @@ const DG = (() => {
     const kind = r.hard ? r.pick(['series3', 'parallel3', 'mixed', 'ident']) : r.pick(['series2', 'parallel2', 'ident']);
     const V = r.pick([6, 9, 12, 24]);
     if (kind === 'series2' || kind === 'series3') {
-      const k = kind === 'series2' ? 2 : 3, Rs = Array.from({ length: k }, () => r.pick([2, 3, 4, 6, 8, 12])), Rt = Rs.reduce((a, b) => a + b, 0), I = V / Rt, vi = r.int(0, k - 1);
+      const [RU, IU] = r.pick([['Ω', 'A'], ['Ω', 'A'], ['kΩ', 'mA']]), k = kind === 'series2' ? 2 : 3, Rs = Array.from({ length: k }, () => r.pick([2, 3, 4, 6, 8, 12])), Rt = Rs.reduce((a, b) => a + b, 0), I = V / Rt, vi = r.int(0, k - 1);
       let g = wire([[50, 70], [350, 70], [350, 190], [50, 190], [50, 70]]); const xs = Rs.map((_, i) => 50 + (i + 1) * 300 / (k + 1));
-      xs.forEach((x, i) => { g += SYM.res(x, 70) + lab(x, 95, `R${i + 1} = ${Rs[i]} Ω`); });
+      xs.forEach((x, i) => { g += SYM.res(x, 70) + lab(x, 95, `R${i + 1} = ${Rs[i]} ${RU}`); });
       g += SYM.A(350, 130) + SYM[V > 9 ? 'batt' : 'cell'](170, 190) + lab(170, 222, `${V} V`) + SYM.sw(260, 190);
       g += wire([[xs[vi] - 32, 70], [xs[vi] - 32, 28], [xs[vi] + 32, 28], [xs[vi] + 32, 70]]) + dotJ(xs[vi] - 32, 70) + dotJ(xs[vi] + 32, 70) + SYM.V(xs[vi], 28);
       const svg = wrap(400, 235, g), q = r.int(0, 2);
-      if (q === 0) return { title: 'Circuit: series', spec: 'P2.19', kind: 'diagram', svg, q: 'The switch is closed. What does the ammeter read?', o: [n(I) + ' A', ...uniq(n(I), [V / Rs[0], V * Rt, Rt / V, V / Rs.length].map(v => n(v))).map(v => v + ' A')], x: `Series: R = ${Rs.join(' + ')} = ${Rt} Ω. I = V ÷ R = ${V} ÷ ${Rt} = ${n(I)} A.` };
-      if (q === 1) return { title: 'Circuit: series', spec: 'P2.19', kind: 'diagram', svg, q: 'The switch is closed. What does the voltmeter read?', o: [n(I * Rs[vi]) + ' V', ...uniq(n(I * Rs[vi]), [V, V / k, V - I * Rs[vi], Rs[vi], V * 2, I, Rt].map(v => n(v))).map(v => v + ' V')], x: `I = ${V} ÷ ${Rt} = ${n(I)} A, the same everywhere in a series circuit. V = I × R = ${n(I)} × ${Rs[vi]} = ${n(I * Rs[vi])} V.` };
-      return { title: 'Circuit: series', spec: 'P2.19', kind: 'diagram', svg, q: 'What is the total resistance of the circuit?', o: [Rt + ' Ω', ...uniq(Rt, [Math.max(...Rs), Rs.reduce((a, b) => a * b, 1), n(1 / Rs.reduce((a, b) => a + 1 / b, 0))].map(Number)).map(v => n(v) + ' Ω')], x: `In series, resistances add: ${Rs.join(' + ')} = ${Rt} Ω.` };
+      if (q === 0) return { title: 'Circuit: series', spec: 'P2.19', kind: 'diagram', svg, q: 'The switch is closed. What does the ammeter read?', o: [n(I) + ' ' + IU, ...uniq(n(I), [V / Rs[0], V * Rt, Rt / V, V / Rs.length, I * 1000].map(v => n(v))).map(v => v + ' ' + IU)], x: `Series: R = ${Rs.join(' + ')} = ${Rt} ${RU}. I = V ÷ R = ${V} ÷ ${Rt}${RU === 'kΩ' ? ' 000' : ''} = ${n(I)} ${IU}${RU === 'kΩ' ? ' (volts ÷ kilohms gives milliamps)' : ''}.` };
+      if (q === 1) return { title: 'Circuit: series', spec: 'P2.19', kind: 'diagram', svg, q: 'The switch is closed. What does the voltmeter read?', o: [n(I * Rs[vi]) + ' V', ...uniq(n(I * Rs[vi]), [V, V / k, V - I * Rs[vi], Rs[vi], V * 2, I, Rt].map(v => n(v))).map(v => v + ' V')], x: `I = ${V} ÷ ${Rt} = ${n(I)} ${IU}, the same everywhere in a series circuit. V = I × R = ${n(I)} ${IU} × ${Rs[vi]} ${RU} = ${n(I * Rs[vi])} V.` };
+      return { title: 'Circuit: series', spec: 'P2.19', kind: 'diagram', svg, q: 'What is the total resistance of the circuit?', o: [Rt + ' ' + RU, ...uniq(Rt, [Math.max(...Rs), Rs.reduce((a, b) => a * b, 1), n(1 / Rs.reduce((a, b) => a + 1 / b, 0))].map(Number)).map(v => n(v) + ' ' + RU)], x: `In series, resistances add: ${Rs.join(' + ')} = ${Rt} ${RU}.` };
     }
     if (kind === 'parallel2' || kind === 'parallel3') {
       const k = kind === 'parallel2' ? 2 : 3, comps = Array.from({ length: k }, () => r.pick(['res', 'res', 'lamp'])), Rs = Array.from({ length: k }, () => r.pick([2, 3, 4, 6, 8, 12].filter(R => (V * 100) % R === 0))), Is = Rs.map(R => V / R), It = Is.reduce((a, b) => a + b, 0);
@@ -363,45 +363,6 @@ const DG = (() => {
     return { title: 'Electron shells', spec: 'C1.24', kind: 'diagram', svg, q: 'Which group and period of the Periodic Table is this element in?', o: [...new Set([`Group ${grp}, period ${sh0.length}`, `Group ${sh0.length}, period ${grp}`, `Group ${grp}, period ${sh0.length + 1}`, `Group ${grp + 1}, period ${sh0.length}`, `Group ${sh0.length + 1}, period ${grp}`])], x: `Number of shells = period (${sh0.length}). Electrons in the outer shell = group (${grp || '0 — a full outer shell'}).` };
   };
 
-  /* Sankey diagram: black and white, each transfer its own outlined band, widths to scale */
-  M.sankey = r => {
-    const dev = r.pick([['electric motor', 'kinetic', ['thermal', 'sound']], ['filament lamp', 'light', ['thermal']], ['LED lamp', 'light', ['thermal']], ['kettle', 'heating the water', ['heating the air', 'sound']], ['television', 'light and sound', ['thermal']], ['car engine', 'kinetic', ['thermal', 'sound']]]);
-    const E = r.pick([100, 200, 400, 500, 1000]), useP = { 'filament lamp': 10, 'LED lamp': r.pick([70, 80]), kettle: r.pick([80, 90]), 'car engine': r.pick([20, 30]), television: r.pick([40, 50]) }[dev[0]] || r.pick([40, 60, 75]);
-    const use = E * useP / 100, waste = E - use, ws = dev[2].length === 2 ? [waste * .8, waste * .2] : [waste];
-    const sc = 160 / E, y0 = 40, H = 160, xi = 110, ybot = y0 + H + 34, gap = 3;
-    let g = `<rect x="20" y="${y0}" width="${xi - 20}" height="${H}" fill="#fff" stroke="${INK}" stroke-width="2"/>` + T(65, y0 + H / 2 - 2, `${E} J`, { size: 14, w: 700 }) + T(65, y0 + H / 2 + 15, 'electrical', { size: 12 });
-    const band = (a, t) => [a + (t > 10 ? gap / 2 : .5), Math.max(3, t - (t > 10 ? gap : 1))];   // a little gap between bands so each reads as its own box
-    const [ua, ut] = band(y0, use * sc), ux = 400, uh = Math.min(16, ut / 2 + 6);
-    g += `<path d="M${xi} ${ua}H${ux}L${ux + uh} ${ua + ut / 2}L${ux} ${ua + ut}H${xi}z" fill="#fff" stroke="${INK}" stroke-width="2"/>`
-      + T(ux + uh + 8, ua + ut / 2, `${use} J`, { size: 13, w: 700, a: 'start' }) + T(ux + uh + 8, ua + ut / 2 + 15, `${dev[1]} (useful)`, { size: 11, a: 'start' });
-    let y = y0 + use * sc; const turn = ws.length === 2 ? [300, 165] : [220];
-    ws.forEach((w, i) => { const [a, t] = band(y, w * sc), xb = turn[i], tip = Math.min(14, Math.max(8, t / 2));
-      g += `<path d="M${xi} ${a}H${xb + t}V${ybot}L${xb + t / 2} ${ybot + tip}L${xb} ${ybot}V${a + t}H${xi}z" fill="#fff" stroke="${INK}" stroke-width="2"/>`
-        + T(xb + t / 2, ybot + tip + 16, `${n(w)} J`, { size: 13, w: 700 }) + T(xb + t / 2, ybot + tip + 31, `${dev[2][i]} (wasted)`, { size: 11 });
-      y += w * sc; });
-    g += T(530, 22, 'Drawn to scale', { size: 11, a: 'end', fill: '#555' });
-    const svg = wrap(540, ybot + 90, g), eff = use / E * 100, q = r.int(0, ws.length === 2 ? 2 : 1);
-    if (q === 0) return { title: 'Sankey diagram', spec: 'P4.4', kind: 'diagram', svg, q: `What is the efficiency of the ${dev[0]}?`, o: [n(eff) + '%', ...uniq(n(eff), [waste / E * 100, E / use, use / waste * 100, eff / 2].map(n)).map(v => v + '%')], x: `Efficiency = useful energy out ÷ total energy in × 100 = ${use} ÷ ${E} × 100 = ${n(eff)}%.` };
-    if (q === 1) return { title: 'Sankey diagram', spec: 'P4.3', kind: 'diagram', svg, q: 'How much energy is wasted altogether?', o: [waste + ' J', ...uniq(waste, [use, E, ws[0] === waste ? E + use : ws[0], E - waste / 2]).map(v => n(v) + ' J')], x: `Energy is conserved: wasted = in − useful = ${E} − ${use} = ${waste} J.` };
-    return { title: 'Sankey diagram', spec: 'P4.3', kind: 'diagram', svg, q: 'Why is the arrow for sound so much thinner than the others?', o: ['Less energy is transferred as sound', 'Sound is a less useful kind of energy', 'Sound travels more slowly', 'Sound energy is destroyed'], x: `The width of each arrow is to scale with the energy it carries: only ${n(ws[1])} J of the ${E} J goes to sound.` };
-  };
-
-  /* transverse wave: drawn with a centred axis */
-  M.wave = r => {
-    const A = r.pick([1, 2, 3, 4]), lam = r.pick([4, 5, 6, 8, 10]), xmax = lam * 2.5, Y = A + 1, w = 400, h = 240, L = 50, R = 20, top = 20, bot = h - 40;
-    const px = x => L + x / xmax * (w - L - R), py = y => top + (Y - y) / (2 * Y) * (bot - top);
-    let g = ''; for (let y = -Y; y <= Y; y++) g += `<line x1="${L}" y1="${py(y)}" x2="${w - R}" y2="${py(y)}" stroke="${GRID}"/>` + T(L - 6, py(y) + 4, y, { size: 11, a: 'end' });
-    const xs = lam / 2; for (let x = 0; x <= xmax + 1e-9; x += xs) g += `<line x1="${px(x)}" y1="${top}" x2="${px(x)}" y2="${bot}" stroke="${GRID}"/>` + T(px(x), bot + 16, n(x), { size: 11 });
-    g += `<line x1="${L}" y1="${py(0)}" x2="${w - R}" y2="${py(0)}" stroke="#666" stroke-dasharray="5 3"/><line x1="${L}" y1="${top}" x2="${L}" y2="${bot}" stroke="${INK}" stroke-width="1.6"/>`;
-    g += `<polyline points="${curve(x => A * Math.sin(2 * Math.PI * x / lam), 0, xmax, 160).map(([x, y]) => px(x).toFixed(1) + ',' + py(y).toFixed(1)).join(' ')}" fill="none" stroke="#dc2626" stroke-width="2.4"/>`;
-    g += T((L + w - R) / 2, h - 6, 'Distance (cm)', { size: 12, w: 600 }) + T(14, (top + bot) / 2, 'Displacement (cm)', { size: 12, w: 600, rot: -90 });
-    const svg = wrap(w, h, g), f = r.pick([2, 5, 10, 20]);
-    const q = r.int(0, r.hard ? 2 : 1);
-    if (q === 0) return { title: 'Wave', spec: 'P3.3', kind: 'graph', svg, q: 'What is the wavelength of this wave?', o: [lam + ' cm', ...uniq(lam, [lam / 2, lam * 2, A, 2 * A]).map(v => n(v) + ' cm')], x: `Wavelength = distance from one peak to the next (one full wave): ${lam} cm.` };
-    if (q === 1) return { title: 'Wave', spec: 'P3.3', kind: 'graph', svg, q: 'The dashed line is the rest position. What is the amplitude?', o: [A + ' cm', ...uniq(A, [2 * A, lam, lam / 2, A + 1]).map(v => n(v) + ' cm')], x: `Amplitude = height of a peak above the rest position: ${A} cm (not peak to trough, which is ${2 * A} cm).` };
-    const v = f * lam / 100; return { title: 'Wave', spec: 'P3.5', kind: 'graph', svg, q: `The frequency is ${f} Hz. What is the wave speed?`, o: [n(v) + ' m/s', ...uniq(n(v), [f * lam, f / lam, lam / f / 100, v * 2].map(n)).map(x => x + ' m/s')], x: `v = f × λ = ${f} × ${lam / 100} m = ${n(v)} m/s. (Convert cm to m first.)` };
-  };
-
   /* current–voltage characteristics */
   M.iv = r => {
     const kind = r.pick(['res', 'lamp', 'diode']), w = 320, h = 260, cx = 160, cy = 130, s = 100;
@@ -416,7 +377,7 @@ const DG = (() => {
 
   /* forces on an object: sometimes drawn to scale (with a scale bar), otherwise every arrow the same length and marked not to scale */
   M.forces = r => {
-    const scaled = r.f() < .5, bal = r.f() < .3, k = .25, scaleN = 200;
+    const [fu, ff] = r.pick([['N', 1], ['N', 1], ['kN', .01]]), F = v => n(v * ff) + ' ' + fu, scaled = r.f() < .5, bal = r.f() < .3, k = .25, scaleN = 200;
     const fw = scaled ? r.pick([300, 400, 500, 600]) : r.pick([100, 200, 300, 400, 600]);
     const bk = bal ? fw : scaled ? r.pick([200, 300, 400, 500].filter(x => x !== fw)) : r.pick([50, 100, 150, 200, 250].filter(x => x !== fw));
     const vert = scaled ? r.pick([200, 300, 400]) : r.pick([200, 500, 800]), len = v => scaled ? v * k : 70;
@@ -424,17 +385,17 @@ const DG = (() => {
     const cx = 230, cy = 50 + len(vert), bw = 50, bh = 35, H = cy + bh + len(vert) + 45;
     const fa = (x1, y1, x2, y2, c) => arrow(x1, y1, x2, y2, c, 3);
     let g = `<rect x="${cx - bw}" y="${cy - bh}" width="${2 * bw}" height="${2 * bh}" fill="#e5e7eb" stroke="${INK}" stroke-width="2"/>`;
-    g += fa(cx + bw, cy, cx + bw + len(fw), cy, '#16a34a') + T(cx + bw + len(fw) / 2, cy - 10, fw + ' N', { size: 13, w: 700 }) + T(cx + bw + len(fw) / 2, cy + bh + 16, 'driving force', { size: 11 });
-    g += fa(cx - bw, cy, cx - bw - len(bk), cy, '#dc2626') + T(cx - bw - len(bk) / 2, cy - 10, measure ? '?' : bk + ' N', { size: 13, w: 700 }) + T(cx - bw - len(bk) / 2, cy + bh + 16, 'friction + drag', { size: 11 });
-    g += fa(cx, cy - bh, cx, cy - bh - len(vert), '#2563eb') + T(cx + 8, cy - bh - len(vert) + 12, vert + ' N', { size: 13, w: 700, a: 'start' }) + T(cx + 8, cy - bh - len(vert) + 26, 'reaction force', { size: 11, a: 'start' });
-    g += fa(cx, cy + bh, cx, cy + bh + len(vert), '#2563eb') + T(cx + 8, cy + bh + len(vert) - 4, vert + ' N weight', { size: 13, w: 700, a: 'start' });
-    g += scaled ? `<g transform="translate(14 ${H - 14})"><path d="M0 -6v6h${scaleN * k}v-6" fill="none" stroke="${INK}" stroke-width="2"/>${T(scaleN * k + 6, 0, `= ${scaleN} N`, { size: 12, w: 700, a: 'start' })}${T(0, -14, 'Drawn to scale', { size: 12, w: 700, a: 'start' })}</g>`
+    g += fa(cx + bw, cy, cx + bw + len(fw), cy, '#16a34a') + T(cx + bw + len(fw) / 2, cy - 10, F(fw), { size: 13, w: 700 }) + T(cx + bw + len(fw) / 2, cy + bh + 16, 'driving force', { size: 11 });
+    g += fa(cx - bw, cy, cx - bw - len(bk), cy, '#dc2626') + T(cx - bw - len(bk) / 2, cy - 10, measure ? '?' : F(bk), { size: 13, w: 700 }) + T(cx - bw - len(bk) / 2, cy + bh + 16, 'friction + drag', { size: 11 });
+    g += fa(cx, cy - bh, cx, cy - bh - len(vert), '#2563eb') + T(cx + 8, cy - bh - len(vert) + 12, F(vert), { size: 13, w: 700, a: 'start' }) + T(cx + 8, cy - bh - len(vert) + 26, 'reaction force', { size: 11, a: 'start' });
+    g += fa(cx, cy + bh, cx, cy + bh + len(vert), '#2563eb') + T(cx + 8, cy + bh + len(vert) - 4, F(vert) + ' weight', { size: 13, w: 700, a: 'start' });
+    g += scaled ? `<g transform="translate(14 ${H - 14})"><path d="M0 -6v6h${scaleN * k}v-6" fill="none" stroke="${INK}" stroke-width="2"/>${T(scaleN * k + 6, 0, `= ${F(scaleN)}`, { size: 12, w: 700, a: 'start' })}${T(0, -14, 'Drawn to scale', { size: 12, w: 700, a: 'start' })}</g>`
       : T(14, H - 14, 'Not to scale', { size: 12, w: 700, a: 'start', fill: '#555' });
     const svg = wrap(460, H, g), res = fw - bk, title = 'Forces diagram';
-    if (measure) return { title, spec: 'P1.15', kind: 'diagram', svg, q: 'The diagram is drawn to scale. Use the scale bar: what is the friction + drag force?', o: [bk + ' N', ...others(bk + ' N', [100, 200, 300, 400, 500, 600, 800].map(v => v + ' N'), r)], x: `The red arrow is ${bk / scaleN} times as long as the ${scaleN} N scale bar: ${bk / scaleN} × ${scaleN} = ${bk} N. (So the resultant is ${fw} − ${bk} = ${res} N forwards.)` };
-    const ans = bal ? '0 N' : `${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}`;
-    return r.int(0, 1) || bal ? { title, spec: 'P1.15', kind: 'diagram', svg, q: 'What is the resultant force on the object?', o: [ans, ...others(ans, bal ? [`${fw + bk} N to the right`, `${fw} N to the right`, `${2 * vert} N downwards`] : [`${fw + bk} N to the right`, `${Math.abs(res)} N to the ${res > 0 ? 'left' : 'right'}`, '0 N', `${fw + bk + 2 * vert} N`], r)], x: bal ? 'Up = down and forwards = backwards: the forces are balanced, so the resultant is 0 N (it stays still or keeps moving at a steady speed).' : `Up and down cancel. Horizontally: ${fw} − ${bk} = ${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}.` }
-      : { title, spec: 'P1.16', kind: 'diagram', svg, q: 'The object is moving to the right. What happens to its speed?', o: [res > 0 ? 'It speeds up' : 'It slows down', res > 0 ? 'It slows down' : 'It speeds up', 'It stays the same', 'It stops straight away'], x: `The resultant force is ${Math.abs(res)} N ${res > 0 ? 'forwards, so it accelerates' : 'backwards, so it decelerates'}.` };
+    if (measure) return { title, spec: 'P1.15', kind: 'diagram', svg, q: 'The diagram is drawn to scale. Use the scale bar: what is the friction + drag force?', o: [F(bk), ...others(F(bk), [100, 200, 300, 400, 500, 600, 800].map(F), r)], x: `The red arrow is ${bk / scaleN} times as long as the ${F(scaleN)} scale bar: ${bk / scaleN} × ${scaleN} = ${F(bk)}. (So the resultant is ${fw} − ${bk} = ${F(res)} forwards.)` };
+    const ans = bal ? F(0) : `${F(Math.abs(res))} to the ${res > 0 ? 'right' : 'left'}`;
+    return r.int(0, 1) || bal ? { title, spec: 'P1.15', kind: 'diagram', svg, q: 'What is the resultant force on the object?', o: [ans, ...others(ans, bal ? [`${F(fw + bk)} to the right`, `${F(fw)} to the right`, `${F(2 * vert)} downwards`] : [`${F(fw + bk)} to the right`, `${F(Math.abs(res))} to the ${res > 0 ? 'left' : 'right'}`, F(0), `${F(fw + bk + 2 * vert)}`], r)], x: bal ? 'Up = down and forwards = backwards: the forces are balanced, so the resultant is 0 N (it stays still or keeps moving at a steady speed).' : `Up and down cancel. Horizontally: ${fw} − ${bk} = ${F(Math.abs(res))} to the ${res > 0 ? 'right' : 'left'}.` }
+      : { title, spec: 'P1.16', kind: 'diagram', svg, q: 'The object is moving to the right. What happens to its speed?', o: [res > 0 ? 'It speeds up' : 'It slows down', res > 0 ? 'It slows down' : 'It speeds up', 'It stays the same', 'It stops straight away'], x: `The resultant force is ${F(Math.abs(res))} ${res > 0 ? 'forwards, so it accelerates' : 'backwards, so it decelerates'}.` };
   };
 
   /* food web */
@@ -453,16 +414,16 @@ const DG = (() => {
   /* pyramid of biomass with numbers (biology maths): sometimes to scale (bar width ∝ biomass), otherwise marked not to scale */
   M.pyramid = r => {
     const L = r.pick([['grass', 'grasshoppers', 'frogs', 'snakes'], ['phytoplankton', 'zooplankton', 'small fish', 'seals'], ['oak tree leaves', 'caterpillars', 'blue tits', 'sparrowhawks']]);
-    const scaled = r.f() < .4, levels = scaled ? 3 : 4;
+    const [what, pu, pf] = r.pick([['biomass', 'g/m²', 1], ['biomass', 'g/m²', 1], ['biomass', 'kg/m²', .001], ['energy', 'kJ/m²/year', 10]]), scaled = r.f() < .4, levels = scaled ? 3 : 4;
     const b0 = r.pick([1000, 2000, 5000]), b = [b0, b0 * (scaled ? r.pick([20, 25, 40]) : r.pick([10, 10, 20])) / 100]; b.push(b[1] * (scaled ? r.pick([20, 25, 40]) : r.pick([10, 20])) / 100); if (!scaled) b.push(b[2] * 10 / 100);
     let g = ''; const maxW = 320, hgt = 38, cx = 200, wOf = (v, i) => scaled ? Math.max(2, maxW * v / b0) : Math.max(L[i].length * 7.5 + 16, maxW * Math.pow(v / b0, .35));
     b.forEach((v, i) => { const w = wOf(v, i), y = 210 - i * (hgt + 4), fits = w >= L[i].length * 7.5 + 12;
       g += `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${hgt}" fill="${['#86efac', '#fde68a', '#fdba74', '#fca5a5'][i]}" stroke="${INK}"/>`
-        + (fits ? T(cx, y + 16, L[i], { size: 12, w: 700 }) + T(cx, y + 31, n(v) + ' g/m²', { size: 11 }) : `<line x1="${cx + w / 2 + 2}" y1="${y + hgt / 2}" x2="${cx + 40}" y2="${y + hgt / 2}" stroke="#888"/>` + T(cx + 44, y + 16, L[i], { size: 12, w: 700, a: 'start' }) + T(cx + 44, y + 31, n(v) + ' g/m²', { size: 11, a: 'start' })); });
-    g += T(390, 22, scaled ? 'Drawn to scale (bar width ∝ biomass)' : 'Not to scale', { size: 11, w: 700, a: 'end', fill: '#555' });
+        + (fits ? T(cx, y + 16, L[i], { size: 12, w: 700 }) + T(cx, y + 31, n(v * pf) + ' ' + pu, { size: 11 }) : `<line x1="${cx + w / 2 + 2}" y1="${y + hgt / 2}" x2="${cx + 40}" y2="${y + hgt / 2}" stroke="#888"/>` + T(cx + 44, y + 16, L[i], { size: 12, w: 700, a: 'start' }) + T(cx + 44, y + 31, n(v * pf) + ' ' + pu, { size: 11, a: 'start' })); });
+    g += T(390, 22, scaled ? `Drawn to scale (bar width ∝ ${what})` : 'Not to scale', { size: 11, w: 700, a: 'end', fill: '#555' });
     const svg = wrap(400, 260, g), lvl = r.int(0, levels - 2), eff = b[lvl + 1] / b[lvl] * 100, q = r.int(0, 1);
-    if (q === 0) return { title: 'Pyramid of biomass', spec: 'B4.7', kind: 'diagram', svg, q: `What percentage of the biomass of the ${L[lvl]} is passed on to the ${L[lvl + 1]}?`, o: [n(eff) + '%', ...uniq(n(eff), [100 - eff, b[lvl] / b[lvl + 1], b[lvl + 1], eff * 10].map(n)).map(v => v + '%')], x: `${n(b[lvl + 1])} ÷ ${n(b[lvl])} × 100 = ${n(eff)}%.` };
-    return { title: 'Pyramid of biomass', spec: 'B4.8', kind: 'diagram', svg, q: 'Why is less biomass found at each higher level?', o: ['Energy is lost at each level, e.g. in respiration, movement and waste', 'Animals higher up are smaller', 'Plants make biomass out of nothing', 'Predators only eat some of the time'], x: 'Only a small fraction is passed on: much is used for respiration (released as heat), lost in faeces and urine, or never eaten.' };
+    if (q === 0) return { title: `Pyramid of ${what}`, spec: 'B4.7', kind: 'diagram', svg, q: `What percentage of the ${what} of the ${L[lvl]} is passed on to the ${L[lvl + 1]}?`, o: [n(eff) + '%', ...uniq(n(eff), [100 - eff, b[lvl] / b[lvl + 1], b[lvl + 1], eff * 10].map(n)).map(v => v + '%')], x: `${n(b[lvl + 1] * pf)} ÷ ${n(b[lvl] * pf)} × 100 = ${n(eff)}%.` };
+    return { title: `Pyramid of ${what}`, spec: 'B4.8', kind: 'diagram', svg, q: `Why is there less ${what} at each higher level?`, o: ['Energy is lost at each level, e.g. in respiration, movement and waste', 'Animals higher up are smaller', 'Plants make biomass out of nothing', 'Predators only eat some of the time'], x: 'Only a small fraction is passed on: much is used for respiration (released as heat), lost in faeces and urine, or never eaten.' };
   };
 
   /* photosynthesis: limiting factors */
@@ -473,27 +434,6 @@ const DG = (() => {
     const svg = chart({ xmax: 100, ymax: 100, xstep: 20, ystep: 20, xl: 'Light intensity (a.u.)', yl: 'Rate of photosynthesis (a.u.)', series: [{ pts: curve(f1, 0, 100), label: 'high CO₂', lab: 40 }, { pts: curve(f2, 0, 100), label: 'low CO₂', lab: 50, dash: 1 }], marks: [[xa, f2(xa), 'X'], [xb, f2(xb), 'Y']] });
     return r.int(0, 1) ? { title: 'Photosynthesis: limiting factors', spec: 'B2.20', kind: 'graph', svg, q: 'What is limiting the rate of photosynthesis at point Y?', o: ['Carbon dioxide concentration', 'Light intensity', 'Chlorophyll', 'Oxygen concentration'], x: 'At Y more light makes no difference (the line is flat), but the high-CO₂ line is higher: carbon dioxide is the limiting factor.' }
       : { title: 'Photosynthesis: limiting factors', spec: 'B2.20', kind: 'graph', svg, q: 'What is limiting the rate of photosynthesis at point X?', o: ['Light intensity', 'Carbon dioxide concentration', 'Temperature only', 'Nothing: it is at its maximum'], x: 'At X the line is still rising: more light would increase the rate, so light intensity is the limiting factor.' };
-  };
-
-  /* magnetic field of a bar magnet: lines leave the north pole, curve round and go into the south pole */
-  M.magnet = r => {
-    const nLeft = r.int(0, 1), askPole = r.int(0, 1), cx = 230, cy = 140, hw = 70, hh = 18, xL = cx - hw, xR = cx + hw;
-    const dir = nLeft ? 0 : 180;   // along the top and bottom arcs the field runs N → S
-    let g = '';
-    [[5, 45, 26], [10, 100, 60], [14, 165, 98], [17, 235, 138]].forEach(([dy, ex, hy]) => [-1, 1].forEach(s => {
-      const y = cy + s * dy, yc = cy + s * (dy + hy);
-      g += `<path d="M${xL} ${y}C${xL - ex} ${yc} ${xR + ex} ${yc} ${xR} ${y}" fill="none" stroke="#444" stroke-width="1.6"/>`;
-      g += arrowHead(cx + (dir ? -4 : 4), cy + s * (dy + .75 * hy), dir, '#444', 9);   // the top of a symmetric curve is at t = 0.5, 3/4 of the way to the control height
-    }));
-    g += `<line x1="18" y1="${cy}" x2="${xL}" y2="${cy}" stroke="#444" stroke-width="1.6"/><line x1="${xR}" y1="${cy}" x2="442" y2="${cy}" stroke="#444" stroke-width="1.6"/>`
-      + arrowHead(nLeft ? 60 : 110, cy, nLeft ? 180 : 0, '#444', 9) + arrowHead(nLeft ? 400 : 350, cy, nLeft ? 180 : 0, '#444', 9);
-    const lab = s => askPole ? '?' : s;
-    g += `<rect x="${xL}" y="${cy - hh}" width="${hw}" height="${2 * hh}" fill="${askPole ? '#d1d5db' : nLeft ? '#fecaca' : '#bfdbfe'}" stroke="${INK}" stroke-width="2"/><rect x="${cx}" y="${cy - hh}" width="${hw}" height="${2 * hh}" fill="${askPole ? '#d1d5db' : nLeft ? '#bfdbfe' : '#fecaca'}" stroke="${INK}" stroke-width="2"/>`
-      + T(cx - hw / 2, cy + 7, lab(nLeft ? 'N' : 'S'), { size: 20, w: 700 }) + T(cx + hw / 2, cy + 7, lab(nLeft ? 'S' : 'N'), { size: 20, w: 700 });
-    g += `<circle cx="${xL - 14}" cy="${cy - 26}" r="4.5" fill="${INK}"/>` + T(xL - 26, cy - 30, 'P', { size: 14, w: 700 }) + `<circle cx="${cx + 190}" cy="${cy - 110}" r="4.5" fill="${INK}"/>` + T(cx + 202, cy - 106, 'Q', { size: 14, w: 700, a: 'start' });
-    const svg = wrap(460, 280, g);
-    return askPole ? { title: 'Magnetic field of a bar magnet', spec: 'P6.4', kind: 'diagram', svg, q: 'Which end of the bar magnet is the north pole?', o: [nLeft ? 'The left end' : 'The right end', nLeft ? 'The right end' : 'The left end', 'Both ends', 'You can\'t tell from the field lines'], x: 'Field lines come out of the north pole and go into the south pole. Follow the arrows back to the end they leave from.' }
-      : { title: 'Magnetic field of a bar magnet', spec: 'P6.4', kind: 'diagram', svg, q: 'Where is the magnetic field stronger, at P or at Q?', o: ['P: the field lines are closer together', 'Q: it is further from the magnet', 'The same everywhere', 'Q: the field lines are curved'], x: 'The closer together the field lines, the stronger the field. They are most crowded near the poles.' };
   };
 
   /* bar chart */
@@ -526,6 +466,162 @@ const DG = (() => {
     const svg = wrap(380, 240, g), t = r.int(0, keys.length - 1);
     if (r.f() < .35) return { title: plant ? 'Plant cell' : 'Animal cell', spec: 'B2.2', kind: 'diagram', svg, q: 'Is this a plant cell or an animal cell?', o: plant ? ['Plant: it has a cell wall, a large vacuole and chloroplasts', 'Animal: it has a nucleus', 'Plant: it has a cell membrane', 'Animal: it has no cell wall'] : ['Animal: no cell wall, no large vacuole, no chloroplasts', 'Plant: it has a nucleus', 'Plant: it has mitochondria', 'Animal: it has a cell wall'], x: plant ? 'Only plant cells have a cellulose cell wall, a permanent vacuole and chloroplasts.' : 'It has a nucleus, cytoplasm, a membrane and mitochondria but no cell wall, vacuole or chloroplasts: an animal cell.' };
     return { title: plant ? 'Plant cell' : 'Animal cell', spec: 'B2.2', kind: 'diagram', svg, q: `What is part ${letters[t]}?`, o: [keys[t], ...others(keys[t], ['nucleus', 'cell membrane', 'cell wall', 'cytoplasm', 'vacuole', 'chloroplast', 'mitochondrion', 'ribosome'], r)], x: `${letters[t]} points to the ${keys[t]}.` };
+  };
+
+  /* Sankey diagram (GCSE style): one block on the left that divides; one outline round the whole thing, so there are no
+     lines between transfers; each transfer ends in its own arrowhead. Widths to scale. Sometimes on squared paper. */
+  const SANKEY_DEV = [
+    ['electric motor', 'electrical', 'kinetic', ['thermal', 'sound'], [8, 14]], ['filament lamp', 'electrical', 'light', ['thermal'], [2, 2]],
+    ['LED lamp', 'electrical', 'light', ['thermal'], [14, 16]], ['kettle', 'electrical', 'thermal (water)', ['thermal (surroundings)', 'sound'], [16, 18]],
+    ['car engine', 'chemical', 'kinetic', ['thermal', 'sound'], [4, 6]], ['television', 'electrical', 'light and sound', ['thermal'], [6, 10]],
+    ['coal power station', 'chemical', 'electrical', ['thermal (surroundings)'], [7, 8]], ['solar cell', 'light', 'electrical', ['thermal'], [3, 4]],
+    ['cyclist', 'chemical', 'kinetic', ['thermal', 'sound'], [4, 5]]];
+  M.sankey = r => {
+    const [name, inT, useT, wasteT, [k0, k1]] = r.pick(SANKEY_DEV), N = 20, sq = 8, grid = r.f() < (r.hard ? .6 : .3);
+    const unit = r.pick(['J', 'J', 'kJ', 'MJ']), v = r.pick(unit === 'MJ' ? [1, 2, 5] : unit === 'kJ' ? [1, 2, 5, 10] : [5, 10, 20, 50]);
+    const ku = r.int(k0, k1), kw = wasteT.length === 2 ? (a => [a, N - ku - a])(Math.max(1, Math.min(N - ku - 1, Math.round((N - ku) * (.7 + r.f() * .15))))) : [N - ku];
+    const E = N * v, use = ku * v, ws = kw.map(k => k * v), waste = E - use, x0 = 20, y0 = 36, H = N * sq, xu = 380, ybot = y0 + H + 40;
+    const turn = kw.length === 2 ? [300, 180] : [196], hu = ku * sq, tipU = Math.min(18, hu / 2 + 4);
+    let path = `M${x0} ${y0}H${xu}L${xu + tipU} ${y0 + hu / 2}L${xu} ${y0 + hu}`, a = y0 + hu; const tips = [];
+    kw.forEach((k, i) => { const t = k * sq, xt = turn[i], tip = Math.min(16, t / 2 + 4); path += `H${xt + t}V${ybot}L${xt + t / 2} ${ybot + tip}L${xt} ${ybot}V${a + t}`; tips.push([xt + t / 2, ybot + tip]); a += t; });
+    path += `H${x0}Z`;
+    const hide = grid ? r.int(0, kw.length) : -1;   // on squared paper one value is left for the student to count
+    const val = (x, i) => i === hide ? '?' : `${n(x)} ${unit}`;
+    let g = '';
+    if (grid) { for (let x = x0 - 2 * sq; x <= 440; x += sq) g += `<line x1="${x}" y1="${y0 - 2 * sq}" x2="${x}" y2="${ybot + 3 * sq}" stroke="#d6e4f0" stroke-width="${(x - x0) % (5 * sq) ? .6 : 1.2}"/>`;
+      for (let y = y0 - 2 * sq; y <= ybot + 3 * sq; y += sq) g += `<line x1="${x0 - 2 * sq}" y1="${y}" x2="440" y2="${y}" stroke="#d6e4f0" stroke-width="${(y - y0) % (5 * sq) ? .6 : 1.2}"/>`; }
+    g += `<path d="${path}" fill="${grid ? 'rgba(255,255,255,.15)' : '#fff'}" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    g += T(x0 + 50, y0 + H / 2 - 2, `${E} ${unit}`, { size: 14, w: 700 }) + T(x0 + 50, y0 + H / 2 + 15, inT, { size: 12 });
+    g += T(xu + tipU + 8, y0 + hu / 2, val(use, 0), { size: 13, w: 700, a: 'start' }) + T(xu + tipU + 8, y0 + hu / 2 + 15, useT, { size: 11, a: 'start' }) + T(xu + tipU + 8, y0 + hu / 2 + 29, '(useful)', { size: 11, a: 'start', fill: '#555' });
+    kw.forEach((k, i) => { const [x, y] = tips[i]; g += T(x, y + 16, val(ws[i], i + 1), { size: 13, w: 700 }) + T(x, y + 31, wasteT[i], { size: 11 }) + T(x, y + 44, '(wasted)', { size: 11, fill: '#555' }); });
+    g += grid ? T(490, 18, `1 small square = ${v} ${unit}`, { size: 12, w: 700, a: 'end' }) : T(490, 18, 'Drawn to scale', { size: 11, a: 'end', fill: '#555' });
+    const svg = wrap(500, ybot + 76, g), eff = use / E * 100, title = 'Sankey diagram';
+    if (grid && hide >= 0) { const ans = hide === 0 ? use : ws[hide - 1], what = hide === 0 ? `usefully transferred as ${useT}` : `wasted as ${wasteT[hide - 1]}`, k = hide === 0 ? ku : kw[hide - 1];
+      return { title, spec: 'P4.3', kind: 'diagram', svg, q: `How much energy is ${what}?`, o: [n(ans) + ' ' + unit, ...uniq(ans, [k, ans * 2, E - ans, ans + v, ans - v]).map(x => n(x) + ' ' + unit)], x: `Count the squares across that arrow: ${k} squares × ${v} ${unit} = ${n(ans)} ${unit}.` }; }
+    const q = r.int(0, kw.length === 2 ? 2 : 1);
+    if (q === 0) return { title, spec: 'P4.4', kind: 'diagram', svg, q: `What is the efficiency of the ${name}?`, o: [n(eff) + '%', ...uniq(n(eff), [waste / E * 100, E / use, use / waste * 100, eff / 2].map(n)).map(x => x + '%')], x: `Efficiency = useful energy out ÷ total energy in × 100 = ${use} ÷ ${E} × 100 = ${n(eff)}%.` };
+    if (q === 1) return { title, spec: 'P4.3', kind: 'diagram', svg, q: 'How much energy is wasted altogether?', o: [n(waste) + ' ' + unit, ...uniq(waste, [use, E, ws[0] === waste ? E + use : ws[0], E - waste / 2]).map(x => n(x) + ' ' + unit)], x: `Energy is conserved: wasted = in − useful = ${E} − ${use} = ${n(waste)} ${unit}.` };
+    return { title, spec: 'P4.3', kind: 'diagram', svg, q: `Why is the ${wasteT[1]} arrow so much thinner than the others?`, o: [`Less energy is transferred as ${wasteT[1]}`, `${wasteT[1][0].toUpperCase() + wasteT[1].slice(1)} is a less useful kind of energy`, `${wasteT[1][0].toUpperCase() + wasteT[1].slice(1)} energy is destroyed`, 'It is transferred more slowly'], x: `The width of each arrow is to scale with the energy it carries: only ${n(ws[1])} ${unit} of the ${E} ${unit}.` };
+  };
+
+  /* transverse and longitudinal waves: number of waves, wavelength, amplitude, units and axis all vary */
+  function waveAxes({ xmax, xstep, Y, ystep, xl, yl, f, w = 420, h = 240 }) {
+    const L = 52, R = 18, top = 16, bot = h - 40, px = x => L + x / xmax * (w - L - R), py = y => top + (Y - y) / (2 * Y) * (bot - top);
+    let g = '';
+    for (let y = -Y; y <= Y + 1e-9; y += ystep) g += `<line x1="${L}" y1="${py(y)}" x2="${w - R}" y2="${py(y)}" stroke="${GRID}"/>` + T(L - 6, py(y) + 4, n(y), { size: 11, a: 'end' });
+    for (let x = 0; x <= xmax + 1e-9; x += xstep) g += `<line x1="${px(x)}" y1="${top}" x2="${px(x)}" y2="${bot}" stroke="${GRID}"/>` + T(px(x), bot + 16, n(x), { size: 11 });
+    g += `<line x1="${L}" y1="${py(0)}" x2="${w - R}" y2="${py(0)}" stroke="#666" stroke-dasharray="5 3"/><line x1="${L}" y1="${top}" x2="${L}" y2="${bot}" stroke="${INK}" stroke-width="1.6"/>`;
+    g += `<polyline points="${curve(f, 0, xmax, 240).map(([x, y]) => px(x).toFixed(1) + ',' + py(y).toFixed(1)).join(' ')}" fill="none" stroke="#dc2626" stroke-width="2.4"/>`;
+    g += T((L + w - R) / 2, h - 6, xl, { size: 12, w: 600 }) + T(14, (top + bot) / 2, yl, { size: 12, w: 600, rot: -90 });
+    return wrap(w, h, g);
+  }
+  M.wave = r => {
+    const kind = r.pick(['dist', 'dist', 'time', 'long']), cyc = r.pick([1.5, 2, 2.5, 3, 4, 5]), title = 'Wave';
+    if (kind === 'long') {   /* a longitudinal wave on a slinky, with a ruler */
+      const U = r.pick([['cm', [2, 4, 5, 8, 10]], ['m', [0.5, 1, 2]], ['mm', [5, 10, 20]]]), lam = r.pick(U[1]), waves = r.pick([3, 4, 5]), len = lam * waves, w = 440, L = 30, R = 20, px = x => L + x / len * (w - L - R);
+      let g = '', x = 0; const ph = r.f();
+      while (x <= len) { g += `<line x1="${px(x).toFixed(1)}" y1="30" x2="${px(x).toFixed(1)}" y2="90" stroke="${INK}" stroke-width="1.6"/>`; x += lam / 13 * (1 + .6 * Math.sin(2 * Math.PI * (x / lam + ph))); }
+      for (let i = 0; i <= waves * 2; i++) { const t = i * lam / 2; g += `<line x1="${px(t)}" y1="112" x2="${px(t)}" y2="${i % 2 ? 118 : 122}" stroke="${INK}"/>` + (i % 2 ? '' : T(px(t), 136, n(t), { size: 11 })); }
+      g += `<line x1="${px(0)}" y1="112" x2="${px(len)}" y2="112" stroke="${INK}"/>` + T(w / 2, 154, `Distance (${U[0]})`, { size: 12, w: 600 });
+      const cx = (((.75 - ph) % 1 + 1) % 1) * lam, rx = cx + lam / 2;   // coils are closest where the sine is −1   // first compression and the rarefaction after it
+      g += T(px(cx), 22, 'C', { size: 13, w: 700, fill: '#2563eb' }) + T(px(rx), 22, 'R', { size: 13, w: 700, fill: '#2563eb' });
+      const svg = wrap(w, 162, g);
+      return r.int(0, 1) ? { title: 'Longitudinal wave', spec: 'P3.3', kind: 'diagram', svg, q: 'Use the scale. What is the wavelength of this wave?', o: [n(lam) + ' ' + U[0], ...uniq(lam, [lam / 2, lam * 2, len, lam * 3]).map(v => n(v) + ' ' + U[0])], x: `Wavelength = distance from the middle of one compression to the middle of the next: ${n(lam)} ${U[0]}.` }
+        : { title: 'Longitudinal wave', spec: 'P3.1', kind: 'diagram', svg, q: 'What are the regions labelled C and R?', o: ['C = compression, R = rarefaction', 'C = rarefaction, R = compression', 'C = crest, R = trough', 'C = trough, R = crest'], x: 'Where the coils are squashed together is a compression; where they are spread out is a rarefaction. Crests and troughs are for transverse waves.' };
+    }
+    const A = r.pick([0.5, 1, 1.5, 2, 3, 4, 5, 6]), Y = A < 1 ? 1 : A <= 2 ? Math.ceil(A) + 1 : Math.ceil((A + 1) / 2) * 2, ystep = Y <= 3 ? .5 * (Y > 1 ? 2 : 1) : 2, ph = r.pick([0, .25, .5]);
+    const yU = r.pick(['cm', 'cm', 'mm', 'm']);
+    if (kind === 'time') {
+      const [tU, Ts] = r.pick([['s', [0.2, 0.25, 0.5, 2, 4]], ['ms', [2, 4, 5, 10, 20]]]), Tp = r.pick(Ts), xmax = Tp * cyc, fr = tU === 'ms' ? 1000 / Tp : 1 / Tp;
+      const svg = waveAxes({ xmax, xstep: Tp / 2, Y, ystep, xl: `Time (${tU})`, yl: `Displacement (${yU})`, f: x => A * Math.sin(2 * Math.PI * (x / Tp + ph)) });
+      if (r.int(0, 1)) return { title: 'Wave: displacement–time', spec: 'P3.3', kind: 'graph', svg, q: 'What is the time period of this wave?', o: [n(Tp) + ' ' + tU, ...uniq(Tp, [Tp / 2, Tp * 2, xmax, A]).map(v => n(v) + ' ' + tU)], x: `Period = time for one complete wave (peak to next peak): ${n(Tp)} ${tU}.` };
+      return { title: 'Wave: displacement–time', spec: 'P3.5', kind: 'graph', svg, q: 'What is the frequency of this wave?', o: [n(fr) + ' Hz', ...uniq(n(fr), [1 / Tp, Tp, 2 * fr, fr / 2, 1000 * Tp].map(n)).map(v => v + ' Hz')], x: `Period T = ${n(Tp)} ${tU}${tU === 'ms' ? ` = ${n(Tp / 1000)} s` : ''}. f = 1 ÷ T = ${n(fr)} Hz.` };
+    }
+    const [xU, lams] = r.pick([['cm', [2, 4, 5, 8, 10, 20]], ['m', [0.5, 1, 2, 4, 5]], ['mm', [2, 4, 5, 10]]]), lam = r.pick(lams), xmax = lam * cyc;
+    const svg = waveAxes({ xmax, xstep: cyc > 3 ? lam : lam / 2, Y, ystep, xl: `Distance (${xU})`, yl: `Displacement (${yU})`, f: x => A * Math.sin(2 * Math.PI * (x / lam + ph)) });
+    const q = r.int(0, r.hard ? 2 : 1);
+    if (q === 0) return { title: 'Wave: displacement–distance', spec: 'P3.3', kind: 'graph', svg, q: 'What is the wavelength of this wave?', o: [n(lam) + ' ' + xU, ...uniq(lam, [lam / 2, lam * 2, xmax, lam * 1.5]).map(v => n(v) + ' ' + xU)], x: `Wavelength = distance from one peak to the next (one full wave): ${n(lam)} ${xU}. There are ${cyc} waves on the graph.` };
+    if (q === 1) return { title: 'Wave: displacement–distance', spec: 'P3.3', kind: 'graph', svg, q: 'The dashed line is the rest position. What is the amplitude?', o: [n(A) + ' ' + yU, ...uniq(A, [2 * A, A + ystep, Y, 2 * Y]).map(v => n(v) + ' ' + yU)], x: `Amplitude = height of a peak above the rest position: ${n(A)} ${yU} (not peak to trough, which is ${n(2 * A)} ${yU}).` };
+    const fq = r.pick([2, 5, 10, 20, 50]), lm = xU === 'm' ? lam : xU === 'cm' ? lam / 100 : lam / 1000, sp = fq * lm;
+    return { title: 'Wave: displacement–distance', spec: 'P3.5', kind: 'graph', svg, q: `The frequency is ${fq} Hz. What is the wave speed?`, o: [n(sp) + ' m/s', ...uniq(n(sp), [fq * lam, fq / lm, sp * 10, sp / 10].map(n)).map(v => v + ' m/s')], x: `v = f × λ = ${fq} × ${n(lm)} m = ${n(sp)} m/s.${xU !== 'm' ? ' (Convert the wavelength to metres first.)' : ''}` };
+  };
+
+  /* magnetic fields traced from pole "charges": field lines never cross, they leave N and enter S.
+     Single bar magnet (horizontal or vertical), two magnets attracting or repelling, or the uniform field between flat poles. */
+  function traceField(Q, box, starts, hidden) {
+    const E = (x, y) => { let ex = 0, ey = 0; Q.forEach(c => { const dx = x - c.x, dy = y - c.y, d3 = Math.pow(dx * dx + dy * dy, 1.5) + 1e-6; ex += c.q * dx / d3; ey += c.q * dy / d3; }); const m = Math.hypot(ex, ey) || 1; return [ex / m, ey / m]; };
+    /* dir 1 = follow the field from an N pole; dir -1 = follow it backwards from an S pole, kept only if it never reaches an N pole (lines that arrive from outside the picture) */
+    return starts.map(([x, y, dir = 1]) => { const pts = [[x, y]]; let px = x, py = y, closed = false;
+      for (let i = 0; i < 1600; i++) { let [ax, ay] = E(px, py); ax *= dir; ay *= dir; let [bx, by] = E(px + ax, py + ay); bx *= dir; by *= dir; px += (ax + bx); py += (ay + by);
+        pts.push([px, py]); if (Math.abs(px) > box[0] || Math.abs(py) > box[1]) break; if (Q.some(c => c.q === -dir && Math.hypot(px - c.x, py - c.y) < 3)) { closed = true; break; } }
+      if (dir < 0) { if (closed) return { pts: [], vis: [] }; pts.reverse(); }
+      const vis = pts.filter(p => !hidden(p)); return { pts, vis }; });
+  }
+  M.magnet = r => {
+    const kind = r.hard ? r.pick(['single', 'attract', 'repel', 'uniform']) : r.pick(['single', 'single', 'attract', 'repel', 'uniform']);
+    const vert = kind === 'single' && r.f() < .35, W = vert ? 340 : 480, H = vert ? 420 : 300, BX = vert ? [H / 2, W / 2] : [W / 2, H / 2];
+    const hw = r.pick([55, 65, 75]), hh = r.pick([14, 17, 20]), m = r.pick([5, 6, 7]);
+    const mags = [], Q = [];
+    const bar = (cx, nLeft) => { mags.push({ x: cx - hw, y: -hh, w: 2 * hw, h: 2 * hh, nLeft }); const a = hw - hh * .7; Q.push({ x: cx + (nLeft ? -a : a), y: 0, q: 1, mate: Q.length + 1 }, { x: cx + (nLeft ? a : -a), y: 0, q: -1 }); };
+    let gap = 0;
+    if (kind === 'single') bar(0, r.int(0, 1) === 1);
+    else if (kind === 'attract' || kind === 'repel') { gap = r.pick([60, 80, 100]); const off = hw + gap / 2, flip = r.int(0, 1) === 1;
+      if (kind === 'attract') { bar(-off, flip); bar(off, flip); } else { bar(-off, flip); bar(off, !flip); } }
+    else { const fw = 40, fh = r.pick([70, 90]), g2 = r.pick([90, 120, 150]) / 2, nLeft = r.int(0, 1) === 1, k = 9;
+      mags.push({ x: -g2 - fw, y: -fh, w: fw, h: 2 * fh, nLeft, face: 1 }, { x: g2, y: -fh, w: fw, h: 2 * fh, nLeft, face: 2 });
+      for (let i = 0; i < k; i++) { const y = -fh + 6 + i * (2 * fh - 12) / (k - 1); Q.push({ x: (nLeft ? -1 : 1) * (g2 + 4), y, q: 1 }, { x: (nLeft ? 1 : -1) * (g2 + 4), y, q: -1 }); } }
+    const inMag = p => mags.some(b => p[0] > b.x - 1 && p[0] < b.x + b.w + 1 && p[1] > b.y - 1 && p[1] < b.y + b.h + 1);
+    const starts = [];
+    Q.forEach((c, i) => {
+      if (kind === 'uniform') { if (c.q > 0) starts.push([c.x + (c.x < 0 ? 4 : -4), c.y]); return; }
+      const mate = c.q > 0 ? Q[c.mate] : Q[i - 1], ref = Math.atan2(mate.y - c.y, mate.x - c.x);   // equal-flux starting angles round each pole
+      for (let j = 1; j <= m; j++) { const th = Math.acos(1 - 2 * (j - .5) / m); [1, -1].forEach(s => starts.push([c.x + 3 * Math.cos(ref + s * th), c.y + 3 * Math.sin(ref + s * th), c.q])); } });
+    const lines = traceField(Q, [BX[0] - 6, BX[1] - 6], starts, inMag);
+    const map = vert ? ([x, y]) => [W / 2 + y, H / 2 + x] : ([x, y]) => [W / 2 + x, H / 2 + y];
+    let g = ''; const heads = [];
+    lines.forEach(({ vis }) => { if (vis.length < 15) return;
+      g += `<polyline points="${vis.filter((_, i) => i % 2 === 0 || i === vis.length - 1).map(p => map(p).map(v => v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#444" stroke-width="1.5"/>`;
+      const i = Math.floor(vis.length / 2), [ax, ay] = map(vis[i - 2]), [bx, by] = map(vis[i + 2]); heads.push([bx, by, Math.atan2(by - ay, bx - ax) * 180 / Math.PI]); });
+    heads.forEach(([x, y, a]) => { g += arrowHead(x, y, a, '#444', 8); });
+    const hidePoles = r.f() < .5;
+    mags.forEach(b => { const [x1, y1] = map([b.x, b.y]), [x2, y2] = map([b.x + b.w, b.y + b.h]), X = Math.min(x1, x2), Y0 = Math.min(y1, y2), w = Math.abs(x2 - x1), h = Math.abs(y2 - y1);
+      if (b.face) { const isN = (b.face === 1) === b.nLeft; g += `<rect x="${X}" y="${Y0}" width="${w}" height="${h}" fill="${hidePoles ? '#d1d5db' : isN ? '#fecaca' : '#bfdbfe'}" stroke="${INK}" stroke-width="2"/>` + T(X + w / 2, Y0 + h / 2 + 7, hidePoles ? '?' : isN ? 'N' : 'S', { size: 20, w: 700 }); return; }
+      const half = vert ? [[X, Y0, w, h / 2], [X, Y0 + h / 2, w, h / 2]] : [[X, Y0, w / 2, h], [X + w / 2, Y0, w / 2, h]];
+      half.forEach(([x, y, ww, hh2], i) => { const isN = (i === 0) === b.nLeft; g += `<rect x="${x}" y="${y}" width="${ww}" height="${hh2}" fill="${hidePoles ? '#d1d5db' : isN ? '#fecaca' : '#bfdbfe'}" stroke="${INK}" stroke-width="2"/>` + T(x + ww / 2, y + hh2 / 2 + 7, hidePoles ? '?' : isN ? 'N' : 'S', { size: 18, w: 700 }); }); });
+    const title = kind === 'single' ? 'Magnetic field of a bar magnet' : kind === 'uniform' ? 'Magnetic field between two flat poles' : 'Magnetic field of two bar magnets';
+    if (kind === 'single') {
+      const b = mags[0], nEnd = b.nLeft ? (vert ? 'The top end' : 'The left end') : (vert ? 'The bottom end' : 'The right end'), sEnd = b.nLeft ? (vert ? 'The bottom end' : 'The right end') : (vert ? 'The top end' : 'The left end');
+      if (hidePoles) return { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'Which end of the bar magnet is the north pole?', o: [nEnd, sEnd, 'Both ends', 'You can\'t tell from the field lines'], x: 'Field lines come out of the north pole and go into the south pole. Follow the arrows back to the end they leave from.' };
+      const P = map([b.nLeft ? -hw - 14 : hw + 14, -hh - 10]), Qp = map([BX[0] * .78, -BX[1] * .82]);
+      g += `<circle cx="${P[0]}" cy="${P[1]}" r="4.5" fill="${INK}"/>` + T(P[0] - 12, P[1] - 6, 'P', { size: 14, w: 700 }) + `<circle cx="${Qp[0]}" cy="${Qp[1]}" r="4.5" fill="${INK}"/>` + T(Qp[0] + 10, Qp[1] - 6, 'Q', { size: 14, w: 700, a: 'start' });
+      return { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'Where is the magnetic field stronger, at P or at Q?', o: ['P: the field lines are closer together', 'Q: it is further from the magnet', 'The same everywhere', 'Q: the field lines are more curved'], x: 'The closer together the field lines, the stronger the field. They are most crowded near the poles.' };
+    }
+    if (kind === 'uniform') return hidePoles
+      ? { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'Which pole is on the left?', o: [mags[0].nLeft ? 'North' : 'South', mags[0].nLeft ? 'South' : 'North', 'Both are north', 'You can\'t tell'], x: 'The field lines point from north to south across the gap. Look at which way the arrows go.' }
+      : { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'What is the magnetic field like in the middle of the gap?', o: ['Uniform: the same strength and direction everywhere', 'Strongest in the middle of the gap', 'Zero, because the poles cancel out', 'It points from S to N'], x: 'The lines are straight, parallel and evenly spaced, so the field is uniform. (It points from N to S and only spreads out at the edges.)' };
+    const facing = kind === 'attract' ? 'opposite poles facing' : 'like poles facing';
+    if (hidePoles || kind === 'attract') return { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'Will these two magnets attract or repel each other?', o: [kind === 'attract' ? 'Attract: field lines join one magnet to the other' : 'Repel: the field lines push apart and don\'t join', kind === 'attract' ? 'Repel: field lines join one magnet to the other' : 'Attract: the field lines push apart and don\'t join', 'Neither: magnets only affect iron', 'You can\'t tell without the pole labels'], x: kind === 'attract' ? `Lines go straight across the gap from one magnet into the other (${facing}), so they attract.` : `The lines from the two facing poles bend away from each other and leave a point with no field in the middle (${facing}), so they repel.` };
+    g += T(W / 2, H / 2 + 5, '×', { size: 18, w: 700, fill: '#dc2626' }) + T(W / 2 + 10, H / 2 - 8, 'X', { size: 13, w: 700, a: 'start', fill: '#dc2626' });
+    return { title, spec: 'P6.4', kind: 'diagram', svg: wrap(W, H, g), q: 'What is at point X, halfway between the magnets?', o: ['A neutral point: the two fields cancel, so there is no magnetic field', 'The strongest part of the field', 'A third pole', 'A point where the field lines cross'], x: 'Like poles face each other, so their fields point in opposite directions and cancel at X. Field lines never cross.' };
+  };
+
+  /* cells: drawn with the What The Cell engine (/interactive/cell-game/cells.js, window.Cells) when the page has loaded it */
+  const CELL_KIND = { animal: 'an animal cell', plant: 'a plant cell', yeast: 'a fungus (yeast)', hypha: 'a fungus (hypha)', rod: 'a bacterium', coccus: 'a bacterium' };
+  const cellOld = M.cell;
+  M.cell = r => {
+    const C = typeof window !== 'undefined' && window.Cells; if (!C) return cellOld(r);
+    const type = r.pick(r.hard ? ['animal', 'plant', 'yeast', 'hypha', 'rod', 'coccus'] : ['animal', 'plant', 'plant', 'animal', 'yeast', 'rod']), style = r.pick(['exam', 'colour']);
+    const c = C.cell(type, style, Math.floor(r.f() * 1e9) + 1), keys = sh(c.has.filter(k => c.parts[k]), r).slice(0, 4);
+    const left = keys.filter(k => c.parts[k][0] < 200).sort((a, b) => c.parts[a][1] - c.parts[b][1]), right = keys.filter(k => c.parts[k][0] >= 200).sort((a, b) => c.parts[a][1] - c.parts[b][1]);
+    const letter = {}; let g = `<clipPath id="cellclip"><rect x="-4" y="0" width="408" height="280"/></clipPath><g clip-path="url(#cellclip)">${c.svg}</g>`, li = 0;
+    [[left, -40], [right, 440]].forEach(([ks, lx]) => ks.forEach((k, i) => { const L = 'ABCD'[li++]; letter[k] = L; const ly = 40 + (i + .5) * (200 / ks.length), [x, y] = c.parts[k];
+      g += `<line x1="${x}" y1="${y}" x2="${lx + (lx < 0 ? 14 : -14)}" y2="${ly}" stroke="${INK}" stroke-width="1.3"/><circle cx="${x}" cy="${y}" r="2.6" fill="${INK}"/>` + T(lx, ly + 6, L, { size: 17, w: 700 }); }));
+    const svg = `<svg viewBox="-60 0 520 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g}</svg>`, k = r.pick(keys), L = letter[k], P = C.PARTS, title = 'Cell diagram';
+    const q = r.int(0, 2);
+    if (q === 0) return { title, spec: 'B2.2', kind: 'diagram', svg, q: `What is part ${L}?`, o: [P[k].name, ...others(P[k].name, Object.values(P).map(p => p.name), r)], x: `${L} is the ${P[k].name.toLowerCase()}: ${P[k].fn.toLowerCase()}.` };
+    if (q === 1) return { title, spec: 'B2.2', kind: 'diagram', svg, q: `What is the job of part ${L}?`, o: [P[k].fn, ...others(P[k].fn, Object.values(P).map(p => p.fn), r)], x: `${L} is the ${P[k].name.toLowerCase()}.` };
+    const ans = CELL_KIND[type], why = { animal: 'a nucleus but no cell wall, no chloroplasts and no large vacuole', plant: 'a cell wall, chloroplasts and a large permanent vacuole', yeast: 'a cell wall and a nucleus but no chloroplasts, and it is a single oval cell', hypha: 'a cell wall and several nuclei in long threads, but no chloroplasts', rod: 'no nucleus: a loop of DNA and plasmids instead', coccus: 'no nucleus: a loop of DNA and plasmids instead' }[type];
+    return { title, spec: 'B2.2', kind: 'diagram', svg, q: 'What kind of organism is this cell from?', o: [ans, ...others(ans, [...new Set(Object.values(CELL_KIND))], r)], x: `It has ${why}, so it's ${ans}.` };
   };
 
   const MAKERS = [['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['fe', 'P1.23'], ['wave', 'P3.3'], ['ray', 'P3.16'], ['sankey', 'P4.4'], ['circuit', 'P2.19'], ['iv', 'P2.10'], ['magnet', 'P6.4'], ['half', 'P7.13'],
