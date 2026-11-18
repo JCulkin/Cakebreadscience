@@ -3,6 +3,7 @@
 ---
 
 ## [Unreleased]
+- Admin Overview: **Building the site** box — lessons checked / under review per subject, worksheets per subject (sub-topics and spec points covered; worksheets, practice and challenge sheets), maths worksheets by spec section, and how many spec points have questions, flashcards and a worksheet. Counted live from the lesson list, worksheet pages and spec index
 - Lessons: simpler lesson list and headers: no "Checked" badge, no dates on "Under review", no how-it-works box, progress line or format-trial link.
 - Lessons: Biology 1 Living organisms checked and frozen as v2026-11-18.
 - Lessons: removed mentions of Separate Science (Biology 1 course slide and paper 2; Chemistry 1a solubility note).
