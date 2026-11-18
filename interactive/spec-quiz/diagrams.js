@@ -918,9 +918,13 @@ const DG = (() => {
     const kind = r.pick(['filtration', 'simple distillation', 'fractional distillation', 'crystallisation']);
     let g = '', parts = {}, NAME = {}, FN = {}, W = 440, H = 300;
     if (kind === 'filtration') {
-      g += `<path d="M150 60h100l-40 60v40h-20v-40z" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M160 66h80l-40 54z" fill="none" stroke="#888" stroke-dasharray="4 3"/><path d="M178 92q22 10 44 0l-22 28z" fill="#a16207" opacity=".7"/>`
-        + `<path d="M170 190h60v10l30 70h-120l30 -70z" fill="#fff" stroke="${INK}" stroke-width="1.8"/><path d="M146 252h108l8 18h-124z" fill="#bfdbfe"/><path d="M200 165v60" stroke="#60a5fa" stroke-width="2" stroke-dasharray="3 4"/>`;
-      parts = { funnel: [244, 70], paper: [168, 72], residue: [200, 100], filtrate: [205, 262], flask: [244, 240] };
+      const wl = y => 180 - 40 * (y - 212) / 84, lev = 268;   // flask: neck 180–220 down to y 212, then the sides slope out to the base at y 296
+      g += `<path d="M${wl(lev)} ${lev}H${400 - wl(lev)}L${400 - wl(294)} 294Q259 298 254 298H146Q141 298 141 294Z" fill="#bfdbfe"/><path d="M${wl(lev)} ${lev}H${400 - wl(lev)}" stroke="#60a5fa" stroke-width="1.4"/>`;   // filtrate, inside the flask
+      g += `<path d="M180 176V212L140 294Q138 300 146 300H254Q262 300 260 294L220 212V176" fill="none" stroke="${INK}" stroke-width="2"/><path d="M176 176h8M216 176h8" stroke="${INK}" stroke-width="2"/>`;   // conical flask
+      g += `<path d="M146 54H254L210 112V214L204 222H196L190 214V112Z" fill="#fff" fill-opacity=".85" stroke="${INK}" stroke-width="2"/>`;   // filter funnel, stem down into the neck
+      g += `<path d="M168 70H232L206 104H194Z" fill="#dbeafe"/><path d="M154 58L200 112L246 58" fill="none" stroke="#9ca3af" stroke-width="1.6"/><path d="M182 92Q200 98 218 92L204 110H196Z" fill="#a16207" fill-opacity=".8"/>`;   // mixture over the paper, residue
+      g += `<ellipse cx="200" cy="232" rx="2.4" ry="3.4" fill="#60a5fa"/><ellipse cx="200" cy="252" rx="2.4" ry="3.4" fill="#60a5fa"/>`;   // drips
+      parts = { funnel: [240, 62], paper: [160, 64], residue: [200, 100], filtrate: [212, 284], flask: [248, 260] };
       NAME = { funnel: 'filter funnel', paper: 'filter paper', residue: 'residue', filtrate: 'filtrate', flask: 'conical flask' };
       FN = { paper: 'Lets the liquid through but traps the insoluble solid', residue: 'The insoluble solid left behind', filtrate: 'The liquid (or solution) that passes through' };
     } else if (kind === 'crystallisation') {
@@ -1089,10 +1093,6 @@ const DG = (() => {
     g += `<rect x="98" y="178" width="30" height="26" fill="${BL}"/><rect x="258" y="174" width="40" height="28" fill="${RD}"/>`;   // openings between atrium and ventricle
     g += `<path d="M96 184Q90 192 98 200M130 184Q136 192 128 200M256 180Q250 190 258 200M300 180Q306 190 298 200" fill="none" stroke="${INK}" stroke-width="1.4"/>`;
     const flap = (x1, y1, x2, y2, bend) => `<path d="M${x1} ${y1}Q${(x1 + x2) / 2 + bend} ${(y1 + y2) / 2} ${x2} ${y2}" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/><path d="M${x1} ${y1}Q${(x1 + x2) / 2 + bend} ${(y1 + y2) / 2} ${x2} ${y2}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`;
-    const cord = (x1, y1, x2, y2) => `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${INK}" stroke-width=".9"/>`;
-    const pap = (x, y, rot) => `<ellipse cx="${x}" cy="${y}" rx="5" ry="10" transform="rotate(${rot} ${x} ${y})" fill="${WALL}" stroke="${INK}" stroke-width="1.2"/>`;
-    g += cord(110, 224, 104, 262) + cord(114, 224, 122, 268) + cord(118, 222, 140, 270) + pap(103, 268, 20) + pap(140, 276, -25);
-    g += cord(270, 222, 258, 296) + cord(276, 224, 280, 298) + cord(282, 222, 300, 278) + pap(262, 302, 10) + pap(302, 284, -30);
     g += flap(98, 196, 112, 226, -6) + flap(128, 196, 116, 226, 6) + flap(258, 194, 272, 224, -6) + flap(298, 194, 282, 224, 6);   // flap valves
     const cups = (x, w, y, c) => { const k = w / 2; let s = ''; for (let i = 0; i < 2; i++) s += `<path d="M${x + i * k} ${y}q${k / 2} ${k * 1.2} ${k} 0" fill="#fff" fill-opacity=".6" stroke="${INK}" stroke-width="2"/>`; return s; };
     g += cups(156, 20, 150, BL) + cups(205, 22, 150, RD);   // semilunar valves
@@ -1214,40 +1214,52 @@ const DG = (() => {
     g += `<g transform="translate(-14 0)"><path d="M84 150Q130 128 190 140Q200 160 192 182Q166 214 112 214Q74 208 74 178Q74 158 84 150Z" fill="#c2884d" fill-opacity=".75" stroke="${INK}" stroke-width="1.6"/><ellipse cx="160" cy="210" rx="9" ry="7" fill="#4d7c0f" stroke="${INK}"/></g>`;   // liver + gall bladder
     g += tube('M180 70Q180 100 186 128Q192 152 210 172', '#fde2e4', 9, 'butt');   // oesophagus, down into the top of the stomach
     const STOM = 'M198 166Q214 150 246 152Q288 158 292 196Q294 236 262 254Q234 268 210 258Q196 252 194 240Q208 238 220 232Q246 220 244 198Q242 180 222 178Q206 178 198 166Z';
-    g += `<path d="${STOM}" fill="#fecaca" stroke="${INK}" stroke-width="1.8"/><path d="M226 170Q262 168 272 196M232 186Q254 192 252 214" fill="none" stroke="#f87171" stroke-width="1" opacity=".7"/>`;   // stomach with folds
-    g += `<path d="M200 270Q240 262 280 268Q284 278 268 280Q236 282 204 280Q194 276 200 270Z" fill="#fde68a" stroke="${INK}" stroke-width="1.4"/>`;   // pancreas
+    const cid = 'stc' + r.int(0, 1e9); g += `<clipPath id="${cid}"><path d="${STOM}"/></clipPath><path d="${STOM}" fill="#fecaca"/><g clip-path="url(#${cid})" fill="none" stroke="#f87171" stroke-width="1.1" opacity=".75"><path d="M222 166Q262 160 278 190M236 178Q266 182 270 214M252 200Q262 220 250 238"/></g><path d="${STOM}" fill="none" stroke="${INK}" stroke-width="1.8"/>`;   // stomach with folds (kept inside)
+    let pan = 'M200 276'; for (let k = 0; k < 7; k++) pan += `q5 -7 10 0`; pan += 'q8 4 0 10'; for (let k = 0; k < 7; k++) pan += `q-5 6 -10 0`; pan += 'q-8 -4 0 -10z';
+    g += `<path d="${pan}" fill="#c4b5fd" stroke="${INK}" stroke-width="1.3"/>`;   // pancreas: lobed gland under the stomach
+    g += `<path d="M138 216Q150 244 172 256Q184 262 190 272" fill="none" stroke="${INK}" stroke-width="4.4"/><path d="M138 216Q150 244 172 256Q184 262 190 272" fill="none" stroke="#65a30d" stroke-width="2"/>`;   // bile duct from the gall bladder to the small intestine
     const LARGE = 'M100 432V306Q100 292 114 292H266Q280 292 280 306V404Q280 426 258 426H212Q194 426 194 444V470';
-    g += tube(LARGE, '#f9a8d4', 24, 'butt') + `<path d="${LARGE}" fill="none" stroke="${INK}" stroke-width="24" stroke-dasharray="1.6 11" opacity=".55"/>`;   // wide, with pouches
+    g += '<g transform="translate(0 20)">' + tube(LARGE, '#f9a8d4', 24, 'butt') + `<path d="${LARGE}" fill="none" stroke="${INK}" stroke-width="24" stroke-dasharray="1.6 11" opacity=".55"/>`;   // wide, with pouches
     g += `<path d="M100 432Q100 448 90 452Q84 456 86 466" fill="none" stroke="${INK}" stroke-width="8" stroke-linecap="round"/><path d="M100 432Q100 448 90 452Q84 456 86 466" fill="none" stroke="#f9a8d4" stroke-width="5" stroke-linecap="round"/>`;   // appendix
-    g += `<path d="M188 470H200" stroke="${INK}" stroke-width="3"/>`;
-    let si = 'M212 252Q236 262 246 280Q256 300 252 318', y = 318, x = 252, dir = -1; const rows = 7, sp = 13;
+    g += `<path d="M188 470H200" stroke="${INK}" stroke-width="3"/></g>`;
+    let si = 'M204 256Q186 266 186 282Q186 298 210 300Q240 302 248 318Q254 330 252 338', y = 338, x = 252, dir = -1; const rows = 7, sp = 13;
     for (let i = 0; i < rows; i++) { const xe = dir < 0 ? 128 : 252; si += `Q190 ${y + (i % 2 ? 4 : -4)} ${xe} ${y}`; if (i < rows - 1) si += `Q${xe + dir * 10} ${y + sp / 2} ${xe} ${y + sp}`; y += sp; dir = -dir; }
-    si += 'Q112 396 108 412';
+    si += 'Q112 416 108 432';
     g += tube(si, '#fde68a', 6.5);   // small intestine: long, narrow, coiled
-    const parts = { mouth: [180, 64], oesophagus: [184, 116], stomach: [272, 212], liver: [92, 176], gall: [146, 210], pancreas: [240, 274], small: [190, 357], large: [280, 360], rectum: [194, 456] };
+    const parts = { mouth: [180, 64], oesophagus: [184, 116], stomach: [272, 212], liver: [92, 176], gall: [146, 210], pancreas: [250, 276], small: [190, 377], large: [280, 380], rectum: [194, 476] };
     const NAME = { mouth: 'mouth', oesophagus: 'oesophagus', stomach: 'stomach', liver: 'liver', gall: 'gall bladder', pancreas: 'pancreas', small: 'small intestine', large: 'large intestine', rectum: 'rectum' };
     const FN = { oesophagus: 'Moves food to the stomach by peristalsis', stomach: 'Digests protein using protease in acid conditions', liver: 'Makes bile', gall: 'Stores bile', pancreas: 'Makes digestive enzymes (amylase, protease, lipase)', small: 'Absorbs digested food into the blood', large: 'Absorbs water from undigested food', rectum: 'Stores faeces' };
-    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 470, { lx: -30, rx: W + 30, mid: 182 });
-    const svg = `<svg viewBox="-50 6 ${W + 100} 480" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The alimentary canal';
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 490, { lx: -30, rx: W + 30, mid: 182 });
+    const svg = `<svg viewBox="-50 6 ${W + 100} 500" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'The alimentary canal';
     if (r.f() < .2) return { title, spec: 'B2.27', kind: 'diagram', svg, q: 'Why is the small intestine so long?', o: ['To give a large surface area for absorbing digested food', 'To store faeces until they leave the body', 'To absorb most of the water', 'So that bile can be made along it'], x: 'It is several metres long, coiled up, and lined with villi: a huge surface area for absorbing digested food into the blood. The wider, shorter large intestine mainly absorbs water.' };
     return partQ(r, title, 'B2.27', svg, letter, keys, NAME, FN);
   };
 
-  /* ---------- reflex arc (B2.90) ---------- */
+  /* ---------- reflex arc (B2.90). User 18 Nov 21:43: \"a bit amateur\" → a real arm and hand by a candle, the spinal cord
+     in cross-section (white matter, butterfly of grey matter), the sensory cell body in its ganglion outside the cord,
+     the relay neurone inside the grey matter, the motor neurone back to the biceps ---------- */
   M.reflex = r => {
-    const W = 440; let g = `<circle cx="350" cy="110" r="66" fill="#f5f5f4" stroke="${INK}" stroke-width="2"/><path d="M322 74q28 28 0 72q28 -26 56 0q-28 -44 0 -72q-28 28 -56 0z" fill="#d6d3d1" stroke="#888"/>` + T(350, 196, 'spinal cord', { size: 11, fill: '#555' });
-    g += `<path d="M262 120L178 196Q170 206 160 206H58Q40 206 40 218Q40 230 58 230H170Q190 230 202 214L282 140Z" fill="#fde2d0" stroke="${INK}" stroke-width="1.6"/>`;   // arm: upper arm up to the shoulder, forearm out to the hand
-    g += `<ellipse cx="226" cy="160" rx="34" ry="13" transform="rotate(-42 226 160)" fill="#fca5a5" stroke="${INK}"/>`;   // biceps (effector)
-    g += `<path d="M14 232q-8 -16 4 -30q2 12 8 6q4 12 -2 24z" fill="#fb923c" stroke="#c2410c"/>` + T(18, 250, 'heat', { size: 10, fill: '#c2410c' });
-    g += `<circle cx="44" cy="218" r="4.5" fill="#2563eb"/><path d="M48 220H170Q200 220 230 200L300 150Q312 140 324 128" fill="none" stroke="#2563eb" stroke-width="3"/><circle cx="292" cy="156" r="7" fill="#93c5fd" stroke="${INK}"/>`;   // receptor + sensory neurone (cell body outside the cord)
-    g += `<path d="M328 124L362 102" stroke="#16a34a" stroke-width="3"/><circle cx="345" cy="113" r="5" fill="#86efac" stroke="${INK}"/>`;   // relay neurone
-    g += `<path d="M368 98Q330 40 280 70Q246 90 236 150" fill="none" stroke="#b91c1c" stroke-width="3"/><circle cx="362" cy="96" r="7" fill="#fca5a5" stroke="${INK}"/>`;   // motor neurone to the biceps
-    g += arrow(100, 228, 140, 228, '#2563eb', 2) + arrow(300, 52, 278, 62, '#b91c1c', 2) + `<circle cx="326" cy="126" r="3" fill="${INK}"/><circle cx="365" cy="100" r="3" fill="${INK}"/>`;
-    const parts = { receptor: [44, 218], sensory: [200, 214], relay: [345, 113], motor: [292, 58], effector: [218, 166], cord: [398, 140], synapse: [326, 126] };
+    const W = 440, SK = '#fde2d0', tube = (d, w) => `<path d="${d}" fill="none" stroke="${INK}" stroke-width="${w + 3}" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${SK}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+    let g = `<path d="M8 244h22v-30h-22z" fill="#fef3c7" stroke="${INK}"/><path d="M19 214v-6" stroke="${INK}" stroke-width="1.5"/><path d="M19 186q-10 12 -4 20q4 4 8 0q6 -8 -4 -20z" fill="#fb923c" stroke="#c2410c"/><path d="M19 194q-4 6 0 11q3 -5 0 -11z" fill="#fde047"/>`;   // candle
+    g += `<path d="M56 186q-8 -10 2 -13q9 1 12 12" fill="${SK}" stroke="${INK}" stroke-width="1.3"/>`;   // thumb
+    g += `<path d="M30 196Q32 186 46 184L70 183Q78 182 86 184L168 180L250 128Q262 120 272 130Q278 142 270 152L190 210Q178 216 166 214L88 212Q78 214 70 211L48 208Q32 206 30 196Z" fill="${SK}" stroke="${INK}" stroke-width="1.6" stroke-linejoin="round"/><path d="M36 194H62M38 201H60" stroke="#c4a484" stroke-width=".8"/><path d="M168 182Q160 198 166 212" fill="none" stroke="#c4a484" stroke-width=".8"/>`;   // arm and hand
+    g += `<ellipse cx="216" cy="168" rx="28" ry="10" transform="rotate(-34 216 168)" fill="#fca5a5" stroke="${INK}" stroke-width="1.2"/><path d="M194 180q22 -6 44 -24" fill="none" stroke="#ef4444" stroke-width=".7"/>`;   // biceps
+    const cx = 352, cy = 118;
+    g += `<ellipse cx="${cx}" cy="${cy}" rx="64" ry="52" fill="#f8fafc" stroke="${INK}" stroke-width="2"/>`;   // white matter
+    g += `<path d="M352 98C338 76 316 76 316 92C316 106 334 110 342 118C334 126 316 132 316 146C318 162 340 158 352 140C364 158 386 162 388 146C388 132 370 126 362 118C370 110 388 106 388 92C388 76 366 76 352 98Z" fill="#d6d3d1" stroke="#78716c" stroke-width="1.2"/><circle cx="${cx}" cy="${cy}" r="3" fill="#fff" stroke="#78716c"/>`;   // grey matter + central canal
+    g += `<ellipse cx="286" cy="84" rx="14" ry="9" transform="rotate(-20 286 84)" fill="#e0e7ff" stroke="${INK}"/>`;   // dorsal root ganglion
+    const nerve = (d, c) => `<path d="${d}" fill="none" stroke="${c}" stroke-width="2.6" stroke-linecap="round"/>`;
+    g += nerve('M34 196L88 192L170 188L250 138Q262 126 266 118Q272 100 279 90', '#2563eb') + nerve('M294 80Q308 76 320 90', '#2563eb') + `<circle cx="286" cy="84" r="5" fill="#93c5fd" stroke="${INK}"/>`;   // sensory neurone, cell body in the ganglion
+    g += `<circle cx="34" cy="196" r="3.6" fill="#2563eb" stroke="#fff"/>`;   // receptor in the fingertip skin
+    g += nerve('M326 94L334 116', '#16a34a') + nerve('M338 124L334 140', '#16a34a') + `<circle cx="336" cy="120" r="4.5" fill="#86efac" stroke="${INK}"/>`;   // relay neurone in the grey matter
+    g += `<circle cx="336" cy="148" r="6" fill="#fca5a5" stroke="${INK}"/>` + nerve('M331 152Q300 170 268 154L240 154', '#b91c1c') + `<path d="M240 154l-4 -6M240 154l-7 0M240 154l-4 6" stroke="#b91c1c" stroke-width="1.6" stroke-linecap="round"/>`;   // motor neurone to the biceps
+    g += `<circle cx="323" cy="92" r="1.6" fill="${INK}"/><circle cx="335" cy="144" r="1.6" fill="${INK}"/>`;   // synapses (gaps)
+    g += arrow(110, 182, 140, 180, '#2563eb', 1.6) + arrow(310, 164, 290, 162, '#b91c1c', 1.6) + T(cx, cy + 70, 'spinal cord (cross-section)', { size: 10, fill: '#555' }) + T(19, 256, 'heat', { size: 10, fill: '#c2410c' });
+    const parts = { receptor: [34, 196], sensory: [130, 190], relay: [336, 120], motor: [300, 166], effector: [208, 172], cord: [404, 118], synapse: [323, 92] };
     const NAME = { receptor: 'receptor', sensory: 'sensory neurone', relay: 'relay neurone', motor: 'motor neurone', effector: 'effector (muscle)', cord: 'spinal cord', synapse: 'synapse' };
     const FN = { receptor: 'Detects the stimulus (heat)', sensory: 'Carries impulses from the receptor to the spinal cord', relay: 'Passes impulses from the sensory to the motor neurone', motor: 'Carries impulses to the effector', effector: 'Contracts to pull the hand away', synapse: 'Gap where a chemical carries the signal to the next neurone' };
-    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 250, { lx: -30, rx: W + 30, mid: 250 });
-    const svg = `<svg viewBox="-50 20 ${W + 100} 245" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'Reflex arc';
+    const keys = sh(Object.keys(parts), r).slice(0, 5), { g: lg, letter } = letterParts(parts, keys, W, 30, 250, { lx: -30, rx: W + 30, mid: 260 });
+    const svg = `<svg viewBox="-50 40 ${W + 100} 226" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${g + lg}</svg>`, title = 'Reflex arc';
     if (r.f() < .3) { const ans = 'receptor → sensory neurone → relay neurone → motor neurone → effector'; return { title, spec: 'B2.90', kind: 'diagram', svg, q: 'In what order does the impulse travel?', o: [ans, 'receptor → motor neurone → relay neurone → sensory neurone → effector', 'effector → motor neurone → relay neurone → sensory neurone → receptor', 'receptor → relay neurone → sensory neurone → motor neurone → effector'], x: 'Stimulus → receptor → sensory neurone → relay neurone (spinal cord) → motor neurone → effector → response. The brain isn\'t needed, so it\'s fast.' }; }
     return partQ(r, title, 'B2.90', svg, letter, keys, NAME, FN);
   };
@@ -1299,21 +1311,33 @@ const DG = (() => {
     return { title, spec: 'B3.9', kind: 'graph', svg, q: 'What happens when the progesterone level falls at the end of the cycle?', o: ['The uterus lining breaks down (menstruation)', 'An egg is released', 'The uterus lining thickens', 'Oestrogen stops being made for good'], x: 'Progesterone maintains the uterus lining. If no embryo implants, progesterone falls and the lining breaks down: the period starts.' };
   };
 
-  /* ---------- quadrats: estimating a population (B4.2) ---------- */
+  /* ---------- quadrats: estimating a population (B4.2). User 18 Nov 21:43: \"a bit amateur\" → grassy field with two
+     tape measures along the edges (random coordinates), then each quadrat enlarged as a real frame with its string grid ---------- */
   M.quadrat = r => {
     const Lm = r.pick([10, 20, 25, 50]), Wm = r.pick([10, 20, 40]), plant = r.pick(['daisies', 'dandelions', 'buttercups', 'clover plants']), dens = r.pick([2, 3, 4, 5, 6]);
-    /* the field with five numbered quadrats, then each quadrat enlarged underneath so the plants can be counted */
-    const fx = 20, fy = 20, fw = 400, fh = 150, scale = Math.min(fw / Lm, fh / Wm), FW = Lm * scale, FH = Wm * scale, qs = Math.max(8, scale);
-    let g = `<rect x="${fx}" y="${fy}" width="${FW}" height="${FH}" fill="#dcfce7" stroke="${INK}" stroke-width="1.6"/>`;
+    const fx = 34, fy = 16, fw = 380, fh = 150, scale = Math.min(fw / Lm, fh / Wm), FW = Lm * scale, FH = Wm * scale, qs = Math.max(9, scale);
+    let g = `<rect x="${fx}" y="${fy}" width="${FW}" height="${FH}" rx="3" fill="#d9f99d" stroke="#4d7c0f" stroke-width="1.6"/>`;
     const nq = 5, quads = []; for (let t = 0; quads.length < nq && t < 3000; t++) { const gap = t < 1500 ? 14 : 2, q = [fx + 4 + r.f() * (FW - qs - 8), fy + 12 + r.f() * (FH - qs - 16)]; if (quads.every(p => Math.abs(p[0] - q[0]) > qs + gap || Math.abs(p[1] - q[1]) > qs + gap)) quads.push(q); }   // always five
+    for (let i = 0; i < FW * FH / 260; i++) { const x = fx + 4 + r.f() * (FW - 8), y = fy + 6 + r.f() * (FH - 8); if (quads.some(([a, b]) => x > a - 4 && x < a + qs + 4 && y > b - 12 && y < b + qs + 4)) continue; g += `<path d="M${(x - 2).toFixed(1)} ${y.toFixed(1)}l2 -5l2 5" fill="none" stroke="#65a30d" stroke-width=".9"/>`; }   // grass
+    const tape = (x, y, len, vert) => { let s = vert ? `<rect x="${x - 7}" y="${y}" width="7" height="${len}" fill="#facc15" stroke="${INK}" stroke-width=".8"/>` : `<rect x="${x}" y="${y}" width="${len}" height="7" fill="#facc15" stroke="${INK}" stroke-width=".8"/>`; const m = vert ? Wm : Lm, st = m > 25 ? 5 : m > 10 ? 2 : 1;
+      for (let k = 0; k <= m; k += st) { const p = k * scale; s += vert ? `<path d="M${x - 7} ${y + FH - p}h${k % (st * 5) ? 3 : 7}" stroke="${INK}" stroke-width=".7"/>` : `<path d="M${x + p} ${y}v${k % (st * 5) ? 3 : 7}" stroke="${INK}" stroke-width=".7"/>`; } return s; };
+    g += tape(fx, fy + FH, FW, 0) + tape(fx, fy, FH, 1);
     const counts = quads.map(() => Math.max(0, dens + r.int(-2, 3)));
-    quads.forEach(([x, y], i) => { g += `<rect x="${x}" y="${y}" width="${qs}" height="${qs}" fill="#fff" stroke="${INK}" stroke-width="1.4"/>` + T(x + qs / 2, y - 3, i + 1, { size: 11, w: 700 }); });
-    g += T(fx + FW / 2, fy + FH + 16, `${Lm} m`, { size: 12, w: 700 }) + T(fx + FW + 14, fy + FH / 2, `${Wm} m`, { size: 12, w: 700, rot: 90 });
-    const by = fy + FH + 40, bs = 70;
-    quads.forEach((_, i) => { const x = 20 + i * 82; g += `<rect x="${x}" y="${by}" width="${bs}" height="${bs}" fill="#f0fdf4" stroke="${INK}" stroke-width="1.6"/>` + T(x + bs / 2, by + bs + 16, `quadrat ${i + 1}`, { size: 11 });
-      const pts = []; for (let t = 0; pts.length < counts[i] && t < 2000; t++) { const p = [x + 10 + r.f() * (bs - 20), by + 10 + r.f() * (bs - 20)]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 15)) pts.push(p); }
-      pts.forEach(([px, py]) => { for (let k = 0; k < 5; k++) { const a = k * 1.2566; g += `<circle cx="${(px + Math.cos(a) * 4).toFixed(1)}" cy="${(py + Math.sin(a) * 4).toFixed(1)}" r="3" fill="#fff" stroke="#a16207" stroke-width=".7"/>`; } g += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="2.6" fill="#facc15"/>`; }); });
-    g += T(20, by + bs + 34, `Each quadrat is 1 m × 1 m. Each ✿ is one of the ${plant}.`, { size: 11, a: 'start' });
+    quads.forEach(([x, y], i) => { g += `<rect x="${x}" y="${y}" width="${qs}" height="${qs}" fill="#f7fee7" stroke="${INK}" stroke-width="1.6"/><circle cx="${x + qs / 2}" cy="${y - 7}" r="6" fill="#fff" stroke="${INK}" stroke-width=".8"/>` + T(x + qs / 2, y - 3.5, i + 1, { size: 9, w: 700 }); });
+    g += T(fx + FW / 2, fy + FH + 22, `${Lm} m`, { size: 12, w: 700 }) + T(fx - 16, fy + FH / 2, `${Wm} m`, { size: 12, w: 700, rot: -90 });
+    const by = fy + FH + 44, bs = 72;
+    const flower = (px, py, k) => { let s = ''; const rot = r.f() * 72;
+      if (plant === 'clover plants') { for (let j = 0; j < 3; j++) { const a = (rot + j * 120) * Math.PI / 180; s += `<circle cx="${(px + Math.cos(a) * 3.6).toFixed(1)}" cy="${(py + Math.sin(a) * 3.6).toFixed(1)}" r="3.4" fill="#4ade80" stroke="#166534" stroke-width=".7"/>`; } return s + `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="1" fill="#166534"/>`; }
+      const pet = plant === 'daisies' ? ['#fff', '#a3a3a3', 8, 2.6] : plant === 'dandelions' ? ['#facc15', '#a16207', 10, 2.2] : ['#fde047', '#a16207', 5, 3.2];
+      for (let j = 0; j < pet[2]; j++) { const a = (rot + j * 360 / pet[2]) * Math.PI / 180; s += `<ellipse cx="${(px + Math.cos(a) * 3.8).toFixed(1)}" cy="${(py + Math.sin(a) * 3.8).toFixed(1)}" rx="${pet[3]}" ry="${(pet[3] * .7).toFixed(1)}" transform="rotate(${(rot + j * 360 / pet[2]).toFixed(0)} ${(px + Math.cos(a) * 3.8).toFixed(1)} ${(py + Math.sin(a) * 3.8).toFixed(1)})" fill="${pet[0]}" stroke="${pet[1]}" stroke-width=".6"/>`; }
+      return s + `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="2.4" fill="${plant === 'daisies' ? '#facc15' : '#eab308'}"/>`; };
+    quads.forEach((_, i) => { const x = 22 + i * 84; g += `<rect x="${x}" y="${by}" width="${bs}" height="${bs}" fill="#ecfccb"/>`;
+      for (let t = 0; t < 8; t++) { const gx = x + 4 + r.f() * (bs - 8), gy = by + 6 + r.f() * (bs - 8); g += `<path d="M${(gx - 2).toFixed(1)} ${gy.toFixed(1)}l2 -5l2 5" fill="none" stroke="#bef264" stroke-width=".8"/>`; }
+      for (let k = 1; k < 5; k++) g += `<path d="M${x + k * bs / 5} ${by}v${bs}M${x} ${by + k * bs / 5}h${bs}" stroke="#a8a29e" stroke-width=".6"/>`;   // string grid
+      const pts = []; for (let t = 0; pts.length < counts[i] && t < 2000; t++) { const p = [x + 10 + r.f() * (bs - 20), by + 10 + r.f() * (bs - 20)]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 16)) pts.push(p); }
+      pts.forEach(([px, py]) => { g += flower(px, py); });
+      g += `<rect x="${x}" y="${by}" width="${bs}" height="${bs}" fill="none" stroke="#57534e" stroke-width="4"/>` + T(x + bs / 2, by + bs + 16, `quadrat ${i + 1}`, { size: 11, w: 600 }); });
+    g += T(22, by + bs + 34, `Each quadrat is 1 m × 1 m. Count the ${plant} in each one.`, { size: 11, a: 'start' });
     const mean = counts.reduce((a, b) => a + b, 0) / nq, est = mean * Lm * Wm, svg = wrap(440, by + bs + 44, g), title = 'Quadrat sampling';
     if (r.int(0, 1)) return { title, spec: 'B4.2', kind: 'diagram', svg, q: `What is the mean number of ${plant} per quadrat?`, o: [n(mean), ...uniq(n(mean), [Math.max(...counts), counts.reduce((a, b) => a + b, 0), mean + 1, Math.min(...counts) || mean / 2].map(n))], x: `Counts: ${counts.join(', ')}. Mean = ${counts.reduce((a, b) => a + b, 0)} ÷ ${nq} = ${n(mean)}.` };
     return { title, spec: 'B4.2', kind: 'diagram', svg, q: `Estimate the number of ${plant} in the whole field.`, o: [n(est), ...uniq(n(est), [mean * (Lm + Wm), counts.reduce((a, b) => a + b, 0) * Lm, est / 2, mean * Lm].map(n))], x: `Mean per 1 m² quadrat = ${n(mean)}. Area = ${Lm} × ${Wm} = ${Lm * Wm} m². Estimate = ${n(mean)} × ${Lm * Wm} = ${n(est)}.` };
