@@ -6,7 +6,7 @@
      interactive/spec-quiz/questions.js   quiz questions per point (+ gens.js generators)
      Flashcards/data/*.json               flashcards per point (field `spec`)
      interactive/lessons/lessons.json     lessons with a draft or version; points from the draft's <span class="spec"> chips
-     worksheets/{biology,chemistry,physics}/*.html   the sheet's spec line (class="spec-ref", or "spec points a to b" in the meta description)
+     worksheets/{biology,chemistry,physics}/(ks4/|ks3/)*.html   the sheet's spec line (class="spec-ref", or "spec points a to b" in the meta description)
      interactive/physics-long-answer/questions-data.js   long answers (`spec: "4.2, 4.3"`)
      interactive/physics-equations/index.html            equations (`spec:'1.4'`)
    Output: const SPEC_INDEX = { res: [[kind, title, url], …], pts: { 'B2.27': { s: 'B2b', n: questions, c: cards, r: [res index…] } },
@@ -76,15 +76,21 @@ for (const s of LJ.subjects) for (const sec of s.sections) for (const t of sec.t
 
 /* ---- worksheets ---- */
 for (const subj of Object.keys(L)) {
-  const dir = path.join(ROOT, 'worksheets', subj);
-  for (const f of fs.readdirSync(dir).sort()) {
-    if (!f.endsWith('.html') || f.endsWith('_ms.html')) continue;
-    const h = fs.readFileSync(path.join(dir, f), 'utf8');
+  const base = path.join(ROOT, 'worksheets', subj);
+  // worksheets/{subj}/*.html plus the KS4 / KS3 sets in worksheets/{subj}/ks4|ks3/
+  const files = [];
+  for (const sub of ['', 'ks4', 'ks3']) {
+    const dir = path.join(base, sub);
+    if (!fs.existsSync(dir)) continue;
+    for (const f of fs.readdirSync(dir).sort()) if (f.endsWith('.html') && !f.endsWith('_ms.html')) files.push(sub ? `${sub}/${f}` : f);
+  }
+  for (const f of files) {
+    const h = fs.readFileSync(path.join(base, f), 'utf8');
     let spec = (h.match(/class="(?:spec-ref|ps-spec)"[^>]*>\s*([\d.,\s–\-—]+)/) || [])[1];
     if (!spec) { const m = h.match(/spec points ([\d.]+) (?:to|–) ([\d.]+)/i); if (m) spec = `${m[1]}–${m[2]}`; }
     if (!spec) continue;
     const title = ((h.match(/<h1[^>]*>([\s\S]*?)<\/h1>/) || h.match(/<title>([^<·]*)/) || [])[1] || f).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
-    const kind = /_practice/.test(f) ? 'Practice sheet' : /_challenge/.test(f) ? 'Challenge sheet' : 'Worksheet';
+    const kind = f.startsWith('ks4/') ? 'KS4 worksheet' : f.startsWith('ks3/') ? 'KS3 worksheet' : /_practice/.test(f) ? 'Practice sheet' : /_challenge/.test(f) ? 'Challenge sheet' : 'Worksheet';
     addRes('sheet', `${kind}: ${title}`, `/worksheets/${subj}/${f}`, expand(L[subj], spec));
   }
 }
