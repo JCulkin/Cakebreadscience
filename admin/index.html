@@ -86,6 +86,11 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 .tpick{max-height:320px;overflow:auto;border:2px solid var(--ink);padding:4px 10px;margin-top:4px;background:var(--soft)}
 .links a{display:block;padding:4px 0}
 .nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle} .nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.55em;line-height:1.05;margin-right:1px} 
+/* students: column picker (18 Nov) */
+.colpick{position:relative;margin-left:auto}.colpick>summary{list-style:none;cursor:pointer}.colpick>summary::-webkit-details-marker{display:none}
+.colbox{position:absolute;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);padding:10px 12px;min-width:270px;max-height:70vh;overflow:auto}
+.colrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;font-size:14px}.colrow label{flex:1;cursor:pointer}
+.colrow button{font:700 13px Barlow,Arial;border:1px solid #999;background:#f6f4ee;width:24px;height:22px;margin-left:2px;cursor:pointer}.colrow button:disabled{opacity:.3;cursor:default}
 </style>
 </head>
 <body>
@@ -99,7 +104,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 
   <section class="panel on" id="p-overview"></section>
   <section class="panel" id="p-students">
-    <div class="toolbar"><input id="sq" placeholder="Search name, email or Questing name" size="34"><select id="sYear"><option value="">Every year</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option><option value="11">Year 11</option><option value="0">No year yet</option></select><label class="small"><input type="checkbox" id="sAll"> Include people who never used Questing, Flashcards or the trackers</label><button class="btn alt sm" data-reload>↻ Reload data</button></div>
+    <div class="toolbar"><input id="sq" placeholder="Search name, email or Questing name" size="34"><select id="sYear"><option value="">Every year</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option><option value="11">Year 11</option><option value="0">No year yet</option></select><label class="small"><input type="checkbox" id="sAll"> Include people who never used Questing, Flashcards or the trackers</label><button class="btn alt sm" data-reload>↻ Reload data</button>
+      <details class="colpick" id="sCols"><summary class="btn alt sm">☰ Columns</summary><div class="colbox" id="sColBox"></div></details></div>
     <div class="wrapx" id="sTable"></div>
   </section>
   <section class="panel" id="p-map">
@@ -209,6 +215,8 @@ async function load() {
       xp: prog ? prog.xp || 0 : 0, pts: st.securedP, secQ: st.securedQ, per: st.per,
       level: prog ? levelOf(prog.xp || 0, st.securedP) : 0,
       answered: prog ? Object.values(prog.q || {}).reduce((n, x) => n + (x.n || 0), 0) : 0,
+      att: prog ? Object.values(prog.q || {}).filter(x => x && x.n).length : 0,   // different questions attempted (18 Nov)
+      right: prog ? prog.correct || 0 : 0, missions: prog ? prog.missions || 0 : 0,
       l7: QE.last7(prog || {}), get wk() { return this.l7.t; },
       m7: days7.reduce((n, d) => n + day(d).m, 0), c7: days7.reduce((n, d) => n + day(d).c, 0),
       d14: days14.map(d => Object.assign({ d }, day(d))), fc, trk, hide: !!(prog && prog.hide),
@@ -262,17 +270,55 @@ function drawOverview() {
 let sSort = 'last', sDir = -1;
 const sciChips = p => `<span class="sci"><b class="B">${p.Biology}</b><b class="C">${p.Chemistry}</b><b class="P">${p.Physics}</b></span>`;
 const stripHtml = d14 => `<span class="strip" title="Last 14 days: green = mission, blue = flashcards">${d14.map(d => `<i class="${d.m && d.c ? 'mc' : d.m ? 'm' : d.c ? 'c' : ''}" title="${d.d}: ${d.m} mission${d.m === 1 ? '' : 's'}, ${d.c} card${d.c === 1 ? '' : 's'}"></i>`).join('')}</span>`;
+/* Students table columns (user, 18 Nov: "change which columns display, to switch them, and a column for questions attempted").
+   Shown + order saved in this browser (localStorage cbs.admin.cols). Student name is always first. */
+const S_COLS = [
+  { k: 'year', t: 'Year', n: 1, on: 1, td: s => s.year || '–' },
+  { k: 'last', t: 'Last on', on: 1, td: s => ago(s.last), cls: 'small' },
+  { k: 'level', t: 'Level', n: 1, on: 1, td: s => s.level || '–' },
+  { k: 'xp', t: 'XP', n: 1, on: 1, td: s => s.xp },
+  { k: 'pts', t: 'Spec points secured', n: 1, on: 1, td: s => `${s.pts} ${s.pts ? sciChips(s.per) : ''}` },
+  { k: 'att', t: 'Questions attempted', n: 1, on: 1, td: s => s.att, tip: 'Different questions tried at least once (missions, Practice, tests, map)' },
+  { k: 'answered', t: 'Answers given', n: 1, td: s => s.answered, tip: 'Every answer, counting repeats' },
+  { k: 'right', t: 'Right answers', n: 1, td: s => s.right },
+  { k: 'secQ', t: 'Questions secured', n: 1, td: s => s.secQ },
+  { k: 'wk', t: 'Right, last 7 days', n: 1, on: 1, td: s => s.wk },
+  { k: 'missions', t: 'Missions (all time)', n: 1, td: s => s.missions },
+  { k: 'm7', t: 'Missions 7d', n: 1, on: 1, td: s => s.m7 },
+  { k: 'c7', t: 'Cards 7d', n: 1, on: 1, td: s => s.c7 },
+  { k: 'd14', t: 'Last 14 days', on: 1, nosort: 1, td: s => stripHtml(s.d14) },
+  { k: 'fc', t: 'Cards studied (all time)', n: 1, on: 1, td: s => s.fc },
+  { k: 'trk', t: 'Tracker: confident B / C / P', on: 1, nosort: 1, cls: 'small', td: s => s.trk.map(x => x == null ? '–' : x + '%').join(' / ') },
+  { k: 'coins', t: 'Coins', n: 1, td: s => s.coins },
+  { k: 'bag', t: 'Items found', n: 1, td: s => s.bag },
+];
+const colPrefs = () => { let p = null; try { p = JSON.parse(localStorage.getItem('cbs.admin.cols') || 'null'); } catch (e) {}
+  const known = S_COLS.map(c => c.k), order = p && p.order ? p.order.filter(k => known.includes(k)).concat(known.filter(k => !p.order.includes(k))) : known;
+  const on = p && p.on ? p.on : S_COLS.filter(c => c.on).map(c => c.k);
+  return { order, on: new Set(on.concat(p && p.order ? known.filter(k => !p.order.includes(k) && S_COLS.find(c => c.k === k).on) : [])) }; };
+const saveCols = (order, on) => { try { localStorage.setItem('cbs.admin.cols', JSON.stringify({ order, on: [...on] })); } catch (e) {} };
+function drawColBox() {
+  const P = colPrefs(), box = $('sColBox'); if (!box) return;
+  box.innerHTML = `<div class="small muted" style="margin-bottom:4px">Tick to show · ↑↓ to move</div>` + P.order.map((k, i) => { const c = S_COLS.find(x => x.k === k);
+    return `<div class="colrow"><label><input type="checkbox" data-col="${k}"${P.on.has(k) ? ' checked' : ''}> ${esc(c.t)}</label><span><button type="button" data-mv="${i}" data-d="-1" ${i ? '' : 'disabled'} aria-label="Move up">↑</button><button type="button" data-mv="${i}" data-d="1" ${i < P.order.length - 1 ? '' : 'disabled'} aria-label="Move down">↓</button></span></div>`; }).join('')
+    + `<div style="margin-top:6px"><button type="button" class="btn alt sm" id="colReset">Reset to default</button></div>`;
+  box.querySelectorAll('[data-col]').forEach(c => c.onchange = () => { const P2 = colPrefs(); c.checked ? P2.on.add(c.dataset.col) : P2.on.delete(c.dataset.col); saveCols(P2.order, P2.on); drawStudents(); });
+  box.querySelectorAll('[data-mv]').forEach(b => b.onclick = () => { const P2 = colPrefs(), i = +b.dataset.mv, j = i + +b.dataset.d; [P2.order[i], P2.order[j]] = [P2.order[j], P2.order[i]]; saveCols(P2.order, P2.on); drawColBox(); drawStudents(); });
+  $('colReset').onclick = () => { try { localStorage.removeItem('cbs.admin.cols'); } catch (e) {} drawColBox(); drawStudents(); };
+}
 function drawStudents() {
   const q = $('sq').value.trim().toLowerCase();
   const yf = $('sYear').value;
   let rows = D.students.filter(s => ($('sAll').checked || s.used || yf !== '') && (yf === '' || s.year === +yf) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
   rows.sort((a, b) => { const x = a[sSort], y = b[sSort]; return (typeof x === 'string' ? x.localeCompare(y) : (x || 0) - (y || 0)) * sDir; });
-  const th = (k, t, n) => `<th class="${n ? 'n' : ''}" data-k="${k}">${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
-  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('year', 'Year', 1)}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker: confident B / C / P</th></tr></thead><tbody>
-    ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.pending ? ` <span class="tag" style="background:#ede9fe">wants “${esc(s.pending)}”</span>` : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>
-      <td class="n">${s.year || '–'}</td><td class="small">${ago(s.last)}</td><td class="n">${s.level || '–'}</td><td class="n">${s.xp}</td><td class="n">${s.pts} ${s.pts ? sciChips(s.per) : ''}</td><td class="n">${s.wk}</td><td class="n">${s.m7}</td><td class="n">${s.c7}</td><td>${stripHtml(s.d14)}</td><td class="n">${s.fc}</td>
-      <td class="small">${s.trk.map(x => x == null ? '–' : x + '%').join(' / ')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nobody matches.</div>';
+  const P = colPrefs(), cols = P.order.filter(k => P.on.has(k)).map(k => S_COLS.find(c => c.k === k));
+  const th = (k, t, n, tip) => `<th class="${n ? 'n' : ''}" data-k="${k}"${tip ? ` title="${esc(tip)}"` : ''}>${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
+  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${cols.map(c => c.nosort ? `<th>${c.t}</th>` : th(c.k, c.t, c.n, c.tip)).join('')}</tr></thead><tbody>
+    ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.pending ? ` <span class="tag" style="background:#ede9fe">wants “${esc(s.pending)}”</span>` : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>`
+      + cols.map(c => `<td class="${c.n ? 'n' : ''}${c.cls ? ' ' + c.cls : ''}">${c.td(s)}</td>`).join('') + `</tr>`).join('')}</tbody></table>` : '<div class="empty">Nobody matches.</div>';
+  drawColBox();
 }
+document.addEventListener('click', e => { const d = $('sCols'); if (d && d.open && !d.contains(e.target)) d.open = false; });
 $('sq').oninput = drawStudents; $('sAll').onchange = drawStudents; $('sYear').onchange = drawStudents;
 $('sTable').addEventListener('click', e => { const h = e.target.closest('th[data-k]'); if (h) { const k = h.dataset.k; sDir = sSort === k ? -sDir : (k === 'name' ? 1 : -1); sSort = k; drawStudents(); } });
 document.addEventListener('click', e => { const r = e.target.closest('tr[data-uid]'); if (r && !e.target.closest('button,a')) openStudent(r.dataset.uid); });
