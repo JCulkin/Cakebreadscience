@@ -33,6 +33,9 @@ main{max-width:1400px;margin:0 auto;padding:20px 22px 60px}
 .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:18px}
 .kpi{background:var(--paper);border:2px solid var(--ink);padding:10px 14px}
 .kpi .big{font-size:38px}.kpi small{display:block;color:var(--muted);font-size:13px}
+.bkpi{display:flex;flex-wrap:wrap;gap:6px 22px;margin-bottom:10px;font-size:14px}.bkpi b{font-size:22px;font-family:'Barlow Condensed',Arial}
+.build{width:100%;min-width:560px}.build td{vertical-align:top;padding:8px 10px 8px 0}.build td:first-child{width:96px}.build th{text-align:left}
+.subj{font-family:'Barlow Condensed',Arial;font-size:17px;text-transform:uppercase}.subj.B{color:var(--bio,#005e22)}.subj.C{color:var(--chem,#c8001e)}.subj.P{color:var(--phys,#d08000)}.subj.M{color:#2563eb}
 .kpi.link{cursor:pointer}.kpi.link:hover{background:#fffbe6}
 .cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:900px){.cols{grid-template-columns:1fr}}
@@ -148,6 +151,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/interactive/spec-quiz/bland.js"></script>
 <script src="/js/school.js"></script>
+<script src="/js/spec-index.js"></script>
 <script>
 /* Admin console (rebuilt 10 Nov 2026): the whole site + Cakebread Questing. Reads Firestore users/*, specProgress/*,
    and Realtime Database specQuizBoard, specQuizReports, gameScores. Progress maths comes from QE.analyse (same rules as the game). */
@@ -254,22 +258,81 @@ function drawOverview() {
     <div class="kpis">${kpi(act.length, 'students who have used the site', 'students')}${kpi(today, 'active today', 'students')}${kpi(week, 'active in the last 7 days', 'students')}
       ${kpi(players, 'play Cakebread Questing', 'students')}${kpi(m7, 'missions in the last 7 days')}${kpi(c7, 'flashcards reviewed, last 7 days')}${kpi(wk, 'right answers, last 7 days')}
       <a class="kpi link" href="/interactive/spec-quiz/reports.html" style="text-decoration:none;color:inherit${rep ? ';border-color:var(--bad)' : ''}"><div class="big" style="${rep ? 'color:var(--bad)' : ''}">${rep}</div><small>open question reports ⚑</small></a></div>
+    <div class="card" id="buildCard"><h2>Building the site</h2><p class="muted">Counting lessons and worksheets…</p></div>
     <div class="cols">
       <div class="card"><h2>Most correct · last 7 days</h2>${top.length ? `<table>${top.map((s, i) => `<tr class="click" data-uid="${s.uid}"><td>${i + 1}</td><td>${esc(s.name)}${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}</td><td class="n">${s.wk}</td></tr>`).join('')}</table>` : '<p class="muted">Nobody has answered anything in the last 7 days.</p>'}</div>
       <div class="card"><h2>Hardest questions</h2>${hard.length ? `<table>${hard.map(q => qRow(q, true)).join('')}</table><p style="margin-top:8px"><a href="#questions" data-go="questions">All questions →</a></p>` : '<p class="muted">Not enough answers yet (needs 3+ on a question).</p>'}</div>
       <div class="card links"><h2>Quick links</h2>
-        <a href="/test.html">Test page</a><a href="https://deploy-preview-3--cakebreadscience.netlify.app/">Preview of the next release (PR #3)</a>
+        <a href="/test.html">Test page</a><a href="https://github.com/JCulkin/Cakebreadscience/pulls">Next release (open pull request → its preview)</a>
         <a href="/interactive/spec-quiz/reports.html">Question reports</a><a href="/leaderboards/">Leaderboards (student view)</a>
         <a href="/interactive/spec-quiz/">Cakebread Questing</a><a href="/mascot/">Mascot sheet</a>
         <p class="small muted" style="margin-top:8px">Data loaded ${new Date(D.at).toLocaleTimeString('en-GB')} · <a href="#" data-reload>reload</a>${D.rtOk ? '' : ' · <b style="color:var(--bad)">Realtime Database unreadable</b>'}</p></div>
     </div>
     <div class="card" style="margin-top:14px"><h2>Gone quiet <span class="small muted" style="text-transform:none;font-family:Barlow">7+ days</span></h2>${quiet.length ? `<table>${quiet.map(s => `<tr class="click" data-uid="${s.uid}"><td>${esc(s.name)}</td><td class="muted">${ago(s.last)}</td></tr>`).join('')}</table>` : '<p class="muted">Everyone has been on in the last week.</p>'}</div>`;
+  drawBuild();
 }
 
 /* ---------- Students ---------- */
 let sSort = 'last', sDir = -1;
 const sciChips = p => `<span class="sci"><b class="B">${p.Biology}</b><b class="C">${p.Chemistry}</b><b class="P">${p.Physics}</b></span>`;
 const stripHtml = d14 => `<span class="strip" title="Last 14 days: green = mission, blue = flashcards">${d14.map(d => `<i class="${d.m && d.c ? 'mc' : d.m ? 'm' : d.c ? 'c' : ''}" title="${d.d}: ${d.m} mission${d.m === 1 ? '' : 's'}, ${d.c} card${d.c === 1 ? '' : 's'}"></i>`).join('')}</span>`;
+/* ---------- Building the site (user, 18 Nov: "a box showing the progress I'm making through the website, through the lessons
+   (split by subject) and through the worksheets"). Everything is counted live from the site's own files:
+   lessons = /interactive/lessons/lessons.json (checked / under review), worksheets = the links on /worksheets/science.html
+   and /worksheets/maths.html (what students can see; mark schemes not counted), spec coverage = /js/spec-index.js,
+   maths sections = the headings on /specifications/maths.html. ---------- */
+let BUILD = null;
+async function loadBuild() {
+  const get = (u, how) => fetch(u, { cache: 'no-store' }).then(r => r.ok ? r[how]() : null).catch(() => null);
+  const [lj, sci, ma, mt] = await Promise.all([get('/interactive/lessons/lessons.json', 'json'), get('/worksheets/science.html', 'text'),
+    get('/worksheets/maths.html', 'text'), get('/specifications/maths.html', 'text')]);
+  return { lj, sci: sci || '', ma: ma || '', mt: mt || '' };
+}
+function drawBuild() {
+  const box = $('buildCard'); if (!box) return;
+  if (!BUILD) { loadBuild().then(b => { BUILD = b; drawBuild(); }); return; }
+  const IX = (typeof SPEC_INDEX !== 'undefined' && SPEC_INDEX) || { pts: {}, res: [] };
+  const SUB = { biology: 'Biology', chemistry: 'Chemistry', physics: 'Physics' }, LETTER = { biology: 'B', chemistry: 'C', physics: 'P' };
+  const subsOf = id => { const sp = SPEC.find(x => x.name === SUB[id]); return sp ? sp.topics.flatMap(t => t.subs.filter(sb => sb.name !== 'Units').map(sb => LETTER[id] + t.n + sb.l)) : []; };
+  const links = (html, re) => [...new Set([...html.matchAll(re)].map(m => m[1].replace(/^.*?(biology|chemistry|physics|maths)\//, '$1/')))].filter(u => !/_ms\.html$/.test(u));
+  const kindOf = u => /_challenge/.test(u) ? 'challenge' : /_practice/.test(u) ? 'practice' : 'sheet';
+  const sheets = links(BUILD.sci, /href="([^"#?]*(?:biology|chemistry|physics)\/[^"#?]+\.html)"/g);
+  const bar = (a, b, tot) => `<div class="bar" style="height:14px;border:1.5px solid var(--ink)"><i class="s" style="width:${tot ? a / tot * 100 : 0}%"></i><i class="l" style="width:${tot ? b / tot * 100 : 0}%"></i></div>`;
+  const all = Object.keys(IX.pts), with_ = f => all.filter(k => f(IX.pts[k])).length;
+  const isSheet = i => IX.res[i] && IX.res[i][0] === 'sheet';
+  const done = [], review = [];
+  const rows = Object.keys(SUB).map(id => {
+    const subs = subsOf(id), L = LETTER[id];
+    const ls = BUILD.lj && (BUILD.lj.subjects || []).find(x => x.id === id);
+    const tops = ls ? ls.sections.flatMap(sec => sec.topics) : [];
+    const ck = tops.filter(t => t.status === 'checked'), dr = tops.filter(t => t.status === 'draft');
+    ck.forEach(t => done.push(`<a href="/interactive/lessons/${id}/${t.code}/">${SUB[id]} ${esc(t.code)} ${esc(t.title.replace(/\s*\(.*\)$/, ''))}</a>`));
+    dr.forEach(t => review.push(`<a href="/interactive/lessons/${id}/${t.code}/draft/">${SUB[id]} ${esc(t.code)} ${esc(t.title.replace(/\s*\(.*\)$/, ''))}</a>`));
+    const nTop = tops.length || subs.length;
+    const mine = sheets.filter(u => u.startsWith(id + '/')), k = { sheet: 0, practice: 0, challenge: 0 }; mine.forEach(u => k[kindOf(u)]++);
+    const covered = new Set(all.filter(x => x[0] === L && (IX.pts[x].r || []).some(isSheet)).map(x => IX.pts[x].s)).size;
+    const pts = all.filter(x => x[0] === L), pSheet = pts.filter(x => (IX.pts[x].r || []).some(isSheet)).length;
+    return `<tr><td><b class="subj ${L}">${SUB[id]}</b></td>
+      <td>${bar(ck.length, dr.length, nTop)}<div class="small">${ck.length} checked · ${dr.length} under review · ${nTop - ck.length - dr.length} to make <span class="muted">of ${nTop}${ls ? ' lessons' : ' sub-topics (no lesson list yet)'}</span></div></td>
+      <td>${bar(covered, 0, subs.length)}<div class="small">${covered} of ${subs.length} sub-topics · ${pSheet} of ${pts.length} spec points<br><span class="muted">${k.sheet} worksheets · ${k.practice} practice · ${k.challenge} challenge</span></div></td></tr>`;
+  });
+  /* maths: sections from the maths tracker, sheets from the maths worksheet page (filenames start with the section, e.g. 4.1_4.2_…) */
+  const msec = [...new Set([...BUILD.mt.matchAll(/>\s*(\d\.\d+)\s*-\s*[^<]+</g)].map(m => m[1]))];
+  const msheets = links(BUILD.ma, /href="([^"#?]*maths\/[^"#?]+\.html)"/g);
+  const mcov = new Set(msheets.flatMap(u => (u.split('/').pop().match(/^(?:\d\.\d+_)+/) || [''])[0].split('_').filter(Boolean)));
+  const mhit = msec.filter(x => mcov.has(x)).length;
+  rows.push(`<tr><td><b class="subj M">Maths</b></td><td class="muted small">No maths lessons planned yet</td>
+    <td>${bar(mhit, 0, msec.length)}<div class="small">${mhit} of ${msec.length} spec sections · ${msheets.length} worksheets${msec.length ? `<br><span class="muted">No sheet numbered for: ${msec.filter(x => !mcov.has(x)).join(', ') || 'none'}</span>` : ''}</div></td></tr>`);
+  const tl = rows.length;
+  box.innerHTML = `<h2>Building the site</h2>
+    <div class="bkpi"><span><b>${with_(p => p.n)}</b>/${all.length} spec points have quiz questions</span><span><b>${with_(p => p.c)}</b>/${all.length} have flashcards</span>
+      <span><b>${with_(p => (p.r || []).some(isSheet))}</b>/${all.length} have a worksheet</span><span><b>${sheets.length + msheets.length}</b> worksheets live</span>
+      <span><b>${done.length}</b> lessons checked · <b>${review.length}</b> under review</span></div>
+    <div style="overflow-x:auto"><table class="build"><thead><tr><th></th><th>Lessons</th><th>Worksheets</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
+    ${done.length || review.length ? `<p class="small" style="margin-top:8px">${done.length ? `<b>Checked:</b> ${done.join(' · ')}` : ''}${done.length && review.length ? '<br>' : ''}${review.length ? `<b>Under review:</b> ${review.join(' · ')}` : ''}</p>` : ''}
+    <p class="small muted" style="margin-top:6px">Green = done (checked lesson / sub-topic with a worksheet), amber = lesson under review. Counted from the live lesson list, the worksheet pages and the spec index (built ${esc(IX.built || '?')}). <a href="/interactive/lessons/">Lessons</a> · <a href="/worksheets/science.html">Science worksheets</a> · <a href="/worksheets/maths.html">Maths worksheets</a></p>`;
+}
+
 /* Students table columns (user, 18 Nov: "change which columns display, to switch them, and a column for questions attempted").
    Shown + order saved in this browser (localStorage cbs.admin.cols). Student name is always first. */
 const S_COLS = [
