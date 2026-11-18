@@ -66,9 +66,9 @@ function partName(k, type){
 function labelled(type, opts){
   opts = opts || {}; const c = getCell(type, opts.style, opts.seed);
   const keys = (opts.labels || c.has).filter(k => c.parts[k]);
-  const fs = opts.big ? 21 : 15, gap = fs*1.55;
+  const fs = opts.big ? 30 : 15, gap = fs*1.45;
   const items = keys.map(k => ({k, p:c.parts[k], name:partName(k, type)}));
-  const M = Math.max(opts.big ? 200 : 150, 24 + fs*0.56*Math.max(...items.map(it => it.name.length)));
+
   const sides = {L:[], R:[]}; items.forEach(it => sides[it.p[0] < 200 ? 'L' : 'R'].push(it));
   // balance sides
   while(sides.L.length > sides.R.length+1){ sides.L.sort((a,b)=>b.p[0]-a.p[0]); sides.R.push(sides.L.shift()); }
@@ -86,7 +86,9 @@ function labelled(type, opts){
         <text x="${tx}" y="${f1(it.y + fs*0.35)}" text-anchor="${side==='L'?'end':'start'}" font-size="${fs}" font-weight="700" font-family="Barlow,Arial,sans-serif" fill="#111">${it.name}</text></g>`;
     });
   }
-  return `<svg viewBox="${-M} 0 ${400+2*M} 280" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><g>${c.svg}</g>${out}</svg>`;
+  const wid = arr => arr.length ? 30 + fs*0.53*Math.max(...arr.map(it => it.name.length)) : 10;
+  const ML = wid(sides.L), MR = wid(sides.R);
+  return `<svg viewBox="${-ML} 0 ${400+ML+MR} 280" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><g>${c.svg}</g>${out}</svg>`;
 }
 L.cellSVG = labelled;
 C['cell'] = el => {

@@ -294,3 +294,16 @@ img.soft{aspect-ratio:1;object-fit:cover;border-radius:50%;-webkit-mask-image:ra
 .ps .kqf .btn{font-size:26px}
 .ps .tx2{columns:2;column-gap:60px;font-size:30px;font-weight:600;line-height:1.3;margin-bottom:10px}
 .ps .tx2>div{break-inside:avoid;margin:0 0 8px}
+.ps .tfbig .tfdeck{font-size:56px;line-height:1.3;margin-top:20px}.ps .tfbig .tfans{font-size:46px}
+.ps .tfmid .tfdeck{font-size:40px;line-height:1.22}.ps .tfmid .tfans{font-size:34px}
+.ps .mrsbig{display:grid;grid-template-columns:1fr 1fr;gap:16px 40px;font:700 60px 'Barlow',Arial,sans-serif}
+.ps .mrsbig b{font:900 84px 'Barlow Condensed',Arial Narrow,sans-serif;color:var(--acc)}
+.ps .mrsbar{position:absolute;right:90px;top:46px;display:flex;gap:6px;font:900 40px 'Barlow Condensed',Arial Narrow,sans-serif}
+.ps .mrsbar span{width:44px;text-align:center;color:#bbb;border-bottom:5px solid transparent}
+.ps .mrsbar span.on{color:var(--acc);border-color:var(--acc)}
+.ps .mrsbar i{width:14px}
+.ps .procrow{display:grid;gap:24px;flex:1;min-height:0}
+.ps .procrow figure{display:flex;flex-direction:column;min-height:0;margin:0;background:#fff;border:5px solid #111}
+.ps .procrow img,.ps .procrow .svgbox{flex:1;min-height:0;width:100%;object-fit:cover}
+.ps .procrow .svgbox{padding:10px}
+.ps .procrow figcaption{font:700 28px 'Barlow',Arial,sans-serif;padding:8px 12px;background:#111;color:#fff;line-height:1.2}
