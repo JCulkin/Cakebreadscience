@@ -316,3 +316,7 @@ img.soft{aspect-ratio:1;object-fit:cover;border-radius:50%;-webkit-mask-image:ra
 .ps .kprow .cellfig{flex:1;min-height:0}
 .ps .stamp{position:absolute;right:80px;top:34px;font:900 54px/1 'Barlow Condensed',Arial Narrow,sans-serif;color:#c62828;border:7px solid #c62828;padding:10px 22px;transform:rotate(-4deg);background:#fff;letter-spacing:1px;z-index:2}
 .ps.contain .galrow img{object-fit:contain;background:#000}
+.ps .lcsm a.linkcard{margin:0;padding:8px;gap:16px;border-width:4px}
+.ps .lcsm a.linkcard img,.ps .lcsm a.linkcard .ic{width:150px;height:90px;font-size:50px}
+.ps .lcsm a.linkcard .lt{font-size:28px;gap:2px}
+.ps .lcsm a.linkcard .lt b,.ps .lcsm a.linkcard .lt small{font-size:18px}
