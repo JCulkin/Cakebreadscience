@@ -124,7 +124,7 @@ const DG = (() => {
 
 
   /* ================= 18 Nov round 2 (user feedback) ================= */
-  const elec = (x, y, cross) => cross ? `<path d="M${(x - 3.5).toFixed(1)} ${(y - 3.5).toFixed(1)}l7 7M${(x + 3.5).toFixed(1)} ${(y - 3.5).toFixed(1)}l-7 7" stroke="#c8001e" stroke-width="2"/>` : `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="#1e3a8a"/>`;
+  const elec = (x, y, cross) => cross === 2 ? `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="#fff" stroke="#15803d" stroke-width="1.8"/>` : cross ? `<path d="M${(x - 3.5).toFixed(1)} ${(y - 3.5).toFixed(1)}l7 7M${(x + 3.5).toFixed(1)} ${(y - 3.5).toFixed(1)}l-7 7" stroke="#c8001e" stroke-width="2"/>` : `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="#1e3a8a"/>`;
   const sh = (a, r) => a.slice().sort(() => r.f() - .5);
   const others = (ans, pool, r) => sh(pool.filter(x => x !== ans), r).slice(0, 3);
   /* up to 8 electrons in 4 pairs (top, right, bottom, left); 2 on a first shell sit top and bottom */
@@ -136,98 +136,6 @@ const DG = (() => {
     else if (RING === 'single') { const slot = i % 4; ang = Q4[slot] + (cnt > slot + 4 ? (i < 4 ? -.3 : .3) : 0); }
     else ang = Q4[Math.floor(i / 2) % 4] + (i % 2 ? .3 : -.3);
     return [Math.sin(ang) * rad, -Math.cos(ang) * rad]; };
-
-  /* ---------- ionic dot-and-cross: outer shells only (GCSE standard), sometimes full shells, and formation diagrams ---------- */
-  const EL = { Li: [2, 1], Na: [2, 8, 1], K: [2, 8, 8, 1], Mg: [2, 8, 2], Ca: [2, 8, 8, 2], F: [2, 7], Cl: [2, 8, 7], O: [2, 6], S: [2, 8, 6] };
-  const NAMES = { Li: 'lithium', Na: 'sodium', K: 'potassium', Mg: 'magnesium', Ca: 'calcium', F: 'fluoride', Cl: 'chloride', O: 'oxide', S: 'sulfide' };
-  /* one particle: shells = electron counts inside out; outerOther = how many outer electrons came from the other atom; brackets for ions */
-  function particle(cx, cy, sym, shells, own, outerOther, charge, full) {
-    let g = `<circle cx="${cx}" cy="${cy}" r="13" fill="#eeeae0" stroke="${INK}"/>` + T(cx, cy + 5, sym, { size: 13, w: 700 });
-    const list = full ? shells : shells.slice(-1), base = full ? 0 : shells.length - 1;
-    list.forEach((cnt, k) => { const rad = 30 + (full ? k : 0) * 14; if (!(cnt === 0 && !full && charge)) g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#666"/>`;
-      const last = k === list.length - 1;
-      for (let i = 0; i < cnt; i++) { const [dx, dy] = ringXY(cnt, i, rad); g += elec(cx + dx, cy + dy, (last && i >= cnt - outerOther) ? !own : own); } });
-    const R0 = !full && list[0] === 0 ? 22 : 30 + (full ? list.length - 1 : 0) * 14 + 9;
-    if (charge) g += `<path d="M${cx - R0 + 6} ${cy - R0}h-6v${2 * R0}h6M${cx + R0 - 6} ${cy - R0}h6v${2 * R0}h-6" fill="none" stroke="${INK}" stroke-width="1.6"/>` + T(cx + R0 + 9, cy - R0 + 7, charge, { size: 14, w: 700 });
-    return { g, R: R0 };
-  }
-  M.ionic = r => {
-    const C = r.pick(r.hard ? [['Mg', 'Cl', 1, 2], ['Ca', 'Cl', 1, 2], ['Na', 'O', 2, 1], ['K', 'O', 2, 1], ['Li', 'O', 2, 1], ['Mg', 'O', 1, 1], ['Ca', 'S', 1, 1], ['Na', 'Cl', 1, 1]]
-      : [['Na', 'Cl', 1, 1], ['K', 'Cl', 1, 1], ['Li', 'F', 1, 1], ['Mg', 'O', 1, 1], ['Ca', 'O', 1, 1], ['Na', 'F', 1, 1]]);
-    RING = r.pick(['pairs', 'pairs', 'single', 'spread']);
-    const [m, a, nm, na] = C, lose = EL[m].slice(-1)[0], gain = 8 - EL[a].slice(-1)[0];
-    const sub = k => k > 1 ? '₂' : '', formula = `${m}${sub(nm)}${a}${sub(na)}`;
-    const mode = r.hard && r.f() < .5 ? 'form' : r.f() < .25 ? 'full' : 'outer';
-    const qMark = `${lose === 1 ? '+' : lose + '+'}`, aMark = `${gain === 1 ? '−' : gain + '−'}`;
-    let svg, W;
-    if (mode === 'form') {   /* before → after: atoms with their outer electrons, an arrow, then the ions */
-      const atoms = [...Array(nm).fill(m), ...Array(na).fill(a)], gap = 14;
-      const before = atoms.map((s, i) => [s, i < nm]), after = before;
-      const wB = 39 * 2, wAm = 22 * 2 + 30, wAa = 39 * 2 + 30;
-      W = 30 + atoms.length * (wB + gap) + 70 + after.reduce((t, [, met]) => t + (met ? wAm : wAa) + gap, 0) + 10;
-      let g = '', x = 30;
-      before.forEach(([s, metal]) => { x += wB / 2; g += particle(x, 95, s, [EL[s].slice(-1)[0]], metal ? 0 : 1, 0, '', false).g; x += wB / 2 + gap; });
-      g += `<path d="M${x} 95h40" stroke="${INK}" stroke-width="2.5"/><path d="M${x + 48} 95l-10 -6v12z" fill="${INK}"/>`; x += 70;
-      after.forEach(([s, metal]) => { const ww = metal ? wAm : wAa; x += ww / 2 - 10; g += metal ? particle(x, 95, s, [0], 0, 0, qMark, false).g : particle(x, 95, s, [8], 1, gain, aMark, false).g; x += ww / 2 + 10 + gap; });
-      g += T(W - 10, 185, 'outer shells only', { size: 11, fill: '#555', a: 'end' });
-      svg = wrap(W, 195, g + `<g transform="translate(20 178)">${elec(0, -4, 0)}${T(8, 0, m, { size: 11, a: 'start' })}${elec(40, -4, 1)}${T(48, 0, a, { size: 11, a: 'start' })}</g>`);
-    } else {
-      const full = mode === 'full', ions = [...Array(nm).fill('m'), ...Array(na).fill('a')];
-      const order = nm === 2 ? ['m', 'a', 'm'] : na === 2 ? ['a', 'm', 'a'] : ['m', 'a'];
-      const step = full ? 175 : 130; W = Math.max(380, order.length * step + 40); let g = '', x = W / 2 - (order.length - 1) * step / 2;
-      order.forEach(t => { const p = t === 'm' ? particle(x, 100, m, full ? EL[m].slice(0, -1) : [0], 0, 0, qMark, full) : particle(x, 100, a, full ? [...EL[a].slice(0, -1), 8] : [8], 1, gain, aMark, full); g += p.g; x += step; });
-      g += `<g transform="translate(${W / 2 - 110} ${full ? 205 : 185})">${elec(0, -4, 0)}${T(8, 0, `${m} electron`, { size: 11, a: 'start' })}${elec(110, -4, 1)}${T(118, 0, `${a} electron`, { size: 11, a: 'start' })}</g>`;
-      svg = wrap(W, full ? 215 : 195, g);
-    }
-    const q = r.int(0, 2), title = mode === 'form' ? 'Dot-and-cross: forming ions' : `Dot-and-cross: ionic${mode === 'full' ? ' (all shells)' : ''}`;
-    if (q === 0) return { title, spec: 'C1.40', kind: 'diagram', svg, q: 'Which compound does this diagram show?', o: [formula, ...others(formula, ['NaCl', 'KCl', 'LiF', 'MgO', 'CaO', 'NaF', 'MgCl₂', 'CaCl₂', 'Na₂O', 'K₂O', 'Li₂O', 'CaS', 'MgCl', 'NaO'], r)], x: `${NAMES[m]} ${NAMES[a]}: each ${m} atom loses ${lose} electron${lose > 1 ? 's' : ''} and each ${a} atom gains ${gain}, so the formula is ${formula}.` };
-    if (q === 1) return { title, spec: 'C1.38', kind: 'diagram', svg, q: `What is the charge on the ${NAMES[a]} ion?`, o: [aMark.replace('−', '−'), ...others(aMark, ['−', '2−', '3−', '+', '2+'], r)], x: `${a} has ${EL[a].slice(-1)[0]} outer electrons and gains ${gain} to fill its outer shell: ${gain} extra negative charge${gain > 1 ? 's' : ''}, so ${aMark}.` };
-    return { title, spec: 'C1.40', kind: 'diagram', svg, q: `How many electrons does each ${m} atom lose?`, o: [String(lose), ...others(String(lose), ['1', '2', '3', '6', '7', '8'], r)], x: `${m} is in group ${lose}: it loses its ${lose} outer electron${lose > 1 ? 's' : ''} to get a full outer shell, becoming ${m}${qMark}.` };
-  };
-
-  /* ---------- covalent dot-and-cross: overlapping outer shells, shared pairs in the overlap ---------- */
-  const MOLS = {
-    'H₂': { atoms: [['H', 0], ['H', 1]], bonds: [[0, 1, 1]], lp: [0, 0] }, 'Cl₂': { atoms: [['Cl', 0], ['Cl', 1]], bonds: [[0, 1, 1]], lp: [3, 3] },
-    'HCl': { atoms: [['H', 1], ['Cl', 0]], bonds: [[0, 1, 1]], lp: [0, 3] }, 'O₂': { atoms: [['O', 0], ['O', 1]], bonds: [[0, 1, 2]], lp: [2, 2] },
-    'N₂': { atoms: [['N', 0], ['N', 1]], bonds: [[0, 1, 3]], lp: [1, 1] },
-    'H₂O': { c: ['O', 2], lig: [['H', 0, 1, 0], ['H', 90, 1, 0]] }, 'NH₃': { c: ['N', 1], lig: [['H', 180, 1, 0], ['H', 0, 1, 0], ['H', 90, 1, 0]] },
-    'CH₄': { c: ['C', 0], lig: [['H', 0, 1, 0], ['H', 90, 1, 0], ['H', 180, 1, 0], ['H', 270, 1, 0]] }, 'CO₂': { c: ['C', 0], lig: [['O', 0, 2, 2], ['O', 180, 2, 2]] },
-  };
-  const RAD = s => s === 'H' ? 24 : s === 'C*' ? 42 : 34;   // C* = a bigger central carbon for CO₂, so both double bonds have room
-  function molecule(f) {
-    const D = MOLS[f], at = [], bonds = [];
-    const dist = (a, b, o) => RAD(a) + RAD(b) - [0, 22, 30, 38][o];   // overlap wide enough for o shared pairs side by side
-    if (D.c) { const cs = f === 'CO₂' ? 'C*' : D.c[0]; at.push({ s: cs, x: 0, y: 0, lp: D.c[1], mark: 0 }); D.lig.forEach(([s, ang, o, lp]) => { const d = dist(cs, s, o), t = ang * Math.PI / 180; at.push({ s, x: Math.cos(t) * d, y: Math.sin(t) * d, lp, mark: 1 }); bonds.push([0, at.length - 1, o]); }); }
-    else { const d = dist(D.atoms[0][0], D.atoms[1][0], D.bonds[0][2]); D.atoms.forEach(([s, mk], i) => at.push({ s, x: i ? d : 0, y: 0, lp: D.lp[i], mark: mk })); bonds.push(...D.bonds); }
-    const xs = at.map(a => a.x), ys = at.map(a => a.y), pad = 44, cxm = (Math.min(...xs) + Math.max(...xs)) / 2, cym = (Math.min(...ys) + Math.max(...ys)) / 2;
-    const W = Math.max(230, Math.max(...xs) - Math.min(...xs) + 2 * pad), H = Math.max(150, Math.max(...ys) - Math.min(...ys) + 2 * pad), x0 = cxm - W / 2, y0 = cym - H / 2;
-    let g = '';
-    at.forEach(a => { g += `<circle cx="${a.x}" cy="${a.y}" r="${RAD(a.s)}" fill="#93c5fd" fill-opacity=".22" stroke="${INK}" stroke-width="1.5"/>`; });   // see-through, so each overlap shows as a darker lens
-    const dirs = at.map(() => []);
-    bonds.forEach(([i, j, o]) => {
-      const A = at[i], B = at[j], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d, px = -uy, py = ux;
-      const a = (d - RAD(B.s) + RAD(A.s)) / 2, mx = A.x + ux * a, my = A.y + uy * a;   // middle of the overlap, so nothing touches a shell line
-      for (let k = 0; k < o; k++) { const off = (k - (o - 1) / 2) * 11; g += elec(mx + ux * off + px * 5.5, my + uy * off + py * 5.5, A.mark) + elec(mx + ux * off - px * 5.5, my + uy * off - py * 5.5, B.mark); }
-      dirs[i].push(Math.atan2(dy, dx)); dirs[j].push(Math.atan2(-dy, -dx));
-    });
-    at.forEach((a, i) => {
-      const R = RAD(a.s), base = dirs[i][0] || 0, slots = (dirs[i].length === 1 ? [Math.PI / 2, -Math.PI / 2, Math.PI] : [Math.PI, Math.PI / 2, -Math.PI / 2, 0]).map(o => base + o).filter(t => dirs[i].every(b => Math.abs(Math.atan2(Math.sin(t - b), Math.cos(t - b))) > .6));
-      slots.slice(0, a.lp).forEach(t => { const cx = a.x + Math.cos(t) * (R - 8), cy = a.y + Math.sin(t) * (R - 8), px = -Math.sin(t) * 5.5, py = Math.cos(t) * 5.5; g += elec(cx + px, cy + py, a.mark) + elec(cx - px, cy - py, a.mark); });
-      const ord = Math.max(1, ...bonds.filter(b => b[0] === i || b[1] === i).map(b => b[2])), out = dirs[i].length === 1 ? (a.s === 'H' ? -8 : -10 - 5 * (ord - 1)) : 0, t0 = dirs[i][0] || 0;
-      g += T(a.x + Math.cos(t0) * out, a.y + Math.sin(t0) * out + 6, a.s.replace('*', ''), { size: 17, w: 700 });
-    });
-    return `<svg viewBox="${x0} ${y0} ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:260px;background:#fff" preserveAspectRatio="xMidYMid meet">${g}</svg>`;
-  }
-  M.covalent = r => {
-    const pool = r.hard ? ['O₂', 'N₂', 'CO₂', 'H₂O', 'NH₃', 'Cl₂'] : ['H₂', 'Cl₂', 'HCl', 'H₂O', 'NH₃', 'CH₄'], f = r.pick(pool), D = MOLS[f], svg = molecule(f);
-    const bondsOf = D.c ? D.lig.reduce((t, l) => t + l[2], 0) : D.bonds[0][2], center = D.c ? D.c[0] : D.atoms[0][0], lpC = D.c ? D.c[1] : D.lp[0];
-    const multi = !D.c && D.bonds[0][2] > 1 ? (D.bonds[0][2] === 2 ? 'a double bond' : 'a triple bond') : f === 'CO₂' ? 'two double bonds' : null;
-    const q = r.int(0, multi ? 3 : 2);
-    if (q === 0) return { title: 'Dot-and-cross: covalent', spec: 'C1.46', kind: 'diagram', svg, q: 'Which molecule does this diagram show?', o: [f, ...others(f, ['H₂', 'Cl₂', 'HCl', 'H₂O', 'NH₃', 'CH₄', 'O₂', 'N₂', 'CO₂'], r)], x: `Count the atoms and the shared pairs in the overlaps: ${f}.` };
-    if (q === 1) return { title: 'Dot-and-cross: covalent', spec: 'C1.46', kind: 'diagram', svg, q: `How many pairs of electrons are shared in ${f}?`, o: [String(bondsOf), ...others(String(bondsOf), ['1', '2', '3', '4', '6', '8'], r)], x: `Count the dot-and-cross pairs in the overlaps: ${bondsOf}.` };
-    if (q === 2) return { title: 'Dot-and-cross: covalent', spec: 'C1.46', kind: 'diagram', svg, q: `How many lone pairs (pairs not shared) does ${D.c ? 'the ' + center + ' atom' : 'each ' + center + ' atom'} have?`, o: [String(lpC), ...others(String(lpC), ['0', '1', '2', '3', '4'], r)], x: `Count the pairs on ${center} that are outside the overlaps: ${lpC}.` };
-    return { title: 'Dot-and-cross: covalent', spec: 'C1.46', kind: 'diagram', svg, q: `What kind of bonding does ${f} have?`, o: [multi, ...others(multi, ['a single bond', 'a double bond', 'a triple bond', 'two double bonds', 'an ionic bond'], r)], x: `${multi === 'a triple bond' ? 'Three' : 'Two'} shared pairs between the same two atoms make ${multi === 'a triple bond' ? 'a triple' : 'a double'} bond.` };
-  };
 
   /* ---------- chromatography: multi-spot dyes, smears, an insoluble spot on the start line ---------- */
   M.chrom = r => {
@@ -362,12 +270,12 @@ const DG = (() => {
   const ELN = ['hydrogen', 'helium', 'lithium', 'beryllium', 'boron', 'carbon', 'nitrogen', 'oxygen', 'fluorine', 'neon', 'sodium', 'magnesium', 'aluminium', 'silicon', 'phosphorus', 'sulfur', 'chlorine', 'argon', 'potassium', 'calcium'];
   const config = z => { const s = []; let left = z; [2, 8, 8, 2].forEach(c => { if (left > 0) { s.push(Math.min(c, left)); left -= c; } }); return s; };
   M.atom = r => {
-    const z = r.int(r.hard ? 11 : 3, r.hard ? 20 : 18), sh0 = config(z), cx = 140, cy = 120, mark = r.int(0, 1); RING = r.pick(['pairs', 'single', 'spread']);
+    const z = r.int(r.hard ? 11 : 1, r.hard ? 20 : 18), sh0 = config(z), cx = 140, cy = 120, mark = r.int(0, 1); RING = r.pick(['pairs', 'single', 'spread']);
     let g = `<circle cx="${cx}" cy="${cy}" r="14" fill="#fde68a" stroke="${INK}"/>` + T(cx, cy + 5, '?', { size: 14, w: 700 });
     sh0.forEach((c, k) => { const rad = 28 + k * 22; g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#666"/>`; for (let i = 0; i < c; i++) { const [dx, dy] = ringXY(c, i, rad); g += elec(cx + dx, cy + dy, mark); } });
     const svg = wrap(280, 240, g), cfg = sh0.join('.'), grp = z === 2 ? 0 : sh0[sh0.length - 1] === 8 ? 0 : sh0[sh0.length - 1], q = r.int(0, 2);
     if (q === 0) return { title: 'Electron shells', spec: 'C1.22', kind: 'diagram', svg, q: 'Which element has this electronic configuration?', o: [ELN[z - 1], ...others(ELN[z - 1], [ELN[z - 2], ELN[z] || ELN[z - 3], ELN[(z + 7) % 20], ELN[(z + 9) % 20]].filter(Boolean), r)], x: `${z} electrons (${cfg}), so ${z} protons: ${ELN[z - 1]} (${ELS[z - 1]}).` };
-    if (q === 1) return { title: 'Electron shells', spec: 'C1.22', kind: 'diagram', svg, q: 'What is the electronic configuration shown?', o: [cfg, ...others(cfg, [config(z - 1).join('.'), config(z + 1).join('.'), sh0.slice().reverse().join('.'), [Math.min(z, 2), z - 2].join('.')], r)], x: `Count the electrons in each shell from the inside: ${cfg}.` };
+    if (q === 1) return { title: 'Electron shells', spec: 'C1.22', kind: 'diagram', svg, q: 'What is the electronic configuration shown?', o: [cfg, ...others(cfg, [...new Set([config(z - 1).join('.'), config(z + 1).join('.'), sh0.slice().reverse().join('.'), [Math.min(z, 2), z - 2].join('.'), config(z + 2).join('.')])].filter(x => x && !/(^|\.)0($|\.)|-/.test(x)), r)], x: `Count the electrons in each shell from the inside: ${cfg}.` };
     return { title: 'Electron shells', spec: 'C1.24', kind: 'diagram', svg, q: 'Which group and period of the Periodic Table is this element in?', o: [...new Set([`Group ${grp}, period ${sh0.length}`, `Group ${sh0.length}, period ${grp}`, `Group ${grp}, period ${sh0.length + 1}`, `Group ${grp + 1}, period ${sh0.length}`, `Group ${sh0.length + 1}, period ${grp}`])], x: `Number of shells = period (${sh0.length}). Electrons in the outer shell = group (${grp || '0 — a full outer shell'}).` };
   };
 
@@ -404,19 +312,6 @@ const DG = (() => {
     const ans = bal ? F(0) : `${F(Math.abs(res))} to the ${res > 0 ? 'right' : 'left'}`;
     return r.int(0, 1) || bal ? { title, spec: 'P1.15', kind: 'diagram', svg, q: 'What is the resultant force on the object?', o: [ans, ...others(ans, bal ? [`${F(fw + bk)} to the right`, `${F(fw)} to the right`, `${F(2 * vert)} downwards`] : [`${F(fw + bk)} to the right`, `${F(Math.abs(res))} to the ${res > 0 ? 'left' : 'right'}`, F(0), `${F(fw + bk + 2 * vert)}`], r)], x: bal ? 'Up = down and forwards = backwards: the forces are balanced, so the resultant is 0 N (it stays still or keeps moving at a steady speed).' : `Up and down cancel. Horizontally: ${fw} − ${bk} = ${F(Math.abs(res))} to the ${res > 0 ? 'right' : 'left'}.` }
       : { title, spec: 'P1.16', kind: 'diagram', svg, q: 'The object is moving to the right. What happens to its speed?', o: [res > 0 ? 'It speeds up' : 'It slows down', res > 0 ? 'It slows down' : 'It speeds up', 'It stays the same', 'It stops straight away'], x: `The resultant force is ${F(Math.abs(res))} ${res > 0 ? 'forwards, so it accelerates' : 'backwards, so it decelerates'}.` };
-  };
-
-  /* food web */
-  M.foodweb = r => {
-    const W = r.pick([
-      { n: { grass: [80, 220], clover: [230, 220], rabbit: [60, 140], slug: [170, 140], vole: [280, 140], thrush: [140, 60], fox: [60, 30], owl: [280, 50] }, e: [['grass', 'rabbit'], ['grass', 'vole'], ['clover', 'slug'], ['clover', 'vole'], ['grass', 'slug'], ['slug', 'thrush'], ['rabbit', 'fox'], ['vole', 'owl'], ['vole', 'fox'], ['thrush', 'owl']], p: ['grass', 'clover'], c1: ['rabbit', 'slug', 'vole'], top: ['fox', 'owl'] },
-      { n: { algae: [100, 220], 'pond weed': [260, 220], 'water flea': [70, 140], snail: [190, 140], tadpole: [300, 140], 'water beetle': [120, 60], stickleback: [260, 70], heron: [190, 20] }, e: [['algae', 'water flea'], ['algae', 'tadpole'], ['pond weed', 'snail'], ['algae', 'snail'], ['pond weed', 'tadpole'], ['water flea', 'water beetle'], ['water flea', 'stickleback'], ['tadpole', 'stickleback'], ['snail', 'water beetle'], ['water beetle', 'heron'], ['stickleback', 'heron']], p: ['algae', 'pond weed'], c1: ['water flea', 'snail', 'tadpole'], top: ['heron'] }]);
-    let g = ''; W.e.forEach(([a, b]) => { const [x1, y1] = W.n[a], [x2, y2] = W.n[b], d = Math.hypot(x2 - x1, y2 - y1); g += arrow(x1 + (x2 - x1) * 14 / d, y1 + (y2 - y1) * 14 / d, x2 - (x2 - x1) * 16 / d, y2 - (y2 - y1) * 16 / d, '#555', 1.6); });
-    Object.entries(W.n).forEach(([k, [x, y]]) => { g += `<rect x="${x - k.length * 3.6 - 6}" y="${y - 11}" width="${k.length * 7.2 + 12}" height="22" rx="11" fill="${W.p.includes(k) ? '#dcfce7' : '#fff'}" stroke="${INK}"/>` + T(x, y + 4, k, { size: 12, w: 600 }); });
-    const svg = wrap(360, 245, g), q = r.int(0, 2), c1 = r.pick(W.c1);
-    if (q === 0) return { title: 'Food web', spec: 'B4.4', kind: 'diagram', svg, q: 'Which of these is a primary consumer?', o: [c1, ...others(c1, [...W.p, ...W.top, ...Object.keys(W.n).filter(k => !W.p.includes(k) && !W.c1.includes(k) && !W.top.includes(k))], r)], x: `A primary consumer eats producers (plants/algae). Arrows from ${W.p.join(' or ')} point to ${c1}.` };
-    if (q === 1) return { title: 'Food web', spec: 'B4.4', kind: 'diagram', svg, q: 'What do the arrows in a food web show?', o: ['The direction energy is transferred', 'Which animal eats the arrow\'s target', 'The direction animals move', 'Where waste goes'], x: 'Arrows point from the food to the feeder: the direction biomass and energy are transferred.' };
-    const p0 = W.p[0]; return { title: 'Food web', spec: 'B4.4', kind: 'diagram', svg, q: `Which organisms are producers?`, o: [W.p.join(' and '), ...others(W.p.join(' and '), [`${W.c1[0]} and ${W.c1[1]}`, W.top.join(' and '), `${p0} and ${W.c1[0]}`], r)], x: `Producers make their own food by photosynthesis; nothing points into them: ${W.p.join(' and ')}.` };
   };
 
   /* pyramid of biomass with numbers (biology maths): sometimes to scale (bar width ∝ biomass), otherwise marked not to scale */
@@ -714,6 +609,177 @@ const DG = (() => {
     if (kase === 'above') return r.int(0, 1) ? { title, spec: 'P3.21', kind: 'diagram', svg, q: 'What is happening to the ray at O?', o: ['Total internal reflection', 'Refraction', 'Diffraction', 'Dispersion'], x: `Angle ${x} (${i}°) is bigger than the critical angle for ${med} (${cR}°), so no light gets out: it is all reflected inside the ${med}.` }
       : { title, spec: 'P3.21', kind: 'diagram', svg, q: `Which of these must be true for this to happen?`, o: [`Angle ${x} is bigger than the critical angle`, `Angle ${x} is smaller than the critical angle`, 'The light is going from air into the block', 'The surface is a mirror'], x: 'Total internal reflection needs light going from a denser medium towards a less dense one (here into air) and an angle of incidence bigger than the critical angle.' };
     return { title, spec: 'P3.21', kind: 'diagram', svg, q: `The dashed ray is weak. Why does most of the light get out of the ${med}?`, o: [`Angle ${x} is less than the critical angle`, `Angle ${x} is more than the critical angle`, 'Light can never reflect inside glass', `The ${med} absorbs the reflected light`], x: `${i}° is below the critical angle (${cR}°): most of the light refracts out and only a little is reflected (the dashed ray).` };
+  };
+
+  /* ---------- ionic dot-and-cross: any metal + non-metal from the first 20 elements; outer shells only (GCSE standard), sometimes full shells, and formation diagrams ---------- */
+  const EL = { Li: [2, 1], Na: [2, 8, 1], K: [2, 8, 8, 1], Be: [2, 2], Mg: [2, 8, 2], Ca: [2, 8, 8, 2], Al: [2, 8, 3], N: [2, 5], O: [2, 6], S: [2, 8, 6], F: [2, 7], Cl: [2, 8, 7] };
+  const NAMES = { Li: 'lithium', Na: 'sodium', K: 'potassium', Be: 'beryllium', Mg: 'magnesium', Ca: 'calcium', Al: 'aluminium', N: 'nitride', O: 'oxide', S: 'sulfide', F: 'fluoride', Cl: 'chloride' };
+  const SUBS = ['', '', '₂', '₃', '₄'], fml = (m, nm, a, na) => `${m}${SUBS[nm]}${a}${SUBS[na]}`, chg = (k, s) => (k === 1 ? '' : k) + s;
+  /* one particle: shells = electron counts inside out; outerOther = how many outer electrons came from the other atom; brackets for ions */
+  function particle(cx, cy, sym, shells, own, outerOther, charge, full) {
+    let g = `<circle cx="${cx}" cy="${cy}" r="13" fill="#eeeae0" stroke="${INK}"/>` + T(cx, cy + 5, sym, { size: 13, w: 700 });
+    const list = full ? shells : shells.slice(-1);
+    list.forEach((cnt, k) => { const rad = 30 + (full ? k : 0) * 14; if (!(cnt === 0 && !full && charge)) g += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#666"/>`;
+      const last = k === list.length - 1;
+      for (let i = 0; i < cnt; i++) { const [dx, dy] = ringXY(cnt, i, rad); g += elec(cx + dx, cy + dy, (last && i >= cnt - outerOther) ? !own : own); } });
+    const R0 = !full && list[0] === 0 ? 22 : 30 + (full ? list.length - 1 : 0) * 14 + 9;
+    if (charge) g += `<path d="M${cx - R0 + 6} ${cy - R0}h-6v${2 * R0}h6M${cx + R0 - 6} ${cy - R0}h6v${2 * R0}h-6" fill="none" stroke="${INK}" stroke-width="1.6"/>` + T(cx + R0 + 9, cy - R0 + 7, charge, { size: 14, w: 700 });
+    return { g, R: R0 };
+  }
+  M.ionic = r => {
+    const metals = ['Li', 'Na', 'K', 'Be', 'Mg', 'Ca', 'Al'], nons = ['F', 'Cl', 'O', 'S', 'N'], gcd = (a, b) => b ? gcd(b, a % b) : a;
+    const all = []; metals.forEach(m => nons.forEach(a => { const qm = EL[m].slice(-1)[0], qa = 8 - EL[a].slice(-1)[0], l = qm * qa / gcd(qm, qa); all.push([m, a, l / qm, l / qa]); }));
+    const pool = all.filter(([m, a, nm, na]) => r.hard ? nm + na <= 5 : nm + na <= 3 && !(m === 'Be' || a === 'N'));
+    const [m, a, nm, na] = r.pick(r.hard ? pool : pool.concat(pool.filter(c => c[2] + c[3] === 2)));
+    RING = r.pick(['pairs', 'pairs', 'single', 'spread']);
+    const lose = EL[m].slice(-1)[0], gain = 8 - EL[a].slice(-1)[0], formula = fml(m, nm, a, na), tot = nm + na;
+    const mode = r.hard && tot <= 3 && r.f() < .5 ? 'form' : tot <= 3 && r.f() < .25 ? 'full' : 'outer';
+    const qMark = chg(lose, '+'), aMark = chg(gain, '−');
+    let svg, W;
+    if (mode === 'form') {   /* before → after: atoms with their outer electrons, an arrow, then the ions */
+      const atoms = [...Array(nm).fill(m), ...Array(na).fill(a)], gap = 14, before = atoms.map((s, i) => [s, i < nm]);
+      const wB = 39 * 2, wAm = 22 * 2 + 30, wAa = 39 * 2 + 30;
+      W = 30 + atoms.length * (wB + gap) + 70 + before.reduce((t, [, met]) => t + (met ? wAm : wAa) + gap, 0) + 10;
+      let g = '', x = 30;
+      before.forEach(([s, metal]) => { x += wB / 2; g += particle(x, 95, s, [EL[s].slice(-1)[0]], metal ? 0 : 1, 0, '', false).g; x += wB / 2 + gap; });
+      g += `<path d="M${x} 95h40" stroke="${INK}" stroke-width="2.5"/><path d="M${x + 48} 95l-10 -6v12z" fill="${INK}"/>`; x += 70;
+      before.forEach(([s, metal]) => { const ww = metal ? wAm : wAa; x += ww / 2 - 10; g += metal ? particle(x, 95, s, [0], 0, 0, qMark, false).g : particle(x, 95, s, [8], 1, gain, aMark, false).g; x += ww / 2 + 10 + gap; });
+      g += T(W - 10, 185, 'outer shells only', { size: 11, fill: '#555', a: 'end' });
+      svg = wrap(W, 195, g + `<g transform="translate(20 178)">${elec(0, -4, 0)}${T(8, 0, m, { size: 11, a: 'start' })}${elec(40, -4, 1)}${T(48, 0, a, { size: 11, a: 'start' })}</g>`);
+    } else {
+      const full = mode === 'full', big = nm >= na ? 'm' : 'a', small = big === 'm' ? 'a' : 'm', nb = Math.max(nm, na), ns = Math.min(nm, na), order = [];
+      for (let k = 0; k < nb; k++) { order.push(big); if (k < ns) order.push(small); }   // alternate, the bigger group first
+      const step = full ? 175 : 130; W = Math.max(380, order.length * step + 40); let g = '', x = W / 2 - (order.length - 1) * step / 2;
+      order.forEach(t => { const p = t === 'm' ? particle(x, 100, m, full ? EL[m].slice(0, -1) : [0], 0, 0, qMark, full) : particle(x, 100, a, full ? [...EL[a].slice(0, -1), 8] : [8], 1, gain, aMark, full); g += p.g; x += step; });
+      g += `<g transform="translate(${W / 2 - 110} ${full ? 205 : 185})">${elec(0, -4, 0)}${T(8, 0, `${m} electron`, { size: 11, a: 'start' })}${elec(110, -4, 1)}${T(118, 0, `${a} electron`, { size: 11, a: 'start' })}</g>`;
+      svg = wrap(W, full ? 215 : 195, g);
+    }
+    const q = r.int(0, 3), title = mode === 'form' ? 'Dot-and-cross: forming ions' : `Dot-and-cross: ionic${mode === 'full' ? ' (all shells)' : ''}`;
+    const wrongF = [fml(m, 1, a, 1), fml(m, na, a, nm), fml(m, nm + 1, a, na), fml(m, nm, a, na + 1), fml(m, 1, a, 2), fml(m, 2, a, 1)].filter(f => f !== formula);
+    if (q === 0) return { title, spec: 'C1.40', kind: 'diagram', svg, q: 'Which compound does this diagram show?', o: [formula, ...others(formula, [...new Set(wrongF)], r)], x: `${NAMES[m]} ${NAMES[a]}: each ${m} atom loses ${lose} electron${lose > 1 ? 's' : ''} and each ${a} atom gains ${gain}. Charges balance with ${nm} ${m}${qMark} to ${na} ${a}${aMark}: ${formula}.` };
+    if (q === 1) return { title, spec: 'C1.38', kind: 'diagram', svg, q: `What is the charge on the ${NAMES[a]} ion?`, o: [aMark, ...others(aMark, ['−', '2−', '3−', '+', '2+', '3+'], r)], x: `${a} has ${EL[a].slice(-1)[0]} outer electrons and gains ${gain} to fill its outer shell: ${gain} extra negative charge${gain > 1 ? 's' : ''}, so ${aMark}.` };
+    if (q === 2) return { title, spec: 'C1.40', kind: 'diagram', svg, q: `How many electrons does each ${m} atom lose?`, o: [String(lose), ...others(String(lose), ['1', '2', '3', '5', '6', '7'], r)], x: `${m} is in group ${lose}: it loses its ${lose} outer electron${lose > 1 ? 's' : ''} to get a full outer shell, becoming ${m}${qMark}.` };
+    return { title, spec: 'C1.36', kind: 'diagram', svg, q: `Which group of the Periodic Table is ${m === 'Al' ? 'aluminium' : NAMES[m]} in?`, o: [`Group ${lose}`, ...others(`Group ${lose}`, ['Group 1', 'Group 2', 'Group 3', 'Group 5', 'Group 6', 'Group 7'], r)], x: `It loses ${lose} electron${lose > 1 ? 's' : ''} to form ${m}${qMark}, so it had ${lose} outer electron${lose > 1 ? 's' : ''}: group ${lose}.` };
+  };
+
+  /* ---------- covalent dot-and-cross: molecules from elements 1–20; lone pairs ON the shell, every shared pair stacked in one vertical column in the overlap ---------- */
+  /* a: [symbol, lone pairs, mark (0 dot, 1 cross, 2 ring)], b: [i, j, bond order, direction from i to j in degrees, 0 = right, 90 = down] */
+  const MOLS = {
+    'H₂': { a: [['H', 0, 0], ['H', 0, 1]], b: [[0, 1, 1, 0]] }, 'F₂': { a: [['F', 3, 0], ['F', 3, 1]], b: [[0, 1, 1, 0]] }, 'Cl₂': { a: [['Cl', 3, 0], ['Cl', 3, 1]], b: [[0, 1, 1, 0]] },
+    'HF': { a: [['F', 3, 0], ['H', 0, 1]], b: [[0, 1, 1, 180]] }, 'HCl': { a: [['Cl', 3, 0], ['H', 0, 1]], b: [[0, 1, 1, 180]] },
+    'O₂': { a: [['O', 2, 0], ['O', 2, 1]], b: [[0, 1, 2, 0]] }, 'N₂': { a: [['N', 1, 0], ['N', 1, 1]], b: [[0, 1, 3, 0]] },
+    'H₂O': { a: [['O', 2, 0], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90]] }, 'H₂S': { a: [['S', 2, 0], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90]] },
+    'NH₃': { a: [['N', 1, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 180], [0, 2, 1, 0], [0, 3, 1, 90]] }, 'PH₃': { a: [['P', 1, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 180], [0, 2, 1, 0], [0, 3, 1, 90]] },
+    'CH₄': { a: [['C', 0, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270]] },
+    'SiH₄': { a: [['Si', 0, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270]] },
+    'CCl₄': { a: [['C', 0, 0], ['Cl', 3, 1], ['Cl', 3, 1], ['Cl', 3, 1], ['Cl', 3, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270]] },
+    'SiCl₄': { a: [['Si', 0, 0], ['Cl', 3, 1], ['Cl', 3, 1], ['Cl', 3, 1], ['Cl', 3, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270]] },
+    'NCl₃': { a: [['N', 1, 0], ['Cl', 3, 1], ['Cl', 3, 1], ['Cl', 3, 1]], b: [[0, 1, 1, 180], [0, 2, 1, 0], [0, 3, 1, 90]] }, 'PCl₃': { a: [['P', 1, 0], ['Cl', 3, 1], ['Cl', 3, 1], ['Cl', 3, 1]], b: [[0, 1, 1, 180], [0, 2, 1, 0], [0, 3, 1, 90]] },
+    'OF₂': { a: [['O', 2, 0], ['F', 3, 1], ['F', 3, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90]] }, 'SCl₂': { a: [['S', 2, 0], ['Cl', 3, 1], ['Cl', 3, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90]] },
+    'CO₂': { a: [['C*', 0, 0], ['O', 2, 1], ['O', 2, 1]], b: [[0, 1, 2, 0], [0, 2, 2, 180]] },
+    'HCN': { a: [['C', 0, 0], ['H', 0, 1], ['N', 1, 2]], b: [[0, 1, 1, 180], [0, 2, 3, 0]] },
+    'C₂H₄': { a: [['C', 0, 0], ['C', 0, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 2, 0], [0, 2, 1, 125], [0, 3, 1, 235], [1, 4, 1, 55], [1, 5, 1, 305]] },
+    'C₂H₆': { a: [['C', 0, 0], ['C', 0, 0], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270], [1, 5, 1, 90], [1, 6, 1, 0], [1, 7, 1, 270]] },
+    'CH₃Cl': { a: [['C', 0, 0], ['Cl', 3, 2], ['H', 0, 1], ['H', 0, 1], ['H', 0, 1]], b: [[0, 1, 1, 0], [0, 2, 1, 90], [0, 3, 1, 180], [0, 4, 1, 270]] },
+  };
+  const MOL_NAME = { 'H₂': 'hydrogen', 'F₂': 'fluorine', 'Cl₂': 'chlorine', 'HF': 'hydrogen fluoride', 'HCl': 'hydrogen chloride', 'O₂': 'oxygen', 'N₂': 'nitrogen', 'H₂O': 'water', 'H₂S': 'hydrogen sulfide', 'NH₃': 'ammonia', 'PH₃': 'phosphine', 'CH₄': 'methane', 'SiH₄': 'silane', 'CCl₄': 'tetrachloromethane', 'SiCl₄': 'silicon tetrachloride', 'NCl₃': 'nitrogen trichloride', 'PCl₃': 'phosphorus trichloride', 'OF₂': 'oxygen difluoride', 'SCl₂': 'sulfur dichloride', 'CO₂': 'carbon dioxide', 'HCN': 'hydrogen cyanide', 'C₂H₄': 'ethene', 'C₂H₆': 'ethane', 'CH₃Cl': 'chloromethane' };
+  const RAD = s => s === 'H' ? 24 : s === 'C*' ? 42 : 34;   // C* = a bigger central carbon for CO₂, so both double bonds have room
+  const OVER = (a, b, o) => o === 3 ? 32 : o === 2 ? 24 : (a === 'H' || b === 'H') ? 22 : 14;   // overlap depth: deep enough for a column of 2o electrons, shallow enough that neighbours don't touch
+  function molecule(f) {
+    const D = MOLS[f], at = D.a.map(([s, lp, mark]) => ({ s, lp, mark, x: null, y: 0 })), bonds = D.b.map(b => b.slice(0, 3));
+    at[0].x = 0; let left = D.b.slice();
+    while (left.length) { left = left.filter(([i, j, o, ang]) => { if (at[i].x === null) return true; const d = RAD(at[i].s) + RAD(at[j].s) - OVER(at[i].s, at[j].s, o), t = ang * Math.PI / 180; at[j].x = at[i].x + Math.cos(t) * d; at[j].y = at[i].y + Math.sin(t) * d; return false; }); }
+    let g = '';
+    at.forEach(a => { g += `<circle cx="${a.x.toFixed(1)}" cy="${a.y.toFixed(1)}" r="${RAD(a.s)}" fill="#93c5fd" fill-opacity=".22" stroke="${INK}" stroke-width="1.5"/>`; });   // see-through, so each overlap shows as a darker lens
+    const dirs = at.map(() => []);
+    bonds.forEach(([i, j, o]) => {
+      const A = at[i], B = at[j], dx = B.x - A.x, dy = B.y - A.y, d = Math.hypot(dx, dy), ux = dx / d, uy = dy / d, px = -uy, py = ux;
+      const a = (d - RAD(B.s) + RAD(A.s)) / 2, mx = A.x + ux * a, my = A.y + uy * a;   // middle of the overlap
+      for (let k = 0; k < 2 * o; k++) { const off = (k - (2 * o - 1) / 2) * 8; g += elec(mx + px * off, my + py * off, k % 2 ? B.mark : A.mark); }   // one column across the bond: dot, cross, dot, cross…
+      dirs[i].push(Math.atan2(dy, dx)); dirs[j].push(Math.atan2(-dy, -dx));
+    });
+    at.forEach((a, i) => {
+      const R = RAD(a.s), base = dirs[i][0] || 0, slots = (dirs[i].length === 1 ? [Math.PI / 2, -Math.PI / 2, Math.PI] : [Math.PI, Math.PI / 2, -Math.PI / 2, 0]).map(o => base + o).filter(t => dirs[i].every(b => Math.abs(Math.atan2(Math.sin(t - b), Math.cos(t - b))) > .6));
+      slots.slice(0, a.lp).forEach(t => { const cx = a.x + Math.cos(t) * R, cy = a.y + Math.sin(t) * R, px = -Math.sin(t) * 5.5, py = Math.cos(t) * 5.5; g += elec(cx + px, cy + py, a.mark) + elec(cx - px, cy - py, a.mark); });   // lone pairs sit on the shell
+      const ord = Math.max(1, ...bonds.filter(b => b[0] === i || b[1] === i).map(b => b[2])), out = dirs[i].length === 1 ? (a.s === 'H' ? -8 : -10 - 5 * (ord - 1)) : 0, t0 = dirs[i][0] || 0;
+      g += T((a.x + Math.cos(t0) * out).toFixed(1), (a.y + Math.sin(t0) * out + 6).toFixed(1), a.s.replace('*', ''), { size: a.s.length > 1 && a.s !== 'C*' ? 15 : 17, w: 700 });
+    });
+    const x0 = Math.min(...at.map(a => a.x - RAD(a.s))) - 14, x1 = Math.max(...at.map(a => a.x + RAD(a.s))) + 14, y0 = Math.min(...at.map(a => a.y - RAD(a.s))) - 14, y1 = Math.max(...at.map(a => a.y + RAD(a.s))) + 14;
+    const W = Math.max(230, x1 - x0), H = Math.max(150, y1 - y0), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    return `<svg viewBox="${(cx - W / 2).toFixed(1)} ${(cy - H / 2).toFixed(1)} ${W.toFixed(1)} ${H.toFixed(1)}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:280px;background:#fff" preserveAspectRatio="xMidYMid meet">${g}</svg>`;
+  }
+  M.covalent = r => {
+    const easy = ['H₂', 'F₂', 'Cl₂', 'HF', 'HCl', 'H₂O', 'H₂S', 'NH₃', 'PH₃', 'CH₄', 'SiH₄'], hard = ['O₂', 'N₂', 'CO₂', 'C₂H₄', 'C₂H₆', 'HCN', 'CCl₄', 'SiCl₄', 'NCl₃', 'PCl₃', 'OF₂', 'SCl₂', 'CH₃Cl'];
+    const f = r.pick(r.hard ? hard.concat(['H₂O', 'NH₃', 'CH₄']) : easy.concat(['O₂', 'N₂'])), D = MOLS[f], svg = molecule(f), title = 'Dot-and-cross: covalent';
+    const shared = D.b.reduce((t, b) => t + b[2], 0), c0 = D.a[0][0].replace('*', ''), same = D.a.filter(x => x[0] === D.a[0][0]).length > 1, lp0 = D.a[0][1];
+    const orders = D.b.map(b => b[2]), dbl = orders.filter(o => o === 2).length, tri = orders.includes(3);
+    const multi = tri ? 'a triple bond' : dbl === 2 ? 'two double bonds' : dbl === 1 ? 'a double bond' : null;
+    const outer0 = 2 * D.b.filter(b => b[0] === 0 || b[1] === 0).reduce((t, b) => t + b[2], 0) + 2 * lp0;
+    const qs = ['which', 'shared', 'lone', 'outer'].concat(multi ? ['bond'] : []), q = r.pick(qs);
+    if (q === 'which') return { title, spec: 'C1.46', kind: 'diagram', svg, q: 'Which molecule does this diagram show?', o: [f, ...others(f, Object.keys(MOLS).filter(k => k !== f), r)], x: `Count each kind of atom and the shared pairs: ${f} (${MOL_NAME[f]}).` };
+    if (q === 'shared') return { title, spec: 'C1.46', kind: 'diagram', svg, q: `How many pairs of electrons are shared in ${f}?`, o: [String(shared), ...others(String(shared), ['1', '2', '3', '4', '5', '6', '8'], r)], x: `Count the electrons in the overlaps and halve: ${shared} pair${shared > 1 ? 's' : ''}.` };
+    if (q === 'lone') return { title, spec: 'C1.46', kind: 'diagram', svg, q: `How many lone pairs (pairs not shared) does ${same && D.a.length === 2 ? 'each ' + c0 + ' atom' : 'the ' + c0 + ' atom'} have?`, o: [String(lp0), ...others(String(lp0), ['0', '1', '2', '3', '4'], r)], x: `Count the pairs on ${c0}'s shell that are outside the overlaps: ${lp0}.` };
+    if (q === 'outer') return { title, spec: 'C1.46', kind: 'diagram', svg, q: `Counting shared electrons, how many electrons are in the outer shell of ${same ? 'each' : 'the'} ${c0} atom?`, o: [String(outer0), ...others(String(outer0), ['2', '4', '6', '7', '8', '10'], r)], x: `${outer0 === 2 ? 'Hydrogen' : c0}'s own electrons plus the ones it shares make ${outer0}: a full outer shell${outer0 === 8 ? ' (like a noble gas)' : ''}.` };
+    return { title, spec: 'C1.46', kind: 'diagram', svg, q: `What kind of bonding does ${f} have?`, o: [multi, ...others(multi, ['single bonds only', 'a double bond', 'a triple bond', 'two double bonds', 'an ionic bond'], r)], x: tri ? 'Three shared pairs between the same two atoms make a triple bond.' : dbl === 2 ? 'Each oxygen shares two pairs with the carbon: two double bonds.' : 'Two shared pairs between the same two atoms make a double bond.' };
+  };
+
+  /* ---------- food webs: generated from an ecosystem's feeding links; simple chains to big webs; bottom-up or left-to-right ---------- */
+  const ECOS = [
+    { L: [['grass', 'oak leaves', 'clover', 'bramble'], ['rabbit', 'caterpillar', 'slug', 'aphid', 'vole', 'deer'], ['thrush', 'blue tit', 'hedgehog', 'ladybird', 'shrew', 'stoat'], ['fox', 'owl', 'sparrowhawk']],
+      e: { rabbit: ['grass', 'clover'], caterpillar: ['oak leaves', 'bramble', 'clover'], slug: ['grass', 'clover', 'bramble'], aphid: ['bramble', 'oak leaves'], vole: ['grass', 'bramble'], deer: ['grass', 'oak leaves', 'bramble'],
+        thrush: ['slug', 'caterpillar'], 'blue tit': ['caterpillar', 'aphid'], hedgehog: ['slug', 'caterpillar'], ladybird: ['aphid'], shrew: ['slug', 'caterpillar'], stoat: ['rabbit', 'vole'],
+        fox: ['hedgehog', 'thrush', 'stoat'], owl: ['shrew', 'thrush', 'stoat'], sparrowhawk: ['blue tit', 'thrush'] } },
+    { L: [['algae', 'pondweed'], ['water flea', 'pond snail', 'tadpole', 'mayfly larva'], ['water beetle', 'stickleback', 'dragonfly nymph', 'newt'], ['heron', 'pike', 'kingfisher']],
+      e: { 'water flea': ['algae'], 'pond snail': ['algae', 'pondweed'], tadpole: ['algae', 'pondweed'], 'mayfly larva': ['algae'], 'water beetle': ['water flea', 'tadpole', 'mayfly larva'], stickleback: ['water flea', 'mayfly larva'], 'dragonfly nymph': ['tadpole', 'mayfly larva', 'water flea'], newt: ['tadpole', 'pond snail'], heron: ['stickleback', 'newt'], pike: ['stickleback', 'newt', 'water beetle'], kingfisher: ['stickleback', 'dragonfly nymph'] } },
+    { L: [['phytoplankton', 'seaweed'], ['zooplankton', 'limpet', 'sea urchin', 'krill'], ['herring', 'crab', 'starfish', 'sand eel'], ['seal', 'puffin', 'cod']],
+      e: { zooplankton: ['phytoplankton'], limpet: ['seaweed'], 'sea urchin': ['seaweed'], krill: ['phytoplankton'], herring: ['zooplankton', 'krill'], crab: ['limpet', 'sea urchin'], starfish: ['limpet'], 'sand eel': ['zooplankton'], seal: ['herring', 'crab'], puffin: ['sand eel', 'herring'], cod: ['sand eel', 'crab', 'herring'] } },
+    { L: [['grass', 'acacia tree'], ['zebra', 'gazelle', 'giraffe', 'termite'], ['lion', 'cheetah', 'hyena', 'aardvark']],
+      e: { zebra: ['grass'], gazelle: ['grass', 'acacia tree'], giraffe: ['acacia tree'], termite: ['grass', 'acacia tree'], lion: ['zebra', 'gazelle'], cheetah: ['gazelle'], hyena: ['zebra', 'gazelle'], aardvark: ['termite'] } }];
+  const LEVEL = ['producer', 'primary consumer', 'secondary consumer', 'tertiary consumer'];
+  M.foodweb = r => {
+    const E = r.pick(ECOS), nL = E.L.length, size = r.hard ? r.pick(['small', 'big', 'big']) : r.pick(['chain', 'chain', 'small', 'big']);
+    let lv = [];   // chosen organisms per level
+    if (size === 'chain') {
+      const top = Math.min(nL - 1, r.pick([2, 3, 3])); let cur = r.pick(E.L[top].filter(o => E.e[o])); const ch = [cur];
+      for (let k = top; k > 0; k--) { cur = r.pick(E.e[cur].filter(f => E.L[k - 1].includes(f))); ch.unshift(cur); }
+      lv = ch.map(o => [o]);
+    } else {
+      const want = size === 'small' ? [r.int(1, 2), r.int(1, 2), r.int(1, 2), 1] : [r.int(2, 3), r.int(3, 4), r.int(2, 3), r.int(1, 2)];
+      lv[0] = sh(E.L[0], r).slice(0, want[0]);
+      for (let k = 1; k < nL; k++) { const can = sh(E.L[k], r).filter(o => E.e[o].some(f => lv[k - 1].includes(f))); if (!can.length) break; lv[k] = can.slice(0, want[k]); }
+      for (let k = lv.length - 2; k >= 0; k--) { const eaten = lv[k].filter(o => lv[k + 1].some(p => E.e[p].includes(o))); if (eaten.length) lv[k] = eaten; }   // every lower organism is eaten by something shown
+    }
+    const orgs = lv.flat(), level = {}; lv.forEach((row, k) => row.forEach(o => { level[o] = k; }));
+    const edges = []; orgs.forEach(p => (E.e[p] || []).forEach(f => { if (level[f] === level[p] - 1) edges.push([f, p]); }));
+    const horiz = r.f() < .3 || (size === 'chain' && r.f() < .5), n = lv.length, pos = {}, bw = o => o.length * 7.2 + 14;
+    /* order each level by where its food sits (fewer crossing arrows), with a little randomness */
+    const rows = [sh(lv[0], r)];
+    for (let k = 1; k < n; k++) rows[k] = lv[k].map(o => { const fi = (E.e[o] || []).map(f => rows[k - 1].indexOf(f)).filter(i => i >= 0); return [o, fi.reduce((t, i) => t + i, 0) / Math.max(1, fi.length) + r.f() * .9]; }).sort((x, y) => x[1] - y[1]).map(x => x[0]);
+    let W = 420, H = 260;
+    if (horiz) {   /* columns left to right, each as wide as its longest name */
+      const cw = rows.map(row => Math.max(...row.map(bw))), gap = Math.max(36, (W - 40 - cw.reduce((t, w) => t + w, 0)) / Math.max(1, n - 1)); W = Math.max(W, 40 + cw.reduce((t, w) => t + w, 0) + gap * (n - 1));
+      let x = 20; rows.forEach((row, k) => { x += cw[k] / 2; row.forEach((o, j) => { pos[o] = [x + (row.length > 2 && j % 2 ? 8 : 0), 20 + (j + 1) / (row.length + 1) * (H - 40)]; }); x += cw[k] / 2 + gap; });
+    } else {       /* rows bottom to top, boxes never overlapping */
+      const rw = rows.map(row => row.reduce((t, o) => t + bw(o), 0) + 18 * (row.length - 1)); W = Math.max(W, Math.max(...rw) + 40);
+      const rowH = n > 1 ? Math.max(56, 200 / (n - 1)) : 0; H = 60 + rowH * (n - 1) + 10;
+      rows.forEach((row, k) => { const sumw = row.reduce((t, o) => t + bw(o), 0), sp = Math.max(18, (W - 40 - sumw) / (row.length + 1)); let x = 20 + (W - 40 - sumw - sp * (row.length - 1)) / 2;
+        row.forEach((o, j) => { pos[o] = [x + bw(o) / 2, 30 + (n - 1 - k) * rowH + (row.length > 2 && j % 2 ? 14 : 0)]; x += bw(o) + sp; }); });
+    }
+    const clip = (o, dx, dy) => { const w = bw(o) / 2 + 3, h = 14, t = Math.min(dx ? w / Math.abs(dx) : 1e9, dy ? h / Math.abs(dy) : 1e9); return [pos[o][0] + dx * t, pos[o][1] + dy * t]; };
+    let g = '';
+    edges.forEach(([f, p]) => { const [x1, y1] = pos[f], [x2, y2] = pos[p], dx = x2 - x1, dy = y2 - y1, [ax, ay] = clip(f, dx, dy), [bx, by] = clip(p, -dx, -dy); g += arrow(ax, ay, bx, by, '#555', 1.6); });
+    orgs.forEach(o => { const [x, y] = pos[o]; g += `<rect x="${(x - bw(o) / 2).toFixed(1)}" y="${y - 11}" width="${bw(o).toFixed(1)}" height="22" rx="11" fill="${level[o] === 0 ? '#dcfce7' : '#fff'}" stroke="${INK}"/>` + T(x.toFixed(1), y + 4, o, { size: 12, w: 600 }); });
+    const svg = wrap(W, H, g), title = size === 'chain' ? 'Food chain' : 'Food web', spec = size === 'chain' ? 'B4.3' : 'B4.4';
+    const tops = orgs.filter(o => !edges.some(([f]) => f === o)), nonTop = orgs.filter(o => !tops.includes(o));
+    const qs = ['producer', 'primary', 'arrows', 'levels'].concat(n > 2 ? ['secondary'] : [], tops.length && nonTop.length >= 3 ? ['top'] : [], orgs.length >= 4 ? ['eats'] : []), q = r.pick(qs);
+    const opts = (ans, pool, extra = []) => { const p = [...new Set(pool.filter(o => o !== ans))]; return [ans, ...others(ans, p.length >= 3 ? p : [...new Set(p.concat(sh(extra.filter(o => o !== ans && !p.includes(o)), r).slice(0, 3 - p.length)))], r)]; };   // too small a web: top up with organisms from the same habitat
+    if (q === 'producer') { const p = r.pick(lv[0]); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a producer?', o: opts(p, orgs.filter(o => level[o] > 0).concat(['the Sun', 'bacteria'])), x: `Producers make their own food by photosynthesis, so nothing points into them: ${lv[0].join(' and ')}.` }; }
+    if (q === 'primary') { const p = r.pick(lv[1]); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a primary consumer?', o: opts(p, orgs.filter(o => level[o] !== 1), E.L.flat().filter((o, k, A) => !E.L[1].includes(o))), x: `A primary consumer eats producers: the arrow into ${p} comes from ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
+    if (q === 'secondary') { const p = r.pick(lv[2]); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a secondary consumer?', o: opts(p, orgs.filter(o => level[o] !== 2), E.L.flat().filter(o => !E.L[2].includes(o))), x: `A secondary consumer eats primary consumers: ${p} eats ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
+    if (q === 'top') { const p = r.pick(tops); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a top predator (nothing in the web eats it)?', o: opts(p, nonTop, E.L.slice(0, -1).flat()), x: `No arrows leave ${p}: nothing in this ${size === 'chain' ? 'chain' : 'web'} eats it.` }; }
+    if (q === 'eats') { const p = r.pick(orgs.filter(o => level[o] > 0)), food = r.pick(edges.filter(e => e[1] === p).map(e => e[0])); return { title, spec, kind: 'diagram', svg, q: `Which of these does the ${p} eat?`, o: opts(food, orgs.filter(o => o !== p && !edges.some(e => e[1] === p && e[0] === o)), E.L.flat().filter(o => o !== p && !(E.e[p] || []).includes(o))), x: `Arrows point from the food to the eater. The arrow${edges.filter(e => e[1] === p).length > 1 ? 's' : ''} into ${p} come${edges.filter(e => e[1] === p).length > 1 ? '' : 's'} from ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
+    if (q === 'levels') return { title, spec, kind: 'diagram', svg, q: `How many trophic levels are there in this ${size === 'chain' ? 'food chain' : 'food web'}?`, o: [String(n), ...others(String(n), [...new Set(['2', '3', '4', '5', String(orgs.length)])], r)], x: `Producers, then ${LEVEL.slice(1, n).join(', ')}: ${n} levels.` };
+    return { title, spec, kind: 'diagram', svg, q: `What do the arrows in a ${size === 'chain' ? 'food chain' : 'food web'} show?`, o: ['The direction energy is transferred', 'Which animal eats the arrow\'s target', 'The direction animals move', 'Where waste goes'], x: 'Arrows point from the food to the feeder: the direction biomass and energy are transferred.' };
   };
 
   const MAKERS = [['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['fe', 'P1.23'], ['wave', 'P3.3'], ['reflect', 'P3.15'], ['ray', 'P3.16'], ['tir', 'P3.21'], ['sankey', 'P4.4'], ['circuit', 'P2.19'], ['iv', 'P2.10'], ['magnet', 'P6.4'], ['half', 'P7.13'],
