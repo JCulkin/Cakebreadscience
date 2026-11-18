@@ -328,7 +328,7 @@ const DG = (() => {
 
   /* ================= new types (18 Nov round 2) ================= */
   const arrowHead = (x, y, ang, c = INK, s = 8) => { const a = ang * Math.PI / 180, p = (d, o) => [x - Math.cos(a) * d - Math.sin(a) * o, y - Math.sin(a) * d + Math.cos(a) * o]; const [x1, y1] = p(s, s * .55), [x2, y2] = p(s, -s * .55); return `<path d="M${x} ${y}L${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}z" fill="${c}"/>`; };
-  const arrow = (x1, y1, x2, y2, c = INK, w = 2) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}"/>` + arrowHead(x2, y2, Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI, c);
+  const arrow = (x1, y1, x2, y2, c = INK, w = 2) => { const s = 6 + w * 2, d = Math.hypot(x2 - x1, y2 - y1), ex = x2 - (x2 - x1) / d * (s - 1), ey = y2 - (y2 - y1) / d * (s - 1); return `<line x1="${x1}" y1="${y1}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="${c}" stroke-width="${w}" stroke-linecap="butt"/>` + arrowHead(x2, y2, Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI, c, s); };
 
   /* reaction profile (energy level diagram) */
   M.profile = r => {
@@ -363,18 +363,27 @@ const DG = (() => {
     return { title: 'Electron shells', spec: 'C1.24', kind: 'diagram', svg, q: 'Which group and period of the Periodic Table is this element in?', o: [...new Set([`Group ${grp}, period ${sh0.length}`, `Group ${sh0.length}, period ${grp}`, `Group ${grp}, period ${sh0.length + 1}`, `Group ${grp + 1}, period ${sh0.length}`, `Group ${sh0.length + 1}, period ${grp}`])], x: `Number of shells = period (${sh0.length}). Electrons in the outer shell = group (${grp || '0 — a full outer shell'}).` };
   };
 
-  /* Sankey diagram */
+  /* Sankey diagram: black and white, each transfer its own outlined band, widths to scale */
   M.sankey = r => {
-    const dev = r.pick([['electric motor', 'kinetic', ['thermal (heating the motor)', 'sound']], ['filament lamp', 'light', ['thermal (heating)']], ['LED lamp', 'light', ['thermal (heating)']], ['kettle', 'thermal (water)', ['thermal (air)', 'sound']]]);
-    const E = r.pick([100, 200, 400, 500, 1000]), useP = dev[0] === 'filament lamp' ? 10 : dev[0] === 'LED lamp' ? r.pick([70, 80]) : dev[0] === 'kettle' ? r.pick([80, 90]) : r.pick([40, 60, 75, 80]), use = E * useP / 100, waste = E - use;
-    const w2 = dev[2].length === 2 ? [Math.round(waste * .8), waste - Math.round(waste * .8)] : [waste], sc = 120 / E, y0 = 40, H = E * sc, xs = 20, xj = 150;
-    let g = `<rect x="${xs}" y="${y0}" width="${xj - xs}" height="${H}" fill="#fcd34d" stroke="${INK}"/>` + T((xs + xj) / 2, y0 + H / 2 + 4, `${E} J`, { size: 13, w: 700 }) + T((xs + xj) / 2, y0 - 8, 'electrical energy in', { size: 11 });
-    const uh = use * sc; g += `<path d="M${xj} ${y0}h170l${Math.min(18, uh / 2 + 4)} ${uh / 2}l${-Math.min(18, uh / 2 + 4)} ${uh / 2}h-170z" fill="#86efac" stroke="${INK}"/>` + T(xj + 85, y0 + uh / 2 + 4, `${use} J ${dev[1]}`, { size: 12, w: 700 });
-    let yy = y0 + uh, xx = xj + 10;
-    w2.forEach((w, i) => { const wh = Math.max(3, w * sc), bot = y0 + H + 60 + i * 0; g += `<path d="M${xj} ${yy}H${xx + wh}V${bot}l${-wh / 2 - 6} 14l${-wh / 2 - 6} -14H${xx}V${yy + wh}H${xj}z" fill="#fca5a5" stroke="${INK}"/>` + T(xx + wh / 2, bot + 30 + i * 0, `${w} J`, { size: 12, w: 700 }) + T(xx + wh / 2, bot + 44, dev[2][i], { size: 11 }); yy += wh; xx += wh + 110; });
-    const svg = wrap(400, y0 + H + 120, g), eff = use / E * 100;
-    return r.int(0, 1) ? { title: 'Sankey diagram', spec: 'P4.4', kind: 'diagram', svg, q: `What is the efficiency of the ${dev[0]}?`, o: [n(eff) + '%', ...uniq(n(eff), [waste / E * 100, E / use, use / waste * 100, eff / 2].map(n)).map(v => v + '%')], x: `Efficiency = useful energy out ÷ total energy in × 100 = ${use} ÷ ${E} × 100 = ${n(eff)}%.` }
-      : { title: 'Sankey diagram', spec: 'P4.3', kind: 'diagram', svg, q: 'How much energy is wasted altogether?', o: [waste + ' J', ...uniq(waste, [use, E, w2[0] === waste ? E + use : w2[0], E - waste / 2]).map(v => n(v) + ' J')], x: `Energy is conserved: wasted = in − useful = ${E} − ${use} = ${waste} J.` };
+    const dev = r.pick([['electric motor', 'kinetic', ['thermal', 'sound']], ['filament lamp', 'light', ['thermal']], ['LED lamp', 'light', ['thermal']], ['kettle', 'heating the water', ['heating the air', 'sound']], ['television', 'light and sound', ['thermal']], ['car engine', 'kinetic', ['thermal', 'sound']]]);
+    const E = r.pick([100, 200, 400, 500, 1000]), useP = { 'filament lamp': 10, 'LED lamp': r.pick([70, 80]), kettle: r.pick([80, 90]), 'car engine': r.pick([20, 30]), television: r.pick([40, 50]) }[dev[0]] || r.pick([40, 60, 75]);
+    const use = E * useP / 100, waste = E - use, ws = dev[2].length === 2 ? [waste * .8, waste * .2] : [waste];
+    const sc = 160 / E, y0 = 40, H = 160, xi = 110, ybot = y0 + H + 34, gap = 3;
+    let g = `<rect x="20" y="${y0}" width="${xi - 20}" height="${H}" fill="#fff" stroke="${INK}" stroke-width="2"/>` + T(65, y0 + H / 2 - 2, `${E} J`, { size: 14, w: 700 }) + T(65, y0 + H / 2 + 15, 'electrical', { size: 12 });
+    const band = (a, t) => [a + (t > 10 ? gap / 2 : .5), Math.max(3, t - (t > 10 ? gap : 1))];   // a little gap between bands so each reads as its own box
+    const [ua, ut] = band(y0, use * sc), ux = 400, uh = Math.min(16, ut / 2 + 6);
+    g += `<path d="M${xi} ${ua}H${ux}L${ux + uh} ${ua + ut / 2}L${ux} ${ua + ut}H${xi}z" fill="#fff" stroke="${INK}" stroke-width="2"/>`
+      + T(ux + uh + 8, ua + ut / 2, `${use} J`, { size: 13, w: 700, a: 'start' }) + T(ux + uh + 8, ua + ut / 2 + 15, `${dev[1]} (useful)`, { size: 11, a: 'start' });
+    let y = y0 + use * sc; const turn = ws.length === 2 ? [300, 165] : [220];
+    ws.forEach((w, i) => { const [a, t] = band(y, w * sc), xb = turn[i], tip = Math.min(14, Math.max(8, t / 2));
+      g += `<path d="M${xi} ${a}H${xb + t}V${ybot}L${xb + t / 2} ${ybot + tip}L${xb} ${ybot}V${a + t}H${xi}z" fill="#fff" stroke="${INK}" stroke-width="2"/>`
+        + T(xb + t / 2, ybot + tip + 16, `${n(w)} J`, { size: 13, w: 700 }) + T(xb + t / 2, ybot + tip + 31, `${dev[2][i]} (wasted)`, { size: 11 });
+      y += w * sc; });
+    g += T(530, 22, 'Drawn to scale', { size: 11, a: 'end', fill: '#555' });
+    const svg = wrap(540, ybot + 90, g), eff = use / E * 100, q = r.int(0, ws.length === 2 ? 2 : 1);
+    if (q === 0) return { title: 'Sankey diagram', spec: 'P4.4', kind: 'diagram', svg, q: `What is the efficiency of the ${dev[0]}?`, o: [n(eff) + '%', ...uniq(n(eff), [waste / E * 100, E / use, use / waste * 100, eff / 2].map(n)).map(v => v + '%')], x: `Efficiency = useful energy out ÷ total energy in × 100 = ${use} ÷ ${E} × 100 = ${n(eff)}%.` };
+    if (q === 1) return { title: 'Sankey diagram', spec: 'P4.3', kind: 'diagram', svg, q: 'How much energy is wasted altogether?', o: [waste + ' J', ...uniq(waste, [use, E, ws[0] === waste ? E + use : ws[0], E - waste / 2]).map(v => n(v) + ' J')], x: `Energy is conserved: wasted = in − useful = ${E} − ${use} = ${waste} J.` };
+    return { title: 'Sankey diagram', spec: 'P4.3', kind: 'diagram', svg, q: 'Why is the arrow for sound so much thinner than the others?', o: ['Less energy is transferred as sound', 'Sound is a less useful kind of energy', 'Sound travels more slowly', 'Sound energy is destroyed'], x: `The width of each arrow is to scale with the energy it carries: only ${n(ws[1])} J of the ${E} J goes to sound.` };
   };
 
   /* transverse wave: drawn with a centred axis */
@@ -405,17 +414,27 @@ const DG = (() => {
     return { title: 'Current–voltage graph', spec: 'P2.10', kind: 'graph', svg, q: 'Which component gives this current–voltage graph?', o: [nm, ...others(nm, ['a resistor at constant temperature', 'a filament lamp', 'a diode', 'a fuse'], r)], x: { res: 'A straight line through the origin: current is proportional to voltage, so the resistance stays the same.', lamp: 'The line curves over: as the filament heats up its resistance rises, so the current grows more slowly.', diode: 'Current flows in one direction only, and only once the voltage passes about 0.6 V.' }[kind] };
   };
 
-  /* forces on an object */
+  /* forces on an object: sometimes drawn to scale (with a scale bar), otherwise every arrow the same length and marked not to scale */
   M.forces = r => {
-    const bal = r.f() < .3, up = r.pick([200, 500, 800]), down = up, fw = r.pick([100, 200, 300, 400, 600]), bk = bal ? fw : r.pick([50, 100, 150, 200, 250].filter(x => x !== fw && x < fw + 300));
-    const cx = 210, cy = 120; let g = `<rect x="${cx - 50}" y="${cy - 35}" width="100" height="70" fill="#e5e7eb" stroke="${INK}" stroke-width="2"/>`;
-    const lw = v => 55 + v / 8;
-    g += arrow(cx + 50, cy, cx + 50 + lw(fw), cy, '#16a34a', 3) + T(cx + 50 + lw(fw) / 2, cy - 10, fw + ' N', { size: 13, w: 700 }) + T(cx + 50 + lw(fw) / 2, cy + 22, 'driving force', { size: 11 });
-    g += arrow(cx - 50, cy, cx - 50 - lw(bk), cy, '#dc2626', 3) + T(cx - 50 - lw(bk) / 2, cy - 10, bk + ' N', { size: 13, w: 700 }) + T(cx - 50 - lw(bk) / 2, cy + 22, 'friction + drag', { size: 11 });
-    g += arrow(cx, cy - 35, cx, cy - 35 - 45, '#2563eb', 3) + T(cx + 8, cy - 70, up + ' N', { size: 13, w: 700, a: 'start' }) + arrow(cx, cy + 35, cx, cy + 35 + 45, '#2563eb', 3) + T(cx + 8, cy + 76, down + ' N weight', { size: 13, w: 700, a: 'start' });
-    const svg = wrap(440, 245, g), res = fw - bk;
-    return r.int(0, 1) || bal ? { title: 'Forces diagram', spec: 'P1.15', kind: 'diagram', svg, q: 'What is the resultant force on the object?', o: [bal ? '0 N' : `${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}`, ...others(bal ? '0 N' : `${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}`, (bal ? [`${fw + bk} N to the right`, `${fw} N to the right`, `${up + down} N downwards`] : [`${fw + bk} N to the right`, `${Math.abs(res)} N to the ${res > 0 ? 'left' : 'right'}`, '0 N', `${fw + bk + up + down} N`]), r)], x: bal ? 'Up = down and forwards = backwards: the forces are balanced, so the resultant is 0 N (it stays still or keeps moving at a steady speed).' : `Up and down cancel. Horizontally: ${fw} − ${bk} = ${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}.` }
-      : { title: 'Forces diagram', spec: 'P1.16', kind: 'diagram', svg, q: 'The object is moving to the right. What happens to its speed?', o: [res > 0 ? 'It speeds up' : 'It slows down', res > 0 ? 'It slows down' : 'It speeds up', 'It stays the same', 'It stops straight away'], x: `The resultant force is ${Math.abs(res)} N ${res > 0 ? 'forwards, so it accelerates' : 'backwards, so it decelerates'}.` };
+    const scaled = r.f() < .5, bal = r.f() < .3, k = .25, scaleN = 200;
+    const fw = scaled ? r.pick([300, 400, 500, 600]) : r.pick([100, 200, 300, 400, 600]);
+    const bk = bal ? fw : scaled ? r.pick([200, 300, 400, 500].filter(x => x !== fw)) : r.pick([50, 100, 150, 200, 250].filter(x => x !== fw));
+    const vert = scaled ? r.pick([200, 300, 400]) : r.pick([200, 500, 800]), len = v => scaled ? v * k : 70;
+    const measure = scaled && !bal && r.f() < .6;
+    const cx = 230, cy = 50 + len(vert), bw = 50, bh = 35, H = cy + bh + len(vert) + 45;
+    const fa = (x1, y1, x2, y2, c) => arrow(x1, y1, x2, y2, c, 3);
+    let g = `<rect x="${cx - bw}" y="${cy - bh}" width="${2 * bw}" height="${2 * bh}" fill="#e5e7eb" stroke="${INK}" stroke-width="2"/>`;
+    g += fa(cx + bw, cy, cx + bw + len(fw), cy, '#16a34a') + T(cx + bw + len(fw) / 2, cy - 10, fw + ' N', { size: 13, w: 700 }) + T(cx + bw + len(fw) / 2, cy + bh + 16, 'driving force', { size: 11 });
+    g += fa(cx - bw, cy, cx - bw - len(bk), cy, '#dc2626') + T(cx - bw - len(bk) / 2, cy - 10, measure ? '?' : bk + ' N', { size: 13, w: 700 }) + T(cx - bw - len(bk) / 2, cy + bh + 16, 'friction + drag', { size: 11 });
+    g += fa(cx, cy - bh, cx, cy - bh - len(vert), '#2563eb') + T(cx + 8, cy - bh - len(vert) + 12, vert + ' N', { size: 13, w: 700, a: 'start' }) + T(cx + 8, cy - bh - len(vert) + 26, 'reaction force', { size: 11, a: 'start' });
+    g += fa(cx, cy + bh, cx, cy + bh + len(vert), '#2563eb') + T(cx + 8, cy + bh + len(vert) - 4, vert + ' N weight', { size: 13, w: 700, a: 'start' });
+    g += scaled ? `<g transform="translate(14 ${H - 14})"><path d="M0 -6v6h${scaleN * k}v-6" fill="none" stroke="${INK}" stroke-width="2"/>${T(scaleN * k + 6, 0, `= ${scaleN} N`, { size: 12, w: 700, a: 'start' })}${T(0, -14, 'Drawn to scale', { size: 12, w: 700, a: 'start' })}</g>`
+      : T(14, H - 14, 'Not to scale', { size: 12, w: 700, a: 'start', fill: '#555' });
+    const svg = wrap(460, H, g), res = fw - bk, title = 'Forces diagram';
+    if (measure) return { title, spec: 'P1.15', kind: 'diagram', svg, q: 'The diagram is drawn to scale. Use the scale bar: what is the friction + drag force?', o: [bk + ' N', ...others(bk + ' N', [100, 200, 300, 400, 500, 600, 800].map(v => v + ' N'), r)], x: `The red arrow is ${bk / scaleN} times as long as the ${scaleN} N scale bar: ${bk / scaleN} × ${scaleN} = ${bk} N. (So the resultant is ${fw} − ${bk} = ${res} N forwards.)` };
+    const ans = bal ? '0 N' : `${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}`;
+    return r.int(0, 1) || bal ? { title, spec: 'P1.15', kind: 'diagram', svg, q: 'What is the resultant force on the object?', o: [ans, ...others(ans, bal ? [`${fw + bk} N to the right`, `${fw} N to the right`, `${2 * vert} N downwards`] : [`${fw + bk} N to the right`, `${Math.abs(res)} N to the ${res > 0 ? 'left' : 'right'}`, '0 N', `${fw + bk + 2 * vert} N`], r)], x: bal ? 'Up = down and forwards = backwards: the forces are balanced, so the resultant is 0 N (it stays still or keeps moving at a steady speed).' : `Up and down cancel. Horizontally: ${fw} − ${bk} = ${Math.abs(res)} N to the ${res > 0 ? 'right' : 'left'}.` }
+      : { title, spec: 'P1.16', kind: 'diagram', svg, q: 'The object is moving to the right. What happens to its speed?', o: [res > 0 ? 'It speeds up' : 'It slows down', res > 0 ? 'It slows down' : 'It speeds up', 'It stays the same', 'It stops straight away'], x: `The resultant force is ${Math.abs(res)} N ${res > 0 ? 'forwards, so it accelerates' : 'backwards, so it decelerates'}.` };
   };
 
   /* food web */
@@ -431,15 +450,19 @@ const DG = (() => {
     const p0 = W.p[0]; return { title: 'Food web', spec: 'B4.4', kind: 'diagram', svg, q: `Which organisms are producers?`, o: [W.p.join(' and '), ...others(W.p.join(' and '), [`${W.c1[0]} and ${W.c1[1]}`, W.top.join(' and '), `${p0} and ${W.c1[0]}`], r)], x: `Producers make their own food by photosynthesis; nothing points into them: ${W.p.join(' and ')}.` };
   };
 
-  /* pyramid of biomass with numbers (biology maths) */
+  /* pyramid of biomass with numbers (biology maths): sometimes to scale (bar width ∝ biomass), otherwise marked not to scale */
   M.pyramid = r => {
     const L = r.pick([['grass', 'grasshoppers', 'frogs', 'snakes'], ['phytoplankton', 'zooplankton', 'small fish', 'seals'], ['oak tree leaves', 'caterpillars', 'blue tits', 'sparrowhawks']]);
-    const b0 = r.pick([1000, 2000, 5000]), p1 = r.pick([10, 10, 20]), b = [b0, b0 * p1 / 100]; b.push(b[1] * r.pick([10, 20]) / 100); b.push(b[2] * 10 / 100);
-    let g = ''; const maxW = 300, hgt = 38, wOf = (v, i) => Math.max(L[i].length * 7.5 + 16, maxW * Math.pow(v / b0, .35));
-    b.forEach((v, i) => { const w = wOf(v, i), y = 200 - i * (hgt + 4); g += `<rect x="${200 - w / 2}" y="${y}" width="${w}" height="${hgt}" fill="${['#86efac', '#fde68a', '#fdba74', '#fca5a5'][i]}" stroke="${INK}"/>` + T(200, y + 16, L[i], { size: 12, w: 700 }) + T(200, y + 31, n(v) + ' g/m²', { size: 11 }); });
-    const svg = wrap(400, 250, g), lvl = r.int(0, 2), eff = b[lvl + 1] / b[lvl] * 100;
-    return r.int(0, 1) ? { title: 'Pyramid of biomass', spec: 'B4.7', kind: 'diagram', svg, q: `What percentage of the biomass of the ${L[lvl]} is passed on to the ${L[lvl + 1]}?`, o: [n(eff) + '%', ...uniq(n(eff), [100 - eff, b[lvl] / b[lvl + 1], b[lvl + 1], eff * 10].map(n)).map(v => v + '%')], x: `${n(b[lvl + 1])} ÷ ${n(b[lvl])} × 100 = ${n(eff)}%.` }
-      : { title: 'Pyramid of biomass', spec: 'B4.8', kind: 'diagram', svg, q: 'Why is less biomass found at each higher level?', o: ['Energy is lost at each level, e.g. in respiration, movement and waste', 'Animals higher up are smaller', 'Plants make biomass out of nothing', 'Predators only eat some of the time'], x: 'Only a small fraction is passed on: much is used for respiration (released as heat), lost in faeces and urine, or never eaten.' };
+    const scaled = r.f() < .4, levels = scaled ? 3 : 4;
+    const b0 = r.pick([1000, 2000, 5000]), b = [b0, b0 * (scaled ? r.pick([20, 25, 40]) : r.pick([10, 10, 20])) / 100]; b.push(b[1] * (scaled ? r.pick([20, 25, 40]) : r.pick([10, 20])) / 100); if (!scaled) b.push(b[2] * 10 / 100);
+    let g = ''; const maxW = 320, hgt = 38, cx = 200, wOf = (v, i) => scaled ? Math.max(2, maxW * v / b0) : Math.max(L[i].length * 7.5 + 16, maxW * Math.pow(v / b0, .35));
+    b.forEach((v, i) => { const w = wOf(v, i), y = 210 - i * (hgt + 4), fits = w >= L[i].length * 7.5 + 12;
+      g += `<rect x="${cx - w / 2}" y="${y}" width="${w}" height="${hgt}" fill="${['#86efac', '#fde68a', '#fdba74', '#fca5a5'][i]}" stroke="${INK}"/>`
+        + (fits ? T(cx, y + 16, L[i], { size: 12, w: 700 }) + T(cx, y + 31, n(v) + ' g/m²', { size: 11 }) : `<line x1="${cx + w / 2 + 2}" y1="${y + hgt / 2}" x2="${cx + 40}" y2="${y + hgt / 2}" stroke="#888"/>` + T(cx + 44, y + 16, L[i], { size: 12, w: 700, a: 'start' }) + T(cx + 44, y + 31, n(v) + ' g/m²', { size: 11, a: 'start' })); });
+    g += T(390, 22, scaled ? 'Drawn to scale (bar width ∝ biomass)' : 'Not to scale', { size: 11, w: 700, a: 'end', fill: '#555' });
+    const svg = wrap(400, 260, g), lvl = r.int(0, levels - 2), eff = b[lvl + 1] / b[lvl] * 100, q = r.int(0, 1);
+    if (q === 0) return { title: 'Pyramid of biomass', spec: 'B4.7', kind: 'diagram', svg, q: `What percentage of the biomass of the ${L[lvl]} is passed on to the ${L[lvl + 1]}?`, o: [n(eff) + '%', ...uniq(n(eff), [100 - eff, b[lvl] / b[lvl + 1], b[lvl + 1], eff * 10].map(n)).map(v => v + '%')], x: `${n(b[lvl + 1])} ÷ ${n(b[lvl])} × 100 = ${n(eff)}%.` };
+    return { title: 'Pyramid of biomass', spec: 'B4.8', kind: 'diagram', svg, q: 'Why is less biomass found at each higher level?', o: ['Energy is lost at each level, e.g. in respiration, movement and waste', 'Animals higher up are smaller', 'Plants make biomass out of nothing', 'Predators only eat some of the time'], x: 'Only a small fraction is passed on: much is used for respiration (released as heat), lost in faeces and urine, or never eaten.' };
   };
 
   /* photosynthesis: limiting factors */
@@ -452,18 +475,25 @@ const DG = (() => {
       : { title: 'Photosynthesis: limiting factors', spec: 'B2.20', kind: 'graph', svg, q: 'What is limiting the rate of photosynthesis at point X?', o: ['Light intensity', 'Carbon dioxide concentration', 'Temperature only', 'Nothing: it is at its maximum'], x: 'At X the line is still rising: more light would increase the rate, so light intensity is the limiting factor.' };
   };
 
-  /* magnetic field around a bar magnet */
+  /* magnetic field of a bar magnet: lines leave the north pole, curve round and go into the south pole */
   M.magnet = r => {
-    const flip = r.int(0, 1), cx = 200, cy = 120; let g = '';
-    for (let i = 1; i <= 4; i++) { const rx = 60 + i * 26, ry = 18 + i * 22; g += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="#555"/>`;
-      const dir = flip ? -1 : 1; g += arrowHead(cx, cy - ry, dir > 0 ? 0 : 180, '#555', 7) + arrowHead(cx, cy + ry, dir > 0 ? 0 : 180, '#555', 7); }
-    g += `<line x1="20" y1="${cy}" x2="${cx - 62}" y2="${cy}" stroke="#555"/><line x1="${cx + 62}" y1="${cy}" x2="380" y2="${cy}" stroke="#555"/>` + arrowHead(60, cy, flip ? 0 : 180, '#555', 7) + arrowHead(340, cy, flip ? 0 : 180, '#555', 7);
-    g += `<rect x="${cx - 60}" y="${cy - 16}" width="60" height="32" fill="#9ca3af" stroke="${INK}"/><rect x="${cx}" y="${cy - 16}" width="60" height="32" fill="#9ca3af" stroke="${INK}"/>`
-      + T(cx - 30, cy + 6, '?', { size: 16, w: 700, fill: '#fff' }) + T(cx + 30, cy + 6, '?', { size: 16, w: 700, fill: '#fff' });
-    g += `<circle cx="${cx - 82}" cy="${cy - 30}" r="4" fill="${INK}"/>` + T(cx - 82, cy - 40, 'P', { size: 13, w: 700 }) + `<circle cx="${cx + 120}" cy="${cy - 92}" r="4" fill="${INK}"/>` + T(cx + 130, cy - 90, 'Q', { size: 13, w: 700, a: 'start' });
-    const svg = wrap(400, 240, g), leftPole = flip ? 'south' : 'north';
-    return r.int(0, 1) ? { title: 'Magnetic field', spec: 'P6.4', kind: 'diagram', svg, q: 'Which end of the magnet is the north pole?', o: [leftPole === 'north' ? 'The left end' : 'The right end', leftPole === 'north' ? 'The right end' : 'The left end', 'Both ends', 'You can\'t tell'], x: 'Field lines point away from a north pole and towards a south pole. Follow the arrows back to where they start.' }
-      : { title: 'Magnetic field', spec: 'P6.4', kind: 'diagram', svg, q: 'Where is the magnetic field stronger, at P or at Q?', o: ['P: the field lines are closer together', 'Q: it is further from the magnet', 'The same everywhere', 'Q: the field lines are curved'], x: 'The closer together the field lines, the stronger the field. They are most crowded near the poles.' };
+    const nLeft = r.int(0, 1), askPole = r.int(0, 1), cx = 230, cy = 140, hw = 70, hh = 18, xL = cx - hw, xR = cx + hw;
+    const dir = nLeft ? 0 : 180;   // along the top and bottom arcs the field runs N → S
+    let g = '';
+    [[5, 30, 22], [10, 60, 52], [14, 95, 88], [17, 130, 125]].forEach(([dy, ex, hy]) => [-1, 1].forEach(s => {
+      const y = cy + s * dy, yc = cy + s * (dy + hy);
+      g += `<path d="M${xL} ${y}C${xL - ex} ${yc} ${xR + ex} ${yc} ${xR} ${y}" fill="none" stroke="#444" stroke-width="1.6"/>`;
+      g += arrowHead(cx + (dir ? -4 : 4), cy + s * (dy + .75 * hy), dir, '#444', 9);   // the top of a symmetric curve is at t = 0.5, 3/4 of the way to the control height
+    }));
+    g += `<line x1="18" y1="${cy}" x2="${xL}" y2="${cy}" stroke="#444" stroke-width="1.6"/><line x1="${xR}" y1="${cy}" x2="442" y2="${cy}" stroke="#444" stroke-width="1.6"/>`
+      + arrowHead(nLeft ? 60 : 110, cy, nLeft ? 180 : 0, '#444', 9) + arrowHead(nLeft ? 400 : 350, cy, nLeft ? 180 : 0, '#444', 9);
+    const lab = s => askPole ? '?' : s;
+    g += `<rect x="${xL}" y="${cy - hh}" width="${hw}" height="${2 * hh}" fill="${askPole ? '#d1d5db' : nLeft ? '#fecaca' : '#bfdbfe'}" stroke="${INK}" stroke-width="2"/><rect x="${cx}" y="${cy - hh}" width="${hw}" height="${2 * hh}" fill="${askPole ? '#d1d5db' : nLeft ? '#bfdbfe' : '#fecaca'}" stroke="${INK}" stroke-width="2"/>`
+      + T(cx - hw / 2, cy + 7, lab(nLeft ? 'N' : 'S'), { size: 20, w: 700 }) + T(cx + hw / 2, cy + 7, lab(nLeft ? 'S' : 'N'), { size: 20, w: 700 });
+    g += `<circle cx="${xL - 14}" cy="${cy - 26}" r="4.5" fill="${INK}"/>` + T(xL - 26, cy - 30, 'P', { size: 14, w: 700 }) + `<circle cx="${cx + 175}" cy="${cy - 105}" r="4.5" fill="${INK}"/>` + T(cx + 187, cy - 101, 'Q', { size: 14, w: 700, a: 'start' });
+    const svg = wrap(460, 280, g);
+    return askPole ? { title: 'Magnetic field of a bar magnet', spec: 'P6.4', kind: 'diagram', svg, q: 'Which end of the bar magnet is the north pole?', o: [nLeft ? 'The left end' : 'The right end', nLeft ? 'The right end' : 'The left end', 'Both ends', 'You can\'t tell from the field lines'], x: 'Field lines come out of the north pole and go into the south pole. Follow the arrows back to the end they leave from.' }
+      : { title: 'Magnetic field of a bar magnet', spec: 'P6.4', kind: 'diagram', svg, q: 'Where is the magnetic field stronger, at P or at Q?', o: ['P: the field lines are closer together', 'Q: it is further from the magnet', 'The same everywhere', 'Q: the field lines are curved'], x: 'The closer together the field lines, the stronger the field. They are most crowded near the poles.' };
   };
 
   /* bar chart */
