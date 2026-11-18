@@ -95,16 +95,17 @@
   const cardsOf = k => (IDX.pts[k] || {}).c || (QEx() && QEx().CARDS_ON[k]) || 0;
 
   /* ---------- subject page ---------- */
-  let FILTER = 'all';
+  let FILTER = new URLSearchParams(location.search).get('f') || 'all';
   const FILTERS = [['all', 'All'], ['none', 'Not started'], ['learning', 'Learning'], ['rusty', 'Rusty'], ['secured', 'Secured'], ['check', 'Check these'], ['class', 'Covered in class']];
   function buildSubject() {
     const S = specOf(SUBJ[subject]), L = LET[subject];
+    if (!FILTERS.some(f => f[0] === FILTER)) FILTER = 'all';
     root.innerHTML = `
       <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE Science (Double Award)</div>
         <h1>${SUBJ[subject]}</h1>
         <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it: get its questions right on two different days in <a href="${Q}practice.html">Practice Questions</a> or Questing, or secure its flashcards. Your own rating just records how you feel.</p></div>
       <div class="tr-sum" id="trSum"></div>
-      <div class="tr-filters" id="trFilters">${FILTERS.map(([k, t]) => `<button type="button" data-f="${k}"${k === 'all' ? ' class="on"' : ''}>${t}<span></span></button>`).join('')}</div>
+      <div class="tr-filters" id="trFilters">${FILTERS.map(([k, t]) => `<button type="button" data-f="${k}"${k === FILTER ? ' class="on"' : ''}>${t}<span></span></button>`).join('')}</div>
       <nav class="tr-topics">${S.topics.map(t => `<a href="#t-${L}${t.n}">${t.n}. ${esc(t.name)}</a>`).join('')}</nav>
       ${S.topics.map(t => `<section class="tr-topic" id="t-${L}${t.n}"><h2><span>${t.n}</span>${esc(t.name)}<i class="tbar" data-tbar="${L}${t.n}"></i></h2>
         ${t.subs.map(sb => { const sk = L + t.n + sb.l;

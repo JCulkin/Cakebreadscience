@@ -37,6 +37,9 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .pt .t{flex:1;font-size:14px}
 .pt .t small{display:block;color:var(--muted)}
 .pt a{font-size:14px;font-weight:700;white-space:nowrap}
+.pt a.k{text-decoration:none}
+.pt .ac{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:flex-end}
+@media(max-width:560px){.pt{flex-wrap:wrap}.pt .ac{width:100%;justify-content:flex-start;padding-left:68px}}
 .muted{color:var(--muted)}.small{font-size:13px}
 .sci{display:grid;grid-template-columns:90px 1fr 70px;gap:6px 10px;align-items:center;font-size:14px}
 .bar{height:12px;background:var(--n);display:flex}.bar i{display:block;height:100%}
@@ -113,7 +116,7 @@ async function draw() {
   const u = QE.user;
   if (!u) {
     $('main').innerHTML = `<div class="gate"><b>Sign in to see your day.</b> One Google account covers Cakebread Questing, Flashcards, the spec trackers and Breadventure Land. <button id="si">Sign in</button></div>
-      <h2 style="margin:22px 0 8px">Or jump in</h2><div class="links"><a href="${Q}">⚔️ Cakebread Questing</a><a href="/Flashcards/">🃏 Flashcards</a><a href="/specifications/biology.html">📋 Spec trackers</a><a href="/">🏠 Homepage</a></div>`;
+      <h2 style="margin:22px 0 8px">Or jump in</h2><div class="links"><a href="${Q}">⚔️ Cakebread Questing</a><a href="/Flashcards/">🃏 Flashcards</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/">🏠 Homepage</a></div>`;
     $('si').onclick = () => QE.signIn().catch(() => {});
     drawn = false; return;
   }
@@ -159,8 +162,12 @@ async function draw() {
   const rusty = Object.keys(QE.POINT_QS).filter(k => QE.pointState(k).rusty).slice(0, 6);
   const weak = QE.weakPoints().slice(0, 6);
   const P = k => QE.POINTS[k] || { id: k.slice(1), text: '' };
-  const row = (k, why) => `<div class="pt"><span class="k ${k[0]}">${k[0]} ${P(k).id}</span><span class="t">${esc(strip(P(k).text).slice(0, 90))}${strip(P(k).text).length > 90 ? '…' : ''}<small>${why}</small></span>
-    <a href="${Q}adventurer-mission.html?point=${k}">⚔️ Quiz me</a>${QE.CARDS_ON[k] ? ` <a href="/Flashcards/?spec=${k}">🃏 Cards</a>` : ''}</div>`;
+  const TRK = { B: 'biology', C: 'chemistry', P: 'physics' };
+  const row = (k, why) => `<div class="pt"><a class="k ${k[0]}" href="/specifications/${TRK[k[0]]}.html#${k}" title="See it on the spec tracker">${k[0]} ${P(k).id}</a><span class="t">${esc(strip(P(k).text).slice(0, 90))}${strip(P(k).text).length > 90 ? '…' : ''}<small>${why}</small></span>
+    <span class="ac">${QE.POINT_QS[k] ? `<a class="pv" href="${Q}practice.html?point=${k}">📝 Prove it</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Cakebread Questing mission on this point">⚔️ Quiz me</a>` : ''}${QE.CARDS_ON[k] ? `<a href="/Flashcards/?spec=${k}">🃏 Cards</a>` : ''}</span></div>`;
+  /* the student's own tracker ratings: "Confident" but not proved yet */
+  const check = conf ? Object.keys(conf).filter(k => conf[k] === 3 && QE.POINT_QS[k] && !QE.pointState(k).secured) : [];
+  const checkSub = check.length ? TRK[Object.entries(check.reduce((m, k) => (m[k[0]] = (m[k[0]] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1])[0][0]] : '';
 
   /* the spec: Questing secured vs tracker ticks */
   const sec = QE.securedBySci();
@@ -186,13 +193,14 @@ async function draw() {
         ${near.length ? `<div class="card"><h2>Nearly secured</h2><p class="small muted" style="margin-bottom:4px">One more right answer or card on another day locks these in.</p>${near.map(([k]) => row(k, 'Nearly there')).join('')}</div>` : ''}
         ${weak.length ? `<div class="card"><h2>From your flashcards</h2>${weak.map(k => row(k, 'You rated these cards hard')).join('')}</div>` : ''}
         ${rusty.length ? `<div class="card"><h2>Gone rusty</h2>${rusty.map(k => row(k, 'Secured, but not practised for 3 weeks')).join('')}</div>` : ''}
-        ${!near.length && !weak.length && !rusty.length ? `<div class="card"><h2>Where to start</h2><p>${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Do a mission or some flashcards: this page then lists the spec points you're closest to securing and the ones that need another look.</p><p style="margin-top:8px"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a> <a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p></div>` : ''}
+        ${check.length ? `<div class="card"><h2>Check these</h2><p class="small muted" style="margin-bottom:4px">You rated these "Confident" on the spec tracker but haven't proved them yet.</p>${check.slice(0, 6).map(k => row(k, 'Rated confident, not proved yet')).join('')}${check.length > 6 ? `<p class="small" style="margin-top:6px"><a href="/specifications/${checkSub}.html?f=check">All ${check.length} on the tracker →</a></p>` : ''}</div>` : ''}
+        ${!near.length && !weak.length && !rusty.length && !check.length ? `<div class="card"><h2>Where to start</h2><p>${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Do some Practice Questions, a mission or some flashcards: this page then lists the spec points you're closest to securing and the ones that need another look.</p><p style="margin-top:8px"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a> <a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p></div>` : ''}
       </div>
       <div>
         <div class="card"><h2>The spec</h2><div class="sci">${sciRow('B', 'biology', 'var(--bio)')}${sciRow('C', 'chemistry', 'var(--chem)')}${sciRow('P', 'physics', 'var(--phys)')}</div>
-          <p class="small muted" style="margin-top:8px">Bars = spec points secured in Cakebread Questing (missions and flashcards).</p></div>
+          <p class="small muted" style="margin-top:8px">Bars = spec points secured (Practice Questions, missions and flashcards).</p></div>
         <div class="card"><h2>Last 14 days</h2><div class="strip">${days.map(d => `<i class="${did(d) ? 'y' : ''}" title="${d}"></i>`).join('')}</div><p class="small muted" style="margin-top:6px">Green = you revised that day.</p></div>
-        <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Plain practice</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
+        <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice Questions</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
       </div>
     </div>`;
   drawSchool(); slowNote();
