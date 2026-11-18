@@ -2,12 +2,24 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<script src="/js/game-gate.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rompe Ladrillos</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>html,body{margin:0;padding:0;overflow:hidden;background:#141823}canvas{display:block;touch-action:none}</style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
 </head>
 <body>
 <script>
+/* Rompe Ladrillos by Hector. Fixes (Cakebread Science, 18 Nov 2026):
+   - The ball started falling the moment the page opened, before the paddle could move (the paddle
+     starts at the far left), so the game was usually over in 2 seconds. Now it waits for a click/tap.
+   - If the ball hit two bricks in the same moment it bounced twice and carried straight on; now one brick per bounce.
+   - The ball could get stuck shaking inside a side wall; it's now pushed back inside.
+   - Speed no longer depends on the screen (it ran twice as fast on 120 Hz screens).
+   - On phones, dragging moved the page instead of the paddle; page margins and scrollbars removed.
+   - Added the site's sign-in gate, favicon and home button. */
+let started = false;
 
 let ball;
 let paddle;
@@ -40,6 +52,19 @@ function draw() {
     return;
   }
 
+  // Esperar a que el jugador empiece
+  if (!started) {
+    paddle.update();
+    paddle.display();
+    ball.display();
+    for (let br of bricks) br.display();
+    textAlign(CENTER, CENTER);
+    fill(255);
+    textSize(24);
+    text("Haz clic para empezar", width / 2, height / 2 + 60);
+    return;
+  }
+
   // Actualizar y dibujar paleta
   paddle.update();
   paddle.display();
@@ -64,6 +89,9 @@ function draw() {
         ball.ySpeed *= -1;
         bricks[i].destroyed = true;
         score += 10;
+        // solo un ladrillo por rebote: dibujar el resto y salir
+        for (let k = i + 1; k < bricks.length; k++) if (!bricks[k].destroyed) { allDestroyed = false; bricks[k].display(); }
+        break;
       }
     }
   }
@@ -80,11 +108,14 @@ function windowResized() {
 function mousePressed() {
   if (gameOver || gameWon) {
     resetGame();
+  } else if (!started) {
+    started = true;
   }
 }
 
 function resetGame() {
   score = 0;
+  started = false;
   gameOver = false;
   gameWon = false;
  
@@ -155,17 +186,15 @@ class Ball {
   }
 
   update() {
-    this.x += this.xSpeed;
-    this.y += this.ySpeed;
+    const k = min(deltaTime, 50) / (1000 / 60); // misma velocidad en cualquier pantalla
+    this.x += this.xSpeed * k;
+    this.y += this.ySpeed * k;
 
     // Rebotes en paredes laterales
-    if (this.x < this.r || this.x > width - this.r) {
-      this.xSpeed *= -1;
-    }
+    if (this.x < this.r) { this.x = this.r; this.xSpeed = abs(this.xSpeed); }
+    if (this.x > width - this.r) { this.x = width - this.r; this.xSpeed = -abs(this.xSpeed); }
     // Rebote en el techo
-    if (this.y < this.r) {
-      this.ySpeed *= -1;
-    }
+    if (this.y < this.r) { this.y = this.r; this.ySpeed = abs(this.ySpeed); }
   }
 
   checkPaddle(p) {
@@ -210,6 +239,8 @@ class Brick {
             b.y - b.r < this.y + this.h);
   }
 }
+function touchMoved() { return false; } // en el móvil, arrastrar mueve la paleta, no la página
 </script>
+<script src="/js/home-link.js" data-mode="float" data-pos="bottom"></script>
 </body>
 </html>
