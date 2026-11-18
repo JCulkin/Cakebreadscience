@@ -14,6 +14,7 @@
 - **My day is now called To do** (header button, Questing bar, page title)
 - Admin Teaching tab: **All years** view — every sub-topic with a tick box for Year 8, 9, 10 and 11 (and one for all years), to compare and fill in every year at once
 - **Practice Questions shows "Set by your teacher"**: the student's unfinished work for their year at the top, with Start the test / Carry on and practise buttons
+- **"New on Cakebread Science" box** at the top of the homepage and To do introducing the new features (Questing, spec trackers, Practice Questions, Flashcards, To do); once closed it stays closed
 - A red **Admin** button in the header next to To do, for admin accounts only (replaces the small floating button at the bottom of the homepage)
 - **Cakebread Questing:** features unlock as you level up (the game starts simple); a **Stats** page (game completion, revision, map, collection); the Wardrobe shows only what you own; admin **Game showcase** page
 - **Breadventure Land:** moves happen when you make them (only boss fights wait for midnight); a starter boss by the Cakelab and bosses in a clear order with gentler hits; treasure chests everyone can see through the fog, with 47 new items to win; the admin can give extra moves
