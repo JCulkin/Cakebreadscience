@@ -243,3 +243,54 @@ img.soft{aspect-ratio:1;object-fit:cover;border-radius:50%;-webkit-mask-image:ra
 .stype{display:inline-block;color:#fff;font-weight:700;font-size:.82em;padding:1px 8px;border-radius:3px;white-space:nowrap}
 .ps .mptab th,.ps .mptab td{padding:5px 12px;white-space:nowrap}
 .ps .mptab thead th{font-size:26px}
+/* ---------- biology components ---------- */
+.btn.sm{font-size:13px;padding:3px 8px}
+.btn.right{background:#e3f4e8;border-color:var(--green)}
+.btn.wrong{background:var(--accL);border-color:var(--acc2)}
+.tool .pic svg{max-height:340px}
+.tfbox{background:#fff;border:2px solid var(--ink)}
+.tfrow{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:9px 12px;border-bottom:1px solid #ddd;align-items:center}
+.tfrow .tfb{display:flex;gap:6px}
+.tfrow .tffb{grid-column:1 / -1;font-size:15px}
+.tfscore{padding:8px 12px;font-weight:700;background:#f6f3ea}
+.ps .tfdeck{font-size:40px;font-weight:600;line-height:1.25;margin-left:60px}
+.ps .tfdeck li{margin:6px 0}
+.ps .tfdeck .tfans{margin-left:24px;font-size:34px}
+.tfans.t{color:var(--green)}.tfans.f{color:#c8001e}
+.kq{display:grid;grid-template-columns:minmax(160px,300px) 1fr;gap:16px;padding:14px;align-items:center}
+.kq img{width:100%;aspect-ratio:4/3;object-fit:cover;border:2px solid var(--ink)}
+.kqb{display:flex;flex-wrap:wrap;gap:6px}
+.kqf{margin-top:8px;font-weight:700}
+@media(max-width:600px){.kq{grid-template-columns:1fr}}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0}
+.gal figure{cursor:zoom-in;background:#fff;border:2px solid var(--ink);margin:0}
+.gal img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gal figcaption{font-size:13px;font-weight:600;padding:3px 6px;margin:0}
+.lightbox{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#fff;font-weight:600;cursor:zoom-out;padding:20px}
+.lightbox img{max-width:95vw;max-height:85vh;object-fit:contain}
+.mrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:12px 0}
+.mrs div{background:#fff;border:2px solid var(--ink);padding:8px 10px;font-size:15px;line-height:1.35}
+.mrs b{display:block;font:900 26px 'Barlow Condensed',Arial Narrow,sans-serif;color:var(--acc);text-transform:uppercase}
+.mrs b span{font-size:40px;margin-right:2px}
+.ps .mrsd{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:10px}
+.ps .mrsd div{border:5px solid #111;background:#fff;padding:12px 16px;font-size:24px;font-weight:600;line-height:1.25}
+.ps .mrsd b{display:block;font:900 46px 'Barlow Condensed',Arial Narrow,sans-serif;color:var(--acc);text-transform:uppercase}
+.credit{font-size:11px;color:#777;margin-top:2px}
+.credit a{color:#777}
+.ps .cellfig{flex:1;min-height:0;display:flex}
+.ps .cellfig svg{width:100%;height:100%}
+.ps .galrow{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr;gap:12px;flex:1;min-height:0}
+.ps .galrow figure{position:relative;margin:0;min-height:0;overflow:hidden;border:4px solid #111}
+.ps .galrow img{width:100%;height:100%;object-fit:cover}
+.ps .galrow figcaption{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);color:#fff;font:700 24px 'Barlow',Arial,sans-serif;padding:4px 10px}
+.ps .lcgrid{display:grid;grid-template-columns:1fr 1fr;gap:4px 30px}
+.ps .lcgrid a.linkcard img,.ps .lcgrid a.linkcard .ic{width:220px;height:130px;font-size:60px}
+.ps .lcgrid a.linkcard .lt{font-size:32px}.ps .lcgrid a.linkcard .lt b{font-size:22px}.ps .lcgrid a.linkcard .lt small{font-size:22px}
+.ps .cellfig{position:relative;align-self:stretch;flex:1;min-height:300px}
+.ps .cellfig>svg{position:absolute;inset:0;width:100%;height:100%}
+.ps .kq{grid-template-columns:600px 1fr;font-size:34px;gap:30px}
+.ps .kq img{border-width:5px}
+.ps .kqb .btn{font-size:30px;padding:8px 18px;border-width:4px}
+.ps .kqf .btn{font-size:26px}
+.ps .tx2{columns:2;column-gap:60px;font-size:30px;font-weight:600;line-height:1.3;margin-bottom:10px}
+.ps .tx2>div{break-inside:avoid;margin:0 0 8px}
