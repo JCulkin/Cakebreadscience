@@ -33,6 +33,14 @@ const ADV = (() => {
   if (stored && stored.v !== 2) stored = null;   // the mock-up's pretend game: start again from the real numbers
   let S = attach(Object.assign(DEF(), stored || {}));
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  /* 17 Nov fix: this copy is one per browser, so on a shared school computer the next student saw the last one's moves
+     ("No moves left today") and lost their +1 revision move. It now belongs to one account and starts fresh for another. */
+  function claim() {
+    if (!QE.known || !QE.user || S.owner === QE.user.uid) return;
+    const keep = S.owner ? {} : { storySeen: S.storySeen, rescueSeen: S.rescueSeen, seenRep: S.seenRep, bossSeen: S.bossSeen };   // an older copy with no owner: probably theirs
+    Object.keys(S).forEach(k => delete S[k]); Object.assign(S, DEF(), keep, { owner: QE.user.uid }); save();
+  }
+  claim(); QE.onChange(claim);
   const reset = () => { try { localStorage.removeItem(KEY); } catch (e) {} S = attach(DEF()); };
 
   /* look, name, gear (saved by the creator and wardrobe pages; the engine copies them into the account) */
@@ -50,6 +58,27 @@ const ADV = (() => {
   const xpFor = l => 100 * l * (l - 1) / 2;
   const rawLevel = () => { let l = 1; while (xpFor(l + 1) <= S.xp) l++; return l; };
   const level = () => Math.min(rawLevel(), levelCap());
+  /* ---------- unlocks (17 Nov, user: "the game should look simpler at first"): features open as you level up.
+     Level is capped by spec points secured, so every unlock is earned by revision. Nothing a player already owns is
+     taken away: worn items stay worn and held brews stay held, they just can't be changed or used until the level. ---------- */
+  const UNLOCKS = [
+    { lv: 1, id: 'clothes', ic: '👕', name: 'Tops, bottoms and shoes', what: 'Change your outfit in the Wardrobe.' },
+    { lv: 2, id: 'spells', ic: '🔮', name: 'Mana and your first spell', what: 'Patch Up: +5 Health on Breadventure Land. Flashcards and missions fill your mana.' },
+    { lv: 3, id: 'hats', ic: '🎩', name: 'Hats', what: 'Wear anything you have found for your head.' },
+    { lv: 4, id: 'shop', ic: '🥤', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
+    { lv: 4, id: 'events', ic: '📅', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
+    { lv: 5, id: 'dungeons', ic: '🕯', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
+    { lv: 5, id: 'hands', ic: '🧤', name: 'Things to hold', what: 'Wear items in both hands.' },
+    { lv: 6, id: 'shield', ic: '🛡', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
+    { lv: 6, id: 'help', ic: '🩹', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
+    { lv: 7, id: 'fog', ic: '🌫', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
+    { lv: 7, id: 'mine', ic: '⛏', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
+    { lv: 8, id: 'legend', ic: '🏆', name: 'Legendary items', what: 'Wear a legendary when you top a science for the week.' },
+  ];
+  const unlockLv = id => (UNLOCKS.find(u => u.id === id) || { lv: 1 }).lv;
+  const can = id => level() >= unlockLv(id);
+  const nextUnlock = () => UNLOCKS.find(u => u.lv > level()) || null;
+  const SLOT_LOCK = { head: 'hats', lhand: 'hands', rhand: 'hands' };
   const stats = () => {
     const l = level(), sec = S.secured;
     const s = { l, str: BASE.str + sec.p + LV.str * l + GEAR, hp: BASE.hp + sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
@@ -77,7 +106,22 @@ const ADV = (() => {
 
   /* ---------- nav bar (one bar: brand, Cakelab, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
+  /* level-up pop-up: once per level, on any Questing page with the nav bar (never mid-mission) */
+  let navOn = false;
+  function levelCheck() {
+    if (!navOn || !QE.known || QE.busy || document.querySelector('.advstory')) return;
+    const l = level();
+    if (S.lvSeen == null || S.lvSeen > l) { S.lvSeen = l; save(); return; }   // first time on this account: no flood of pop-ups
+    if (l === S.lvSeen) return;
+    const news = UNLOCKS.filter(u => u.lv > S.lvSeen && u.lv <= l), nx = UNLOCKS.find(u => u.lv > l);
+    S.lvSeen = l; save();
+    storyModal(`<div class="ch">Level up</div><h2>Level ${l}!</h2><div class="pics"><img src="${PIXEL.figure(eq(), look())}" width="100" alt=""></div>
+      ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${u.ic} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
+      ${nx ? `<p style="color:#666;font-size:15px">Next: ${nx.ic} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
+  }
+  QE.onChange(levelCheck);
   function nav(active) {
+    navOn = true; setTimeout(levelCheck, 50);
     const css = document.createElement('style');
     css.textContent = `body>header{display:none}
 .advnav{position:sticky;top:0;z-index:50;background:#151518;border-bottom:3px solid #00a03a;display:flex;align-items:center;gap:6px;padding:7px 12px;overflow-x:auto;scrollbar-width:none;font-family:Barlow,Arial,sans-serif}
@@ -119,8 +163,9 @@ const ADV = (() => {
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
-      + tab('today', '/today/', '📅', 'My day')
+      + tab('today', '/today/', '✅', 'To do')
       + `<span class="gap"></span>`
+      + tab('stats', 'adventurer-stats.html', '📊', 'Stats', 'sm')
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
       + `<span class="acct" id="advAcct"></span>`;
@@ -251,6 +296,10 @@ const ADV = (() => {
     superbug: ['..............K.............', '..............K.............', '..............K.............', '.............KK.............', '..........KKKLgKKK..........', '...g....KKLLLGGLLgKK....g...', '....K..KLhhGGGGGGGLgK..K....', '.....K.KhGGGGGGGGGGgK.K.....', '......KLGGGGGGGGGGGGgK......', '......KLKKGGGGGGGGKKgK......', '......KLGGKKGGGKKGGGgK......', '.....KLGGWWWGGGWWWGGGgK.....', '.....KLGGWKKGGGKKWGGGgK.....', '.gKK.KLGGWKKGGGKKWGGGgK.KKg.', '...KKKLGGGGGGGGGGGGGGgKKK...', '.....KLgGGGGGGGGGGGGGgK.....', '.....KgGGGGGGGGGGGGGggK.....', '......KLGGKKKKKKKKGGgK......', '......KLGGKWKWKWKKGGgK......', '......KggGGKKKKKKGGGgK......', '......KKLGGGGGGGGGGgKK......', '.....K.KggGGgGGGGGggK.K.....', '....K...KKgggGGgggKK...K....', '...g......KKKggKKK......g...', '.............KK.............', '..............K.............', '..............K.............', '..............K.............'],
     superbug_hurt: ['...Y..........K.........Y...', '..YWY.........K........YWY..', '...Y..........K.........Y...', '.............KK.............', '..........KKKLgKKK..........', '...g....KKLLLGGLLgKK....g...', '....K..KLhhGGGGGGGLgK..K....', '.....K.KhGGGGGGGGGGgK.K.....', '......KLGGGGGGGGGGGGgK......', '......KLGGGGGGGGGGGGgK......', '......KLGGGGGGGGGGGGgK......', '.....KLGGKGGGGGGGKGGGgK.....', '.....KLGGGKGGGGGKGGGGgK.....', '.gKK.KLGGKGGGGGGGKGGGgK.KKg.', '...KKKLGGGGGGGGGGGGGGgKKK...', '.....KLgGGGGGGGGGGGGGgK.....', '.....KgGGGGGGGGGGGGGggK.....', '......KLGGGKKKKKKGGGgK......', '......KLGGGKppppKGGGgK......', '......KggGGKKKKKKGGGgK......', '......KKLGGGGGGGGGGgKK......', '.....K.KggGGgGGGGGggK.K.....', '....K...KKgggGGgggKK...K....', '...g......KKKggKKK......g...', '.............KK.............', '..............K.............', '..............K.............', '..............K.............'],
     superbug_down: ['............................', '............................', '..............s.............', '..............K.............', '....s........KK.......s.....', '.....K.......K.......K......', '......K....KKKKKK...K.......', '.......KKKKswwwwwKKK........', '......KKswwSsSSSSwwwKK......', '.....KswsSSSSSSSSSSSwwK.....', '.....KsSSSSSSSKSKSSSSwK.....', '....KsSSSSSSSSSKSSSSSwwK....', '....KsSSKKKSSSKSKSSSSSwK....', '....KssSKSKSSSSSSSSSSSwK....', '...KsSSSKSKSSSSSSSSSSSSwK...', 'KKKKsSSSKSKSSSSSSSSSSSSsKKKK', '....KsSSKSKSSSKSKSSSSSwK....', '....KsSSKKKSSSSKSSSSSSwK....', '....KsSSSSSSSSKSKSSSSSsK....', '.....KsSSSSSSSSSSSSSSwK.....', '.....KssSSSSSSSSSSSSssK.....', '......KKssssSSSSSsssKK......', '.......KKKKssssssKKK........', '......K....KKKKKK...K.......', '.....K.......K.......K......', '....s........KK.......s.....', '..............K.............', '..............s.............'],
+    /* the starter boss (17 Nov 2026): the Crumb Goblin, 28×28 */
+    goblin: ['............................', '............................', '............................', '....................K.K.KK..', '...................KK.K.KKK.', '...................Kw.w.wsK.', 'K..........KKKKK...Kw.S.SsK.', '.KK......KKLLLLgKK.KwSSSSsK.', '.KgKKK..KLLGGGGGLgKKssssssK.', '..KLLgKKLGGGGGGGGGgKKKKKKKK.', '..KgGGKLGWWWGGGWWWGgKKwsK...', '...KgGKLGWKKGGGKKWGgKKwsK...', '....KgKLGWKKGGGKKWGgKKwsK...', '.....KKLGGGGGggGGGGgKKwsK...', '......KLGGGGGGGGGGGgKKwsK...', '......KgGGGGGGGGGGGgKKwsK...', '.......KgGKWKWKWKGgK.KwsK...', '........KggKKKKKggK..KwsK...', '......KKKKKgggggKKK..KwsK...', '....KKXXKKKKKKKKqKK..KwsK...', '....KyBpBKKqqqqqqqKK.KwsK...', '...KXBBByBKKqqqqqqKK.KwsK...', '...KKpBBBBKKqqqqqqKK.KwsK...', '....KKyBByKqqqqqqqKK.KwsK...', '....KKKKKKKqqqqqqqKK.KwsK...', '......KKKKKKKqqKKKK..KwsK...', '.........KggKKKKggK..KssK...', '.........KKKKKKKKKK..KKKK...'],
+    goblin_hurt: ['............................', '........................Y...', '...Y...................YWY..', '..YWY...............K.K.YK..', '...Y...............KK.K.KKK.', '...................Kw.w.wsK.', 'K..........KKKKK...Kw.S.SsK.', '.KK......KKLLLLgKK.KwSSSSsK.', '.KgKKK..KLLGGGGGLgKKssssssK.', '..KLLgKKLGGGGGGGGGgKKKKKKKK.', '..KgGGKLGKGGGGGGGKGgKKwsK...', '...KgGKLGGKGGGGGKGGgKKwsK...', '....KgKLGKGGGGGGGKGgKKwsK...', '.....KKLGGGGGggGGGGgKKwsK...', '......KLGGGGGGGGGGGgKKwsK...', '......KgGGGGGGGGGGGgKKwsK...', '.......KgGGKKKKKGGgK.KwsK...', '........KggKpppKggK..KwsK...', '......KKKKKgggggKKK..KwsK...', '....KKXXKKKKKKKKqKK..KwsK...', '....KyBpBKKqqqqqqqKK.KwsK...', '...KXBBByBKKqqqqqqKK.KwsK...', '...KKpBBBBKKqqqqqqKK.KwsK...', '....KKyBByKqqqqqqqKK.KwsK...', '....KKKKKKKqqqqqqqKK.KwsK...', '......KKKKKKKqqKKKK..KwsK...', '.........KggKKKKggK..KssK...', '.........KKKKKKKKKK..KKKK...'],
+    goblin_down: ['............................', '.....................K......', '...................KK.......', '.................KKsK.......', '.....KK.........KswK........', '...KKKSKK......KsSwK........', '...KKSswK.....KsSSsK........', '..KKwsssSK..KKKKKKK.........', '..KKsssSSK.KswwwwwK.........', '..KKsswsKKKsSSSSSSwK........', 'KKKKwssKKKsSSSSKSKSwK.......', 'KsKKKKKKKKsSSSSSKSSwK.......', 'KsKssKKsKsKKSSSKSKSSwK......', 'KKKsssssKsSKSSSSSSSSwK......', 'KKssssssKsSKSSsSSSSSwK......', 'KKssssssKsSKSSsSSSSSwK......', 'KKKsssssKsKKSSSKSKSSsK......', 'KsKssssssKsSSSSSKSSwK.......', 'KsKsssssKKsSSSSKSKSsK.......', 'KKKKKKKKKKKsSSSSSSsK........', '...KKKKK...KssssssKKKKKK....', '............KKKKKKKswwwKK...', 'KKKKKKKKKKKKKKKKKKKsS.......', 'KswwwwwwwwwwwwwwwwKsSSwKK...', 'KsssssssssssssssssKsS.......', 'KKKKKKKKKKKKKKKKKKKsSSwKK...', '..................KssssKK...', '..................KKKKKK....'],
     /* the Underworld (17 Nov 2026): its boss, 28×28 like the others */
     magmaw: ['............................', '............................', '............................', '............................', '.....KK.............K.......', '.....KK............KKK......', '.....KKK..KKKKKKKK.KKK......', '....KKKKKKSSSOSSSDKKKK......', '....KKKKSSssssFsssSDKKK.....', '.....KSSssssssOsssssSDK.....', '....KSOsssssssssssssOsDK....', '...KSssFssssssssssssFssDK...', '...KSssOWWWsssssWWWOsssDK...', '..KSssssWOOsssssOOWsssssDK..', '..KSssssWOOsssssOOWsssssDK..', '..KSssssssssssssssssssssDK..', '..KSssssssssssssssssssssDK..', '..KSssssssKKKKKKKsssssssDK..', '..KKsssssKWOWOWOWKssssssKK..', '.KwsKsssKOOFFFFFOOKssssKwsK.', 'KwSSOKssKOFFFFFFFOKsssOwSSsK', 'KwSSsFOssKOFFFFFOKsssFKwSSsK', 'KsSSsKsOssKWKWKWKsssOsKsSSsK', '.KssKssssssssssssssssssKssK.', 'K.KKKDDDDDDDDDDDDDDDDDKDKKK.', 'W.WKWKKKKKKKKKKKKKKKKKWKWKW.', 'W.W.W....OF......O....W.W.W.', '..........O..O...FO.........'],
     magmaw_hurt: ['............................', '............................', '............................', '.........................Y..', '..Y..KK.............K...YWY.', '.YWY.KK............KKK...Y..', '..Y..KKK..KKKKKKKK.KKK......', '....KKKKKKSSSOSSSDKKKK......', '....KKKKSSssssFsssSDKKK.....', '.....KSSssssssOsssssSDK.....', '....KSOsssssssssssssOsDK....', '...KSssFssssssssssssFssDK...', '...KSssOKsssssssssKOsssDK...', '..KSssssOKsssssssKssssssDK..', '..KSssssKsssssssssKsssssDK..', '..KSssssssssssssssssssssDK..', '..KSssssssssssssssssssssDK..', '..KSssssssssssssssssssssDK..', '..KKssssssssssssssssssssKK..', '.KwsKssssssKKKKKKssssssKwsK.', 'KwSSOKsssssKOOOOKsssssOwSSsK', 'KwSSsFOssssKKKKKKssssFKwSSsK', 'KsSSsKsOssssssssssssOsKsSSsK', '.KssKssssssssssssssssssKssK.', 'K.KKKDDDDDDDDDDDDDDDDDKDKKK.', 'W.WKWKKKKKKKKKKKKKKKKKWKWKW.', 'W.W.W....OF......O....W.W.W.', '..........O..O...FO.........'],
@@ -273,6 +322,10 @@ const ADV = (() => {
     snowpeak: ['.....WW.....', '....WWWW....', '...WWWWwS...', '..WWWwSSSs..', '.WWwSSSSsss.', 'WwSSSSSSssss', '............', '............', '............', '............', '............', '............'],
     /* Underworld scenery (17 Nov 2026) */
     gem: ['............', '............', '.....c......', '....cCc.....', '....cCC.....', '...ccCCC.c..', '...cCCCC.cC.', '...cCCCC.CC.', '..sssssssss.', '............', '............', '............'],
+    /* treasure chests (17 Nov): R = the metal bands, recoloured per kind of chest (iron, silver, gold, cursed purple) */
+    chest: ["................", "................", "................", "...KKKKKKKKKK...", "..KllJJJJJJllK..", ".KXRRXXXXXXRRXK.", ".KXRRXKKKKXRRXK.", "..KRRXKlRKXRRK..", ".KKKKKKRRKKKKKK.", ".KBRRBKKRKBRRBK.", ".KNRRNKKKKNRRNK.", ".KBRRBBBBBBRRBK.", ".KNRRNNNNNNRRNK.", ".KBrrBBBBBBrrBK.", ".KKKKKKKKKKKKKK.", "................"],
+    chest_open: ["..KKKKKKKKKKKW..", ".KWRRNNNNNNRRNK.", ".KNRRNNNNNNRRNK.", ".KNRRNNNNNNRRNKW", "W.KKKKKKKKKKKK..", ".KKKYKFFKKFYKKK.", ".KNFFNbYNFNFFNK.", ".KNNNFNNFYFNbNK.", ".KKKKKKKKKKKKKK.", ".KBRRBKKKKBRRBK.", ".KNRRNKKKKNRRNK.", ".KBRRBBBBBBRRBK.", ".KNRRNNNNNNRRNK.", ".KBrrBBBBBBrrBK.", ".KKKKKKKKKKKKKK.", "................"],
+    mimic: ["..KKKKKKKKKKKK..", ".KNRRNNNNNNRRNK.", ".KNRYKNNNNYKRNK.", ".KNRRNNNNNNRRNK.", "..KKKKKKKKKKKK..", ".KWKWKWKWKWKWKK.", ".KEEEEppppEEEEK.", ".KEEEEEppEEEEEK.", ".KKWKWKKKKKWKWK.", ".KBRRBKKKKBRRBK.", ".KNRRNKKKKNRRNK.", ".KBRRBBBBBBRRBK.", ".KNRRNNNNNNRRNK.", ".KBrrBBBBBBrrBK.", ".KKKKKKKKKKKKKK.", "................"],
     spire: ['............', '............', '.....w......', '.....S......', '....wSs.....', '....wSs.....', '...wSSs..w..', '...wSSs.wSs.', '..wSSSSswSSs', '..ssssssssss', '............', '............'],
     bone: ['............', '............', '............', '............', '.ZW.....WZ..', '.WWWWWWWWW..', '.ZW.....WZ..', '............', '............', '............', '............', '............'],
     glowcap: ['............', '............', '............', '............', '....HHHH....', '...HCHHCH...', '..HHHHHHHH..', '.....ee.....', '.....ee.....', '....eeee....', '............', '............'],
@@ -307,5 +360,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

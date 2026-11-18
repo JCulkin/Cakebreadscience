@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex, nofollow">
 <title>Practice - Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +29,15 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 .pb{height:8px;border:1.5px solid #111;background:#fff;margin-top:4px}.pb i{display:block;height:100%;background:var(--sc)}
 .rowbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;gap:10px;align-items:center;width:100%;background:#fff;border:1.5px solid #bbb;border-left:6px solid var(--sc);padding:8px 10px;margin-top:6px}
 .rowbtn:hover,.rowbtn:focus-visible{background:#fffbe0}
+.setw{background:#fff;border:2px solid #111;box-shadow:0 3px 0 #111;padding:12px 14px;margin:14px 0 6px}
+.setw h2{margin:0 0 6px}
+.setw .a{border-top:1px solid #ddd;padding:8px 0}.setw .a:first-of-type{border-top:0}
+.setw .a b{font-size:17px}.setw .a small{color:#666;font-weight:600;margin-left:6px}
+.setw .late{background:#fee2e2;color:#991b1b;border:1px solid #991b1b;font:700 11px Barlow,Arial;padding:0 5px;text-transform:uppercase;margin-left:6px}
+.setw .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.setw .chips a{border:1.5px solid #111;padding:3px 10px;font-weight:700;font-size:14px;text-decoration:none;color:#111;background:#fef3c7}
+.setw .chips a.go{background:#facc15}
+.setw .pbw{height:8px;border:1.5px solid #111;background:#fff;margin-top:5px;max-width:320px}.setw .pbw i{display:block;height:100%;background:#facc15}
 .rowbtn .tag{font:700 11px Barlow,Arial;text-transform:uppercase;letter-spacing:.5px;color:var(--sc);min-width:96px}
 .rowbtn .go{margin-left:auto;font-weight:700;white-space:nowrap}
 .scitabs{display:flex;gap:6px;flex-wrap:wrap}
@@ -86,19 +94,20 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 </style>
 </head>
 <body>
-<div class="bar0"><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Practice</span><div class="acct" id="acct"></div></div>
+<div class="bar0"><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Practice</span><div class="acct" id="acct" hidden style="display:none!important"></div><div id="cbs-account" style="margin-left:auto"></div></div>
 <main class="wrap">
 
   <section id="pick">
     <h1>Practice</h1>
     <p class="lede">Ten questions at a time, straight from the spec. A question is <b>secured</b> when you get it right first time on two different days, and secured questions secure the spec point. Everything here counts exactly as it does in <a href="index.html">Cakebread Questing</a>.</p>
     <div class="sum" id="sum"></div>
+    <div id="setwork"></div>
     <h2>Suggested for you</h2>
     <div id="sugg"></div>
     <h2>The whole spec</h2>
     <div class="scitabs" id="tabs"></div>
     <div id="topics"></div>
-    <label class="setting"><input type="checkbox" id="plain"> <span>Always use plain practice: “Quiz me” links on the spec trackers and My day open here instead of a Questing mission.</span></label>
+    <label class="setting"><input type="checkbox" id="plain"> <span>Always use plain practice: “Quiz me” links on the spec trackers and To do open here instead of a Questing mission.</span></label>
   </section>
 
   <section id="quiz" class="hidden">
@@ -127,6 +136,9 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="/js/year.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="/js/account.js"></script>
+<script src="/js/school.js"></script>
 <script>
 /* Practice (16 Nov 2026): a plain front door to the Questing engine. Same question bank, same securing rules,
    same saved progress (users/{uid}.specQuiz); no adventurer, monsters or loot on screen. */
@@ -259,7 +271,7 @@ function finish() {
         <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">My day</a></div>
+    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">To do</a></div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe.'}</p>`;
   $('again').onclick = () => start(PS.sub.key, PS.point);
   scrollTo(0, 0);
@@ -277,6 +289,30 @@ function boot() {
     else { const p = QE.picks()[0]; if (p) SCI = p.sub.key[0]; drawPick(); } }
 }
 boot(); QE.onChange(boot);
+/* Set by your teacher (17 Nov 2026): the student's unfinished set work for their year, at the top of the picker (js/school.js) */
+let SCH = null;
+const withinP = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
+async function drawSet() {
+  const box = $('setwork'); if (!box) return;
+  const y = window.CBSYear && CBSYear.year;
+  if (!QE.user || !y || !window.firebase || !firebase.database) { box.innerHTML = ''; return; }
+  if (!SCH) { try { SCH = await withinP(CBSSchool.load(firebase.database()), 6000); } catch (e) { box.innerHTML = ''; return; } }
+  let udoc = {}; try { udoc = (await withinP(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000)).data() || {}; } catch (e) {}
+  const S = CBSSchool, today = QE.TODAY;
+  const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
+  const open = S.forYear(SCH.assign, y).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
+    .filter(x => x.t ? x.t.state !== 'done' : !x.p.done);
+  if (!open.length) { box.innerHTML = ''; return; }
+  box.innerHTML = `<div class="setw"><h2>Set by your teacher</h2>${open.map(({ a, t, p }) => {
+    const late = a.due && a.due < today ? '<span class="late">Overdue</span>' : '';
+    if (t) return `<div class="a"><b>${esc(a.title || 'Test')}</b><small>Test · ${t.n} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
+      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encodeURIComponent(a.id)}">${t.state === 'started' ? 'Carry on →' : 'Start the test →'}</a></div></div>`;
+    return `<div class="a"><b>${esc(a.title || 'Work set')}</b><small>Get ${p.target} right${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
+      <div class="pbw" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%"></i></div><div class="small">${p.got} of ${p.target} so far. Practise any of these:</div>
+      <div class="chips">${(a.items || []).map(k => `<a href="${S.practise(k)}">${esc(S.shortLabel(k))} →</a>`).join('')}</div></div>`;
+  }).join('')}</div>`;
+}
+QE.onChange(drawSet); if (window.CBSYear) CBSYear.onChange(drawSet); drawSet();
 </script>
 </body>
 </html>

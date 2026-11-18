@@ -80,7 +80,7 @@ const QE = (() => {
   };
   const UID_KEY = 'cbs.questing.uid';
   const blank = () => ({ v: 1, q: {}, cards: {}, weak: {}, xp: 0, correct: 0, hard: 0, subj: { Biology: 0, Chemistry: 0, Physics: 0 }, weeks: {}, ws: {}, dc: {}, missions: 0, unrusted: 0, earned: {}, hide: false, updatedAt: 0 });
-  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, look: null, eq: null, nick: null, updatedAt: 0 });
+  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, tally: {}, seen: {}, look: null, eq: null, nick: null, updatedAt: 0 });
   const progKey = uid => 'specquiz.camp.' + (uid || 'anon');
   const gameKey = uid => 'cbs.questing.game.' + (uid || 'anon');
   const readProg = uid => Object.assign(blank(), ls.get(progKey(uid)) || {});
@@ -114,6 +114,8 @@ const QE = (() => {
     o.coins = Math.max(a.coins || 0, b.coins || 0);
     o.cd = {}; for (const src of [a.cd || {}, b.cd || {}]) for (const k in src) if (!o.cd[k] || (src[k].n || 0) > (o.cd[k].n || 0)) o.cd[k] = src[k];
     o.best = {}; for (const src of [a.best || {}, b.best || {}]) for (const k in src) { const x = o.best[k] || { r: 0, w: 0 }; o.best[k] = { r: Math.max(x.r, src[k].r || 0), w: x.w || src[k].w ? 1 : 0 }; }   // best score and 'busted' per mission (17 Nov)
+    o.tally = {}; for (const src of [a.tally || {}, b.tally || {}]) for (const k in src) o.tally[k] = Math.max(o.tally[k] || 0, src[k] || 0);   // stats counters (17 Nov)
+    o.seen = {}; for (const src of [a.seen || {}, b.seen || {}]) for (const k in src) if (!o.seen[k] || src[k] < o.seen[k]) o.seen[k] = src[k];   // firsts: 'm:<den>', 'd:<dungeon>' … → first date
     o.pool = Object.assign({ hp: 0, mana: 0 }, newer.pool);   // the newer copy: the map may already have taken what was waiting
     for (const k of ['look', 'eq', 'nick']) if (!o[k]) o[k] = a[k] || b[k] || null;
     return o;
@@ -472,6 +474,10 @@ const QE = (() => {
   }
   function missionsToday() { return GAME.days[TODAY] || 0; }
   function gameChanged() { GAME.updatedAt = Date.now(); save(); }
+  /* stats screen counters (17 Nov, user: "squares stepped on, items, monsters fought etc."): GAME.tally = { key: count },
+     GAME.seen = { 'm:<den>' | 'd:<dungeon>' | … : first date }. Kept as maxima / earliest dates when copies merge. */
+  function tally(k, n = 1) { GAME.tally = GAME.tally || {}; GAME.tally[k] = (GAME.tally[k] || 0) + n; GAME.updatedAt = Date.now(); save(); }
+  function mark(k) { GAME.seen = GAME.seen || {}; if (GAME.seen[k]) return; GAME.seen[k] = TODAY; GAME.updatedAt = Date.now(); save(); }
 
   /* ---------- the class board (Realtime Database, signed-in only) ---------- */
   function board() {
@@ -515,7 +521,7 @@ const QE = (() => {
   return {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },
     get online() { return FB.ok; }, set busy(v) { busy = !!v; }, get busy() { return busy; },
-    TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName, requestName,
+    TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, tally, mark, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName, requestName,
     signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,

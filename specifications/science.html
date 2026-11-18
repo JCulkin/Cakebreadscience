@@ -1,292 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Spec Trackers - Cakebread Science</title>
-    <meta name="description" content="IGCSE Edexcel specification trackers for Biology, Chemistry, Physics and Maths.">
-    <meta name="keywords" content="IGCSE, Edexcel, science, biology, chemistry, physics, specification, worksheets">
-    <meta name="author" content="Cakebread Science">
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <meta name="theme-color" content="#294f7a">
-    <link rel="canonical" href="https://cakebreadscience.com/specifications/science.html">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/specifications.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spec Trackers | Cakebread Science</title>
+<meta name="description" content="Spec trackers for Edexcel International GCSE Science (Double Award) and Maths: every spec point, your progress, and everything on the site that teaches it.">
+<link rel="canonical" href="https://cakebreadscience.com/specifications/science.html">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/tracker.css">
 </head>
-<body data-subject="science">
-    <div class="spec-shell">
-        <nav class="spec-topbar">
-            <div class="topbar-left">
-                <a href="../index.html" class="topbar-link">← Back</a>
-                <a href="biology.html" class="topbar-link subject-bio">Biology</a>
-                <a href="chemistry.html" class="topbar-link subject-chem">Chemistry</a>
-                <a href="physics.html" class="topbar-link subject-phys">Physics</a>
-                <a href="maths.html" class="topbar-link subject-maths">Maths</a>
-            </div>
-            <div class="topbar-right">
-<span class="auth-status" data-auth-status>Not signed in</span>
-                <button class="auth-button" data-auth-login>Sign in with Google</button>
-                <button class="auth-button secondary hidden" data-auth-logout>Sign out</button>
-            </div>
-        </nav>
+<body class="">
+<header class="site"><a class="brand" href="/"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Spec trackers</span><div id="cbs-account"></div></header>
+<nav class="subnav" aria-label="Spec trackers"><a href="science.html" class="on">All subjects</a><a class="b" href="biology.html">Biology</a><a class="c" href="chemistry.html">Chemistry</a><a class="p" href="physics.html">Physics</a><a href="maths.html">Maths</a></nav>
+<main id="tracker" data-view="overview"><p class="muted">Loading the spec…</p></main>
 
-        <section class="science-hero">
-            <div class="science-hero-copy">
-                <span class="hero-eyebrow">IGCSE Edexcel Science &amp; Maths</span>
-                <h1>Spec Trackers</h1>
-                <p class="hero-lede">Every point of the Biology, Chemistry, Physics and Maths specifications in one place. Track your progress with checkboxes or RAG (Red / Amber / Green) confidence levels.</p>
-                <p class="hero-note">Progress saves locally and syncs to your account when signed in.</p>
-            </div>
-        </section>
-
-        <section class="science-subjects">
-            <article class="subject-card biology-card">
-                <div class="card-header">
-                    <h2>🧬 Biology</h2>
-                    <p class="card-subtitle">Living organisms and biological systems</p>
-                </div>
-                <div class="card-progress" id="bio-progress">
-                    <div class="progress-bar" data-progress-bar></div>
-                    <span class="progress-text" data-progress-text>Loading...</span>
-                </div>
-                <a href="biology.html" class="card-link">Explore Specification →</a>
-            </article>
-
-            <article class="subject-card chemistry-card">
-                <div class="card-header">
-                    <h2>⚗️ Chemistry</h2>
-                    <p class="card-subtitle">Matter, reactions, and chemical properties</p>
-                </div>
-                <div class="card-progress" id="chem-progress">
-                    <div class="progress-bar" data-progress-bar></div>
-                    <span class="progress-text" data-progress-text>Loading...</span>
-                </div>
-                <a href="chemistry.html" class="card-link">Explore Specification →</a>
-            </article>
-
-            <article class="subject-card physics-card">
-                <div class="card-header">
-                    <h2>⚛️ Physics</h2>
-                    <p class="card-subtitle">Forces, energy, and motion</p>
-                </div>
-                <div class="card-progress" id="phys-progress">
-                    <div class="progress-bar" data-progress-bar></div>
-                    <span class="progress-text" data-progress-text>Loading...</span>
-                </div>
-                <a href="physics.html" class="card-link">Explore Specification →</a>
-            </article>
-
-            <article class="subject-card maths-card">
-                <div class="card-header">
-                    <h2>📐 Maths</h2>
-                    <p class="card-subtitle">Number, algebra, geometry and statistics</p>
-                </div>
-                <div class="card-progress">
-                    <span class="progress-text">Every spec point with its worksheets. Progress tracking coming soon.</span>
-                </div>
-                <a href="maths.html" class="card-link">Explore Specification →</a>
-            </article>
-        </section>
-    </div>
-
-<style>
-        .science-subjects {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 24px;
-            padding: 32px 0;
-        }
-
-        .subject-card {
-            border-radius: 16px;
-            padding: 28px;
-            color: white;
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .subject-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.2);
-        }
-
-        .biology-card {
-            background: linear-gradient(135deg, #1f5c3b 0%, #2f7d4b 45%, #4aa06b 100%);
-        }
-
-        .chemistry-card {
-            background: linear-gradient(135deg, #204a72 0%, #2b5f8e 45%, #3f7ab0 100%);
-        }
-
-        .physics-card {
-            background: linear-gradient(135deg, #8f4f12 0%, #b06a19 45%, #d28d38 100%);
-        }
-
-        .maths-card {
-            background: linear-gradient(135deg, #17398a 0%, #2255cc 45%, #4a7be0 100%);
-        }
-
-        .card-header {
-            flex-grow: 1;
-        }
-
-        .card-header h2 {
-            margin: 0 0 8px 0;
-            font-size: 26px;
-            letter-spacing: -0.5px;
-        }
-
-        .card-subtitle {
-            margin: 0;
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .card-progress {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 999px;
-            overflow: hidden;
-        }
-
-        .progress-bar::after {
-            content: '';
-            display: block;
-            height: 100%;
-            width: var(--progress-width, 0%);
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 999px;
-            transition: width 0.4s ease;
-        }
-
-        .progress-text {
-            font-size: 12px;
-            opacity: 0.85;
-        }
-
-        .card-link {
-            color: white;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            padding: 12px 16px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .card-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.6);
-            transform: translateX(4px);
-        }
-
-        @media (max-width: 768px) {
-            .science-subjects {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .subject-card {
-                padding: 20px;
-            }
-
-            .card-header h2 {
-                font-size: 22px;
-            }
-        }
-    </style>
-
-    <script src="../js/firebase-config.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script src="../js/specifications.js"></script>
-    <script>
-        (() => {
-            let auth = null;
-            let db = null;
-            let currentUser = null;
-
-            function getLocalState(subjectId) {
-                try {
-                    const raw = localStorage.getItem(`spec-progress-v1-${subjectId}`);
-                    return raw ? JSON.parse(raw) : null;
-                } catch (e) {
-                    return null;
-                }
-            }
-
-            function updateCard(cardId, subjectState) {
-                const card = document.getElementById(cardId + '-progress');
-                if (!card) return;
-                if (!subjectState) {
-                    card.querySelector('.progress-text').textContent = 'No progress yet';
-                    return;
-                }
-                const items = subjectState.items || {};
-                const total = subjectState.total || Object.keys(items).length;
-                const completed = Object.keys(items).filter(key => items[key] && items[key].checkbox === true).length;
-                const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
-                card.querySelector('[data-progress-bar]').style.setProperty('--progress-width', percent + '%');
-                card.querySelector('.progress-text').textContent = `${completed} / ${total} (${percent}%)`;
-            }
-
-            // Show from localStorage immediately (same source as the per-subject popup)
-            updateCard('bio', getLocalState('biology'));
-            updateCard('chem', getLocalState('chemistry'));
-            updateCard('phys', getLocalState('physics'));
-
-            // Also load from Firestore when signed in (cross-device sync)
-            const waitForFirebase = () => {
-                if (typeof firebase !== 'undefined' && firebase.apps.length > 0) {
-                    initializeProgressCards();
-                } else {
-                    setTimeout(waitForFirebase, 100);
-                }
-            };
-            waitForFirebase();
-
-            function initializeProgressCards() {
-                auth = firebase.auth();
-                db = firebase.firestore();
-
-                auth.onAuthStateChanged(async (user) => {
-                    currentUser = user;
-                    if (currentUser) {
-                        loadProgressFromFirestore();
-                    }
-                });
-            }
-
-            async function loadProgressFromFirestore() {
-                try {
-                    const doc = await db.collection('specProgress').doc(currentUser.uid).get();
-                    if (!doc.exists) return;
-                    const data = doc.data();
-                    const subjects = data.subjects || {};
-                    if (subjects.biology) updateCard('bio', subjects.biology);
-                    if (subjects.chemistry) updateCard('chem', subjects.chemistry);
-                    if (subjects.physics) updateCard('phys', subjects.physics);
-                } catch (error) {
-                    console.error('Error loading progress from Firestore:', error);
-                }
-            }
-
-        })();
-    </script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="/interactive/spec-quiz/spec.js"></script>
+<script src="/interactive/spec-quiz/questions.js"></script>
+<script src="/interactive/spec-quiz/gens.js"></script>
+<script src="/interactive/spec-quiz/cards.js"></script>
+<script src="/interactive/spec-quiz/questing-engine.js"></script>
+<script src="/js/spec-index.js"></script>
+<script src="/js/spec-legacy.js"></script>
+<script src="/js/account.js"></script>
+<script src="/js/year.js"></script>
+<script src="/js/school.js"></script>
+<script src="/js/tracker.js"></script>
 </body>
 </html>

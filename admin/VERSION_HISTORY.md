@@ -2,6 +2,34 @@
 
 ---
 
+## [5.0.0] - 2026-11-18
+### One site: one spec tracker, one sign-in, To do, and revision that works with or without the game
+
+#### Added
+- **One spec tracker:** Biology, Chemistry, Physics and the All subjects overview rebuilt as one tracker in the site's look, driven by real progress. Each spec point shows its status from Practice / Questing / Flashcards (Not started, Learning x/y, Secured, Rusty, No quiz yet), the student's own rating (Not yet / Unsure / Confident, saved to their account), "Covered in class" for their year, and links: Prove it (Practice, no game needed), mission, flashcards and worksheets/resources for that point. Filters: Not started, Learning, Rusty, Secured, Check these (confident but not proved), Covered in class. Every point has its own link (e.g. `/specifications/biology.html#B2.27`) for worksheets to point at. Old ticks and red/amber/green ratings carry over automatically. To do and the admin Students tab now show the "confident" %. Maths tracker unchanged
+- **To do works with the tracker:** a new **Check these** list (points the student rated Confident but hasn't proved), a **Prove it** button (Practice Questions, no game needed) beside Quiz me on every point, point codes link to that point on the tracker, and the Spec trackers links open the All subjects page. The tracker opens on a filter from a link (`?f=check`)
+- **Flashcards redesigned in the site's look:** big heading, the Cakebread Questing panel as a dark game banner, decks as bold tiles in their subject colours (Biology green, Chemistry red, Physics amber) with a Study button, a bolder card with Question / Answer labels in the deck's colour, clear rating buttons, an end screen with links to the Cakelab and Practice; links to To do and Practice Questions; the duplicate Home button removed
+- **One sign-in box everywhere:** the same top-right box (Sign in, or To do → · first name · Sign out, plus Admin and Team quiz for admins) on the spec trackers, Physics 6-markers and learning bank, leaderboards, Quick quiz, Practice, Flashcards and tests; the old per-page sign-in buttons are gone, and no page shows a student's email address any more
+- Homepage: **a new Cakebread Questing banner** showing Breadventure Land ("the revision game"); **Practice Questions** and **Flashcards** get their own cards; Quick quiz is now an admin-only **Team quiz** button in the header (opens straight into the team game)
+- **My day is now called To do** (header button, Questing bar, page title)
+- Admin Teaching tab: **All years** view — every sub-topic with a tick box for Year 8, 9, 10 and 11 (and one for all years), to compare and fill in every year at once
+- **Practice Questions shows "Set by your teacher"**: the student's unfinished work for their year at the top, with Start the test / Carry on and practise buttons
+- **"New on Cakebread Science" box** at the top of the homepage and To do introducing the new features (Questing, spec trackers, Practice Questions, Flashcards, To do); once closed it stays closed
+- A red **Admin** button in the header next to To do, for admin accounts only (replaces the small floating button at the bottom of the homepage)
+- **Cakebread Questing:** features unlock as you level up (the game starts simple); a **Stats** page (game completion, revision, map, collection); the Wardrobe shows only what you own; admin **Game showcase** page
+- **Breadventure Land:** moves happen when you make them (only boss fights wait for midnight); a starter boss by the Cakelab and bosses in a clear order with gentler hits; treasure chests everyone can see through the fog, with 47 new items to win; the admin can give extra moves
+- **Elevenstudents:** AskGPT and Rompe Ladrillos by Hector (with the games sign-in, a home button and phone fixes); Maths and Essays sections removed from the gallery; tabs fit on phones
+
+#### Fixed
+- Pablo's game (Elevenstudents) had an unfilled Firebase setup, so its sign-in never worked; it now uses the site's account
+- **Restricted games fail safe:** a game stays hidden until the player's approval is confirmed; if it can't be confirmed within 10 seconds (e.g. the network blocks Firebase) the player goes to the sign-in page instead of playing (a student had played Wholesome Snake without approval)
+- My day and set-work tests never wait forever: every database call has a time limit, the page always draws, and it says which part of Firebase couldn't be reached (to diagnose the school network)
+- Breadventure Land: new students' moves
+- Spec tracker ratings: the account now wins over an old copy in another browser, and a rating that couldn't be saved (e.g. the school network blocking Firebase) is saved on the next visit
+- Homepage footer → v5.0.0
+
+---
+
 ## [4.1.1] - 2026-11-17
 ### Fixed
 - My day no longer gets stuck on "Loading your day…" for students who had cleared their Breadventure Land moves (and now shows a short version instead of hanging if anything else goes wrong), so set work shows up

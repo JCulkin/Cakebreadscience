@@ -144,18 +144,21 @@ $('lvl').textContent = `Level ${l}`;
 $('xpTxt').textContent = `${S.xp - cur} / ${next - cur} XP`;
 $('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
 const toNextCap = 8 - ADV.securedTotal() % 8;
+/* what the next level brings (unlocks, 17 Nov) */
+{ const nx = ADV.nextUnlock(); if (nx) $('cap').insertAdjacentHTML('afterend', `<p class="small" id="nextUnlock" style="margin-top:4px">🔓 <b>Next:</b> ${nx.ic} ${nx.name} at level ${nx.lv}.</p>`); }
 $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
   : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
 $('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
   ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
   ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · more Magic = more mana`, s.mag / 70],
-  ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]]
+  ADV.can('spells') ? ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]
+    : ['🔮 Mana', `🔒 Lv ${ADV.unlockLv('spells')}`, 'mag', `mana and spells unlock at level ${ADV.unlockLv('spells')}`, 0]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
 
-$('dayTitle').textContent = `Today · day ${S.day}`;
+$('dayTitle').textContent = `Today · day ${S.dayNo || 1}`;   // S.day is the map's epoch day number, not the world's day
 function renderLand() {
   const ch = S.chapter || 1, k = ADV.keys(), P = BL.PLACES, hp = S.boss || {};
-  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && !P[x].deep && (P[x].ch || 1) === Math.min(ch, 2));
+  const foes = Object.keys(P).filter(x => P[x].type === 'boss' && !P[x].deep && !P[x].starter && (P[x].ch || 1) === Math.min(ch, 2));
   const foe = x => { const h = hp[x] ?? P[x].max, down = h === 0;
     return `<div class="foe${down ? ' down' : ''}"><img src="${ADV.icon(P[x].icon + (down ? '_down' : h <= P[x].max * .34 ? '_hurt' : ''))}" alt="${P[x].name}"><div class="hp"><i style="width:${h / P[x].max * 100}%"></i></div><span>${down ? '✓ ' : ''}${P[x].name.replace(/^The /, '')}</span></div>`; };
   const prof = ch < 2 ? `<div class="cage"><img src="${ADV.icon('prof')}" alt="The Professor in a cage"><i></i></div>`
@@ -163,13 +166,28 @@ function renderLand() {
   $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +
     foes.slice(0, 2).map(foe).join('') + prof + foes.slice(2).map(foe).join('');
   $('landKick').textContent = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 🔑` : 'Chapter 2 · the monsters wake';
-  const planned = (S.plan || []).length, mv = S.moves || 0;
-  { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ev.ic} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
-  $('landSt').innerHTML = (mv ? (planned ? `${planned} of ${mv} moves planned for tonight. ` : `<b>${mv} move${mv === 1 ? '' : 's'} to plan</b> before midnight. `) : 'No moves left today. ')
+  const mv = S.moves || 0, camp = S.camp && BL.PLACES[S.camp.k];
+  if (ADV.can('events')) { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ev.ic} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
+  $('landSt').innerHTML = (camp ? `⛺ Camped at ${camp.name} with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} for midnight. ` : '') + (mv ? `<b>${mv} move${mv === 1 ? '' : 's'} to use</b> today. ` : 'No moves left today. ')
+    + (S.chestsUp ? `✨ <b>${S.chestsUp} treasure chest${S.chestsUp > 1 ? 's' : ''}</b> on the map: first to reach one opens it. ` : '')
     + `❤ ${S.health} Health · 🔮 ${S.mana} mana. Fight the guards together; every spec point you secure makes you stronger.`;
   $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
 renderLand();
+/* the real moves, Health and mana live in the shared world: read them (the browser's copy is only as fresh as the last map visit) */
+async function landLive() {
+  if (!QE.known || !QE.user || landLive.done) return; landLive.done = true;
+  try {
+    const rt = firebase.database(), u = QE.user.uid;
+    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
+    if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
+    else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = BL.bossNow(w);
+      S.plan = []; S.camp = st.camp && st.camp.day === w.day && st.at === st.camp.k ? st.camp : null; }
+    S.chestsUp = w ? Object.keys(w.chests || {}).filter(k => !BL.isUnder(k) || st && st.under).length : 0;
+    ADV.save(); document.querySelectorAll('#landKick ~ .small').forEach(x => x.remove()); renderLand();
+  } catch (e) { console.warn('Cakelab: shared world not read', e); }
+}
+landLive(); QE.onChange(landLive);
 if (!S.storySeen) ADV.storyIntro();
 { const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#16a34a', C: '#dc2626', P: '#d97706' }[sg.key[0]] : '#d97706'); }
 if (S.missionsToday) {
@@ -190,7 +208,8 @@ $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], [
 const it = S.lastLoot && ADV_ITEMS.find(i => i.id === S.lastLoot);
 if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.item(it.id)}" alt=""><div><b>${it.name}</b><br><span class="small">${ADV_RARITY[it.r]} · ${it.d}</span><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`;
 else { $('lootTitle').textContent = 'Loot'; $('loot').innerHTML = `<p style="font-size:15px">Every mission drops an item. Finish today's mission to see what you get.</p>`; }
-$('brews').innerHTML = Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `🧪 ${n} ×${q}`).join('<br>') || 'None';
+$('brews').innerHTML = !ADV.can('shop') ? `<span class="small">🔒 Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.</span>`
+  : Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `${(BL.BREWS[n] || {}).ic || '🧪'} ${(BL.BREWS[n] || {}).name || n} ×${q}`).join('<br>') || 'None';
 $('coins').textContent = S.coins;
 $('showMe').checked = !QE.prog.hide;
 $('showMe').onchange = () => QE.setHide(!$('showMe').checked);

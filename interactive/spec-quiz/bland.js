@@ -78,21 +78,25 @@ const PLACES = {
   '7,4': { type: 'home', name: 'The Cakelab', icon: 'home', text: 'Your base: a lab that smells of baking. Everyone starts here and comes back here when knocked out. Safe — nothing attacks you here, and resting refills your Health.' },
   '6,5': { type: 'shop', name: 'The Tuck Shop', icon: 'shop', text: 'Spend your coins on brews. Stand here to buy; drink them anywhere (Spells & brews).', stock: true },
   '6,6': { type: 'event', name: 'Suspicious Puddle', icon: 'ask', text: 'Something glints at the bottom. A random event every night: a coin, a brew, or a very wet sock.' },
+  /* the starter boss (17 Nov balance pass): two squares from the Cakelab, beatable alone by a brand-new player in about
+     three nights without being knocked out, and back two days after it falls so every new player gets one */
+  '6,2': { type: 'boss', ch: 1, starter: true, respawn: 2, science: 'b', name: 'The Crumb Goblin', icon: 'goblin', max: 90, power: 2, tier: 'Starter', coins: 25, brew: 'slushie',
+    text: 'Crumbmaw\'s lookout, guarding the crumb trail with a stolen cake fork. Small, greedy and beatable on your own: a good first boss. It comes back two days after it falls.', loot: ['+25 coins each', 'an Electrolyte Slushie each'] },
   /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
-  '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 900, power: 6,
+  '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 650, power: 5, tier: 'Tough',
     text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', item: 'mito', loot: ['🔑 Key piece 1 of 3', 'Mitochondria Gauntlet (Lowkey Legendary)', '+40 coins each'] },
-  '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 1000, power: 8,
+  '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 800, power: 6, tier: 'Very tough',
     text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Legendary)', '+40 coins each'] },
-  '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 820, power: 7,
+  '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 450, power: 4, tier: 'Next step',
     text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', item: 'shield', loot: ['🔑 Key piece 3 of 3', 'Periodic Table Shield (Rare)', '+40 coins each'] },
   '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for anyone alone. When it wakes, everyone fights it together.' },
   '7,1': { type: 'cage', name: 'The Professor\'s Cage', icon: 'prof', text: 'The Professor is locked in here, looking cross and slightly crumbly. The lock needs all three key pieces — win them from the Spore Lord, the Stone Golem and the Acid Hydra.' },
   /* chapter 2: wake up once the Professor is free */
-  '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 8,
+  '3,10': { type: 'boss', ch: 2, science: 'b', name: 'The Superbug', icon: 'superbug', max: 1000, power: 6, tier: 'Tough',
     text: 'A bacterium that has survived every antibiotic thrown at it, so now it is enormous and very smug. Lives in the Petri Swamp. Natural selection made it; you lot will unmake it.', item: 'grass', loot: ['Touch-Grass Boots (Rare)', 'Electrolyte Slushie', '+50 coins each'] },
-  '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 950, power: 9,
+  '16,4': { type: 'boss', ch: 2, science: 'c', name: 'The Rust Wyrm', icon: 'rustwyrm', max: 1000, power: 7, tier: 'Tough',
     text: 'A great iron serpent in Scrap Heap Hills, slowly oxidising. Every rainy night it gets a bit flakier and a lot angrier.', item: 'chainmail', loot: ['Chainmail of Covalent Bonds (Rare)', 'Fizzy Courage', '+50 coins each'] },
-  '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1100, power: 10,
+  '17,6': { type: 'boss', ch: 2, science: 'p', name: 'The Half-Life Horror', icon: 'halflife', max: 1200, power: 8, tier: 'Very tough',
     text: 'Something leaked out of the old reactor. Half of it has already decayed. The other half is very much still here.', item: 'kilt', loot: ['Kilt of Kinetic Energy (Rare)', 'Bottled Aura', '+50 coins each'] },
   '16,7': { type: 'dungeon', ch: 2, science: 'p', name: 'The Old Reactor', icon: 'reactor', subs: ['P7b', 'P7c'], rooms: ['the control room', 'the turbine hall', 'the reactor core'], text: 'A broken-down nuclear power station, cracked and humming. Three floors of radioactivity questions (wear a very sensible lead suit).' },
   '2,5': { type: 'dungeon', science: 'b', name: 'The Petri Dish Pit', icon: 'cave', subs: ['B1b', 'B2b', 'B2c', 'B5a', 'B5c'], rooms: ['the agar slopes', 'the colony caves', 'the incubator'], text: 'Three floors deep and faintly warm. Every floor is a room of questions on cells, microbes and enzymes.' },
@@ -106,7 +110,7 @@ const PLACES = {
     text: 'Somebody has pulled the boards off. Five floors of questions on metals, energy and magnets, and you keep your place from one day to the next. Strange noises come up from the very bottom.' },
   /* ---------- the Underworld ---------- */
   '9,19': { type: 'lift', name: 'The Mine Lift', icon: 'lift', text: 'A rusty cage on a very long cable. It goes up to the Abandoned Mine and, more reluctantly, back down.' },
-  '18,21': { type: 'boss', ch: 1, deep: true, coins: 100, science: 'p', name: 'Magmaw', icon: 'magmaw', max: 1300, power: 11,
+  '18,21': { type: 'boss', ch: 1, deep: true, coins: 100, science: 'p', name: 'Magmaw', icon: 'magmaw', max: 1500, power: 9, tier: 'Hardest',
     text: 'A boulder with a furnace for a mouth, sitting by the Lava Lake at the hot end of the Ember Flats. It has been warming the Underworld for a very long time and has opinions about heat.', brew: 'fizz', loot: ['+100 coins each', 'a Fizzy Courage each'] },
   '9,23': { type: 'dungeon', science: 'b', name: 'The Bone Library', icon: 'cave', subs: ['B3a', 'B3b', 'B4b', 'B5b'], rooms: ['the fossil stacks', 'the family-tree room', 'the extinct wing'], text: 'Every shelf is a rock layer. Three floors of questions on reproduction, inheritance and energy in ecosystems.' },
   '11,17': { type: 'dungeon', science: 'c', name: 'The Crystal Vault', icon: 'cave', subs: ['C1c', 'C1d', 'C1f', 'C1g'], rooms: ['the ionic hall', 'the covalent corridor', 'the giant lattice'], text: 'Everything in here has a very regular structure. Three floors of questions on atoms, the Periodic Table and bonding.' },
@@ -143,6 +147,13 @@ const BREWS = {
   fizz: { name: 'Fizzy Courage', ic: '🫧', cost: 40, when: 'night', what: 'Your hits do half as much again tonight.' },
   calm: { name: 'Decaf Panic', ic: '☕', cost: 25, when: 'night', what: 'You can\'t be knocked out tonight (you stop at 1 Health).' },
 };
+/* spells (mana) and dungeon floor coins: the numbers live here so the map and the admin showcase read the same list (17 Nov) */
+const SPELL_INFO = [
+  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.' },
+  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.' },
+  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.' },
+];
+const FLOOR_COINS = [8, 12, 15, 18, 22];
 const BREW_OLD = { 'Fizzy Courage': 'fizz', 'Bottled Aura': 'aura', 'Electrolyte Slushie': 'slushie', 'Decaf Panic': 'calm' };   // dungeon finds before 10 Nov used names
 
 /* ===================== geometry ===================== */
@@ -171,7 +182,17 @@ const dstr = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '
 const TODAY = (() => { const m = /[?&]today=(\d{4}-\d{2}-\d{2})/.exec(location.search); return m ? m[1] : dstr(new Date()); })();
 const dayNum = s => Math.round(Date.UTC(+s.slice(0, 4), +s.slice(5, 7) - 1, +s.slice(8, 10)) / 864e5);
 const BOSS_MAX = {}; Object.entries(PLACES).forEach(([k, P]) => { if (P.type === 'boss') BOSS_MAX[k] = P.max; });
-const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.assign({}, BOSS_MAX), hit: {}, log: [] });
+/* 17 Nov balance pass: bosses already hurt in the live world keep the same share of damage under their new maximum */
+const OLD_MAX = { '2,2': 900, '11,2': 1000, '4,7': 820, '3,10': 1000, '16,4': 950, '17,6': 1100, '18,21': 1300 };
+function bossNow(w) {
+  const b = Object.assign({}, BOSS_MAX, (w && w.boss) || {});
+  if (w && !w.bal) Object.keys(OLD_MAX).forEach(k => { if (w.boss && w.boss[k] != null && w.boss[k] > 0) b[k] = Math.max(1, Math.min(BOSS_MAX[k], Math.round(w.boss[k] * BOSS_MAX[k] / OLD_MAX[k]))); });
+  Object.keys(b).forEach(k => { if (BOSS_MAX[k] != null) b[k] = Math.min(b[k], BOSS_MAX[k]); });
+  return b;
+}
+const newWorld = () => ({ started: TODAY, day: TODAY, chapter: 1, boss: Object.assign({}, BOSS_MAX), hit: {}, log: [], bal: 1 });
+/* bonus = extra moves given by the teacher (admin console): no cap, kept until used, spent after the normal moves */
+const movesOf = st => ((st && st.moves) || 0) + ((st && st.bonus) || 0);
 const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, visited: [HOME], lifted: [], shield: false, dens: {}, brews: {},
   report: null, reportDay: null, pending: null, joined: TODAY });
 
@@ -179,6 +200,9 @@ const newState = hp => ({ at: HOME, health: hp, mana: 0, moves: FIRST_MOVES, vis
    meet = the first time you fight it, taunt = when it is hit, low = when it drops under a third, fall = its defeat.
    Each boss is built on a misconception from its science; keep the science inside the Double Award spec. ---------- */
 const BOSS_STORY = {
+  '6,2': { meet: 'A small green goblin with a cake fork jumps out. “Crumbs only spread if someone carries them,” it squeaks. (Not so: particles spread out on their own, from where there are lots to where there are few. That\'s diffusion, and it needs no energy.)',
+    taunt: ['“Mine! All the crumbs are MINE!”', '“Active transport? Far too much effort.”', 'It hides a crumb behind its back. Badly.'],
+    low: 'The Crumb Goblin is out of breath and nearly out of crumbs.', fall: 'The Crumb Goblin drops its fork and scarpers north. It\'ll be back for more crumbs in a couple of days.' },
   '2,2': { meet: 'The Spore Lord looms out of the mist. “Fungi are just plants that forgot to be green,” it booms. (They are not: no chlorophyll, no photosynthesis, walls of chitin.)',
     taunt: ['“I feed on the dead. You look tired.”', '“Chop away. My hyphae go for miles.”', '“Spores! Spores for everyone!”'],
     low: 'The Spore Lord’s cap is sagging and it has stopped making speeches.', fall: 'The Spore Lord folds up like a wet umbrella. In the mush where it stood, something glints: a piece of a key.' },
@@ -212,126 +236,124 @@ const EVENTS = [
 const eventOf = day => EVENTS[Math.floor((dayNum(day) + 3) / 7) % EVENTS.length];   // weeks run Monday to Sunday
 const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same step (max +40%)
 
-/* ===================== the night =====================
-   resolve(world, pubs, states, today) → { world, states } (new objects). Everyone's planned steps happen in order, step by step:
-   players on the same boss square at the same step fight it together; small monsters are per player (your own copy);
-   knocked out = back to the Cakelab on a quarter of your Health, rest of your moves cancelled. Deterministic for a given day. */
+/* ===================== treasure chests (17 Nov, user: "treasure chests … that spawn on the map at some periodicity …
+   Everyone should see it even with fog") =====================
+   world.chests = { k: { t: kind, d: dayNum it appeared, m: 1 if it is secretly a mimic } }. Each night tops the surface up
+   to CHEST_TARGET (at most 2 new a night) and, half the time, the Underworld to CHEST_UNDER. A chest lasts CHEST_DAYS days.
+   Everyone sees every chest, even through the fog (map page). The first player to step on one opens it: claimChest() deletes
+   it in a transaction, so only one person gets it. What's inside is rolled on the map page (items live in adventurer-items.js):
+   coins in the range, an item of one of the rarities (dark items first in cursed chests; one you don't own yet), maybe a brew.
+   world.finds = the last few openings [{ n, t, it, day }] (written by the player who opened it); the morning report tells everyone. */
+const CHESTS = {
+  wood: { name: 'Wooden chest', col: '#57534e', glow: '#fbbf24', coins: [8, 15], rar: ['common', 'uncommon'], brew: 0, odds: 'Common or Uncommon item' },
+  silver: { name: 'Silver chest', col: '#cbd5e1', glow: '#f1f5f9', coins: [15, 25], rar: ['uncommon', 'rare', 'rare'], brew: .3, odds: 'Uncommon or Rare item, maybe a brew' },
+  gold: { name: 'Golden chest', col: '#facc15', glow: '#fde047', coins: [30, 45], rar: ['rare', 'lowkey', 'lowkey', 'unhinged'], brew: 1, odds: 'Rare, Lowkey Legendary or (very rarely) Absolutely Unhinged item, plus a brew' },
+  cursed: { name: 'Cursed chest', col: '#7c3aed', glow: '#c084fc', coins: [20, 30], rar: ['uncommon', 'rare', 'lowkey'], dark: true, brew: .5, under: true, odds: 'one of the dark items, maybe a brew' },
+};
+const CHEST_TARGET = 3, CHEST_UNDER = 1, CHEST_DAYS = 5, MIMIC = 0.15;
+const isUnder = k => unkey(k)[1] >= UNDER0;
+/* tidy up old chests and make new ones; n = drop exactly n on the surface now (admin), kind optional. Returns the new keys. */
+function spawnChests(w, states, today, rnd, n, kind) {
+  w.chests = w.chests || {}; const now = dayNum(today), made = [];
+  if (!n) Object.keys(w.chests).forEach(k => { if (now - (w.chests[k].d || now) >= CHEST_DAYS) delete w.chests[k]; });
+  const taken = new Set([...Object.keys(w.chests), ...Object.values(states || {}).map(st => st && st.at), HOME, ...CRUMBS]);
+  const spots = under => { const out = []; for (let r = under ? UNDER0 : 0; r < (under ? ROWS : SURF_ROWS); r++) for (let c = 0; c < COLS; c++) { const k = key(c, r);
+    if (!PLACES[k] && !taken.has(k) && T_AT(c, r) !== 'B' && walkableIn(w, c, r) && (under || dist([c, r], unkey(HOME)) >= 2)) out.push(k); } return out; };
+  const add = (under, t) => { const sp = spots(under); if (!sp.length) return; const k = sp[Math.floor(rnd() * sp.length)], r = rnd();
+    t = t || (under ? (r < .6 ? 'cursed' : r < .85 ? 'silver' : 'gold') : (r < .6 ? 'wood' : r < .9 ? 'silver' : 'gold'));
+    w.chests[k] = { t, d: now }; if (t === 'wood' && rnd() < MIMIC) w.chests[k].m = 1; taken.add(k); made.push(k); };
+  const count = under => Object.keys(w.chests).filter(k => isUnder(k) === under).length;
+  if (n) { for (let i = 0; i < n; i++) add(kind === 'cursed', kind); return made; }
+  for (let i = 0; i < 2 && count(false) < CHEST_TARGET; i++) add(false);
+  if (count(true) < CHEST_UNDER && rnd() < .5) add(true);
+  return made;
+}
+
+/* ===================== the night (rewritten 17 Nov: moves now happen when you make them) =====================
+   Walking, small monsters, critters, the puddle, resting, shops and dungeons all happen at once on the map page.
+   Only boss fights wait: stepping onto a living boss makes camp (state.camp = {k, n, day}); every move spent there is one
+   attack at midnight, and everyone camped at the same boss fights together, round by round (rally = the others in that round).
+   resolve(world, pubs, states, today) → { world, states, rescued } (new objects). Deterministic for a given day.
+   Also: refills moves, wears off tonight's brews and shield, writes each player's short morning report. */
 function resolve(w0, pubs, st0, today) {
   const w = JSON.parse(JSON.stringify(w0)), S = JSON.parse(JSON.stringify(st0 || {}));
   let seed = 7; for (const ch of today) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const elapsed = Math.max(1, Math.min(7, dayNum(today) - dayNum(w.day || today)));
-  const tNum = dayNum(today), EV = eventOf(w0.day || today).id;   // the event of the day the plans were made
-  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0], did = {};
-  const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
-  w.boss = Object.assign({}, BOSS_MAX, w.boss || {}); w.hit = w.hit || {};
+  const EV = eventOf(w0.day || today).id;   // the event of the day the camps were made
   const P_ = uid => pubs[uid] || {};
-  const ids = Object.keys(S);
-  const lines = {}, out = {}, used = {}, visBefore = {}, pos = {}, rewards = {};
+  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0];
+  const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+  w.boss = bossNow(w); w.bal = 1; w.hit = w.hit || {}; w.back = w.back || {};
+  /* bosses that come back (the starter): full health again on the day they're due, with a fresh list of who hit them */
+  Object.entries(w.back).forEach(([k, d]) => { if (dayNum(today) >= d && PLACES[k]) { w.boss[k] = PLACES[k].max; w.hit[k] = {}; delete w.back[k]; } });
+  const ids = Object.keys(S).filter(u => S[u] && S[u].at);   // a state the admin made just to hold extra moves waits until its player joins
+  const lines = {}, out = {}, rewards = {}, fought = {};
   const say = (u, h) => lines[u].push(h);
   const ouch = (u, h) => (S[u].shield ? Math.ceil(h / 2) : h);
   const strOf = u => ((P_(u).str || 10) + (S[u].aura ? 5 : 0)) * (S[u].fizz ? 1.5 : 1);
   const hurt = (u, h) => { S[u].health = Math.max(S[u].calm ? 1 : 0, S[u].health - h); };
   const give = (u, coins, item) => { const r = rewards[u] = rewards[u] || { coins: 0, items: [] }; r.coins += coins || 0; if (item) r.items.push(item); };
-  const knockout = u => { out[u] = true; pos[u] = HOME; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4));
-    say(u, `<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Your other moves tonight are cancelled. Recharge with a mission (+${HEAL.mission} per right answer) or your flashcards (+${HEAL.card} per card).</p>`); };
-  const plans = {};
-  ids.forEach(u => {
-    const st = S[u]; lines[u] = []; used[u] = 0; pos[u] = st.at || HOME; visBefore[u] = visibleOf(st);
-    st.visited = st.visited || [HOME]; st.dens = st.dens || {}; st.brews = st.brews || {};
-    const pl = P_(u).plan, steps = [];
-    if (pl && pl.day === w0.day && Array.isArray(pl.steps)) {   // check every step: adjacent (or staying), walkable, within moves
-      let at = pos[u];
-      for (const k of pl.steps.slice(0, Math.max(0, st.moves || 0))) {
-        const [c, r] = unkey(k);
-        if (!(k === at || neighbours(...unkey(at)).some(([x, y]) => x === c && y === r)) || !walkableIn(w, c, r)) break;
-        steps.push(k); at = k;
-      }
+  ids.forEach(u => { lines[u] = []; S[u].dens = S[u].dens || {}; S[u].brews = S[u].brews || {}; });
+  /* the camps: by boss, each player with the number of attacks they queued */
+  const camps = {};
+  ids.forEach(u => { const c = S[u].camp, P = c && PLACES[c.k];
+    if (c && c.day === w0.day && S[u].at === c.k && P && P.type === 'boss' && (P.ch || 1) <= w.chapter && w.boss[c.k] > 0 && c.n > 0) (camps[c.k] = camps[c.k] || []).push([u, c.n]); });
+  Object.entries(camps).forEach(([k, team]) => {
+    const P = PLACES[k], ST = BOSS_STORY[k] || {}, hk = w.hit[k] = w.hit[k] || {}, start = w.boss[k];
+    const rounds = Math.max(...team.map(([, n]) => n)), dealt = {};
+    team.forEach(([u]) => { if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`); hk[u] = true; dealt[u] = 0; fought[u] = P.name; });
+    for (let i = 0; i < rounds && w.boss[k] > 0; i++) {
+      const now = team.filter(([u, n]) => n > i && !out[u]).map(([u]) => u); if (!now.length) break;
+      const bonus = Math.min(4, now.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
+      now.forEach(u => { const d = Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult); dealt[u] += d; w.boss[k] = Math.max(0, w.boss[k] - d); });
+      if (w.boss[k] > 0) now.forEach(u => { const h = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, h); dealt['hit_' + u] = (dealt['hit_' + u] || 0) + h;
+        if (S[u].health === 0) { out[u] = true; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4)); } });
     }
-    plans[u] = steps;
+    const total = start - w.boss[k], ST2 = BOSS_STORY[k] || {};
+    team.forEach(([u, n]) => {
+      const mates = team.filter(([x]) => x !== u).map(([x]) => nameOf(x));
+      say(u, `<p class="good">⚔ At midnight ${mates.length ? `you and ${list(mates)} attack ${P.name} together` : `you attack ${P.name}`}: ${total} damage in all${mates.length ? ` (you did ${dealt[u]})` : ''}.${mates.length ? ` 📣 Rally bonus for fighting side by side.` : ''}</p>`);
+      if (dealt['hit_' + u]) say(u, `<p class="bad">${P.name} hits back: −${dealt['hit_' + u]} Health.</p>`);
+      if (out[u]) say(u, `<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Missions (+${HEAL.mission} per right answer) and flashcards (+${HEAL.card} per card) heal you.</p>`);
+      else if (w.boss[k] > 0) say(u, w.boss[k] <= P.max / 3 && start > P.max / 3 && ST2.low ? `<p class="new">${ST2.low}</p>` : ST2.taunt ? `<p>${P.name}: <i>${ST2.taunt[Math.floor(rnd() * ST2.taunt.length)]}</i></p>` : '');
+    });
+    if (w.boss[k] === 0) {
+      const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
+      Object.keys(hk).forEach(u => { if (S[u]) { lines[u] = lines[u] || []; give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; }
+        if (ST2.fall) lines[u].push(`<p class="new">${ST2.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
+      if (P.respawn) w.back[k] = dayNum(today) + P.respawn;
+      (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
+      if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
+    }
   });
-  const maxSteps = Math.max(0, ...ids.map(u => plans[u].length));
-  for (let i = 0; i < maxSteps; i++) {
-    const fights = {};   // boss square → attackers this step
-    ids.forEach(u => {
-      if (out[u] || i >= plans[u].length) return;
-      const k = plans[u][i], P = PLACES[k], [c, r] = unkey(k), st = S[u];
-      used[u]++;
-      say(u, `<p>Move ${i + 1}: ${k === pos[u] ? 'You stay at' : 'You walk to'} <b>${P ? P.name : LAND[T_AT(c, r)].name}</b>.</p>`);
-      pos[u] = k; st.at = k;
-      if (!st.visited.includes(k)) st.visited.push(k);
-      if (P && P.type === 'boss' && (P.ch || 1) <= w.chapter && w.boss[k] > 0) (fights[k] = fights[k] || []).push(u);
-      else if (P && P.type === 'monster') {
-        const d = st.dens[k]; let hp = !d ? P.max : d.back ? (d.back > tNum ? 0 : P.max) : d.hp;
-        if (!hp) { say(u, `<p>The ${P.name} has gone to lick its wounds. Nothing to fight here tonight.</p>`); return; }
-        const dmg = Math.round(strOf(u) * (0.6 + rnd() * 0.8)); hp = Math.max(0, hp - dmg);
-        say(u, `<p class="good">You take on the ${P.name}: ${dmg} damage.</p>`);
-        const hit = ouch(u, Math.round(P.power * (0.5 + rnd()))); hurt(u, hit);
-        say(u, `<p class="bad">It fights back: −${hit} Health.</p>`);
-        if (!hp) { const c = EV === 'coins' ? 16 : 8; st.dens[k] = { back: tNum + 2 }; give(u, c); did[u] = `beat the ${P.name}`; say(u, `<p class="lt">★ ${P.name} beaten! +${c} coins${EV === 'coins' ? ' (Market week)' : ''}. It'll be back in two days.</p>`); }
-        else { st.dens[k] = { hp }; say(u, `<p>The ${P.name} limps off with ${hp} health left. Come back to finish it.</p>`); }
-        if (st.health === 0) knockout(u);
-      } else if (!P && EV !== 'quiet' && rnd() < .3 && WILD[T_AT(c, r)]) {
-        const hit = ouch(u, 1 + Math.floor(rnd() * 3)); hurt(u, hit);
-        say(u, `<p>On the way you're jumped by <b>${WILD[T_AT(c, r)]}</b>. You see it off (−${hit} Health).</p>`);
-        if (st.health === 0) knockout(u);
-      } else if (P && P.type === 'dungeon') {
-        /* dungeons are played awake (16 Nov): the floors are question rooms on the map page; the night only gets you to the door */
-        if (i === plans[u].length - 1) say(u, `<p class="new">You make camp at the door of <b>${P.name}</b>. Open the map and go in: every floor is a room of questions, with loot for each one you clear.</p>`);
-      } else if (P && P.type === 'event') {
-        if (rnd() < .4) { const c = EV === 'coins' ? 10 : 5; give(u, c); say(u, `<p>You poke the puddle and fish out <span class="lt">${c} coins</span>.</p>`); } else say(u, '<p>You poke the puddle. It pokes back. You lose a sock.</p>');
-      } else if (P && P.type === 'shop') say(u, '<p>The Tuck Shop is open. You browse, buy nothing, and leave with crumbs.</p>');
-      else if (P && P.type === 'lift') { if (i === plans[u].length - 1) say(u, '<p class="new">You wait by the Mine Lift. Open the map to ride it up.</p>'); }
-      else if (P && P.type === 'home') { const b = st.health; st.health = Math.min(P_(u).hp || 15, st.health + HEAL.rest * (EV === 'rest' ? 2 : 1)); say(u, `<p class="good">You rest in the Cakelab: +${st.health - b} Health.</p>`); }
-    });
-    /* bosses: everyone on the square this step fights together */
-    Object.entries(fights).forEach(([k, team]) => {
-      const P = PLACES[k], ST = BOSS_STORY[k] || {}, before = w.boss[k];
-      const bonus = Math.min(4, team.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
-      const dmg = team.map(u => Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult)), total = dmg.reduce((a, b) => a + b, 0);
-      w.boss[k] = Math.max(0, w.boss[k] - total);
-      const hk = w.hit[k] = w.hit[k] || {};
-      const taunt = ST.taunt ? ST.taunt[Math.floor(rnd() * ST.taunt.length)] : '';
-      team.forEach((u, j) => {
-        if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`);
-        hk[u] = true; did[u] = `fought ${P.name}`;
-        const mates = team.filter(x => x !== u).map(nameOf);
-        say(u, `<p class="good">${mates.length ? `You and ${list(mates)} attack ${P.name} together` : `You attack ${P.name}`}: ${total} damage${mates.length ? ` (you did ${dmg[j]})` : ''}.${bonus ? ` 📣 Rally: +${Math.round(bonus * 100)}% for fighting side by side.` : ''}</p>`);
-        if (w.boss[k] > 0) {
-          if (before > P.max / 3 && w.boss[k] <= P.max / 3 && ST.low) say(u, `<p class="new">${ST.low}</p>`); else if (taunt) say(u, `<p>${P.name}: <i>${taunt}</i></p>`);
-          const hit = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, hit); say(u, `<p class="bad">${P.name} hits back. You lose ${hit} Health.</p>`); if (S[u].health === 0) knockout(u); }
-      });
-      if (w.boss[k] === 0) {
-        const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
-        Object.keys(hk).forEach(u => { if (S[u]) { give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; } if (ST.fall) lines[u].push(`<p class="new">${ST.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
-        (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
-        if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
-      }
-    });
-  }
+  /* treasure chests: who found what yesterday, then tonight's new ones */
+  const finds = (w0.finds || []).filter(f => f && f.day === w0.day);
+  const newChests = spawnChests(w, S, today, rnd);
   /* chapter 2: the cage opens for everyone the night the third key piece is won */
   let rescued = false;
-  if (w.chapter < 2 && keysOf(w) === 3) { w.chapter = 2; rescued = true; w.log.push('All three key pieces won: the Professor is free! Chapter 2 begins.'); }
+  if (w.chapter < 2 && keysOf(w) === 3) { w.chapter = 2; rescued = true; (w.log = w.log || []).push('All three key pieces won: the Professor is free! Chapter 2 begins.'); }
   ids.forEach(u => {
     const st = S[u];
     if (rescued) lines[u].unshift('<p class="lt">🔓 With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>');
-    const vis = visibleOf(st);
-    Object.entries(PLACES).forEach(([k, P]) => { if (vis.has(k) && !visBefore[u].has(k)) lines[u].push(`<p class="new">🗺 The fog clears: you can now see <b>${P.name}</b>.</p>`); });
-    if (st.shield) lines[u].push('<p class="lt">🛡 Your Jam Shield took half of every hit tonight. It has worn off.</p>');
+    if (st.shield) lines[u].push('<p class="lt">🛡 Your Jam Shield has worn off.</p>');
     ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">${BREWS[b].ic} Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
-    st.shield = false;
+    st.shield = false; st.camp = null;
     Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
-    st.moves = Math.min(MOVE_BANK, Math.max(0, (st.moves || 0) - used[u]) + DAILY_MOVES * elapsed);
-    if (!plans[u].length) lines[u].push(`<p>You didn't plan any moves${elapsed > 1 ? ' for a while' : ''}, so you stayed at ${PLACES[st.at] ? PLACES[st.at].name : 'your spot'}.</p>`);
+    /* new moves: moves were already spent as they were made. Someone who joined today keeps their 6 first-day moves. */
+    const before = st.moves || 0;
+    if (st.joined !== today) st.moves = Math.max(before, Math.min(MOVE_BANK, before + DAILY_MOVES * elapsed));
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
-    /* what everyone else got up to (the shared world should feel shared) */
-    const others = ids.filter(x => x !== u && plans[x].length).map(x => `<b>${nameOf(x)}</b> ${did[x] || `walked to ${PLACES[S[x].at] ? PLACES[S[x].at].name : LAND[T_AT(...unkey(S[x].at))].name}`}${out[x] ? ' and was knocked out' : ''}`);
+    const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
     if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
+    if (finds.length) lines[u].push(`<p>✨ Treasure found yesterday: ${finds.map(f => `<b>${f.n}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${f.it})` : ''}`).join('; ')}.</p>`);
+    if (newChests.length) lines[u].push(`<p class="new">✨ ${newChests.length === 1 ? 'A new treasure chest has' : newChests.length + ' new treasure chests have'} appeared in the night${newChests.some(isUnder) ? ' (one of them in the Underworld)' : ''}. You can see chests glinting even through the fog. First to reach one gets what's inside.</p>`);
     const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
-    st.report = lines[u]; st.reportDay = today;
+    lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}.</p>`);
+    st.report = lines[u]; st.reportDay = today; st.big = !!(fought[u] || rescued || lines[u].some(l => /defeated!/.test(l)));   // big = worth a pop-up
   });
   w.day = today; delete w.lock;
-  w.lastNight = { day: today, players: ids.length, moved: ids.filter(u => plans[u].length).length };
+  w.lastNight = { day: today, players: ids.length, moved: Object.keys(fought).length };
   return { world: w, states: S, rescued };
 }
 
@@ -350,7 +372,7 @@ async function join(profile) {
     const r = await ref('world').transaction(cur => cur || newWorld());
     world = Object.assign(newWorld(), r.snapshot.val());
   }
-  if (!states[uid]) { states[uid] = newState(profile.hp); await ref('state/' + uid).set(states[uid]); }
+  if (!states[uid] || !states[uid].at) { states[uid] = Object.assign(newState(profile.hp), states[uid] || {}); await ref('state/' + uid).set(states[uid]); }   // (may already hold extra moves from the teacher)
   await publish(profile);
 }
 function publish(profile, plan) {
@@ -368,6 +390,22 @@ async function aid(to, what, from) {
   await ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5));
   if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
 }
+/* treasure: the first to step on a chest gets it. Returns the chest if you got it, null if someone else already had. */
+async function claimChest(k) {
+  let took = null;
+  const r = await ref('world/chests/' + k).transaction(cur => { took = cur; return cur ? null : cur; });
+  if (world && world.chests) delete world.chests[k];
+  return r.committed && took ? took : null;
+}
+const logFind = f => ref('world/finds').transaction(a => (Array.isArray(a) ? a : []).concat(f).slice(-10));
+/* admin: drop chests on the surface now (or one cursed chest in the Underworld) */
+async function dropChests(n, kind) {
+  await load(); if (!world) return [];
+  const w = { chests: Object.assign({}, world.chests || {}), chapter: world.chapter, boss: world.boss };
+  const made = spawnChests(w, states, TODAY, Math.random, n, kind), upd = {};
+  made.forEach(k => { upd['world/chests/' + k] = w.chests[k]; }); if (made.length) await ref().update(upd);
+  world.chests = w.chests; return made;
+}
 function saveMine(fields) { Object.assign(states[uid], fields); return ref('state/' + uid).update(fields); }
 /* the night: run if the world's day is before today. A transaction on the lock stops two visitors running it at once. */
 async function runNightIfDue(force) {
@@ -378,8 +416,13 @@ async function runNightIfDue(force) {
   if (!force && world.day >= TODAY) return null;
   if (force && world.day >= TODAY) world.day = dstr(new Date(Date.parse(TODAY + 'T12:00:00') - 864e5));   // admin: replay tonight
   const res = resolve(world, pubs, states, TODAY);
-  const upd = { world: res.world };
-  Object.entries(res.states).forEach(([u, st]) => { upd['state/' + u] = st; });
+  const upd = {}, c0 = world.chests || {}, c1 = res.world.chests || {};
+  Object.keys(res.world).forEach(f => { if (f !== 'chests' && f !== 'finds') upd['world/' + f] = res.world[f]; });
+  Object.keys(world).forEach(f => { if (!(f in res.world)) upd['world/' + f] = null; });   // e.g. the lock
+  Object.keys(c0).forEach(k => { if (!c1[k]) upd['world/chests/' + k] = null; });
+  Object.keys(c1).forEach(k => { if (!c0[k]) upd['world/chests/' + k] = c1[k]; });
+  const NIGHT_FIELDS = ['at', 'health', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews'];
+  Object.entries(res.states).forEach(([u, st]) => { if (!st || !st.at) return; NIGHT_FIELDS.forEach(f => { upd[`state/${u}/${f}`] = st[f] === undefined ? null : st[f]; }); });
   await ref().update(upd);
   world = res.world; states = res.states;
   return res;
@@ -387,7 +430,7 @@ async function runNightIfDue(force) {
 const me = () => states[uid];
 
 return { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS, CH1, HOME, SIGHT, MOVE_BANK,
-  BREWS, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
+  FIRST_MOVES, DAILY_MOVES, movesOf, CHESTS, CHEST_TARGET, CHEST_UNDER, CHEST_DAYS, MIMIC, isUnder, spawnChests, claimChest, logFind, dropChests, BREWS, SPELL_INFO, FLOOR_COINS, bossNow, key, unkey, nb, inMap, neighbours, isWater, cube, dist, hash, keysOf, sealedIn, walkableIn, visibleOf, TODAY, dayNum, dstr, BOSS_MAX,
   newWorld, newState, resolve, init, load, join, publish, savePlan, saveMine, aid, runNightIfDue, me, BOSS_STORY, EVENTS, eventOf, RALLY,
   get world() { return world; }, get pubs() { return pubs; }, get states() { return states; }, get uid() { return uid; } };
 })();

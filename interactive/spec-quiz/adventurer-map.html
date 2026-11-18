@@ -50,6 +50,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .hud .tools .btn{padding:4px 10px;font-size:14px}
 .hud .day{font-size:13px;color:var(--muted);font-weight:700}
 .questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
+.hud .mana.lk{opacity:.55;font-size:13px}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
 .questbar .ev{display:block;margin-top:3px;padding-top:3px;border-top:1px dashed #bbb;font-size:12px;font-weight:600;max-width:270px;line-height:1.25}.questbar .ev u{text-decoration:none;font-weight:900;color:#b45309}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
@@ -64,7 +65,11 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #map .wv{animation:wv 5s ease-in-out infinite alternate}@keyframes wv{from{transform:translateX(-3px)}to{transform:translateX(4px)}}
 #map .idle,#map .mebob{transform-box:fill-box;animation:bob 1.6s steps(2,jump-none) infinite alternate}#map .mebob{animation-duration:1.1s}@keyframes bob{to{transform:translateY(-2px)}}
 #map .lava{animation:lava 2.4s ease-in-out infinite alternate}@keyframes lava{from{opacity:.15}to{opacity:.75}}
-@media(prefers-reduced-motion:reduce){#map .lava,#map .wv,#map .idle,#map .mebob{animation:none}}
+#map .glint{animation:glint 1.8s ease-in-out infinite alternate}@keyframes glint{from{opacity:.45}to{opacity:1}}
+#map .chestbob{transform-box:fill-box;animation:bob 1.2s steps(2,jump-none) infinite alternate}
+#dunBody .chestwin{display:flex;gap:14px;align-items:center;justify-content:center;margin:8px 0}#dunBody .chestwin img{image-rendering:pixelated}
+#dunBody .prize{background:#1c1917;border:2px solid #facc15;padding:8px 10px;margin-top:8px;font-size:15px}#dunBody .prize .rar{font:800 12px Barlow,Arial;text-transform:uppercase;letter-spacing:.04em}
+@media(prefers-reduced-motion:reduce){#map .lava,#map .wv,#map .idle,#map .mebob,#map .glint,#map .chestbob{animation:none}}
 @media(max-width:1460px){.hud .day{display:none}}
 @media(max-width:1400px){.hud .tools .t{display:none}.hud .tools #sleep .t{display:inline}}
 @media(max-width:760px){.hud{gap:6px 10px;padding:6px 8px}.hud .who img{width:32px;height:32px}.hud .nm{font-size:17px}.hud .hp .bar{width:70px}.hud .tools{margin-left:0;width:100%}.hud .tools .t{display:none}.hud .tools #sleep{margin-left:auto}.hud .tools #sleep .t{display:inline}}
@@ -146,13 +151,14 @@ table.st th{background:var(--soft)}
       <div>
         <ul>
           <li><b>One world for everyone who plays.</b> The other adventurers on the map are real players. Click a face to see who they are and where they're heading.</li>
-          <li><b>Plan, then sleep.</b> Tap a glowing square to plan a move. Everyone's moves happen together at midnight, and the morning report tells you what happened.</li>
+          <li><b>Moves happen straight away.</b> Tap a glowing square (or any square you can see, for the whole way there). Small monsters fight you on the spot: each move is one question, right and you hit it, wrong and it hits you. <b>Bosses wait for midnight:</b> step onto one to make camp; each move you spend there is one attack, and everyone camped at the same boss fights it together. Walking away breaks camp and gives the moves back.</li>
           <li><b>Moves:</b> 6 on your first day, then 2 a day, <b>+1 for the day's first revision</b> (a mission or today's flashcards). Unused moves bank, up to 4. A move is one step, or staying put to fight or explore again.</li>
           <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together, with a <b>rally bonus</b> of +10% damage for each ally. On the same square as another player you can tap them to patch them up (3 mana) or give them a brew. <b>Each week has an event</b> (shown under the quest).</li>
           <li><b>Bosses:</b>  Boss health carries over night to night and never goes back up.</li>
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
           <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
+          <li><b>New things open as you level up</b> (and you level up by securing spec points): mana and spells at level 2, hats at 3, the Tuck Shop and weekly events at 4, dungeons at 5, the Abandoned Mine at 7. Locked places show a padlock and the level.</li>
           <li><b>Dungeons</b> are played awake. End a move at a dungeon door, then open the map and go in: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
           <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
@@ -278,25 +284,39 @@ function noteBossHits() {
   ADV.save(); if (Object.keys(HITNOW).length) setTimeout(() => { for (const k in HITNOW) HITNOW[k] = -1; }, 1600);
 }
 
+/* treasure chests (17 Nov): from the shared world, seen by everyone even through the fog */
+const chestAt = k => (S.chests || {})[k];
+const chestKind = k => BL.CHESTS[(chestAt(k) || {}).t] || BL.CHESTS.wood;
+const chestLeft = k => Math.max(1, BL.CHEST_DAYS - (BL.dayNum(QE.TODAY) - (chestAt(k).d || BL.dayNum(QE.TODAY))));
+
 /* ===================== drawing ===================== */
 let sel = null;
 const svg = $('map');
 
-function lastStop() { return S.plan.length ? S.plan[S.plan.length - 1] : S.at; }
+/* 17 Nov: moves happen when you make them (only boss fights wait for midnight). lastStop() is where you are now. */
+let walking = false;
+function lastStop() { return S.at; }
+/* staying put costs a move, so it's only offered where it does something: a fight, a camp, a rest or the puddle */
+function stayUseful(k) { const P = PLACES[k]; if (!P) return false;
+  if (P.type === 'boss') return (P.ch || 1) <= S.chapter && S.boss[k] > 0;
+  if (P.type === 'monster') return denHp(k) > 0;
+  if (P.type === 'home') return S.restDay !== QE.TODAY;
+  if (P.type === 'event') return S.puddleDay !== QE.TODAY;
+  return false; }
 function reachable() {
-  if (S.plan.length >= S.moves) return new Set();
-  const [lc, lr] = unkey(lastStop());
-  return new Set([...neighbours(lc, lr).filter(([c, r]) => walkable(c, r)).map(([c, r]) => key(c, r)), lastStop()]);
+  if (S.moves <= 0 || walking) return new Set();
+  const [lc, lr] = unkey(S.at);
+  return new Set([...neighbours(lc, lr).filter(([c, r]) => walkable(c, r)).map(([c, r]) => key(c, r)), ...(stayUseful(S.at) ? [S.at] : [])]);
 }
 /* shortest way from your last planned stop to k, through squares you can see; never walks through a live monster or boss on the way */
 function pathTo(k) {
   const start = lastStop(); if (k === start) return [];
-  const vis = visibleSet(), prev = { [start]: null }, q = [start];
+  const vis = visibleSet(), prev = { [start]: null }, q = [start], fogOK = !vis.has(k) && !!chestAt(k);   // a chest glints through the fog: you can head for it
   const fight = kk => { const P = PLACES[kk]; return !!P && (P.type === 'boss' ? S.boss[kk] > 0 : P.type === 'monster' && denHp(kk) > 0); };
   while (q.length) {
     const cur = q.shift(); if (cur === k) break;
     if (cur !== start && fight(cur)) continue;
-    for (const [c, r] of neighbours(...unkey(cur))) { const nk = key(c, r); if (nk in prev || !walkable(c, r) || !vis.has(nk)) continue; prev[nk] = cur; q.push(nk); }
+    for (const [c, r] of neighbours(...unkey(cur))) { const nk = key(c, r); if (nk in prev || !walkable(c, r) || (!vis.has(nk) && !fogOK)) continue; prev[nk] = cur; q.push(nk); }
   }
   if (!(k in prev)) return null;
   const out = []; for (let x = k; x !== start; x = prev[x]) out.unshift(x);
@@ -404,6 +424,8 @@ function renderMap() {
         things += `<rect x="${x - 20}" y="${y + 16}" width="40" height="6" fill="#fff" stroke="#111" stroke-width="1.2"/><rect x="${x - 19.4}" y="${y + 16.6}" width="${38.8 * hp / P.max}" height="4.8" fill="#e11d48"/>`;
       }
       if (P.type === 'locked') things += img(icon('lock'), x + 7, y - 24, 14);
+      { const need = P.type === 'dungeon' ? (k === MINE ? 'mine' : 'dungeons') : P.stock ? 'shop' : null;   // not yet for you: padlock + level
+        if (need && !ADV.can(need) && (P.ch || 1) <= S.chapter) things += img(icon('lock'), x + 6, y - 26, 15) + `<text x="${x + 13}" y="${y + 21}" text-anchor="middle" font-size="9" font-weight="900" fill="#111" paint-order="stroke" stroke="#fff" stroke-width="2.5">Lv ${ADV.unlockLv(need)}</text>`; }
       if (P.type === 'worldboss') things += `<text x="${x + 18}" y="${y - 18}" font-size="12" font-weight="900" fill="#334155">z</text><text x="${x + 25}" y="${y - 26}" font-size="9" font-weight="900" fill="#334155">z</text>`;
     }
     if (!vis.has(k)) {
@@ -412,6 +434,12 @@ function renderMap() {
       if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) fogTop += img(icon('shadow'), x - 18, y - 22, 36, 'opacity=".75"') + `<text x="${x}" y="${y + 21}" text-anchor="middle" font-size="11" font-weight="900" fill="${DARK ? '#cbd5e1' : '#475569'}">?</text>`;
     }
     if (CRUMBS.includes(k) && S.chapter < 2) fogTop += img(icon('crumbs'), x - 22, y - 18, 44) + img(icon('crumbs'), x - 8, y - 4, 34);
+    if (chestAt(k)) {   /* treasure: drawn over the fog too, with a glowing outline in the chest's colour */
+      const C = chestKind(k), seenIt = vis.has(k);
+      const ring = `<polygon class="glint" points="${hexPts(x, y, HEXR - 3)}" fill="${C.glow}22" stroke="${C.glow}" stroke-width="${seenIt ? 2.5 : 3.5}" stroke-dasharray="${seenIt ? '4 3' : 'none'}"/>`;
+      const spr = `<ellipse cx="${x}" cy="${y + 11}" rx="11" ry="3" fill="#0004"/>` + img(icon('chest', C.col), x - 14, y - 17, 28, 'class="chestbob"') + `<text class="glint" x="${x + 13}" y="${y - 12}" font-size="12" fill="#fff" paint-order="stroke" stroke="${C.glow}" stroke-width="2">✦</text>`;
+      fogTop += ring + spr;
+    }
     hits += `<polygon class="hit" data-k="${k}" points="${hexPts(x, y)}"/>`;
   }
   /* fog also covers the sea round the edge of the map */
@@ -435,17 +463,12 @@ function renderMap() {
     });
     if (list.length > 3) ppl += `<g class="pp" data-k2="${k}"><rect x="${x + 14}" y="${y - 32}" width="18" height="16" rx="3" fill="#111"/><text x="${x + 23}" y="${y - 20}" text-anchor="middle" font-size="10" font-weight="900" fill="#fff">+${list.length - 3}</text></g>`;
   });
-  /* planned route + reachable squares + selection */
+  /* reachable squares, the way to a picked square, your camp + selection */
   let route = '';
-  if (S.plan.length) {
-    const pts = [S.at, ...S.plan].map(k => center(...unkey(k)).map(v => v.toFixed(1)).join(',')).join(' ');
-    route += `<polyline points="${pts}" fill="none" stroke="#111" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><polyline points="${pts}" fill="none" stroke="#facc15" stroke-width="4" stroke-linecap="round" stroke-dasharray="2 9"/>`;
-    S.plan.forEach((k, i) => { const [x, y] = center(...unkey(k)); route += `<circle cx="${x + 19}" cy="${y + 4}" r="9" fill="#facc15" stroke="#111" stroke-width="1.5"/><text x="${x + 19}" y="${y + 8}" font-size="11" font-weight="900" text-anchor="middle">${i + 1}</text>`; });
-  }
   reach.forEach(k => { const [x, y] = center(...unkey(k)); route += `<polygon points="${hexPts(x, y, HEXR - 2.5)}" fill="#facc1522" stroke="#facc15" stroke-width="3" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="20" dur="1.2s" repeatCount="indefinite"/></polygon>`; });
-  if (sel && sel !== lastStop() && S.plan.length < S.moves) {   /* preview of the way there */
+  if (sel && sel !== S.at && S.moves > 0) {   /* preview of the way there */
     const pv = pathTo(sel);
-    if (pv && pv.length > 1) { const left = S.moves - S.plan.length, pts = k => center(...unkey(k)).map(v => v.toFixed(1)).join(',');
+    if (pv && pv.length > 1) { const left = S.moves, pts = k => center(...unkey(k)).map(v => v.toFixed(1)).join(',');
       route += `<polyline points="${[lastStop(), ...pv.slice(0, left)].map(pts).join(' ')}" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 8" opacity=".95"/>`;
       if (pv.length > left) route += `<polyline points="${pv.slice(left - 1).map(pts).join(' ')}" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1 10" opacity=".5"/>`; }
   }
@@ -456,7 +479,7 @@ function renderMap() {
 </defs>
     <rect y="${HEXR * 1.5 * (R0 - 2)}" width="${VB_W}" height="${HEXR * 1.5 * (R1 - R0 + 4)}" fill="${DARK ? '#2b2733' : '#4f9fd1'}"/>${water}${land}${coast}<g>${decor}</g><g>${regionLabels(vis)}</g>${things}
     <g filter="url(#fogblur)" opacity=".97">${fog}</g>${fogTop}${route}
-    ${hits}${ppl}`;
+    ${hits}${ppl}${S.camp ? (() => { const [x, y] = center(...unkey(S.camp.k)); return `<g style="pointer-events:none"><rect x="${x - 17}" y="${y - 50}" width="34" height="17" rx="8" fill="#111" stroke="#facc15" stroke-width="1.5"/><text x="${x}" y="${y - 37}" text-anchor="middle" font-size="11" font-weight="900" fill="#facc15">⛺ ${S.camp.n}</text></g>`; })() : ''}`;
 }
 
 /* ===================== HUD, panel, tooltip ===================== */
@@ -465,20 +488,19 @@ function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    <div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>
-    <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span><span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span></div>
-    <div class="moves">Moves ${[...Array(Math.max(S.moves, 2))].map((_, i) => `<span class="${i < S.plan.length ? 'used' : ''}">${i + 1}</span>`).join('')}</div>
-    <div class="day">Day ${S.dayNo || 1} · moves happen at midnight</div>
-    <div class="tools"><button class="btn alt" id="undo" title="Undo last move" ${S.plan.length ? '' : 'disabled'}>↶<span class="t"> Undo</span></button><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
+    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
+    <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span>${ADV.can('shop') ? `<span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span>` : ''}</div>
+    <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' 🎁' : ''}</div>
+    <div class="day">Day ${S.dayNo || 1} · boss fights happen at midnight</div>
+    <div class="tools"><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
-  { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
-  $('undo').onclick = () => { S.plan.pop(); persist(); renderAll(); };
+  if (ADV.can('events')) { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
   $('repBtn').onclick = () => showReport();
   $('meBtn').onclick = () => { const m = document.querySelector('#map .pp[data-p="me"]'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
   if ($('peekBtn')) $('peekBtn').onclick = () => { const other = LAYER ? 0 : 1; peek = other === layerOf(S.at) ? null : other; sel = null; renderMap(); renderHud(); renderPanel(); renderLegend(); };
-  $('spellBtn').onclick = showSpells;
+  if ($('spellBtn')) $('spellBtn').onclick = showSpells;
 }
 
 /* ===================== spells (mana from flashcards and missions) ===================== */
@@ -488,18 +510,16 @@ function brewRows() {
     return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:26px">${b.ic}</span><div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
     : '<p class="small">None yet. Buy them at the Tuck Shop with coins from missions, flashcards and the map, or find them in dungeons.</p>');
 }
-const SPELLS = [
-  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.', ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.',
-    cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
-  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.', ok: () => !S.shield, why: 'Already up for tonight.',
-    cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
-  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.', ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.',
-    cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
-];
+const SPELL_FN = {
+  heal: { ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.', cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5); return `💚 +${S.health - b} Health.`; } },
+  shield: { ok: () => !S.shield, why: 'Already up for tonight.', cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
+  fog: { ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.', cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
+};
+const SPELLS = BL.SPELL_INFO.map(sp => Object.assign({}, sp, SPELL_FN[sp.id]));   // names and costs live in bland.js
 /* ---------- dungeons (16 Nov): three floors of themed questions, played awake, once a day per dungeon ----------
    floor = up to 4 questions; 3 right clears it (coins; floor 3 also a brew and a loot item); 2 wrong ends the run.
    Answers go through QE.recordAnswer, so they count towards securing spec points like a mission. */
-const FLOOR_COINS = [8, 12, 15, 18, 22];
+const FLOOR_COINS = BL.FLOOR_COINS;
 function delve(k) {
   const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
   const all = QUESTIONS.filter(q => keys.has(q.s)), sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -526,8 +546,9 @@ function delve(k) {
     });
   }
   function floorDone() {
-    const c = FLOOR_COINS[D.floor]; D.coins += c; S.coins += c; let extra = '';
+    const c = FLOOR_COINS[D.floor]; D.coins += c; S.coins += c; let extra = ''; QE.tally('floors');
     if (P.keep) { S.depth = S.depth || {}; S.depth[k] = Math.min(NF - 1, Math.max(S.depth[k] || 0, D.floor + 1)); }
+    if (D.floor === NF - 1) QE.mark('d:' + k);
     if (D.floor === NF - 1 && k === MINE && S.under) return end(true);   // the bottom of the mine only pays out its treasure once
     if (D.floor === NF - 1) {
       if (k === MINE) { S.under = true; D.broke = true; }
@@ -553,28 +574,32 @@ function delve(k) {
 function showSpells() {
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
-  const row = sp => { const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
+  const LK = { heal: 'spells', shield: 'shield', fog: 'fog' };
+  const row = sp => { if (!ADV.can(LK[sp.id])) return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0;opacity:.5"><span style="font-size:28px;filter:grayscale(1)">${sp.ic}</span><div style="flex:1"><b>${sp.name}</b><br><span class="small">${sp.what}</span></div><b>🔒 Level ${ADV.unlockLv(LK[sp.id])}</b></div>`;
+    const can = S.mana >= sp.cost && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
     <div style="flex:1"><b>${sp.name}</b> · ${sp.cost} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
     <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
   $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
-    ${SPELLS.map(row).join('')}${brewRows()}`;
+    ${SPELLS.map(row).join('')}${ADV.can('shop') ? brewRows() : `<h3 style="margin:14px 0 4px;opacity:.5">🧪 Brews · 🔒 Level ${ADV.unlockLv('shop')}</h3><p class="small">Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.${Object.values(S.brews).some(n => n > 0) ? ' The ones you have are kept for you.' : ''}</p>`}`;
   m.classList.add('on');
   $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
     const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
-    S.brews[id]--; let msg;
+    S.brews[id]--; QE.tally('brews'); let msg;
     if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `🥤 Health refilled (+${S.health - b0}).`; }
     else { S[id] = true; msg = `${br.ic} ${br.name}: ${br.what}`; }
     persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
   $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
-    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; const msg = sp.cast(); persist(); renderAll(); showSpells();
+    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= sp.cost; QE.tally('spells'); const msg = sp.cast(); persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
 }
 
 function describe(k) {
   const [c, r] = unkey(k), t = T_AT(c, r), P = PLACES[k], vis = visibleSet().has(k);
+  if (chestAt(k)) { const C = chestKind(k), n = chestLeft(k);
+    return { tp: 'Treasure' + (vis ? '' : ' · glinting through the fog'), name: C.name, chest: true, text: `${vis ? 'A' : 'You can just make out a'} ${C.name.toLowerCase()} ${vis ? 'sitting on ' + (LAND[t] ? 'the ' + LAND[t].name.replace(/^The /, '') : 'the ground') : 'in the ' + (layerOf(k) ? 'darkness' : 'fog')}. The first adventurer to reach it opens it. It'll vanish in ${n} day${n > 1 ? 's' : ''} if nobody does.` }; }
   if (!vis) {
     if (P && (P.type === 'boss' || P.type === 'worldboss') && (P.ch || 1) <= S.chapter) return { tp: 'Unexplored', name: 'Something big', text: 'You can hear it from here. Get within 2 squares to see what it is.' };
     if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'Cake crumbs in the fog', text: 'A trail of crumbs and sprinkles leads north into the fog. Follow it.' };
@@ -590,57 +615,67 @@ function describe(k) {
 function renderPanel() {
   const pn = $('panel');
   if (!sel) { pn.classList.remove('on'); return; }
-  const D = describe(sel), P = D.P, reach = reachable(), last = lastStop();
+  const D = describe(sel), P = D.P, last = S.at;
   const people = PEOPLE.filter(p => S.people[p.i] === sel && visibleSet().has(sel)), mine = S.at === sel;
-  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : ''}${D.name}</div>`;
+  let h = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${D.tp}</div><div class="tn">${P ? `<img class="px" src="${P.type === 'boss' && (P.ch || 1) <= S.chapter ? bossIcon(sel, P) : icon(P.icon, P.col)}" alt="">` : D.chest ? `<img class="px" src="${icon('chest', chestKind(sel).col)}" alt="">` : ''}${D.name}</div>`;
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && P.tier) h += `<div class="cap" style="margin-top:2px"><b style="color:${{ Starter: '#16a34a', 'Next step': '#0284c7', Tough: '#b45309', 'Very tough': '#dc2626', Hardest: '#7c3aed' }[P.tier] || '#111'}">${P.tier === 'Starter' ? '★ Starter boss: you can beat this one on your own' : P.tier}</b>${S.boss[sel] === 0 && P.respawn && BL.world && (BL.world.back || {})[sel] ? ` · beaten, back in ${Math.max(1, BL.world.back[sel] - BL.dayNum(QE.TODAY))} day${BL.world.back[sel] - BL.dayNum(QE.TODAY) > 1 ? 's' : ''}` : ''}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
+  if (D.chest) { const C = chestKind(sel); h += `<div class="loot">✨ <b>Might hold:</b> ${C.coins[0]}–${C.coins[1]} coins and a ${C.odds}. Walking onto it opens it straight away (no extra move).${chestAt(sel).t === 'wood' ? ' Not every wooden chest is what it seems…' : ''}</div>`
+    + (layerOf(sel) && !S.under && layerOf(S.at) === 0 ? `<div class="cap">It's in the Underworld: you'll need to dig through the Abandoned Mine first.</div>` : ''); }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
     h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
   if (P && P.type === 'monster') {
-    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 2.5)));   // ~2.5 moves (= attacks) a day
-    h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits back for about ${P.power}</div><div class="loot">⚔ <b>You can beat this on your own</b> — about ${n} night${n > 1 ? 's' : ''}. Drops: +30 XP, coins, sometimes a brew.</div>`
+    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 1.5)));
+    h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits you for about ${P.power} if you get its question wrong</div><div class="loot">⚔ <b>Fight it now, on your own.</b> Each move here is one ${ADV.SCI[P.science] || ''} question: right and you hit it (about ${n} right answer${n > 1 ? 's' : ''} to beat it), wrong and it hits you. Beat it for ${monsterCoins()} coins.</div>`
       : `<div class="cap">Beaten — it'll be back in a day or two.</div>`;
   }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
-    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / (str * 2.5)), team = Math.ceil(S.boss[sel] / ((str + 4 * 22) * 2.5));
-    h += `<div class="loot">👥 <b>Much easier together:</b> alone about ${solo} nights · with 4 others about ${team}. 📣 <b>Rally:</b> +10% damage for each player on the square with you at the same move.</div>`;
+    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / str), team = Math.ceil(S.boss[sel] / ((str + 3 * 16) * 1.3));   // attacks: you alone / you + 3 others (rally +30%)
+    const campers = Object.entries(BL.states || {}).filter(([u, st]) => u !== BL.uid && st && st.camp && st.camp.k === sel && st.at === sel && BL.world && st.camp.day === BL.world.day).map(([u]) => (BL.pubs[u] || {}).name || 'Someone');
+    h += `<div class="loot">⛺ <b>Boss fights happen at midnight.</b> Step here to make camp: every move you spend here is one attack tonight, alongside everyone else camped here (📣 +10% damage for each of them). Alone about ${solo} attack${solo > 1 ? 's' : ''} to beat it · with 3 others about ${team} each. It hits each camper back for about ${P.power} a round.</div>`
+      + (S.camp && S.camp.k === sel ? `<div class="loot" style="background:#fef9c3;padding:4px 8px;border:2px solid #111">⛺ <b>You're camped here with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight.</b> Walking away breaks camp and gives those moves back.</div>` : '')
+      + (campers.length ? `<div class="loot">👥 Also camped here tonight: <b>${campers.join(', ')}</b></div>` : '');
   }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
-  if (P && P.stock) {
+  if (P && P.stock && !ADV.can('shop')) h += `<div class="no">🔒 The shutters are down for you. The Tuck Shop opens at level ${ADV.unlockLv('shop')}.</div>`;
+  else if (P && P.stock) {
     const here = S.at === sel && shared;
-    h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Stand here to buy (end a move on the Tuck Shop).</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
+    h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Walk here to buy.</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
       `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
   }
-  if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
+  const dLock = P && P.type === 'dungeon' ? (sel === MINE ? 'mine' : 'dungeons') : null;
+  if (dLock && !ADV.can(dLock)) h += `<div class="no">🔒 ${sel === MINE ? 'The boards are nailed back on for you.' : 'The door won\'t budge yet.'} ${sel === MINE ? 'The mine' : 'Dungeons'} open at level ${ADV.unlockLv(dLock)}.</div>`;
+  else if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
     const done = (S.delve || {})[sel] === QE.TODAY, NF = P.rooms.length, dep = P.keep ? Math.min((S.depth || {})[sel] || 0, NF - 1) : 0;
     if (P.keep) h += `<div class="loot">⛏ <b>You've dug down to floor ${dep + 1} of ${NF}.</b> ${S.under ? 'The lift at the bottom is open.' : 'You keep your place from day to day. Clear the bottom floor and you break through to whatever is making those noises.'}</div>`;
     h += mine && shared ? (done ? `<div class="loot">🕯 You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>${NF} floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">${dep ? `Carry on from floor ${dep + 1}` : `Enter ${P.name}`} →</button></div>`)
-      : `<div class="loot"><b>${NF} floors of questions</b>, loot on every floor. End a move here, then come back in the morning to go in.</div>`;
+      : `<div class="loot"><b>${NF} floors of questions</b>, loot on every floor. Walk to the door to go in.</div>`;
     if (sel === MINE && S.under) h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${LIFT}">🛗 Take the lift down to the Underworld ↓</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to take the lift down to the Underworld.</div>`;
   }
   if (P && P.type === 'lift') h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${MINE}">🛗 Ride the lift up to the surface ↑</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to ride back up to the Abandoned Mine.</div>`;
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
-  const left = S.moves - S.plan.length, stay = sel === last, path = stay ? [sel] : left > 0 ? pathTo(sel) : null;
-  if (left > 0 && path && path.length) {
-    const n = S.plan.length + 1, far = path.length > left;
-    const what = far ? 'Head that way' : P && ['boss', 'monster'].includes(P.type) ? (stay ? 'Stay and fight' : 'Go and fight') : P && P.type === 'dungeon' ? (stay ? 'Stay at the door' : 'Go to the door') : stay ? 'Stay here' : 'Go here';
-    h += `<div class="act"><button class="btn gold" id="goBtn">${what} (${far ? `${left} of ${path.length} moves tonight` : path.length > 1 ? `${path.length} moves` : `move ${n}`})</button></div>`
-      + (far ? `<div class="cap" style="margin-top:4px">It's ${path.length} squares away: you'll get part of the way tonight and can carry on tomorrow.</div>` : '');
+  const left = S.moves, stay = sel === last, path = stay ? (stayUseful(sel) ? [sel] : null) : left > 0 ? pathTo(sel) : null;
+  if (left > 0 && path && path.length && !walking) {
+    const far = path.length > left, endK = path[Math.min(path.length, left) - 1], endP = PLACES[endK];
+    const what = far ? 'Head that way' : stay ? (P.type === 'boss' ? '⛺ Add an attack for tonight' : P.type === 'monster' ? '⚔ Fight it' : P.type === 'home' ? '🛏 Rest' : '👀 Poke it')
+      : endP && endP.type === 'boss' && (endP.ch || 1) <= S.chapter && S.boss[endK] > 0 ? '⛺ Go and make camp' : endP && endP.type === 'monster' && denHp(endK) ? '⚔ Go and fight' : P && P.type === 'dungeon' ? 'Go to the door' : 'Go';
+    h += `<div class="act"><button class="btn gold" id="goBtn">${what} (${far ? `${left} of ${path.length} moves` : `${path.length} move${path.length > 1 ? 's' : ''}`})</button></div>`
+      + (far ? `<div class="cap" style="margin-top:4px">It's ${path.length} squares away: you'll get part of the way now and can carry on tomorrow.</div>` : '');
   } else if (D.water) h += `<div class="no">🚫 ${T_AT(...unkey(sel)) === '#' ? 'Solid rock — go round.' : T_AT(...unkey(sel)) === 'L' ? 'Lava — go round.' : layerOf(sel) ? 'Too deep and too cold — go round.' : 'Water — find a bridge.'}</div>`;
   else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
   else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">💤 Asleep until the Professor is free (chapter ${P.ch}).</div>`;
   else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
-  else if (S.plan.length >= S.moves) h += `<div class="no">All your moves are planned. They happen at midnight. Come back tomorrow, or do a mission or your flashcards for an extra move.</div>`;
+  else if (S.moves <= 0) h += `<div class="no">No moves left today. You get 2 more at midnight, and +1 for your first mission or flashcards of the day.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">No way there yet through the squares you've uncovered. Explore closer first.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
   if ($('dunGo')) $('dunGo').onclick = () => delve(sel);
   if ($('rideBtn')) $('rideBtn').onclick = () => ride($('rideBtn').dataset.to);
   $('pClose').onclick = () => { sel = null; renderAll(); };
-  if ($('goBtn')) $('goBtn').onclick = () => { S.plan.push(...path.slice(0, left)); persist(); renderAll(); };
+  if ($('goBtn')) $('goBtn').onclick = () => walk(path.slice(0, left));
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
     const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
-    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; persist(); renderAll();
+    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); persist(); renderAll();
     toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
   });
 }
@@ -651,15 +686,17 @@ function renderPerson(who) {
   let fig; try { fig = me ? PIXEL.figure(ADV.eq(), ADV.look()) : PIXEL.figure(p.eq, p.base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
   $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? ADV.stats().l : p.lvl}</div>
     <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
-    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : p.planned ? ` Has ${p.planned} move${p.planned > 1 ? 's' : ''} planned for tonight.` : ' No moves planned yet.'}</p>
-    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">End a move here tonight to fight alongside them (rally: +10% damage each).</p>` : ''}
-    ${!me && shared && at === S.at ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
+    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : (() => { const c = (BL.states[p.uid] || {}).camp; return c && BL.world && c.day === BL.world.day && PLACES[c.k] ? ` ⛺ Camped at ${PLACES[c.k].name} with ${c.n} attack${c.n > 1 ? 's' : ''} for midnight.` : ''; })()}</p>
+    ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">Camp here too and you'll fight alongside them at midnight (rally: +10% damage each).</p>` : ''}
+    ${!me && shared && at === S.at && !ADV.can('help') ? `<p class="cap">🔒 Helping other players opens at level ${ADV.unlockLv('help')}.</p>` : ''}
+    ${!me && shared && at === S.at && ADV.can('help') ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
       <button class="btn ${S.mana >= 3 ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= 3 ? '' : 'disabled'}>🩹 Patch them up (3 mana, +5 Health)</button>
       ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${b.ic} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
-      : !me && shared ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
+      : !me && shared && at !== S.at && ADV.can('help') ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
   $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
     const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
     try {
+      QE.tally('helped');
       if (id === 'heal') { if (S.mana < 3) return; S.mana -= 3; await BL.aid(p.uid, { heal: 5 }, ADV.nick()); }
       else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
       persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +5 Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
@@ -671,7 +708,7 @@ function renderPerson(who) {
 function renderLegend() {
   if (LAYER) { $('legend').innerHTML = [['#6b6475', 'Hollow Road'], ['#3f6b63', 'Glowshroom Grove'], ['#5b6aa8', 'Crystal Gallery'], ['#8a7f6a', 'Fossil Beds'], ['#7a4a3a', 'Ember Flats'], ['#2b2733', 'Rock (no way through)'], ['#ea580c', 'Lava (can\'t cross)'], ['#17384a', 'Sunless Lake (can\'t cross)'], ['#0e0d14', 'Darkness (unexplored)']].map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>The Underworld, under Breadventure Land. The Mine Lift takes you back up.</span>`; return; }
   $('legend').innerHTML = [['#5a9e4b', 'Woods'], ['#9fcf6e', 'Meadow'], ['#b9d77f', 'Fields'], ['#b8b0a2', 'Peaks'], ['#e8edf3', 'Snow'], ['#7fa77a', 'Marsh'], ['#e8cf8f', 'Dunes'], ['#79b4a3', 'Petri Swamp'], ['#b38b6d', 'Scrap Heap'], ['#c9cf7f', 'Glowing Wastes'], ['#4f9fd1', 'Water (can\'t cross)'], ['#dfe4ea', 'Fog (unexplored)']]
-    .map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span>Hover or tap a square for details.</span>`;
+    .map(([c, n]) => `<span><i style="background:${c}"></i>${n}</span>`).join('') + `<span><img src="${icon('chest', BL.CHESTS.gold.col)}" width="16" style="image-rendering:pixelated;vertical-align:-3px"> Treasure chest (you can see them through the fog)</span><span>Hover or tap a square for details.</span>`;
 }
 
 /* tooltip on hover (mouse only) */
@@ -691,7 +728,7 @@ svg.addEventListener('pointermove', e => {
   let extra = D.tp;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) extra += ` · ${S.boss[k]}/${P.max} health · best with friends`;
   if (P && P.type === 'monster') extra += denHp(k) ? ` · ${denHp(k)}/${P.max} health · you can solo this` : ' · beaten, back soon';
-  if (reachable().has(k)) extra += ' · click to plan a move'; else if (S.plan.length < S.moves && visibleSet().has(k) && walkable(...unkey(k))) extra += ' · click to plan a route';
+  if (reachable().has(k)) extra += ' · click to move'; else if (S.moves > 0 && visibleSet().has(k) && walkable(...unkey(k))) extra += ' · click for the way there';
   tip.innerHTML = `<b>${D.name}</b><small>${extra}</small>`;
   }
   tip.style.display = 'block';
@@ -710,33 +747,165 @@ svg.addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('modal').classList.remove('on'); $('spellModal').classList.remove('on'); sel = null; renderAll(); } });
 
+/* ===================== moves happen now (17 Nov) =====================
+   walk(steps): one move per step, drawn one at a time. Stops early when something happens: a monster fight (one question),
+   making camp at a boss, a critter knocking you out, or running out of moves. Only boss fights wait for midnight (bland.js). */
+const EVNOW = () => BL.eventOf(BL.world ? BL.world.day : QE.TODAY).id;   // events apply to everyone; only their banner is level-gated
+const monsterCoins = () => EVNOW() === 'coins' ? 16 : 8;
+function spendMove() {   // normal moves first, then the teacher's extra ones
+  if (S.moves <= 0) return false;
+  if (S.moves - (S.bonus || 0) <= 0) S.bonus = Math.max(0, (S.bonus || 0) - 1);
+  S.moves--; return true;
+}
+function knockOut(where) {
+  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); QE.tally('knockouts');
+  toast(`💫 ${where} knocks you out. You wake up in the Cakelab on ${S.health} Health. Missions and flashcards heal you.`);
+}
+const hurtMe = h => { h = S.shield ? Math.ceil(h / 2) : h; S.health = Math.max(S.calm ? 1 : 0, S.health - h); return h; };
+const fightStr = () => (ADV.stats().str + (S.aura ? 5 : 0)) * (S.fizz ? 1.5 : 1);
+const pause = ms => new Promise(r => setTimeout(r, ms));
+async function walk(steps) {
+  if (walking || !shared) return;
+  walking = true; sel = null;
+  try {
+    for (const k of steps) {
+      if (!spendMove()) break;
+      QE.tally('steps');
+      const from = S.at, stop = await arrive(k, from);
+      persist(); renderAll(); if (k !== from) centreOnMe();
+      if (stop) break;
+      await pause(160);
+    }
+  } finally { walking = false; persist(); sel = S.at; renderAll(); }
+}
+/* one step onto k: returns true if the walk should stop there */
+async function arrive(k, from) {
+  const P = PLACES[k], [c, r] = unkey(k);
+  if (S.camp && S.camp.k !== k) { const n = S.camp.n; S.moves += n; S.camp = null; toast(`⛺ You break camp: ${n} move${n > 1 ? 's' : ''} back.`); }
+  S.at = k; if (!S.visited.includes(k)) S.visited.push(k);
+  if (chestAt(k)) { await openChest(k); return true; }
+  if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
+    S.camp = { k, n: (S.camp && S.camp.k === k ? S.camp.n : 0) + 1, day: BL.world.day };
+    QE.tally('attacks'); toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
+    return true;
+  }
+  if (P && P.type === 'monster' && denHp(k) > 0) { await fightMonster(k); return true; }
+  if (P && P.type === 'home') {
+    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1)); S.restDay = QE.TODAY; QE.tally('rests'); toast(`🛏 You rest in the Cakelab: +${S.health - b} Health.`); }
+    return true;
+  }
+  if (P && P.type === 'event') {
+    if (S.puddleDay === QE.TODAY) toast('The puddle has nothing more for you today.');
+    else { S.puddleDay = QE.TODAY; QE.tally('puddles'); if (Math.random() < .4) { const n = EVNOW() === 'coins' ? 10 : 5; S.coins = S.coins + n; toast(`You poke the puddle and fish out 🪙 ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
+    return true;
+  }
+  if (P) return k === from;   // shop, dungeon, lift…: you've arrived
+  if (EVNOW() !== 'quiet' && Math.random() < .3 && BL.WILD[T_AT(c, r)]) {
+    const h = hurtMe(1 + Math.floor(Math.random() * 3)); QE.tally('critters'); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
+    if (S.health === 0) { knockOut(BL.WILD[T_AT(c, r)].replace(/^an? /, 'A ')); return true; }
+  }
+  return false;
+}
+/* a treasure chest: the first player there gets it (transaction in bland.js), then the loot is rolled here */
+const BOSS_ITEMS = new Set(Object.values(PLACES).map(P => P.item).filter(Boolean));
+function chestLoot(ch) {
+  const C = BL.CHESTS[ch.t] || BL.CHESTS.wood, owned = new Set([...(QE.game.bag || []), ...ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id)]);
+  if (ch.m) return { mimic: true, coins: 5 };
+  const ok = i => i.r !== 'legend' && i.from !== 'Starter outfit' && i.id !== 'calc67' && !BOSS_ITEMS.has(i.id) && !owned.has(i.id);
+  const pick = a => a[Math.floor(Math.random() * a.length)];
+  let pool = C.dark ? ADV_ITEMS.filter(i => i.dark && ok(i)) : [];
+  if (!pool.length) { const r = pick(C.rar); pool = ADV_ITEMS.filter(i => i.r === r && ok(i)); }
+  if (!pool.length) pool = ADV_ITEMS.filter(i => C.rar.includes(i.r) && ok(i));   // you own everything of that rarity
+  const item = pool.length ? pick(pool) : null, coins = C.coins[0] + Math.floor(Math.random() * (C.coins[1] - C.coins[0] + 1));
+  return { coins: coins + (item ? 0 : 20), item, brew: Math.random() < C.brew ? pick(Object.keys(BL.BREWS)) : null };
+}
+async function openChest(k) {
+  const C = chestKind(k);
+  delete S.chests[k];
+  let ch = null; try { ch = await BL.claimChest(k); } catch (e) { console.warn('chest', e); }
+  if (!ch) { toast(`The ${C.name.toLowerCase()} is gone: someone got here first.`); return; }
+  const L = chestLoot(ch), m = $('dunModal'), body = $('dunBody'), RC = { common: '#9ca3af', uncommon: '#4ade80', rare: '#60a5fa', lowkey: '#a78bfa', unhinged: '#f472b6' };
+  S.coins = S.coins + L.coins;
+  if (L.item) { QE.game.bag = QE.game.bag || []; QE.game.bag.push(L.item.id); QE.game.lastLoot = L.item.id; QE.gameChanged(); }
+  if (L.brew) { S.brews = S.brews || {}; S.brews[L.brew] = (S.brews[L.brew] || 0) + 1; }
+  let bit = 0; if (L.mimic) { bit = hurtMe(3); QE.tally('mimics'); } else QE.tally('chest_' + ch.t);
+  persist();   // saved before the pop-up, in case they head straight to the Wardrobe
+  BL.logFind({ n: (QE.boardName() || 'Someone').split(' ')[0], t: ch.t, it: L.mimic ? 'it was a mimic' : L.item ? L.item.name : '', day: BL.world.day }).catch(() => {});
+  const eq = Object.assign({}, ADV.eq()); if (L.item) eq[L.item.slot] = L.item.id;
+  const lock = L.item && ADV.SLOT_LOCK[L.item.slot] && !ADV.can(ADV.SLOT_LOCK[L.item.slot]) ? ADV.unlockLv(ADV.SLOT_LOCK[L.item.slot]) : 0;
+  return new Promise(res => {
+    QE.busy = true; m.classList.add('on');
+    body.innerHTML = L.mimic
+      ? `<h2 style="margin:0;text-align:center">It's a mimic!</h2><div class="chestwin"><img src="${icon('mimic', C.col)}" width="110" alt=""></div><div class="dx">The chest grows teeth and bites you (−${bit} Health), then coughs up 🪙 ${L.coins} coins and scuttles off, embarrassed.</div>`
+      : `<h2 style="margin:0;text-align:center">${C.name}!</h2><div class="chestwin"><img src="${icon('chest_open', C.col)}" width="96" alt="">${L.item ? `<img src="${PIXEL.figure(eq, ADV.look())}" width="88" alt="">` : ''}</div>
+        ${L.item ? `<div class="prize"><span class="rar" style="color:${RC[L.item.r] || '#facc15'}">${ADV_RARITY[L.item.r]} · ${ADV_SLOTS.find(x => x.k === L.item.slot).name}</span><br><b>${L.item.name}</b><br><span class="small">${L.item.d}</span>${lock ? `<br><span class="small">🔒 You can wear it from level ${lock}. It waits in your bag till then.</span>` : ''}</div>` : `<div class="prize">You already own everything this chest could hold, so it's full of extra coins instead.</div>`}
+        <div class="dx">🪙 +${L.coins} coins${L.brew ? ` · ${BL.BREWS[L.brew].ic} ${BL.BREWS[L.brew].name}` : ''}</div>`;
+    body.innerHTML += `<div class="act" style="display:flex;gap:8px;margin-top:10px">${L.item ? `<a class="btn alt" href="adventurer-wardrobe.html">Wardrobe →</a>` : ''}<button class="btn gold" id="dunNext">Back to the map →</button></div>`;
+    $('dunNext').focus();
+    $('dunNext').onclick = () => { m.classList.remove('on'); QE.busy = false; if (S.health === 0) knockOut('A mimic'); res(); };
+  });
+}
+/* a small monster: one question from its science. Right = you hit it; wrong = it hits you. */
+function fightMonster(k) {
+  return new Promise(resolve => {
+    const P = PLACES[k], L = (P.science || 'b').toUpperCase(), keys = new Set();
+    QE.allSubs().filter(s => s.L === L).forEach(s => s.keys.forEach(x => keys.add(x)));
+    const pool = QE.buildMission(keys), q = QE.inst(pool[Math.floor(Math.random() * Math.min(3, pool.length))]);
+    const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    const body = $('dunBody'), m = $('dunModal'), hp0 = denHp(k);
+    QE.busy = true; m.classList.add('on');
+    body.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><img class="px" src="${icon(P.icon, P.col)}" width="72" style="image-rendering:pixelated" alt=""><div style="flex:1"><h2 style="margin:0">${P.name}</h2>
+      <div style="height:12px;border:2px solid #facc15;background:#222;margin:6px 0"><i id="mHp" style="display:block;height:100%;width:${hp0 / P.max * 100}%;background:#f59e0b;transition:width .4s"></i></div><div class="small">${hp0} / ${P.max} health · ${ADV.SCI[P.science] || ''}${q.hard ? ' · ★ harder' : ''}</div></div></div>
+      <div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+    body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
+      const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
+      QE.recordAnswer(q, ok); QE.tally('monsterQs');
+      let msg, done = false, out = false;
+      if (ok) {
+        const d = Math.round(fightStr() * (1.2 + Math.random() * 0.6) * (q.hard ? 1.25 : 1)), hp = Math.max(0, hp0 - d);
+        S.dens[k] = hp ? { hp } : { back: S.day + 2 }; $('mHp').style.width = (hp / P.max * 100) + '%';
+        if (!hp) { S.coins = S.coins + monsterCoins(); done = true; QE.tally('monsters'); QE.mark('m:' + k); }
+        msg = `<b class="good">Right: you hit it for ${d}!</b> ${hp ? `${P.name} has ${hp} health left.` : `<span class="lt">★ ${P.name} beaten! +${monsterCoins()} coins.</span> It'll be back in two days.`}`;
+      } else {
+        const h = hurtMe(Math.round(P.power * (0.5 + Math.random())));
+        msg = `<b class="bad">Wrong: ${P.name} hits you (−${h} Health).</b>`; if (S.health === 0) out = true;
+      }
+      $('dunFb').innerHTML = `<div class="dx">${msg} ${q.x || ''}</div><button class="btn gold" id="dunNext">${out ? 'Ouch →' : 'Back to the map →'}</button>`;
+      $('dunNext').focus();
+      $('dunNext').onclick = () => { m.classList.remove('on'); QE.busy = false; if (out) knockOut(P.name); else if (done) toast(`★ ${P.name} beaten! 🪙 +${monsterCoins()}`); QE.gameChanged(); resolve(); };
+    });
+  });
+}
+
 /* ===================== the shared world: sync, the night, rewards ===================== */
 let shared = false;
 function persist() {
   ADV.save();
   if (!shared) return;
-  BL.savePlan(S.plan.slice()).catch(e => console.warn('plan not saved', e));
-  BL.saveMine({ health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
+  BL.saveMine({ at: S.at, visited: S.visited.slice(), moves: Math.max(0, S.moves - (S.bonus || 0)), bonus: S.bonus || null, camp: S.camp || null, dens: S.dens || {}, restDay: S.restDay || null, puddleDay: S.puddleDay || null, health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
 }
-/* the lift between the mine and the Underworld: instant, free, and it cancels tonight's plan (your steps were from the other end) */
+/* the lift between the mine and the Underworld: instant and free */
 function ride(to) {
-  S.at = to; if (!S.visited.includes(to)) S.visited.push(to); S.plan = []; sel = null; peek = null; ADV.save();
-  if (shared) { BL.saveMine({ at: to, visited: S.visited.slice() }).catch(e => console.warn('lift not saved', e)); BL.savePlan([]).catch(() => {}); }
+  S.at = to; if (!S.visited.includes(to)) S.visited.push(to); sel = null; peek = null; ADV.save();
+  if (shared) BL.saveMine({ at: to, visited: S.visited.slice() }).catch(e => console.warn('lift not saved', e));
   renderAll(); renderLegend(); centreOnMe(); window.scrollTo({ top: 0 });
   toast(layerOf(to) ? '🛗 The lift rattles down for a very long time. <b>Welcome to the Underworld.</b>' : '🛗 The lift hauls you back up into the daylight.');
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
-  S.chapter = w.chapter; S.boss = Object.assign({}, BL.BOSS_MAX, w.boss || {});
+  S.chapter = w.chapter; S.boss = BL.bossNow(w); S.chests = Object.assign({}, w.chests || {});
   S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1;
-  Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: st.moves || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
-    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, depth: st.depth || {}, under: !!st.under, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null });
-  S.plan = pub.plan && pub.plan.day === w.day && Array.isArray(pub.plan.steps) ? pub.plan.steps.slice(0, S.moves) : [];
+  Object.assign(S, { at: st.at || BL.HOME, health: st.health, mana: st.mana || 0, moves: BL.movesOf(st), bonus: st.bonus || 0, visited: st.visited || [BL.HOME], lifted: st.lifted || [],
+    shield: !!st.shield, aura: !!st.aura, fizz: !!st.fizz, calm: !!st.calm, dens: st.dens || {}, delve: st.delve || {}, depth: st.depth || {}, under: !!st.under, brews: st.brews || {}, report: st.report || null, reportDay: st.reportDay || null, big: !!st.big,
+    camp: st.camp && st.camp.day === w.day && st.at === st.camp.k ? st.camp : null, restDay: st.restDay || null, puddleDay: st.puddleDay || null });
+  S.plan = [];   // (no more planning: kept empty for older readers)
   buildPeople(); ADV.save(); noteBossHits();
 }
 const profile = () => { const s = ADV.stats(); return { name: QE.boardName(), look: ADV.look(), eq: ADV.eq(), lvl: s.l, str: s.str, hp: s.hp, mag: s.mag }; };
 function toast(msg) {
-  const t = document.createElement('div'); t.setAttribute('role', 'status');
+  document.querySelectorAll('.maptoast').forEach(x => x.remove());   // one at a time
+  const t = document.createElement('div'); t.setAttribute('role', 'status'); t.className = 'maptoast';
   t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center';
   t.innerHTML = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 5000);
 }
@@ -760,10 +929,10 @@ async function applyOutbox() {
 }
 const FIRST_REPORT = [
   '<p class="lt">Welcome to Breadventure Land! You start in the Cakelab with <b>6 moves</b>.</p>',
-  '<p>Plan your moves on the map: tap a glowing square next to you. Everyone\'s moves happen together at midnight, and every morning a report like this one tells you what happened. Other adventurers on the map are real players.</p>',
+  '<p>Tap a glowing square to walk there: moves happen straight away. Small monsters fight you on the spot, one question at a time. <b>Bosses are different:</b> step onto one to make camp, and everyone camped there fights it together at midnight. Other adventurers on the map are real players.</p>',
   '<p class="new">Tip: follow the cake crumbs north from the Cakelab, and win the three key pieces together to free the Professor. Missions and flashcards refill your Health and give an extra move each day.</p>'];
 function showReport() {
-  $('repTitle').textContent = `Morning report · day ${S.dayNo || 1}`;
+  $('repTitle').textContent = `Last night · day ${S.dayNo || 1}`;
   $('report').innerHTML = (S.report || FIRST_REPORT).join('');
   $('modal').classList.add('on');
   S.seenRep = S.seenRep || {}; S.seenRep[BL.uid || 'anon'] = S.reportDay || 'first'; ADV.save();
@@ -800,7 +969,9 @@ async function start() {
     { const inbox = BL.me().inbox; if (inbox && inbox.length) { await BL.saveMine({ inbox: null }); inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); } }
     fromShared(); renderAll(); centreOnMe();
     const rescueNow = S.chapter >= 2 && !S.rescueSeen;
-    const showRep = () => { if ((S.seenRep || {})[BL.uid] !== (S.reportDay || 'first')) showReport(); };
+    const showRep = () => { if ((S.seenRep || {})[BL.uid] === (S.reportDay || 'first')) return;
+      if (S.report && !S.big) { S.seenRep = S.seenRep || {}; S.seenRep[BL.uid] = S.reportDay; ADV.save(); toast((S.report[S.report.length - 1] || '').replace(/<\/?p[^>]*>/g, '') + (S.report.some(l => /chests? ha(s|ve) appeared/.test(l)) ? '<br>✨ New treasure on the map!' : '')); }   // a quiet night: just the new moves
+      else showReport(); };
     if (!S.storySeen) ADV.storyIntro(() => rescueNow ? ADV.storyRescue(showRep) : showRep());
     else if (rescueNow) ADV.storyRescue(showRep);
     else showRep();

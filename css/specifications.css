@@ -1065,3 +1065,7 @@ body.modal-open {
 .revise-main .go.alt { background: #fff; }
 .revise-main small { font-weight: 500; }
 .spec-modal .spec-links { display: none; }
+
+/* One sign-in box everywhere (17 Nov 2026): the shared account box (js/account.js) sits in the top bar; the page's own buttons are hidden */
+[data-auth-status],[data-auth-login],[data-auth-logout]{display:none!important}
+.spec-topbar #cbs-account{margin-left:auto}

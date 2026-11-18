@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="/js/game-gate.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AskGPT</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>html,body{margin:0;padding:0;overflow:hidden;background:#202123}canvas{display:block}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+/* AskGPT by Hector. Fixes (Cakebread Science, 17 Nov 2026):
+   - On phones and tablets one tap counted twice (touch + mouse), so tapping a start button
+     also answered question 1 (or "Volver a Jugar" started a new game straight away).
+     Clicks within 0.4 s of a screen change are now ignored.
+   - On narrow screens the points move under the question counter (they overlapped the title),
+     and the title and hearts moved right to make room for the home button.
+   - Page margins removed so the game fills the screen without scrollbars.
+   - Added the site's sign-in gate, favicon and home button. */
+let lastStateChange = 0;
+
+let gameState = "START"; // START, PLAYING, END
+let difficulty = "FACIL"; // FACIL, MEDIO, DIFICIL
+let currentQuestionIndex = 0;
+let score = 0;
+let lives = 3;
+let timer = 10;
+let lastTimeCheck = 0;
+let feedbackMessage = "";
+let feedbackColor;
+let feedbackTimer = 0;
+let endReason = "";
+
+let currentQuestions = [];
+let optionColors = [];
+
+// Banco base de preguntas de cultura general por dificultad
+const baseQuestions = {
+  FACIL: [
+    { q: "¿Cuál es el océano más grande de la Tierra?", options: ["Atlántico", "Índico", "Pacífico", "Ártico"], correct: 2 },
+    { q: "¿Qué gas es el más abundante en nuestra atmósfera?", options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Hidrógeno"], correct: 1 },
+    { q: "¿Cuál es el planeta más cercano al Sol?", options: ["Venus", "Marte", "Mercurio", "Tierra"], correct: 2 },
+    { q: "¿Cuántos continentes hay en la Tierra según el modelo tradicional?", options: ["4", "5", "6", "7"], correct: 2 },
+    { q: "¿Cuál es el animal terrestre más rápido del mundo?", options: ["León", "Guepardo", "Caballo", "Tigre"], correct: 1 },
+    { q: "¿Qué instrumento musical tiene teclas blancas y negras?", options: ["Guitarra", "Violín", "Piano", "Flauta"], correct: 2 },
+    { q: "¿Cuál es la capital de Francia?", options: ["Madrid", "Roma", "Berlín", "París"], correct: 3 },
+    { q: "¿De qué color es la esmeralda?", options: ["Roja", "Azul", "Verde", "Amarilla"], correct: 2 },
+    { q: "¿Cuántos días tiene un año bisiesto?", options: ["364", "365", "366", "360"], correct: 2 },
+    { q: "¿Qué órgano bombea la sangre en el cuerpo humano?", options: ["Pulmón", "Cerebro", "Hígado", "Corazón"], correct: 3 },
+    { q: "¿Cuál es el metal más caro y preciado usado en joyería amarilla?", options: ["Plata", "Oro", "Hierro", "Cobre"], correct: 1 },
+    { q: "¿Cuántas patas tiene una araña?", options: ["6", "8", "10", "12"], correct: 1 },
+    { q: "¿En qué continente está Egipto?", options: ["Asia", "Europa", "África", "América"], correct: 2 },
+    { q: "¿Qué estrella ilumina nuestro planeta de día?", options: ["La Luna", "El Sol", "Sirio", "Polaris"], correct: 1 },
+    { q: "¿Cuál es el idioma más hablado en Brasil?", options: ["Español", "Inglés", "Portugués", "Francés"], correct: 2 }
+  ],
+  MEDIO: [
+    { q: "¿En qué año cayó el Muro de Berlín?", options: ["1985", "1989", "1991", "1975"], correct: 1 },
+    { q: "¿Cuál es el símbolo químico del oro?", options: ["Ag", "Go", "Au", "Gd"], correct: 2 },
+    { q: "¿Quién pintó la Mona Lisa?", options: ["Van Gogh", "Picasso", "Leonardo da Vinci", "Dalí"], correct: 2 },
+    { q: "¿Cuál es el río más largo del mundo?", options: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"], correct: 1 },
+    { q: "¿Qué país tiene forma de bota?", options: ["España", "Grecia", "Italia", "Portugal"], correct: 2 },
+    { q: "¿Cuál es el hueso más largo del cuerpo humano?", options: ["Tibia", "Húmero", "Fémur", "Radio"], correct: 2 },
+    { q: "¿En qué año llegó el ser humano a la Luna?", options: ["1965", "1969", "1972", "1959"], correct: 1 },
+    { q: "¿Cuál es la capital de Japón?", options: ["Pekín", "Seúl", "Bangkok", "Tokio"], correct: 3 },
+    { q: "¿Quién escribió Don Quijote de la Mancha?", options: ["Lope de Vega", "Cervantes", "Góngora", "Quevedo"], correct: 1 },
+    { q: "¿Cuál es el elemento químico con símbolo Fe?", options: ["Flúor", "Fósforo", "Hierro", "Francio"], correct: 2 },
+    { q: "¿Qué planeta es conocido como el planeta rojo?", options: ["Júpiter", "Marte", "Saturno", "Urano"], correct: 1 },
+    { q: "¿Cuántos jugadores hay en un equipo de fútbol en el campo?", options: ["9", "10", "11", "12"], correct: 2 },
+    { q: "¿Cuál es la montaña más alta del mundo?", options: ["K2", "Aconcagua", "Everest", "Kilimanjaro"], correct: 2 },
+    { q: "¿Qué gas absorben las plantas para realizar la fotosíntesis?", options: ["Oxígeno", "Dióxido de carbono", "Helio", "Metano"], correct: 1 },
+    { q: "¿En qué país se originaron los Juegos Olímpicos?", options: ["Italia", "Egipto", "Grecia", "China"], correct: 2 }
+  ],
+  DIFICIL: [
+    { q: "¿Qué tratado puso fin a la Guerra de los 30 Años en 1648?", options: ["Versalles", "Paz de Westfalia", "Utrecht", "Viena"], correct: 1 },
+    { q: "¿Qué físico publicó la Relatividad General en 1915?", options: ["Newton", "Niels Bohr", "Albert Einstein", "Max Planck"], correct: 2 },
+    { q: "¿Cuál es la capital de Australia?", options: ["Sídney", "Melbourne", "Canberra", "Perth"], correct: 2 },
+    { q: "¿Qué elemento tiene el número atómico 79?", options: ["Plata", "Platino", "Oro", "Mercurio"], correct: 2 },
+    { q: "¿En qué año comenzó la Primera Guerra Mundial?", options: ["1912", "1914", "1916", "1918"], correct: 1 },
+    { q: "¿Quién descubrió la penicilina?", options: ["Louis Pasteur", "Alexander Fleming", "Marie Curie", "Robert Koch"], correct: 1 },
+    { q: "¿Cuál es la velocidad aproximada de la luz en el vacío?", options: ["150.000 km/s", "300.000 km/s", "450.000 km/s", "1.000.000 km/s"], correct: 1 },
+    { q: "¿Qué emperador romano legalizó el cristianismo?", options: ["Nerón", "Augusto", "Constantino", "Trajano"], correct: 2 },
+    { q: "¿Cuál es el país más pequeño del mundo por superficie?", options: ["Mónaco", "San Marino", "Ciudad del Vaticano", "Nauru"], correct: 2 },
+    { q: "¿Qué partícula subatómica tiene carga negativa?", options: ["Protón", "Neutrón", "Electrón", "Positrón"], correct: 2 },
+    { q: "¿Quién compuso Las cuatro estaciones?", options: ["Mozart", "Beethoven", "Vivaldi", "Bach"], correct: 2 },
+    { q: "¿Cuál es el metal con el punto de fusión más alto?", options: ["Hierro", "Titanio", "Tungsteno", "Acero"], correct: 2 },
+    { q: "¿En qué año cayó Constantinopla?", options: ["1453", "1492", "1399", "1517"], correct: 0 },
+    { q: "¿Cuál es la estrella más cercana al Sistema Solar?", options: ["Sirio", "Alfa Centauri C", "Betelgeuse", "Vega"], correct: 1 },
+    { q: "¿Qué filósofo escribió La República?", options: ["Aristóteles", "Sócrates", "Platón", "Descartes"], correct: 2 }
+  ]
+};
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  optionColors = [
+    color(226, 27, 60),  // Rojo
+    color(19, 104, 206), // Azul
+    color(216, 158, 0),  // Amarillo
+    color(16, 163, 127)  // Verde ChatGPT
+  ];
+}
+
+function draw() {
+  background(32, 33, 35);
+
+  if (gameState === "START") {
+    drawStartScreen();
+  } else if (gameState === "PLAYING") {
+    drawQuizScreen();
+  } else if (gameState === "END") {
+    drawEndScreen();
+  }
+}
+
+function drawStartScreen() {
+  textAlign(CENTER, CENTER);
+  fill(16, 163, 127);
+  textSize(52);
+  textStyle(BOLD);
+  text("AskGPT", width / 2, height * 0.20);
+ 
+  textStyle(NORMAL);
+  fill(236, 236, 241);
+  textSize(20);
+  text("Reto de 100 Preguntas • Tienes 3 Vidas", width / 2, height * 0.30);
+  text("Selecciona tu nivel de dificultad:", width / 2, height * 0.36);
+
+  drawButton(width / 2 - 150, height * 0.46, 300, 55, "FÁCIL", color(16, 163, 127));
+  drawButton(width / 2 - 150, height * 0.58, 300, 55, "MEDIO", color(216, 158, 0));
+  drawButton(width / 2 - 150, height * 0.70, 300, 55, "DIFÍCIL", color(226, 27, 60));
+}
+
+function drawQuizScreen() {
+  let qData = currentQuestions[currentQuestionIndex];
+ 
+  // Barra superior: Nivel y Vidas
+  textAlign(LEFT, TOP);
+  fill(172, 172, 190);
+  textSize(18);
+  text("AskGPT • " + difficulty, 52, 25);
+ 
+  // Dibujar vidas con corazones
+  let hearts = "";
+  for (let i = 0; i < 3; i++) {
+    hearts += (i < lives) ? "♥ " : "♡ ";
+  }
+  fill(226, 27, 60);
+  textSize(26);
+  text(hearts, 52, 52);
+
+  // Contador de preguntas (1 a 100)
+  textAlign(RIGHT, TOP);
+  fill(172, 172, 190);
+  textSize(18);
+  text("Pregunta: " + (currentQuestionIndex + 1) + " / 100", width - 30, 25);
+ 
+  // Puntos en el centro superior
+  // on narrow screens the points go under the question counter, so the top line doesn't overlap
+  fill(16, 163, 127);
+  textStyle(BOLD);
+  if (width < 640) { textAlign(RIGHT, TOP); textSize(20); text("Puntos: " + score, width - 30, 54); }
+  else { textAlign(CENTER, TOP); textSize(24); text("Puntos: " + score, width / 2, 22); }
+  textStyle(NORMAL);
+ 
+  // Temporizador circular
+  stroke(16, 163, 127);
+  strokeWeight(3);
+  if (timer <= 3) {
+    stroke(226, 27, 60);
+    fill(226, 27, 60, 80);
+  } else {
+    fill(52, 53, 65);
+  }
+  ellipse(width / 2, height * 0.17, 64, 64);
+  noStroke();
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(24);
+  text(timer, width / 2, height * 0.17);
+
+  // Control del tiempo
+  if (millis() - lastTimeCheck >= 1000 && feedbackTimer <= 0) {
+    timer--;
+    lastTimeCheck = millis();
+    if (timer <= 0) {
+      loseLife("¡Tiempo agotado! -1 Vida");
+    }
+  }
+
+  // Cuadro de la Pregunta
+  fill(52, 53, 65);
+  stroke(86, 88, 105);
+  strokeWeight(1);
+  rect(40, height * 0.27, width - 80, height * 0.19, 12);
+ 
+  noStroke();
+  fill(255);
+  textSize(22);
+  textAlign(CENTER, CENTER);
+  text(qData.q, 60, height * 0.27, width - 120, height * 0.19);
+
+  // Cuadrícula de 4 opciones (con sus índices corregidos)
+  let btnW = (width - 100) / 2;
+  let btnH = (height * 0.44) / 2;
+ 
+  drawButton(40, height * 0.5, btnW, btnH, "A)  " + qData.options[0], optionColors[0]);
+  drawButton(60 + btnW, height * 0.5, btnW, btnH, "B)  " + qData.options[1], optionColors[1]);
+  drawButton(40, height * 0.52 + btnH, btnW, btnH, "C)  " + qData.options[2], optionColors[2]);
+  drawButton(60 + btnW, height * 0.52 + btnH, btnW, btnH, "D)  " + qData.options[3], optionColors[3]);
+
+  // Pantalla de feedback
+  if (feedbackTimer > 0) {
+    fill(0, 0, 0, 215);
+    rect(0, 0, width, height);
+    fill(feedbackColor);
+    textSize(42);
+    textStyle(BOLD);
+    textAlign(CENTER, CENTER);
+    text(feedbackMessage, width / 2, height / 2);
+    textStyle(NORMAL);
+   
+    if (millis() - feedbackTimer >= 1500) {
+      feedbackTimer = 0;
+      if (lives <= 0) {
+        endReason = "¡Te has quedado sin vidas!";
+        gameState = "END";
+      } else {
+        nextQuestion();
+      }
+    }
+  }
+}
+
+function drawEndScreen() {
+  textAlign(CENTER, CENTER);
+  fill(lives > 0 ? color(16, 163, 127) : color(226, 27, 60));
+  textSize(42);
+  textStyle(BOLD);
+  text(endReason, width / 2, height * 0.28);
+ 
+  textStyle(NORMAL);
+  fill(255);
+textSize(28);
+text("Puntuación Final: " + score + " pts", width / 2, height * 0.42);
+textSize(20);
+fill(172, 172, 190);
+text("Preguntas superadas: " + currentQuestionIndex + " / 100", width / 2, height * 0.50);
+drawButton(width / 2 - 150, height * 0.62, 300, 60, "Volver a Jugar", color(16, 163, 127));
+}
+function drawButton(x, y, w, h, label, btnColor) {
+push();
+fill(btnColor);
+noStroke();
+rect(x, y, w, h, 10);
+fill(255);
+textSize(20);
+textAlign(CENTER, CENTER);
+text(label, x + 15, y, w - 30, h);
+pop();
+}
+function mousePressed() {
+if (millis() - lastStateChange < 400) return;
+const stateBefore = gameState;
+handlePress();
+if (gameState !== stateBefore) lastStateChange = millis();
+}
+function handlePress() {
+if (feedbackTimer > 0) return;
+if (gameState === "START") {
+if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150) {
+if (mouseY > height * 0.46 && mouseY < height * 0.46 + 55) startQuiz("FACIL");
+else if (mouseY > height * 0.58 && mouseY < height * 0.58 + 55) startQuiz("MEDIO");
+else if (mouseY > height * 0.70 && mouseY < height * 0.70 + 55) startQuiz("DIFICIL");
+}
+}
+else if (gameState === "PLAYING") {
+let qData = currentQuestions[currentQuestionIndex];
+let btnW = (width - 100) / 2;
+let btnH = (height * 0.44) / 2;
+let clickedAnswer = -1;
+if (mouseY > height * 0.5 && mouseY < height * 0.5 + btnH) {
+if (mouseX > 40 && mouseX < 40 + btnW) clickedAnswer = 0;
+if (mouseX > 60 + btnW && mouseX < 60 + btnW * 2) clickedAnswer = 1;
+} else if (mouseY > height * 0.52 + btnH && mouseY < height * 0.52 + btnH * 2) {
+if (mouseX > 40 && mouseX < 40 + btnW) clickedAnswer = 2;
+if (mouseX > 60 + btnW && mouseX < 60 + btnW * 2) clickedAnswer = 3;
+}
+if (clickedAnswer !== -1) {
+if (clickedAnswer === qData.correct) {
+let pointsEarned = timer * 100;
+score += pointsEarned;
+triggerFeedback(true, "¡CORRECTO!\n+" + pointsEarned + " pts");
+} else {
+loseLife("¡INCORRECTO!\n-1 Vida");
+}
+}
+}
+else if (gameState === "END") {
+if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150 && mouseY > height * 0.62 && mouseY < height * 0.62 + 60) {
+gameState = "START";
+}
+}
+}
+function loseLife(msg) {
+lives--;
+triggerFeedback(false, msg);
+}
+function build100Questions(lvl) {
+let pool = baseQuestions[lvl].slice();
+while (pool.length < 100) {
+pool.push(generateMathQuestion(lvl));
+}
+return shuffle(pool);
+}
+function generateMathQuestion(lvl) {
+let a, b, ans, qText;
+if (lvl === "FACIL") {
+a = floor(random(5, 50));
+b = floor(random(5, 50));
+if (random() > 0.5) {
+ans = a + b;
+qText = "¿Cuánto es " + a + " + " + b + "?";
+} else {
+if (a < b) {
+let temp = a;
+a = b;
+b = temp;
+}
+ans = a - b;
+qText = "¿Cuánto es " + a + " - " + b + "?";
+}
+} else if (lvl === "MEDIO") {
+a = floor(random(6, 18));
+b = floor(random(4, 15));
+ans = a * b;
+qText = "¿Cuánto es " + a + " × " + b + "?";
+} else {
+a = floor(random(12, 35));
+b = floor(random(11, 25));
+let c = floor(random(10, 50));
+ans = (a * b) - c;
+qText = "Calcula: (" + a + " × " + b + ") - " + c;
+}
+let opts = [ans];
+while (opts.length < 4) {
+let offset = floor(random(-12, 13));
+let fake = ans + offset;
+if (offset !== 0 && fake >= 0 && !opts.includes(fake)) {
+opts.push(fake);
+}
+}
+opts = shuffle(opts);
+let correctIdx = opts.indexOf(ans);
+return {
+q: qText,
+options: opts.map(String),
+correct: correctIdx
+};
+}
+function startQuiz(lvl) {
+difficulty = lvl;
+currentQuestions = build100Questions(lvl);
+currentQuestionIndex = 0;
+score = 0;
+lives = 3;
+gameState = "PLAYING";
+resetTimer();
+}
+function resetTimer() {
+timer = 10;
+lastTimeCheck = millis();
+}
+function triggerFeedback(isCorrect, msg) {
+feedbackMessage = msg;
+feedbackColor = isCorrect ? color(16, 163, 127) : color(226, 27, 60);
+feedbackTimer = millis();
+}
+function nextQuestion() {
+currentQuestionIndex++;
+if (currentQuestionIndex < 100) {
+resetTimer();
+} else {
+endReason = "¡COMPLETASTE LAS 100 PREGUNTAS!";
+gameState = "END";
+}
+}
+function windowResized() {
+resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+<script src="/js/home-link.js" data-mode="float"></script>
+</body>
+</html>

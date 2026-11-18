@@ -21,6 +21,7 @@ header .who{margin-left:auto;font-size:13px;color:#aaa;display:flex;gap:10px;ali
 header .who button{background:none;border:1px solid #555;color:#ddd;padding:3px 10px;cursor:pointer;font:inherit}
 .tabs{display:flex;gap:4px;padding:0 22px;background:#111;overflow-x:auto}
 .tabs button{background:#222;color:#bbb;border:0;padding:9px 16px 7px;font-size:17px;cursor:pointer;white-space:nowrap;border-top:3px solid transparent}
+.tabs a.tablink{background:#facc15;color:#111;padding:9px 16px 7px;font:900 17px 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase;text-decoration:none;white-space:nowrap;border-top:3px solid transparent;margin-left:auto}
 .tabs button.on{background:var(--cream);color:var(--ink);border-top-color:var(--green)}
 main{max-width:1400px;margin:0 auto;padding:20px 22px 60px}
 .panel{display:none}.panel.on{display:block}
@@ -78,6 +79,10 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 .tsci h3{margin:14px 0 4px}.ttop{margin:6px 0 8px}.ttop b{display:block;font-size:14px;margin-bottom:2px}
 .tsub{display:block;font-size:14px;padding:2px 0 2px 6px;cursor:pointer}.tsub:hover{background:#fffbe6}
+.tall td.c,.tall th.c{text-align:center;width:84px}.tall input[type=checkbox]{width:18px;height:18px;cursor:pointer}
+.tall tr.tsc th{background:#111;color:#fff;font-size:15px;text-transform:uppercase;cursor:default;position:static}
+.tall tr.ttp td{background:var(--soft)}.tall td.tsn{padding-left:18px}
+.tall thead th{position:sticky;top:0;z-index:1}
 .tpick{max-height:320px;overflow:auto;border:2px solid var(--ink);padding:4px 10px;margin-top:4px;background:var(--soft)}
 .links a{display:block;padding:4px 0}
 .nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle} .nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.55em;line-height:1.05;margin-right:1px} 
@@ -87,7 +92,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Admin</span></h1><div class="who" id="who"></div></header>
 <nav class="tabs" id="tabs" hidden>
   <button data-t="overview" class="on">Overview</button><button data-t="students">Students</button><button data-t="map">Spec map</button><button data-t="teach">Teaching</button>
-  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="games" id="gTab">Games</button><button data-t="backup">Backup</button>
+  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="games" id="gTab">Games</button><button data-t="backup">Backup</button><a class="tablink" href="/admin/showcase.html">🎮 Game showcase</a>
 </nav>
 <main>
   <div class="gate" id="gate"><h2>Admin</h2><p id="gateMsg">Checking who you are…</p><div id="gateBtn"></div></div>
@@ -191,7 +196,8 @@ async function load() {
     const a = prog ? QE.analyse(prog) : null;
     const fc = Object.values(u.progress || {}).filter(p => p && p.repetitions > 0).length;
     const subj = (specMap[doc.id] && specMap[doc.id].subjects) || u.specSubjects || {};
-    const trk = ['biology', 'chemistry', 'physics'].map(k => { const s = subj[k]; if (!s) return null; const it = s.items || {}, tot = s.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; });
+    const cf = specMap[doc.id] && specMap[doc.id].conf;
+    const trk = ['biology', 'chemistry', 'physics'].map(k => { if (cf) { const L = k[0].toUpperCase(), all = Object.keys(QE.POINTS).filter(x => x[0] === L), n = all.filter(x => cf[x] === 3).length; return all.length ? Math.round(n / all.length * 100) : null; } const s = subj[k]; if (!s) return null; const it = s.items || {}, tot = s.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; });
     const times = [Date.parse(u.lastAccess), Date.parse(u.settings && u.settings.lastStudyDate), Date.parse(u.specQuizSummary && u.specQuizSummary.updatedAt), prog && prog.updatedAt, game.updatedAt].filter(x => x && !isNaN(x));
     const day = d => ({ m: (game.days || {})[d] || 0, c: ((game.cd || {})[d] || {}).n || 0 });
     const st = a ? a.stats : { securedP: 0, securedQ: 0, per: { Biology: 0, Chemistry: 0, Physics: 0 } };
@@ -262,7 +268,7 @@ function drawStudents() {
   let rows = D.students.filter(s => ($('sAll').checked || s.used || yf !== '') && (yf === '' || s.year === +yf) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
   rows.sort((a, b) => { const x = a[sSort], y = b[sSort]; return (typeof x === 'string' ? x.localeCompare(y) : (x || 0) - (y || 0)) * sDir; });
   const th = (k, t, n) => `<th class="${n ? 'n' : ''}" data-k="${k}">${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
-  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('year', 'Year', 1)}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker ticked B / C / P</th></tr></thead><tbody>
+  $('sTable').innerHTML = rows.length ? `<table><thead><tr>${th('name', 'Student')}${th('year', 'Year', 1)}${th('last', 'Last on')}${th('level', 'Level', 1)}${th('xp', 'XP', 1)}${th('pts', 'Spec points secured', 1)}${th('wk', 'Right, last 7 days', 1)}${th('m7', 'Missions 7d', 1)}${th('c7', 'Cards 7d', 1)}<th>Last 14 days</th>${th('fc', 'Cards studied (all time)', 1)}<th>Tracker: confident B / C / P</th></tr></thead><tbody>
     ${rows.map(s => `<tr class="click" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}${s.badNick ? ' <span class="tag red">name blocked</span>' : ''}${s.pending ? ` <span class="tag" style="background:#ede9fe">wants “${esc(s.pending)}”</span>` : ''}${s.hide ? ' <span class="tag">hidden</span>' : ''}<div class="small muted">${esc(s.email)}</div></td>
       <td class="n">${s.year || '–'}</td><td class="small">${ago(s.last)}</td><td class="n">${s.level || '–'}</td><td class="n">${s.xp}</td><td class="n">${s.pts} ${s.pts ? sciChips(s.per) : ''}</td><td class="n">${s.wk}</td><td class="n">${s.m7}</td><td class="n">${s.c7}</td><td>${stripHtml(s.d14)}</td><td class="n">${s.fc}</td>
       <td class="small">${s.trk.map(x => x == null ? '–' : x + '%').join(' / ')}</td></tr>`).join('')}</tbody></table>` : '<div class="empty">Nobody matches.</div>';
@@ -294,7 +300,7 @@ function openStudent(uid) {
       ${s.weak.length ? `<div class="card"><h3 style="margin-top:0">Flashcards they found hard</h3><p>${s.weak.map(k => `<span class="tag">${k}</span>`).join(' ')}</p></div>` : ''}
       ${missed.length ? `<div class="card"><h3 style="margin-top:0">Questions they get wrong most</h3><table>${missed.map(([id, x]) => { const q = QBYID[id]; return `<tr><td class="small"><b>${id}</b> ${q ? esc(strip(q.q || '(calculation)')).slice(0, 140) : ''}</td><td class="n small">${(x.r || 0)}/${x.n} right</td></tr>`; }).join('')}</table></div>` : ''}`
     : '<p class="muted" style="margin:12px 0">Hasn\'t played Cakebread Questing yet.</p>'}
-    <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker ticked: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics ? esc(JSON.stringify(s.raw.longAnswersSummary.physics).slice(0, 120)) : 'none'}</p></div>`;
+    <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker, rated confident: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics ? esc(JSON.stringify(s.raw.longAnswersSummary.physics).slice(0, 120)) : 'none'}</p></div>`;
   $('dim').classList.add('on'); $('drawer').classList.add('on'); $('drawer').scrollTop = 0;
   const msg = (t, ok) => { $('dMsg').className = 'msg ' + (ok ? 'ok' : 'err'); $('dMsg').textContent = t; };
   const setNick = async nick => {
@@ -416,31 +422,82 @@ async function loadBland() {
   catch (e) { el.innerHTML = `<div class="card" style="border-color:var(--bad)">Couldn't read Breadventure Land (${esc(e.code || e.message)}). Check the Realtime Database rules include the <code>bland</code> block.</div>`; }
 }
 const placeName = k => { const P = BL.PLACES[k]; if (P) return P.name; const [c, r] = BL.unkey(k); const L = BL.LAND[BL.T_AT(c, r)]; return L ? L.name : k; };
+/* extra moves (17 Nov): the teacher gives (or takes back) moves to one student, a year group or everyone. They go into
+   bland/state/{uid}/bonus: no cap, kept until used, spent after the normal moves. A student who hasn't opened the map yet
+   gets them waiting (the state holds only bonus + inbox until they join). The student sees a toast next time they open the map. */
+function grantRows() {
+  const admins = window.ADMIN_EMAILS || [];
+  const list = (D ? D.students : []).filter(s => !admins.includes(s.email)).map(s => ({ s, st: BL.states[s.uid] || null }));
+  Object.keys(BL.states).forEach(u => { if (!list.some(x => x.s.uid === u)) list.push({ s: { uid: u, name: (BL.pubs[u] || {}).name || u, year: 0 }, st: BL.states[u] }); });
+  return list.sort((a, b) => (!!(b.st && b.st.at) - !!(a.st && a.st.at)) || (a.s.year || 99) - (b.s.year || 99) || a.s.name.localeCompare(b.s.name));
+}
+function grantCard() {
+  const rows = grantRows(), years = [8, 9, 10, 11].filter(y => rows.some(r => r.s.year === y));
+  return `<div class="card" id="grant"><h2>Give extra moves</h2>
+    <p class="small muted" style="margin-bottom:8px">Extra moves are on top of the normal 2 a day: no cap, kept until used, spent after the normal ones. Students who haven't opened the map yet get them waiting. Use a minus number to take extra moves back.</p>
+    <div class="toolbar"><b>Tick:</b> <button class="btn alt sm" data-gsel="map">Everyone on the map</button>${years.map(y => `<button class="btn alt sm" data-gsel="y${y}">Year ${y}</button>`).join('')}<button class="btn alt sm" data-gsel="all">Everyone</button><button class="btn alt sm" data-gsel="none">Nobody</button>
+      <span style="margin-left:auto"></span><label><b>Moves</b> <input type="number" id="gN" value="2" min="-20" max="20" style="width:64px"></label><button class="btn" id="gGo">🎁 Give to the ticked students</button></div>
+    <div class="wrapx" style="max-height:340px;overflow:auto"><table><thead><tr><th></th><th>Student</th><th class="n">Year</th><th>On the map?</th><th class="n">Moves now</th><th class="n">Extra</th></tr></thead><tbody>
+      ${rows.map(({ s, st }) => { const on = !!(st && st.at);
+        return `<tr><td><input type="checkbox" data-g="${esc(s.uid)}" data-gy="${s.year || 0}" data-gm="${on ? 1 : 0}"></td><td><b>${esc(s.name)}</b>${BL.pubs[s.uid] && BL.pubs[s.uid].name && BL.pubs[s.uid].name !== s.name ? ` <span class="nick">${esc(BL.pubs[s.uid].name)}</span>` : ''}</td><td class="n">${s.year || '–'}</td>
+          <td class="small">${on ? 'yes' : '<span class="muted">not yet</span>'}</td><td class="n">${on ? BL.movesOf(st) : '<span class="muted">6 on joining</span>'}</td><td class="n">${st && st.bonus ? `<span class="tag green">+${st.bonus}</span>` : ''}</td></tr>`; }).join('') || '<tr><td colspan="6" class="muted">No students yet.</td></tr>'}</tbody></table></div>
+    <div class="msg" id="gMsg"></div></div>`;
+}
+function grantWire(el, fail) {
+  const boxes = () => [...el.querySelectorAll('[data-g]')];
+  el.querySelectorAll('[data-gsel]').forEach(b => b.onclick = () => { const k = b.dataset.gsel;
+    boxes().forEach(x => { if (k === 'none') x.checked = false; else if (k === 'all') x.checked = true; else if (k === 'map') x.checked = x.checked || x.dataset.gm === '1'; else x.checked = x.checked || x.dataset.gy === k.slice(1); }); });
+  $('gGo').onclick = async () => {
+    const n = Math.round(+$('gN').value || 0), who = boxes().filter(x => x.checked).map(x => x.dataset.g);
+    if (!n || !who.length) { $('gMsg').className = 'msg err'; $('gMsg').textContent = !n ? 'Choose a number of moves.' : 'Tick at least one student.'; return; }
+    if (who.length > 5 && !confirm(`${n > 0 ? 'Give' : 'Take back'} ${Math.abs(n)} extra move${Math.abs(n) === 1 ? '' : 's'} ${n > 0 ? 'to' : 'from'} ${who.length} students?`)) return;
+    $('gGo').disabled = true;
+    try {
+      for (const u of who) {
+        await RT.ref(`bland/state/${u}/bonus`).transaction(b => Math.max(0, (b || 0) + n) || null);
+        if (n > 0) await RT.ref(`bland/state/${u}/inbox`).transaction(a => (a || []).concat(`🎁 Your teacher gave you ${n} extra move${n === 1 ? '' : 's'} on Breadventure Land. They're yours until you use them.`).slice(-5));
+      }
+      await BL.load(); drawBland(`${n > 0 ? 'Gave' : 'Took back'} ${Math.abs(n)} extra move${Math.abs(n) === 1 ? '' : 's'} ${n > 0 ? 'to' : 'from'} ${who.length} student${who.length === 1 ? '' : 's'}.`);
+    } catch (e) { fail(e); $('gGo').disabled = false; }
+  };
+}
+/* treasure chests (17 Nov): bland/world/chests/{k} = { t, d, m }; the night tops them up; the first player there opens one */
+function chestCard(w) {
+  const ch = Object.entries(w.chests || {}), now = BL.dayNum(BL.TODAY), finds = (w.finds || []).slice().reverse();
+  return `<div class="card"><h2>Treasure chests</h2>
+    <p class="small muted">Every night tops the surface up to ${BL.CHEST_TARGET} chests (2 new at most) and, half the time, puts ${BL.CHEST_UNDER} in the Underworld. Each lasts ${BL.CHEST_DAYS} days. Everyone sees them through the fog; the first student to step on one opens it. About 1 in ${Math.round(1 / BL.MIMIC)} wooden chests is a mimic (bites for 3, gives 5 coins).</p>
+    <table><thead><tr><th>Chest</th><th>Where</th><th class="n">Days left</th><th></th></tr></thead><tbody>
+    ${ch.map(([k, c]) => `<tr><td><b>${esc((BL.CHESTS[c.t] || {}).name || c.t)}</b>${c.m ? ' <span class="tag" title="a mimic">mimic</span>' : ''}</td><td>${esc(placeName(k))}${BL.isUnder(k) ? ' <span class="small muted">(Underworld)</span>' : ''} <span class="small muted">${k}</span></td><td class="n">${Math.max(0, BL.CHEST_DAYS - (now - (c.d || now)))}</td><td><button class="btn alt sm" data-chdel="${k}">Remove</button></td></tr>`).join('') || '<tr><td colspan="4" class="muted">No chests on the map right now.</td></tr>'}</tbody></table>
+    <p style="margin-top:10px">Drop a chest now: <select id="chKind" style="font:inherit;padding:4px"><option value="">Random (wooden, silver or golden)</option><option value="wood">Wooden</option><option value="silver">Silver</option><option value="gold">Golden</option><option value="cursed">Cursed (in the Underworld)</option></select> <button class="btn sm" id="chDrop">✨ Drop it</button></p>
+    ${finds.length ? `<h3>Recently opened</h3><ul style="margin-left:18px">${finds.map(f => `<li>${esc(f.n || '?')} · ${esc((BL.CHESTS[f.t] || {}).name || f.t)}${f.it ? ' · ' + esc(f.it) : ''} <span class="small muted">${esc(f.day || '')}</span></li>`).join('')}</ul>` : ''}</div>`;
+}
 function drawBland(msg) {
   const el = $('p-bland'), w = BL.world;
   if (!w) { el.innerHTML = '<div class="card"><h2>Breadventure Land</h2><p class="muted">Nobody has opened it yet. The world is created the first time a signed-in student opens the map.</p></div>'; return; }
   const due = w.day < BL.TODAY;
-  const players = Object.entries(BL.states).map(([u, st]) => ({ u, st, p: BL.pubs[u] || {}, s: D && D.students.find(x => x.uid === u) }));
+  const players = Object.entries(BL.states).filter(([, st]) => st && st.at).map(([u, st]) => ({ u, st, p: BL.pubs[u] || {}, s: D && D.students.find(x => x.uid === u) }));
   const bosses = Object.entries(BL.PLACES).filter(([, P]) => P.type === 'boss');
   el.innerHTML = `${msg ? `<div class="msg ok" style="margin-bottom:10px">${msg}</div>` : ''}
     <div class="kpis"><div class="kpi"><div class="big">${w.chapter}</div><small>chapter · ${BL.keysOf(w)}/3 key pieces</small></div>
       <div class="kpi"><div class="big">${BL.dayNum(w.day) - BL.dayNum(w.started || w.day) + 1}</div><small>day · last night run ${esc(w.day)}</small></div>
-      <div class="kpi"><div class="big">${players.length}</div><small>players · ${players.filter(x => x.p.plan && x.p.plan.day === w.day && (x.p.plan.steps || []).length).length} with moves planned tonight</small></div>
+      <div class="kpi"><div class="big">${players.length}</div><small>players · ${players.filter(x => x.st.camp && x.st.camp.day === w.day).length} camped at a boss for tonight</small></div>
       <div class="kpi"><div class="big" style="${due ? 'color:var(--bad)' : ''}">${due ? 'Due' : 'Done'}</div><small>tonight's night ${due ? 'runs when the next player opens the map' : 'has run'}</small></div></div>
     <div class="cols">
       <div class="card"><h2>Bosses</h2><table><thead><tr><th>Boss</th><th class="n">Health</th><th class="n">Fought by</th><th>Set health</th></tr></thead><tbody>
-        ${bosses.map(([k, P]) => `<tr><td><b>${esc(P.name)}</b><div class="small muted">${P.ch === 2 ? 'Chapter 2' : 'Chapter 1 · key piece'}</div></td><td class="n">${w.boss[k] ?? P.max} / ${P.max}</td><td class="n">${Object.keys((w.hit || {})[k] || {}).length}</td>
-          <td><input type="number" min="0" max="${P.max}" value="${w.boss[k] ?? P.max}" data-bhp="${k}" style="width:80px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"> <button class="btn alt sm" data-bset="${k}">Save</button></td></tr>`).join('')}</tbody></table></div>
+        ${bosses.map(([k, P]) => `<tr><td><b>${esc(P.name)}</b><div class="small muted">${P.starter ? 'Starter · comes back after 2 days' : P.deep ? 'Underworld' : P.ch === 2 ? 'Chapter 2' : 'Chapter 1 · key piece'}${P.tier && !P.starter ? ' · ' + P.tier : ''}</div></td><td class="n">${BL.bossNow(w)[k]} / ${P.max}</td><td class="n">${Object.keys((w.hit || {})[k] || {}).length}</td>
+          <td><input type="number" min="0" max="${P.max}" value="${BL.bossNow(w)[k]}" data-bhp="${k}" style="width:80px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"> <button class="btn alt sm" data-bset="${k}">Save</button></td></tr>`).join('')}</tbody></table></div>
       <div class="card"><h2>World</h2>
         <p>Chapter: <select id="blCh" style="font:inherit;padding:4px"><option value="1" ${w.chapter < 2 ? 'selected' : ''}>1 · Free the Professor</option><option value="2" ${w.chapter >= 2 ? 'selected' : ''}>2 · The monsters wake</option></select> <button class="btn alt sm" id="blChSave">Save</button></p>
-        <p style="margin-top:10px"><button class="btn sm" id="blRun" ${due ? '' : 'disabled'}>🌙 Run tonight's night now</button> <span class="small muted">${due ? 'Runs everyone\'s planned moves, as if a student had opened the map.' : 'Already run today. It runs again after midnight.'}</span></p>
+        <p style="margin-top:10px"><button class="btn sm" id="blRun" ${due ? '' : 'disabled'}>🌙 Run tonight's night now</button> <span class="small muted">${due ? 'Runs tonight\'s boss fights and gives everyone their new moves, as if a student had opened the map.' : 'Already run today. It runs again after midnight.'}</span></p>
         ${(w.log || []).length ? `<h3>What's happened</h3><ul style="margin-left:18px">${w.log.slice(-8).map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
         <h3>Danger</h3><button class="btn warn sm" id="blReset">Reset the whole world</button> <span class="small muted">Bosses back to full, chapter 1, every player back to the Cakelab with 6 moves.</span></div>
     </div>
-    <div class="card"><h2>Players</h2><div class="wrapx"><table><thead><tr><th>Player</th><th>Where</th><th class="n">Health</th><th class="n">Moves</th><th>Planned tonight</th><th>Waiting to collect</th><th></th></tr></thead><tbody>
-      ${players.map(({ u, st, p, s }) => { const planned = p.plan && p.plan.day === w.day ? (p.plan.steps || []) : [];
-        return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}</td>
-          <td class="small">${planned.length ? planned.map(placeName).map(esc).join(' → ') : '<span class="muted">nothing</span>'}</td><td class="small">${st.pending ? `🪙 ${st.pending.coins || 0}${(st.pending.items || []).length ? ' + ' + st.pending.items.length + ' item' : ''}` : ''}</td>
+    ${grantCard()}
+    ${chestCard(w)}
+    <div class="card"><h2>Players</h2><div class="wrapx"><table><thead><tr><th>Player</th><th>Where</th><th class="n">Health</th><th class="n">Moves</th><th>Camped for tonight</th><th>Waiting to collect</th><th></th></tr></thead><tbody>
+      ${players.map(({ u, st, p, s }) => { const camp = st.camp && st.camp.day === w.day && BL.PLACES[st.camp.k];
+        return `<tr><td><b>${esc(p.name || '?')}</b><div class="small muted">${esc(s ? s.name : u)}</div></td><td>${esc(placeName(st.at || BL.HOME))}</td><td class="n">${st.health ?? '–'} / ${p.hp ?? '–'}</td><td class="n">${st.moves ?? 0}${st.bonus ? ` <span class="tag green" title="extra moves from you, kept until used">+${st.bonus}</span>` : ''}</td>
+          <td class="small">${camp ? `⛺ ${esc(camp.name)} · ${st.camp.n} attack${st.camp.n > 1 ? 's' : ''}` : '<span class="muted">–</span>'}</td><td class="small">${st.pending ? `🪙 ${st.pending.coins || 0}${(st.pending.items || []).length ? ' + ' + st.pending.items.length + ' item' : ''}` : ''}</td>
           <td style="white-space:nowrap"><button class="btn alt sm" data-bheal="${u}">Heal + to Cakelab</button> <button class="btn alt sm" data-bdel="${u}">Remove</button></td></tr>`; }).join('') || '<tr><td colspan="7" class="muted">No players yet.</td></tr>'}</tbody></table></div></div>
     <div class="msg" id="blMsg"></div>`;
   const fail = e => { $('blMsg').className = 'msg err'; $('blMsg').textContent = 'Not saved: ' + (e.code || e.message) + '. Check the bland block in the Realtime Database rules.'; };
@@ -451,6 +508,9 @@ function drawBland(msg) {
   $('blReset').onclick = async () => { if (!confirm('Reset Breadventure Land for everyone? Bosses, chapter, positions, fog and banked moves all start again. Coins and items already collected stay.')) return;
     try { const upd = { world: BL.newWorld() }; Object.entries(BL.states).forEach(([u, st]) => { upd['state/' + u] = Object.assign(BL.newState((BL.pubs[u] || {}).hp || 15), { pending: st.pending || null }); });
       await RT.ref('bland').update(upd); await BL.load(); drawBland('The world has been reset.'); } catch (e) { fail(e); } };
+  grantWire(el, fail);
+  if ($('chDrop')) $('chDrop').onclick = async () => { try { const made = await BL.dropChests(1, $('chKind').value || undefined); await BL.load(); drawBland(made.length ? `Dropped a ${(BL.CHESTS[BL.world.chests[made[0]].t] || {}).name.toLowerCase()} at ${placeName(made[0])}.` : 'No free square for a chest.'); } catch (e) { fail(e); } };
+  el.querySelectorAll('[data-chdel]').forEach(b => b.onclick = async () => { try { await RT.ref('bland/world/chests/' + b.dataset.chdel).remove(); await BL.load(); drawBland('Chest removed.'); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-bheal]').forEach(b => b.onclick = async () => { const u = b.dataset.bheal; try { await RT.ref('bland/state/' + u).update({ at: BL.HOME, health: (BL.pubs[u] || {}).hp || 15 }); await BL.load(); drawBland('Sent to the Cakelab with full Health.'); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-bdel]').forEach(b => b.onclick = async () => { const u = b.dataset.bdel; if (!confirm('Remove this player from Breadventure Land? They start again in the Cakelab next time they open the map.')) return;
     try { await RT.ref('bland/state/' + u).remove(); await RT.ref('bland/pub/' + u).remove(); await BL.load(); drawBland('Player removed.'); } catch (e) { fail(e); } });
@@ -548,7 +608,46 @@ async function loadTeach() {
   try { TCH.data = await CBSSchool.load(RT); TCH.err = ''; } catch (e) { TCH.data = { taught: {}, assign: {} }; TCH.err = e.code || e.message; }
   drawTeach();
 }
+function teachBar(y) {
+  return `<div class="toolbar">${CBSSchool.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
+    <button class="btn ${y === 'all' ? '' : 'alt'} sm" data-ty="all">All years · taught</button>
+    <span class="small muted">${D.students.filter(s => !s.year && s.used).length} active students haven't chosen a year yet (Students tab → filter "No year yet").</span></div>`;
+}
+/* "All years" (user, 17 Nov): every sub-topic × Year 8–11 tick boxes in one table, to compare and fill in everyone at once */
+function drawTeachAll(msg) {
+  const el = $('p-teach'), S = CBSSchool, d = TCH.data, YS = S.YEARS, T = d.taught;
+  const on = (n, k) => !!(T['Y' + n] && T['Y' + n][k]);
+  const subsBy = {}; Object.values(S.SUBS).forEach(sb => { (subsBy[sb.L] = subsBy[sb.L] || {}); (subsBy[sb.L][sb.topic] = subsBy[sb.L][sb.topic] || { name: sb.topicName, subs: [] }).subs.push(sb); });
+  const all = Object.keys(S.SUBS), cnt = n => all.filter(k => on(n, k)).length;
+  let rows = '';
+  ['B', 'C', 'P'].forEach(L => {
+    rows += `<tr class="tsc"><th colspan="${YS.length + 2}">${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</th></tr>`;
+    Object.entries(subsBy[L]).forEach(([n, t]) => {
+      rows += `<tr class="ttp"><td><b>${n}. ${esc(t.name)}</b></td>${YS.map(y => `<td class="c small muted">${t.subs.filter(sb => on(y, sb.key)).length}/${t.subs.length}</td>`).join('')}<td></td></tr>`;
+      t.subs.forEach(sb => {
+        const k = sb.key, n4 = YS.filter(y => on(y, k)).length;
+        rows += `<tr><td class="tsn">${n}${sb.l} ${esc(sb.name)}</td>${YS.map(y => `<td class="c"><input type="checkbox" data-ty2="${y}" data-k="${k}"${on(y, k) ? ` checked title="Taught ${esc(T['Y' + y][k])}"` : ` title="Year ${y}: not taught yet"`}></td>`).join('')}
+          <td class="c"><input type="checkbox" data-allk="${k}"${n4 === YS.length ? ' checked' : ''}${n4 && n4 < YS.length ? ' data-mixed="1"' : ''} title="Every year"></td></tr>`;
+      });
+    });
+  });
+  el.innerHTML = (TCH.err ? `<div class="card"><h2>Teaching isn't switched on yet</h2><p class="muted">Couldn't read <code>school</code> (${esc(TCH.err)}). Publish the new Realtime Database rule first.</p></div>` : '')
+    + teachBar('all') + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
+    + `<div class="card"><h2>Taught in class · all years</h2><p class="small muted">Tick what each year has done in lessons; students see these as "Covered in class" on To do. The last column ticks or unticks a sub-topic for every year.</p>
+      <div class="wrapx"><table class="tall"><thead><tr><th>Sub-topic</th>${YS.map(y => `<th class="c">Year ${y}<div class="small">${cnt(y)}/${all.length}</div></th>`).join('')}<th class="c">All</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+  el.querySelectorAll('[data-mixed]').forEach(c => c.indeterminate = true);
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = b.dataset.ty === 'all' ? 'all' : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  const keepScroll = f => async () => { const y0 = scrollY; await f(); scrollTo(0, y0); };
+  el.querySelectorAll('[data-ty2]').forEach(c => c.onchange = keepScroll(async () => { const Y = 'Y' + c.dataset.ty2, k = c.dataset.k;
+    try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (T[Y] = T[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (T[Y]) delete T[Y][k]; } drawTeachAll(); }
+    catch (e) { drawTeachAll('Could not save: ' + (e.code || e.message)); } }));
+  el.querySelectorAll('[data-allk]').forEach(c => c.onchange = keepScroll(async () => { const k = c.dataset.allk, upd = {};
+    YS.forEach(y => { upd[`Y${y}/${k}`] = c.checked ? ((T['Y' + y] || {})[k] || TODAY) : null; });
+    try { await RT.ref('school/taught').update(upd); YS.forEach(y => { const Y = 'Y' + y; if (c.checked) { T[Y] = T[Y] || {}; if (!T[Y][k]) T[Y][k] = TODAY; } else if (T[Y]) delete T[Y][k]; }); drawTeachAll(); }
+    catch (e) { drawTeachAll('Could not save: ' + (e.code || e.message)); } }));
+}
 function drawTeach(msg) {
+  if (TCH.y === 'all' && TCH.data) return drawTeachAll(msg);
   const el = $('p-teach'), S = CBSSchool, y = TCH.y, Y = 'Y' + y, d = TCH.data;
   if (!d) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
   const taught = d.taught[Y] || {}, kids = D.students.filter(s => s.year === y);
@@ -588,15 +687,14 @@ function drawTeach(msg) {
         <input id="aNote" placeholder="Note for students (optional)" maxlength="200" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
       </div><div class="acts"><button class="btn" id="aSave">Set it</button><button class="btn alt" id="aCancel">Cancel</button></div><div class="msg err" id="aMsg"></div></div>` : '';
   el.innerHTML = (TCH.err ? `<div class="card"><h2>Teaching isn't switched on yet</h2><p class="muted">Couldn't read <code>school</code> (${esc(TCH.err)}). Publish the new Realtime Database rule first.</p></div>` : '')
-    + `<div class="toolbar">${S.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
-      <span class="small muted">${D.students.filter(s => !s.year && s.used).length} active students haven't chosen a year yet (Students tab → filter "No year yet").</span></div>`
+    + teachBar(y)
     + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
-    + `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on My day. ${nT} of ${nAll} sub-topics ticked.</p>
+    + `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on To do. ${nT} of ${nAll} sub-topics ticked.</p>
         <div class="acts"><select id="tCopy"><option value="">Copy ticks from…</option>${S.YEARS.filter(n => n !== y).map(n => `<option value="${n}">Year ${n}</option>`).join('')}</select></div>${tree('taught')}</div></div>
       <div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}
         ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set for Year ${y}.</p></div>`}</div></div>`;
   const fail = e => drawTeach('Could not save: ' + (e.code || e.message));
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = b.dataset.ty === 'all' ? 'all' : +b.dataset.ty; TCH.form = false; drawTeach(); });
   el.querySelectorAll('[data-taught]').forEach(c => c.onchange = async () => { const k = c.dataset.taught;
     try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (d.taught[Y] = d.taught[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (d.taught[Y]) delete d.taught[Y][k]; } drawTeach(); } catch (e) { fail(e); } });
   $('tCopy').onchange = async e => { const from = e.target.value; if (!from) return; const src = d.taught['Y' + from] || {}, upd = {};

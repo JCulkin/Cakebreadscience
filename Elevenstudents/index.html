@@ -77,6 +77,10 @@
             overflow: hidden;
         }
 
+        @media (max-width: 600px) {
+            .nav-tab { padding: 10px 14px; font-size: 0.95em; }
+        }
+
         .nav-tab:hover {
             background: rgba(255, 255, 255, 0.1);
         }
@@ -406,65 +410,12 @@
             position: relative;
         }
 
-        /* Different color for essay emojis */
-        .essay-card .project-preview {
-            background: rgba(100, 50, 150, 0.3);
-        }
-
         /* Different color for simulation emojis */
         .simulation-card .project-preview {
             background: rgba(50, 150, 200, 0.3);
         }
 
-        /* Different color for maths emojis */
-        .maths-card .project-preview {
-            background: rgba(200, 150, 50, 0.3);
-        }
-
-        /* Placeholder card styling for essays section */
-        .placeholder-card {
-            opacity: 0.7;
-            position: relative;
-        }
-
-        .placeholder-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .placeholder-card:hover .placeholder-overlay {
-            opacity: 1;
-        }
-
-        .placeholder-text {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .placeholder-card .emoji-container {
-            filter: grayscale(50%);
-            opacity: 0.8;
-        }
-
-        .placeholder-card:hover .emoji-container {
-            filter: grayscale(30%);
-            transform: scale(1.05);
-        }
-
-        /* Featured card — Iggy v2 */
+        /* Featured card: the newest game, with a NEW badge */
         .featured-card {
             border: 2px solid transparent;
             animation: featured-flash 1.4s ease-in-out infinite;
@@ -609,12 +560,6 @@
                 <div class="nav-tab" onclick="showSection('simulations')">
                     <span>🔬</span> Simulations
                 </div>
-                <div class="nav-tab" onclick="showSection('maths')">
-                    <span>🧮</span> Maths
-                </div>
-                <div class="nav-tab" onclick="showSection('essays')">
-                    <span>📝</span> Essays
-                </div>
             </div>
         </div>
 
@@ -624,6 +569,35 @@
             <section id="games" class="content-section active">
                 <h2 class="section-title">🎮 Games <a href="highscores.html" style="font-size: 0.6em; margin-left: 20px; color: #00ffff; text-decoration: none; opacity: 0.9;">🏆 High Scores</a></h2>
                 <div class="gallery">
+                    <div class="project-card featured-card" onclick="window.location.href='Games/hector-ladrillos.html'">
+                        <div class="v2-badge">NEW</div>
+                        <div class="project-preview">
+                            <div class="emoji-container">🧱</div>
+                            <div class="line-count">202 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">Rompe Ladrillos</div>
+                            <div class="project-author">by Hector</div>
+                            <div class="project-description">
+                                A classic brick-breaker: steer the paddle with your mouse or finger, bounce the ball and smash all 50 bricks. Where it hits the paddle changes the angle!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="project-card" onclick="window.location.href='Games/hector-askgpt.html'">
+                        <div class="project-preview">
+                            <div class="emoji-container">🧠</div>
+                            <div class="line-count">362 lines</div>
+                        </div>
+                        <div class="project-info">
+                            <div class="project-title">AskGPT</div>
+                            <div class="project-author">by Hector</div>
+                            <div class="project-description">
+                                A 100-question challenge in Spanish: general knowledge and mental maths. Three lives, 10 seconds a question, and the faster you answer the more points you get.
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="project-card featured-card" onclick="window.location.href='Games/iggy.html'">
                         <div class="v2-badge">VERSION 2</div>
                         <div class="project-preview">
@@ -988,79 +962,7 @@
                 </div>
             </section>
 
-            <!-- Maths Section -->
-            <section id="maths" class="content-section">
-                <h2 class="section-title">🧮 Maths</h2>
-                <div class="gallery">
-                    <div class="project-card maths-card" onclick="window.location.href='Maths/Jamie-maths.html'">
-                        <div class="project-preview">
-                            <div class="emoji-container">🧮</div>
-                            <div class="line-count">919 lines</div>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Jamie's Maths Challenge</div>
-                            <div class="project-author">by Jamie</div>
-                            <div class="project-description">
-                                Test your mathematical skills with this exciting challenge game!
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Essays Section -->
-            <section id="essays" class="content-section">
-                <h2 class="section-title">📝 Essays <span style="font-size: 0.5em; opacity: 0.7; margin-left: 10px;">(Coming Soon)</span></h2>
-                <div class="gallery">
-                    <div class="project-card essay-card placeholder-card" onclick="event.preventDefault();">
-                        <div class="project-preview">
-                            <div class="emoji-container">📝</div>
-                            <div class="placeholder-overlay">
-                                <div class="placeholder-text">Example Essay</div>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Example Essay Title</div>
-                            <div class="project-author">by Student Name</div>
-                            <div class="project-description">
-                                This is just an example of what an essay card might look like. Essays section is coming soon!
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="project-card essay-card placeholder-card" onclick="event.preventDefault();">
-                        <div class="project-preview">
-                            <div class="emoji-container">📝</div>
-                            <div class="placeholder-overlay">
-                                <div class="placeholder-text">Example Essay</div>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Another Example Essay</div>
-                            <div class="project-author">by Another Student</div>
-                            <div class="project-description">
-                                This is another example placeholder. Real essays will be added soon.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="project-card essay-card placeholder-card" onclick="event.preventDefault();">
-                        <div class="project-preview">
-                            <div class="emoji-container">📝</div>
-                            <div class="placeholder-overlay">
-                                <div class="placeholder-text">Example Essay</div>
-                            </div>
-                        </div>
-                        <div class="project-info">
-                            <div class="project-title">Yet Another Example</div>
-                            <div class="project-author">by Third Student</div>
-                            <div class="project-description">
-                                This is a third example placeholder to show how the essays section will look when complete.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
 
         <div class="cta-section">

@@ -359,7 +359,7 @@ function finish() {
     g.best[MS.sub.key] = { r: Math.max(b.r, right), w: b.w || won ? 1 : 0 }; }
   $('wind').classList.add('hidden');
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
-  const drop = pool[Math.floor(Math.random() * pool.length)];
+  const drop = Math.random() < 1 / 67 && ADV_ITEMS.find(i => i.id === 'calc67') || pool[Math.floor(Math.random() * pool.length)];   // the 6-7 Calculator: 1 in 67, as its card always said
   const firstRev = !QE.revisedToday();
   QE.finishMission({ coins, loot: drop.id, right });
   QE.busy = false;
@@ -382,7 +382,7 @@ function finish() {
         ${gainP > 0 ? `<li class="up">📌 ${gainP} spec point${gainP === 1 ? '' : 's'} secured${statUps.length ? ' → ' + statUps.map(([, n, c]) => `<b>${n} ${before[c]} → ${after[c]}</b>`).join(', ') : ''}</li>` : `<li>Secure ${MS.sub.subj} spec points to raise your ${statName}.</li>`}
         ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! XP you had banked now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
         ${record}<li>🪙 +${coins} coins${flawless ? ' (defeat and flawless bonuses)' : won ? ' (defeat bonus)' : ''}${MS.top >= 3 ? ` · 🔥 best run ${MS.top} in a row` : ''}</li>
-        <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
+        <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) && ADV.can('spells') ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
