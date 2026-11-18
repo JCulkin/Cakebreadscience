@@ -88,7 +88,7 @@ function labelled(type, opts){
   }
   const wid = arr => arr.length ? 30 + fs*0.53*Math.max(...arr.map(it => it.name.length)) : 10;
   const ML = wid(sides.L), MR = wid(sides.R);
-  return `<svg viewBox="${-ML} 0 ${400+ML+MR} 280" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><g>${c.svg}</g>${out}</svg>`;
+  return `<svg viewBox="${-ML} 0 ${400+ML+MR} 280" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><svg x="0" y="0" width="400" height="280" viewBox="0 0 400 280" overflow="hidden">${c.svg}</svg>${out}</svg>`;
 }
 L.cellSVG = labelled;
 C['cell'] = el => {

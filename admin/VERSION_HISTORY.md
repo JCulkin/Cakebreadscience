@@ -3,11 +3,12 @@
 ---
 
 ## [Unreleased]
+- Lessons: removed mentions of Separate Science (Biology 1 course slide and paper 2; Chemistry 1a solubility note).
 
 #### Added
 - **Lessons: new presenting controls (trial on 1f Ionic bonding):** a **Next slide ⏭** button (Shift+→) that skips any remaining reveals and goes straight to the next slide, a **⏮ Slide** button (Shift+←), and **▦ All slides** (G) — a grid of every slide, fully revealed, to jump to any point. The normal Next (→, space, click, clicker Page Down) still steps through reveals. Other lessons get these once approved
 - **Lesson 1f Ionic bonding is checked** — the first lesson out of review (version 18 Nov 2026, `/interactive/lessons/chemistry/1f/`); it now appears in the spec trackers' resources
-- **New lesson (under review): Biology 1 Living organisms** (`/interactive/lessons/biology/1/`) — built from the Topic 1 deck: MRS C GREN, the five kingdoms + viruses, pathogens; all the deck's photos and videos kept, organised by kingdom with photo galleries; new labelled cell diagrams (plant, animal, yeast, Mucor, Amoeba, Chlorella, bacteria, virus), a kingdom explorer, true/false checks and a "Which group?" picture quiz; a "Mrs C Green" cartoon and a slide for each life process with pictures and diagrams; a new classification diagram; 76 projector slides. The Lessons page now has a Biology tab
+- **New lesson (under review): Biology 1 Living organisms** (`/interactive/lessons/biology/1/`) — built from the Topic 1 deck: MRS C GREN, the five kingdoms + viruses, pathogens; all the deck's photos and videos kept, organised by kingdom with photo galleries; new labelled cell diagrams (plant, animal, yeast, Mucor, Amoeba, Chlorella, bacteria, virus), a kingdom explorer, true/false checks and a "Which group?" picture quiz; a "Mrs C Gren" cartoon and a slide for each life process with pictures and diagrams; a new classification diagram; plants grouped into non-flowering and flowering (with crop examples); key points as cards above each labelled cell; 76 projector slides. The Lessons page now has a Biology tab
 
 #### Changed
 - **Lessons:** the ✎ Review notes system is gone (feedback now goes straight into the lessons chat); lessons not yet checked show an **Under review** tag. Big images with a plain coloured background now set the slide/frame to the same colour, and photos can be shown as soft-edged circles (used for the "cat-ions" kittens)
