@@ -2,6 +2,13 @@
 
 ---
 
+## [Unreleased]
+
+#### Added
+- **Lessons: new presenting controls (trial on 1f Ionic bonding):** a **Next slide ⏭** button (Shift+→) that skips any remaining reveals and goes straight to the next slide, a **⏮ Slide** button (Shift+←), and **▦ All slides** (G) — a grid of every slide, fully revealed, to jump to any point. The normal Next (→, space, click, clicker Page Down) still steps through reveals. Other lessons get these once approved
+
+---
+
 ## [5.0.0] - 2026-11-18
 ### One site: one spec tracker, one sign-in, To do, and revision that works with or without the game
 

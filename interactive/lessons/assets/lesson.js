@@ -70,8 +70,8 @@ function deck(){
   });
   const root = document.createElement('div'); root.id = 'deck';
   root.innerHTML = `<div id="stageWrap"><div id="stage"></div></div>
-   <div class="dbar"><button id="dPrev">‹ Back</button><span id="dCount"></span><button id="dNext">Next ›</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button class="rvonly" id="dNote" title="N">✎ Note this slide</button><button class="rvonly" id="dNotes">Notes list</button><button id="dExit" title="Esc">✕ Exit</button></div>
-   <div id="black"></div>`;
+   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, skipping reveals (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button class="rvonly" id="dNote" title="N">✎ Note this slide</button><button class="rvonly" id="dNotes">Notes list</button><button id="dExit" title="Esc">✕ Exit</button></div>
+   <div id="black"></div><div id="overview"><div class="ovhead"><b>All slides</b><span>Click a slide to jump to it · Esc to close</span><button id="ovClose">✕ Close</button></div><div class="ovgrid"></div></div>`;
   document.body.appendChild(root);
   const stage = $('#stage');
   const slides = $$('section.ps', src);
@@ -92,14 +92,40 @@ function deck(){
   function show(i){ cur = Math.max(0, Math.min(ps.length-1, i)); ps.forEach((p,j) => p.classList.toggle('cur', j===cur)); apply(ps[cur]); $('#dCount').textContent = (cur+1)+' / '+ps.length; ps[cur].dispatchEvent(new CustomEvent('shown')); }
   function next(){ const p = ps[cur]; if(p.shown < p.max){ p.shown++; apply(p); } else show(cur+1); }
   function prev(){ const p = ps[cur]; if(p.shown > 0){ p.shown--; apply(p); } else show(cur-1); }
+  function nextSlide(){ if(cur < ps.length-1){ ps[cur+1].shown = 0; show(cur+1); } }
+  function prevSlide(){ if(cur > 0){ ps[cur-1].shown = 0; show(cur-1); } }
+  /* overview: grid of every slide, fully revealed; click to jump */
+  const ov = $('#overview'), ovGrid = $('.ovgrid', ov); let ovBuilt = false;
+  const ovOpen = () => ov.classList.contains('on');
+  function ovScale(){ $$('.ovs', ov).forEach(t => { const w = t.clientWidth; if(w) t.firstChild.style.transform = `scale(${w/1600})`; }); }
+  function overview(){
+    if(!ovBuilt){
+      ps.forEach((p,i) => {
+        const t = document.createElement('div'); t.className = 'ovt'; t.dataset.i = i;
+        const c = p.cloneNode(true); c.classList.add('cur'); c.removeAttribute('data-rid');
+        $$('.hint', c).forEach(h => h.remove()); $$('video', c).forEach(v => { v.removeAttribute('autoplay'); v.muted = true; });
+        const h = $('h1,h2', p), lines = (h || p).innerText.split('\n').map(x => x.trim()).filter(Boolean), title = (h ? lines.join(' ') : (lines[0] || 'Slide')).slice(0,60);
+        t.innerHTML = '<div class="ovs"></div>'; t.firstChild.appendChild(c);
+        t.insertAdjacentHTML('beforeend', `<div class="ovl"><b>${i+1}</b> ${title.replace(/</g,'&lt;')}</div>`);
+        t.onclick = () => { ovClose(); ps[i].shown = 0; show(i); };
+        ovGrid.appendChild(t);
+      });
+      ovBuilt = true;
+    }
+    $$('.ovt', ov).forEach((t,i) => t.classList.toggle('cur', i === cur));
+    ov.classList.add('on'); ovScale();
+    const ct = $('.ovt.cur', ov); if(ct) ct.scrollIntoView({block:'center'});
+  }
+  function ovClose(){ ov.classList.remove('on'); }
   function fit(){ const s = Math.min(innerWidth/1600, innerHeight/900), sw = $('#stageWrap'); sw.style.width = 1600*s+'px'; sw.style.height = 900*s+'px'; stage.style.transform = `scale(${s})`; }
   const isP = () => body.classList.contains('pm');
   function enter(){ body.classList.add('pm'); fit(); show(cur); }
-  function exit(){ body.classList.remove('pm','rvopen'); $('#black').classList.remove('on'); if(document.fullscreenElement) document.exitFullscreen(); }
+  function exit(){ ovClose(); body.classList.remove('pm','rvopen'); $('#black').classList.remove('on'); if(document.fullscreenElement) document.exitFullscreen(); }
   const full = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(()=>{});
   const pb = document.createElement('button'); pb.className='pbtn'; pb.textContent='▶ Present'; pb.title='Projector mode'; pb.onclick=enter; document.body.appendChild(pb);
   const hb = $('#hdrPresent'); if(hb) hb.onclick = enter;
-  $('#dNext').onclick = next; $('#dPrev').onclick = prev; $('#dExit').onclick = exit; $('#dFull').onclick = full;
+  $('#dNext').onclick = next; $('#dPrev').onclick = prev;
+  $('#dNextS').onclick = nextSlide; $('#dPrevS').onclick = prevSlide; $('#dAll').onclick = () => ovOpen() ? ovClose() : overview(); $('#ovClose').onclick = ovClose; $('#dExit').onclick = exit; $('#dFull').onclick = full;
   const blk = $('#black'); $('#dBlack').onclick = () => blk.classList.toggle('on'); blk.onclick = () => blk.classList.remove('on');
   $('#dNote').onclick = e => { e.stopPropagation(); L.noteFor && L.noteFor(ps[cur], innerWidth/2-180, 80); };
   $('#dNotes').onclick = e => { e.stopPropagation(); body.classList.toggle('rvopen'); };
@@ -110,7 +136,12 @@ function deck(){
   });
   addEventListener('keydown', e => {
     if(!isP() || e.target.closest('textarea,input')) return;
-    if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); next(); }
+    const v2 = body.dataset.deckUi === 'v2';
+    if(ovOpen()){ if(e.key==='Escape'||e.key==='g'||e.key==='G'){ e.preventDefault(); ovClose(); } return; }
+    if(v2 && e.shiftKey && e.key==='ArrowRight'){ e.preventDefault(); nextSlide(); }
+    else if(v2 && e.shiftKey && e.key==='ArrowLeft'){ e.preventDefault(); prevSlide(); }
+    else if(v2 && (e.key==='g'||e.key==='G')){ e.preventDefault(); overview(); }
+    else if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){ e.preventDefault(); next(); }
     else if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){ e.preventDefault(); prev(); }
     else if(e.key==='Escape') exit();
     else if(e.key==='f'||e.key==='F') full();
@@ -121,8 +152,8 @@ function deck(){
   let tx=null; addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
   addEventListener('touchend', e => { if(!isP()||tx===null) return; const d = e.changedTouches[0].clientX - tx; if(Math.abs(d)>50){ d<0?next():prev(); } tx=null; });
   let mt; addEventListener('mousemove', () => { body.classList.add('mouse'); clearTimeout(mt); mt = setTimeout(()=>body.classList.remove('mouse'), 1500); });
-  addEventListener('resize', () => { if(isP()) fit(); });
-  deckApi = L.deck = { show, next, prev, enter, exit, count: ps.length, get cur(){ return cur; } };
+  addEventListener('resize', () => { if(isP()) fit(); if(ovOpen()) ovScale(); });
+  deckApi = L.deck = { show, next, prev, nextSlide, prevSlide, overview, enter, exit, count: ps.length, get cur(){ return cur; } };
   if(location.hash === '#present') enter();
 }
 

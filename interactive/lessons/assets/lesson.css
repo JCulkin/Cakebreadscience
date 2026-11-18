@@ -199,3 +199,25 @@ details.specbox summary{cursor:pointer;font-weight:700;font-size:16px}
 details.specbox ol{margin:8px 0 0 0;list-style:none}
 details.specbox li{margin:5px 0;display:grid;grid-template-columns:44px 1fr}
 details.specbox li b{color:var(--acc)}
+
+/* presenter v2: next-slide button + all-slides overview (opt-in: <body data-deck-ui="v2">) */
+.dbar button.v2only{display:none}
+body[data-deck-ui="v2"] .dbar button.v2only{display:inline-block}
+.dbar #dNextS,.dbar #dAll{background:#3a3a3a}
+#overview{position:fixed;inset:0;z-index:58;background:#111;overflow:auto;display:none;padding:0 18px 30px}
+#overview.on{display:block}
+#overview .ovhead{position:sticky;top:0;z-index:2;background:#111;display:flex;gap:16px;align-items:baseline;padding:14px 0 12px;color:#ccc;font:600 15px 'Barlow',Arial,sans-serif}
+#overview .ovhead b{font:900 28px 'Barlow Condensed',Arial Narrow,sans-serif;text-transform:uppercase;color:#fff}
+#overview .ovhead button{margin-left:auto;font:600 16px 'Barlow',Arial,sans-serif;background:#222;color:#eee;border:1px solid #555;padding:6px 14px;cursor:pointer}
+#overview .ovgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.ovt{cursor:pointer;background:#222;border:3px solid #333;transition:border-color .1s}
+.ovt:hover{border-color:#888}
+.ovt.cur{border-color:var(--accHi)}
+.ovt .ovs{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;background:#fffdf6}
+.ovt .ovs>.ps{display:flex;position:absolute;left:0;top:0;width:1600px;height:900px;transform-origin:0 0;pointer-events:none}
+.ovt .ovs>.ps [data-s]{opacity:1!important}
+.ovt .ovs>.ps .gone{opacity:0!important}
+.ovt .ovs>.ps .hidden-e .el{opacity:1}
+.ovt .ovl{color:#ccc;font:600 14px 'Barlow',Arial,sans-serif;padding:5px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ovt .ovl b{color:#fff;margin-right:4px}
+.ovt .ovs>.ps [data-hide-from]{opacity:0!important}
