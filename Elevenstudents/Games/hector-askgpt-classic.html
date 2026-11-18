@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<script src="/js/game-gate.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AskGPT</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<style>html,body{margin:0;padding:0;overflow:hidden;background:#202123}canvas{display:block}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+
+let gameState = "START"; // START, PLAYING, END
+let difficulty = "FACIL"; // FACIL, MEDIO, DIFICIL
+let currentQuestionIndex = 0;
+let score = 0;
+let timer = 10;
+let lastTimeCheck = 0;
+let feedbackMessage = "";
+let feedbackColor;
+let feedbackTimer = 0;
+
+// Base de datos de preguntas de AskGPT por dificultad
+const quizData = {
+  FACIL: [
+    {
+      q: "¿Cuál es el océano más grande de la Tierra?",
+      options: ["Océano Atlántico", "Océano Índico", "Océano Pacífico", "Océano Ártico"],
+      correct: 2
+    },
+    {
+      q: "¿Qué gas es el más abundante en nuestra atmósfera?",
+      options: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Hidrógeno"],
+      correct: 1
+    }
+  ],
+  MEDIO: [
+    {
+      q: "¿En qué año cayó el Muro de Berlín?",
+      options: ["1985", "1989", "1991", "1975"],
+      correct: 1
+    },
+    {
+      q: "¿Cuál es el símbolo químico del oro?",
+      options: ["Ag", "Go", "Au", "Gd"],
+      correct: 2
+    }
+  ],
+  DIFICIL: [
+    {
+      q: "¿Qué tratado de paz puso fin a la Guerra de los 30 Años?",
+      options: ["Tratado de Versalles", "Paz de Westfalia", "Tratado de Utrecht", "Congreso de Viena"],
+      correct: 1
+    },
+    {
+      q: "¿Qué físico publicó la Relatividad General en 1915?",
+      options: ["Isaac Newton", "Niels Bohr", "Albert Einstein", "Max Planck"],
+      correct: 2
+    }
+  ]
+};
+
+let currentQuestions = [];
+let optionColors = [];
+
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  // Paleta de colores para las 4 opciones
+  optionColors = [
+    color(226, 27, 60),  // Rojo
+    color(19, 104, 206), // Azul
+    color(216, 158, 0),  // Amarillo
+    color(16, 163, 127)  // Verde ChatGPT
+  ];
+}
+
+function draw() {
+  background(32, 33, 35); // Fondo oscuro estilo interfaz IA
+
+  if (gameState === "START") {
+    drawStartScreen();
+  } else if (gameState === "PLAYING") {
+    drawQuizScreen();
+  } else if (gameState === "END") {
+    drawEndScreen();
+  }
+}
+
+function drawStartScreen() {
+  textAlign(CENTER, CENTER);
+  fill(16, 163, 127); // Verde característico
+  textSize(50);
+  textStyle(BOLD);
+  text("AskGPT", width / 2, height * 0.22);
+ 
+  textStyle(NORMAL);
+  fill(236, 236, 241);
+  textSize(20);
+  text("Selecciona tu nivel de dificultad para iniciar el reto:", width / 2, height * 0.35);
+
+  // Botón Fácil
+  drawButton(width / 2 - 150, height * 0.46, 300, 55, "FÁCIL", color(16, 163, 127));
+  // Botón Medio
+  drawButton(width / 2 - 150, height * 0.58, 300, 55, "MEDIO", color(216, 158, 0));
+  // Botón Difícil
+  drawButton(width / 2 - 150, height * 0.70, 300, 55, "DIFÍCIL", color(226, 27, 60));
+}
+
+function drawQuizScreen() {
+  let qData = currentQuestions[currentQuestionIndex];
+ 
+  // Barra superior con información
+  textAlign(LEFT, TOP);
+  fill(172, 172, 190);
+  textSize(20);
+  text(`AskGPT • Nivel: ${difficulty}`, 30, 30);
+ 
+  textAlign(RIGHT, TOP);
+  text(`Pregunta: ${currentQuestionIndex + 1}/${currentQuestions.length}`, width - 30, 30);
+ 
+  // Puntos en el centro superior
+  textAlign(CENTER, TOP);
+  fill(16, 163, 127);
+  textSize(26);
+  textStyle(BOLD);
+  text(`Puntos: ${score}`, width / 2, 28);
+  textStyle(NORMAL);
+ 
+  // Círculo del temporizador
+  stroke(16, 163, 127);
+  strokeWeight(3);
+  if (timer <= 3) {
+    stroke(226, 27, 60);
+    fill(226, 27, 60, 80);
+  } else {
+    fill(52, 53, 65);
+  }
+  ellipse(width / 2, height * 0.17, 68, 68);
+  noStroke();
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(26);
+  text(timer, width / 2, height * 0.17);
+
+  // Control del tiempo por segundo
+  if (millis() - lastTimeCheck >= 1000 && feedbackTimer <= 0) {
+    timer--;
+    lastTimeCheck = millis();
+    if (timer <= 0) {
+      triggerFeedback(false, "¡Tiempo agotado!");
+    }
+  }
+
+  // Cuadro de la Pregunta (Estilo burbuja de chat IA)
+  fill(52, 53, 65);
+  stroke(86, 88, 105);
+  strokeWeight(1);
+  rect(40, height * 0.27, width - 80, height * 0.19, 12);
+ 
+  noStroke();
+  fill(255);
+  textSize(22);
+  textAlign(CENTER, CENTER);
+  text(qData.q, 60, height * 0.27, width - 120, height * 0.19);
+
+  // Renderizar las 4 opciones en cuadrícula
+  let btnW = (width - 100) / 2;
+  let btnH = (height * 0.44) / 2;
+ 
+  // Opción 0 (Arriba Izq)
+  drawButton(40, height * 0.5, btnW, btnH, "A)  " + qData.options[0], optionColors[0]);
+  // Opción 1 (Arriba Der)
+  drawButton(60 + btnW, height * 0.5, btnW, btnH, "B)  " + qData.options[1], optionColors[1]);
+  // Opción 2 (Abajo Izq)
+  drawButton(40, height * 0.52 + btnH, btnW, btnH, "C)  " + qData.options[2], optionColors[2]);
+  // Opción 3 (Abajo Der)
+  drawButton(60 + btnW, height * 0.52 + btnH, btnW, btnH, "D)  " + qData.options[3], optionColors[3]);
+
+  // Pantalla de retroalimentación tras responder
+  if (feedbackTimer > 0) {
+    fill(0, 0, 0, 210);
+    rect(0, 0, width, height);
+    fill(feedbackColor);
+    textSize(46);
+    textStyle(BOLD);
+    textAlign(CENTER, CENTER);
+    text(feedbackMessage, width / 2, height / 2);
+    textStyle(NORMAL);
+   
+    if (millis() - feedbackTimer >= 1800) {
+      feedbackTimer = 0;
+      nextQuestion();
+    }
+  }
+}
+
+function drawEndScreen() {
+  textAlign(CENTER, CENTER);
+  fill(16, 163, 127);
+  textSize(44);
+  textStyle(BOLD);
+  text("Sesión de AskGPT Finalizada", width / 2, height * 0.3);
+ 
+  textStyle(NORMAL);
+  fill(255);
+  textSize(30);
+  text(`Puntuación Final: ${score} pts`, width / 2, height * 0.45);
+ 
+  drawButton(width / 2 - 150, height * 0.62, 300, 60, "Nueva Consulta", color(16, 163, 127));
+}
+
+function drawButton(x, y, w, h, label, btnColor) {
+  push();
+  fill(btnColor);
+  noStroke();
+  rect(x, y, w, h, 10);
+ 
+  fill(255);
+  textSize(20);
+  textAlign(CENTER, CENTER);
+  text(label, x + 15, y, w - 30, h);
+  pop();
+}
+
+function mousePressed() {
+  if (feedbackTimer > 0) return;
+
+  if (gameState === "START") {
+    if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150) {
+      if (mouseY > height * 0.46 && mouseY < height * 0.46 + 55) startQuiz("FACIL");
+      else if (mouseY > height * 0.58 && mouseY < height * 0.58 + 55) startQuiz("MEDIO");
+      else if (mouseY > height * 0.70 && mouseY < height * 0.70 + 55) startQuiz("DIFICIL");
+    }
+  }
+  else if (gameState === "PLAYING") {
+    let qData = currentQuestions[currentQuestionIndex];
+    let btnW = (width - 100) / 2;
+    let btnH = (height * 0.44) / 2;
+    let clickedAnswer = -1;
+
+    if (mouseY > height * 0.5 && mouseY < height * 0.5 + btnH) {
+      if (mouseX > 40 && mouseX < 40 + btnW) clickedAnswer = 0;
+      if (mouseX > 60 + btnW && mouseX < 60 + btnW * 2) clickedAnswer = 1;
+    } else if (mouseY > height * 0.52 + btnH && mouseY < height * 0.52 + btnH * 2) {
+      if (mouseX > 40 && mouseX < 40 + btnW) clickedAnswer = 2;
+      if (mouseX > 60 + btnW && mouseX < 60 + btnW * 2) clickedAnswer = 3;
+    }
+
+    if (clickedAnswer !== -1) {
+      if (clickedAnswer === qData.correct) {
+        let pointsEarned = timer * 100;
+        score += pointsEarned;
+        triggerFeedback(true, `¡RESPUESTA CORRECTA!\n+${pointsEarned} pts`);
+      } else {
+        triggerFeedback(false, "¡RESPUESTA INCORRECTA!");
+      }
+    }
+  }
+  else if (gameState === "END") {
+    if (mouseX > width / 2 - 150 && mouseX < width / 2 + 150 && mouseY > height * 0.62 && mouseY < height * 0.62 + 60) {
+      gameState = "START";
+    }
+  }
+}
+
+function startQuiz(lvl) {
+  difficulty = lvl;
+  currentQuestions = quizData[lvl];
+  currentQuestionIndex = 0;
+  score = 0;
+  gameState = "PLAYING";
+  resetTimer();
+}
+
+function resetTimer() {
+  timer = 10;
+  lastTimeCheck = millis();
+}
+
+function triggerFeedback(isCorrect, msg) {
+  feedbackMessage = msg;
+  feedbackColor = isCorrect ? color(16, 163, 127) : color(226, 27, 60);
+  feedbackTimer = millis();
+}
+
+function nextQuestion() {
+  currentQuestionIndex++;
+  if (currentQuestionIndex < currentQuestions.length) {
+    resetTimer();
+  } else {
+    gameState = "END";
+  }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+</script>
+<script src="/js/home-link.js" data-mode="float" data-pos="bottom"></script>
+</body>
+</html>
