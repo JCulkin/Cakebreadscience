@@ -51,19 +51,23 @@
     }));
     return out;
   }
+  /* The account is the source of truth. This browser keeps a copy (instant drawing) and a list of ratings
+     that haven't reached the account yet (offline / school filter); those are pushed on the next load. */
+  const unKey = () => 'cbs.tracker.conf.unsynced.' + uid;
   async function loadConf(user) {
     uid = user ? user.uid : null;
-    CONF = readLocal(lsKey());
-    if (!user || !window.firebase || !firebase.firestore) { drawAll(); return; }
-    const anon = readLocal('cbs.tracker.conf.anon');
+    CONF = readLocal(lsKey()); drawAll();
+    if (!user || !window.firebase || !firebase.firestore) return;
+    const anon = readLocal('cbs.tracker.conf.anon'), uns = readLocal(unKey());
     try {
       const snap = await within(firebase.firestore().collection('specProgress').doc(user.uid).get(), 6000);
       const d = (snap.exists && snap.data()) || {};
       let remote = d.conf || null, fresh = false;
       if (!remote) { remote = migrate(d.subjects); fresh = true; }
-      CONF = Object.assign({}, remote, CONF, anon);          // this browser's newer ratings win
+      CONF = Object.assign({}, remote, uns, anon);          // unsaved ratings from this browser win, then the account
       writeLocal();
-      if (fresh || Object.keys(anon).length) { pending = Object.assign({}, CONF); saveRemote(fresh); }
+      const push = Object.assign({}, fresh ? CONF : {}, uns, anon);
+      if (Object.keys(push).length) { pending = push; saveRemote(fresh); }
       try { localStorage.removeItem('cbs.tracker.conf.anon'); } catch (e) {}
     } catch (e) { console.warn('tracker: confidence not loaded', e); }
     drawAll();
@@ -71,8 +75,14 @@
   async function saveRemote(migrated) {
     if (!uid || !Object.keys(pending).length) return;
     const body = { conf: pending, confAt: Date.now() }; if (migrated) body.confMigrated = true;
-    pending = {};
-    try { await firebase.firestore().collection('specProgress').doc(uid).set(body, { merge: true }); } catch (e) { console.warn('tracker: confidence not saved', e); }
+    const sent = pending; pending = {};
+    const uns = Object.assign(readLocal(unKey()), sent);
+    try { localStorage.setItem(unKey(), JSON.stringify(uns)); } catch (e) {}
+    try {
+      await within(firebase.firestore().collection('specProgress').doc(uid).set(body, { merge: true }), 8000);
+      const left = readLocal(unKey()); Object.keys(sent).forEach(k => { if (left[k] === sent[k]) delete left[k]; });
+      try { Object.keys(left).length ? localStorage.setItem(unKey(), JSON.stringify(left)) : localStorage.removeItem(unKey()); } catch (e) {}
+    } catch (e) { console.warn('tracker: confidence not saved yet (will retry)', e); }
   }
   function setConf(k, v) {
     CONF[k] = CONF[k] === v ? 0 : v; pending[k] = CONF[k]; writeLocal();

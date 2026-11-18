@@ -205,6 +205,12 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-11-18 - v5.0.0 One Site
+- **One spec tracker** for Biology, Chemistry and Physics: every point coloured by what the student has proved (Practice Questions, Questing or Flashcards — the game is optional), their own confidence rating, "Covered in class", and links to practise, flashcards and worksheets; every point has its own link
+- **To do** (was My day) lists points to check, nearly secured and gone rusty, with Prove it buttons
+- **One sign-in box** on every page; homepage Questing banner and Practice / Flashcards cards; Flashcards redesigned
+- Admin: All years teaching view; games fail safe on blocked networks
+
 ### 2026-11-17 - v4.1.1 Fix
 - My day no longer hangs for students who cleared their Breadventure Land moves, so set work shows up
 
