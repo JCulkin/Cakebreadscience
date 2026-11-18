@@ -75,7 +75,9 @@
   const CACHE = 'cbs.school';
   const shape = v => ({ taught: (v || {}).taught || {}, assign: (v || {}).assign || {} });
   async function load(rt) {
-    const v = shape(await rtGet(rt, 'school'));
+    /* taught + assign only: school/review (the admin's question/worksheet review marks) is big and not for students */
+    const [taught, assign] = await Promise.all([rtGet(rt, 'school/taught'), rtGet(rt, 'school/assign')]);
+    const v = shape({ taught, assign });
     try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), v })); } catch (e) {}
     return v;
   }

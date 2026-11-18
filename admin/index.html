@@ -100,7 +100,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Admin</span></h1><div class="who" id="who"></div></header>
 <nav class="tabs" id="tabs" hidden>
   <button data-t="overview" class="on">Overview</button><button data-t="students">Students</button><button data-t="map">Spec map</button><button data-t="teach">Teaching</button>
-  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="games" id="gTab">Games</button><button data-t="backup">Backup</button><a class="tablink" href="/admin/showcase.html">🎮 Game showcase</a>
+  <button data-t="questions">Questions</button><button data-t="boards">Leaderboards</button><button data-t="bland">Breadventure Land</button><button data-t="games" id="gTab">Games</button><button data-t="backup">Backup</button><a class="tablink" href="/admin/review.html">✅ Review</a><a class="tablink" href="/admin/showcase.html">🎮 Game showcase</a>
 </nav>
 <main>
   <div class="gate" id="gate"><h2>Admin</h2><p id="gateMsg">Checking who you are…</p><div id="gateBtn"></div></div>
@@ -155,6 +155,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/spec-quiz/bland.js"></script>
 <script src="/js/school.js"></script>
 <script src="/js/spec-index.js"></script>
+<script src="/admin/review-lib.js"></script>
 <script>
 /* Admin console (rebuilt 10 Nov 2026): the whole site + Cakebread Questing. Reads Firestore users/*, specProgress/*,
    and Realtime Database specQuizBoard, specQuizReports, gameScores. Progress maths comes from QE.analyse (same rules as the game). */
@@ -289,7 +290,8 @@ async function loadBuild() {
   const get = (u, how) => fetch(u, { cache: 'no-store' }).then(r => r.ok ? r[how]() : null).catch(() => null);
   const [lj, sci, ma, mt] = await Promise.all([get('/interactive/lessons/lessons.json', 'json'), get('/worksheets/science.html', 'text'),
     get('/worksheets/maths.html', 'text'), get('/specifications/maths.html', 'text')]);
-  return { lj, sci: sci || '', ma: ma || '', mt: mt || '' };
+  const [rev, ws] = await Promise.all([REVIEW.loadReview(RT).catch(() => ({ q: {}, w: {} })), REVIEW.sheets().catch(() => [])]);
+  return { lj, sci: sci || '', ma: ma || '', mt: mt || '', rev, ws };
 }
 function drawBuild() {
   const box = $('buildCard'); if (!box) return;
@@ -304,6 +306,10 @@ function drawBuild() {
   const all = Object.keys(IX.pts), with_ = f => all.filter(k => f(IX.pts[k])).length;
   const isSheet = i => IX.res[i] && IX.res[i][0] === 'sheet';
   const done = [], review = [];
+  const RQ = REVIEW.counts(QUESTIONS, BUILD.rev.q, q => q.id, REVIEW.qHash);
+  const wst = s => REVIEW.status(BUILD.rev.w[REVIEW.key(s.p)], s.h);
+  const wline = sub => { const all = BUILD.ws.filter(s => s.subj === sub), c = { todo: 0, changed: 0, fix: 0, ok: 0 }; all.forEach(s => c[wst(s)]++);
+    return { all, c, html: `<br><b>${all.length}</b> made · <span style="color:var(--s)"><b>${c.ok}</b> checked</span> · <b>${c.todo + c.changed}</b> to review${c.changed ? ` (${c.changed} changed)` : ''}${c.fix ? ` · <span style="color:var(--bad)">${c.fix} need a fix</span>` : ''}${all.some(s => !s.live) ? ` · ${all.filter(s => !s.live).length} drafts` : ''}` }; };
   const rows = Object.keys(SUB).map(id => {
     const subs = subsOf(id), L = LETTER[id];
     const ls = BUILD.lj && (BUILD.lj.subjects || []).find(x => x.id === id);
@@ -317,7 +323,7 @@ function drawBuild() {
     const pts = all.filter(x => x[0] === L), pSheet = pts.filter(x => (IX.pts[x].r || []).some(isSheet)).length;
     return `<tr><td><b class="subj ${L}">${SUB[id]}</b></td>
       <td>${bar(ck.length, dr.length, nTop)}<div class="small">${ck.length} checked · ${dr.length} under review · ${nTop - ck.length - dr.length} to make <span class="muted">of ${nTop}${ls ? ' lessons' : ' sub-topics (no lesson list yet)'}</span></div></td>
-      <td>${bar(covered, 0, subs.length)}<div class="small">${covered} of ${subs.length} sub-topics · ${pSheet} of ${pts.length} spec points<br><span class="muted">${k.sheet} worksheets · ${k.practice} practice · ${k.challenge} challenge</span></div></td></tr>`;
+      <td>${bar(covered, 0, subs.length)}<div class="small">${covered} of ${subs.length} sub-topics · ${pSheet} of ${pts.length} spec points<br><span class="muted">${k.sheet} worksheets · ${k.practice} practice · ${k.challenge} challenge</span>${wline(id).html}</div></td></tr>`;
   });
   /* maths: sections from the maths tracker, sheets from the maths worksheet page (filenames start with the section, e.g. 4.1_4.2_…) */
   const msec = [...new Set([...BUILD.mt.matchAll(/>\s*(\d\.\d+)\s*-\s*[^<]+</g)].map(m => m[1]))];
@@ -325,15 +331,17 @@ function drawBuild() {
   const mcov = new Set(msheets.flatMap(u => (u.split('/').pop().match(/^(?:\d\.\d+_)+/) || [''])[0].split('_').filter(Boolean)));
   const mhit = msec.filter(x => mcov.has(x)).length;
   rows.push(`<tr><td><b class="subj M">Maths</b></td><td class="muted small">No maths lessons planned yet</td>
-    <td>${bar(mhit, 0, msec.length)}<div class="small">${mhit} of ${msec.length} spec sections · ${msheets.length} worksheets${msec.length ? `<br><span class="muted">No sheet numbered for: ${msec.filter(x => !mcov.has(x)).join(', ') || 'none'}</span>` : ''}</div></td></tr>`);
+    <td>${bar(mhit, 0, msec.length)}<div class="small">${mhit} of ${msec.length} spec sections · ${msheets.length} worksheets${wline('maths').html}${msec.length ? `<br><span class="muted">No sheet numbered for: ${msec.filter(x => !mcov.has(x)).join(', ') || 'none'}</span>` : ''}</div></td></tr>`);
   const tl = rows.length;
   box.innerHTML = `<h2>Building the site</h2>
     <div class="bkpi"><span><b>${with_(p => p.n)}</b>/${all.length} spec points have quiz questions</span><span><b>${with_(p => p.c)}</b>/${all.length} have flashcards</span>
       <span><b>${with_(p => (p.r || []).some(isSheet))}</b>/${all.length} have a worksheet</span><span><b>${sheets.length + msheets.length}</b> worksheets live</span>
       <span><b>${done.length}</b> lessons checked · <b>${review.length}</b> under review</span></div>
+    <div class="bkpi" style="background:#f6f4ee;border:1.5px solid var(--ink);padding:8px 12px;align-items:center"><span><b style="color:var(--s)">${RQ.ok}</b>/${RQ.total} questions you've checked</span><span><b>${RQ.todo + RQ.changed}</b> to review${RQ.changed ? ` (${RQ.changed} changed since checked)` : ''}</span>${RQ.fix ? `<span><b style="color:var(--bad)">${RQ.fix}</b> need a fix</span>` : ''}
+      <span><b style="color:var(--s)">${BUILD.ws.filter(s => wst(s) === 'ok').length}</b>/${BUILD.ws.length} worksheets checked</span><a class="btn" href="/admin/review.html" style="margin-left:auto">✅ Review questions and worksheets →</a></div>
     <div style="overflow-x:auto"><table class="build"><thead><tr><th></th><th>Lessons</th><th>Worksheets</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
     ${done.length || review.length ? `<p class="small" style="margin-top:8px">${done.length ? `<b>Checked:</b> ${done.join(' · ')}` : ''}${done.length && review.length ? '<br>' : ''}${review.length ? `<b>Under review:</b> ${review.join(' · ')}` : ''}</p>` : ''}
-    <p class="small muted" style="margin-top:6px">Green = done (checked lesson / sub-topic with a worksheet), amber = lesson under review. Counted from the live lesson list, the worksheet pages and the spec index (built ${esc(IX.built || '?')}). <a href="/interactive/lessons/">Lessons</a> · <a href="/worksheets/science.html">Science worksheets</a> · <a href="/worksheets/maths.html">Maths worksheets</a></p>`;
+    <p class="small muted" style="margin-top:6px">Green = done (checked lesson / sub-topic with a worksheet), amber = lesson under review. Checked = you pressed “It's good” in Review and it hasn't changed since. Counted from the live lesson list, the worksheet pages and the spec index (built ${esc(IX.built || '?')}). <a href="/interactive/lessons/">Lessons</a> · <a href="/worksheets/science.html">Science worksheets</a> · <a href="/worksheets/maths.html">Maths worksheets</a></p>`;
 }
 
 /* Students table columns (user, 18 Nov: "change which columns display, to switch them, and a column for questions attempted").

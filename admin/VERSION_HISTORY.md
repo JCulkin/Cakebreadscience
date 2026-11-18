@@ -3,6 +3,7 @@
 ---
 
 ## [Unreleased]
+- **Admin Review portal** (`/admin/review.html`, ✅ Review tab): go through the whole question bank one question at a time — spec point, question, answer, explanation, diagrams and calculation examples, any student reports — with a big **✓ It's good** button (or Enter), **Needs a fix** with a note, skip/back, filters by status, subject and sub-topic, and jump to an id. Worksheets get the same: every sheet made, with its mark scheme, marked Good or Needs a fix. **Anything edited after you checked it goes back to review automatically** (each check saves a fingerprint of the content). The Building the site box shows questions and worksheets checked / to review
 - Admin Overview: **Building the site** box — lessons checked / under review per subject, worksheets per subject (sub-topics and spec points covered; worksheets, practice and challenge sheets), maths worksheets by spec section, and how many spec points have questions, flashcards and a worksheet. Counted live from the lesson list, worksheet pages and spec index
 - Lessons: simpler lesson list and headers: no "Checked" badge, no dates on "Under review", no how-it-works box, progress line or format-trial link.
 - Lessons: Biology 1 Living organisms checked and frozen as v2026-11-18.
