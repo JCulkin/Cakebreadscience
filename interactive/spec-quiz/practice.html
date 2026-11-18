@@ -115,6 +115,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
     <div class="progress" id="prog"></div>
     <div class="card qcard">
       <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
+      <div id="qfig"></div>
       <div class="qtext" id="qtext"></div>
       <div class="opts" id="opts"></div>
       <div id="fb"></div>
@@ -133,6 +134,9 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="diagrams.js"></script>
+<script src="diagq.js"></script>
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="/js/year.js"></script>
@@ -204,10 +208,13 @@ function show() {
   $('prog').innerHTML = PS.qs.map((_, j) => `<i class="${j < PS.res.length ? (PS.res[j].ok ? 'ok' : 'no') : j === PS.i ? 'now' : ''}"></i>`).join('');
   $('qnum').textContent = `Question ${PS.i + 1} of ${PS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)}`;
+  $('qfig').innerHTML = typeof DQ !== 'undefined' ? DQ.fig(q) : '';   // diagram questions: the drawing above the question
   $('qtext').innerHTML = nuc(q.tf !== undefined ? `True or false? ${q.q}` : q.q);
-  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0]));
+  let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0])), keys = 'ABCD';
+  if (q.svg && typeof DQ !== 'undefined') ({ opts, keys } = DQ.order(opts, o => o[0]));   // letter answers in order, numbered keys
+  PS.keys = keys;
   $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
-  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${nuc(t)}</span></button>`).join('');
+  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${nuc(t)}</span></button>`).join('');
   $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
   PS.opts = opts; PS.picked = -1;
   $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
@@ -227,7 +234,8 @@ $('opts').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if ($('quiz').classList.contains('hidden') || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
-  const i = 'abcd'.indexOf(e.key.toLowerCase()), bs = [...$('opts').children];
+  const k = e.key.toLowerCase(), bs = [...$('opts').children];
+  let i = PS.keys === '1234' ? bs.findIndex(o => o.textContent.slice(1).trim().toLowerCase() === k) : 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k);
   if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click();
 });
 $('nextBtn').onclick = () => { PS.i++; if (PS.i < PS.qs.length) show(); else finish(); };

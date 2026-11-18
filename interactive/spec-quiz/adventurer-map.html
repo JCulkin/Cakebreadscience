@@ -196,6 +196,9 @@ table.st th{background:var(--soft)}
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="diagrams.js"></script>
+<script src="diagq.js"></script>
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
@@ -523,7 +526,8 @@ const FLOOR_COINS = BL.FLOOR_COINS;
 function delve(k) {
   const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
   const all = QUESTIONS.filter(q => keys.has(q.s)), sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-  const easy = sh(all.filter(q => !q.hard)), hard = sh(all.filter(q => q.hard));
+  const dgOk = typeof DQ !== 'undefined' && DQ.ok(), cap = list => { let n = 0; return list.filter(q => !q.dg || (dgOk && n++ < 2)); };   // at most 2 diagram questions of each sort per run
+  const easy = cap(sh(all.filter(q => !q.hard))), hard = cap(sh(all.filter(q => q.hard)));
   const take = n => { const f = n >= 2 ? hard.splice(0, 2).concat(easy.splice(0, 2)) : n === 1 ? hard.splice(0, 1).concat(easy.splice(0, 3)) : easy.splice(0, 4); return sh(f.concat(easy.splice(0, 4 - f.length))).map(QE.inst); };
   const NF = P.rooms.length, first = P.keep ? Math.min((S.depth || {})[k] || 0, NF - 1) : 0;   // the mine remembers how deep you got
   const D = { k, P, floor: first, qs: take(first), i: 0, ok: 0, no: 0, coins: 0, got: [], right: 0 };
@@ -532,10 +536,11 @@ function delve(k) {
   const stairs = () => `<div class="stairs">${P.rooms.map((_, f) => `<span class="${f < D.floor ? 'done' : f === D.floor ? 'on' : ''}">${NF > 3 ? '' : 'Floor '}${f + 1}</span>`).join('')}</div>`;
   const close = () => { m.classList.remove('on'); QE.busy = false; if (D.right) QE.earn({ mana: Math.floor(D.right / 3) }); QE.gameChanged(); persist(); renderAll(); };
   function ask() {
-    const q = D.qs[D.i], opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    const q = D.qs[D.i]; let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    if (q.svg && typeof DQ !== 'undefined') opts = DQ.order(opts, o => o[0]).opts;
     body.innerHTML = `${stairs()}<h2 style="margin:0">${P.name}</h2><div class="small">Floor ${D.floor + 1}: ${P.rooms[D.floor]} · 3 right to clear it${q.hard ? ' · ★ harder' : ''}</div>
       <div class="pips">${[0, 1, 2].map(j => `<i class="${j < D.ok ? 'ok' : ''}"></i>`).join('')}<span style="width:10px"></span>${[0, 1].map(j => `<i class="${j < D.no ? 'no' : ''}" style="border-color:#ef4444"></i>`).join('')}</div>
-      <div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+      ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
     body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
       const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
       QE.recordAnswer(q, ok); let hurt = 0;
@@ -852,12 +857,13 @@ function fightMonster(k) {
     QE.allSubs().filter(s => s.L === L).forEach(s => s.keys.forEach(x => keys.add(x)));
     const pool = QE.buildMission(keys), q = QE.inst(pool[Math.floor(Math.random() * Math.min(3, pool.length))]);
     const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-    const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
+    if (q.svg && typeof DQ !== 'undefined') opts = DQ.order(opts, o => o[0]).opts;
     const body = $('dunBody'), m = $('dunModal'), hp0 = denHp(k);
     QE.busy = true; m.classList.add('on');
     body.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><img class="px" src="${icon(P.icon, P.col)}" width="72" style="image-rendering:pixelated" alt=""><div style="flex:1"><h2 style="margin:0">${P.name}</h2>
       <div style="height:12px;border:2px solid #facc15;background:#222;margin:6px 0"><i id="mHp" style="display:block;height:100%;width:${hp0 / P.max * 100}%;background:#f59e0b;transition:width .4s"></i></div><div class="small">${hp0} / ${P.max} health · ${ADV.SCI[P.science] || ''}${q.hard ? ' · ★ harder' : ''}</div></div></div>
-      <div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+      ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
     body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
       const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
       QE.recordAnswer(q, ok); QE.tally('monsterQs');

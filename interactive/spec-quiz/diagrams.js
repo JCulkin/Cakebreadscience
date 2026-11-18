@@ -4,7 +4,9 @@
    DG.make(name) → a question; DG.MAKERS lists them. */
 const DG = (() => {
   const INK = '#111', GRID = '#d8d3c4', F = "font-family:Barlow,Arial,sans-serif";
-  const rnd = () => ({ int: (a, b) => a + Math.floor(Math.random() * (b - a + 1)), pick: a => a[Math.floor(Math.random() * a.length)], f: () => Math.random() });
+  /* seeded random source (mulberry32): the same seed always draws the same diagram and question, in every browser */
+  const rnd = seed => { let s = (seed >>> 0) || 1; const f = () => { s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    return { int: (a, b) => a + Math.floor(f() * (b - a + 1)), pick: a => a[Math.floor(f() * a.length)], f }; };
   const n = v => (Math.round(v * 100) / 100).toString();
   const T = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 12}" text-anchor="${o.a || 'middle'}"${o.w ? ` font-weight="${o.w}"` : ''}${o.fill ? ` fill="${o.fill}"` : ''}${o.rot ? ` transform="rotate(${o.rot} ${x} ${y})"` : ''} style="${F}">${s}</text>`;
   const wrap = (w, h, body) => `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;background:#fff">${body}</svg>`;
@@ -125,7 +127,7 @@ const DG = (() => {
 
   /* ================= 18 Nov round 2 (user feedback) ================= */
   const elec = (x, y, cross) => cross === 2 ? `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" fill="#fff" stroke="#15803d" stroke-width="1.8"/>` : cross ? `<path d="M${(x - 3.5).toFixed(1)} ${(y - 3.5).toFixed(1)}l7 7M${(x + 3.5).toFixed(1)} ${(y - 3.5).toFixed(1)}l-7 7" stroke="#c8001e" stroke-width="2"/>` : `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.4" fill="#1e3a8a"/>`;
-  const sh = (a, r) => a.slice().sort(() => r.f() - .5);
+  const sh = (a, r) => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r.f() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };   // Fisher–Yates: same order in every browser
   const others = (ans, pool, r) => sh(pool.filter(x => x !== ans), r).slice(0, 3);
   /* up to 8 electrons in 4 pairs (top, right, bottom, left); 2 on a first shell sit top and bottom */
   /* how electrons sit on a shell: RING = 'pairs' (in pairs at top/right/bottom/left), 'single' (one at each of the four points first, then pairing up), 'spread' (evenly round the shell). Set by each maker. */
@@ -258,11 +260,11 @@ const DG = (() => {
       + arrow(px(65), py(P), px(65), py(top) + 3, '#16a34a') + T(px(65) + 12, py((P + top) / 2), labs[2], { size: 14, w: 700, fill: '#16a34a' })
       + T(px(10), py(R0) - 8, 'reactants', { size: 11 }) + T(px(90), py(P) + (exo ? 16 : -8), 'products', { size: 11 });
     const svg = chart({ xmax: 100, ymax, xstep: 20, ystep: 40, xl: 'Progress of reaction', yl: 'Energy (kJ/mol)', series: [{ pts: curve(f, 0, 100, 100) }], extra, noXticks: true });
-    const q = r.int(0, 2), title = 'Reaction profile', spec = 'C3.5';
+    const q = r.int(0, 2), title = 'Reaction profile', spec = 'C3.1';   // Double Award: exo/endo C3.1, activation energy C3.13
     if (q === 0) return { title, spec, kind: 'graph', svg, q: 'Is this reaction exothermic or endothermic?', o: [exo ? 'Exothermic: the products have less energy than the reactants' : 'Endothermic: the products have more energy than the reactants', exo ? 'Endothermic: the products have less energy than the reactants' : 'Exothermic: the products have more energy than the reactants', 'Exothermic: the curve goes up first', 'Endothermic: it needs activation energy'], x: exo ? 'Products are lower than reactants: energy is given out to the surroundings, so ΔH is negative.' : 'Products are higher than reactants: energy is taken in from the surroundings, so ΔH is positive.' };
-    if (q === 1) return { title, spec, kind: 'graph', svg, q: 'Which arrow shows the activation energy?', o: [labs[0], labs[1], labs[2]], x: `Activation energy is from the reactants up to the top of the hump: arrow ${labs[0]}. Arrow ${labs[1]} is the overall energy change.` };
+    if (q === 1) return { title, spec: 'C3.13', kind: 'graph', svg, q: 'Which arrow shows the activation energy?', o: [labs[0], labs[1], labs[2]], x: `Activation energy is from the reactants up to the top of the hump: arrow ${labs[0]}. Arrow ${labs[1]} is the overall energy change.` };
     const ans = (exo ? '−' : '+') + dH + ' kJ/mol';
-    return { title, spec: 'C3.6', kind: 'graph', svg, q: 'Use the graph. What is the overall energy change (ΔH)?', o: [ans, (exo ? '+' : '−') + dH + ' kJ/mol', (exo ? '−' : '+') + Ea + ' kJ/mol', '+' + top + ' kJ/mol'], x: `Reactants ${R0} kJ/mol, products ${P} kJ/mol: ΔH = ${P} − ${R0} = ${ans}${exo ? ' (exothermic)' : ' (endothermic)'}.` };
+    return { title, spec: 'C3.1', kind: 'graph', svg, q: 'Use the graph. What is the overall energy change (ΔH)?', o: [ans, (exo ? '+' : '−') + dH + ' kJ/mol', (exo ? '−' : '+') + Ea + ' kJ/mol', '+' + top + ' kJ/mol'], x: `Reactants ${R0} kJ/mol, products ${P} kJ/mol: ΔH = ${P} − ${R0} = ${ans}${exo ? ' (exothermic)' : ' (endothermic)'}.` };
   };
 
   /* atom: electron shells */
@@ -325,8 +327,8 @@ const DG = (() => {
         + (fits ? T(cx, y + 16, L[i], { size: 12, w: 700 }) + T(cx, y + 31, n(v * pf) + ' ' + pu, { size: 11 }) : `<line x1="${cx + w / 2 + 2}" y1="${y + hgt / 2}" x2="${cx + 40}" y2="${y + hgt / 2}" stroke="#888"/>` + T(cx + 44, y + 16, L[i], { size: 12, w: 700, a: 'start' }) + T(cx + 44, y + 31, n(v * pf) + ' ' + pu, { size: 11, a: 'start' })); });
     g += T(390, 22, scaled ? `Drawn to scale (bar width ∝ ${what})` : 'Not to scale', { size: 11, w: 700, a: 'end', fill: '#555' });
     const svg = wrap(400, 260, g), lvl = r.int(0, levels - 2), eff = b[lvl + 1] / b[lvl] * 100, q = r.int(0, 1);
-    if (q === 0) return { title: `Pyramid of ${what}`, spec: 'B4.7', kind: 'diagram', svg, q: `What percentage of the ${what} of the ${L[lvl]} is passed on to the ${L[lvl + 1]}?`, o: [n(eff) + '%', ...uniq(n(eff), [100 - eff, b[lvl] / b[lvl + 1], b[lvl + 1], eff * 10].map(n)).map(v => v + '%')], x: `${n(b[lvl + 1] * pf)} ÷ ${n(b[lvl] * pf)} × 100 = ${n(eff)}%.` };
-    return { title: `Pyramid of ${what}`, spec: 'B4.8', kind: 'diagram', svg, q: `Why is there less ${what} at each higher level?`, o: ['Energy is lost at each level, e.g. in respiration, movement and waste', 'Animals higher up are smaller', 'Plants make biomass out of nothing', 'Predators only eat some of the time'], x: 'Only a small fraction is passed on: much is used for respiration (released as heat), lost in faeces and urine, or never eaten.' };
+    if (q === 0) return { title: `Pyramid of ${what}`, spec: 'B4.9', kind: 'diagram', svg, q: `What percentage of the ${what} of the ${L[lvl]} is passed on to the ${L[lvl + 1]}?`, o: [n(eff) + '%', ...uniq(n(eff), [100 - eff, b[lvl] / b[lvl + 1], b[lvl + 1], eff * 10].map(n)).map(v => v + '%')], x: `${n(b[lvl + 1] * pf)} ÷ ${n(b[lvl] * pf)} × 100 = ${n(eff)}%.` };
+    return { title: `Pyramid of ${what}`, spec: 'B4.9', kind: 'diagram', svg, q: `Why is there less ${what} at each higher level?`, o: ['Energy is lost at each level, e.g. in respiration, movement and waste', 'Animals higher up are smaller', 'Plants make biomass out of nothing', 'Predators only eat some of the time'], x: 'Only a small fraction is passed on: much is used for respiration (released as heat), lost in faeces and urine, or never eaten.' };
   };
 
   /* photosynthesis: limiting factors */
@@ -432,7 +434,7 @@ const DG = (() => {
       g += T(px(cx), 22, 'C', { size: 13, w: 700, fill: '#2563eb' }) + T(px(rx), 22, 'R', { size: 13, w: 700, fill: '#2563eb' });
       const svg = wrap(w, 162, g);
       return r.int(0, 1) ? { title: 'Longitudinal wave', spec: 'P3.3', kind: 'diagram', svg, q: 'Use the scale. What is the wavelength of this wave?', o: [n(lam) + ' ' + U[0], ...uniq(lam, [lam / 2, lam * 2, len, lam * 3]).map(v => n(v) + ' ' + U[0])], x: `Wavelength = distance from the middle of one compression to the middle of the next: ${n(lam)} ${U[0]}.` }
-        : { title: 'Longitudinal wave', spec: 'P3.1', kind: 'diagram', svg, q: 'What are the regions labelled C and R?', o: ['C = compression, R = rarefaction', 'C = rarefaction, R = compression', 'C = crest, R = trough', 'C = trough, R = crest'], x: 'Where the coils are squashed together is a compression; where they are spread out is a rarefaction. Crests and troughs are for transverse waves.' };
+        : { title: 'Longitudinal wave', spec: 'P3.2', kind: 'diagram', svg, q: 'What are the regions labelled C and R?', o: ['C = compression, R = rarefaction', 'C = rarefaction, R = compression', 'C = crest, R = trough', 'C = trough, R = crest'], x: 'Where the coils are squashed together is a compression; where they are spread out is a rarefaction. Crests and troughs are for transverse waves.' };
     }
     const A = r.pick([0.5, 1, 1.5, 2, 3, 4, 5, 6]), Y = A < 1 ? 1 : A <= 2 ? Math.ceil(A) + 1 : Math.ceil((A + 1) / 2) * 2, ystep = Y <= 3 ? .5 * (Y > 1 ? 2 : 1) : 2, ph = r.pick([0, .25, .5]);
     const yU = r.pick(['cm', 'cm', 'mm', 'm']);
@@ -653,7 +655,7 @@ const DG = (() => {
     const svg = wrap(WW, legY + 26, g);
     const q = r.int(0, 3), title = mode === 'form' ? 'Dot-and-cross: forming ions' : `Dot-and-cross: ionic${mode === 'full' ? ' (all shells)' : ''}`;
     const wrongF = [fml(m, 1, a, 1), fml(m, na, a, nm), fml(m, nm + 1, a, na), fml(m, nm, a, na + 1), fml(m, 1, a, 2), fml(m, 2, a, 1)].filter(f => f !== formula);
-    if (q === 0) return { title, spec: 'C1.40', kind: 'diagram', svg, q: 'Which compound does this diagram show?', o: [formula, ...others(formula, [...new Set(wrongF)], r)], x: `${NAMES[m]} ${NAMES[a]}: each ${m} atom loses ${lose} electron${lose > 1 ? 's' : ''} and each ${a} atom gains ${gain}. Charges balance with ${nm} ${m}${qMark} to ${na} ${a}${aMark}: ${formula}.` };
+    if (q === 0) return { title, spec: 'C1.40', kind: 'diagram', svg, q: 'Which compound does this diagram show?', o: [formula, ...others(formula, [...new Set(wrongF)].filter(f => !/^NaN/.test(f)), r)], x: `${NAMES[m]} ${NAMES[a]}: each ${m} atom loses ${lose} electron${lose > 1 ? 's' : ''} and each ${a} atom gains ${gain}. Charges balance with ${nm} ${m}${qMark} to ${na} ${a}${aMark}: ${formula}.` };
     if (q === 1) return { title, spec: 'C1.38', kind: 'diagram', svg, q: `What is the charge on the ${NAMES[a]} ion?`, o: [aMark, ...others(aMark, ['−', '2−', '3−', '+', '2+', '3+'], r)], x: `${a} has ${EL[a].slice(-1)[0]} outer electrons and gains ${gain} to fill its outer shell: ${gain} extra negative charge${gain > 1 ? 's' : ''}, so ${aMark}.` };
     if (q === 2) return { title, spec: 'C1.40', kind: 'diagram', svg, q: `How many electrons does each ${m} atom lose?`, o: [String(lose), ...others(String(lose), ['1', '2', '3', '5', '6', '7'], r)], x: `${m} is in group ${lose}: it loses its ${lose} outer electron${lose > 1 ? 's' : ''} to get a full outer shell, becoming ${m}${qMark}.` };
     return { title, spec: 'C1.36', kind: 'diagram', svg, q: `Which group of the Periodic Table is ${m === 'Al' ? 'aluminium' : NAMES[m]} in?`, o: [`Group ${lose}`, ...others(`Group ${lose}`, ['Group 1', 'Group 2', 'Group 3', 'Group 5', 'Group 6', 'Group 7'], r)], x: `It loses ${lose} electron${lose > 1 ? 's' : ''} to form ${m}${qMark}, so it had ${lose} outer electron${lose > 1 ? 's' : ''}: group ${lose}.` };
@@ -766,7 +768,7 @@ const DG = (() => {
     let g = '';
     edges.forEach(([f, p]) => { const [x1, y1] = pos[f], [x2, y2] = pos[p], dx = x2 - x1, dy = y2 - y1, [ax, ay] = clip(f, dx, dy), [bx, by] = clip(p, -dx, -dy); g += arrow(ax, ay, bx, by, '#555', 1.6); });
     orgs.forEach(o => { const [x, y] = pos[o]; g += `<rect x="${(x - bw(o) / 2).toFixed(1)}" y="${y - 11}" width="${bw(o).toFixed(1)}" height="22" rx="11" fill="${level[o] === 0 ? '#dcfce7' : '#fff'}" stroke="${INK}"/>` + T(x.toFixed(1), y + 4, o, { size: 12, w: 600 }); });
-    const svg = wrap(W, H, g), title = size === 'chain' ? 'Food chain' : 'Food web', spec = size === 'chain' ? 'B4.3' : 'B4.4';
+    const svg = wrap(W, H, g), title = size === 'chain' ? 'Food chain' : 'Food web', spec = 'B4.6';   // trophic levels B4.6, who eats whom B4.7, arrows B4.8
     const tops = orgs.filter(o => !edges.some(([f]) => f === o)), nonTop = orgs.filter(o => !tops.includes(o));
     const qs = ['producer', 'primary', 'arrows', 'levels'].concat(n > 2 ? ['secondary'] : [], tops.length && nonTop.length >= 3 ? ['top'] : [], orgs.length >= 4 ? ['eats'] : []), q = r.pick(qs);
     const opts = (ans, pool, extra = []) => { const p = [...new Set(pool.filter(o => o !== ans))]; return [ans, ...others(ans, p.length >= 3 ? p : [...new Set(p.concat(sh(extra.filter(o => o !== ans && !p.includes(o)), r).slice(0, 3 - p.length)))], r)]; };   // too small a web: top up with organisms from the same habitat
@@ -774,9 +776,9 @@ const DG = (() => {
     if (q === 'primary') { const p = r.pick(lv[1]); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a primary consumer?', o: opts(p, orgs.filter(o => level[o] !== 1), E.L.flat().filter((o, k, A) => !E.L[1].includes(o))), x: `A primary consumer eats producers: the arrow into ${p} comes from ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
     if (q === 'secondary') { const p = r.pick(lv[2]); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a secondary consumer?', o: opts(p, orgs.filter(o => level[o] !== 2), E.L.flat().filter(o => !E.L[2].includes(o))), x: `A secondary consumer eats primary consumers: ${p} eats ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
     if (q === 'top') { const p = r.pick(tops); return { title, spec, kind: 'diagram', svg, q: 'Which of these is a top predator (nothing in the web eats it)?', o: opts(p, nonTop, E.L.slice(0, -1).flat()), x: `No arrows leave ${p}: nothing in this ${size === 'chain' ? 'chain' : 'web'} eats it.` }; }
-    if (q === 'eats') { const p = r.pick(orgs.filter(o => level[o] > 0)), food = r.pick(edges.filter(e => e[1] === p).map(e => e[0])); return { title, spec, kind: 'diagram', svg, q: `Which of these does the ${p} eat?`, o: opts(food, orgs.filter(o => o !== p && !edges.some(e => e[1] === p && e[0] === o)), E.L.flat().filter(o => o !== p && !(E.e[p] || []).includes(o))), x: `Arrows point from the food to the eater. The arrow${edges.filter(e => e[1] === p).length > 1 ? 's' : ''} into ${p} come${edges.filter(e => e[1] === p).length > 1 ? '' : 's'} from ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
+    if (q === 'eats') { const p = r.pick(orgs.filter(o => level[o] > 0)), food = r.pick(edges.filter(e => e[1] === p).map(e => e[0])); return { title, spec: 'B4.7', kind: 'diagram', svg, q: `Which of these does the ${p} eat?`, o: opts(food, orgs.filter(o => o !== p && !edges.some(e => e[1] === p && e[0] === o)), E.L.flat().filter(o => o !== p && !(E.e[p] || []).includes(o))), x: `Arrows point from the food to the eater. The arrow${edges.filter(e => e[1] === p).length > 1 ? 's' : ''} into ${p} come${edges.filter(e => e[1] === p).length > 1 ? '' : 's'} from ${edges.filter(e => e[1] === p).map(e => e[0]).join(' and ')}.` }; }
     if (q === 'levels') return { title, spec, kind: 'diagram', svg, q: `How many trophic levels are there in this ${size === 'chain' ? 'food chain' : 'food web'}?`, o: [String(n), ...others(String(n), [...new Set(['2', '3', '4', '5', String(orgs.length)])], r)], x: `Producers, then ${LEVEL.slice(1, n).join(', ')}: ${n} levels.` };
-    return { title, spec, kind: 'diagram', svg, q: `What do the arrows in a ${size === 'chain' ? 'food chain' : 'food web'} show?`, o: ['The direction energy is transferred', 'Which animal eats the arrow\'s target', 'The direction animals move', 'Where waste goes'], x: 'Arrows point from the food to the feeder: the direction biomass and energy are transferred.' };
+    return { title, spec: 'B4.8', kind: 'diagram', svg, q: `What do the arrows in a ${size === 'chain' ? 'food chain' : 'food web'} show?`, o: ['The direction energy is transferred', 'Which animal eats the arrow\'s target', 'The direction animals move', 'Where waste goes'], x: 'Arrows point from the food to the feeder: the direction biomass and energy are transferred.' };
   };
 
   /* =================== round 7 (18 Nov evening): second set of diagrams, Double Award only =================== */
@@ -1475,9 +1477,11 @@ const DG = (() => {
     ['wave', 'P3.3'], ['emspec', 'P3.11'], ['reflect', 'P3.15'], ['ray', 'P3.16'], ['tir', 'P3.21'], ['sankey', 'P4.4'], ['pressure', 'P5.7'], ['gaslaw', 'P5.20'],
     ['magnet', 'P6.4'], ['motor', 'P6.13'], ['penetration', 'P7.5'], ['half', 'P7.13'],
     ['particles', 'C1.1'], ['cool', 'C1.1'], ['separation', 'C1.10'], ['chrom', 'C1.12'], ['nucleus', 'C1.16'], ['atom', 'C1.22'], ['ionic', 'C1.40'], ['covalent', 'C1.46'],
-    ['airO2', 'C2.14'], ['displace', 'C2.16'], ['ph', 'C2.29'], ['calorim', 'C3.3'], ['profile', 'C3.5'], ['rate', 'C3.10'], ['table', 'C3.15'], ['fraccol', 'C4.8'], ['displayed', 'C4.21'],
+    ['airO2', 'C2.14'], ['displace', 'C2.16'], ['ph', 'C2.29'], ['calorim', 'C3.3'], ['profile', 'C3.1'], ['rate', 'C3.10'], ['table', 'C3.15'], ['fraccol', 'C4.8'], ['displayed', 'C4.21'],
     ['cell', 'B2.2'], ['enzyme', 'B2.11'], ['osmosis', 'B2.17'], ['photo', 'B2.20'], ['leaf', 'B2.21'], ['gut', 'B2.27'], ['thorax', 'B2.46'], ['heart', 'B2.65'], ['reflex', 'B2.90'], ['eye', 'B2.91'],
-    ['flower', 'B3.3'], ['menstrual', 'B3.9'], ['punnett', 'B3.23'], ['pedigree', 'B3.24'], ['quadrat', 'B4.2'], ['foodweb', 'B4.4'], ['pyramid', 'B4.7'], ['carbon', 'B4.10'], ['bars', '—']];
-  function make(name, hard) { const r = rnd(); r.hard = !!hard; const q = M[name](r); q.o = q.o.slice(0, 4); return q; }
-  return { make, MAKERS, M };
+    ['flower', 'B3.3'], ['menstrual', 'B3.9'], ['punnett', 'B3.23'], ['pedigree', 'B3.24'], ['quadrat', 'B4.2'], ['foodweb', 'B4.6'], ['pyramid', 'B4.9'], ['carbon', 'B4.10'], ['bars', '—']];
+  /* DG.make(name, hard, seed): seed (a whole number) picks the drawing and the question; leave it out for a random one. The result carries its seed. */
+  const newSeed = () => 1 + Math.floor(Math.random() * 2147483646);
+  function make(name, hard, seed) { seed = seed || newSeed(); const r = rnd(seed); r.hard = !!hard; const q = M[name](r); q.o = q.o.slice(0, 4); q.seed = seed; q.maker = name; q.hard = !!hard; return q; }
+  return { make, MAKERS, M, newSeed };
 })();

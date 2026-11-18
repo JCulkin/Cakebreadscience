@@ -150,6 +150,7 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(locatio
     <div class="progress" id="prog"></div>
     <div class="card qcard">
       <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
+      <div id="qfig"></div>
       <div class="qtext" id="qtext"></div>
       <div class="opts" id="opts"></div>
       <div id="fb"></div>
@@ -169,6 +170,9 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(locatio
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="diagrams.js"></script>
+<script src="diagq.js"></script>
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
@@ -253,10 +257,13 @@ function show() {
   $('prog').innerHTML = MS.qs.map((x, j) => `<i class="${MS.retry && x === q ? 'now' : j < MS.res.length ? (MS.res[j].ok ? 'ok' : MS.fixedIds.has(x.id) ? 'fix' : 'no') : j === MS.i ? 'now' : ''}"></i>`).join('');
   $('qnum').textContent = MS.retry ? `Second wind · ${MS.ri + 1} of ${MS.retry.length} · ${q.tf !== undefined ? 'quarter' : 'half'} a hit` : `Question ${MS.i + 1} of ${MS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)} · ${MS.sub.subj}`;
+  $('qfig').innerHTML = typeof DQ !== 'undefined' ? DQ.fig(q) : '';   // diagram questions: the drawing above the question
   $('qtext').innerHTML = q.tf !== undefined ? `True or false? ${q.q}` : q.q;
-  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0]));
+  let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0])), keys = 'ABCD';
+  if (q.svg && typeof DQ !== 'undefined') ({ opts, keys } = DQ.order(opts, o => o[0]));   // letter answers in order, numbered keys
+  MS.keys = keys;
   $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
-  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${t}</span></button>`).join('');
+  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${t}</span></button>`).join('');
   $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
   MS.opts = opts; MS.picked = -1;
   $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
@@ -333,7 +340,7 @@ $('nextBtn').onclick = () => {
 document.addEventListener('keydown', e => {
   if ($('fight').classList.contains('hidden') || e.ctrlKey || e.metaKey || e.altKey || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
   const os = [...$('opts').children], k = e.key.toLowerCase();
-  let i = 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k);
+  let i = MS.keys === '1234' ? os.findIndex(o => o.textContent.slice(1).trim().toLowerCase() === k) : 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k);
   if (os.length === 2 && (k === 't' || k === 'f')) i = k === 't' ? 0 : 1;
   if (i >= 0 && i < os.length && !os[i].disabled) { e.preventDefault(); os[i].click(); }
   else if ((k === 'arrowright' || (k === 'enter' && document.activeElement !== $('nextBtn') && !/BUTTON|A/.test(document.activeElement.tagName))) && !$('nextBtn').classList.contains('hidden')) { e.preventDefault(); $('nextBtn').click(); }

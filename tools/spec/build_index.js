@@ -53,7 +53,7 @@ function addRes(kind, title, url, keys) {
 
 /* ---- quiz questions ---- */
 const qctx = vm.createContext({ console, Math, Date, JSON });
-vm.runInContext(['interactive/spec-quiz/spec.js', 'interactive/spec-quiz/questions.js', 'interactive/spec-quiz/gens.js'].map(rd).join('\n;\n') + '\n;globalThis.Q = QUESTIONS;', qctx);
+vm.runInContext(['interactive/spec-quiz/spec.js', 'interactive/spec-quiz/questions.js', 'interactive/spec-quiz/gens.js', 'interactive/spec-quiz/diagq.js'].map(rd).join('\n;\n') + '\n;globalThis.Q = QUESTIONS;', qctx);
 for (const q of qctx.Q) if (P[q.s]) P[q.s].n++;
 
 /* ---- flashcards ---- */

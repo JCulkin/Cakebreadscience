@@ -27,6 +27,7 @@ const QBY = {};             // key → [questions]
 QUESTIONS.forEach((q, i) => {
   q.i = i;
   if (!POINTS[q.s]) { console.warn('Question tied to unknown spec point', q.s, q.q); return; }
+  if (q.dg && !(typeof DQ !== 'undefined' && DQ.ok())) return;   // diagram questions only where diagrams.js is loaded
   (QBY[q.s] = QBY[q.s] || []).push(q);
 });
 const qCount = keys => keys.reduce((n, k) => n + (QBY[k] ? QBY[k].length : 0), 0);
@@ -99,7 +100,8 @@ function refreshChecks() {
   updateCount();
 }
 
-function selectedPool(hard = true, calc = true) { return [...SEL].flatMap(k => QBY[k] || []).filter(q => (hard || !q.hard) && (calc || !q.calc)); }
+const keepQ = (q, hard, calc, diag) => (hard || !q.hard) && (calc || !q.calc) && (diag !== false || !q.dg);
+function selectedPool(hard = true, calc = true, diag = true) { return [...SEL].flatMap(k => QBY[k] || []).filter(q => keepQ(q, hard, calc, diag)); }
 
 function updateCount() {
   const pool = selectedPool();
@@ -150,10 +152,11 @@ function scopeText() {
 }
 
 /* build a quiz of n questions spread evenly over the selected spec points */
-function buildQuiz(n, hard = true, calc = true) {
-  const groups = shuffle([...SEL].filter(k => QBY[k]).map(k => shuffle(QBY[k].filter(q => (hard || !q.hard) && (calc || !q.calc)))).filter(g => g.length));
-  const out = [];
-  while (out.length < n && groups.some(g => g.length)) groups.forEach(g => { if (g.length && out.length < n) out.push(g.pop()); });
+function buildQuiz(n, hard = true, calc = true, diag = true) {
+  const groups = shuffle([...SEL].filter(k => QBY[k]).map(k => shuffle(QBY[k].filter(q => keepQ(q, hard, calc, diag)))).filter(g => g.length));
+  const out = [], cap = Math.ceil(n / 3); let nd = 0;   // diagram questions: at most a third of the quiz
+  const can = q => !q.dg || nd < cap;
+  while (out.length < n && groups.some(g => g.some(can))) groups.forEach(g => { if (out.length >= n) return; const j = g.map(can).lastIndexOf(true); if (j < 0) return; const q = g.splice(j, 1)[0]; if (q.dg) nd++; out.push(q); });
   return shuffle(out).map(inst);
 }
 
@@ -167,7 +170,7 @@ function reportPayload(q, opts, pickedIdx, reason, comment) {
   const n = u && u.displayName ? u.displayName.trim().split(/\s+/) : null;
   return {
     qid: q.id, reason, comment: (comment || '').slice(0, 400),
-    shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400),
+    shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400), ...(q.seed ? { seed: q.seed } : {}),
     options: opts.map(o => (o.t || '').replace(/<[^>]+>/g, '').slice(0, 120)),
     correct: opts.findIndex(o => o.ok), picked: pickedIdx === null ? -1 : pickedIdx,
     mode: (typeof CAMP !== 'undefined' && CAMP.mission) ? 'campaign' : TEAM ? 'team' : 'solo',
@@ -222,10 +225,11 @@ const QBYID = {}; QUESTIONS.forEach(q => { QBYID[q.id] = q; });
 function renderQ(q, box, onAnswer) {
   const p = POINTS[q.s];
   const isTF = 'tf' in q;
-  const opts = isTF ? [{ t: 'True', ok: q.tf === true }, { t: 'False', ok: q.tf === false }] : shuffle(q.o.map((t, i) => ({ t, ok: i === 0 })));
-  const keys = isTF ? ['T', 'F'] : ['A', 'B', 'C', 'D'];
+  let opts = isTF ? [{ t: 'True', ok: q.tf === true }, { t: 'False', ok: q.tf === false }] : shuffle(q.o.map((t, i) => ({ t, ok: i === 0 })));
+  let keys = isTF ? ['T', 'F'] : ['A', 'B', 'C', 'D'];
+  if (q.svg && typeof DQ !== 'undefined') { const d = DQ.order(opts, o => o.t); opts = d.opts; if (d.letters) keys = ['1', '2', '3', '4']; }   // letter answers in order, numbered keys
   box.innerHTML = `<span class="qtag" style="--sc:${SUBJ_COL[p.subject]}">${p.subject} ${p.id} <span class="tf">· ${isTF ? 'True or false?' : 'Multiple choice'}</span>${q.hard ? '<span class="hardtag">★ Harder</span>' : ''}</span>
-    <div class="prompt">${nuc(q.q)}</div>
+    ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="prompt">${nuc(q.q)}</div>
     <div class="opts ${isTF ? 'n2' : ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="key">${keys[i]}</span><span>${nuc(o.t)}</span></button>`).join('')}</div>
     <div class="qfoot"><button class="replink" type="button">⚑ Report this question</button><div class="repbox hidden"></div></div>`;
   const btns = [...box.querySelectorAll('.opt')];
@@ -252,11 +256,11 @@ document.addEventListener('keydown', e => {
 
 /* ---------- solo ---------- */
 $('soloBtn').onclick = () => {
-  const s = Object.assign({ n: 10, hard: true, calc: true }, store.get('solocfg') || {});
+  const s = Object.assign({ n: 10, hard: true, calc: true, diag: true }, store.get('solocfg') || {});
   const box = $('solosetup');
   const draw = () => {
-    const total = selectedPool(s.hard, s.calc).length;
-    if (!total && !(s.calc && s.hard)) { s.calc = s.hard = true; return draw(); }
+    const total = selectedPool(s.hard, s.calc, s.diag).length;
+    if (!total && !(s.calc && s.hard && s.diag)) { s.calc = s.hard = s.diag = true; return draw(); }
     const choices = [5, 10, 20, 30].filter(n => n < total).concat([total]);
     if (!choices.includes(s.n)) s.n = Math.min(10, total);
     box.innerHTML = `<a class="back" href="#" id="ssBack">← Choose content</a><h1>Solo</h1>
@@ -266,19 +270,21 @@ $('soloBtn').onclick = () => {
         <div class="chips">${choices.map(n => `<button class="chip ${s.n === n ? 'on' : ''}" data-n="${n}">${n === total ? `All ${n}` : n}</button>`).join('')}</div>
         <label class="toggle"><input type="checkbox" id="hardOn" ${s.hard ? 'checked' : ''}> Include ★ harder questions</label>
         <label class="toggle"><input type="checkbox" id="calcOn" ${s.calc ? 'checked' : ''}> Include calculation questions</label>
+        <label class="toggle"><input type="checkbox" id="diagOn" ${s.diag ? 'checked' : ''}> Include diagram and graph questions</label>
         <div style="margin-top:18px"><button class="btn big green" id="ssGo">Start →</button></div>
       </div></div>`;
     box.querySelector('#ssBack').onclick = ev => { ev.preventDefault(); menu(); };
     box.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { s.n = +b.dataset.n; draw(); });
     box.querySelector('#hardOn').onchange = ev => { s.hard = ev.target.checked; draw(); };
     box.querySelector('#calcOn').onchange = ev => { s.calc = ev.target.checked; draw(); };
-    box.querySelector('#ssGo').onclick = () => { store.set('solocfg', s); startSolo(s.n, s.hard, s.calc); };
+    box.querySelector('#diagOn').onchange = ev => { s.diag = ev.target.checked; draw(); };
+    box.querySelector('#ssGo').onclick = () => { store.set('solocfg', s); startSolo(s.n, s.hard, s.calc, s.diag); };
   };
   draw(); show('solosetup');
 };
 
-function startSolo(n, hard, calc) {
-  SOLO = { qs: buildQuiz(n, hard, calc), qi: -1, score: 0, res: [], n, hard, calc };
+function startSolo(n, hard, calc, diag) {
+  SOLO = { qs: buildQuiz(n, hard, calc, diag), qi: -1, score: 0, res: [], n, hard, calc, diag };
   TEAM = null; show('play'); nextSolo();
 }
 function soloHud() {
@@ -312,7 +318,7 @@ function soloResults() {
     ${pts.length ? `<h3>Revise these spec points</h3><ul class="revise">${pts.map(k => { const p = POINTS[k]; return `<li style="--sc:${SUBJ_COL[p.subject]}"><b>${p.subject} ${p.id}</b>${esc(p.text)}${missed.filter(q => q.s === k).map(q => `<span class="q">✗ ${nuc(q.q)}</span>`).join('')}</li>`; }).join('')}</ul>` : ''}
     <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="tomenu">Change content</button></div>
   </div></div>`;
-  $('again').onclick = () => startSolo(SOLO.n, SOLO.hard, SOLO.calc);
+  $('again').onclick = () => startSolo(SOLO.n, SOLO.hard, SOLO.calc, SOLO.diag);
   $('tomenu').onclick = menu;
   show('results');
 }
@@ -321,11 +327,11 @@ function soloResults() {
 /* ?team (the admin's "Team quiz" button, 17 Nov): team game only */
 if (new URLSearchParams(location.search).has('team')) { $('soloBtn').hidden = true; $('teamBtn').textContent = 'Set up the teams →'; $('teamBtn').classList.remove('alt'); $('teamBtn').classList.add('green'); }
 $('teamBtn').onclick = () => {
-  const s = Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, hard: true, calc: false }, store.get('teamcfg') || {});
+  const s = Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, hard: true, calc: false, diag: true }, store.get('teamcfg') || {});
   const box = $('teamsetup');
   const draw = () => {
-    const total = selectedPool(s.hard, s.calc).length;
-    if (!total && !s.calc) { s.calc = true; return draw(); }
+    const total = selectedPool(s.hard, s.calc, s.diag).length;
+    if (!total && !(s.calc && s.diag)) { s.calc = s.diag = true; return draw(); }
     const perChoices = [2, 3, 5, 8, 10].filter(p => p * s.n <= total);
     if (!perChoices.length) perChoices.push(Math.max(1, Math.floor(total / s.n)));
     if (!perChoices.includes(s.per)) s.per = perChoices.reduce((a, b) => Math.abs(b - 3) < Math.abs(a - 3) ? b : a);
@@ -341,6 +347,7 @@ $('teamBtn').onclick = () => {
         <label class="toggle"><input type="checkbox" id="steal" ${s.steal ? 'checked' : ''}> Steals: a wrong answer passes to a random other team for half points (not on true-or-false questions)</label>
         <label class="toggle"><input type="checkbox" id="hardOn" ${s.hard ? 'checked' : ''}> Include ★ harder questions: worth 200 points instead of 100 (steal 100)</label>
         <label class="toggle"><input type="checkbox" id="calcOn" ${s.calc ? 'checked' : ''}> Include calculation questions (off by default: they need working out, which is slow on the board)</label>
+        <label class="toggle"><input type="checkbox" id="diagOn" ${s.diag ? 'checked' : ''}> Include diagram and graph questions</label>
         <div style="margin-top:18px"><button class="btn big green" id="tsGo">Start: ${s.n * s.per} questions →</button></div>
       </div></div>`;
     box.querySelector('#tsBack').onclick = ev => { ev.preventDefault(); menu(); };
@@ -351,6 +358,7 @@ $('teamBtn').onclick = () => {
     box.querySelector('#steal').onchange = ev => { s.steal = ev.target.checked; };
     box.querySelector('#hardOn').onchange = ev => { s.hard = ev.target.checked; draw(); };
     box.querySelector('#calcOn').onchange = ev => { s.calc = ev.target.checked; draw(); };
+    box.querySelector('#diagOn').onchange = ev => { s.diag = ev.target.checked; draw(); };
     box.querySelector('#tsGo').onclick = () => { store.set('teamcfg', s); startTeam(s); };
   };
   draw(); show('teamsetup');
@@ -358,7 +366,7 @@ $('teamBtn').onclick = () => {
 
 function startTeam(s) {
   SOLO = null;
-  TEAM = { cfg: s, teams: Array.from({ length: s.n }, (_, i) => ({ name: (s.names[i] || '').trim() || TEAM_NAMES[i], col: TEAM_COLS[i], score: 0, right: 0 })), qs: buildQuiz(s.n * s.per, s.hard, s.calc), qi: -1 };
+  TEAM = { cfg: s, teams: Array.from({ length: s.n }, (_, i) => ({ name: (s.names[i] || '').trim() || TEAM_NAMES[i], col: TEAM_COLS[i], score: 0, right: 0 })), qs: buildQuiz(s.n * s.per, s.hard, s.calc, s.diag), qi: -1 };
   show('play'); nextTeamQ();
 }
 

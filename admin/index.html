@@ -147,6 +147,9 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/spec-quiz/spec.js"></script>
 <script src="/interactive/spec-quiz/questions.js"></script>
 <script src="/interactive/spec-quiz/gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="/interactive/spec-quiz/diagrams.js"></script>
+<script src="/interactive/spec-quiz/diagq.js"></script>
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/interactive/spec-quiz/bland.js"></script>
@@ -481,6 +484,7 @@ $('mTable').addEventListener('click', e => { const r = e.target.closest('tr.topi
 function qSample(q) {
   if (!q) return { text: '(question no longer in the bank)', ans: '' };
   // the bank is our own HTML (nuclide notation, sub/superscripts), so it is shown as written
+  if (q.dg) { const g = typeof DQ !== 'undefined' && DQ.make(q.id); return g ? { text: `<div style="max-width:240px">${DQ.fig(g)}</div>` + g.q + ' <i class="muted">(a new drawing each time; this is one example)</i>', ans: g.o[0] } : { text: '(diagram question)', ans: '' }; }
   if (q.gen) { try { const g = q.gen(R); return { text: g.q + ' <i class="muted">(random numbers each time)</i>', ans: g.o ? g.o[0] : '' }; } catch (e) { return { text: '(calculation)', ans: '' }; } }
   return { text: q.q, ans: 'tf' in q ? (q.tf ? 'True' : 'False') : q.o[0] };
 }

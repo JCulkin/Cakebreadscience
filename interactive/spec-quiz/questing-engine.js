@@ -446,9 +446,11 @@ const QE = (() => {
   const revisedToday = () => missionsToday() > 0 || cardsToday().done;
   /* ten questions: ready to secure → rusty → got wrong before → new, from the chosen spec points;
      if they don't have ten questions between them, the rest come from `fill` (e.g. the whole topic) */
+  /* diagram questions (diagq.js, 18 Nov): only where the page can draw them (DQ.ok()), and at most DG_CAP in a mission */
+  const DG_CAP = 2, canDraw = () => typeof DQ !== 'undefined' && DQ.ok();
   function buildMission(keys, fill) {
-    const pick = [], used = new Set();
-    const take = (list, n) => { for (const q of shuffle(list)) { if (n <= 0 || pick.length >= MISSION_LEN) break; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; } } };
+    const pick = [], used = new Set(), draw = canDraw(); let nd = 0;
+    const take = (list, n) => { for (const q of shuffle(list)) { if (n <= 0 || pick.length >= MISSION_LEN) break; if (q.dg && (!draw || nd >= DG_CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
     const fillFrom = pool => {
       const ready = pool.filter(q => { const s = qState(q.id); return s.c === 1 && s.d < TODAY; });
       const rusty = pool.filter(q => pointState(q.s).rusty);
@@ -494,7 +496,7 @@ const QE = (() => {
   function report(q, options, correctIdx, pickedIdx, reason, comment) {
     const u = FB.user, n = u && u.displayName ? u.displayName.trim().split(/\s+/) : null;
     const rep = { qid: q.id, reason, comment: (comment || '').slice(0, 400), shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400),
-      options: options.map(o => String(o).replace(/<[^>]+>/g, '').slice(0, 120)), correct: correctIdx, picked: pickedIdx, mode: 'questing',
+      options: options.map(o => String(o).replace(/<[^>]+>/g, '').slice(0, 120)), correct: correctIdx, picked: pickedIdx, mode: 'questing', ...(q.seed ? { seed: q.seed } : {}),
       name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '', t: Date.now() };
     try { if (!FB.ok || !FB.rtdb) throw new Error('offline'); return FB.rtdb.ref('specQuizReports').push(rep); }
     catch (e) { return Promise.reject(e); }
