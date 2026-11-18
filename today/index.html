@@ -127,7 +127,7 @@ async function draw() {
   const [dR, sR, lR] = await Promise.allSettled([
     within(fs.collection('users').doc(u.uid).get(), 6000, 'your account (Firestore)'),
     within(fs.collection('specProgress').doc(u.uid).get(), 6000, 'the spec trackers (Firestore)'),
-    within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => rt0.ref(p).once('value').then(x => x.val()))), 6000, 'Breadventure Land (Realtime Database)')]);
+    within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => CBSSchool.rtGet(rt0, p, 15000))), 15000, 'Breadventure Land (Realtime Database)')]);
   if (dR.status === 'fulfilled') doc = dR.value.data() || {};
   let conf = null;
   if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; conf = (s.exists && s.data().conf) || null; } else spec = doc.specSubjects || {};
@@ -215,8 +215,10 @@ async function drawSchool() {
   if (hp) hp.insertAdjacentHTML('beforeend', y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>');
   if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
   if (!SCHOOL) {
-    try { SCHOOL = await within(CBSSchool.load(firebase.database()), 6000, "your teacher's work (Realtime Database)"); }
-    catch (e) { console.warn('school', e); box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p>Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`; slowNote(); return; }
+    try { SCHOOL = await within(CBSSchool.load(firebase.database()), 16000, "your teacher's work (Realtime Database)"); SLOW.delete("your teacher's work (Realtime Database)"); }
+    catch (e) { console.warn('school', e); SCHOOL = CBSSchool.cached();
+      if (!SCHOOL) { box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p>Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`; slowNote(); return; }
+      SCHOOL.stale = true; }
   }
   let udoc = {}; try { udoc = (await within(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000, 'your account (Firestore)')).data() || {}; } catch (e) {}
   const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
@@ -239,7 +241,8 @@ async function drawSchool() {
   const noYear = y ? '' : `<div class="card setw"><h2>Which year are you in?</h2><p>Choose your year to see the work your teacher sets for it.</p><p style="margin-top:8px"><button class="btn" id="yrBtn2">Choose your year</button></p></div>`;
   const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
-  box.innerHTML = noYear + (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${setHtml}</div>` : '')
+  const staleNote = SCHOOL.stale ? `<p class="small muted" style="margin-bottom:6px">⚠️ Showing the copy saved on ${new Date(SCHOOL.savedAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}: the network wouldn't answer just now, so anything set since then is missing. Reload to try again.</p>` : '';
+  box.innerHTML = noYear + (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${staleNote}${setHtml}</div>` : staleNote ? `<div class="card">${staleNote}</div>` : '')
     + (taught.length ? `<div class="card covered"><h2>Covered in class</h2><p class="small muted" style="margin-bottom:8px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</div>` : '');
   if (y && !set.length && !taught.length) box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p class="muted">Nothing set for you right now.</p></div>`;
   if ($('yrBtn2')) $('yrBtn2').onclick = () => CBSYear.ask();

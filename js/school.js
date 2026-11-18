@@ -54,10 +54,32 @@
   const audience = (a, students) => (students || []).filter(s => isFor(a, s.year, s.uid));
   /* practise work: the spec points behind it and how many to get right (saved on the work so /js/openwork.js needs no question bank) */
   const practiseNeed = a => { const ids = [...new Set((a.items || []).flatMap(qsOf))]; return { pts: [...new Set((a.items || []).flatMap(pointsOf))], need: Math.min(a.target || 10, ids.length || 1) }; };
-  async function load(rt) {
-    const s = await rt.ref('school').once('value');
-    const v = s.val() || {};
-    return { taught: v.taught || {}, assign: v.assign || {} };
+  /* 18 Nov: one student's To do showed "Couldn't reach your teacher's work (Realtime Database)": the SDK's live connection
+     (a websocket) can be blocked or very slow on some networks, and once() then never answers. rtGet() also asks the plain
+     REST address (an ordinary HTTPS request with the student's sign-in token) after a moment, and takes whichever answers first. */
+  async function rtGet(rt, path, ms = 15000) {
+    let done = false;
+    const sdk = rt.ref(path).once('value').then(x => { done = true; return x.val(); });
+    const rest = (async () => {
+      await new Promise(r => setTimeout(r, 1500));
+      if (done) throw new Error('not needed');
+      const u = firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
+      if (!u || !base) throw new Error('no rest');
+      const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error('rest ' + r.status);
+      return r.json();
+    })();
+    const all = Promise.any ? Promise.any([sdk, rest]) : sdk;
+    return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); all.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
   }
-  window.CBSSchool = { SUBS, POINT, isPoint, pointsOf, qsOf, label, shortLabel, practise, progress, pickTest, isTest, testOf, forYear, forMe, isFor, audience, practiseNeed, load, YEARS: [8, 9, 10, 11] };
+  const CACHE = 'cbs.school';
+  const shape = v => ({ taught: (v || {}).taught || {}, assign: (v || {}).assign || {} });
+  async function load(rt) {
+    const v = shape(await rtGet(rt, 'school'));
+    try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), v })); } catch (e) {}
+    return v;
+  }
+  /* the last copy this browser loaded (shown, marked as saved, when the network won't answer) */
+  const cached = () => { try { const c = JSON.parse(localStorage.getItem(CACHE) || 'null'); return c && c.v ? Object.assign(shape(c.v), { savedAt: c.t }) : null; } catch (e) { return null; } };
+  window.CBSSchool = { SUBS, POINT, isPoint, pointsOf, qsOf, label, shortLabel, practise, progress, pickTest, isTest, testOf, forYear, forMe, isFor, audience, practiseNeed, load, cached, rtGet, YEARS: [8, 9, 10, 11] };
 })();

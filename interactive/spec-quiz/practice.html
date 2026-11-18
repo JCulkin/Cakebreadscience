@@ -296,7 +296,7 @@ async function drawSet() {
   const box = $('setwork'); if (!box) return;
   const y = window.CBSYear && CBSYear.year;
   if (!QE.user || !window.firebase || !firebase.database) { box.innerHTML = ''; return; }
-  if (!SCH) { try { SCH = await withinP(CBSSchool.load(firebase.database()), 6000); } catch (e) { box.innerHTML = ''; return; } }
+  if (!SCH) { try { SCH = await withinP(CBSSchool.load(firebase.database()), 16000); } catch (e) { SCH = CBSSchool.cached(); if (!SCH) { box.innerHTML = ''; return; } } }
   let udoc = {}; try { udoc = (await withinP(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000)).data() || {}; } catch (e) {}
   const S = CBSSchool, today = QE.TODAY;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';

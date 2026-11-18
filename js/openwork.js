@@ -12,6 +12,15 @@
   const load = src => new Promise(ok => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ok; document.head.appendChild(s); });
   const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   let uid = null;
+  /* Realtime Database read with a plain-HTTPS fallback (the live connection is blocked on some networks; see /js/school.js) */
+  function rtGet(path) {
+    if (window.CBSSchool && CBSSchool.rtGet) return CBSSchool.rtGet(firebase.database(), path, 12000);
+    let done = false;
+    const sdk = firebase.database().ref(path).once('value').then(x => { done = true; return x.val(); });
+    const rest = (async () => { await new Promise(r => setTimeout(r, 1500)); if (done) throw new Error('not needed'); const u = firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
+      if (!u || !base) throw new Error('no rest'); const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' }); if (!r.ok) throw new Error('rest'); return r.json(); })();
+    return within(Promise.any ? Promise.any([sdk, rest]) : sdk, 12000);
+  }
   const FRESH = /^\/(today|work)\b|practice\.html|adventurer-mission\.html/.test(location.pathname);   // pages where work gets done: never trust the cache
   /* is this piece of work still open for this student? */
   function open(a, id, u) {
@@ -34,9 +43,9 @@
     if (!firebase.database) await load(`https://www.gstatic.com/firebasejs/${v}/firebase-database-compat.js`);
     if (!firebase.firestore || !firebase.database) return;
     try {
-      const [ud, as] = await Promise.all([within(firebase.firestore().collection('users').doc(me).get(), 6000), within(firebase.database().ref('school/assign').once('value'), 6000)]);
+      const [ud, as] = await Promise.all([within(firebase.firestore().collection('users').doc(me).get(), 6000), rtGet('school/assign')]);
       if (me !== uid) return;
-      const u = ud.exists ? ud.data() || {} : {}, y = u.year, all = as.val() || {}, d = today();
+      const u = ud.exists ? ud.data() || {} : {}, y = u.year, all = as || {}, d = today();
       const mine = Object.entries(all).filter(([, a]) => a && !a.archived && ((y && a.years && a.years['Y' + y]) || (a.students && a.students[me])));
       const left = mine.filter(([id, a]) => open(a, id, u));
       W.n = left.length; W.late = left.filter(([, a]) => a.due && a.due < d).length;

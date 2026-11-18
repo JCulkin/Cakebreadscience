@@ -80,7 +80,7 @@ async function boot() {
   if (!QE.user) { booted = false; $('main').innerHTML = `<div class="card"><h2>Sign in</h2><p>Sign in to do the work your teacher set.</p><p style="margin-top:12px"><button class="btn" id="si">Sign in with Google</button></p></div>`; $('si').onclick = () => QE.signIn().catch(() => {}); return; }
   if (booted) return; booted = true;
   let failed = false;
-  try { A = (await within(firebase.database().ref('school/assign/' + ID).once('value'), 6000)).val(); } catch (e) { A = null; failed = true; }
+  try { A = await CBSSchool.rtGet(firebase.database(), 'school/assign/' + ID, 16000); } catch (e) { A = ((CBSSchool.cached() || {}).assign || {})[ID] || null; failed = !A; }
   if (failed) { booted = false; $('main').innerHTML = `<div class="card"><h2>Couldn't load the work</h2><p>The work your teacher set couldn't be reached just now (the school network may be blocking part of Firebase). Try reloading; if it keeps happening, tell your teacher.</p><p style="margin-top:12px"><button class="btn" onclick="location.reload()">Try again</button></p></div>`; return; }
   if (!A) { $('main').innerHTML = `<div class="card"><h2>Not found</h2><p>This piece of work doesn't exist any more. <a href="/today/">Back to your To do list</a></p></div>`; return; }
   try { W = (((await within(ref().get(), 5000)).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
