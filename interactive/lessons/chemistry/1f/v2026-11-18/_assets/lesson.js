@@ -17,7 +17,7 @@ function header(){
   const nav = $('.lhead .navrow');
   if(nav){
     if(!nav.querySelector('a[href="/"]')) nav.insertAdjacentHTML('afterbegin', `<a href="/" title="Cakebread Science home">🏠 Home</a>`);
-    const badge = st === 'checked' ? `<span class="status checked">Checked · ${fmtDate(ver)}</span>` : `<span class="status draft">Under review · updated ${fmtDate(upd)}</span>`;
+    const badge = st === 'checked' ? '' : `<span class="status draft">Under review</span>`;
     nav.insertAdjacentHTML('beforeend', badge + `<button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
   }
   const toc = $('.lhead .toc');

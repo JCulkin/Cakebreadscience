@@ -3,6 +3,7 @@
 ---
 
 ## [Unreleased]
+- Lessons: simpler lesson list and headers: no "Checked" badge, no dates on "Under review", no how-it-works box, progress line or format-trial link.
 - Lessons: Biology 1 Living organisms checked and frozen as v2026-11-18.
 - Lessons: removed mentions of Separate Science (Biology 1 course slide and paper 2; Chemistry 1a solubility note).
 
