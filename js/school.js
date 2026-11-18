@@ -1,8 +1,10 @@
 /* Teaching by year group (user, 17 Nov 2026): what has been taught in class, and work set for a year.
    Realtime Database (read: signed in; write: admins):
      school/taught/Y10/C1a = 'YYYY-MM-DD'                      sub-topic taught in class to Year 10
-     school/assign/{id} = {title, type: 'test'|'practise', years: {Y10: true}, items: ['C1a', 'C2.27'], qids (test), target (practise),
-                           set: 'YYYY-MM-DD', due, note, by, t, archived}
+     school/assign/{id} = {title, type: 'test'|'practise', years: {Y10: true}, students: {uid: true}, items: ['C1a', 'C2.27'],
+                           qids (test), target (practise), pts + need (practise: spec points and how many to get right, for /js/openwork.js),
+                           set: 'YYYY-MM-DD', due, note, by, t, edited, archived}
+   Who sees a piece of work (18 Nov): everyone in a ticked year PLUS any ticked students (e.g. someone who hasn't chosen a year).
    Two types (user, 17 Nov): 'test' = a fixed set of questions (qids, same for everyone), one go at /work/?id=, score saved on
    users/{uid}.work[id] = {ans: {qid: 1|0}, n, started, done, score, at}; 'practise' (also old work with no type) =
    Items are sub-topic keys (subject letter + topic + sub letter, as in QE.allSubs / practice.html?sub=) or spec point keys (C2.27).
@@ -44,12 +46,18 @@
     const answered = Object.keys(w.ans || {}).length, score = Object.values(w.ans || {}).filter(Boolean).length;
     return { state: w.done ? 'done' : 'started', answered, n: w.n || n, score: w.done ? w.score : score, at: w.at, ans: w.ans || {} };
   }
-  const forYear = (assign, y) => Object.entries(assign || {}).filter(([, a]) => a && !a.archived && a.years && a.years['Y' + y])
+  const isFor = (a, y, uid) => !!a && ((y && a.years && a.years['Y' + y]) || (uid && a.students && a.students[uid]));
+  const forMe = (assign, y, uid) => Object.entries(assign || {}).filter(([, a]) => a && !a.archived && isFor(a, y, uid))
     .map(([id, a]) => Object.assign({ id }, a)).sort((a, b) => (a.due || '9999').localeCompare(b.due || '9999'));
+  const forYear = (assign, y) => forMe(assign, y, null);
+  /* the students who can see a piece of work, from a list of {uid, year} */
+  const audience = (a, students) => (students || []).filter(s => isFor(a, s.year, s.uid));
+  /* practise work: the spec points behind it and how many to get right (saved on the work so /js/openwork.js needs no question bank) */
+  const practiseNeed = a => { const ids = [...new Set((a.items || []).flatMap(qsOf))]; return { pts: [...new Set((a.items || []).flatMap(pointsOf))], need: Math.min(a.target || 10, ids.length || 1) }; };
   async function load(rt) {
     const s = await rt.ref('school').once('value');
     const v = s.val() || {};
     return { taught: v.taught || {}, assign: v.assign || {} };
   }
-  window.CBSSchool = { SUBS, POINT, isPoint, pointsOf, qsOf, label, shortLabel, practise, progress, pickTest, isTest, testOf, forYear, load, YEARS: [8, 9, 10, 11] };
+  window.CBSSchool = { SUBS, POINT, isPoint, pointsOf, qsOf, label, shortLabel, practise, progress, pickTest, isTest, testOf, forYear, forMe, isFor, audience, practiseNeed, load, YEARS: [8, 9, 10, 11] };
 })();

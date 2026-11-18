@@ -141,6 +141,7 @@ const ADV = (() => {
 .advnav .cta:hover{filter:brightness(1.08);color:#111;background:auto}
 .advnav .cta.mission:hover{background:#fde047}.advnav .cta.map:hover{background:#86efac}
 .advnav .cta.on{outline:3px solid #fff;outline-offset:2px}
+.advnav a.tab.due{background:#dc2626;color:#fff;border-color:#111}.advnav a.tab.due .dot{background:#fff;color:#dc2626}
 .advnav .dot{background:#e11d48;color:#fff;border-radius:10px;font-size:12px;font-weight:900;padding:0 6px;line-height:18px;animation:advpulse 1.6s infinite}
 @keyframes advpulse{50%{transform:scale(1.18)}}
 .advnav .sm{font-size:14px;padding:6px 8px}
@@ -170,6 +171,12 @@ const ADV = (() => {
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
       + `<span class="acct" id="advAcct"></span>`;
     document.body.prepend(n);
+    /* open set work (18 Nov, user): the To do tab turns red with a "!" (/js/openwork.js) */
+    { const todo = n.querySelector('a[href="/today/"]'), go = () => CBSWork.onChange(w => {
+        todo.classList.toggle('due', w.n > 0); todo.querySelectorAll('.dot').forEach(x => x.remove());
+        const mis = n.querySelector('a.mission'); if (w.n > 0 && mis) mis.after(todo);   // next to Mission, so it shows on a phone too
+        if (w.n > 0) { todo.insertAdjacentHTML('beforeend', `<span class="dot">!</span>`); todo.title = `${w.n} piece${w.n > 1 ? 's' : ''} of set work to do${w.late ? ` (${w.late} overdue)` : ''}`; } else todo.title = ''; });
+      if (todo && window.firebase) { if (window.CBSWork) go(); else { const sc = document.createElement('script'); sc.src = '/js/openwork.js'; sc.onload = go; document.head.appendChild(sc); } } }
     const acct = n.querySelector('#advAcct');
     const draw = () => {
       const u = QE.user;

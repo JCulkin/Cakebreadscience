@@ -295,12 +295,12 @@ const withinP = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => 
 async function drawSet() {
   const box = $('setwork'); if (!box) return;
   const y = window.CBSYear && CBSYear.year;
-  if (!QE.user || !y || !window.firebase || !firebase.database) { box.innerHTML = ''; return; }
+  if (!QE.user || !window.firebase || !firebase.database) { box.innerHTML = ''; return; }
   if (!SCH) { try { SCH = await withinP(CBSSchool.load(firebase.database()), 6000); } catch (e) { box.innerHTML = ''; return; } }
   let udoc = {}; try { udoc = (await withinP(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000)).data() || {}; } catch (e) {}
   const S = CBSSchool, today = QE.TODAY;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const open = S.forYear(SCH.assign, y).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
+  const open = S.forMe(SCH.assign, y, QE.user.uid).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
     .filter(x => x.t ? x.t.state !== 'done' : !x.p.done);
   if (!open.length) { box.innerHTML = ''; return; }
   box.innerHTML = `<div class="setw"><h2>Set by your teacher</h2>${open.map(({ a, t, p }) => {

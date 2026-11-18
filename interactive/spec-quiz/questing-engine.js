@@ -344,6 +344,7 @@ const QE = (() => {
 
   /* ---------- answering ---------- */
   function recordAnswer(q, ok) {
+    try { Object.keys(sessionStorage).filter(k => k.startsWith('cbs.work.')).forEach(k => sessionStorage.removeItem(k)); } catch (e) {}   // the "To do !" count (/js/openwork.js) may have changed
     const s = Object.assign({ c: 0, n: 0, r: 0 }, PROG.q[q.id]), before = pointState(q.s), notes = [];
     s.n++;
     if (ok) {

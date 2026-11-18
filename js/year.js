@@ -9,7 +9,8 @@
   if (window.CBSYear) return;
   const subs = [];
   const Y = window.CBSYear = { year: null, uid: null, ask, onChange: f => { subs.push(f); if (Y.uid) f(Y.year); } };
-  const emit = () => { subs.forEach(f => { try { f(Y.year); } catch (e) {} }); window.dispatchEvent(new CustomEvent('cbs-year', { detail: Y.year })); };
+  const emit = () => { Y.known = !!Y.uid;   // known = this account's year has been read (or the read failed)
+    subs.forEach(f => { try { f(Y.year); } catch (e) {} }); window.dispatchEvent(new CustomEvent('cbs-year', { detail: Y.year })); };
   const isAdmin = u => (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).includes(u.email);
 
   const css = document.createElement('style');
@@ -55,7 +56,7 @@
     needFirestore(() => {
       fs = firebase.firestore();
       firebase.auth().onAuthStateChanged(u => {
-        Y.uid = u ? u.uid : null; Y.year = null;
+        Y.uid = u ? u.uid : null; Y.year = null; Y.known = false;
         if (!u) { emit(); return; }
         fs.collection('users').doc(u.uid).get().then(d => {
           const y = d.exists ? (d.data() || {}).year : null;
