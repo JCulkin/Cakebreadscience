@@ -813,35 +813,101 @@ const DG = (() => {
     return wrap(w, h, g);
   }
 
-  /* ---------- particle diagrams: states of matter, or element / compound / mixture (C1.1, C1.8) ---------- */
-  M.particles = r => {
-    const box = (x, y, inner) => `<rect x="${x}" y="${y}" width="110" height="110" fill="#fff" stroke="${INK}" stroke-width="1.6"/>${inner}`;
-    const ball = (x, y, c, rad = 8) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad}" fill="${c}" stroke="${INK}"/>`;
-    const L = ['A', 'B', 'C', 'D'];
-    if (r.f() < .45) {   /* states */
-      const order = sh(['solid', 'liquid', 'gas'], r), col = r.pick(['#93c5fd', '#fca5a5', '#86efac', '#fde68a']); let g = '';
-      order.forEach((st, k) => { const x0 = 15 + k * 130, y0 = 15; let inner = '';
-        if (st === 'solid') for (let i = 0; i < 5; i++) for (let j = 0; j < 5; j++) inner += ball(x0 + 19 + j * 18, y0 + 19 + i * 18, col);
-        else if (st === 'liquid') { const pts = []; for (let t = 0; pts.length < 18 && t < 3000; t++) { const p = [x0 + 12 + r.f() * 86, y0 + 50 + r.f() * 48]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 16.5 && Math.hypot(q[0] - p[0], q[1] - p[1]) < 60)) pts.push(p); } pts.forEach(p => { inner += ball(p[0], p[1], col); }); }
-        else { const pts = []; for (let t = 0; pts.length < 6 && t < 3000; t++) { const p = [x0 + 12 + r.f() * 86, y0 + 12 + r.f() * 86]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 34)) pts.push(p); } pts.forEach(p => { inner += ball(p[0], p[1], col); }); }
-        g += box(x0, y0, inner) + T(x0 + 55, y0 + 132, L[k], { size: 15, w: 700 }); });
-      const svg = wrap(405, 160, g), want = r.pick(['solid', 'liquid', 'gas']), ans = L[order.indexOf(want)], title = 'Particle diagrams: states';
-      if (r.int(0, 1)) return { title, spec: 'C1.1', kind: 'diagram', svg, q: `Which box shows a ${want}?`, o: [ans, ...L.slice(0, 3).filter(x => x !== ans)], x: { solid: 'A solid: particles touching in a regular pattern, vibrating in fixed positions.', liquid: 'A liquid: particles touching but arranged randomly, able to move past each other.', gas: 'A gas: particles far apart, moving quickly in all directions.' }[want] };
-      const from = r.pick(['solid', 'liquid']), to = from === 'solid' ? 'liquid' : 'gas', name = from === 'solid' ? 'melting' : 'boiling (or evaporating)';
-      return { title, spec: 'C1.2', kind: 'diagram', svg, q: `What is the change from box ${L[order.indexOf(from)]} to box ${L[order.indexOf(to)]} called?`, o: [name, ...others(name, ['melting', 'boiling (or evaporating)', 'freezing', 'condensing', 'subliming'], r)], x: `${from} → ${to} is ${name}: the particles gain energy and move further apart / more freely.` };
+  /* ---------- particle diagrams: states of matter, or element / compound / mixture (C1.1, C1.8) ----------
+     User, 18 Nov 21:19: fill each box to the edges; liquids sit at the bottom; gases sometimes with speed lines. */
+  const ball = (x, y, c, rad) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rad.toFixed(2)}" fill="${c}" stroke="${INK}" stroke-width="${rad > 9 ? 1.3 : 1}"/>`;
+  const frame = (x, y, S) => `<rect x="${x}" y="${y}" width="${S}" height="${S}" fill="none" stroke="${INK}" stroke-width="2"/>`;
+  function solidGrid(x0, y0, S, k, c, c2) {   // k × k touching particles, wall to wall
+    const rad = S / (2 * k); let s = '';
+    for (let i = 0; i < k; i++) for (let j = 0; j < k; j++) s += ball(x0 + rad + j * 2 * rad, y0 + rad + i * 2 * rad, c2 && (i + j) % 2 ? c2 : c, rad);
+    return s;
+  }
+  function liquidPile(x0, y0, S, rad, frac, r) {   // particles settle to the bottom, touching but jumbled
+    const P = [], top = y0 + S * (1 - frac), lo = x0 + rad, hi = x0 + S - rad, floor = y0 + S - rad, D = 2 * rad;
+    const ok = (x, y) => x >= lo - .01 && x <= hi + .01 && y <= floor + .01 && y >= y0 + rad && P.every(p => (p[0] - x) ** 2 + (p[1] - y) ** 2 >= D * D - .5);
+    for (let guard = 0; guard < 400; guard++) {
+      const C = [];
+      for (let t = 0; t < 14; t++) C.push([lo + r.f() * (hi - lo), floor]);
+      C.push([lo, floor], [hi, floor]);
+      P.forEach((a, i) => {
+        [lo, hi].forEach(x => { const dx = Math.abs(a[0] - x); if (dx < D) C.push([x, a[1] - Math.sqrt(D * D - dx * dx)]); });
+        for (let j = i + 1; j < P.length; j++) { const b = P[j], dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy); if (d >= 2 * D || d < 1e-6) continue;
+          const h = Math.sqrt(D * D - d * d / 4), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, ux = -dy / d, uy = dx / d;
+          C.push([mx + ux * h, my + uy * h], [mx - ux * h, my - uy * h]); }
+      });
+      let best = null, bs = -1e9;
+      C.forEach(([x, y]) => { if (!ok(x, y)) return; const sc = y - r.f() * rad * .55; if (sc > bs) { bs = sc; best = [x, y]; } });
+      if (!best || best[1] - rad < top) break;
+      P.push(best);
     }
-    /* element / compound / mixture: four boxes of different kinds */
-    const C1 = '#60a5fa', C2 = '#f87171', C3 = '#374151';
+    return P;
+  }
+  function spread(n, R, x0, y0, S, r, gap = 6) {   // best-candidate spacing; R = one radius or one per item; centres kept R inside the walls
+    const P = [], Rs = Array.isArray(R) ? R : Array(n).fill(R);
+    for (let i = 0; i < n; i++) { const Ri = Rs[i]; let best = null, bd = -1e9;
+      for (let t = 0; t < 80; t++) { const p = [x0 + Ri + r.f() * (S - 2 * Ri), y0 + Ri + r.f() * (S - 2 * Ri)], d = P.length ? Math.min(...P.map(q => Math.hypot(q[0] - p[0], q[1] - p[1]) - q[2] - Ri)) : 999; if (d > bd) { bd = d; best = p; } }
+      if (bd < gap) continue; P.push([best[0], best[1], Ri, i]); }
+    return P;
+  }
+  function gasBox(x0, y0, S, rad, c, r, moving) {   // a few particles anywhere in the box; with speed lines behind some
+    const pts = spread(r.int(6, 8), rad, x0, y0, S, r, moving ? 26 : 14);
+    const inside = (x, y) => x > x0 + 2 && x < x0 + S - 2 && y > y0 + 2 && y < y0 + S - 2;
+    let lines = '', balls = '';
+    pts.forEach((p, i) => {
+      if (moving) {
+        const L = r.pick([5, 10, 16, 24, 32]);
+        for (let t = 0; t < 30; t++) { const a = r.f() * Math.PI * 2, dx = Math.cos(a), dy = Math.sin(a);
+          const tail = s => [p[0] - dx * (rad + 3 + s), p[1] - dy * (rad + 3 + s)];
+          const clear = [0, .5, 1].every(f => { const [tx, ty] = tail(L * f); return inside(tx - dy * rad * .6, ty + dx * rad * .6) && inside(tx + dy * rad * .6, ty - dx * rad * .6) && pts.every((q, j) => j === i || Math.hypot(q[0] - tx, q[1] - ty) > rad + 4); });
+          if (!clear) continue;
+          [-.55, 0, .55].forEach(o => { const len = o ? L * .7 : L, [ax, ay] = tail(0), [bx, by] = tail(len), ox = -dy * rad * o, oy = dx * rad * o;
+            lines += `<line x1="${(ax + ox).toFixed(1)}" y1="${(ay + oy).toFixed(1)}" x2="${(bx + ox).toFixed(1)}" y2="${(by + oy).toFixed(1)}" stroke="#6b7280" stroke-width="1.6" stroke-linecap="round"/>`; });
+          break; }
+      }
+      balls += ball(p[0], p[1], c, rad);
+    });
+    return lines + balls;
+  }
+  M.particles = r => {
+    const L = ['A', 'B', 'C', 'D'];
+    if (r.f() < .5) {   /* states */
+      const S = 120, gapX = 22, order = sh(['solid', 'liquid', 'gas'], r), col = r.pick(['#93c5fd', '#fca5a5', '#86efac', '#fde68a', '#c4b5fd']);
+      const k = r.pick([5, 6, 6, 7, 8]), rad = S / (2 * k), moving = r.f() < .5; let g = '';
+      order.forEach((st, i) => { const x0 = 14 + i * (S + gapX), y0 = 12;
+        g += `<rect x="${x0}" y="${y0}" width="${S}" height="${S}" fill="#fff"/>`;
+        g += st === 'solid' ? solidGrid(x0, y0, S, k, col) : st === 'liquid' ? liquidPile(x0, y0, S, rad, .5 + r.f() * .2, r).map(p => ball(p[0], p[1], col, rad)).join('') : gasBox(x0, y0, S, rad, col, r, moving);
+        g += frame(x0, y0, S) + T(x0 + S / 2, y0 + S + 22, L[i], { size: 15, w: 700 }); });
+      const W = 28 + 3 * S + 2 * gapX, svg = wrap(W, S + 44, g), title = 'Particle diagrams: states', gasL = L[order.indexOf('gas')];
+      const q = r.int(0, moving ? 2 : 1);
+      if (q === 2) return { title, spec: 'C1.1', kind: 'diagram', svg, q: `What do the lines behind the particles in box ${gasL} show?`, o: ['The particles move in random directions at different speeds', 'All the particles move at the same speed', 'The particles vibrate about fixed positions', 'The particles are getting bigger'], x: 'Longer lines = faster particles. Gas particles move quickly and randomly, and not all at the same speed.' };
+      if (q === 0) { const want = r.pick(['solid', 'liquid', 'gas']), ans = L[order.indexOf(want)];
+        return { title, spec: 'C1.1', kind: 'diagram', svg, q: `Which box shows a ${want}?`, o: [ans, ...L.slice(0, 3).filter(x => x !== ans)], x: { solid: 'A solid: particles touching in a regular pattern, vibrating in fixed positions.', liquid: 'A liquid: particles touching but arranged randomly, settled at the bottom of the container and able to move past each other.', gas: 'A gas: particles far apart, filling the container and moving quickly in all directions.' }[want] }; }
+      const pairs = [['solid', 'liquid', 'melting'], ['liquid', 'gas', 'boiling (or evaporating)'], ['liquid', 'solid', 'freezing'], ['gas', 'liquid', 'condensing']], [from, to, name] = r.pick(pairs);
+      return { title, spec: 'C1.2', kind: 'diagram', svg, q: `What is the change from box ${L[order.indexOf(from)]} to box ${L[order.indexOf(to)]} called?`, o: [name, ...others(name, ['melting', 'boiling (or evaporating)', 'freezing', 'condensing', 'subliming'], r)], x: `${from} → ${to} is ${name}: the particles ${['melting', 'boiling (or evaporating)'].includes(name) ? 'gain energy and move more freely / further apart' : 'lose energy and move less / get closer together'}.` };
+    }
+    /* element / compound / mixture: four boxes, each filled to the walls */
+    const S = 112, rad = 8, step = 12.5, C1 = '#60a5fa', C2 = '#f87171', C3 = '#374151', C4 = '#facc15';
     const KINDS = { atoms: 'an element made of single atoms', diatomic: 'an element made of molecules', compound: 'a compound', mixEl: 'a mixture of two elements', mixElCpd: 'a mixture of an element and a compound', mixCpd: 'a mixture of two compounds' };
-    const fill = (x0, y0, kind) => { const units = []; const n0 = kind === 'atoms' ? 9 : 6;
-      for (let i = 0; i < n0; i++) units.push(kind === 'atoms' ? [[C1]] : kind === 'diatomic' ? [[C2, C2]] : kind === 'compound' ? [[C1, C3, C1]] : kind === 'mixEl' ? (i % 2 ? [[C1]] : [[C2, C2]]) : kind === 'mixElCpd' ? (i % 2 ? [[C2, C2]] : [[C1, C3]]) : (i % 2 ? [[C1, C3]] : [[C2, C2, C3]]));
-      const pts = []; for (let t = 0; pts.length < units.length && t < 4000; t++) { const p = [x0 + 22 + r.f() * 66, y0 + 16 + r.f() * 78]; if (pts.every(q => Math.hypot(q[0] - p[0], q[1] - p[1]) > 27)) pts.push(p); }
-      let s = ''; units.forEach((u, i) => { if (!pts[i]) return; const at0 = u[0], ang = r.f() * Math.PI, step = 12; at0.forEach((c, j) => { const off = (j - (at0.length - 1) / 2) * step; s += ball(pts[i][0] + Math.cos(ang) * off, pts[i][1] + Math.sin(ang) * off, c, 7.5); }); });
+    const mol = atoms => { const shape = atoms.length === 3 && r.f() < .5 ? 'bent' : 'line'; return { atoms, shape }; };
+    const unitsFor = kind => { const A = [C1], D = [C2, C2], X = r.pick([[C1, C3], [C1, C3, C1], [C3, C4, C3]]), Y = r.pick([[C2, C3], [C2, C4]]);
+      const mk = (a, b, nn) => Array.from({ length: nn }, (_, i) => mol(i % 2 ? b : a));
+      return kind === 'atoms' ? mk(A, A, r.int(10, 14)) : kind === 'diatomic' ? mk(D, D, r.int(8, 10)) : kind === 'compound' ? mk(X, X, r.int(7, 9)) : kind === 'mixEl' ? mk(A, D, r.int(9, 11)) : kind === 'mixElCpd' ? mk(D, X, r.int(8, 9)) : mk(X, Y, r.int(8, 9)); };
+    const drawUnit = (cx, cy, u) => { const a = r.f() * Math.PI * 2, nA = u.atoms.length; let s = '';
+      const pos = u.shape === 'bent' ? [[-step * .85, step * .5], [0, -step * .25], [step * .85, step * .5]] : u.atoms.map((_, j) => [(j - (nA - 1) / 2) * step, 0]);
+      const order = u.atoms.map((c, j) => j).sort((p, q) => (u.atoms[p] === C3 || u.atoms[p] === C4) - (u.atoms[q] === C3 || u.atoms[q] === C4));   // central atom drawn last
+      order.forEach(j => { const [px, py] = pos[j]; s += ball(cx + px * Math.cos(a) - py * Math.sin(a), cy + px * Math.sin(a) + py * Math.cos(a), u.atoms[j], rad); });
       return s; };
+    const fill = (x0, y0, kind) => {
+      if (kind === 'atoms' && r.f() < .4) return { s: solidGrid(x0, y0, S, r.pick([6, 7]), C1), solid: 1 };
+      if (kind === 'compound' && r.f() < .35) return { s: solidGrid(x0, y0, S, r.pick([6, 7]), C1, C3), solid: 1 };
+      const us = unitsFor(kind), Rs = us.map(u => (u.atoms.length === 1 ? rad : u.shape === 'bent' ? step * .9 + rad : (u.atoms.length - 1) / 2 * step + rad) + .5);
+      const pts = spread(us.length, Rs, x0, y0, S, r, 3);
+      return { s: pts.map(p => drawUnit(p[0], p[1], us[p[3]])).join('') };
+    };
     const kinds = sh(Object.keys(KINDS), r).slice(0, 4); let g = '';
-    kinds.forEach((k, i) => { const x0 = 15 + i * 125, y0 = 15; g += box(x0, y0, fill(x0, y0, k)) + T(x0 + 55, y0 + 132, L[i], { size: 15, w: 700 }); });
-    const svg = wrap(520, 160, g), k = r.pick(kinds), ans = L[kinds.indexOf(k)];
-    return { title: 'Particle diagrams: elements, compounds, mixtures', spec: 'C1.8', kind: 'diagram', svg, q: `Each colour is a different kind of atom. Which box shows ${KINDS[k]}?`, o: [ans, ...L.filter(x => x !== ans)], x: { atoms: 'One kind of atom, not joined: an element.', diatomic: 'One kind of atom, joined in pairs: an element made of molecules.', compound: 'Every particle is the same, made of different atoms chemically joined: a compound.', mixEl: 'Two different elements, not joined to each other: a mixture.', mixElCpd: 'An element and a compound mixed but not joined: a mixture.', mixCpd: 'Two different compounds mixed together: a mixture.' }[k] };
+    kinds.forEach((k, i) => { const x0 = 12 + i * (S + 16), y0 = 12; g += `<rect x="${x0}" y="${y0}" width="${S}" height="${S}" fill="#fff"/>` + fill(x0, y0, k).s + frame(x0, y0, S) + T(x0 + S / 2, y0 + S + 22, L[i], { size: 15, w: 700 }); });
+    const svg = wrap(24 + 4 * S + 48, S + 44, g), k = r.pick(kinds), ans = L[kinds.indexOf(k)];
+    return { title: 'Particle diagrams: elements, compounds, mixtures', spec: 'C1.8', kind: 'diagram', svg, q: `Each colour is a different kind of atom. Which box shows ${KINDS[k]}?`, o: [ans, ...L.filter(x => x !== ans)], x: { atoms: 'One kind of atom, not joined to anything else: an element.', diatomic: 'One kind of atom, joined in pairs: an element made of molecules.', compound: 'Every particle is the same, made of different atoms chemically joined: a compound.', mixEl: 'Two different elements, not joined to each other: a mixture.', mixElCpd: 'An element and a compound mixed but not joined: a mixture.', mixCpd: 'Two different compounds mixed together: a mixture.' }[k] };
   };
 
   /* ---------- separating mixtures: filtration, simple and fractional distillation, crystallisation (C1.10) ---------- */
@@ -892,22 +958,41 @@ const DG = (() => {
     return partQ(r, title, 'C1.10', svg, letter, keys, NAME, FN);
   };
 
-  /* ---------- displacement results table → reactivity order (C2.16) ---------- */
+  /* ---------- displacement results → reactivity order (C2.16). Grid of 3 or 4 metals, or one solution with a list of metals ---------- */
   M.displace = r => {
-    const names = r.pick([['W', 'X', 'Y', 'Z'], ['P', 'Q', 'R', 'S'], ['magnesium', 'zinc', 'iron', 'copper'], ['zinc', 'iron', 'copper', 'silver']]), real = names[0].length > 1;
-    const order = real ? names.slice() : sh(names, r);   // most reactive first
-    const salt = m => real ? { magnesium: 'magnesium sulfate', zinc: 'zinc sulfate', iron: 'iron(II) sulfate', copper: 'copper(II) sulfate', silver: 'silver nitrate' }[m] : `${m} nitrate`;
-    const cols = sh(names, r), rows = sh(names, r);
-    let g = ''; const cw = 92, x0 = 108, y0 = 10, rh = 30;
-    g += `<rect x="${x0 - 98}" y="${y0}" width="98" height="${rh * 1.4}" fill="#eeeae0" stroke="${INK}"/>` + T(x0 - 49, y0 + 18, 'metal ↓', { size: 10 }) + T(x0 - 49, y0 + 33, 'solution →', { size: 10 });
-    cols.forEach((c, j) => { g += `<rect x="${x0 + j * cw}" y="${y0}" width="${cw}" height="${rh * 1.4}" fill="#eeeae0" stroke="${INK}"/>` + T(x0 + j * cw + cw / 2, y0 + 18, salt(c).split(' ').slice(0, -1).join(' '), { size: 11, w: 700 }) + T(x0 + j * cw + cw / 2, y0 + 33, salt(c).split(' ').slice(-1)[0], { size: 10 }); });
-    rows.forEach((m, i) => { const y = y0 + rh * 1.4 + i * rh; g += `<rect x="${x0 - 98}" y="${y}" width="98" height="${rh}" fill="#eeeae0" stroke="${INK}"/>` + T(x0 - 49, y + 20, m, { size: 12, w: 700 });
-      cols.forEach((c, j) => { const v = m === c ? '—' : order.indexOf(m) < order.indexOf(c) ? '✓' : '✗'; g += `<rect x="${x0 + j * cw}" y="${y}" width="${cw}" height="${rh}" fill="#fff" stroke="${INK}"/>` + T(x0 + j * cw + cw / 2, y + 21, v, { size: 16, w: 700, fill: v === '✓' ? '#16a34a' : v === '✗' ? '#dc2626' : '#888' }); }); });
-    const svg = wrap(x0 + 4 * cw + 10, y0 + rh * 1.4 + 4 * rh + 22, g + T(x0 - 96, y0 + rh * 5.4 + 16, '✓ = reaction (the metal displaces the other metal)    ✗ = no reaction', { size: 10, a: 'start' })), title = 'Displacement reactions';
-    const ord = order.join(', '), q = r.int(0, 2);
-    if (q === 0) { const wrong = [order.slice().reverse().join(', '), [order[1], order[0], order[2], order[3]].join(', '), [order[0], order[2], order[1], order[3]].join(', '), [order[0], order[1], order[3], order[2]].join(', ')]; return { title, spec: 'C2.16', kind: 'table', svg, q: 'What is the order of reactivity, most reactive first?', o: [ord, ...others(ord, wrong, r)], x: `A metal displaces any metal less reactive than itself. ${order[0]} reacts with all three other solutions, ${order[3]} with none: ${ord}.` }; }
-    if (q === 1) return { title, spec: 'C2.16', kind: 'table', svg, q: 'Which metal is the least reactive?', o: [order[3], ...order.slice(0, 3)], x: `${order[3]} doesn't displace any of the others (all ✗).` };
-    const a = r.int(0, 2), b = r.int(a + 1, 3); return { title, spec: 'C2.16', kind: 'table', svg, q: `Will ${order[b]} react with a solution of ${salt(order[a])}?`, o: [`No: ${order[b]} is less reactive than ${order[a]}`, `Yes: ${order[b]} is more reactive than ${order[a]}`, 'Yes: all metals react with salt solutions', `Only if it is heated`], x: `Look along the ${order[b]} row: the ${salt(order[a])} column is ✗. A less reactive metal can't displace a more reactive one.` };
+    const REACT = ['magnesium', 'zinc', 'iron', 'copper', 'silver'], title = 'Displacement reactions';
+    const SALT = { magnesium: 'magnesium sulfate', zinc: 'zinc sulfate', iron: 'iron(II) sulfate', copper: 'copper(II) sulfate', silver: 'silver nitrate' };
+    const SEEN = { copper: 'red-brown solid forms, blue colour fades', iron: 'dark grey solid forms, pale green colour fades', zinc: 'grey solid forms on the metal', silver: 'shiny grey crystals form' };
+    const cell = (x, y, w, h, fill = '#fff') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${INK}"/>`, HEAD = '#eeeae0';
+    if (r.f() < .3) {   /* one solution, a list of metals */
+      const s = r.pick(['copper', 'copper', 'iron', 'zinc']), si = REACT.indexOf(s);
+      let ms; do { ms = sh(REACT.filter(m => m !== s), r).slice(0, r.int(3, 4)); } while (!ms.some(m => REACT.indexOf(m) < si) || !ms.some(m => REACT.indexOf(m) > si));
+      const more = REACT.filter(m => ms.includes(m) && REACT.indexOf(m) < si), c1 = 110, c2 = 280, rh = 30, y0 = 34; let g = T(10, 20, `Each metal was put into ${SALT[s]} solution.`, { size: 13, w: 700, a: 'start' });
+      g += cell(10, y0, c1, rh, HEAD) + T(10 + c1 / 2, y0 + 20, 'metal', { size: 12, w: 700 }) + cell(10 + c1, y0, c2, rh, HEAD) + T(10 + c1 + c2 / 2, y0 + 20, 'what was seen', { size: 12, w: 700 });
+      ms.forEach((m, i) => { const y = y0 + rh * (i + 1), yes = REACT.indexOf(m) < si; g += cell(10, y, c1, rh) + T(10 + c1 / 2, y + 20, m, { size: 12 }) + cell(10 + c1, y, c2, rh) + T(10 + c1 + c2 / 2, y + 20, yes ? SEEN[s] : 'no change', { size: 12 }); });
+      const svg = wrap(c1 + c2 + 20, y0 + rh * (ms.length + 1) + 10, g), join = a => a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+      const ans = join(more), less = ms.filter(m => !more.includes(m)), pool = [join(less), join(ms), ...ms.map(m => m), join(sh(ms, r).slice(0, 2))].filter(v => v !== ans);
+      if (r.f() < .5 || less.length > 1) return { title, spec: 'C2.16', kind: 'table', svg, q: `Which of these metals are more reactive than ${s}?`, o: [ans, ...[...new Set(pool)].slice(0, 3)], x: `A more reactive metal displaces ${s} from its solution, so you see a change. ${ans} reacted; ${join(less)} didn't.` };
+      return { title, spec: 'C2.16', kind: 'table', svg, q: `Why did nothing happen with ${less[0]}?`, o: [`${less[0]} is less reactive than ${s}`, `${less[0]} is more reactive than ${s}`, `${less[0]} doesn't conduct electricity`, 'The solution was too dilute'], x: `A metal can only displace a less reactive metal. ${less[0]} is below ${s} in the reactivity series.` };
+    }
+    const k = r.hard ? r.pick([3, 4, 4]) : r.pick([3, 3, 4]);
+    const sets = k === 3 ? [['X', 'Y', 'Z'], ['A', 'B', 'C'], ['magnesium', 'zinc', 'copper'], ['zinc', 'iron', 'copper'], ['magnesium', 'iron', 'copper'], ['zinc', 'copper', 'silver']] : [['W', 'X', 'Y', 'Z'], ['P', 'Q', 'R', 'S'], ['magnesium', 'zinc', 'iron', 'copper'], ['zinc', 'iron', 'copper', 'silver']];
+    const names = r.pick(sets), real = names[0].length > 1, order = real ? names.slice() : sh(names, r);
+    const salt = m => real ? SALT[m] : `${m} nitrate`;
+    const cols = sh(names, r), rows = sh(names, r), cw = real ? 92 : 72, x0 = real ? 108 : 78, lw = x0 - 10, y0 = 10, rh = 30, hh = rh * 1.4;
+    let g = cell(10, y0, lw, hh, HEAD) + T(10 + lw / 2, y0 + 18, 'metal ↓', { size: 10 }) + T(10 + lw / 2, y0 + 33, 'solution →', { size: 10 });
+    cols.forEach((c, j) => { const sx = x0 + j * cw + cw / 2, w = salt(c).split(' '); g += cell(x0 + j * cw, y0, cw, hh, HEAD) + T(sx, y0 + 18, w.slice(0, -1).join(' '), { size: 11, w: 700 }) + T(sx, y0 + 33, w[w.length - 1], { size: 10 }); });
+    rows.forEach((m, i) => { const y = y0 + hh + i * rh; g += cell(10, y, lw, rh, HEAD) + T(10 + lw / 2, y + 20, m, { size: 12, w: 700 });
+      cols.forEach((c, j) => { const v = m === c ? '—' : order.indexOf(m) < order.indexOf(c) ? '✓' : '✗'; g += cell(x0 + j * cw, y, cw, rh, v === '—' ? '#f3f4f6' : '#fff') + T(x0 + j * cw + cw / 2, y + 21, v, { size: 16, w: 700, fill: v === '✓' ? '#16a34a' : v === '✗' ? '#dc2626' : '#888' }); }); });
+    const H = y0 + hh + k * rh, Wd = Math.max(x0 + k * cw + 10, 330);
+    const svg = wrap(Wd, H + 24, g + T(10, H + 17, '✓ = reaction (the metal displaces the other metal)    ✗ = no reaction', { size: 10, a: 'start' }));
+    const ord = order.join(', '), q = r.int(0, 2), last = order[k - 1];
+    const perms = []; const perm = (a, p = []) => { if (!a.length) { perms.push(p.join(', ')); return; } a.forEach((x, i) => perm(a.filter((_, j) => j !== i), [...p, x])); }; perm(order);
+    const near = [order.slice().reverse().join(', '), ...perms.filter(p => p !== ord)];
+    if (q === 0) return { title, spec: 'C2.16', kind: 'table', svg, q: 'What is the order of reactivity, most reactive first?', o: [ord, ...[...new Set(near.filter(p => p !== ord))].slice(0, 1).concat(sh(near.slice(1).filter(p => p !== near[0]), r).slice(0, 2))], x: `A metal displaces any metal less reactive than itself. ${order[0]} reacts with all ${k - 1} other solutions, ${last} with none: ${ord}.` };
+    if (q === 1) { const least = r.int(0, 1), m = least ? last : order[0];
+      return { title, spec: 'C2.16', kind: 'table', svg, q: `Which metal is the ${least ? 'least' : 'most'} reactive?`, o: [m, ...order.filter(x => x !== m)].slice(0, 4), x: least ? `${m} doesn't displace any of the others (its row is all ✗).` : `${m} displaces all the others (its row is all ✓).` }; }
+    const a = r.int(0, k - 2), b = r.int(a + 1, k - 1); return { title, spec: 'C2.16', kind: 'table', svg, q: `Will ${order[b]} react with a solution of ${salt(order[a])}?`, o: [`No: ${order[b]} is less reactive than ${order[a]}`, `Yes: ${order[b]} is more reactive than ${order[a]}`, 'Yes: all metals react with salt solutions', 'Only if it is heated'], x: `Look along the ${order[b]} row: the ${salt(order[a])} column is ✗. A less reactive metal can't displace a more reactive one.` };
   };
 
   /* ---------- gas syringes: percentage of oxygen in air (C2.10, C2.14) ---------- */
