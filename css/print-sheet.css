@@ -168,3 +168,15 @@ body.ps.bio { --ps-answer: #1a4f8a; --ps-answer-bg: #dde9f7; }
 .ps .tip { font-size: 8.8pt; color: var(--ps-warn); }
 .ps .tip::before { content: "⚠ "; }
 .ps .howto { font-size: 9pt; }
+
+/* Phones (worksheets chat, 19 Nov): worksheets keep their A4 page and the browser shows the whole page
+   (viewport width=820 on the sheet); mark schemes reflow to the screen width so answers are easy to read. */
+@media screen and (max-width: 820px) {
+    .ps.ps-ms .screen-links { width: auto; margin: 4mm 12px -2mm; flex-wrap: wrap; gap: 3mm 6mm; }
+    .ps.ps-ms .page { width: auto; max-width: 210mm; height: auto; overflow: visible; margin: 4mm 0; padding: 4mm 12px; box-shadow: none; }
+    .ps.ps-ms .ms, .ps.ps-ms .two, .ps.ps-ms .three { display: block !important; }
+    .ps.ps-ms .ms > *, .ps.ps-ms .two > *, .ps.ps-ms .three > * { margin-bottom: 2.5mm; }
+    .ps.ps-ms table { display: block; overflow-x: auto; max-width: 100%; }
+    .ps.ps-ms svg { max-width: 100%; height: auto; }
+    .ps.ps-ms .header { flex-wrap: wrap; }
+}
