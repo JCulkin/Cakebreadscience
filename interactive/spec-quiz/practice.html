@@ -143,6 +143,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 <script src="/js/admin-config.js"></script>
 <script src="/js/account.js"></script>
 <script src="/js/school.js"></script>
+<script src="/js/spec-point.js"></script>
 <script>
 /* Practice (16 Nov 2026): a plain front door to the Questing engine. Same question bank, same securing rules,
    same saved progress (users/{uid}.specQuiz); no adventurer, monsters or loot on screen. */
@@ -179,9 +180,9 @@ function drawPick() {
       const open = OPEN.has(s.key);
       return `<div class="sub"><div class="subrow"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><div class="pb"><i style="width:${s.st.n ? s.st.secured / s.st.n * 100 : 0}%"></i></div><span class="n">${s.st.secured}/${s.st.n}${s.st.rusty ? ` · ${s.st.rusty} rusty` : ''}</span>
         <button type="button" class="tgl" data-tgl="${s.key}" aria-expanded="${open}">Spec points ${open ? '▴' : '▾'}</button><button type="button" class="go" data-sub="${s.key}">Practise →</button></div>
-        ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = QE.POINTS[k]; if (!p.has) return '';
+        ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = (window.SPECPT && SPECPT.of(k)) || QE.POINTS[k]; if (!p.has) return '';
           const [c, w] = p.rusty ? ['r', 'Rusty'] : p.secured ? ['s', 'Secured'] : p.started ? ['l', 'Learning'] : ['n', 'New'];
-          return `<div class="pt"><span class="id">${P.id}</span><span>${esc(strip(P.text))}${P.bullets ? ' ' + esc(P.bullets.map(strip).join('; ')) : ''}</span><span class="st ${c}">${w}</span><button type="button" data-point="${k}">Practise</button></div>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div>`; }).join('');
+          return `<div class="pt"><span class="id">${P.id}</span><span>${esc(strip(P.text))}${P.bullets ? ' ' + esc(P.bullets.map(strip).join('; ')) : ''}${window.SPECPT ? SPECPT.extras(P) : ''}</span><span class="st ${c}">${w}</span><button type="button" data-point="${k}">Practise</button></div>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div>`; }).join('');
 }
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-sci]'); if (b) { SCI = b.dataset.sci; drawPick(); } });
 $('pick').addEventListener('click', e => {

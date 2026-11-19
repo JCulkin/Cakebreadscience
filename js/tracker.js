@@ -121,7 +121,7 @@
         ${t.subs.map(sb => { const sk = L + t.n + sb.l;
           return `<div class="tr-sub" data-sub="${sk}"><h3><span class="sl">${t.n}${sb.l}</span> ${esc(sb.name)} <em class="cic" data-cic="${sk}" hidden>✓ Covered in class</em>
               ${sb.name !== 'Units' && CBSSchool.SUBS[sk] && CBSSchool.qsOf(sk).length ? `<a class="tr-subgo" href="${Q}practice.html?sub=${sk}">Practise ${t.n}${sb.l} →</a>` : ''}</h3>
-            ${sb.points.map(p => row(p, sk)).join('')}</div>`; }).join('')}
+            ${sb.points.map(p => (window.SPECPT ? SPECPT.heading(p) : '') + row(p, sk)).join('')}</div>`; }).join('')}
       </section>`).join('')}`;
     root.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { FILTER = b.dataset.f; root.querySelectorAll('[data-f]').forEach(x => x.classList.toggle('on', x === b)); applyFilter(); });
     root.addEventListener('click', e => {
@@ -135,7 +135,7 @@
     const groups = {}; res.forEach(([kind, title, url]) => (groups[kind] = groups[kind] || []).push(`<a href="${esc(url)}">${esc(title)}</a>`));
     return `<div class="tr-pt" id="${k}" data-k="${k}" data-sub="${sk}">
       <div class="tr-main"><a class="code" href="#${k}" title="Link to this spec point">${k.slice(1)}</a>
-        <div class="txt">${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}</div></div>
+        <div class="txt">${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</div></div>
       <div class="tr-side">
         <span class="pill" data-pill></span>
         <div class="conf" role="group" aria-label="How sure do you feel?"><button type="button" data-conf="1" title="Not yet">Not yet</button><button type="button" data-conf="2" title="Unsure">Unsure</button><button type="button" data-conf="3" title="Confident">Confident</button></div>

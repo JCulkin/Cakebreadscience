@@ -63,7 +63,7 @@ function drawTree() {
           if (p.h && p.h !== lastH) { h = `<li class="pthead">${esc(p.h)}</li>`; lastH = p.h; }
           return h + `<li><label class="pt ${n ? '' : 'empty'}"><input type="checkbox" data-key="${p.key}" ${SEL.has(p.key) ? 'checked' : ''}>
             <span class="pid">${p.id}</span>
-            <span class="ptx">${esc(p.text)}${p.eq ? `<span class="eq">${esc(p.eq)}</span>` : ''}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${p.detail ? `<span class="det">${esc(p.detail)}</span>` : ''}</span>
+            <span class="ptx">${esc(p.text)}${p.eq ? `<span class="eq">${esc(p.eq)}</span>` : ''}${p.note ? `<span class="det"><i>Note: ${esc(p.note)}</i></span>` : ''}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${p.detail ? `<span class="det">${esc(p.detail)}</span>` : ''}</span>
             ${pill(n)}</label></li>`;
         }).join('');
         return node('sub', bid, `(${sb.l})`, sb.name, nodeKeys('sub', sb), `<ul class="points">${pts}</ul>`);
