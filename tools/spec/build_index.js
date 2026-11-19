@@ -75,6 +75,9 @@ for (const s of LJ.subjects) for (const sec of s.sections) for (const t of sec.t
 }
 
 /* ---- worksheets ---- */
+// sheets listed on worksheets/archive.html are retired: no tracker links to them (worksheets chat, 19 Nov)
+const ARCHIVED = new Set(fs.existsSync(path.join(ROOT, 'worksheets', 'archive.html'))
+  ? [...fs.readFileSync(path.join(ROOT, 'worksheets', 'archive.html'), 'utf8').matchAll(/href="((?:biology|chemistry|physics)\/[^"#?]+\.html)"/g)].map(m => m[1]) : []);
 for (const subj of Object.keys(L)) {
   const base = path.join(ROOT, 'worksheets', subj);
   // worksheets/{subj}/*.html plus the KS4 / KS3 sets in worksheets/{subj}/ks4|ks3/
@@ -85,6 +88,7 @@ for (const subj of Object.keys(L)) {
     for (const f of fs.readdirSync(dir).sort()) if (f.endsWith('.html') && !f.endsWith('_ms.html')) files.push(sub ? `${sub}/${f}` : f);
   }
   for (const f of files) {
+    if (ARCHIVED.has(`${subj}/${f}`)) continue;
     const h = fs.readFileSync(path.join(base, f), 'utf8');
     let spec = (h.match(/class="(?:spec-ref|ps-spec)"[^>]*>\s*([\d.,\s–\-—]+)/) || [])[1];
     if (!spec) { const m = h.match(/spec points ([\d.]+) (?:to|–) ([\d.]+)/i); if (m) spec = `${m[1]}–${m[2]}`; }
