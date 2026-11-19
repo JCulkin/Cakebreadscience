@@ -238,7 +238,7 @@ async function drawW() {
   const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.wfilter];
   const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', `All (${S.length})`]];
   const NAMES = { biology: 'Biology', chemistry: 'Chemistry', physics: 'Physics', maths: 'Maths', 'cross-curricular': 'Cross-curricular' };
-  const KIND = { sheet: 'Worksheet', practice: 'Practice sheet', challenge: 'Challenge sheet', KS4: 'KS4 worksheet', KS3: 'KS3 worksheet' };
+  const KIND = { sheet: 'Worksheet', practice: 'Practice sheet', challenge: 'Challenge sheet', KS4: 'KS4 worksheet', KS3: 'KS3 worksheet', 'KS4 Single Award': 'KS4 worksheet · Single Award version' };
   const groups = Object.keys(NAMES).map(sub => {
     const rows = S.filter(s => s.subj === sub && want(sOf(s)));
     const all = S.filter(s => s.subj === sub), ok = all.filter(s => sOf(s) === 'ok').length;

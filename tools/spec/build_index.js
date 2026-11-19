@@ -89,6 +89,7 @@ for (const subj of Object.keys(L)) {
   }
   for (const f of files) {
     if (ARCHIVED.has(`${subj}/${f}`)) continue;
+    if (f.endsWith('_sa.html')) continue;   // Single Award twin of a sheet (worksheets chat): the worksheets home links it, trackers keep the Double Award one
     const h = fs.readFileSync(path.join(base, f), 'utf8');
     let spec = (h.match(/class="(?:spec-ref|ps-spec)"[^>]*>\s*([\d.,\s–\-—]+)/) || [])[1];
     if (!spec) { const m = h.match(/spec points ([\d.]+) (?:to|–) ([\d.]+)/i); if (m) spec = `${m[1]}–${m[2]}`; }

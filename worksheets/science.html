@@ -24,6 +24,21 @@
         .level.practice.bio { background:#2e8b4a; } .level.challenge.bio { background:#004d1a; }
         .rev { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:#8a5a00; background:#fff1c9; border:1px solid #e3bd52; padding:0 6px; margin-left:8px; }
         [hidden] { display: none !important; }
+        /* Single / Double Award: data-c on a row = da (has a Single Award twin) · sa (the twin) · skip (Double Award only).
+           body.c-da (default) hides sa rows; body.c-sa hides da + skip rows; body.c-admin shows everything with chips. */
+        .cchip { font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.6px; padding:1px 6px; margin-left:8px; border:1.5px solid currentColor; white-space:nowrap; }
+        .cchip.sa { margin:0 8px 0 0; color:#fff; background:#5b2a86; border-color:#5b2a86; }
+        .cchip.da { color:#111; } .cchip.end { color:#5b2a86; }
+        .cchip.adm, .cchip.sa-too, .admbar { display:none; }
+        body.c-admin .cchip.adm, body.c-admin .cchip.sa-too, body.c-sa .cchip.sa-too { display:inline-block; }
+        body.c-admin .admbar { display:flex; }
+        body.c-da [data-c="sa"], body.c-sa [data-c="da"], body.c-sa [data-c="skip"] { display:none; }
+        body.c-sa [data-c="sa"] a { padding-left:0; } body.c-sa .cchip.sa { display:none; }
+        body.c-admin [data-c="sa"] a { padding-left:28px; }
+        body.c-admin [data-c="sa"] .sa-name { color:#555; }
+        .admbar { align-items:center; gap:6px; flex-wrap:wrap; margin:8px 0 0; font-size:13px; color:#555; }
+        .admbar button { font:700 13px 'Barlow Condensed','Arial Narrow',Arial,sans-serif; text-transform:uppercase; letter-spacing:.6px; border:1.5px solid #111; background:#fff; padding:4px 10px; cursor:pointer; }
+        .admbar button.on { background:#111; color:#eeeae0; }
         .lvbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin:16px 0 4px; padding:12px 16px; background:#fff; border:2px solid #111; box-shadow:0 3px 0 #111; }
         .lvbar b { font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif; font-size:24px; text-transform:uppercase; }
         .lvbar #lvWho { color:#555; font-weight:600; }
@@ -34,7 +49,7 @@
         .archive-link { display:block; margin: 22px 0 6px; font-weight:600; color:#555; }
     </style>
 </head>
-<body>
+<body class="c-da">
     <div class="container">
         <a href="../index.html" class="back-link">&larr; Back to Main Menu</a>
 
@@ -47,6 +62,7 @@
             <div><b id="lvName">KS4 worksheets</b> <span id="lvWho">· Years 10 and 11</span><div class="lvnote" id="lvNote">Sign in to open your year's worksheets automatically.</div></div>
             <button type="button" id="lvSwitch" class="lvbtn">KS3 worksheets →</button>
         </div>
+        <div class="admbar" id="admbar"><span>Admin: view as</span><button type="button" data-v="admin" class="on">Both courses</button><button type="button" data-v="da">Double Award student</button><button type="button" data-v="sa">Single Award student</button></div>
         <p class="intro" id="lvIntro"></p>
 
         <div class="resources" data-level="ks4">
@@ -57,8 +73,9 @@
                 <div class="resource-list">
                     <div class="topic-group physics">
                         <div class="topic-title">Topic 3 — Waves</div>
-                        <div class="resource-item"><a href="physics/ks4/3b2_wave_speed.html"><span>3b2 — Wave speed and frequency</span><span class="spec-text">3.5–3.7</span></a></div>
-                        <div class="resource-item layer"><a href="physics/3b_wave_speed_challenge.html"><span><span class="level challenge">Challenge</span>Wave Speed: Multi-step Problems</span><span class="spec-text">1.4, 3.5–3.7</span></a></div>
+                        <div class="resource-item" data-c="da"><a href="physics/ks4/3b2_wave_speed.html"><span>3b2 — Wave speed and frequency<span class="cchip da adm">Double Award</span></span><span class="spec-text">3.5–3.7</span></a></div>
+                        <div class="resource-item layer" data-c="sa"><a href="physics/ks4/3b2_wave_speed_sa.html"><span><span class="cchip sa">Single Award</span><span class="sa-name">3b2 — Wave speed and frequency</span><span class="rev">Under review</span></span><span class="spec-text">3.1, 3.5, 3.7</span></a></div>
+                        <div class="resource-item layer" data-c="skip"><a href="physics/3b_wave_speed_challenge.html"><span><span class="level challenge">Challenge</span>Wave Speed: Multi-step Problems<span class="cchip da adm">Double Award only</span></span><span class="spec-text">1.4, 3.5–3.7</span></a></div>
                     </div>
                 </div>
             </div>
@@ -69,21 +86,24 @@
                 <div class="resource-list">
                     <div class="topic-group chemistry">
                         <div class="topic-title">Topic 1 — Principles of Chemistry</div>
-                        <div class="resource-item"><a href="chemistry/ks4/1a_states_of_matter.html"><span>1a — States of matter<span class="rev">Under review</span></span><span class="spec-text">1.1–1.4</span></a></div>
+                        <div class="resource-item"><a href="chemistry/ks4/1a_states_of_matter.html"><span>1a — States of matter<span class="cchip end sa-too">Single Award: skip the last section</span><span class="rev">Under review</span></span><span class="spec-text">1.1–1.4</span></a></div>
                         <div class="resource-item"><a href="chemistry/ks4/1b_elements_compounds_mixtures.html"><span>1b — Elements, compounds and mixtures<span class="rev">Under review</span></span><span class="spec-text">1.8–1.13</span></a></div>
                         <div class="resource-item"><a href="chemistry/ks4/1c_atomic_structure.html"><span>1c — Atomic structure<span class="rev">Under review</span></span><span class="spec-text">1.14–1.17</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1d_periodic_table.html"><span>1d — The periodic table<span class="rev">Under review</span></span><span class="spec-text">1.18–1.24</span></a></div>
+                        <div class="resource-item" data-c="da"><a href="chemistry/ks4/1d_periodic_table.html"><span>1d — The periodic table<span class="cchip da adm">Double Award</span><span class="rev">Under review</span></span><span class="spec-text">1.18–1.24</span></a></div>
+                        <div class="resource-item layer" data-c="sa"><a href="chemistry/ks4/1d_periodic_table_sa.html"><span><span class="cchip sa">Single Award</span><span class="sa-name">1d — The periodic table</span><span class="rev">Under review</span></span><span class="spec-text">1.18, 1.21</span></a></div>
                         <div class="resource-item"><a href="chemistry/ks4/1e1_balancing_equations.html"><span>1e1 — Balancing equations and relative formula mass<span class="rev">Under review</span></span><span class="spec-text">1.25, 1.26</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1e2_moles_1.html"><span>1e2 — Moles 1<span class="rev">Under review</span></span><span class="spec-text">1.27, 1.28</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1e3_reacting_masses.html"><span>1e3 — Reacting masses and percentage yield<span class="rev">Under review</span></span><span class="spec-text">1.29, 1.30</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1e4_empirical_formulae.html"><span>1e4 — Empirical and molecular formulae<span class="rev">Under review</span></span><span class="spec-text">1.31–1.33, 1.36</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1f_bonding_electrons_charge.html"><span>1f — Bonding: electrons and charge</span><span class="spec-text">1.37–1.40, 1.44–1.46</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1g_structure_properties.html"><span>1g — Structure and properties<span class="rev">Under review</span></span><span class="spec-text">1.41–1.43, 1.47–1.51</span></a></div>
-                        <div class="resource-item"><a href="chemistry/ks4/1R_review.html"><span>1R — Review: principles of chemistry<span class="rev">Under review</span></span><span class="spec-text">1.1–1.51</span></a></div>
+                        <div class="resource-item" data-c="skip"><a href="chemistry/ks4/1e2_moles_1.html"><span>1e2 — Moles 1<span class="cchip da adm">Double Award only</span><span class="rev">Under review</span></span><span class="spec-text">1.27, 1.28</span></a></div>
+                        <div class="resource-item" data-c="skip"><a href="chemistry/ks4/1e3_reacting_masses.html"><span>1e3 — Reacting masses and percentage yield<span class="cchip da adm">Double Award only</span><span class="rev">Under review</span></span><span class="spec-text">1.29, 1.30</span></a></div>
+                        <div class="resource-item" data-c="skip"><a href="chemistry/ks4/1e4_empirical_formulae.html"><span>1e4 — Empirical and molecular formulae<span class="cchip da adm">Double Award only</span><span class="rev">Under review</span></span><span class="spec-text">1.31–1.33, 1.36</span></a></div>
+                        <div class="resource-item" data-c="da"><a href="chemistry/ks4/1f_bonding_electrons_charge.html"><span>1f — Bonding: electrons and charge<span class="cchip da adm">Double Award</span></span><span class="spec-text">1.37–1.40, 1.44–1.46</span></a></div>
+                        <div class="resource-item layer" data-c="sa"><a href="chemistry/ks4/1f_bonding_electrons_charge_sa.html"><span><span class="cchip sa">Single Award</span><span class="sa-name">1f — Bonding: electrons and charge</span><span class="rev">Under review</span></span><span class="spec-text">1.37–1.39, 1.44</span></a></div>
+                        <div class="resource-item" data-c="da"><a href="chemistry/ks4/1g_structure_properties.html"><span>1g — Structure and properties<span class="cchip da adm">Double Award</span><span class="rev">Under review</span></span><span class="spec-text">1.41–1.43, 1.47–1.51</span></a></div>
+                        <div class="resource-item layer" data-c="sa"><a href="chemistry/ks4/1g_structure_properties_sa.html"><span><span class="cchip sa">Single Award</span><span class="sa-name">1g — Structure and properties</span><span class="rev">Under review</span></span><span class="spec-text">1.41–1.42, 1.47, 1.49</span></a></div>
+                        <div class="resource-item"><a href="chemistry/ks4/1R_review.html"><span>1R — Review: principles of chemistry<span class="cchip end sa-too">Single Award: skip the last section</span><span class="rev">Under review</span></span><span class="spec-text">1.1–1.51</span></a></div>
                     </div>
                     <div class="topic-group chemistry">
                         <div class="topic-title">Topic 2 — Inorganic Chemistry</div>
-                        <div class="resource-item"><a href="chemistry/ks4/1e5_moles_2.html"><span>1e5 — Moles 2: mixed calculations<span class="rev">Under review</span></span><span class="spec-text">1.27–1.33</span></a></div>
+                        <div class="resource-item" data-c="skip"><a href="chemistry/ks4/1e5_moles_2.html"><span>1e5 — Moles 2: mixed calculations<span class="cchip da adm">Double Award only</span><span class="rev">Under review</span></span><span class="spec-text">1.27–1.33</span></a></div>
                     </div>
                 </div>
             </div>
@@ -99,11 +119,11 @@
                     </div>
                     <div class="topic-group biology">
                         <div class="topic-title">Topic 2 — Structure and Functions in Living Organisms</div>
-                        <div class="resource-item"><a href="biology/ks4/2a_cells_organisation.html"><span>2a — Cells and levels of organisation<span class="rev">Under review</span></span><span class="spec-text">2.1–2.4</span></a></div>
+                        <div class="resource-item"><a href="biology/ks4/2a_cells_organisation.html"><span>2a — Cells and levels of organisation<span class="cchip end sa-too">Single Award: skip the last section</span><span class="rev">Under review</span></span><span class="spec-text">2.1–2.4</span></a></div>
                         <div class="resource-item"><a href="biology/ks4/2c1_molecules_food_tests.html"><span>2c1 — Biological molecules and food tests<span class="rev">Under review</span></span><span class="spec-text">2.7–2.9</span></a></div>
                         <div class="resource-item"><a href="biology/ks4/2c2_enzymes.html"><span>2c2 — Enzymes<span class="rev">Under review</span></span><span class="spec-text">2.10–2.13</span></a></div>
-                        <div class="resource-item"><a href="biology/ks4/2d_diffusion_osmosis.html"><span>2d — Diffusion, osmosis and active transport<span class="rev">Under review</span></span><span class="spec-text">2.15–2.17</span></a></div>
-                        <div class="resource-item"><a href="biology/ks4/2f_respiration.html"><span>2f — Respiration<span class="rev">Under review</span></span><span class="spec-text">2.34–2.39</span></a></div>
+                        <div class="resource-item"><a href="biology/ks4/2d_diffusion_osmosis.html"><span>2d — Diffusion, osmosis and active transport<span class="cchip end sa-too">Single Award: skip the last section</span><span class="rev">Under review</span></span><span class="spec-text">2.15–2.17</span></a></div>
+                        <div class="resource-item"><a href="biology/ks4/2f_respiration.html"><span>2f — Respiration<span class="cchip end sa-too">Single Award: skip the last section</span><span class="rev">Under review</span></span><span class="spec-text">2.34–2.39</span></a></div>
                     </div>
                 </div>
             </div>
@@ -151,6 +171,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="/js/account.js" data-bar></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="/js/year.js"></script>
 <script>
 /* KS4 / KS3 switch (worksheets chat, 19 Nov). Default: the signed-in student's year (Years 8-9 → KS3, 10-11 → KS4);
@@ -177,6 +199,24 @@
     if (window.firebase && firebase.auth) firebase.auth().onAuthStateChanged(u => { document.getElementById('lvNote').hidden = !!u; });
   } catch (e) {}
   window.addEventListener('hashchange', () => { if (/^#ks[34]$/.test(location.hash)) { chosen = location.hash.slice(1); show(chosen); } });
+})();
+/* Single / Double Award (worksheets chat, 19 Nov). Admin → both, with chips, plus a "view as" switch. A student whose
+   users/{uid}.course is 'SA' → the Single Award versions in place of the Double Award ones, Double-Award-only sheets hidden.
+   Everyone else (signed out, Double Award, read failed) → Double Award. Reads the student's own users doc only. */
+(function () {
+  const set = v => { document.body.classList.remove('c-da', 'c-sa', 'c-admin'); document.body.classList.add('c-' + v);
+    document.querySelectorAll('#admbar button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+    document.querySelectorAll('.topic-group').forEach(g => { const it = g.querySelectorAll('.resource-item');
+      g.hidden = it.length > 0 && [...it].every(r => getComputedStyle(r).display === 'none'); }); };
+  document.querySelectorAll('#admbar button').forEach(b => b.onclick = () => set(b.dataset.v));
+  try {
+    firebase.auth().onAuthStateChanged(u => {
+      if (!u) return set('da');
+      if ((window.ADMIN_EMAILS || []).includes(u.email)) return set('admin');
+      firebase.firestore().collection('users').doc(u.uid).get()
+        .then(d => set(d.exists && (d.data() || {}).course === 'SA' ? 'sa' : 'da')).catch(() => set('da'));
+    });
+  } catch (e) {}
 })();
 </script>
 </body>

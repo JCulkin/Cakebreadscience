@@ -24,7 +24,7 @@ for (const folder of FOLDERS) {
     const title = ((html.match(/<title>([^<]*)<\/title>/i) || [])[1] || f).replace(/\s*[|–-]\s*Cakebread Science\s*$/i, '').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ').replace(/&#39;|&apos;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').trim();
     out.push({
       p, t: title, subj: folder,
-      kind: f.startsWith('ks4/') ? 'KS4' : f.startsWith('ks3/') ? 'KS3' : /_challenge\b/.test(f) ? 'challenge' : /_practice\b/.test(f) ? 'practice' : 'sheet',
+      kind: f.endsWith('_sa.html') ? 'KS4 Single Award' : f.startsWith('ks4/') ? 'KS4' : f.startsWith('ks3/') ? 'KS3' : /_challenge\b/.test(f) ? 'challenge' : /_practice\b/.test(f) ? 'practice' : 'sheet',
       live: linked.has(p),
       ms: fs.existsSync(path.join(dir, ms)) ? `${folder}/${ms}` : null
     });
