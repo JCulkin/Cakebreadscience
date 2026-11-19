@@ -217,7 +217,7 @@ async function load() {
     const st = a ? a.stats : { securedP: 0, securedQ: 0, per: { Biology: 0, Chemistry: 0, Physics: 0 } };
     students.push({
       uid: doc.id, raw: u, prog, game, a,
-      name: u.displayName || u.email || doc.id, email: u.email || '', year: [8, 9, 10, 11].includes(u.year) ? u.year : 0,
+      name: u.displayName || u.email || doc.id, email: u.email || '', year: [8, 9, 10, 11].includes(u.year) ? u.year : 0, course: u.course === 'SA' ? 'SA' : '',
       nick: game.nick && !QE.checkName(game.nick) ? game.nick : '', badNick: game.nick && game.nick !== '-' && QE.checkName(game.nick) ? game.nick : '',
       last: times.length ? Math.max(...times) : 0,
       xp: prog ? prog.xp || 0 : 0, pts: st.securedP, secQ: st.securedQ, per: st.per,
@@ -348,6 +348,7 @@ function drawBuild() {
    Shown + order saved in this browser (localStorage cbs.admin.cols). Student name is always first. */
 const S_COLS = [
   { k: 'year', t: 'Year', n: 1, on: 1, td: s => s.year || '–' },
+  { k: 'course', t: 'Course', on: 1, td: s => s.course === 'SA' ? '<b>Single</b>' : 'Double', tip: 'Science (Single Award) students only see Single Award content. Set it on the student (click their name).' },
   { k: 'last', t: 'Last on', on: 1, td: s => ago(s.last), cls: 'small' },
   { k: 'level', t: 'Level', n: 1, on: 1, td: s => s.level || '–' },
   { k: 'xp', t: 'XP', n: 1, on: 1, td: s => s.xp },
@@ -407,6 +408,7 @@ function openStudent(uid) {
   const P = s.prog, missed = P ? Object.entries(P.q || {}).filter(([, x]) => x.n - (x.r || 0) >= 1).sort((a, b) => (b[1].n - (b[1].r || 0)) - (a[1].n - (a[1].r || 0))).slice(0, 8) : [];
   $('dBody').innerHTML = `<h2>${esc(s.name)}</h2><div class="small muted">${esc(s.email)} · last on ${ago(s.last)}</div>
     <div class="acts" style="align-items:center"><b>Year</b><select id="dYear" style="font:inherit;padding:4px 8px;border:2px solid var(--ink)"><option value="">not chosen</option>${[8, 9, 10, 11].map(y => `<option value="${y}"${s.year === y ? ' selected' : ''}>Year ${y}</option>`).join('')}</select><span class="small muted" id="dYearMsg">${s.raw.yearBy === 'admin' ? 'set by you' : s.year ? 'chosen by the student' : ''}</span></div>
+    <div class="acts" style="align-items:center"><b>Course</b><select id="dCourse" style="font:inherit;padding:4px 8px;border:2px solid var(--ink)"><option value="">Science (Double Award)</option><option value="SA"${s.course === 'SA' ? ' selected' : ''}>Science (Single Award)</option></select><span class="small muted" id="dCourseMsg">${s.course === 'SA' ? 'they only see Single Award spec points, questions and flashcards' : ''}</span></div>
     <div class="card" style="margin-top:12px"><h3 style="margin-top:0">Public name</h3>
       <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Cakebread Questing name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
       ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
@@ -435,6 +437,9 @@ function openStudent(uid) {
   $('dYear').onchange = async e => { const y = e.target.value ? +e.target.value : null;
     try { await DB.collection('users').doc(s.uid).set({ year: y, yearAt: Date.now(), yearBy: 'admin' }, { merge: true }); s.year = y || 0; s.raw.year = y; s.raw.yearBy = 'admin'; $('dYearMsg').textContent = 'Saved ✓'; drawStudents(); }
     catch (err) { $('dYearMsg').textContent = 'Could not save: ' + (err.code || err.message); } };
+  $('dCourse').onchange = async e => { const c = e.target.value === 'SA' ? 'SA' : null;
+    try { await DB.collection('users').doc(s.uid).set({ course: c, courseAt: Date.now() }, { merge: true }); s.course = c || ''; s.raw.course = c; $('dCourseMsg').textContent = 'Saved ✓ They switch next time they open a page.'; drawStudents(); }
+    catch (err) { $('dCourseMsg').textContent = 'Could not save: ' + (err.code || err.message); } };
   $('ren').onclick = () => { const n = QE.cleanName($('nn').value), bad = QE.checkName(n); if (bad) return msg(bad); setNick(n); };
   $('clr').onclick = () => setNick('-');
   if ($('hid')) $('hid').onclick = async () => {

@@ -865,6 +865,7 @@ h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:90
     <script src="/interactive/spec-quiz/questions.js"></script>
     <script src="/interactive/spec-quiz/gens.js"></script>
     <script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/course.js"></script>
     <script src="/interactive/spec-quiz/cards.js"></script>
     <script src="/interactive/spec-quiz/questing-engine.js"></script>
     <script src="/js/admin-config.js"></script>
@@ -1197,7 +1198,8 @@ h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:90
                 const response = await fetch(filePath);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const cards = await response.json();
-                return cards.map(c => ({ id: c.id, front: processHtmlWithImages(c.front), back: processHtmlWithImages(c.back), spec: c.spec, topic: c.topic }));
+                /* Single Award students only get cards on their course's points (/js/course.js) */
+                return cards.filter(c => !window.CBSCourse || CBSCourse.has(c.spec)).map(c => ({ id: c.id, front: processHtmlWithImages(c.front), back: processHtmlWithImages(c.back), spec: c.spec, topic: c.topic }));
             } catch (error) {
                 console.error(`[DECK] could not load ${filePath}:`, error);
                 return [];

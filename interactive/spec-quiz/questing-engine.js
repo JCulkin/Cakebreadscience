@@ -31,6 +31,8 @@ const QE = (() => {
   const RUST_DAYS = 21, MISSION_LEN = 10;
 
   /* ---------- spec ---------- */
+  /* Single Award students (/js/course.js, set by the admin): SPEC, QUESTIONS and CARD_COUNTS are trimmed to their course first */
+  if (window.CBSCourse) CBSCourse.prune();
   const POINTS = {};
   SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => sb.points.forEach(p => {
     p.key = s.name[0] + p.id; POINTS[p.key] = { key: p.key, id: p.id, text: p.text, subject: s.name, topic: t.n, sub: sb.l };
@@ -223,7 +225,7 @@ const QE = (() => {
     FB.user = u; FB.known = true;
     const before = sig();
     if (!u) {
-      ls.del(UID_KEY); uid0 = null;
+      ls.del(UID_KEY); uid0 = null; if (window.CBSCourse) CBSCourse.update(null, null);
       PROG = readProg(null); GAME = readGame(null); syncLookIntoGame(); writeLocal(); FB.status = 'local';
     } else {
       FB.status = 'loading'; emit();
@@ -237,6 +239,7 @@ const QE = (() => {
         ls.del(progKey(null)); ls.del(gameKey(null));
         ls.set(UID_KEY, u.uid); uid0 = u.uid;
         writeLocal(); await saveRemote();
+        if (window.CBSCourse) CBSCourse.update(u.uid, data.course);
       } catch (e) {
         console.error('Questing load failed', e);
         PROG = mergeProg(readProg(u.uid), readProg(null)); GAME = mergeGame(readGame(u.uid), readGame(null));

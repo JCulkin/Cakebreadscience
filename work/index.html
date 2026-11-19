@@ -55,6 +55,7 @@ h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
 <script src="/interactive/cell-game/cells.js"></script>
 <script src="/interactive/spec-quiz/diagrams.js"></script>
 <script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/js/year.js"></script>
@@ -97,10 +98,13 @@ function head() {
 function practise() {
   const p = CBSSchool.progress(QE.prog, A);
   $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>${p.got} of ${p.target}</b> different questions right since it was set${p.done ? ' · Done ✓' : ''}.</p>
-    <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
+    <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).filter(onCourse).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
 }
+/* Single Award students (/js/course.js): only chips for spec points and sections on their course */
+const onCourse = k => !window.CBSCourse || !CBSCourse.sa || (/\./.test(k) ? CBSCourse.has(k) : QE.allSubs().some(x => x.key === k));
 function intro() {
   const qids = (A.qids || []).filter(id => QBY[id]), done = W ? Object.keys(W.ans || {}).length : 0;
+  if (!qids.length && window.CBSCourse && CBSCourse.sa) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p></div>`; return; }
   $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Cakebread Questing.</p>
     ${done ? `<p style="margin-top:8px">You've answered ${done} of ${qids.length}. Carry on where you stopped.</p>` : ''}
     <p style="margin-top:14px"><button class="btn" id="go">${done ? 'Carry on →' : 'Start the test →'}</button></p></div>`;

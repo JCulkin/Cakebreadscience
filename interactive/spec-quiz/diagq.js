@@ -142,8 +142,8 @@ var DQ = (function () {
   function make(id, seed) {
     const e = BY[id]; if (!e || !ok()) return null;
     if (seed) { const d = DG.make(e.maker, e.hard, seed); return { q: d.q, o: d.o, x: d.x, svg: d.svg, seed, title: d.title, kind: d.kind }; }
-    const s0 = DG.newSeed();
-    for (let k = 0; k < 800; k++) { const s = seedAt(s0, k), d = DG.make(e.maker, e.hard, s); if (d.spec === e.spec && e.rx.test(strip(d.q))) return { q: d.q, o: d.o, x: d.x, svg: d.svg, seed: s, title: d.title, kind: d.kind }; }
+    const s0 = DG.newSeed(), av = window.CBSCourse && CBSCourse.dqAvoid; /* Single Award students: skip drawings that go beyond their course */
+    for (let k = 0; k < 800; k++) { const s = seedAt(s0, k), d = DG.make(e.maker, e.hard, s); if (d.spec === e.spec && e.rx.test(strip(d.q)) && !(av && av.test(strip(d.q) + ' ' + d.o.map(strip).join(' ')))) return { q: d.q, o: d.o, x: d.x, svg: d.svg, seed: s, title: d.title, kind: d.kind }; }
     return null;
   }
   /* register in the bank: gen() is called by inst() wherever a question is built */

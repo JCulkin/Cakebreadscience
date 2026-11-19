@@ -199,6 +199,7 @@ table.st th{background:var(--soft)}
 <script src="/interactive/cell-game/cells.js"></script>
 <script src="diagrams.js"></script>
 <script src="diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
@@ -525,7 +526,12 @@ const SPELLS = BL.SPELL_INFO.map(sp => Object.assign({}, sp, SPELL_FN[sp.id])); 
 const FLOOR_COINS = BL.FLOOR_COINS;
 function delve(k) {
   const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
-  const all = QUESTIONS.filter(q => keys.has(q.s)), sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  let all = QUESTIONS.filter(q => keys.has(q.s));
+  /* a Single Award course (/js/course.js) can leave a dungeon's theme thin: top up from the same topics, then the same science */
+  if (all.length < 12) { const tops = new Set(P.subs.map(x => x.replace(/[a-z]+$/, ''))), Ls = new Set(P.subs.map(x => x[0]));
+    all = all.concat(QUESTIONS.filter(q => !keys.has(q.s) && tops.has(q.s.split('.')[0])));
+    if (all.length < 12) all = all.concat(QUESTIONS.filter(q => !keys.has(q.s) && !tops.has(q.s.split('.')[0]) && Ls.has(q.s[0]))); }
+  const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const dgOk = typeof DQ !== 'undefined' && DQ.ok(), cap = list => { let n = 0; return list.filter(q => !q.dg || (dgOk && n++ < 2)); };   // at most 2 diagram questions of each sort per run
   const easy = cap(sh(all.filter(q => !q.hard))), hard = cap(sh(all.filter(q => q.hard)));
   const take = n => { const f = n >= 2 ? hard.splice(0, 2).concat(easy.splice(0, 2)) : n === 1 ? hard.splice(0, 1).concat(easy.splice(0, 3)) : easy.splice(0, 4); return sh(f.concat(easy.splice(0, 4 - f.length))).map(QE.inst); };

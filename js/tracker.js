@@ -111,7 +111,7 @@
     const S = specOf(SUBJ[subject]), L = LET[subject];
     if (!FILTERS.some(f => f[0] === FILTER)) FILTER = 'all';
     root.innerHTML = `
-      <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE Science (Double Award)</div>
+      <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE ${window.CBSCourse ? CBSCourse.label : 'Science (Double Award)'}</div>
         <h1>${SUBJ[subject]}</h1>
         <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it: get its questions right on two different days in <a href="${Q}practice.html">Practice Questions</a> or Questing, or secure its flashcards. Your own rating just records how you feel.</p></div>
       <div class="tr-sum" id="trSum"></div>
@@ -184,8 +184,8 @@
 
   /* ---------- overview page ---------- */
   function drawOverview() {
-    root.innerHTML = `<div class="tr-head"><div class="tr-kick">Edexcel International GCSE · Science (Double Award) and Maths</div><h1>Spec Trackers</h1>
-      <p class="tr-lede">Every spec point in one place, with how much you've proved, how sure you feel, and everything on the site that teaches it.</p></div>
+    root.innerHTML = `<div class="tr-head"><div class="tr-kick">Edexcel International GCSE · ${window.CBSCourse ? CBSCourse.label : 'Science (Double Award)'} and Maths</div><h1>Spec Trackers</h1>
+      <p class="tr-lede">Every spec point in one place, with how much you've proved, how sure you feel, and everything on the site that teaches it.${window.CBSCourse && CBSCourse.sa ? ` Your course is <b>Science (Single Award)</b>: only its spec points are shown. The exam is ${CBSCourse.exam}.` : ''}</p></div>
       <div class="ov">${['biology', 'chemistry', 'physics'].map(s => { const c = counts(LET[s]), q = c.total - c.na;
         return `<a class="ovc s-${s}" href="${s}.html"><h2>${SUBJ[s]}</h2>${bar(c)}<p><b>${c.secured}</b> of ${q} secured · ${c.learning} learning${c.rusty ? ` · ${c.rusty} rusty` : ''}</p>
           <p class="muted">${c.conf} rated confident${c.check ? ` · <b>${c.check} to check</b>` : ''}</p><span class="go">Open ${SUBJ[s]} →</span></a>`; }).join('')}
