@@ -135,7 +135,11 @@
             <div class="resource-section">
                 <div class="section-header physics">⚡ Physics</div>
                 <div class="resource-list">
-                    <div class="topic-group physics"><div class="topic-title">New worksheets coming soon</div></div>
+                    <div class="topic-group physics">
+                        <div class="topic-title">Topic 8 — Astrophysics</div>
+                        <div class="resource-item"><a href="physics/ks3/8b_space_stars.html"><span>8b — Space and stars<span class="rev">Under review</span></span><span class="spec-text">8.2–8.10</span></a></div>
+                        <div class="resource-item"><a href="physics/ks3/8R_review.html"><span>8R — Review: astrophysics<span class="rev">Under review</span></span><span class="spec-text">8.2–8.10</span></a></div>
+                    </div>
                 </div>
             </div>
 
@@ -209,6 +213,9 @@
     document.querySelectorAll('.topic-group').forEach(g => { const it = g.querySelectorAll('.resource-item');
       g.hidden = it.length > 0 && [...it].every(r => getComputedStyle(r).display === 'none'); }); };
   document.querySelectorAll('#admbar button').forEach(b => b.onclick = () => set(b.dataset.v));
+  /* preview deploys (deploy-preview-N--…netlify.app) and localhost: admin view, since signing in there is awkward (user, 19 Nov) */
+  const preview = /--cakebreadscience\.netlify\.app$|^localhost$|^127\./.test(location.hostname);
+  if (preview) { set('admin'); return; }
   try {
     firebase.auth().onAuthStateChanged(u => {
       if (!u) return set('da');
