@@ -53,7 +53,10 @@
             {
               "code": "2d",
               "title": "Movement of substances into and out of cells",
-              "spec": "2.15–2.17"
+              "spec": "2.15–2.17",
+              "status": "draft",
+              "draftUpdated": "2026-11-19",
+              "versions": []
             },
             {
               "code": "2e",
@@ -63,7 +66,10 @@
             {
               "code": "2f",
               "title": "Respiration",
-              "spec": "2.34–2.39"
+              "spec": "2.34–2.39",
+              "status": "draft",
+              "draftUpdated": "2026-11-19",
+              "versions": []
             },
             {
               "code": "2g",

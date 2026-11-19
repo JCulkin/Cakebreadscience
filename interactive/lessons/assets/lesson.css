@@ -337,3 +337,12 @@ table.cmpcell td.no{background:#fde3e3;color:#b71c1c}
 .ps .gaps{line-height:1.9}
 .ps .gaps u{text-decoration:none;color:var(--acc);font-weight:900;border-bottom:4px solid var(--acc);padding:0 6px}
 .ps.containw .galrow img{object-fit:contain;background:#fff}
+/* fractions and equations (Biology 2d, 2f) */
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 6px}
+.frac b:first-child{border-bottom:3px solid currentColor;padding:0 6px}
+.eqn{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0;font:800 20px 'Barlow',Arial,sans-serif}
+.eqn .term{padding:6px 12px;border:3px solid var(--c);color:var(--c);background:#fff;border-radius:8px}
+.eqn .op{font-size:1.2em;color:#111}
+.ps .eqn{font-size:46px;gap:16px;margin:18px 0}
+.ps .eqn .term{border-width:5px;padding:8px 18px}
+.ps table.aer td:nth-child(2){background:#e3f2fd}.ps table.aer td:nth-child(3){background:#f3e5f5}
