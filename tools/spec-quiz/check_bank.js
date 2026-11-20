@@ -1,15 +1,18 @@
 const fs=require('fs');const dir=process.argv[2];
 const vm=require('vm');
-for(const f of ['spec.js','questions.js','gens.js'])vm.runInThisContext(fs.readFileSync(dir+'/'+f,'utf8'),{filename:f});
+globalThis.window=globalThis;
+for(const f of ['spec.js','questions.js','gens.js','../cell-game/cells.js','diagrams.js','diagq.js'])vm.runInThisContext(fs.readFileSync(dir+'/'+f,'utf8'),{filename:f});
 const SPEC=vm.runInThisContext('SPEC'),QUESTIONS=vm.runInThisContext('QUESTIONS'),R=vm.runInThisContext('R');
 const keys=new Set();SPEC.forEach(s=>s.topics.forEach(t=>t.subs.forEach(b=>b.points.forEach(p=>keys.add(s.name[0]+p.id)))));
 let bad=0;const ids=new Set();
 for(const q of QUESTIONS){
  if(ids.has(q.id)){console.log('dup id',q.id);bad++} ids.add(q.id);
  if(!keys.has(q.s)){console.log('bad spec',q.id);bad++}
- const N=q.gen?3000:1;
+ const N=q.dg?40:q.gen?3000:1;   // diagram questions (diagq.js): 3 or 4 options, each drawing must redraw from its seed
  for(let i=0;i<N;i++){const v=q.gen?q.gen(R):q;
-  if(v.o){const o=v.o; if(o.length!==4||new Set(o).size!==4||o.some(x=>x==null||/undefined|Infinity|—/.test(x)||(/NaN/.test(x)&&q.s!=="C1.39"))){console.log('opts',q.id,JSON.stringify(o),v.q);bad++;break}}
+  if(q.dg&&!v.svg){console.log('no drawing',q.id);bad++;break}
+  if(q.dg&&DQ.make(q.id,v.seed).svg!==v.svg){console.log('not repeatable',q.id);bad++;break}
+  if(v.o){const o=v.o; if(o.length!==(q.dg&&o.length===3?3:4)||new Set(o).size!==o.length||o.some(x=>x==null||/undefined|Infinity|—/.test(x)||(/NaN/.test(x)&&q.s!=="C1.39"))){console.log('opts',q.id,JSON.stringify(o),v.q);bad++;break}}
   else if(typeof v.tf!=='boolean'){console.log('tf',q.id);bad++}
   if(/undefined|\bNaN\b(?!₃)/.test(v.q+v.x)&&q.s!=="C1.39"){console.log('text',q.id,v.q,v.x);bad++;break}}
 }

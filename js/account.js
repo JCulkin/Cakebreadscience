@@ -54,7 +54,10 @@
 .cbs-sitebar .h b{color:#00a03a}.cbs-sitebar .h img{width:28px;height:28px;object-fit:contain}
 .cbs-sitebar #cbs-account{margin-left:auto}
 @media print{.cbs-sitebar,#cbs-account{display:none!important}}
-#cbs-account .day{background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}`;
+#cbs-account .day{background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}
+#cbs-account .day.due{background:#dc2626;color:#fff;display:inline-flex;align-items:center;gap:6px}
+#cbs-account .day .bang{background:#fff;color:#dc2626;border-radius:50%;width:18px;height:18px;display:inline-grid;place-items:center;font-size:14px;line-height:1;animation:cbsbang 1.2s ease-in-out infinite alternate}
+@keyframes cbsbang{to{transform:scale(1.18)}}@media(prefers-reduced-motion:reduce){#cbs-account .day .bang{animation:none}}`;
   document.head.appendChild(css);
   const G = '<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
   let auth = null;
@@ -69,11 +72,21 @@
       const admin = (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).includes(u.email);
       box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
       box.querySelector('.out').onclick = () => auth.signOut();
+      badge();
     } else {
       box.innerHTML = `<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
       box.querySelector('.in').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .catch(e => { if (e && e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') alert('Sign-in did not work: ' + (e.message || e)); });
     }
+  }
+  /* open set work → the To do button turns red with a "!" (18 Nov, /js/openwork.js) */
+  function badge() {
+    const day = box.querySelector('.day'); if (!day) return;
+    const go = () => CBSWork.onChange(w => { const d = box.querySelector('.day'); if (!d) return;
+      if (w.n > 0) { d.classList.add('due'); d.innerHTML = `<span class="bang">!</span>To do · ${w.n}`; d.title = `${w.n} piece${w.n > 1 ? 's' : ''} of set work to do${w.late ? ` (${w.late} overdue)` : ''}`; }
+      else { d.classList.remove('due'); d.textContent = 'To do →'; d.title = ''; } });
+    if (window.CBSWork) return go();
+    const s = document.createElement('script'); s.src = '/js/openwork.js'; s.onload = go; document.head.appendChild(s);
   }
   auth.onAuthStateChanged(draw);
 })();

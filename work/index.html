@@ -52,6 +52,10 @@ h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
 <script src="/interactive/spec-quiz/spec.js"></script>
 <script src="/interactive/spec-quiz/questions.js"></script>
 <script src="/interactive/spec-quiz/gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="/interactive/spec-quiz/diagrams.js"></script>
+<script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/js/year.js"></script>
@@ -80,7 +84,7 @@ async function boot() {
   if (!QE.user) { booted = false; $('main').innerHTML = `<div class="card"><h2>Sign in</h2><p>Sign in to do the work your teacher set.</p><p style="margin-top:12px"><button class="btn" id="si">Sign in with Google</button></p></div>`; $('si').onclick = () => QE.signIn().catch(() => {}); return; }
   if (booted) return; booted = true;
   let failed = false;
-  try { A = (await within(firebase.database().ref('school/assign/' + ID).once('value'), 6000)).val(); } catch (e) { A = null; failed = true; }
+  try { A = await CBSSchool.rtGet(firebase.database(), 'school/assign/' + ID, 16000); } catch (e) { A = ((CBSSchool.cached() || {}).assign || {})[ID] || null; failed = !A; }
   if (failed) { booted = false; $('main').innerHTML = `<div class="card"><h2>Couldn't load the work</h2><p>The work your teacher set couldn't be reached just now (the school network may be blocking part of Firebase). Try reloading; if it keeps happening, tell your teacher.</p><p style="margin-top:12px"><button class="btn" onclick="location.reload()">Try again</button></p></div>`; return; }
   if (!A) { $('main').innerHTML = `<div class="card"><h2>Not found</h2><p>This piece of work doesn't exist any more. <a href="/today/">Back to your To do list</a></p></div>`; return; }
   try { W = (((await within(ref().get(), 5000)).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
@@ -93,11 +97,15 @@ function head() {
 }
 function practise() {
   const p = CBSSchool.progress(QE.prog, A);
+  if (p.none) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p></div>`; return; }
   $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>${p.got} of ${p.target}</b> different questions right since it was set${p.done ? ' · Done ✓' : ''}.</p>
-    <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
+    <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).filter(onCourse).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
 }
+/* Single Award students (/js/course.js): only chips for spec points and sections on their course */
+const onCourse = k => !window.CBSCourse || !CBSCourse.sa || (/\./.test(k) ? CBSCourse.has(k) : QE.allSubs().some(x => x.key === k));
 function intro() {
   const qids = (A.qids || []).filter(id => QBY[id]), done = W ? Object.keys(W.ans || {}).length : 0;
+  if (!qids.length && window.CBSCourse && CBSCourse.sa) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p></div>`; return; }
   $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Cakebread Questing.</p>
     ${done ? `<p style="margin-top:8px">You've answered ${done} of ${qids.length}. Carry on where you stopped.</p>` : ''}
     <p style="margin-top:14px"><button class="btn" id="go">${done ? 'Carry on →' : 'Start the test →'}</button></p></div>`;
@@ -111,12 +119,16 @@ function start() {
   QE.busy = true; show();
 }
 function show() {
-  const raw = QBY[RUN.qids[RUN.i]], q = QE.inst(raw); RUN.q = q;
-  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : QE.shuffle(q.o.map((o, j) => [o, j === 0]));
+  const raw = QBY[RUN.qids[RUN.i]]; W.seeds = W.seeds || {};
+  /* diagram questions: each student gets their own drawing; its seed is kept (W.seeds) so a reload or the teacher sees the same one */
+  const d = raw.dg && typeof DQ !== 'undefined' && W.seeds[raw.id] ? DQ.make(raw.id, W.seeds[raw.id]) : null, q = d ? { ...raw, ...d } : QE.inst(raw); RUN.q = q;
+  if (q.seed && raw.dg) W.seeds[raw.id] = q.seed;
+  let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : QE.shuffle(q.o.map((o, j) => [o, j === 0])), keys = 'ABCD';
+  if (q.svg && typeof DQ !== 'undefined') ({ opts, keys } = DQ.order(opts, o => o[0]));
   $('main').innerHTML = `<div class="card"><div class="small muted">${esc(A.title || 'Test')} · question ${RUN.i + 1} of ${RUN.qids.length}</div>
     <div class="prog">${RUN.qids.map((id, j) => `<i class="${id in W.ans ? (W.ans[id] ? 'ok' : 'no') : j === RUN.i ? 'now' : ''}"></i>`).join('')}</div>
-    <div class="q">${nuc(q.tf !== undefined ? 'True or false? ' + q.q : q.q)}</div>
-    <div class="opts" id="opts">${opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${nuc(t)}</span></button>`).join('')}</div><div id="fb"></div></div>`;
+    ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="q">${nuc(q.tf !== undefined ? 'True or false? ' + q.q : q.q)}</div>
+    <div class="opts" id="opts">${opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${nuc(t)}</span></button>`).join('')}</div><div id="fb"></div></div>`;
   $('opts').onclick = e => {
     const b = e.target.closest('.opt'); if (!b || b.disabled) return;
     const ok = b.dataset.ok === '1';
@@ -130,7 +142,7 @@ function show() {
     $('nx').onclick = () => { RUN.i = RUN.qids.findIndex(id => !(id in W.ans)); if (RUN.i < 0) finish(); else show(); };
   };
 }
-document.addEventListener('keydown', e => { const o = $('opts'); if (!o) return; const i = 'abcd'.indexOf(e.key.toLowerCase()), bs = [...o.children]; if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click(); });
+document.addEventListener('keydown', e => { const o = $('opts'); if (!o) return; const k = e.key.toLowerCase(); let i = 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k); const bs = [...o.children]; if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click(); });
 async function finish() {
   const vals = Object.values(W.ans || {});
   W.done = true; W.score = vals.filter(Boolean).length; W.at = Date.now();
@@ -143,7 +155,7 @@ function results() {
   const qids = (A.qids || []).filter(id => QBY[id]), ans = W.ans || {};
   const plain = h => String(h || '').replace(/<[^>]+>/g, '');
   $('main').innerHTML = `<div class="card">${head()}<div class="score">${W.score} / ${W.n || qids.length}</div><p class="muted">Done ${W.at ? new Date(W.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}. Your teacher can see this score.</p></div>
-    <div class="card"><h2>Your answers</h2>${qids.map((id, j) => { const q = QBY[id], ok = ans[id];
+    <div class="card"><h2>Your answers</h2>${qids.map((id, j) => { const raw = QBY[id], ok = ans[id], sd = (W.seeds || {})[id], d = raw.dg && sd && typeof DQ !== 'undefined' ? DQ.make(id, sd) : null, q = d ? { ...raw, ...d, gen: null } : raw;
       return `<div class="res"><span class="mk ${ok ? 'ok' : 'no'}">${ok ? '✓' : '✗'} ${j + 1}.</span> ${esc(plain(q.gen ? (q.q || 'Calculation question (different numbers each time)') : q.q)).slice(0, 160)}${!ok && !q.gen && q.o ? `<div class="small muted">Answer: ${esc(plain(q.o[0]))}</div>` : !ok && q.tf !== undefined ? `<div class="small muted">Answer: ${q.tf ? 'True' : 'False'}</div>` : ''}</div>`; }).join('')}
       <p style="margin-top:12px" class="small">Practise these again: ${(A.items || []).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join(' · ')}</p></div>`;
 }

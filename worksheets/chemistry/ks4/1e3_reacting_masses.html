@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=820">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Cakebread Science">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>1e3 · Reacting Masses &amp; Yield</title>
+<link rel="stylesheet" href="../../../css/chemistry.css">
+<link rel="stylesheet" href="../../../css/print-sheet.css">
+<style>
+  .ps .grid td.ka { color: var(--ps-answer); font-weight: bold; background: var(--ps-answer-bg); }
+  .ps .grid td.ex, .ps .ex { color: var(--ps-example); font-style: italic; }
+  .ps .grid td.l, .ps .grid th.l { text-align: left; }
+  .ps .grid td.c { width: 30mm; }
+  .ps .rule { font-size: 9.5pt; }
+  .ps .rule b { color: var(--primary-color); }
+  .ps .bank { display: inline-block; border: 1px solid var(--accent-border); background: var(--accent-lighter); padding: .4mm 2mm; margin: .5mm .5mm; font-weight: bold; font-size: 9pt; }
+  .ps .gap { display: inline-block; border-bottom: 1px solid #111; width: 24mm; }
+  .ps .gap.s { width: 14mm; } .ps .gap.l { width: 40mm; }
+  .ps .fill { line-height: 2.1; font-size: 10pt; }
+  .ps .fig { text-align: center; }
+  .ps .q2 { margin-top: 1.6mm; }
+  .ps .qn { font-weight: bold; color: var(--primary-color); }
+  .ps .draw { border: 1px dashed #888; border-radius: 1.5mm; position: relative; }
+  .ps .draw .lbl { position: absolute; top: 1mm; left: 2mm; font-weight: bold; font-size: 10pt; }
+  .ps .draw .foot2 { position: absolute; bottom: 1mm; left: 2mm; right: 2mm; font-size: 8.5pt; color: #333; }
+  .ps .example { border: 1.5px solid var(--ps-example); border-radius: 2mm; padding: 1.5mm 3mm; color: #111; }
+  .ps .example .t { font-weight: bold; font-size: 9pt; text-transform: uppercase; letter-spacing: .5px; color: var(--ps-example); }
+  .ps .eqn { font-family: "Segoe UI", Arial, sans-serif; letter-spacing: .2px; }
+  .ps .box { border: 1.5px solid #111; display: inline-block; min-width: 9mm; height: 7mm; vertical-align: middle; }
+  .ps .steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; }
+  .ps .step { border: 1px dashed #888; border-radius: 1.5mm; padding: 1mm 2mm; font-size: 9pt; color: #333; position: relative; }
+  .ps .step b { color: var(--primary-color); }
+  .ps sup, .ps sub { font-size: 70%; line-height: 0; }
+  .ps .nuc { display: inline-flex; align-items: center; }
+  .ps .nuc .ms { display: inline-flex; flex-direction: column; font-size: 70%; line-height: 1; text-align: right; margin-right: 1px; }
+  .ps .nuc sup { align-self: flex-start; margin-top: .3em; }
+  .ps .mk { float: right; font-size: 8.5pt; color: #333; font-weight: normal; }
+  .ps .grid.h7 td { height: 7mm; } .ps .grid.h8 td { height: 8mm; } .ps .grid.h10 td { height: 10mm; } .ps .grid.h12 td { height: 12mm; } .ps .grid.h16 td { height: 16mm; } .ps .grid.h20 td { height: 20mm; }
+  .ps .page > .g { flex: 1 1 auto; }
+  .ps .page > .q2.g { display: flex; flex-direction: column; }
+  .ps .q2.g > .work { flex: 1 1 auto; }
+  .ps .page > table.g { flex: 1 1 auto; }
+  .ps table.g tr:first-child { height: 1px; } .ps table.g tr:first-child th { height: auto; }
+  .ps .lns { flex: 1 1 0; height: 0; overflow: hidden; }
+  .ps .tiny { font-size: 8.5pt; color: #333; }
+  
+</style>
+</head>
+<body class="ps">
+<div class="screen-links"><a href="../../ks4.html">← KS4 worksheets</a><a href="1e3_reacting_masses_ms.html">Mark scheme →</a><span class="review-chip"></span></div>
+<div class="page">
+  <div class="header">
+    <div class="titles">
+      <h1>1e3 · Reacting Masses &amp; Yield</h1>
+      <div class="ps-sub">IGCSE Edexcel Chemistry · KS4</div>
+      <div class="ps-spec">1.29–1.30 · spec sub-topic 1(e) part 3: reacting masses from equations, percentage yield</div>
+    </div>
+    <div class="name">Name: <span></span></div>
+  </div>
+  <div class="reminder"><div class="title">Reminder: three steps</div>
+  <div class="rule"><b>1</b> Moles of the substance you know: mass ÷ M<sub>r</sub>. &nbsp; <b>2</b> Use the big numbers in the balanced equation to find moles of the substance you want. &nbsp; <b>3</b> Mass you want = moles × M<sub>r</sub>.</div></div>
+  <div class="tiny" style="text-align:center;margin:1mm 0"><b>A<sub>r</sub>:</b> H 1 · C 12 · N 14 · O 16 · Na 23 · Mg 24 · S 32 · Cl 35.5 · K 39 · Ca 40 · Fe 56 · Cu 63.5 · Br 80</div>
+  <div class="example"><div class="t">Worked example · what mass of magnesium oxide forms when 6 g of magnesium burns?</div>
+  <div class="eqn" style="text-align:center;font-size:11pt;margin:1mm 0">2Mg + O<sub>2</sub> → 2MgO</div>
+  <div class="steps3" style="color:#111"><div><b>1</b> moles Mg = 6 ÷ 24 = 0.25 mol</div><div><b>2</b> 2 Mg : 2 MgO is 1 : 1, so 0.25 mol MgO</div><div><b>3</b> M<sub>r</sub> MgO = 40; mass = 0.25 × 40 = <b>10 g</b></div></div></div>
+  <h2>A &nbsp;Follow the steps</h2>
+  <div class="q2"><span class="qn">A1.</span> What mass of magnesium oxide forms from 12 g of magnesium? <span class="eqn">2Mg + O<sub>2</sub> → 2MgO</span></div>
+  <div class="steps3 g"><div class="step"><b>1</b> moles of Mg<div style="height:16mm"></div></div><div class="step"><b>2</b> moles of MgO<div style="height:16mm"></div></div><div class="step"><b>3</b> mass of MgO<div style="height:16mm"></div></div></div><div class="final">mass = <span></span> g</div>
+  <div class="q2"><span class="qn">A2.</span> What mass of calcium oxide forms when 50 g of calcium carbonate is heated? <span class="eqn">CaCO<sub>3</sub> → CaO + CO<sub>2</sub></span></div>
+  <div class="steps3 g"><div class="step"><b>1</b> moles of CaCO<sub>3</sub><div style="height:16mm"></div></div><div class="step"><b>2</b> moles of CaO<div style="height:16mm"></div></div><div class="step"><b>3</b> mass of CaO<div style="height:16mm"></div></div></div><div class="final">mass = <span></span> g</div>
+  <div class="q2"><span class="qn">A3.</span> What mass of sodium chloride forms from 4.6 g of sodium? <span class="eqn">2Na + Cl<sub>2</sub> → 2NaCl</span></div>
+  <div class="steps3 g"><div class="step"><b>1</b> moles of Na<div style="height:16mm"></div></div><div class="step"><b>2</b> moles of NaCl<div style="height:16mm"></div></div><div class="step"><b>3</b> mass of NaCl<div style="height:16mm"></div></div></div><div class="final">mass = <span></span> g</div>
+
+  <div class="foot">Side 1 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>B &nbsp;On your own <small>watch the ratios: they are not all 1 : 1</small></h2>
+  <div class="tiny" style="text-align:center;margin:1mm 0"><b>A<sub>r</sub>:</b> H 1 · C 12 · N 14 · O 16 · Na 23 · Mg 24 · S 32 · Cl 35.5 · K 39 · Ca 40 · Fe 56 · Cu 63.5 · Br 80</div>
+  <div class="q2 g"><div><span class="qn">B1.</span> What mass of water forms when 8 g of oxygen reacts with hydrogen? <span class="eqn">2H<sub>2</sub> + O<sub>2</sub> → 2H<sub>2</sub>O</span></div><div class="work" style="height:30mm"></div><div class="final">mass = <span></span> g</div></div>
+  <div class="q2 g"><div><span class="qn">B2.</span> What mass of iron can be made from 320 g of iron(III) oxide? <span class="eqn">Fe<sub>2</sub>O<sub>3</sub> + 3CO → 2Fe + 3CO<sub>2</sub></span></div><div class="work" style="height:30mm"></div><div class="final">mass = <span></span> g</div></div>
+  <div class="q2 g"><div><span class="qn">B3.</span> What mass of hydrogen is needed to make 34 g of ammonia? <span class="eqn">N<sub>2</sub> + 3H<sub>2</sub> → 2NH<sub>3</sub></span></div><div class="work" style="height:30mm"></div><div class="final">mass = <span></span> g</div></div>
+  <div class="q2 g"><div><span class="qn">B4.</span> Copper(II) oxide is reduced by hydrogen. What mass of copper forms from 7.95 g of copper(II) oxide? <span class="eqn">CuO + H<sub>2</sub> → Cu + H<sub>2</sub>O</span></div><div class="work" style="height:30mm"></div><div class="final">mass = <span></span> g</div></div>
+  <div class="q2 g"><div><span class="qn">B5.</span> Methane burns: <span class="eqn">CH<sub>4</sub> + 2O<sub>2</sub> → CO<sub>2</sub> + 2H<sub>2</sub>O</span>. What mass of carbon dioxide and what mass of water form when 16 g of methane burns?</div><div class="work" style="height:30mm"></div><div class="final">CO<sub>2</sub> = <span></span> g &nbsp; H<sub>2</sub>O = <span></span> g</div></div>
+
+  <div class="foot">Side 2 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>C &nbsp;Percentage yield</h2>
+  <div class="reminder" style="margin-top:0"><div class="two" style="grid-template-columns:1fr 70mm;align-items:center"><div class="rule">The <b>theoretical yield</b> is the mass you calculate from the equation. The <b>actual yield</b> is the mass you really get. It is almost always less.</div>
+  <div class="eq" style="font-size:12pt">% yield = <span style="display:inline-block;text-align:center;vertical-align:middle"><span style="display:block;border-bottom:1.5px solid #111">actual yield</span>theoretical yield</span> × 100</div></div></div>
+  <div class="q2 g"><div><span class="qn">C1.</span> A student expected to make 10.0 g of a salt but only collected 8.5 g. Calculate the percentage yield.</div><div class="work" style="height:14mm"></div><div class="final">% yield = <span></span> %</div></div>
+  <div class="q2 g"><div><span class="qn">C2.</span> In A2 the theoretical yield of calcium oxide was 28 g. A company actually made 22.4 g. Calculate the percentage yield.</div><div class="work" style="height:14mm"></div><div class="final">% yield = <span></span> %</div></div>
+  <div class="q2 g"><div><span class="qn">C3.</span> A student burned 2.4 g of magnesium and collected 3.6 g of magnesium oxide. Calculate the theoretical yield, then the percentage yield. <span class="eqn">2Mg + O<sub>2</sub> → 2MgO</span></div><div class="work" style="height:30mm"></div><div class="final">% yield = <span></span> %</div></div>
+  <div class="q2"><span class="qn">C4.</span> Give <b>three</b> reasons why the actual yield is usually less than the theoretical yield.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">C5.</span> A student calculated a percentage yield of 108%. Their crystals had been left on the filter paper for only a few minutes. Suggest why the yield is above 100%.<span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 3 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>D &nbsp;Working out the equation from masses</h2>
+  <div class="example"><div class="t">How it works</div>Convert each mass to moles, then divide by the smallest number of moles. The whole-number ratio gives the big numbers in the equation.</div>
+  <div class="tiny" style="text-align:center;margin:1mm 0"><b>A<sub>r</sub>:</b> H 1 · C 12 · N 14 · O 16 · Na 23 · Mg 24 · S 32 · Cl 35.5 · K 39 · Ca 40 · Fe 56 · Cu 63.5 · Br 80</div>
+  <div class="q2"><span class="qn">D1.</span> 2.4 g of magnesium reacts with 1.6 g of oxygen, O<sub>2</sub>, to make 4.0 g of magnesium oxide, MgO.</div>
+  <table class="grid h12 g"><tr><th></th><th>Mg</th><th>O<sub>2</sub></th><th>MgO</th></tr><tr><td class="l">mass (g)</td><td>2.4</td><td>1.6</td><td>4.0</td></tr><tr><td class="l">M<sub>r</sub></td><td></td><td></td><td></td></tr><tr><td class="l">moles</td><td></td><td></td><td></td></tr><tr><td class="l">ratio</td><td></td><td></td><td></td></tr></table>
+  <div class="final" style="text-align:left">balanced equation: <span style="width:90mm"></span></div>
+  <div class="q2"><span class="qn">D2.</span> 5.6 g of iron reacts with 10.65 g of chlorine, Cl<sub>2</sub>, to make 16.25 g of iron chloride, FeCl<sub>3</sub>.</div>
+  <table class="grid h12 g"><tr><th></th><th>Fe</th><th>Cl<sub>2</sub></th><th>FeCl<sub>3</sub></th></tr><tr><td class="l">mass (g)</td><td>5.6</td><td>10.65</td><td>16.25</td></tr><tr><td class="l">M<sub>r</sub></td><td></td><td></td><td></td></tr><tr><td class="l">moles</td><td></td><td></td><td></td></tr><tr><td class="l">ratio</td><td></td><td></td><td></td></tr></table>
+  <div class="final" style="text-align:left">balanced equation: <span style="width:90mm"></span></div>
+  <div class="mistake" style="margin-top:3mm"><b>Spot the mistake.</b> To find the mass of MgO made from 4.8 g of magnesium, a student wrote: moles of Mg = 24 ÷ 4.8 = 5 mol, so mass of MgO = 5 × 40 = 200 g. What went wrong? Give the correct answer.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 4 of 4</div>
+</div>
+<script src="/js/home-link.js" data-back="/worksheets/science.html#ks4" data-back-label="Science worksheets"></script>
+</body>
+</html>

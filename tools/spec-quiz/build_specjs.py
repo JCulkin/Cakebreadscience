@@ -4,6 +4,8 @@ import json, re, sys
 
 d = json.load(open(sys.argv[1], encoding="utf-8"))
 
+NOTES = {"Chemistry|1.40": "only outer electrons need to be shown", "Chemistry|1.47": "the term ‘intermolecular’ forces of attraction can be used to represent all forces between molecules", "Chemistry|4.4": "students will be expected to name compounds containing up to six carbon atoms", "Chemistry|4.6": "knowledge of reaction mechanisms is not required", "Chemistry|4.13": "references to haemoglobin are not required", "Chemistry|4.22": "knowledge of reaction mechanisms is not required", "Chemistry|4.26": "knowledge of cis/trans or E/Z notation is not required"}
+NOTES = {tuple(k.split("|")): v for k, v in NOTES.items()}
 HEADINGS = ["Flowering plants", "Humans", "Crop plants", "Micro-organisms"]
 EQ = {
  "1.4": "average speed = distance moved ÷ time taken",
@@ -66,10 +68,10 @@ for s in d:
                 po = {"id": p["id"]}
                 if s["name"] == "Physics" and p["id"] == "7.2":
                     text = "describe the structure of an atom in terms of protons, neutrons and electrons and use symbols such as ¹⁴₆C to describe particular nuclei"
-                if s["name"] == "Chemistry" and p["id"] == "1.40":
-                    text = text.replace(" only outer electrons", " (only outer electrons")+")"
-                if s["name"] == "Chemistry" and p["id"] == "1.47":
-                    text = text.replace(" the term ‘intermolecular’", " (the term ‘intermolecular’")+")"
+                # scope notes (printed under the point in the spec) go in their own field, not run into the sentence (19 Nov 2026)
+                note = NOTES.get((s["name"], p["id"]))
+                if note and text.endswith(" " + note):
+                    text = text[: -len(note) - 1]; po["note"] = note
                 if s["name"] == "Physics" and p["id"] in EQ:
                     head = text.split(":")[0]
                     po["text"] = head + (TAIL.get(p["id"], ""))

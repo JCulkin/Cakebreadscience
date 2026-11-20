@@ -5866,3 +5866,25 @@ T('B5.15-05', 'Genetic modification can be used to make crop plants resistant to
 M('B5.16-05', 'A sheep is given a human gene so that its milk contains a human protein. What word describes this sheep?',
   ['Transgenic', 'Cloned', 'Selectively bred', 'Polygenic'],
   'Transgenic means genetic material has been transferred from one species to a different species.')
+/* 19 Nov 2026: extra questions on the narrower Single Award wording (still correct for everyone) */
+M('C2.19-06', 'Which of these is a <b>barrier method</b> of stopping iron rusting?',
+  ['Oiling a bicycle chain', 'Leaving it outside in the rain', 'Keeping it near the sea', 'Storing it in damp air'],
+  'Oil, grease, paint and plastic keep oxygen and water away from the iron.');
+T('C2.19-07', 'Galvanising means coating iron with a layer of zinc.', true,
+  'True. The zinc layer keeps oxygen and water away from the iron.');
+M('C2.28-06', 'What colour does red litmus turn in an alkali?',
+  ['Blue', 'Red (no change)', 'Green', 'Purple'],
+  'Litmus is red in acid and blue in alkali.');
+T('C2.28-07', 'Litmus turns red in an alkali.', false,
+  'False. Litmus turns red in an acid and blue in an alkali.');
+M('C2.28-08', 'A solution turns red litmus paper blue. What does this show?',
+  ['The solution is alkaline', 'The solution is acidic', 'The solution is neutral', 'The solution is pure water'],
+  'Alkalis turn red litmus blue; acids turn blue litmus red.');
+M('C2.48-06', 'Dilute hydrochloric acid is added to a solid carbonate. Which gas is given off?',
+  ['Carbon dioxide', 'Hydrogen', 'Oxygen', 'Chlorine'],
+  'Acid + carbonate → salt + water + carbon dioxide.');
+M('C2.48-07', 'How do you identify the gas given off in the test for carbonate ions?',
+  ['Bubble it through limewater, which turns milky', 'A glowing splint relights in it', 'A lighted splint gives a squeaky pop', 'It bleaches damp litmus paper'],
+  'Carbon dioxide turns limewater milky (cloudy).');
+T('C2.48-08', 'When dilute hydrochloric acid is added to a carbonate, it fizzes.', true,
+  'True. The bubbles are carbon dioxide.');

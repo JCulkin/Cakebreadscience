@@ -2,6 +2,42 @@
 
 ---
 
+## [Unreleased]
+### New worksheets, Single Award, diagram questions and the admin Review portal
+- Lessons: Biology 1 back under review: key-point slides now say autotrophic / heterotrophic / saprotrophic and "store carbohydrate as …"; new "Three ways to get food" slide and page diagram after fungi.
+- **Full spec wording everywhere:** the spec trackers, Practice and the Review page now show everything in the official specification. Physics equations appear under their point (word and symbol versions); the spec's scope notes appear as a small "Spec note" line (e.g. C4.6 "knowledge of reaction mechanisms is not required", which used to run straight into the sentence); the long descriptions for Biology 1.2, 1.3 and 1.4 fold away behind "… more" (1.2 as Plants / Animals / Fungi / Protoctists tabs) and print in full; section labels such as "Flowering plants" and "Humans" are back. Practice also shows the bullet points it was missing
+- Lessons: slide tags "Double Award only" and "Beyond GCSE" (big, top-right) on every lesson, drafts and checked versions; their look lives in one file, /interactive/lessons/tags.css.
+- Lessons: new Biology drafts (under review): 2d Movement of substances into and out of cells (39 slides) and 2f Respiration (24 slides), with own diagrams (diffusion, osmosis, active transport, factors, agar cubes, Visking tubing, plant cells in water, potato graph) and colour-coded equations.
+- **Admin Review portal** (`/admin/review.html`, ✅ Review tab): go through the whole question bank one question at a time — spec point, question, answer, explanation, diagrams and calculation examples, any student reports — with a big **✓ It's good** button (or Enter), **Needs a fix** with a note, skip/back, filters by status, subject and sub-topic, and jump to an id. Worksheets get the same: every sheet made, with its mark scheme, marked Good or Needs a fix. **Anything edited after you checked it goes back to review automatically** (each check saves a fingerprint of the content). The Building the site box shows questions and worksheets checked / to review
+- Admin Overview: **Building the site** box — lessons checked / under review per subject, worksheets per subject (sub-topics and spec points covered; worksheets, practice and challenge sheets), maths worksheets by spec section, and how many spec points have questions, flashcards and a worksheet. Counted live from the lesson list, worksheet pages and spec index
+- Lessons: new Biology drafts (under review): 2a Levels of organisation (17 slides), 2b Cell structure (34 slides), 2c Biological molecules, food tests and enzymes (47 slides); own diagrams (levels ladder, elements, building blocks, food-test colours, lock-and-key steps, temperature and pH graphs). Cell diagrams on slides now draw bigger.
+- Lessons: simpler lesson list and headers: no "Checked" badge, no dates on "Under review", no how-it-works box, progress line or format-trial link.
+- Lessons: Biology 1 Living organisms checked and frozen as v2026-11-18.
+- Lessons: removed mentions of Separate Science (Biology 1 course slide and paper 2; Chemistry 1a solubility note).
+
+#### Added
+- **New worksheets home** (`/worksheets/science.html`): separate **KS4** (Years 10–11) and **KS3** (Years 8–9) lists with a switch, opening on the signed-in student's year. New sets: KS4 Chemistry topic 1 (12 sheets + mark schemes), KS3 Chemistry topic 1, Biology 1 and 2ab (KS4 + KS3), KS4 Biology 2c1, 2c2, 2d, 2f, KS4 Physics waves, KS3 Physics space. Codes name the spec sub-topics each sheet covers (e.g. `2ab`, `1fg1`); new sheets carry an "Under review" tag; older sheets moved to an archive page
+- **Science (Single Award) students:** set a student's course in the admin console (Students → open the student → Course; new Course column). They see only their course across Questing, Practice, the trackers, To do, Flashcards and set work; worksheets show Single Award versions where they differ, and set work targets are sized to their course
+- **219 diagram and graph questions in the question bank** (93 spec points): code-drawn graphs, circuits, ray diagrams, dot-and-cross, food webs, cells and more, a new drawing each time; in missions, Practice, the Quick/Team quiz (new toggle), Breadventure Land and set-work tests (each student's drawing is saved with their answer)
+- **Admin Review portal** (`/admin/review.html`, ✅ Review tab): the whole question bank one question at a time (spec point, question, answer, explanation, diagrams and calculation examples, student reports) with a big **✓ It's good** button (or Enter), **Needs a fix** with a note, filters and jump to an id; worksheets by subject and KS4 / KS3 with Good / Needs a fix. **Anything edited after you checked it goes back to review automatically**
+- Admin Overview: **Building the site** box: lessons checked / under review per subject, worksheet coverage per subject, maths sections with no sheet, and how many questions and worksheets you've reviewed
+- **Full spec wording everywhere:** trackers, Practice and Review show the physics equations, the spec's scope notes, the long Biology 1.2–1.4 descriptions (behind "… more", 1.2 as Plants / Animals / Fungi / Protoctists tabs) and section labels such as "Flowering plants". Practice also shows the bullet points it was missing
+- **Set work:** edit work after setting it (title, years, sub-topics, number, due date, note), set work for students by name, an "All set work" view; the **To do** button turns red with a "!" and a count while a student has open work
+- Admin Students: choose and reorder the columns (remembered), new Questions attempted column and more optional columns
+- **Lessons:** new Biology drafts 1, 2a–2d, 2f (under review); 1f Ionic bonding and Biology 1 Living organisms checked; "Double Award only" / "Beyond GCSE" slide tags; Next slide ⏭ and ▦ All slides controls in projector mode (trial)
+
+#### Changed
+- **Checked stays checked:** an edit you ask for no longer sends a checked question, worksheet or lesson back to review (only changes made without your say-so do). Chemistry 1fg1 worksheets (KS4, Single Award, KS3) marked checked; Biology lesson 1 Living organisms checked again with its latest edits (version 20 Nov 2026)
+- Lessons: simpler lesson list (no Checked badge, review dates or how-it-works box); the ✎ Review notes system is gone; 1f Ionic bonding content updates (hydroxide replaces phosphate and more); Separate Science mentions removed
+- Sitemap: archived worksheets removed
+
+#### Fixed
+- Set work and To do reach the Realtime Database another way when a network blocks its live connection, and show the last saved copy if both fail
+- Students with no year chosen couldn't see set work: To do now asks for the year, and work can be set by name
+- Every new worksheet has a link back to the homepage
+
+---
+
 ## [5.0.0] - 2026-11-18
 ### One site: one spec tracker, one sign-in, To do, and revision that works with or without the game
 

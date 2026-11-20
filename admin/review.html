@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Review | Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<!-- Review portal (19 Nov 2026). User: "the question bank needs a new page for me to systematically review … a big button on the
+     page for me to say it's good. Any time a question is ever changed it's got to be sent back to review." + worksheets: "what's
+     been made and what is yet to review". Fingerprints and storage: /admin/review-lib.js. Admins only. -->
+<style>
+:root{--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#5a5a5a;--line:#d8d3c4;--soft:#f6f4ee;--green:#00a03a;--dk:#005e22;
+  --bio:#2e7d32;--chem:#c8001e;--phys:#d08000;--ok:#16a34a;--todo:#facc15;--chg:#ea580c;--fix:#dc2626}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4;font-size:15px}
+a{color:var(--dk)}
+h1,h2,h3,.tabs button{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
+header{background:#111;color:var(--cream);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px}header h1{font-size:26px}header h1 span{color:var(--green)}
+header .who{margin-left:auto;font-size:13px;color:#aaa;display:flex;gap:10px;align-items:center}
+header a.back{color:#111;background:#facc15;padding:4px 10px;font-weight:800;text-decoration:none}
+.tabs{display:flex;gap:4px;padding:0 20px;background:#111}
+.tabs button{background:#222;color:#bbb;border:0;padding:9px 16px 7px;font-size:17px;cursor:pointer;border-top:3px solid transparent}
+.tabs button.on{background:var(--cream);color:var(--ink);border-top-color:var(--green)}
+main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
+.panel{display:none}.panel.on{display:block}
+.gate{max-width:460px;margin:60px auto;background:var(--paper);border:2px solid var(--ink);padding:24px;text-align:center}
+.btn{display:inline-block;background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:7px 14px;font:700 14px 'Barlow',Arial;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--ink)}
+.sum{background:var(--paper);border:2px solid var(--ink);padding:12px 14px;margin-bottom:12px}
+.pbar{display:flex;height:16px;border:1.5px solid var(--ink);background:#e7e2d6;overflow:hidden;margin:6px 0}
+.pbar i{display:block;height:100%}.pbar .ok{background:var(--ok)}.pbar .fix{background:var(--fix)}.pbar .changed{background:var(--chg)}
+.chips{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}.chips b{font:900 20px 'Barlow Condensed',Arial}
+.filters{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 12px}
+.filters button{font:700 13px Barlow,Arial;background:#fff;border:1.5px solid #999;padding:4px 10px;cursor:pointer;border-radius:99px}
+.filters button.on{background:#111;color:#fff;border-color:#111}
+.filters select,.filters input{font:600 14px Barlow,Arial;padding:4px 6px;border:1.5px solid #999;background:#fff}
+.filters select{max-width:100%}@media(max-width:640px){.filters select,.filters input{flex:1 1 100%}}
+.st{display:inline-block;font:700 11.5px Barlow,Arial;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:99px;border:1.5px solid #111;white-space:nowrap}
+.st.todo{background:var(--todo)}.st.changed{background:var(--chg);color:#fff;border-color:var(--chg)}.st.fix{background:var(--fix);color:#fff;border-color:var(--fix)}.st.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
+/* the question card */
+.qcard{background:var(--paper);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);padding:16px 18px}
+.qtop{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-bottom:6px}
+.qid{font:900 24px 'Barlow Condensed',Arial}
+.tag{font:700 12px Barlow,Arial;border:1.5px solid #bbb;padding:1px 7px;border-radius:4px;color:#444}
+.pos{margin-left:auto;color:var(--muted);font-size:13px}
+.spec{font-size:13.5px;color:#444;background:var(--soft);border-left:4px solid #bbb;padding:5px 9px;margin:4px 0 12px}
+.spec b{color:#111}
+.qtext{font-size:20px;font-weight:600;margin:6px 0 10px;line-height:1.35}
+.opts{list-style:none;display:grid;gap:6px;margin-bottom:10px}
+.opts li{border:1.5px solid #ccc;padding:7px 11px;font-size:16px;border-radius:6px}
+.opts li.right{border-color:var(--ok);background:#dcfce7;font-weight:700}
+.opts li.right::before{content:'✓ ';color:var(--ok)}
+.tf{font-size:17px;margin-bottom:10px}.tf b{padding:2px 10px;border-radius:5px;background:#dcfce7;border:1.5px solid var(--ok)}
+.expl{background:#fffbe6;border:1.5px solid #e9d38b;padding:8px 11px;font-size:15px;margin-bottom:10px}
+.expl::before{content:'Explanation: ';font-weight:800}
+.sample{border-top:1px dashed #bbb;padding-top:8px;margin-top:8px}
+.sample h4{font:700 13px Barlow,Arial;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.reps{background:#fee2e2;border:1.5px solid var(--fix);padding:8px 11px;margin:6px 0 10px;font-size:14px}
+.prev{background:#fff1e6;border:1.5px solid var(--chg);padding:7px 11px;margin:0 0 10px;font-size:14px}
+.good{display:block;width:100%;margin-top:14px;background:var(--ok);color:#fff;border:3px solid #0f5132;box-shadow:0 5px 0 #0f5132;
+  font:900 34px 'Barlow Condensed',Arial;text-transform:uppercase;padding:16px 10px;cursor:pointer;letter-spacing:.5px}
+.good:hover{filter:brightness(1.07)}.good:active{transform:translateY(3px);box-shadow:0 2px 0 #0f5132}
+.row2{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.row2 .btn{font-size:15px}.row2 .fixb{background:#fff;color:var(--fix);border-color:var(--fix)}
+.keys{margin-left:auto;font-size:12.5px;color:var(--muted)}
+.fixbox{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}.fixbox textarea{flex:1;min-width:240px;font:15px Barlow,Arial;padding:6px;border:1.5px solid var(--fix);min-height:60px}
+.done{background:var(--paper);border:2px solid var(--ink);padding:30px;text-align:center;font-size:18px}
+.saved{color:var(--ok);font-weight:700;font-size:14px}
+/* worksheets */
+.wsub{margin:16px 0 6px;font:900 21px 'Barlow Condensed',Arial;text-transform:uppercase}
+.wrow{display:grid;grid-template-columns:150px 1fr auto;gap:6px 12px;align-items:center;background:var(--paper);border:1.5px solid #cfc8b6;padding:8px 10px;margin-bottom:5px}
+.wrow .t a{font-weight:700}.wrow .t small{display:block;color:var(--muted)}
+.wrow .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.wrow .acts button{font:800 14px Barlow,Arial;padding:6px 12px;cursor:pointer;border:2px solid #111;background:#fff}
+.wrow .acts .wgood{background:var(--ok);color:#fff;border-color:#0f5132}
+.wrow .acts .wfix{color:var(--fix);border-color:var(--fix)}
+.wrow .note{grid-column:2/-1;font-size:13.5px;color:var(--fix)}
+.wband{margin:10px 0 4px;font:700 12px Barlow,Arial;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
+.wrow.arch{opacity:.7}
+@media(max-width:640px){.wrow{grid-template-columns:1fr}.wrow .acts{justify-content:flex-start}.qtext{font-size:18px}.good{font-size:28px}}
+.muted{color:var(--muted)}.small{font-size:13px}
+</style>
+</head>
+<body>
+<header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Review</span></h1>
+  <a class="back" href="/admin/">← Admin</a><div class="who" id="who"></div></header>
+<nav class="tabs" id="tabs" hidden><button data-tab="q" class="on">Question bank</button><button data-tab="w">Worksheets</button></nav>
+<main>
+  <div class="gate" id="gate"><h2>Review</h2><p id="gateMsg" class="muted" style="margin:10px 0 16px">Checking your account…</p><div id="gateBtn"></div></div>
+  <section class="panel" id="p-q"></section>
+  <section class="panel" id="p-w"></section>
+</main>
+
+<script src="/js/firebase-config.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="/interactive/spec-quiz/spec.js"></script>
+<script src="/interactive/spec-quiz/questions.js"></script>
+<script src="/interactive/spec-quiz/gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="/interactive/spec-quiz/diagrams.js"></script>
+<script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/school.js"></script>
+<script src="/js/spec-point.js"></script>
+<script src="/admin/review-lib.js"></script>
+<script>
+/* Page state is RV (not T/M/G/R — those are question-bank globals). */
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const RV = { recs: { q: {}, w: {} }, reps: {}, qs: [], filter: 'todo', subj: '', sub: '', list: [], i: 0, sheets: null, wfilter: 'todo', user: null };
+firebase.initializeApp(window.firebaseConfig);
+const auth = firebase.auth(), RT = firebase.database();
+const SUBJ = { B: 'Biology', C: 'Chemistry', P: 'Physics' };
+const POINTS = {}; SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => sb.points.forEach(p => { POINTS[s.name[0] + p.id] = { p, sub: s.name[0] + t.n + sb.l, subName: sb.name, topic: t.name }; }))));
+const SUBS = []; SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => { if (sb.name !== 'Units') SUBS.push([s.name[0] + t.n + sb.l, `${s.name[0]} ${t.n}${sb.l} ${sb.name}`]); })));
+const strip = h => String(h || '').replace(/<[^>]+>/g, '');
+
+auth.onAuthStateChanged(async u => {
+  RV.user = u;
+  const ok = u && (window.ADMIN_EMAILS || []).includes(u.email);
+  $('who').innerHTML = u ? `${esc(u.displayName || '')} <button class="btn ghost" id="so" style="padding:2px 8px">Sign out</button>` : '';
+  if ($('so')) $('so').onclick = () => auth.signOut();
+  $('tabs').hidden = !ok; $('gate').style.display = ok ? 'none' : '';
+  if (!u) { $('gateMsg').textContent = 'Sign in with your admin Google account.'; $('gateBtn').innerHTML = '<button class="btn" id="si">Sign in with Google</button>'; $('si').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); return; }
+  if (!ok) { $('gateMsg').textContent = 'This page is for the site admin only.'; $('gateBtn').innerHTML = ''; return; }
+  RV.qs = REVIEW.questions().map(q => ({ q, h: REVIEW.qHash(q) }));
+  $('p-q').innerHTML = '<p class="muted">Loading your review marks…</p>'; $('p-q').classList.add('on');
+  const [recs, reps] = await Promise.all([REVIEW.loadReview(RT), RT.ref('specQuizReports').once('value').then(x => x.val() || {}).catch(() => ({}))]);
+  RV.recs = recs; RV.reps = {};
+  Object.entries(reps).forEach(([k, r]) => { if (r && !r.resolved && r.qid) (RV.reps[r.qid] = RV.reps[r.qid] || []).push(r); });
+  tab(location.hash === '#worksheets' ? 'w' : 'q');
+});
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => tab(b.dataset.tab));
+function tab(t) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + t));
+  history.replaceState(null, '', t === 'w' ? '#worksheets' : '#questions');
+  if (t === 'q') { buildList(); drawQ(); } else drawW();
+}
+
+/* ---------- question bank ---------- */
+const stOf = x => REVIEW.statusQ(RV.recs.q, x.q.id, x.h);
+function buildList(keepId) {
+  const want = { todo: s => s === 'todo' || s === 'changed', changed: s => s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.filter];
+  RV.list = RV.qs.filter(x => (!RV.subj || x.q.s[0] === RV.subj) && (!RV.sub || (POINTS[x.q.s] || {}).sub === RV.sub) && want(stOf(x)));
+  RV.i = keepId ? Math.max(0, RV.list.findIndex(x => x.q.id === keepId)) : 0;
+}
+function summary(c, noun) {
+  const t = c.total || 1;
+  return `<div class="sum"><div class="chips"><span><b>${c.ok}</b> of ${c.total} ${noun} checked</span><span><b>${c.todo}</b> never reviewed</span><span><b style="color:var(--chg)">${c.changed}</b> changed since checked</span><span><b style="color:var(--fix)">${c.fix}</b> need a fix</span></div>
+    <div class="pbar"><i class="ok" style="width:${c.ok / t * 100}%"></i><i class="fix" style="width:${c.fix / t * 100}%"></i><i class="changed" style="width:${c.changed / t * 100}%"></i></div></div>`;
+}
+function drawQ(msg) {
+  const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: RV.qs.length }; RV.qs.forEach(x => c[stOf(x)]++);
+  const F = [['todo', `To review (${c.todo + c.changed})`], ['changed', `Changed (${c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', 'All']];
+  const x = RV.list[RV.i];
+  $('p-q').innerHTML = summary(c, 'questions') + `<div class="filters">${F.map(([k, t]) => `<button data-f="${k}" class="${RV.filter === k ? 'on' : ''}">${t}</button>`).join('')}
+      <select id="fSubj"><option value="">All subjects</option>${Object.entries(SUBJ).map(([k, v]) => `<option value="${k}" ${RV.subj === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
+      <select id="fSub"><option value="">All sub-topics</option>${SUBS.filter(([k]) => !RV.subj || k[0] === RV.subj).map(([k, v]) => `<option value="${k}" ${RV.sub === k ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>
+      <input id="fGo" placeholder="Go to id, e.g. P3.3-07" size="18"></div>
+    ${x ? card(x) : `<div class="done">🎉 Nothing ${RV.filter === 'all' ? 'here' : 'left in this list'}.${RV.filter === 'todo' && (RV.subj || RV.sub) ? ' Try another subject or sub-topic.' : ''}</div>`}
+    ${msg ? `<p class="saved" style="margin-top:8px">${msg}</p>` : ''}`;
+  document.querySelectorAll('#p-q [data-f]').forEach(b => b.onclick = () => { RV.filter = b.dataset.f; buildList(); drawQ(); });
+  $('fSubj').onchange = e => { RV.subj = e.target.value; RV.sub = ''; buildList(); drawQ(); };
+  $('fSub').onchange = e => { RV.sub = e.target.value; buildList(); drawQ(); };
+  $('fGo').onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); const id = e.target.value.trim(); const j = RV.qs.findIndex(y => y.q.id.toLowerCase() === id.toLowerCase());
+    if (j < 0) { e.target.style.borderColor = 'var(--fix)'; return; } RV.filter = 'all'; RV.subj = ''; RV.sub = ''; buildList(RV.qs[j].q.id); drawQ(); };
+  if (!x) return;
+  $('good').onclick = () => mark('ok');
+  $('fixb').onclick = () => { $('fixbox').hidden = false; $('fixNote').focus(); };
+  $('fixSave').onclick = () => mark('fix', $('fixNote').value.trim());
+  $('skip').onclick = () => move(1); $('back').onclick = () => move(-1);
+  if ($('again')) $('again').onclick = () => drawQ();
+  if ($('unmark')) $('unmark').onclick = async () => { await REVIEW.clear(RT, 'q', x.q.id); delete RV.recs.q[REVIEW.key(x.q.id)]; drawQ('Sent back to review.'); };
+}
+function card(x) {
+  const q = x.q, P = POINTS[q.s] || {}, st = stOf(x), rec = RV.recs.q[REVIEW.key(q.id)], reps = RV.reps[q.id] || [];
+  const type = q.dg ? '🖼️ Diagram' : q.gen ? '🎲 Calculation (new numbers each time)' : q.tf !== undefined ? 'True / false' : 'Multiple choice';
+  const one = d => {
+    const fig = d.svg && window.DQ ? DQ.fig(d) : '';
+    if (d.tf !== undefined) return `${fig}<div class="qtext">${d.q}</div><div class="tf">Answer: <b>${d.tf ? 'True' : 'False'}</b></div>${d.x ? `<div class="expl">${d.x}</div>` : ''}`;
+    return `${fig}<div class="qtext">${d.q}</div><ul class="opts">${(d.o || []).map((o, i) => `<li class="${i === 0 ? 'right' : ''}">${o}</li>`).join('')}</ul>${d.x ? `<div class="expl">${d.x}</div>` : ''}`;
+  };
+  let body;
+  if (q.gen) {
+    const samples = [0, 1, 2].map(() => { try { return q.gen(R); } catch (e) { return { q: '⚠️ This generator crashed: ' + esc(e.message), o: [] }; } });
+    body = one(samples[0]) + samples.slice(1).map((s, i) => `<div class="sample"><h4>Another example (${i + 2} of 3)</h4>${one(s)}</div>`).join('')
+      + `<button class="btn ghost" id="again" style="margin-top:8px">🎲 New examples</button>`;
+  } else body = one(q);
+  return `<div class="qcard">
+    <div class="qtop"><span class="qid">${esc(q.id)}</span><span class="st ${st}">${REVIEW.LABEL[st]}</span><span class="tag">${type}</span>${q.hard ? '<span class="tag">★ Harder</span>' : ''}
+      <span class="pos">${RV.i + 1} of ${RV.list.length} in this list</span></div>
+    <div class="spec"><b>${esc(q.s)}</b> ${esc(strip(P.p ? P.p.text : ''))}${P.p && P.p.bullets ? ': ' + esc(P.p.bullets.join('; ')) : ''}${P.sub ? ` <span class="muted">· ${esc(P.sub)} ${esc(P.subName)}</span>` : ''}${P.p && window.SPECPT ? SPECPT.extras(P.p) : ''}</div>
+    ${st === 'changed' ? `<div class="prev">✏️ <b>Changed since you checked it</b> on ${new Date(rec.at).toLocaleDateString('en-GB')}${rec.st === 'fix' && rec.note ? ` (you'd asked: “${esc(rec.note)}”)` : ''}. Check the new version.</div>` : ''}
+    ${st === 'ok' && (!rec || rec.h !== x.h) && REVIEW.keptQ(q.id) ? `<div class="prev" style="border-color:var(--ok);background:#ecfdf3">✓ Kept checked after the edit you asked for${REVIEW.keptQ(q.id).at ? ` (${esc(REVIEW.keptQ(q.id).at)})` : ''}${REVIEW.keptQ(q.id).why ? `: ${esc(REVIEW.keptQ(q.id).why)}` : ''}.</div>` : ''}
+    ${st === 'fix' && rec.note ? `<div class="prev">You marked this as needing a fix: “${esc(rec.note)}”. It comes back here once it's been changed.</div>` : ''}
+    ${reps.length ? `<div class="reps">⚑ <b>${reps.length} open report${reps.length > 1 ? 's' : ''} from students:</b> ${reps.slice(0, 4).map(r => esc(r.reason) + (r.comment ? ` — “${esc(r.comment)}”` : '')).join(' · ')} <a href="/interactive/spec-quiz/reports.html">Reports →</a></div>` : ''}
+    ${body}
+    <button class="good" id="good">✓ It's good</button>
+    <div class="row2"><button class="btn ghost" id="back">← Back</button><button class="btn ghost" id="skip">Skip →</button><button class="btn fixb" id="fixb">✏️ Needs a fix…</button>
+      ${st === 'ok' || st === 'fix' ? '<button class="btn ghost" id="unmark">Send back to review</button>' : ''}
+      <span class="keys">Keys: <b>Enter</b> good · <b>F</b> needs a fix · <b>→</b> skip · <b>←</b> back</span></div>
+    <div class="fixbox" id="fixbox" hidden><textarea id="fixNote" placeholder="What's wrong? (e.g. option 2 is also right; typo in the explanation)">${st === 'fix' && rec.note ? esc(rec.note) : ''}</textarea><button class="btn" id="fixSave" style="background:var(--fix);border-color:var(--fix)">Save — needs a fix</button></div>
+  </div>`;
+}
+async function mark(st, note) {
+  const x = RV.list[RV.i]; if (!x) return;
+  const rec = { h: x.h, at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 500);
+  try { await REVIEW.save(RT, 'q', x.q.id, rec); } catch (e) { alert('Not saved — check your connection. (' + e.message + ')'); return; }
+  RV.recs.q[REVIEW.key(x.q.id)] = rec;
+  /* in the To review list the item drops out, so the next one slides into place; elsewhere move on */
+  const stays = RV.filter === 'all' || RV.filter === st;
+  if (stays) RV.i++; else RV.list.splice(RV.i, 1);
+  if (RV.i >= RV.list.length) RV.i = Math.max(0, RV.list.length - 1);
+  drawQ(st === 'ok' ? `✓ ${x.q.id} checked` : `✏️ ${x.q.id} marked as needing a fix`);
+  window.scrollTo({ top: 0 });
+}
+function move(d) { if (!RV.list.length) return; RV.i = (RV.i + d + RV.list.length) % RV.list.length; drawQ(); window.scrollTo({ top: 0 }); }
+document.addEventListener('keydown', e => {
+  if (!$('p-q').classList.contains('on') || /TEXTAREA|INPUT|SELECT|BUTTON/.test((e.target && e.target.tagName) || '') || /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName) || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (e.key === 'Enter' || e.key === 'g') { e.preventDefault(); if ($('good')) mark('ok'); }
+  else if (e.key === 'f') { e.preventDefault(); if ($('fixb')) $('fixb').click(); }
+  else if (e.key === 'ArrowRight') move(1); else if (e.key === 'ArrowLeft') move(-1);
+});
+
+/* ---------- worksheets ---------- */
+async function drawW() {
+  const box = $('p-w');
+  if (!RV.sheets) {
+    box.innerHTML = '<p class="muted" id="wload">Reading the worksheets…</p>';
+    try { RV.sheets = await REVIEW.sheets((d, n) => { const e = $('wload'); if (e) e.textContent = `Reading the worksheets… ${d} of ${n}`; }); }
+    catch (e) { box.innerHTML = '<p>Couldn\'t load the worksheet list (/admin/worksheets.json).</p>'; return; }
+  }
+  const ARCH = RV.sheets.filter(s => s.archived), S = RV.wfilter === 'arch' ? ARCH : RV.sheets.filter(s => !s.archived);
+  const sOf = s => s.archived ? 'arch' : REVIEW.statusW(RV.recs.w, s);
+  const LIVE = RV.sheets.filter(s => !s.archived), c = { todo: 0, changed: 0, fix: 0, ok: 0, total: LIVE.length }; LIVE.forEach(s => c[sOf(s)]++);
+  const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true, arch: () => true }[RV.wfilter];
+  const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', `All (${LIVE.length})`], ['arch', `Archived (${ARCH.length})`]];
+  /* within a subject: KS4 (Single Award twin straight after its sheet), KS3, then anything else (challenges, maths, older) */
+  const band = s => /^[a-z-]+\/ks4\//.test(s.p) ? 0 : /^[a-z-]+\/ks3\//.test(s.p) ? 1 : 2;
+  const BAND = ['KS4 · Years 10 and 11', 'KS3 · Years 8 and 9', 'Other sheets'];
+  const sortKey = s => s.p.replace(/_sa\.html$/, '.html~');
+  const NAMES = { biology: 'Biology', chemistry: 'Chemistry', physics: 'Physics', maths: 'Maths', 'cross-curricular': 'Cross-curricular' };
+  const KIND = { sheet: 'Worksheet', practice: 'Practice sheet', challenge: 'Challenge sheet', KS4: 'KS4 worksheet', KS3: 'KS3 worksheet', 'KS4 Single Award': 'KS4 worksheet · Single Award version' };
+  const groups = Object.keys(NAMES).map(sub => {
+    const rows = S.filter(s => s.subj === sub && want(sOf(s))).sort((a, b) => band(a) - band(b) || sortKey(a).localeCompare(sortKey(b)));
+    const all = S.filter(s => s.subj === sub), ok = all.filter(s => sOf(s) === 'ok').length;
+    if (!all.length) return '';
+    let lastBand = -1;
+    return `<div class="wsub">${NAMES[sub]} <span class="muted small" style="font-family:Barlow;text-transform:none">${RV.wfilter === 'arch' ? `${all.length} archived` : `${ok} of ${all.length} checked`}</span></div>`
+      + (rows.length ? rows.map(s => { const st = sOf(s), rec = RV.recs.w[REVIEW.key(s.p)];
+        const head = RV.wfilter !== 'arch' && band(s) !== lastBand ? `<div class="wband">${BAND[lastBand = band(s)]}</div>` : '';
+        if (st === 'arch') return `<div class="wrow arch"><span><span class="st">Archived</span></span><span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>Only on the archive page, not shown to students</small></span><span></span></div>`;
+        return head + `<div class="wrow" data-p="${esc(s.p)}"><span><span class="st ${st}">${REVIEW.LABEL[st]}</span></span>
+          <span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>${KIND[s.kind]}${s.live ? '' : ' · <b>draft (not on the worksheet pages)</b>'}${s.ms ? ` · <a href="/worksheets/${esc(s.ms)}" target="_blank">mark scheme</a>` : ''}${s.missing ? ' · ⚠️ page not found' : ''}${st === 'changed' ? ` · changed since you checked it on ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' && rec && rec.h === s.h ? ` · checked ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' && REVIEW.keptW(s.p) ? ` · checked ${esc(REVIEW.keptW(s.p).at || '')}${REVIEW.keptW(s.p).why ? ` (${esc(REVIEW.keptW(s.p).why)})` : ''}` : ''}</small></span>
+          <span class="acts">${st !== 'ok' ? '<button class="wgood">✓ Good</button>' : '<button class="wun">Send back</button>'}<button class="wfix">✏️ Needs a fix</button></span>
+          ${rec && rec.note && (st === 'fix' || st === 'changed') ? `<span class="note">Your note: “${esc(rec.note)}”</span>` : ''}</div>`; }).join('')
+        : '<p class="muted small">Nothing in this list.</p>');
+  }).join('');
+  box.innerHTML = summary(c, 'worksheets') + `<div class="filters">${F.map(([k, t]) => `<button data-wf="${k}" class="${RV.wfilter === k ? 'on' : ''}">${t}</button>`).join('')}</div>
+    <p class="small muted" style="margin-bottom:6px">Open a sheet (and its mark scheme), then press ✓ Good. Any change to its wording, answers or pictures sends it back here. Archived sheets (only on the archive page) aren't counted.</p>${groups}`;
+  box.querySelectorAll('[data-wf]').forEach(b => b.onclick = () => { RV.wfilter = b.dataset.wf; drawW(); });
+  box.querySelectorAll('.wrow[data-p]').forEach(r => {
+    const s = S.find(x => x.p === r.dataset.p);
+    const set = async (st, note) => { const rec = { h: s.h, at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 500);
+      try { await REVIEW.save(RT, 'w', s.p, rec); RV.recs.w[REVIEW.key(s.p)] = rec; drawW(); } catch (e) { alert('Not saved — check your connection.'); } };
+    const g = r.querySelector('.wgood'); if (g) g.onclick = () => set('ok');
+    const u = r.querySelector('.wun'); if (u) u.onclick = async () => { await REVIEW.clear(RT, 'w', s.p); delete RV.recs.w[REVIEW.key(s.p)]; drawW(); };
+    r.querySelector('.wfix').onclick = () => { const n = prompt('What needs fixing on “' + s.t + '”?', (RV.recs.w[REVIEW.key(s.p)] || {}).note || ''); if (n !== null) set('fix', n); };
+  });
+}
+</script>
+</body>
+</html>
