@@ -13,7 +13,8 @@
      and CBSCourse.update(uid, course) when it reads the account. The course is cached per browser (localStorage cbs.course,
      tied to the last signed-in account in cbs.questing.uid); if the account's course differs from what the page was drawn
      with, the page reloads once.
-   API: CBSCourse.sa (bool), .has(key), .label, .exam, .prune(), .update(uid, course). */
+   API: CBSCourse.sa (bool), .has(key), .inSA(q) / .inSAid(id) (on the Single Award course, whoever is signed in), .label, .exam,
+   .prune(), .update(uid, course). Also loaded on the admin console (it trims nothing there) so set work can be sized for both courses. */
 (function () {
   if (window.CBSCourse) return;
   const RANGES = {
@@ -61,7 +62,9 @@
     has: key => !sa || !key || SA.has(key),
     /* diagram questions (diagq.js) roll again if the drawing's question or options use this (cell diagrams label ribosomes) */
     dqAvoid: sa ? /ribosom|protein synthesis|proteins are made/i : null,
-    keepQ: q => !sa || (SA.has(q.s) && !DA_ONLY.has(q.id)),
+    inSA: q => SA.has(q.s) && !DA_ONLY.has(q.id),
+    inSAid: id => SA.has(id.slice(0, id.lastIndexOf('-'))) && !DA_ONLY.has(id),
+    keepQ: q => !sa || C.inSA(q),
     prune, update
   };
   let done = { spec: false, qs: false, cards: false };

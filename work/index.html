@@ -97,6 +97,7 @@ function head() {
 }
 function practise() {
   const p = CBSSchool.progress(QE.prog, A);
+  if (p.none) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p></div>`; return; }
   $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>${p.got} of ${p.target}</b> different questions right since it was set${p.done ? ' · Done ✓' : ''}.</p>
     <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).filter(onCourse).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
 }

@@ -150,6 +150,7 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/cell-game/cells.js"></script>
 <script src="/interactive/spec-quiz/diagrams.js"></script>
 <script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/interactive/spec-quiz/bland.js"></script>
@@ -734,6 +735,10 @@ async function loadTeach() {
   try { TCH.data = await CBSSchool.load(RT); TCH.err = ''; } catch (e) { TCH.data = { taught: {}, assign: {} }; TCH.err = e.code || e.message; }
   /* practise work set before 18 Nov has no pts/need, which the students' "To do !" check needs: add them once */
   const fix = {}; Object.entries(TCH.data.assign).forEach(([id, a]) => { if (a && a.type !== 'test' && (!a.pts || !a.need)) { const x = CBSSchool.practiseNeed(a); fix[id + '/pts'] = x.pts; fix[id + '/need'] = x.need; Object.assign(a, x); } });
+  /* 20 Nov: the Single Award size of each piece of work (needSA for practise, nSA for tests; /js/school.js), added once */
+  Object.entries(TCH.data.assign).forEach(([id, a]) => { if (!a) return;
+    if (a.type === 'test') { if (!('nSA' in a) && a.qids) { a.nSA = CBSSchool.testSA(a); if (a.nSA != null) fix[id + '/nSA'] = a.nSA; } }
+    else if (!('needSA' in a)) { const x = CBSSchool.practiseNeed(a); if ('needSA' in x) { a.needSA = x.needSA; fix[id + '/needSA'] = x.needSA; } } });
   if (Object.keys(fix).length) RT.ref('school/assign').update(fix).catch(e => console.warn('pts backfill', e));
   drawTeach();
 }
@@ -795,11 +800,11 @@ function drawTeach(msg) {
     return [...ys, ...(nm.length ? [nm.length > 3 ? nm.length + ' named students' : nm.join(', ')] : [])].join(' + ') || 'nobody'; };
   const nameCell = (s, a) => `<td class="sname">${esc(s.name)}${!(s.year && a.years && a.years['Y' + s.year]) ? ' <span class="tag" title="Added by name">named</span>' : ''}${!s.year ? ' <span class="small muted">(no year)</span>' : ''}</td>`;
   const fmt = x => x ? new Date(x + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const aCard = a => { if (S.isTest(a)) return tCard(a); const kids = whoOf(a); const rows = kids.map(s => ({ s, p: S.progress(s.prog, a) })).sort((x, z) => z.p.got - x.p.got);
+  const aCard = a => { if (S.isTest(a)) return tCard(a); const kids = whoOf(a); const rows = kids.map(s => ({ s, p: S.progress(s.prog, a, s.course || '') })).sort((x, z) => z.p.got - x.p.got);
     const done = rows.filter(r => r.p.done).length;
     return `<div class="card"><h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">${esc(a.title || 'Work set')}${a.archived ? ' <span class="tag">archived</span>' : ''}<span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">set ${fmt(a.set)}${a.due ? ' · due ' + fmt(a.due) : ''} · for ${esc(forTxt(a))}</span></h2>
       <p class="small">${(a.items || []).map(k => esc(S.label(k))).join(' · ')}</p>${a.note ? `<p class="small muted">${esc(a.note)}</p>` : ''}
-      <p class="small" style="margin:6px 0"><b>${done} of ${kids.length}</b> students done (${a.target || 10} questions right since it was set).</p>
+      <p class="small" style="margin:6px 0"><b>${done} of ${kids.length}</b> students done (${a.target || 10} questions right since it was set${rows.some(r => r.s.course === 'SA') ? `; ${rows.find(r => r.s.course === 'SA').p.target} for Single Award` : ''}).</p>
       ${rows.length ? `<div class="wrapx"><table>${rows.map(({ s, p }) => `<tr class="click" data-uid="${s.uid}">${nameCell(s, a)}<td style="width:45%"><div class="bar"><i class="${p.done ? 's' : 'l'}" style="width:${p.got / p.target * 100}%"></i></div></td><td class="n">${p.got}/${p.target}${p.done ? ' ✓' : ''}</td><td class="small">${ago(s.last)}</td></tr>`).join('')}</table></div>` : `<p class="muted small">Nobody can see this yet: no student is in its years, and nobody is added by name.</p>`}
       <div class="acts"><button class="btn alt sm" data-aedit="${a.id}">✏️ Edit</button><button class="btn alt sm" data-arch="${a.id}">${a.archived ? 'Unarchive' : 'Archive'}</button><button class="btn warn sm" data-adel="${a.id}">Delete</button></div></div>`; };
   const tCard = a => { const kids = whoOf(a), n = (a.qids || []).length, rows = kids.map(s => ({ s, r: S.testOf(s.raw, a) }));
@@ -881,8 +886,8 @@ function drawTeach(msg) {
           if (started && !confirm(`${started} student${started > 1 ? 's have' : ' has'} already started or finished this test. New questions will be picked: finished scores stay, but anyone half-way through starts the new questions. Carry on?`)) return;
           a.qids = S.pickTest(items, Math.min(num, 40)); if (!a.qids.length) return m('No questions in what you ticked.');
         }
-        delete a.target; delete a.pts; delete a.need;
-      } else { a.target = num; Object.assign(a, S.practiseNeed(a)); delete a.qids; }
+        delete a.target; delete a.pts; delete a.need; delete a.needSA; const nSA = S.testSA(a); if (nSA != null) a.nSA = nSA;
+      } else { a.target = num; Object.assign(a, S.practiseNeed(a)); delete a.qids; delete a.nSA; }
       if (ED) a.edited = Date.now();
       try {
         if (ED) { await RT.ref('school/assign/' + ED.id).set(a); d.assign[ED.id] = a; }

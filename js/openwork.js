@@ -24,14 +24,16 @@
   const FRESH = /^\/(today|work)\b|practice\.html|adventurer-mission\.html/.test(location.pathname);   // pages where work gets done: never trust the cache
   /* is this piece of work still open for this student? */
   function open(a, id, u) {
-    if (a.type === 'test') return !(((u.work || {})[id] || {}).done);
+    const sa = u.course === 'SA';   // Single Award students: work sized for their course (nSA / needSA, see /js/school.js)
+    if (a.type === 'test') return !(sa && a.nSA === 0) && !(((u.work || {})[id] || {}).done);
+    if (sa && a.needSA === 0) return false;
     const q = ((u.specQuiz || {}).q) || {}, set = a.set || '';
     if (a.pts && a.need) {
       const pts = new Set(a.pts);
       const got = Object.entries(q).filter(([qid, x]) => x && x.l && x.l >= set && pts.has(qid.slice(0, qid.lastIndexOf('-')))).length;
-      return got < a.need;
+      return got < (sa && a.needSA > 0 ? a.needSA : a.need);
     }
-    if (window.CBSSchool && window.QUESTIONS) return !CBSSchool.progress({ q }, a).done;
+    if (window.CBSSchool && window.QUESTIONS) return !CBSSchool.progress({ q }, a, sa ? 'SA' : '').done;
     return true;   // old work saved before pts/need: counted as open until the admin console has added them
   }
   async function run(force) {
