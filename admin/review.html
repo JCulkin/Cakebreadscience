@@ -145,7 +145,7 @@ function tab(t) {
 }
 
 /* ---------- question bank ---------- */
-const stOf = x => REVIEW.status(RV.recs.q[REVIEW.key(x.q.id)], x.h);
+const stOf = x => REVIEW.statusQ(RV.recs.q, x.q.id, x.h);
 function buildList(keepId) {
   const want = { todo: s => s === 'todo' || s === 'changed', changed: s => s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.filter];
   RV.list = RV.qs.filter(x => (!RV.subj || x.q.s[0] === RV.subj) && (!RV.sub || (POINTS[x.q.s] || {}).sub === RV.sub) && want(stOf(x)));
@@ -198,6 +198,7 @@ function card(x) {
       <span class="pos">${RV.i + 1} of ${RV.list.length} in this list</span></div>
     <div class="spec"><b>${esc(q.s)}</b> ${esc(strip(P.p ? P.p.text : ''))}${P.p && P.p.bullets ? ': ' + esc(P.p.bullets.join('; ')) : ''}${P.sub ? ` <span class="muted">· ${esc(P.sub)} ${esc(P.subName)}</span>` : ''}${P.p && window.SPECPT ? SPECPT.extras(P.p) : ''}</div>
     ${st === 'changed' ? `<div class="prev">✏️ <b>Changed since you checked it</b> on ${new Date(rec.at).toLocaleDateString('en-GB')}${rec.st === 'fix' && rec.note ? ` (you'd asked: “${esc(rec.note)}”)` : ''}. Check the new version.</div>` : ''}
+    ${st === 'ok' && (!rec || rec.h !== x.h) && REVIEW.keptQ(q.id) ? `<div class="prev" style="border-color:var(--ok);background:#ecfdf3">✓ Kept checked after the edit you asked for${REVIEW.keptQ(q.id).at ? ` (${esc(REVIEW.keptQ(q.id).at)})` : ''}${REVIEW.keptQ(q.id).why ? `: ${esc(REVIEW.keptQ(q.id).why)}` : ''}.</div>` : ''}
     ${st === 'fix' && rec.note ? `<div class="prev">You marked this as needing a fix: “${esc(rec.note)}”. It comes back here once it's been changed.</div>` : ''}
     ${reps.length ? `<div class="reps">⚑ <b>${reps.length} open report${reps.length > 1 ? 's' : ''} from students:</b> ${reps.slice(0, 4).map(r => esc(r.reason) + (r.comment ? ` — “${esc(r.comment)}”` : '')).join(' · ')} <a href="/interactive/spec-quiz/reports.html">Reports →</a></div>` : ''}
     ${body}
@@ -237,7 +238,7 @@ async function drawW() {
     catch (e) { box.innerHTML = '<p>Couldn\'t load the worksheet list (/admin/worksheets.json).</p>'; return; }
   }
   const ARCH = RV.sheets.filter(s => s.archived), S = RV.wfilter === 'arch' ? ARCH : RV.sheets.filter(s => !s.archived);
-  const sOf = s => s.archived ? 'arch' : REVIEW.status(RV.recs.w[REVIEW.key(s.p)], s.h);
+  const sOf = s => s.archived ? 'arch' : REVIEW.statusW(RV.recs.w, s);
   const LIVE = RV.sheets.filter(s => !s.archived), c = { todo: 0, changed: 0, fix: 0, ok: 0, total: LIVE.length }; LIVE.forEach(s => c[sOf(s)]++);
   const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true, arch: () => true }[RV.wfilter];
   const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', `All (${LIVE.length})`], ['arch', `Archived (${ARCH.length})`]];
@@ -257,7 +258,7 @@ async function drawW() {
         const head = RV.wfilter !== 'arch' && band(s) !== lastBand ? `<div class="wband">${BAND[lastBand = band(s)]}</div>` : '';
         if (st === 'arch') return `<div class="wrow arch"><span><span class="st">Archived</span></span><span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>Only on the archive page, not shown to students</small></span><span></span></div>`;
         return head + `<div class="wrow" data-p="${esc(s.p)}"><span><span class="st ${st}">${REVIEW.LABEL[st]}</span></span>
-          <span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>${KIND[s.kind]}${s.live ? '' : ' · <b>draft (not on the worksheet pages)</b>'}${s.ms ? ` · <a href="/worksheets/${esc(s.ms)}" target="_blank">mark scheme</a>` : ''}${s.missing ? ' · ⚠️ page not found' : ''}${st === 'changed' ? ` · changed since you checked it on ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' ? ` · checked ${new Date(rec.at).toLocaleDateString('en-GB')}` : ''}</small></span>
+          <span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>${KIND[s.kind]}${s.live ? '' : ' · <b>draft (not on the worksheet pages)</b>'}${s.ms ? ` · <a href="/worksheets/${esc(s.ms)}" target="_blank">mark scheme</a>` : ''}${s.missing ? ' · ⚠️ page not found' : ''}${st === 'changed' ? ` · changed since you checked it on ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' && rec && rec.h === s.h ? ` · checked ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' && REVIEW.keptW(s.p) ? ` · checked ${esc(REVIEW.keptW(s.p).at || '')}${REVIEW.keptW(s.p).why ? ` (${esc(REVIEW.keptW(s.p).why)})` : ''}` : ''}</small></span>
           <span class="acts">${st !== 'ok' ? '<button class="wgood">✓ Good</button>' : '<button class="wun">Send back</button>'}<button class="wfix">✏️ Needs a fix</button></span>
           ${rec && rec.note && (st === 'fix' || st === 'changed') ? `<span class="note">Your note: “${esc(rec.note)}”</span>` : ''}</div>`; }).join('')
         : '<p class="muted small">Nothing in this list.</p>');

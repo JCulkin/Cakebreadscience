@@ -308,7 +308,7 @@ function drawBuild() {
   const isSheet = i => IX.res[i] && IX.res[i][0] === 'sheet';
   const done = [], review = [];
   const RQ = REVIEW.counts(QUESTIONS, BUILD.rev.q, q => q.id, REVIEW.qHash);
-  const wst = s => REVIEW.status(BUILD.rev.w[REVIEW.key(s.p)], s.h);
+  const wst = s => REVIEW.statusW(BUILD.rev.w, s);
   const wline = sub => { const all = BUILD.ws.filter(s => s.subj === sub && !s.archived), c = { todo: 0, changed: 0, fix: 0, ok: 0 }; all.forEach(s => c[wst(s)]++);
     return { all, c, html: `<br><b>${all.length}</b> made · <span style="color:var(--s)"><b>${c.ok}</b> checked</span> · <b>${c.todo + c.changed}</b> to review${c.changed ? ` (${c.changed} changed)` : ''}${c.fix ? ` · <span style="color:var(--bad)">${c.fix} need a fix</span>` : ''}${all.some(s => !s.live) ? ` · ${all.filter(s => !s.live).length} not on the worksheet pages yet` : ''}` }; };
   const rows = Object.keys(SUB).map(id => {

@@ -33,6 +33,18 @@
     return (d.body ? d.body.textContent : '').replace(/\s+/g, ' ').trim() + '\u0001' + imgs;
   }
   const status = (rec, h) => !rec ? 'todo' : rec.h !== h ? 'changed' : rec.st === 'fix' ? 'fix' : 'ok';
+  /* Kept checked (user, 20 Nov: "if something is checked and I make edits to it, keep it as checked … unless YOU by your own
+     account change it"). A chat that makes an edit the user asked for runs  node tools/review/keep.js q <id…> | w <path…>,
+     which writes the new fingerprint to /admin/review-approved.json. That counts as checked until the content changes again.
+     Worksheets use a plain-text fingerprint here (rawHash) because node has no DOM. */
+  let APPROVED = { q: {}, w: {} };
+  const rawText = html => String(html || '').replace(/<(script|style|noscript|template)\b[\s\S]*?<\/\1>/gi, ' ')
+    .replace(/<img\b[^>]*?\bsrc="([^"]*)"[^>]*>/gi, ' [img:$1] ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
+  const rawHash = (sheet, ms) => hash(rawText(sheet) + '\u0002' + rawText(ms));
+  const full = (rec, h, kept) => rec && rec.h === h ? (rec.st === 'fix' ? 'fix' : 'ok') : kept ? 'ok' : !rec ? 'todo' : 'changed';
+  const statusQ = (recs, id, h) => full(recs[key(id)], h, (APPROVED.q[id] || {}).h === h);
+  const statusW = (recs, s) => full(recs[key(s.p)], s.h, !!s.hr && (APPROVED.w[s.p] || {}).hr === s.hr);
+  const keptQ = id => APPROVED.q[id] || null, keptW = p => APPROVED.w[p] || null;
   const LABEL = { todo: 'To review', changed: 'Changed since checked', fix: 'Needs a fix', ok: 'Checked ✓' };
 
   /* the whole question bank in spec order (questions.js + gens.js must be loaded) */
@@ -43,7 +55,9 @@
   }
   async function loadReview(rt) {
     const get = async p => { try { return (window.CBSSchool && CBSSchool.rtGet) ? await CBSSchool.rtGet(rt, p, 15000) : (await rt.ref(p).once('value')).val(); } catch (e) { return null; } };
-    const [q, w] = await Promise.all([get('school/review/q'), get('school/review/w')]);
+    const [q, w, ap] = await Promise.all([get('school/review/q'), get('school/review/w'),
+      fetch('/admin/review-approved.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null)]);
+    APPROVED = { q: (ap && ap.q) || {}, w: (ap && ap.w) || {} };
     return { q: q || {}, w: w || {} };
   }
   async function save(rt, kind, id, rec) { await rt.ref(`school/review/${kind}/${key(id)}`).set(rec); }
@@ -58,7 +72,7 @@
     const one = async s => {
       const get = u => fetch('/worksheets/' + u, { cache: 'no-cache' }).then(r => r.ok ? r.text() : '').catch(() => '');
       const [a, b] = await Promise.all([get(s.p), s.ms ? get(s.ms) : '']);
-      s.h = hash(textOf(a) + '\u0002' + textOf(b)); s.missing = !a;
+      s.h = hash(textOf(a) + '\u0002' + textOf(b)); s.hr = rawHash(a, b); s.missing = !a;
       done++; if (onProgress) onProgress(done, list.length);
     };
     for (let i = 0; i < list.length; i += 8) await Promise.all(list.slice(i, i + 8).map(one));
@@ -66,8 +80,8 @@
   }
   function counts(items, recs, idOf, hOf) {
     const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: items.length };
-    items.forEach(it => c[status(recs[key(idOf(it))], hOf(it))]++);
+    items.forEach(it => c[full(recs[key(idOf(it))], hOf(it), (APPROVED.q[idOf(it)] || {}).h === hOf(it))]++);
     return c;
   }
-  window.REVIEW = { key, hash, qHash, textOf, status, LABEL, questions, loadReview, save, clear, sheets, counts };
+  window.REVIEW = { key, hash, qHash, textOf, rawText, rawHash, status, statusQ, statusW, keptQ, keptW, LABEL, questions, loadReview, save, clear, sheets, counts };
 })();

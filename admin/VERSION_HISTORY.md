@@ -27,6 +27,7 @@
 - **Lessons:** new Biology drafts 1, 2a–2d, 2f (under review); 1f Ionic bonding and Biology 1 Living organisms checked; "Double Award only" / "Beyond GCSE" slide tags; Next slide ⏭ and ▦ All slides controls in projector mode (trial)
 
 #### Changed
+- **Checked stays checked:** an edit you ask for no longer sends a checked question, worksheet or lesson back to review (only changes made without your say-so do). Chemistry 1fg1 worksheets (KS4, Single Award, KS3) marked checked; Biology lesson 1 Living organisms checked again with its latest edits (version 20 Nov 2026)
 - Lessons: simpler lesson list (no Checked badge, review dates or how-it-works box); the ✎ Review notes system is gone; 1f Ionic bonding content updates (hydroxide replaces phosphate and more); Separate Science mentions removed
 - Sitemap: archived worksheets removed
 
