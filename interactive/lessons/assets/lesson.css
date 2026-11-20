@@ -346,3 +346,7 @@ table.cmpcell td.no{background:#fde3e3;color:#b71c1c}
 .ps .eqn{font-size:46px;gap:16px;margin:18px 0}
 .ps .eqn .term{border-width:5px;padding:8px 18px}
 .ps table.aer td:nth-child(2){background:#e3f2fd}.ps table.aer td:nth-child(3){background:#f3e5f5}
+/* slide tags (trial on Biology 2d): one corner, top right */
+.ps[data-tag]::after{position:absolute;top:22px;right:90px;font:800 22px 'Barlow',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border:3px solid currentColor;border-radius:6px;background:#fff;z-index:3}
+.ps[data-tag="da"]::after{content:"Double Award only";color:#1565c0}
+.ps[data-tag="beyond"]::after{content:"Beyond GCSE";color:#8e24aa}

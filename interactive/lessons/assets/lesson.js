@@ -75,7 +75,7 @@ function deck(){
   document.body.appendChild(root);
   const stage = $('#stage');
   const slides = $$('section.ps', src);
-  stage.innerHTML = slides.map((s,i) => `<section class="ps ${s.className.replace('ps','')}" ${s.getAttribute('style')?`style="${s.getAttribute('style')}"`:''}><div class="sbar"></div>${s.innerHTML}<div class="num">${i+1} / ${slides.length}</div></section>`).join('');
+  stage.innerHTML = slides.map((s,i) => `<section class="ps ${s.className.replace('ps','')}" ${s.getAttribute('style')?`style="${s.getAttribute('style')}"`:''}${s.dataset.tag?` data-tag="${s.dataset.tag}"`:''}><div class="sbar"></div>${s.innerHTML}<div class="num">${i+1} / ${slides.length}</div></section>`).join('');
   src.remove();
   L.initComps(stage);
   const ps = $$('.ps', stage);
