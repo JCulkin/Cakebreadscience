@@ -6,8 +6,12 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.resolve(__dirname, '..', '..');
 const W = path.join(ROOT, 'worksheets');
 const FOLDERS = ['biology', 'chemistry', 'physics', 'maths', 'cross-curricular'];
-const indexHtml = fs.readdirSync(W).filter(f => f.endsWith('.html')).map(f => fs.readFileSync(path.join(W, f), 'utf8')).join('\n');
-const linked = new Set([...indexHtml.matchAll(/href="(?:\/worksheets\/|\.\/)?((?:biology|chemistry|physics|maths|cross-curricular)\/[^"#?]+\.html)"/g)].map(m => m[1]));
+/* live = linked from a worksheets index page students use; archived = only on worksheets/archive.html (retired by the
+   worksheets chat, 19 Nov: not shown to students, so not in the review queue) */
+const linksOf = files => new Set(files.filter(f => fs.existsSync(path.join(W, f))).flatMap(f => [...fs.readFileSync(path.join(W, f), 'utf8')
+  .matchAll(/href="(?:\/worksheets\/|\.\/)?((?:biology|chemistry|physics|maths|cross-curricular)\/[^"#?]+\.html)"/g)].map(m => m[1])));
+const INDEXES = fs.readdirSync(W).filter(f => f.endsWith('.html') && f !== 'archive.html');
+const linked = linksOf(INDEXES), retired = linksOf(['archive.html']);
 const out = [];
 for (const folder of FOLDERS) {
   const dir = path.join(W, folder);
@@ -26,9 +30,10 @@ for (const folder of FOLDERS) {
       p, t: title, subj: folder,
       kind: f.endsWith('_sa.html') ? 'KS4 Single Award' : f.startsWith('ks4/') ? 'KS4' : f.startsWith('ks3/') ? 'KS3' : /_challenge\b/.test(f) ? 'challenge' : /_practice\b/.test(f) ? 'practice' : 'sheet',
       live: linked.has(p),
+      archived: !linked.has(p) && retired.has(p),
       ms: fs.existsSync(path.join(dir, ms)) ? `${folder}/${ms}` : null
     });
   }
 }
 fs.writeFileSync(path.join(ROOT, 'admin/worksheets.json'), JSON.stringify({ built: new Date().toISOString().slice(0, 10), sheets: out }, null, 0) + '\n');
-console.log(`worksheets: ${out.length} made · ${out.filter(s => s.live).length} on the worksheet pages · ${out.filter(s => s.ms).length} with mark schemes`);
+console.log(`worksheets: ${out.length} made · ${out.filter(s => s.live).length} on the worksheet pages · ${out.filter(s => s.archived).length} archived · ${out.filter(s => s.ms).length} with mark schemes`);

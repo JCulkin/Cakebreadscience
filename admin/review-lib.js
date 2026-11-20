@@ -50,8 +50,10 @@
   async function clear(rt, kind, id) { await rt.ref(`school/review/${kind}/${key(id)}`).remove(); }
 
   /* worksheets: the list from /admin/worksheets.json, each fingerprinted from the live page (and its mark scheme) */
+  /* archived sheets (worksheets/archive.html only) aren't shown to students, so they're listed but not read or reviewed */
   async function sheets(onProgress) {
-    const list = ((await (await fetch('/admin/worksheets.json', { cache: 'no-store' })).json()) || {}).sheets || [];
+    const all = ((await (await fetch('/admin/worksheets.json', { cache: 'no-store' })).json()) || {}).sheets || [];
+    const list = all.filter(s => !s.archived);
     let done = 0;
     const one = async s => {
       const get = u => fetch('/worksheets/' + u, { cache: 'no-cache' }).then(r => r.ok ? r.text() : '').catch(() => '');
@@ -60,7 +62,7 @@
       done++; if (onProgress) onProgress(done, list.length);
     };
     for (let i = 0; i < list.length; i += 8) await Promise.all(list.slice(i, i + 8).map(one));
-    return list;
+    return all;
   }
   function counts(items, recs, idOf, hOf) {
     const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: items.length };

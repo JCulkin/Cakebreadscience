@@ -38,6 +38,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
 .filters button{font:700 13px Barlow,Arial;background:#fff;border:1.5px solid #999;padding:4px 10px;cursor:pointer;border-radius:99px}
 .filters button.on{background:#111;color:#fff;border-color:#111}
 .filters select,.filters input{font:600 14px Barlow,Arial;padding:4px 6px;border:1.5px solid #999;background:#fff}
+.filters select{max-width:100%}@media(max-width:640px){.filters select,.filters input{flex:1 1 100%}}
 .st{display:inline-block;font:700 11.5px Barlow,Arial;text-transform:uppercase;letter-spacing:.4px;padding:2px 8px;border-radius:99px;border:1.5px solid #111;white-space:nowrap}
 .st.todo{background:var(--todo)}.st.changed{background:var(--chg);color:#fff;border-color:var(--chg)}.st.fix{background:var(--fix);color:#fff;border-color:var(--fix)}.st.ok{background:var(--ok);color:#fff;border-color:var(--ok)}
 /* the question card */
@@ -78,6 +79,8 @@ main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
 .wrow .acts .wgood{background:var(--ok);color:#fff;border-color:#0f5132}
 .wrow .acts .wfix{color:var(--fix);border-color:var(--fix)}
 .wrow .note{grid-column:2/-1;font-size:13.5px;color:var(--fix)}
+.wband{margin:10px 0 4px;font:700 12px Barlow,Arial;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
+.wrow.arch{opacity:.7}
 @media(max-width:640px){.wrow{grid-template-columns:1fr}.wrow .acts{justify-content:flex-start}.qtext{font-size:18px}.good{font-size:28px}}
 .muted{color:var(--muted)}.small{font-size:13px}
 </style>
@@ -233,28 +236,36 @@ async function drawW() {
     try { RV.sheets = await REVIEW.sheets((d, n) => { const e = $('wload'); if (e) e.textContent = `Reading the worksheets… ${d} of ${n}`; }); }
     catch (e) { box.innerHTML = '<p>Couldn\'t load the worksheet list (/admin/worksheets.json).</p>'; return; }
   }
-  const S = RV.sheets, sOf = s => REVIEW.status(RV.recs.w[REVIEW.key(s.p)], s.h);
-  const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: S.length }; S.forEach(s => c[sOf(s)]++);
-  const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.wfilter];
-  const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', `All (${S.length})`]];
+  const ARCH = RV.sheets.filter(s => s.archived), S = RV.wfilter === 'arch' ? ARCH : RV.sheets.filter(s => !s.archived);
+  const sOf = s => s.archived ? 'arch' : REVIEW.status(RV.recs.w[REVIEW.key(s.p)], s.h);
+  const LIVE = RV.sheets.filter(s => !s.archived), c = { todo: 0, changed: 0, fix: 0, ok: 0, total: LIVE.length }; LIVE.forEach(s => c[sOf(s)]++);
+  const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true, arch: () => true }[RV.wfilter];
+  const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', `All (${LIVE.length})`], ['arch', `Archived (${ARCH.length})`]];
+  /* within a subject: KS4 (Single Award twin straight after its sheet), KS3, then anything else (challenges, maths, older) */
+  const band = s => /^[a-z-]+\/ks4\//.test(s.p) ? 0 : /^[a-z-]+\/ks3\//.test(s.p) ? 1 : 2;
+  const BAND = ['KS4 · Years 10 and 11', 'KS3 · Years 8 and 9', 'Other sheets'];
+  const sortKey = s => s.p.replace(/_sa\.html$/, '.html~');
   const NAMES = { biology: 'Biology', chemistry: 'Chemistry', physics: 'Physics', maths: 'Maths', 'cross-curricular': 'Cross-curricular' };
   const KIND = { sheet: 'Worksheet', practice: 'Practice sheet', challenge: 'Challenge sheet', KS4: 'KS4 worksheet', KS3: 'KS3 worksheet', 'KS4 Single Award': 'KS4 worksheet · Single Award version' };
   const groups = Object.keys(NAMES).map(sub => {
-    const rows = S.filter(s => s.subj === sub && want(sOf(s)));
+    const rows = S.filter(s => s.subj === sub && want(sOf(s))).sort((a, b) => band(a) - band(b) || sortKey(a).localeCompare(sortKey(b)));
     const all = S.filter(s => s.subj === sub), ok = all.filter(s => sOf(s) === 'ok').length;
     if (!all.length) return '';
-    return `<div class="wsub">${NAMES[sub]} <span class="muted small" style="font-family:Barlow;text-transform:none">${ok} of ${all.length} checked</span></div>`
+    let lastBand = -1;
+    return `<div class="wsub">${NAMES[sub]} <span class="muted small" style="font-family:Barlow;text-transform:none">${RV.wfilter === 'arch' ? `${all.length} archived` : `${ok} of ${all.length} checked`}</span></div>`
       + (rows.length ? rows.map(s => { const st = sOf(s), rec = RV.recs.w[REVIEW.key(s.p)];
-        return `<div class="wrow" data-p="${esc(s.p)}"><span><span class="st ${st}">${REVIEW.LABEL[st]}</span></span>
+        const head = RV.wfilter !== 'arch' && band(s) !== lastBand ? `<div class="wband">${BAND[lastBand = band(s)]}</div>` : '';
+        if (st === 'arch') return `<div class="wrow arch"><span><span class="st">Archived</span></span><span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>Only on the archive page, not shown to students</small></span><span></span></div>`;
+        return head + `<div class="wrow" data-p="${esc(s.p)}"><span><span class="st ${st}">${REVIEW.LABEL[st]}</span></span>
           <span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>${KIND[s.kind]}${s.live ? '' : ' · <b>draft (not on the worksheet pages)</b>'}${s.ms ? ` · <a href="/worksheets/${esc(s.ms)}" target="_blank">mark scheme</a>` : ''}${s.missing ? ' · ⚠️ page not found' : ''}${st === 'changed' ? ` · changed since you checked it on ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' ? ` · checked ${new Date(rec.at).toLocaleDateString('en-GB')}` : ''}</small></span>
           <span class="acts">${st !== 'ok' ? '<button class="wgood">✓ Good</button>' : '<button class="wun">Send back</button>'}<button class="wfix">✏️ Needs a fix</button></span>
           ${rec && rec.note && (st === 'fix' || st === 'changed') ? `<span class="note">Your note: “${esc(rec.note)}”</span>` : ''}</div>`; }).join('')
         : '<p class="muted small">Nothing in this list.</p>');
   }).join('');
   box.innerHTML = summary(c, 'worksheets') + `<div class="filters">${F.map(([k, t]) => `<button data-wf="${k}" class="${RV.wfilter === k ? 'on' : ''}">${t}</button>`).join('')}</div>
-    <p class="small muted" style="margin-bottom:6px">Open a sheet (and its mark scheme), then press ✓ Good. Any change to its wording, answers or pictures sends it back here.</p>${groups}`;
+    <p class="small muted" style="margin-bottom:6px">Open a sheet (and its mark scheme), then press ✓ Good. Any change to its wording, answers or pictures sends it back here. Archived sheets (only on the archive page) aren't counted.</p>${groups}`;
   box.querySelectorAll('[data-wf]').forEach(b => b.onclick = () => { RV.wfilter = b.dataset.wf; drawW(); });
-  box.querySelectorAll('.wrow').forEach(r => {
+  box.querySelectorAll('.wrow[data-p]').forEach(r => {
     const s = S.find(x => x.p === r.dataset.p);
     const set = async (st, note) => { const rec = { h: s.h, at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 500);
       try { await REVIEW.save(RT, 'w', s.p, rec); RV.recs.w[REVIEW.key(s.p)] = rec; drawW(); } catch (e) { alert('Not saved — check your connection.'); } };

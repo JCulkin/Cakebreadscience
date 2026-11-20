@@ -309,8 +309,8 @@ function drawBuild() {
   const done = [], review = [];
   const RQ = REVIEW.counts(QUESTIONS, BUILD.rev.q, q => q.id, REVIEW.qHash);
   const wst = s => REVIEW.status(BUILD.rev.w[REVIEW.key(s.p)], s.h);
-  const wline = sub => { const all = BUILD.ws.filter(s => s.subj === sub), c = { todo: 0, changed: 0, fix: 0, ok: 0 }; all.forEach(s => c[wst(s)]++);
-    return { all, c, html: `<br><b>${all.length}</b> made · <span style="color:var(--s)"><b>${c.ok}</b> checked</span> · <b>${c.todo + c.changed}</b> to review${c.changed ? ` (${c.changed} changed)` : ''}${c.fix ? ` · <span style="color:var(--bad)">${c.fix} need a fix</span>` : ''}${all.some(s => !s.live) ? ` · ${all.filter(s => !s.live).length} drafts` : ''}` }; };
+  const wline = sub => { const all = BUILD.ws.filter(s => s.subj === sub && !s.archived), c = { todo: 0, changed: 0, fix: 0, ok: 0 }; all.forEach(s => c[wst(s)]++);
+    return { all, c, html: `<br><b>${all.length}</b> made · <span style="color:var(--s)"><b>${c.ok}</b> checked</span> · <b>${c.todo + c.changed}</b> to review${c.changed ? ` (${c.changed} changed)` : ''}${c.fix ? ` · <span style="color:var(--bad)">${c.fix} need a fix</span>` : ''}${all.some(s => !s.live) ? ` · ${all.filter(s => !s.live).length} not on the worksheet pages yet` : ''}` }; };
   const rows = Object.keys(SUB).map(id => {
     const subs = subsOf(id), L = LETTER[id];
     const ls = BUILD.lj && (BUILD.lj.subjects || []).find(x => x.id === id);
@@ -339,7 +339,7 @@ function drawBuild() {
       <span><b>${with_(p => (p.r || []).some(isSheet))}</b>/${all.length} have a worksheet</span><span><b>${sheets.length + msheets.length}</b> worksheets live</span>
       <span><b>${done.length}</b> lessons checked · <b>${review.length}</b> under review</span></div>
     <div class="bkpi" style="background:#f6f4ee;border:1.5px solid var(--ink);padding:8px 12px;align-items:center"><span><b style="color:var(--s)">${RQ.ok}</b>/${RQ.total} questions you've checked</span><span><b>${RQ.todo + RQ.changed}</b> to review${RQ.changed ? ` (${RQ.changed} changed since checked)` : ''}</span>${RQ.fix ? `<span><b style="color:var(--bad)">${RQ.fix}</b> need a fix</span>` : ''}
-      <span><b style="color:var(--s)">${BUILD.ws.filter(s => wst(s) === 'ok').length}</b>/${BUILD.ws.length} worksheets checked</span><a class="btn" href="/admin/review.html" style="margin-left:auto">✅ Review questions and worksheets →</a></div>
+      <span><b style="color:var(--s)">${BUILD.ws.filter(s => !s.archived && wst(s) === 'ok').length}</b>/${BUILD.ws.filter(s => !s.archived).length} worksheets checked</span><a class="btn" href="/admin/review.html" style="margin-left:auto">✅ Review questions and worksheets →</a></div>
     <div style="overflow-x:auto"><table class="build"><thead><tr><th></th><th>Lessons</th><th>Worksheets</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
     ${done.length || review.length ? `<p class="small" style="margin-top:8px">${done.length ? `<b>Checked:</b> ${done.join(' · ')}` : ''}${done.length && review.length ? '<br>' : ''}${review.length ? `<b>Under review:</b> ${review.join(' · ')}` : ''}</p>` : ''}
     <p class="small muted" style="margin-top:6px">Green = done (checked lesson / sub-topic with a worksheet), amber = lesson under review. Checked = you pressed “It's good” in Review and it hasn't changed since. Counted from the live lesson list, the worksheet pages and the spec index (built ${esc(IX.built || '?')}). <a href="/interactive/lessons/">Lessons</a> · <a href="/worksheets/science.html">Science worksheets</a> · <a href="/worksheets/maths.html">Maths worksheets</a></p>`;

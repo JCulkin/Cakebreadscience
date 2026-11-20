@@ -72,5 +72,6 @@ $('all').onclick = all; $('ans').onchange = all; $('hard').onchange = all; $('on
 document.querySelectorAll('.f').forEach(b => b.onclick = () => { filt = b.dataset.f; document.querySelectorAll('.f').forEach(x => x.classList.toggle('on', x === b)); document.querySelectorAll('.card').forEach(c => c.hidden = !!filt && c.dataset.kind !== filt); });
 all();
 </script>
+<script src="/js/home-link.js" data-back="/test.html" data-back-label="Test page"></script>
 </body>
 </html>
