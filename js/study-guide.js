@@ -99,8 +99,7 @@
       </section>`;
     }).join('');
     const kwSec = kwGroups.length ? `<section class="sg-kws"><h2 class="sg-topic" style="--c:#111">Key words</h2>
-      <p class="sg-kwlede">Not in the spec wording above, but you need to know them and use them in your answers.</p>
-      ${kwGroups.map(({ x, kw }) => `<div class="sg-kwg" style="--c:${COL[x.sb.L]}"><h4><span>${x.sb.topic}${x.sb.l}</span> ${esc(x.sb.name)}</h4><ul>${kw.map(([w, m]) => `<li><b>${esc(w)}</b>: ${esc(m)}</li>`).join('')}</ul></div>`).join('')}</section>` : '';
+      ${kwGroups.map(({ x, kw }) => `<div class="sg-kwg" style="--c:${COL[x.sb.L]}"><span class="sg-kwc">${x.sb.topic}${x.sb.l}</span><ul>${kw.map(([w, m]) => `<li><b>${esc(w)}</b>: ${esc(m)}</li>`).join('')}</ul></div>`).join('')}</section>` : '';
     const advice = `<section class="sg-adv"><h2 class="sg-topic" style="--c:#111">Exam advice</h2><ul>${ADVICE.map(([h, t]) => `<li><b>${h}:</b> ${t}</li>`).join('')}</ul></section>`;
     return `<article class="sg sg-${mode}">${head}${list.length ? body : '<p>No spec points chosen yet.</p>'}${kwSec}${advice}</article>`;
   }
@@ -120,11 +119,9 @@
 .sg-pts tr{break-inside:avoid}
 .sg-code{width:38px;font-weight:900;color:var(--c)}
 .sg-txt ul{margin:2px 0 0 18px}
-.sg-kwlede{font-size:13px;color:#444;margin:-2px 0 6px}
-.sg-kwg{margin:0 0 8px;border-left:4px solid var(--c);padding-left:8px}
-.sg-kwg h4{font:900 14px 'Barlow Condensed',Arial;text-transform:uppercase;margin:0 0 2px;break-after:avoid}
-.sg-kwg h4 span{color:var(--c)}
-.sg-kwg ul{list-style:none;columns:2;column-gap:18px;font-size:13px}.sg-kwg li{break-inside:avoid;margin:1px 0}
+.sg-kwg{display:flex;gap:8px;align-items:flex-start;margin:0 0 4px;border-left:4px solid var(--c);padding-left:6px}
+.sg-kwc{flex:none;width:26px;font:900 14px/1.3 'Barlow Condensed',Arial;text-transform:uppercase;color:var(--c)}
+.sg-kwg ul{flex:1;min-width:0;list-style:none;columns:2;column-gap:18px;font-size:13px;line-height:1.3}.sg-kwg li{break-inside:avoid;margin:0 0 1px}
 @media(max-width:600px){.sg-kwg ul{columns:1}.sg h1{font-size:28px}}
 .sg-adv ul{margin-left:18px;font-size:13.5px}.sg-adv li{margin:3px 0}
 .sg-rev{margin:6px 0 4px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
