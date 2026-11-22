@@ -313,14 +313,17 @@ function build() {
       <b style="font-family:'Barlow Condensed',sans-serif;font-size:19px;text-transform:uppercase"><code>${n}</code></b><div class="small muted">${used(n).length ? 'Used by: ' + used(n).map(esc).join(' · ') : 'Not used yet'}</div></div>`).join('')}</div>`);
 
   /* ---------- items ---------- */
-  const SLOT = Object.fromEntries(ADV_SLOTS.map(s => [s.k, s.name]));
-  const one = it => { const fig = PIXEL.figure({ [it.slot]: it.id }, PIXEL.DEFAULT);
+  /* 22 Nov: one tag = rarity + level; stats and what it does on their own lines */
+  const one = it => { const fig = PIXEL.figure(ADV_PUT({}, it), PIXEL.DEFAULT), fx = ADV_FX_TXT(it.fx);
     return `<div class="card item"><img class="px ic" src="${PIXEL.item(it.id)}" alt=""><img class="px fig" src="${fig}" alt="">
-      <div><b>${esc(it.name)}</b><span class="tag r-${it.r}">${ADV_RARITY[it.r]}</span>${it.s ? `<span class="tag" style="color:${SCOL[it.s]}">${SNAME[it.s]}</span>` : ''}<span class="tag">${SLOT[it.slot]}</span>
-      ${it.dark ? '<span class="tag" style="color:#7c3aed">☠ cursed chests</span>' : ''}${ADV.SLOT_LOCK[it.slot] || it.legend ? `<span class="tag" style="color:#7c3aed">🔓 level ${ADV.unlockLv(it.legend ? 'legend' : ADV.SLOT_LOCK[it.slot])}</span>` : ''}
-      <p class="small" style="margin-top:3px"><i>${esc(it.d)}</i></p><p class="small muted">From: ${esc(it.from)}</p></div></div>`; };
-  const starter = Object.fromEntries(ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => [i.slot, i.id]));
-  const legend = Object.fromEntries(ADV_ITEMS.filter(i => i.r === 'legend' || i.r === 'unhinged').map(i => [i.slot, i.id]));
+      <div><b>${esc(it.name)}</b> <span class="tag r-${it.r}">${ADV_TAG(it)}</span>
+      <p class="small" style="margin-top:2px">${ADV_WHERE(it)}${it.s ? ` · <span style="font-weight:700;color:${SCOL[it.s]}">${SNAME[it.s]}</span>` : ''}${ADV_STATS_TXT(it) ? ' · <span style="font-weight:700">' + ADV_STATS_TXT(it) + '</span>' : ''}</p>
+      ${fx.map(f => `<p class="small" style="color:#7c2d12;font-weight:700">★ ${esc(f)}</p>`).join('')}
+      <p class="small" style="margin-top:3px"><i>${esc(it.d)}</i></p><p class="small muted">From: ${esc(it.from)}${it.dark ? ' (☠ also cursed chests)' : ''}</p></div></div>`; };
+  const starter = ADV_ITEMS.filter(i => i.from === 'Starter outfit').reduce((e, i) => ADV_PUT(e, i), {});
+  const legend = ADV_ITEMS.filter(i => (i.r === 'legend' || i.r === 'unhinged') && !i.two).reduce((e, i) => ADV_PUT(e, i, i.slot === 'hand' ? (e.rhand ? 'lhand' : 'rhand') : null), {});
+  const SETFIG = { b: ['leafhat', 'puffer', 'genes', 'wellies', 'net'], c: ['goggles', 'labcoat', 'distill', 'galvboots', 'burette'], p: ['beanie', 'sequin', 'kilt', 'springs', 'glove', 'mirror'] };
+  const setEq = k => SETFIG[k].reduce((e, id) => ADV_PUT(e, ADV_BY[id], ADV_BY[id].slot === 'hand' && !ADV_BY[id].two ? (e.rhand ? 'lhand' : 'rhand') : null), {});
   /* ---------- treasure chests (17 Nov) ---------- */
   const chestPool = C => { const no = new Set([...Object.values(BL.PLACES).map(P => P.item).filter(Boolean), 'calc67']);
     return ADV_ITEMS.filter(i => i.r !== 'legend' && i.from !== 'Starter outfit' && !no.has(i.id) && (C.dark ? i.dark : C.rar.includes(i.r))); };
@@ -330,11 +333,11 @@ function build() {
       <h3>${esc(C.name)}</h3><p class="small">${id === 'cursed' ? 'Underworld only (60%), ' : id === 'wood' ? '60% of surface chests, ' : id === 'silver' ? '30% on top, 25% below, ' : '10% on top, 15% below, '}🪙 ${C.coins[0]}–${C.coins[1]} · ${esc(C.odds)}${C.brew ? ` · brew ${Math.round(C.brew * 100)}%` : ''}</p>
       <p class="small muted">${chestPool(C).length} items can come out of it</p></div>`).join('')}</div>`);
 
-  sec('items', 'Items', `${ADV_ITEMS.length} things to wear, in ${ADV_SLOTS.length} slots`, `
-    <p class="lede">Strength from gear is a flat +${ADV.GEAR} (the old joke stats are no longer shown to students). Tops, bottoms and shoes from level 1, hats from level ${ADV.unlockLv('hats')}, hands from ${ADV.unlockLv('hands')}, legendaries from ${ADV.unlockLv('legend')}. Rarity: ${Object.entries(ADV_RARITY).map(([r, n]) => `<span class="tag r-${r}">${n} · ${ADV_ITEMS.filter(i => i.r === r).length}</span>`).join('')}</p>
+  sec('items', 'Items', `${ADV_ITEMS.length} things to wear`, `
+    <p class="lede">Every item has a level (hats ${ADV.unlockLv('hats')}+, things to hold ${ADV.unlockLv('hands')}+, legendaries ${ADV.unlockLv('legend')}) and adds Strength, Health or Magic (budget: common 1, uncommon 2, rare 3, lowkey legendary 4, absolutely unhinged 5, legendary 6 points; two-handed items double; a special ability costs about 1). Some also do something (★). Things to hold go in either hand; some need both. <b>Science sets:</b> 4 or more slots filled, every item from one science → +${Math.round(ADV.SET_PCT * 100)}% of that science's stat (at least 3), a small extra and a glow: ${Object.values(ADV_SETS).map(S => `<b style="color:${S.col}">${S.name}</b> ${ADV_STAT[S.stat][1]}, ${ADV_FX_TXT(S.fx)[0].toLowerCase()}`).join(' · ')}. Rarity: ${Object.entries(ADV_RARITY).map(([r, n]) => `<span class="tag r-${r}">${n} · ${ADV_ITEMS.filter(i => i.r === r).length}</span>`).join('')}</p>
     <div class="faces" style="margin-bottom:10px"><figure><img class="px" src="${PIXEL.figure(starter, PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>Starter outfit</figcaption></figure>
-      <figure><img class="px" src="${PIXEL.figure(legend, PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>Rarest of each slot</figcaption></figure></div>
-    ${ADV_SLOTS.map(sl => `<h3>${sl.name} <small class="cnt">${ADV_ITEMS.filter(i => i.slot === sl.k).length}</small></h3><div class="grid" style="--w:360px">${ADV_ITEMS.filter(i => i.slot === sl.k).map(one).join('')}</div>`).join('')}`);
+      <figure><img class="px" src="${PIXEL.figure(legend, PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>Rarest of each slot</figcaption></figure>${Object.keys(ADV_SETS).map(k => `<figure><img class="px" src="${PIXEL.figure(setEq(k), PIXEL.DEFAULT)}" style="height:160px;background:#b9d77f" alt=""><figcaption>${ADV_SETS[k].name} set</figcaption></figure>`).join('')}</div>
+    ${ADV_GROUPS.map(sl => { const a = ADV_ITEMS.filter(i => i.slot === sl.k).sort((x, y) => (x.lv || 1) - (y.lv || 1)); return `<h3>${sl.name} <small class="cnt">${a.length}</small></h3><div class="grid" style="--w:360px">${a.map(one).join('')}</div>`; }).join('')}`);
 
   /* ---------- character creator ---------- */
   const O = PIXEL.OPTIONS, D0 = PIXEL.DEFAULT, look = o => PIXEL.portrait(Object.assign({}, D0, o));
@@ -356,8 +359,8 @@ function build() {
   const lv = [...Array(16)].map((_, i) => i + 1);
   sec('rules', 'Rules and numbers', 'everything a student can earn, and how', `
     <div class="grid" style="--w:420px">
-      <div class="card"><h3 style="margin-top:0">Stats</h3><dl class="kv"><dt>Strength</dt><dd>${ADV.BASE.str} + Physics spec points secured + ${ADV.LV.str} per level + ${ADV.GEAR} from gear</dd><dt>Health</dt><dd>${ADV.BASE.hp} + Biology spec points secured + ${ADV.LV.hp} per level</dd>
-        <dt>Magic</dt><dd>Chemistry spec points secured + ${ADV.LV.mag} per level</dd><dt>Mana</dt><dd>up to 10 + Magic</dd><dt>Level cap</dt><dd>2 + 1 per 8 spec points secured</dd><dt>Spec points</dt><dd>Biology ${ADV.TOTAL.b} · Chemistry ${ADV.TOTAL.c} · Physics ${ADV.TOTAL.p}</dd></dl>
+      <div class="card"><h3 style="margin-top:0">Stats</h3><dl class="kv"><dt>Strength</dt><dd>${ADV.BASE.str} + Physics spec points secured + ${ADV.LV.str} per level + gear</dd><dt>Health</dt><dd>${ADV.BASE.hp} + Biology spec points secured + ${ADV.LV.hp} per level + gear</dd>
+        <dt>Magic</dt><dd>Chemistry spec points secured + ${ADV.LV.mag} per level + gear</dd><dt>Mana</dt><dd>up to 10 + Magic</dd><dt>Level cap</dt><dd>2 + 1 per 8 spec points secured</dd><dt>Spec points</dt><dd>Biology ${ADV.TOTAL.b} · Chemistry ${ADV.TOTAL.c} · Physics ${ADV.TOTAL.p}</dd></dl>
         <div class="wrapx" style="margin-top:8px;border-width:1px"><table><tr><th>Level</th>${lv.map(l => `<td class="n">${l}</td>`).join('')}</tr><tr><th>XP</th>${lv.map(l => `<td class="n small">${ADV.xpFor(l)}</td>`).join('')}</tr></table></div></div>
       <div class="card"><h3 style="margin-top:0">Securing and XP</h3><dl class="kv"><dt>Question</dt><dd>right first time on two different days (true/false counts half)</dd><dt>Spec point</dt><dd>secured questions + cards ≥ its value (max 4)</dd><dt>Rusty</dt><dd>${QE.RUST_DAYS} days without a correct answer</dd>
         <dt>XP</dt><dd>5 per right answer (10 for ★), +20 per secured question, +100 per new spec point</dd><dt>Flashcards</dt><dd>+${QE.CARD.xp} XP (max ${QE.CARD.xpCap} a day), +${QE.CARD.hp} Health, +${QE.CARD.mana} mana per due card; 1 coin per ${QE.CARD.coinEvery}; ${QE.CARD.doneAt} cards = today's revision</dd></dl></div>

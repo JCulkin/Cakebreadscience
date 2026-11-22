@@ -71,6 +71,12 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .detail .dd{font-style:italic;margin:4px 0}
 .detail .ds{font-size:13px;color:var(--muted)}
 .detail .acts{margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+.it.lk img{opacity:.45;filter:grayscale(.6)}.it .lock{position:absolute;top:4px;left:4px;background:#fff7ed;color:#b45309;font-size:10px;padding:1px 5px;border-radius:4px;border:1px solid #fdba74}
+.tag{display:inline-block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#fff;background:var(--c);padding:2px 8px;border-radius:4px}
+.r-unhinged .tag{background:linear-gradient(90deg,#ea580c,#db2777,#7c3aed)}
+.detail .dst{font-weight:700;font-size:15px;margin-top:4px}.detail .dfx{font-weight:700;color:#7c2d12;font-size:14px}
+.gear{font-size:14px;margin-top:8px;text-align:left;background:var(--soft);border:2px solid var(--line);border-radius:8px;padding:8px 10px}.gear ul{margin:4px 0 0 18px}
+.setok{margin-top:8px;font-size:14px;text-align:left;border:2px solid var(--g);border-radius:8px;padding:8px 10px;background:#fff}
 .hints{margin-top:12px;background:#fff;border:2px dashed #aaa;padding:10px 14px;font-size:14px}
 .hints li{margin:4px 0 0 18px}
 @media(max-width:520px){.detail{flex-direction:column;align-items:center;text-align:center}.detail .acts{justify-content:center}}
@@ -127,7 +133,7 @@ const STARTER = ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id
 const OWNED = new Set([...STARTER, ...(ADV.S.bag || [])]);
 const HOLDERS = {};
 let eq = ADV.eq();
-for (const k in eq) if (eq[k] && !OWNED.has(eq[k])) { const st = ADV_ITEMS.find(i => i.slot === k && i.from === 'Starter outfit'); eq[k] = st ? st.id : null; }
+for (const k in eq) if (eq[k] && !OWNED.has(eq[k])) { const st = ADV_ITEMS.find(i => ADV_FITS(i, k) && i.from === 'Starter outfit' && (i.slot !== 'hand' || i.side === k[0])); eq[k] = st ? st.id : null; }
 /* legendaries: whoever has the most correct answers in that science over the last 7 days holds it */
 QE.onChange(() => {
   if (!QE.user || HOLDERS._done) return; HOLDERS._done = true;
@@ -136,64 +142,68 @@ QE.onChange(() => {
     render();
   }).catch(() => {});
 });
-let slot = 'top', sel = eq.top || null, showHints = false;   // tops first: hats unlock at level 3
+let slot = 'top', sel = eq.top || null;   // tops first: hats are level 3, things to hold level 5
 const PIC = {}; const pic = id => PIC[id] || (PIC[id] = PIXEL.item(id));
 const SUBJ = {b: 'Biology', c: 'Chemistry', p: 'Physics'};
-const sgn = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
-
-function setBonus() {
-  const c = {b: 0, c: 0, p: 0};
-  Object.values(eq).forEach(id => { const s = id && byId[id].s; if (s) c[s]++; });
-  const names = {b: 'Certified Plant Whisperer', c: 'Certified Lab Gremlin', p: 'Certified Gravity Enjoyer'};
-  const [k, n] = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
-  return n >= 3 ? {title: names[k], txt: `<b>Set bonus:</b> ${n} ${SUBJ[k]} items → “${names[k]}”`} : {title: null, txt: `Wear 3 items from one science for a set bonus.`};
+const RANK = {common: 0, uncommon: 1, rare: 2, lowkey: 3, unhinged: 4, legend: 5};
+/* 22 Nov: every item has a level (one tag with its rarity), adds Strength/Health/Magic and maybe does something (fx);
+   hand items go in either hand, some need both; 4+ slots all from one science = a set bonus and a glow (adventurer-items.js) */
+const lvNow = () => ADV.stats().l;
+const canWear = i => (i.lv || 1) <= lvNow() && !(i.legend && !ADV.can('legend'));
+function setLine(g) {
+  if (g.set) { const S = ADV_SETS[g.set], st = ADV.stats(); return `<div class="setok" style="--g:${S.col}">✨ <b>Full ${S.name} set!</b> +${st.set} ${ADV_STAT[S.stat][0]} ${ADV_STAT[S.stat][1]} (15%), ${ADV_FX_TXT(S.fx)[0].replace(/^./, c => c.toLowerCase())}, and you glow.</div>`; }
+  const c = {}; Object.entries(eq).forEach(([k, id]) => { const i = byId[id]; if (i && ADV_FITS(i, k) && i.s) c[i.s] = (c[i.s] || 0) + 1; });
+  const best = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+  return best ? `<div class="small">${SUBJ[best[0]]} set: ${best[1]} slot${best[1] > 1 ? 's' : ''}. Fill 4 or more slots with ${SUBJ[best[0]]} items only (nothing from another science, nothing without one) for +15% ${ADV_STAT[ADV_SETS[best[0]].stat][1]} and a glow.</div>`
+    : `<div class="small">Wear 4 or more items from one science, and nothing else, for a set bonus and a glow.</div>`;
+}
+function gearBox() {
+  const g = ADV_GEAR(eq), st = ['str', 'hp', 'mag'].filter(k => g[k]).map(k => `${g[k] > 0 ? '+' : '−'}${Math.abs(g[k])} ${ADV_STAT[k][0]}`).join(' ');
+  const fx = ADV_FX_TXT(g.fx);
+  return `<div class="gear"><b>Your gear:</b> ${st || 'nothing extra yet'}${fx.length ? `<ul>${fx.map(f => `<li>${f}</li>`).join('')}</ul>` : ''}</div>${setLine(g)}`;
 }
 function render() {
   document.getElementById('fig').src = PIXEL.figure(eq, base);
   document.getElementById('nm').textContent = nick;
-  const sb = setBonus();
-  document.getElementById('ttl').textContent = '“' + (sb.title || 'Side Quest Enjoyer') + '”';
-  document.getElementById('set').innerHTML = sb.txt;
+  const g = ADV_GEAR(eq);
+  document.getElementById('ttl').textContent = '“' + (g.set ? ADV_SETS[g.set].title : 'Side Quest Enjoyer') + '”';
+  document.getElementById('set').innerHTML = gearBox();
 
   document.getElementById('slots').innerHTML = ADV_SLOTS.map(s => {
-    const id = eq[s.k], lk = ADV.SLOT_LOCK[s.k] && !ADV.can(ADV.SLOT_LOCK[s.k]);
-    return `<button class="slot ${slot === s.k ? 'on' : ''} ${lk ? 'lk' : ''}" role="tab" aria-selected="${slot === s.k}" data-slot="${s.k}">
-      ${id ? `<img class="px" src="${pic(id)}" alt="">` : '<div class="empty">＋</div>'}${s.name}${lk ? `<span class="lock">🔒 Lv ${ADV.unlockLv(ADV.SLOT_LOCK[s.k])}</span>` : ''}</button>`;
+    const id = eq[s.k], two = id && byId[id] && byId[id].two;
+    return `<button class="slot ${slot === s.k ? 'on' : ''}" role="tab" aria-selected="${slot === s.k}" data-slot="${s.k}">
+      ${id ? `<img class="px" src="${pic(id)}" alt="">` : '<div class="empty">＋</div>'}${s.name}${two ? '<span class="n">both hands</span>' : ''}</button>`;
   }).join('');
 
-  /* a slot that isn't unlocked yet: show what's coming and how far away it is (anything already worn there stays on) */
-  if (ADV.SLOT_LOCK[slot] && !ADV.can(ADV.SLOT_LOCK[slot])) {
-    const u = ADV.UNLOCKS.find(x => x.id === ADV.SLOT_LOCK[slot]), xp = ADV.S.xp, need = ADV.xpFor(u.lv), cap = ADV.levelCap() < u.lv;
-    document.getElementById('slotName').textContent = ADV_SLOTS.find(s => s.k === slot).name;
-    document.getElementById('count').textContent = '';
-    document.getElementById('grid').innerHTML = `<div class="locked" style="grid-column:1/-1">🔒 <b>${u.name} unlock at level ${u.lv}.</b><br>${cap ? `Secure more spec points to raise your level cap (${ADV.securedTotal()} secured; level ${u.lv} needs ${(u.lv - 2) * 8}).` : `${xp} / ${need} XP`}
-      <div class="pb"><i style="width:${Math.min(100, (cap ? ADV.securedTotal() / ((u.lv - 2) * 8) : xp / need) * 100)}%"></i></div>${eq[slot] ? '<p class="small" style="margin-top:8px">You can keep wearing what you have on.</p>' : ''}</div>`;
-    document.getElementById('detail').innerHTML = ''; document.getElementById('hints').innerHTML = '';
-    return;
-  }
-  const mine = ADV_ITEMS.filter(i => i.slot === slot && OWNED.has(i.id));   // only what you've got (user, 17 Nov: no "still to find"; completion lives on the Stats page)
+  const mine = ADV_ITEMS.filter(i => ADV_FITS(i, slot) && OWNED.has(i.id)).sort((a, b) => (a.lv || 1) - (b.lv || 1) || RANK[a.r] - RANK[b.r]);   // only what you've got (no "still to find": the Stats page has completion)
   document.getElementById('slotName').textContent = ADV_SLOTS.find(s => s.k === slot).name;
-  document.getElementById('count').textContent = '';
-  document.getElementById('grid').innerHTML = mine.map(i => `<button class="it r-${i.r} ${sel === i.id ? 'sel' : ''}" data-id="${i.id}">
-      ${eq[slot] === i.id ? '<span class="wearing">ON</span>' : ''}<img class="px" src="${pic(i.id)}" alt=""><span class="lbl">${i.name}</span></button>`).join('');
+  document.getElementById('count').textContent = slot.endsWith('hand') ? 'Anything you hold can go in either hand' : '';
+  document.getElementById('grid').innerHTML = mine.map(i => `<button class="it r-${i.r} ${sel === i.id ? 'sel' : ''} ${canWear(i) ? '' : 'lk'}" data-id="${i.id}">
+      ${eq[slot] === i.id ? '<span class="wearing">ON</span>' : ''}${canWear(i) ? '' : `<span class="lock">🔒 Lv ${i.lv}</span>`}<img class="px" src="${pic(i.id)}" alt=""><span class="lbl">${i.name}</span></button>`).join('')
+    || `<div class="locked" style="grid-column:1/-1">Nothing here yet. Missions, flashcards, dungeons, bosses and treasure chests all drop things to wear.</div>`;
 
-  const it = sel && byId[sel] && byId[sel].slot === slot ? byId[sel] : null;
+  const it = sel && byId[sel] && ADV_FITS(byId[sel], slot) ? byId[sel] : null;
+  const fx = it ? ADV_FX_TXT(it.fx) : [];
   document.getElementById('detail').innerHTML = it ? `<div class="detail r-${it.r}">
       <img class="px" src="${pic(it.id)}" alt="">
-      <div><div class="rar" style="color:var(--${it.r})">${ADV_RARITY[it.r]}</div>
-        <div class="dn">${it.name}</div><div class="dd">${it.d}</div>
+      <div><span class="tag" style="--c:var(--${it.r})">${ADV_TAG(it)}</span>
+        <div class="dn">${it.name}</div>
+        <div class="ds">${ADV_WHERE(it)}${it.s ? ` · <b style="color:${ADV_SETS[it.s].col}">${SUBJ[it.s]}</b>` : ''}</div>
+        ${ADV_STATS_TXT(it) ? `<div class="dst">${ADV_STATS_TXT(it)}</div>` : ''}${fx.map(f => `<div class="dfx">★ ${f}</div>`).join('')}
+        <div class="dd">${it.d}</div>
         <div class="ds">Got it from: ${it.legend ? 'top of the ' + it.legend + ' board over the last 7 days — keep practising to keep it!' : it.from}</div>
-        <div class="acts">${it.legend && !ADV.can('legend') ? `<span class="small">🔒 Legendaries can be worn from level ${ADV.unlockLv('legend')}.</span>` : eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>` : `<button class="btn" data-wear="${it.id}">Wear it</button>`}</div></div></div>` : '';
-
+        <div class="acts">${it.legend && !ADV.can('legend') ? `<span class="small">🔒 Legendaries can be worn from level ${ADV.unlockLv('legend')}.</span>`
+          : eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>`
+          : !canWear(it) ? `<span class="small">🔒 You can wear this from level ${it.lv} (you're level ${lvNow()}). Secure spec points and keep revising to level up.</span>`
+          : `<button class="btn" data-wear="${it.id}">${it.two ? 'Hold it in both hands' : slot.endsWith('hand') ? `Hold it in your ${slot === 'rhand' ? 'right' : 'left'} hand` : 'Wear it'}</button>`}</div></div></div>` : '';
   document.getElementById('hints').innerHTML = '';
 }
 document.addEventListener('click', e => {
   const s = e.target.closest('[data-slot]');
-  if (s) { slot = s.dataset.slot; sel = eq[slot] || null; showHints = false; render(); return; }
-  if (e.target.closest('[data-hints]')) { showHints = !showHints; render(); return; }
+  if (s) { slot = s.dataset.slot; sel = eq[slot] || null; render(); return; }
   const w = e.target.closest('[data-wear]');
-  if (w) { eq[slot] = w.dataset.wear; save(); render(); return; }
-  if (e.target.closest('[data-off]')) { eq[slot] = null; save(); render(); return; }
+  if (w) { const i = byId[w.dataset.wear]; if (i && canWear(i)) { eq = ADV_PUT(eq, i, slot); save(); } render(); return; }
+  if (e.target.closest('[data-off]')) { eq = ADV_OFF(eq, slot); save(); render(); return; }
   const t = e.target.closest('.it[data-id]');
   if (t) { sel = t.dataset.id; render(); }
 });

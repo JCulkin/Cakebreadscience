@@ -290,7 +290,10 @@ function resolve(w0, pubs, st0, today) {
   const ids = Object.keys(S).filter(u => S[u] && S[u].at);   // a state the admin made just to hold extra moves waits until its player joins
   const lines = {}, out = {}, rewards = {}, fought = {};
   const say = (u, h) => lines[u].push(h);
-  const ouch = (u, h) => (S[u].shield ? Math.ceil(h / 2) : h);
+  /* gear (22 Nov): pub/{uid}.fx = what the player's worn items do (adventurer-items.js ADV_FX): boss, armour (own damage),
+     rally (+% for everyone else in the same round), guard (−% damage for everyone else in the same round), move (+1 a night) */
+  const FX_ = u => P_(u).fx || {};
+  const ouch = (u, h, guard = 0) => { h = Math.round(h * (1 - Math.min(50, FX_(u).armour || 0) / 100) * (1 - Math.min(50, guard) / 100)); h = Math.max(1, h); return S[u].shield ? Math.ceil(h / 2) : h; };
   const strOf = u => ((P_(u).str || 10) + (S[u].aura ? 5 : 0)) * (S[u].fizz ? 1.5 : 1);
   const hurt = (u, h) => { S[u].health = Math.max(S[u].calm ? 1 : 0, S[u].health - h); };
   const give = (u, coins, item) => { const r = rewards[u] = rewards[u] || { coins: 0, items: [] }; r.coins += coins || 0; if (item) r.items.push(item); };
@@ -306,8 +309,9 @@ function resolve(w0, pubs, st0, today) {
     for (let i = 0; i < rounds && w.boss[k] > 0; i++) {
       const now = team.filter(([u, n]) => n > i && !out[u]).map(([u]) => u); if (!now.length) break;
       const bonus = Math.min(4, now.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
-      now.forEach(u => { const d = Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult); dealt[u] += d; w.boss[k] = Math.max(0, w.boss[k] - d); });
-      if (w.boss[k] > 0) now.forEach(u => { const h = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1))); hurt(u, h); dealt['hit_' + u] = (dealt['hit_' + u] || 0) + h;
+      const others = (u, f) => now.filter(x => x !== u).reduce((a, x) => a + (FX_(x)[f] || 0), 0);   // what the others in this round give you
+      now.forEach(u => { const d = Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult * (1 + (Math.min(60, FX_(u).boss || 0) + others(u, 'rally')) / 100)); dealt[u] += d; w.boss[k] = Math.max(0, w.boss[k] - d); });
+      if (w.boss[k] > 0) now.forEach(u => { const h = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1)), others(u, 'guard')); hurt(u, h); dealt['hit_' + u] = (dealt['hit_' + u] || 0) + h;
         if (S[u].health === 0) { out[u] = true; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4)); } });
     }
     const total = start - w.boss[k], ST2 = BOSS_STORY[k] || {};
@@ -342,7 +346,8 @@ function resolve(w0, pubs, st0, today) {
     Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
     /* new moves: moves were already spent as they were made. Someone who joined today keeps their 6 first-day moves. */
     const before = st.moves || 0;
-    if (st.joined !== today) st.moves = Math.max(before, Math.min(MOVE_BANK, before + DAILY_MOVES * elapsed));
+    const xm = Math.min(1, FX_(u).move || 0);   // gear: +1 move a night (and room to bank it)
+    if (st.joined !== today) st.moves = Math.max(before, Math.min(MOVE_BANK + xm, before + (DAILY_MOVES + xm) * elapsed));
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
     const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
     if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);

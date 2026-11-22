@@ -384,7 +384,7 @@ function finish() {
     ${verdict(right, won)}
     ${MS.foe.t ? `<div class="card truth"><span class="kick">${won ? 'Misconception busted' : 'The misconception'}: “${esc(MS.foe.name)}”</span><p><b>What's actually true:</b> ${esc(MS.foe.t)}</p></div>` : ''}
     <div class="rewards">
-      <div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_RARITY[drop.r]}</span><br><b style="font-size:20px">${drop.name}</b><br><i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>
+      <div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_TAG(drop)}</span><br><b style="font-size:20px">${drop.name}</b><br>${[ADV_STATS_TXT(drop), ...ADV_FX_TXT(drop.fx)].filter(Boolean).map(t => `<b style="font-size:14px">${t}</b><br>`).join('')}<i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>
       <div class="card"><h3 style="margin-top:0">What you got</h3><ul class="gain">
         <li>⭐ +${xp} XP · ${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b>` : 'questions you got right today secure when you get them right again on another day'}</li>
         ${gainP > 0 ? `<li class="up">📌 ${gainP} spec point${gainP === 1 ? '' : 's'} secured${statUps.length ? ' → ' + statUps.map(([, n, c]) => `<b>${n} ${before[c]} → ${after[c]}</b>`).join(', ') : ''}</li>` : `<li>Secure ${MS.sub.subj} spec points to raise your ${statName}.</li>`}

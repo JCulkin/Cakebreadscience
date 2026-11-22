@@ -150,9 +150,10 @@ const toNextCap = 8 - ADV.securedTotal() % 8;
 { const nx = ADV.nextUnlock(); if (nx) $('cap').insertAdjacentHTML('afterend', `<p class="small" id="nextUnlock" style="margin-top:4px">🔓 <b>Next:</b> ${nx.ic} ${nx.name} at level ${nx.lv}.</p>`); }
 $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
   : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
-$('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l} + gear ${ADV.GEAR}`, s.str / 70],
-  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}`, S.health / s.hp],
-  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l} · more Magic = more mana`, s.mag / 70],
+const gx = k => (s.gear[k] ? ` + gear ${s.gear[k]}` : '') + (s.gear.set && ADV_SETS[s.gear.set].stat === k ? ` + ${ADV_SETS[s.gear.set].name} set ${s.set}` : '');
+$('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l}${gx('str')}`, s.str / 70],
+  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}${gx('hp')}`, S.health / s.hp],
+  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l}${gx('mag')} · more Magic = more mana`, s.mag / 70],
   ADV.can('spells') ? ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]
     : ['🔮 Mana', `🔒 Lv ${ADV.unlockLv('spells')}`, 'mag', `mana and spells unlock at level ${ADV.unlockLv('spells')}`, 0]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
@@ -208,7 +209,7 @@ $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], [
   `<div class="sci"><div class="top"><span style="color:var(--${k})">${n}</span><span>${S.secured[k]} / ${ADV.TOTAL[k]}</span></div><div class="bar"><i style="width:${S.secured[k] / ADV.TOTAL[k] * 100}%;background:var(--${k})"></i></div><small>→ ${st}</small></div>`).join('');
 
 const it = S.lastLoot && ADV_ITEMS.find(i => i.id === S.lastLoot);
-if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.item(it.id)}" alt=""><div><b>${it.name}</b><br><span class="small">${ADV_RARITY[it.r]} · ${it.d}</span><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`;
+if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.item(it.id)}" alt=""><div><b>${it.name}</b><br><span class="small">${ADV_TAG(it)}${ADV_STATS_TXT(it) ? ' · ' + ADV_STATS_TXT(it) : ''} · ${it.d}</span><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`;
 else { $('lootTitle').textContent = 'Loot'; $('loot').innerHTML = `<p style="font-size:15px">Every mission drops an item. Finish today's mission to see what you get.</p>`; }
 $('brews').innerHTML = !ADV.can('shop') ? `<span class="small">🔒 Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.</span>`
   : Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `${(BL.BREWS[n] || {}).ic || '🧪'} ${(BL.BREWS[n] || {}).name || n} ×${q}`).join('<br>') || 'None';

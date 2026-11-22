@@ -49,9 +49,12 @@ const ADV = (() => {
   const nick = () => { const n = localStorage.getItem('cbs.adventurer.nick'); return n && !QE.checkName(n) ? n : QE.user ? QE.googleName() : 'Adventurer'; };
   const eq = () => load('cbs.adventurer.eq') || Object.assign({}, STARTER);
 
-  /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured. */
+  /* stats = quiz half (secured spec points) + level + gear. Level comes from XP, capped by spec points secured.
+     22 Nov: gear = what each worn item adds (adventurer-items.js ADV_GEAR; the starter outfit adds the old flat +2 Strength),
+     and a full science set adds 15% (at least 3) to its stat. */
   const LV = { str: 2, hp: 3, mag: 1 };
-  const GEAR = 2;
+  const SET_PCT = 0.15;
+  const gear = () => ADV_GEAR(eq());
   const BASE = { str: 8, hp: 15 };   // every adventurer starts with this, so a brand-new student can still win small fights
   const securedTotal = () => { const s = S.secured; return s.p + s.b + s.c; };
   const levelCap = () => 2 + Math.floor(securedTotal() / 8);
@@ -81,7 +84,8 @@ const ADV = (() => {
   const SLOT_LOCK = { head: 'hats', lhand: 'hands', rhand: 'hands' };
   const stats = () => {
     const l = level(), sec = S.secured;
-    const s = { l, str: BASE.str + sec.p + LV.str * l + GEAR, hp: BASE.hp + sec.b + LV.hp * l, mag: sec.c + LV.mag * l };
+    const g = gear(), s = { l, str: BASE.str + sec.p + LV.str * l + g.str, hp: BASE.hp + sec.b + LV.hp * l + g.hp, mag: Math.max(0, sec.c + LV.mag * l + g.mag), gear: g, set: 0 };
+    if (g.set) { const k = ADV_SETS[g.set].stat; s.set = Math.max(3, Math.round(s[k] * SET_PCT)); s[k] += s.set; }
     if (S.health == null || S.health > s.hp) S.health = s.hp;
     s.mana = 10 + s.mag;   // most mana a student can hold
     if (S.mana == null) S.mana = 0;
@@ -96,9 +100,10 @@ const ADV = (() => {
     const s = stats(), p = QE.takePool(), g = { hp: 0, mana: 0, move: false };
     if (p.hp) { const b = S.health; S.health = Math.min(s.hp, S.health + p.hp); g.hp = S.health - b; }
     if (p.mana) { const b = S.mana; S.mana = Math.min(s.mana, S.mana + p.mana); g.mana = S.mana - b; }
-    if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP, S.moves + 1); g.move = true; }
+    const extra = s.gear.fx.revise ? 1 : 0;   // e.g. Roller Skates: +1 more move for the day's first revision
+    if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP + extra, S.moves + 1 + extra); g.move = 1 + extra; }
     /* the shared Breadventure Land picks these up next time the map opens (it holds the real Health, mana and moves) */
-    if (p.hp || p.mana || g.move) { const o = S.out = S.out || { hp: 0, mana: 0, move: 0 }; o.hp += p.hp || 0; o.mana += p.mana || 0; if (g.move) o.move++; }
+    if (p.hp || p.mana || g.move) { const o = S.out = S.out || { hp: 0, mana: 0, move: 0 }; o.hp += p.hp || 0; o.mana += p.mana || 0; if (g.move) o.move += g.move; }
     if (g.hp || g.mana || g.move || p.hp || p.mana) save();
     return g;
   }
@@ -193,7 +198,7 @@ const ADV = (() => {
       const t = document.createElement('div');
       t.setAttribute('role', 'status');
       t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center;transition:opacity .5s';
-      t.textContent = 'From your revision: ' + [gained.hp && `❤ +${gained.hp} Health`, gained.mana && `🔮 +${gained.mana} mana`, gained.move && '+1 move on Breadventure Land'].filter(Boolean).join(' · ');
+      t.textContent = 'From your revision: ' + [gained.hp && `❤ +${gained.hp} Health`, gained.mana && `🔮 +${gained.mana} mana`, gained.move && `+${gained.move} move${gained.move > 1 ? 's' : ''} on Breadventure Land`].filter(Boolean).join(' · ');
       document.body.appendChild(t); setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 600); }, 4200);
     }
   }
@@ -367,5 +372,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, LV, GEAR, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

@@ -11,18 +11,21 @@ const PIXEL = (() => {
   const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const tone = (h, f) => '#' + hex(h).map(v => Math.max(0, Math.min(255, Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f))))).map(v => v.toString(16).padStart(2, '0')).join('');
 
-  function layer(fn) {
-    const fill = new Map(), det = new Map(), key = (x, y) => x + ',' + y;
+  /* mirror = drawn in the other hand (22 Nov: hand items go in either hand). The body is symmetric about x = 19.5,
+     so a mirrored pixel is x' = 39 − x; text is kept readable (moved, not reversed). */
+  function layer(fn, mirror) {
+    const fill = new Map(), det = new Map(), key = (x, y) => x + ',' + y, X = x => mirror ? 39 - x : x;
     const api = {
-      r(x, y, w, h, c) { for (let i = x; i < x + w; i++) for (let j = y; j < y + h; j++) fill.set(key(i, j), c); return api; },
-      e(cx, cy, rx, ry, c) { for (let i = Math.floor(cx - rx); i <= cx + rx; i++) for (let j = Math.floor(cy - ry); j <= cy + ry; j++) if (((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2 <= 1.05) fill.set(key(i, j), c); return api; },
-      f(c, ...pts) { pts.forEach(([x, y]) => fill.set(key(x, y), c)); return api; },          // filled pixels (outlined)
-      cut(...pts) { pts.forEach(([x, y]) => fill.delete(key(x, y))); return api; },
-      d(c, ...pts) { pts.forEach(([x, y]) => det.set(key(x, y), c)); return api; },          // detail pixels (no outline, no shading)
-      t(s, x, y, c) { let ox = x; [...s].forEach(ch => { FONT[ch].forEach((row, j) => [...row].forEach((b, i) => { if (b === '1') det.set(key(ox + i, y + j), c); })); ox += FONT[ch][0].length + 1; }); return api; },
+      r(x, y, w, h, c) { for (let i = x; i < x + w; i++) for (let j = y; j < y + h; j++) fill.set(key(X(i), j), c); return api; },
+      e(cx, cy, rx, ry, c) { for (let i = Math.floor(cx - rx); i <= cx + rx; i++) for (let j = Math.floor(cy - ry); j <= cy + ry; j++) if (((i - cx) / rx) ** 2 + ((j - cy) / ry) ** 2 <= 1.05) fill.set(key(X(i), j), c); return api; },
+      f(c, ...pts) { pts.forEach(([x, y]) => fill.set(key(X(x), y), c)); return api; },          // filled pixels (outlined)
+      cut(...pts) { pts.forEach(([x, y]) => fill.delete(key(X(x), y))); return api; },
+      d(c, ...pts) { pts.forEach(([x, y]) => det.set(key(X(x), y), c)); return api; },          // detail pixels (no outline, no shading)
+      t(s, x, y, c) { const w = [...s].reduce((n, ch) => n + FONT[ch][0].length + 1, -1); let ox = mirror ? 39 - (x + w - 1) : x;
+        [...s].forEach(ch => { FONT[ch].forEach((row, j) => [...row].forEach((b, i) => { if (b === '1') det.set(key(ox + i, y + j), c); })); ox += FONT[ch][0].length + 1; }); return api; },
     };
     fn(api);
-    return { fill, det };
+    return { fill, det, fn };
   }
   function paint(ctx, L) {
     const has = (x, y) => L.fill.has(x + ',' + y), put = (x, y, c) => { ctx.fillStyle = c; ctx.fillRect(x + OX, y + OY, 1, 1); };
@@ -449,18 +452,130 @@ const PIXEL = (() => {
       a.e(30.5, 29, 2.5, 4.5, '#fde047').r(30, 33, 2, 2, '#fde047').e(31, 36, 2.2, 1.8, '#fde047').f('#ef4444', [29, 38], [30, 38]).f('#f97316', [33, 36], [34, 36], [33, 37]);
       a.d('#f97316', [29, 25], [32, 25], [29, 24], [32, 24]).d('#111', [31, 35]).d('#fef9c3', [29, 27], [29, 28]).d('#111', [36, 32], [37, 33], [36, 34]);
     }),
+    /* 22 Nov 2026: science-set pieces and things to hold (see adventurer-items.js) */
+    leafhat: layer(a => {
+      a.e(19.5, 2.5, 8.5, 2.6, '#22c55e').f('#854d0e', [28, 1], [29, 0]);
+      a.d('#15803d', ...[12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27].map(x => [x, 2]), [15, 1], [18, 1], [21, 1], [24, 1], [16, 3], [19, 3], [22, 3], [25, 3]).d('#86efac', [14, 1], [20, 0], [23, 0]);
+    }),
+    goggles: layer(a => {
+      a.r(13, 10, 1, 2, '#1f2937').r(26, 10, 1, 2, '#1f2937');
+      a.d('#0e7490', ...[15, 16, 17, 18, 19].flatMap(x => [[x, 9], [x, 13]]), ...[20, 21, 22, 23, 24].flatMap(x => [[x, 9], [x, 13]]), [14, 10], [14, 11], [14, 12], [25, 10], [25, 11], [25, 12], [19, 10], [20, 10], [19, 11], [20, 11]);
+      a.d('#a5f3fc', [15, 10], [20, 12], [24, 10], [19, 12]);
+    }),
+    apron: layer(a => {
+      a.r(16, 20, 8, 11, '#f1f5f9').r(17, 19, 6, 1, '#f1f5f9');
+      a.d('#94a3b8', [16, 19], [23, 19], [15, 20], [24, 20]).d('#cbd5e1', [17, 25], [18, 25], [19, 25], [20, 25], [21, 25], [22, 25]);
+      a.d('#f9a8d4', [18, 22], [19, 22], [18, 23]).d('#f472b6', [21, 27], [22, 27], [22, 28]).d('#ec4899', [17, 29], [18, 29]).d('#fbcfe8', [21, 21]);
+    }),
+    genes: layer(a => {
+      a.r(15, 29, 10, 2, '#1d4ed8').r(15, 31, 4, 6, '#1d4ed8').r(21, 31, 4, 6, '#1d4ed8');
+      [15, 21].forEach(x0 => { for (let y = 31; y <= 36; y++) { const i = (y + x0) % 4; a.d(i < 2 ? '#f472b6' : '#facc15', [x0 + (i === 1 || i === 2 ? 3 : 0), y]); if (y % 2) a.d('#93c5fd', [x0 + 1, y], [x0 + 2, y]); } });
+      a.d('#1e3a8a', ...[15, 16, 17, 18, 19, 20, 21, 22, 23, 24].map(x => [x, 29]));
+    }),
+    phleggings: layer(a => {
+      const C = ['#7c3aed', '#7c3aed', '#2563eb', '#16a34a', '#84cc16', '#facc15', '#f97316', '#ef4444'];
+      a.r(15, 29, 10, 1, C[0]); a.r(15, 30, 10, 1, C[1]);
+      for (let y = 31; y <= 36; y++) { a.r(15, y, 4, 1, C[y - 29]); a.r(21, y, 4, 1, C[y - 29]); }
+    }),
+    distill: layer(a => {
+      const C = { 29: '#fef9c3', 30: '#fef9c3', 31: '#fde68a', 32: '#fbbf24', 33: '#f59e0b', 34: '#b45309', 35: '#44403c', 36: '#292524' };
+      a.r(15, 29, 10, 2, C[29]); for (let y = 31; y <= 36; y++) { a.r(15, y, 4, 1, C[y]); a.r(21, y, 4, 1, C[y]); }
+      a.d('#a8a29e', [19, 29], [20, 29], [19, 30], [20, 30]);
+    }),
+    wellies: layer(a => {
+      a.r(14, 33, 5, 6, '#facc15').r(21, 33, 5, 6, '#facc15');
+      a.d('#16a34a', [14, 33], [15, 33], [16, 33], [17, 33], [18, 33], [21, 33], [22, 33], [23, 33], [24, 33], [25, 33]).d('#fef08a', [15, 35], [17, 36], [22, 35], [24, 37], [16, 38]).d('#ca8a04', [18, 37], [25, 36]);
+    }),
+    roothair: layer(a => {
+      a.r(14, 36, 5, 3, '#a16207').r(21, 36, 5, 3, '#a16207');
+      a.d('#fef3c7', [14, 39], [15, 40], [16, 39], [17, 40], [18, 39], [21, 39], [22, 40], [23, 39], [24, 40], [25, 39]).d('#ca8a04', [15, 36], [17, 36], [22, 36], [24, 36]);
+    }),
+    galvboots: layer(a => {
+      a.r(14, 33, 5, 6, '#9ca3af').r(21, 33, 5, 6, '#9ca3af');
+      a.d('#e5e7eb', [15, 34], [17, 35], [16, 37], [22, 34], [24, 35], [23, 37]).d('#d1d5db', [16, 34], [18, 36], [25, 34], [21, 36]).d('#6b7280', [14, 38], [18, 38], [21, 38], [25, 38]);
+    }),
+    crystalshoes: layer(a => {
+      a.r(14, 36, 5, 3, '#60a5fa').r(21, 36, 5, 3, '#60a5fa').f('#93c5fd', [15, 35], [17, 34], [17, 35], [22, 35], [24, 34], [24, 35]);
+      a.d('#dbeafe', [15, 36], [16, 37], [22, 36], [23, 37], [17, 34], [24, 34]).d('#1d4ed8', [18, 38], [25, 38], [14, 38], [21, 38]);
+    }),
+    stethoscope: layer(a => {
+      a.f('#374151', [30, 26], [30, 25], [30, 24], [30, 23], [31, 22], [32, 22], [33, 22], [31, 21], [30, 20], [34, 21], [35, 20]);
+      a.f('#9ca3af', [30, 19], [35, 19]).e(29.5, 28.5, 1.8, 1.8, '#d1d5db');
+      a.d('#6b7280', [29, 28], [30, 29]).d('#f8fafc', [29, 27]);
+    }),
+    umbrella: layer(a => {
+      for (let i = 0; i <= 15; i++) a.f('#57534e', [12 - Math.floor(i * 0.3), 28 - i]);
+      a.f('#57534e', [13, 29], [14, 28]);
+      a.e(7.5, 12, 7, 5.5, '#7c3aed'); for (let y = 13; y <= 18; y++) for (let x = -1; x <= 16; x++) a.cut([x, y]);
+      [1, 4, 8, 11, 14].forEach(x => a.f('#7c3aed', [x, 13]));
+      a.d('#c4b5fd', [3, 9], [5, 8], [8, 7], [11, 8], [12, 9]).d('#5b21b6', [4, 11], [4, 12], [8, 10], [8, 11], [8, 12], [11, 11], [11, 12]);
+    }),
+    folder: layer(a => {
+      a.r(27, 19, 8, 12, '#2563eb').f('#ef4444', [35, 20], [35, 21]).f('#facc15', [35, 24], [35, 25]).f('#22c55e', [35, 28], [35, 29]);
+      a.d('#f8fafc', [29, 22], [30, 22], [31, 22], [32, 22], [29, 23], [32, 23]).d('#1e40af', [27, 30], [28, 30], [33, 19]);
+    }),
+    megaphone: layer(a => {
+      for (let i = 0; i <= 6; i++) { const h = 2 + i; a.r(11 - i, 24 - Math.floor(h / 2), 1, h, '#ef4444'); }
+      a.f('#374151', [12, 25], [12, 26], [12, 27]);
+      a.d('#fecaca', [5, 21], [5, 22], [5, 23], [5, 24], [5, 25], [5, 26], [5, 27]).d('#fef2f2', [9, 22], [7, 21]).d('#b91c1c', [10, 26], [8, 27]);
+    }),
+    net: layer(a => {
+      for (let t = 0; t <= 21; t++) a.f('#a16207', [27 - t, Math.round(28 - t * 0.85)]);
+      a.f('#9ca3af', [2, 3], [3, 2], [4, 2], [5, 2], [6, 3], [7, 4], [7, 5], [6, 6], [5, 7], [4, 7], [3, 7], [2, 6], [1, 5], [1, 4]);
+      a.d('#e5e7eb', [3, 4], [5, 4], [4, 5], [3, 6], [5, 6], [4, 3], [6, 5], [2, 5]).d('#d6d3d1', [4, 8], [3, 9], [4, 10], [5, 9]);
+    }),
+    burette: layer(a => {
+      a.r(7, 26, 25, 2, '#e0f2fe').r(32, 25, 2, 4, '#0f766e').f('#e0f2fe', [34, 26], [35, 26], [35, 27]);
+      for (let x = 8; x <= 30; x += 2) a.d('#64748b', [x, 26]);
+      a.d('#f9a8d4', ...[8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(x => [x, 27])).d('#f9a8d4', [36, 28]);
+    }),
+    magnet: layer(a => {
+      a.r(11, 22, 18, 3, '#dc2626').r(11, 25, 3, 8, '#dc2626').r(26, 25, 3, 8, '#dc2626').r(11, 33, 3, 2, '#e5e7eb').r(26, 33, 3, 2, '#e5e7eb');
+      a.d('#fca5a5', [13, 22], [16, 22], [20, 22], [24, 22]).d('#991b1b', [14, 24], [25, 24]);
+    }),
+    slinky: layer(a => {
+      const C = ['#ef4444', '#f97316', '#facc15', '#22c55e', '#3b82f6', '#8b5cf6'];
+      [13, 15, 17, 18, 19, 20, 22, 24, 26].forEach((x, i) => a.f(C[i % C.length], [x, 25], [x, 26], [x, 27], [x, 28], [x, 29]));
+      a.d('#fff', [17, 25], [19, 25], [20, 25]);
+    }),
+    trophy: layer(a => {
+      a.e(19.5, 21, 6, 4, '#facc15').r(14, 17, 12, 2, '#facc15').r(18, 25, 4, 3, '#eab308').r(15, 28, 10, 2, '#a16207');
+      a.f('#facc15', [13, 19], [12, 20], [12, 21], [12, 22], [12, 23], [12, 24], [12, 25], [12, 26], [26, 19], [27, 20], [27, 21], [27, 22], [27, 23], [27, 24], [27, 25], [27, 26]);
+      a.d('#fef08a', [16, 18], [17, 19], [16, 20]).d('#ca8a04', [19, 20], [20, 20], [19, 21], [20, 22], [18, 21], [21, 21]).d('#fde68a', [16, 28], [17, 28]);
+    }),
   };
 
   function canvasFor(layers) {
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const ctx = c.getContext('2d'); layers.forEach(L => paint(ctx, L)); return c;
   }
+  /* hand items: drawn in their own hand (item.side) or mirrored into the other; a two-handed item is drawn once */
+  const MIR = {};
+  const handL = (eq, k) => {
+    const id = eq && eq[k]; if (!id || !D[id]) return [];
+    const it = typeof ADV_BY !== 'undefined' ? ADV_BY[id] : null;
+    if (it && it.two) return k === 'rhand' || eq.rhand !== id ? [D[id]] : [];
+    const side = it && it.side ? it.side : k[0];
+    if (side === k[0]) return [D[id]];
+    return [MIR[id] || (MIR[id] = layer(D[id].fn, true))];
+  };
   function layersFor(eq, base) {
-    const B = norm(base), g = k => eq && eq[k] && D[eq[k]] ? [D[eq[k]]] : [];
+    const B = norm(base), g = k => k.endsWith('hand') ? handL(eq, k) : eq && eq[k] && D[eq[k]] ? [D[eq[k]]] : [];
     return [hairBackL(B), bodyL(B), ...g('bottom'), ...g('shoes'), ...g('top'), headL(B), hairFrontL(B), faceL(B),
       ...(B.extras.has('kippah') && !B.cloth && !(eq && eq.head) ? [kippahL(B)] : []), ...g('head'), ...g('rhand'), ...g('lhand')].filter(Boolean);
   }
-  function figure(eq, base) { return canvasFor(layersFor(eq, base)).toDataURL(); }
+  /* a full science set (ADV_GEAR in adventurer-items.js) makes the figure glow the science's colour */
+  function glow(c, col) {
+    const ctx = c.getContext('2d'), px = ctx.getImageData(0, 0, W, H).data, on = (x, y) => x >= 0 && y >= 0 && x < W && y < H && px[(y * W + x) * 4 + 3] > 0;
+    const [R, G, Bc] = hex(col), out = ctx.createImageData(W, H);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { if (on(x, y)) continue; let d = 9;
+      for (let j = -2; j <= 2; j++) for (let i = -2; i <= 2; i++) if (on(x + i, y + j)) d = Math.min(d, Math.max(Math.abs(i), Math.abs(j)));
+      if (d <= 2) { const o = (y * W + x) * 4; out.data[o] = R; out.data[o + 1] = G; out.data[o + 2] = Bc; out.data[o + 3] = d === 1 ? 200 : 90; } }
+    const g = document.createElement('canvas'); g.width = W; g.height = H; g.getContext('2d').putImageData(out, 0, 0);
+    const o = document.createElement('canvas'); o.width = W; o.height = H; const oc = o.getContext('2d'); oc.drawImage(g, 0, 0); oc.drawImage(c, 0, 0); return o;
+  }
+  const setCol = eq => { try { const g = typeof ADV_GEAR === 'function' ? ADV_GEAR(eq) : null; return g && g.set ? ADV_SETS[g.set].col : null; } catch (e) { return null; } };
+  function figure(eq, base) { const c = canvasFor(layersFor(eq, base)), col = setCol(eq); return (col ? glow(c, col) : c).toDataURL(); }
   /* head-and-shoulders crop for option tiles */
   function portrait(base, eq) {
     const c = canvasFor(layersFor(eq || {}, base)), o = document.createElement('canvas'); o.width = 24; o.height = 24;
@@ -474,5 +589,5 @@ const PIXEL = (() => {
     o.getContext('2d').drawImage(c, x0, y0, x1 - x0 + 1, y1 - y0 + 1, Math.floor((s - (x1 - x0 + 1)) / 2), Math.floor((s - (y1 - y0 + 1)) / 2), x1 - x0 + 1, y1 - y0 + 1);
     return o.toDataURL();
   }
-  return { figure, portrait, item, has: id => !!D[id], OPTIONS, DEFAULT, W, H };
+  return { figure, portrait, item, has: id => !!D[id], setCol, OPTIONS, DEFAULT, W, H };
 })();
