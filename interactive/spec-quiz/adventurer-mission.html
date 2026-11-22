@@ -244,13 +244,13 @@ function start(k, point, G) {
   MS.nh = 0; MS.nw = 0; MS.streak = 0; MS.top = 0; MS.retry = null; MS.ri = 0; MS.fixed = 0; MS.fixedIds = new Set();
   scrollTo(0, 0); show();
 }
-/* study-guide revision (22 Nov): ?subs=C1a,C1b&n=15&t=<guide title> — a mission of n questions from those sub-topics against
+/* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — a mission of n questions from those sub-topics against
    one of their misconceptions; "another n" leaves out the questions shown in this browser's last runs of the same set */
 const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
 function startGuide(keys, n, title) {
-  const subs = keys.map(k => subBy(k)).filter(Boolean); if (!subs.length) return false;
+  const subs = [...new Set(keys.map(k => subBy(k) || SUBS.find(x => x.keys.has(k))).filter(Boolean))]; if (!subs.length) return false;
   const sub = subs[Math.floor(Math.random() * subs.length)], foe = foeOf(sub);
-  const set = new Set(); subs.forEach(x => x.keys.forEach(k => set.add(k)));
+  const set = new Set(); keys.forEach(k => { const x = subBy(k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
   let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
   const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
   try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
@@ -262,7 +262,7 @@ function startGuide(keys, n, title) {
   const qs = new URLSearchParams(location.search), pt = qs.get('point');
   const sb = pt && SUBS.find(x => x.keys.has(pt));
   const gs = (qs.get('subs') || '').split(',').filter(Boolean), gn = Math.min(30, Math.max(5, +qs.get('n') || 15));
-  if (gs.length && gs.some(k => subBy(k))) setTimeout(() => startGuide(gs, gn, qs.get('t') || ''), 0);
+  if (gs.length && gs.some(k => subBy(k) || SUBS.some(x => x.keys.has(k)))) setTimeout(() => startGuide(gs, gn, qs.get('t') || ''), 0);
   else if (sb) setTimeout(() => start(sb.key, pt), 0);
   else if (subBy(qs.get('sub'))) setTimeout(() => start(qs.get('sub')), 0);   // ?sub=B2e: straight into that mission (the results page's buttons)
 }

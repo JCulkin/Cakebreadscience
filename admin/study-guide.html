@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
 <!-- Study guides (22 Nov 2026, admin only). Pick sub-topics + Double/Single Award → printable A4 guide (spec points in full,
-     common mistakes, exam advice) and, once published, an online copy on students' To do with Revise buttons.
+     key words, short exam advice) and, once published, an online copy on students' To do with Revise buttons.
      Saved in RTDB school/guides/{id}; the renderer is /js/study-guide.js. Page state is SGA (not T/M/G/R). -->
 <style>
 :root{--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#5a5a5a;--green:#00a03a;--dk:#005e22}
@@ -33,8 +33,10 @@ input[type=text],input[type=date]{font:600 15px Barlow,Arial;padding:6px 8px;bor
 .seg input{margin-right:5px}
 .picker{max-height:62vh;overflow:auto;border:1.5px solid #ddd;padding:6px 8px;margin-top:6px}
 .picker .subj{font:900 16px 'Barlow Condensed',Arial;text-transform:uppercase;margin:10px 0 2px}
-.picker .top{font-weight:800;font-size:14px;margin-top:6px}.picker .sb{display:block;margin-left:20px;font-size:14px}
-.picker .sb small{color:#888}
+.picker .top{display:block;font-weight:800;font-size:14px;margin-top:8px}
+.picker .sbrow{display:flex;align-items:center;gap:6px;margin-left:20px;font-size:14px;padding:1px 0}.picker .sb{flex:1}
+.picker .ptbtn{font:700 12px Barlow,Arial;border:1.5px solid #999;background:#fff;border-radius:99px;padding:1px 8px;cursor:pointer;white-space:nowrap}
+.picker .ptlist{margin:2px 0 6px 40px;border-left:2px solid #e3ddcf;padding-left:8px}.picker .pt{display:block;font-size:13px;padding:2px 0;line-height:1.3}.picker .pt input{margin-right:5px}
 .saved{list-style:none}.saved li{border-top:1px solid #e3ddcf;padding:7px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .saved li b{flex:1 1 200px}
 .msg{font-weight:700;color:var(--dk);font-size:14px;margin-top:6px}
@@ -57,7 +59,7 @@ input[type=text],input[type=date]{font:600 15px Barlow,Arial;padding:6px 8px;bor
         <label class="f">Course</label><div class="seg" id="gCourse"><label><input type="radio" name="course" value="DA" checked>Double Award</label><label><input type="radio" name="course" value="SA">Single Award</label></div>
         <label class="f">Shown to (on To do)</label><div class="seg" id="gYears"></div>
         <p class="small muted" style="margin-top:4px">Students see it on To do if their year is ticked and their course matches. Tick no year to keep it to print only.</p>
-        <label class="f">Topics and sub-topics</label>
+        <label class="f">Spec points</label><p class="small muted">Tick a topic or sub-topic for all its points, or open “points” to pick exact ones.</p>
         <div class="seg" id="gSci"></div>
         <div class="picker" id="picker"></div>
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
@@ -78,7 +80,7 @@ input[type=text],input[type=date]{font:600 15px Barlow,Arial;padding:6px 8px;bor
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="/interactive/spec-quiz/spec.js"></script>
-<script src="/interactive/spec-quiz/misconceptions.js"></script>
+<script src="/js/key-words.js"></script>
 <script src="/js/course.js"></script>
 <script src="/js/spec-point.js"></script>
 <script src="/js/study-guide.js"></script>
@@ -87,7 +89,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 firebase.initializeApp(window.firebaseConfig);
 const auth = firebase.auth(), RT = firebase.database();
-const SGA = { all: {}, id: null, sci: 'B', picked: new Set(), user: null };
+const SGA = { all: {}, id: null, sci: 'B', picked: new Set(), open: new Set(), user: null };   // picked = spec point keys; open = sub-topics showing their points
 CBSGuide.style();
 $('gYears').innerHTML = [8, 9, 10, 11].map(y => `<label><input type="checkbox" value="Y${y}">Year ${y}</label>`).join('');
 $('gSci').innerHTML = [['B', 'Biology'], ['C', 'Chemistry'], ['P', 'Physics']].map(([k, n]) => `<label><input type="radio" name="sci" value="${k}" ${k === 'B' ? 'checked' : ''}>${n}</label>`).join('');
@@ -102,26 +104,29 @@ auth.onAuthStateChanged(async u => {
   await loadSaved(); fresh(); const want = new URLSearchParams(location.search).get('id'); if (want && SGA.all[want]) edit(want);
 });
 const course = () => (document.querySelector('#gCourse input:checked') || {}).value || 'DA';
-const guide = () => ({ title: $('gTitle').value.trim() || 'Study guide', date: $('gDate').value || '', course: course(),
-  years: Object.fromEntries([...document.querySelectorAll('#gYears input:checked')].map(i => [i.value, true])),
-  subs: CBSGuide.subsFor(course()).map(s => s.key).filter(k => SGA.picked.has(k)) });
+const ptsOf = s => CBSGuide.pointsFor(s, course()).map(p => p.key);
+const guide = () => { const subs = CBSGuide.subsFor(course()).filter(s => ptsOf(s).some(k => SGA.picked.has(k)));
+  return { title: $('gTitle').value.trim() || 'Study guide', date: $('gDate').value || '', course: course(),
+    years: Object.fromEntries([...document.querySelectorAll('#gYears input:checked')].map(i => [i.value, true])),
+    subs: subs.map(s => s.key), pts: subs.flatMap(s => ptsOf(s).filter(k => SGA.picked.has(k))) }; };
 
 async function loadSaved() {
   try { SGA.all = (await RT.ref('school/guides').once('value')).val() || {}; } catch (e) { SGA.all = {}; }
   const list = Object.entries(SGA.all).sort((a, b) => (b[1].at || 0) - (a[1].at || 0));
-  $('saved').innerHTML = list.length ? list.map(([id, g]) => `<li><b>${esc(g.title)}</b><span class="small muted">${g.course === 'SA' ? 'Single' : 'Double'} · ${(g.subs || []).length} sub-topics${g.date ? ' · ' + esc(g.date) : ''} · ${Object.keys(g.years || {}).map(y => y.slice(1)).join(', ') ? 'Year ' + Object.keys(g.years || {}).map(y => y.slice(1)).join(', ') : 'print only'}</span>
+  $('saved').innerHTML = list.length ? list.map(([id, g]) => `<li><b>${esc(g.title)}</b><span class="small muted">${g.course === 'SA' ? 'Single' : 'Double'} · ${g.pts ? g.pts.length + ' points' : (g.subs || []).length + ' sub-topics'}${g.date ? ' · ' + esc(g.date) : ''} · ${Object.keys(g.years || {}).map(y => y.slice(1)).join(', ') ? 'Year ' + Object.keys(g.years || {}).map(y => y.slice(1)).join(', ') : 'print only'}</span>
     <button class="btn ghost" data-edit="${id}" style="padding:2px 10px">Open</button></li>`).join('') : '<li class="muted">None yet.</li>';
   document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => edit(b.dataset.edit));
 }
 function fresh() {
-  SGA.id = null; SGA.picked = new Set(); $('gTitle').value = ''; $('gDate').value = '';
+  SGA.id = null; SGA.picked = new Set(); SGA.open = new Set(); $('gTitle').value = ''; $('gDate').value = '';
   document.querySelector('#gCourse input[value=DA]').checked = true; document.querySelectorAll('#gYears input').forEach(i => i.checked = false);
   $('edH').textContent = 'New study guide'; $('delBtn').hidden = true; $('viewOnline').hidden = true; $('msg').textContent = '';
   drawPicker(); draw();
 }
 function edit(id) {
   const g = SGA.all[id]; if (!g) return;
-  SGA.id = id; SGA.picked = new Set(g.subs || []); $('gTitle').value = g.title || ''; $('gDate').value = g.date || '';
+  SGA.id = id; SGA.open = new Set();
+  SGA.picked = new Set(g.pts || CBSGuide.subs().filter(s => (g.subs || []).includes(s.key)).flatMap(s => s.points.map(p => p.key))); $('gTitle').value = g.title || ''; $('gDate').value = g.date || '';
   document.querySelector(`#gCourse input[value=${g.course === 'SA' ? 'SA' : 'DA'}]`).checked = true;
   document.querySelectorAll('#gYears input').forEach(i => i.checked = !!(g.years || {})[i.value]);
   const first = (g.subs || [])[0]; if (first) { SGA.sci = first[0]; document.querySelector(`#gSci input[value=${SGA.sci}]`).checked = true; }
@@ -129,21 +134,33 @@ function edit(id) {
   $('viewOnline').hidden = false; $('viewOnline').href = '/guide/?id=' + encodeURIComponent(id);
   drawPicker(); draw(); scrollTo(0, 0);
 }
-/* topics → sub-topics with tick boxes; a topic's box ticks all of its sub-topics */
+/* topics → sub-topics → exact spec points. A topic or sub-topic box ticks all of its points; "Points" opens the list */
 function drawPicker() {
   const list = CBSGuide.subsFor(course()).filter(s => s.L === SGA.sci);
   const topics = [...new Set(list.map(s => s.topic))];
-  $('picker').innerHTML = topics.map(t => { const xs = list.filter(s => s.topic === t), all = xs.every(s => SGA.picked.has(s.key)), some = xs.some(s => SGA.picked.has(s.key));
-    return `<label class="top"><input type="checkbox" data-topic="${t}" ${all ? 'checked' : ''} ${!all && some ? 'data-some="1"' : ''}> ${t} · ${esc(xs[0].topicName)}</label>`
-      + xs.map(s => `<label class="sb"><input type="checkbox" data-sub="${s.key}" ${SGA.picked.has(s.key) ? 'checked' : ''}> ${s.topic}${s.l} ${esc(s.name)} <small>(${CBSGuide.pointsFor(s, course()).length} points)</small></label>`).join(''); }).join('');
-  document.querySelectorAll('[data-some]').forEach(i => i.indeterminate = true);
+  const state = keys => { const n = keys.filter(k => SGA.picked.has(k)).length; return n === 0 ? '' : n === keys.length ? 'checked' : 'data-some="1"'; };
+  $('picker').innerHTML = topics.map(t => { const xs = list.filter(s => s.topic === t);
+    return `<label class="top"><input type="checkbox" data-topic="${t}" ${state(xs.flatMap(ptsOf))}> ${t} · ${esc(xs[0].topicName)}</label>`
+      + xs.map(s => { const pts = CBSGuide.pointsFor(s, course()), keys = pts.map(p => p.key), n = keys.filter(k => SGA.picked.has(k)).length, open = SGA.open.has(s.key);
+        return `<div class="sbrow"><label class="sb"><input type="checkbox" data-sub="${s.key}" ${state(keys)}> ${s.topic}${s.l} ${esc(s.name)}</label>
+          <button type="button" class="ptbtn" data-open="${s.key}" aria-expanded="${open}">${n}/${keys.length} points ${open ? '▴' : '▾'}</button></div>`
+          + (open ? `<div class="ptlist">${pts.map(p => `<label class="pt"><input type="checkbox" data-pt="${p.key}" ${SGA.picked.has(p.key) ? 'checked' : ''}><b>${esc(p.id)}</b> ${esc(p.text.length > 120 ? p.text.slice(0, 117) + '…' : p.text)}</label>`).join('')}</div>` : ''); }).join(''); }).join('');
+  document.querySelectorAll('#picker [data-some]').forEach(i => i.indeterminate = true);
   const others = [...SGA.picked].filter(k => k[0] !== SGA.sci).length;
-  if (others) $('picker').insertAdjacentHTML('afterbegin', `<p class="small muted">Also ticked in other sciences: ${others} sub-topic${others > 1 ? 's' : ''}.</p>`);
+  if (others) $('picker').insertAdjacentHTML('afterbegin', `<p class="small muted">Also ticked in other sciences: ${others} point${others > 1 ? 's' : ''}.</p>`);
 }
 $('picker').addEventListener('change', e => {
-  const i = e.target; if (i.dataset.sub) i.checked ? SGA.picked.add(i.dataset.sub) : SGA.picked.delete(i.dataset.sub);
-  if (i.dataset.topic) CBSGuide.subsFor(course()).filter(s => s.L === SGA.sci && String(s.topic) === i.dataset.topic).forEach(s => i.checked ? SGA.picked.add(s.key) : SGA.picked.delete(s.key));
-  drawPicker(); draw();
+  const i = e.target, set = keys => keys.forEach(k => i.checked ? SGA.picked.add(k) : SGA.picked.delete(k));
+  const list = CBSGuide.subsFor(course()).filter(s => s.L === SGA.sci);
+  if (i.dataset.pt) set([i.dataset.pt]);
+  if (i.dataset.sub) set(ptsOf(list.find(s => s.key === i.dataset.sub)));
+  if (i.dataset.topic) set(list.filter(s => String(s.topic) === i.dataset.topic).flatMap(ptsOf));
+  const y = $('picker').scrollTop; drawPicker(); $('picker').scrollTop = y; draw();
+});
+$('picker').addEventListener('click', e => {
+  const b = e.target.closest('[data-open]'); if (!b) return;
+  const k = b.dataset.open; SGA.open.has(k) ? SGA.open.delete(k) : SGA.open.add(k);
+  const y = $('picker').scrollTop; drawPicker(); $('picker').scrollTop = y;
 });
 $('gSci').addEventListener('change', () => { SGA.sci = document.querySelector('#gSci input:checked').value; drawPicker(); });
 $('gCourse').addEventListener('change', () => { drawPicker(); draw(); });
@@ -152,7 +169,7 @@ function draw() { $('preview').innerHTML = CBSGuide.render(guide(), 'print'); }
 $('newBtn').onclick = fresh;
 $('printBtn').onclick = () => { draw(); const t = document.title; document.title = guide().title; window.print(); document.title = t; };
 $('saveBtn').onclick = async () => {
-  const g = guide(); if (!g.subs.length) { $('msg').textContent = 'Tick at least one sub-topic first.'; return; }
+  const g = guide(); if (!g.subs.length) { $('msg').textContent = 'Tick at least one spec point first.'; return; }
   g.at = Date.now(); g.by = (SGA.user && SGA.user.email) || '';
   try { if (SGA.id) await RT.ref('school/guides/' + SGA.id).set(g); else { const r = RT.ref('school/guides').push(); await r.set(g); SGA.id = r.key; } }
   catch (e) { $('msg').textContent = 'Not saved — check your connection.'; return; }

@@ -2,11 +2,14 @@
    to tell them what's in an exam … Just pick topics/sub topics, double or single. Common mistakes. Exam advice. Print pdf for me
    and also show it online already for students in the To do area with attached REVISE buttons that presents the student quiz
    questions from this subtopics (normal mode, or questing). Gives them 15 questions and they can repeat it and get more random."
-   Data: RTDB school/guides/{id} = {title, date ('YYYY-MM-DD' or ''), course 'DA'|'SA', years {Y10: true}, subs ['C1a', …], at, by}
+   22 Nov later: "remove the checkboxes … remove the common mistakes. Add a key words section instead … massively shorten exam
+   advice … let me select and unselect exact spec points". Key words come from /js/key-words.js (window.KEYWORDS).
+   Data: RTDB school/guides/{id} = {title, date ('YYYY-MM-DD' or ''), course 'DA'|'SA', years {Y10: true}, subs ['C1a', …],
+         pts ['C1.4', …] (exact points; missing = every point of those sub-topics), at, by}
          (admin-written, read by signed-in students — the existing `school` rule).
-   Needs spec.js; misconceptions.js for the common mistakes; /js/spec-point.js for the full wording; /js/course.js for Single
+   Needs spec.js; key-words.js; /js/spec-point.js for the full wording; /js/course.js for Single
    Award wording (window.CBSCourse.SA / SA_TEXT). Used by /admin/study-guide.html, /guide/ and To do (CBSGuide.todo).
-   Revise links: Practice / mission with ?subs=C1a,C1b&n=15&t=<title> (15 questions; "another 15" avoids the last ones). */
+   Revise links: Practice / mission with ?subs=C1a,C2.5,C2.7&n=15&t=<title> (sub-topic or point keys) (15 questions; "another 15" avoids the last ones). */
 (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const N = 15, Q = '/interactive/spec-quiz/';
@@ -40,53 +43,68 @@
   function daysTo(d) { if (!d) return null; const a = new Date(d + 'T12:00:00'), b = new Date(); b.setHours(12, 0, 0, 0); return Math.round((a - b) / 864e5); }
 
   const ADVICE = [
-    ['Read the command word', `<b>State / Give / Name</b>: a short answer, no explanation needed. <b>Describe</b>: say what happens or what something is like (no reasons). <b>Explain</b>: give the reason why, using “because” or “so”. <b>Calculate</b>: show your working and give the unit. <b>Suggest</b>: use what you know in a new situation. <b>Compare</b>: say how both are similar and different, mentioning both. <b>Evaluate</b>: give points for and against, then a conclusion.`],
-    ['Use the marks', 'The number of marks is the number of points the examiner wants. About one minute per mark. Two-mark “explain” questions usually need a fact and the reason linked to it.'],
-    ['Calculations', 'Write the equation, put the numbers in, then the answer with its unit. Convert units first (g → kg, cm³ → dm³, ms → s). You can still get method marks if the final answer is wrong.'],
-    ['Graphs and diagrams', 'Sharp pencil and a ruler. Label axes with the quantity and unit, plot points as small crosses, and draw a smooth curve or straight line of best fit (not dot to dot).'],
-    ['Practicals', 'Know the method, the independent / dependent / control variables, how to make it fair and safe, and how to make results more reliable (repeat and take a mean).'],
-    ['In the exam', 'Answer every question: a sensible guess can score. Underline key words in the question. Leave time to check units, significant figures and that you answered what was asked.']
+    ['Command words', '<b>State</b> = a short fact. <b>Describe</b> = say what happens. <b>Explain</b> = say why (“because…”). <b>Calculate</b> = show working and give the unit. <b>Evaluate</b> = both sides, then a conclusion.'],
+    ['Marks', 'One mark ≈ one point. A 3-mark question needs three separate points.'],
+    ['Key words', 'Use the key words in your answers: they are often what the marks are for.'],
+    ['Graphs', 'Label both axes with units, plot neatly in pencil, and draw a line or curve of best fit.']
   ];
+
+  /* the points a guide covers: its sub-topics, narrowed to g.pts when exact points were picked (older guides: whole sub-topics) */
+  function chosen(g) {
+    const course = g.course === 'SA' ? 'SA' : 'DA', subsSet = new Set(g.subs || []), pts = g.pts ? new Set(g.pts) : null;
+    return subsFor(course).filter(sb => subsSet.has(sb.key)).map(sb => {
+      const all = pointsFor(sb, course), use = pts ? all.filter(p => pts.has(p.key)) : all;
+      return { sb, all, pts: use, whole: use.length === all.length };
+    }).filter(x => x.pts.length);
+  }
+  /* Revise tokens: a whole sub-topic as its key (C1a), part of one as its point keys (C1.4) */
+  const tokens = list => list.flatMap(x => x.whole ? [x.sb.key] : x.pts.map(p => p.key));
+  const flat = p => JSON.stringify([p.text, p.bullets, p.eq, p.note, p.detail]).toLowerCase();
+  /* key words for these points that the spec wording doesn't already contain (each word once per guide) */
+  function keyWords(pts, seen) {
+    const KW = window.KEYWORDS || {}, txt = pts.map(flat).join(' ');
+    const out = [];
+    pts.forEach(p => (KW[p.key] || []).forEach(([w, m]) => {
+      const core = w.toLowerCase().replace(/\s*\(.*?\)\s*/g, ' ').trim(), id = core;
+      if (seen.has(id)) return; seen.add(id);
+      if (core.length > 3 && txt.includes(core)) return;
+      out.push([w, m]);
+    }));
+    return out;
+  }
 
   /* the guide document. mode 'print' (A4 handout) or 'online' (with Revise buttons) */
   function render(g, mode = 'online') {
-    const course = g.course === 'SA' ? 'SA' : 'DA', chosen = new Set(g.subs || []);
-    const list = subsFor(course).filter(sb => chosen.has(sb.key));
-    const keys = list.map(sb => sb.key);
-    const label = course === 'SA' ? 'Science (Single Award)' : 'Science (Double Award)';
-    const dd = daysTo(g.date);
-    const head = `<header class="sg-head"><div class="sg-kick">Cakebread Science · Study guide · ${label}</div>
-      <h1>${esc(g.title || 'Study guide')}</h1>
-      ${g.date ? `<p class="sg-date">📅 ${esc(fmtDate(g.date))}${mode === 'online' && dd !== null ? (dd > 1 ? ` · in ${dd} days` : dd === 1 ? ' · tomorrow' : dd === 0 ? ' · today' : '') : ''}</p>` : ''}
-      <p class="sg-lede">Everything below can come up. Tick each point as you revise it: <span class="sg-box"></span> not yet <span class="sg-box"></span> unsure <span class="sg-box"></span> confident.</p>
-      ${mode === 'online' && keys.length ? `<div class="sg-rev big"><span style="flex:1 1 100%"><b>Revise all of it:</b> ${N} questions at a time from these sub-topics, new ones each go.</span>
-        <a class="sg-btn" href="${reviseUrl('plain', keys, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, g.title)}">⚔️ Revise in Cakebread Questing</a></div>` : ''}
-    </header>`;
+    const course = g.course === 'SA' ? 'SA' : 'DA', list = chosen(g), keys = tokens(list), seen = new Set();
+    const label = course === 'SA' ? 'Single Award' : 'Double Award';
+    const dd = daysTo(g.date), T = g.title || 'Study guide';
+    const head = `<header class="sg-head"><div class="sg-hl"><h1>${esc(T)}</h1>
+      ${g.date ? `<p class="sg-date">📅 ${esc(fmtDate(g.date))}${mode === 'online' && dd !== null ? (dd > 1 ? ` · in ${dd} days` : dd === 1 ? ' · tomorrow' : dd === 0 ? ' · today' : '') : ''}</p>` : ''}</div>
+      <div class="sg-course">${label}</div></header>
+      ${mode === 'online' && keys.length ? `<div class="sg-rev big"><span style="flex:1 1 100%"><b>Revise all of it:</b> ${N} questions at a time on exactly these points, new ones each go.</span>
+        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Cakebread Questing</a></div>` : ''}`;
     let lastTopic = '';
-    const body = list.map(sb => {
-      const pts = pointsFor(sb, course);
-      const mis = (typeof MISCON !== 'undefined' && MISCON[sb.key]) || null;
+    const body = list.map(x => {
+      const sb = x.sb, kw = keyWords(x.pts, seen), code = sb.topic + sb.l;
       const th = sb.L + sb.topic !== lastTopic ? `<h2 class="sg-topic" style="--c:${COL[sb.L]}">${SUBJ[sb.L]} ${sb.topic} · ${esc(sb.topicName)}</h2>` : '';
       lastTopic = sb.L + sb.topic;
       return th + `<section class="sg-sub" style="--c:${COL[sb.L]}">
-        <h3><span>${sb.topic}${sb.l}</span> ${esc(sb.name)}</h3>
-        <table class="sg-pts"><tbody>${pts.map(p => `<tr><td class="sg-tick"><span class="sg-box"></span><span class="sg-box"></span><span class="sg-box"></span></td>
-          <td class="sg-code">${esc(p.id)}</td><td class="sg-txt">${window.SPECPT ? SPECPT.heading(p) : ''}${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</td></tr>`).join('')}</tbody></table>
-        ${mis ? `<div class="sg-mis"><b>Common mistake:</b> “${esc(mis.o)}” <b>Actually:</b> ${esc(mis.t)}</div>` : ''}
-        ${mode === 'online' ? `<div class="sg-rev">Revise ${sb.topic}${sb.l}: <a class="sg-btn sm" href="${reviseUrl('plain', [sb.key], `${g.title || 'Study guide'} · ${sb.topic}${sb.l}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', [sb.key], `${g.title || 'Study guide'} · ${sb.topic}${sb.l}`)}">⚔️ Questing</a></div>` : ''}
+        <h3><span>${code}</span> ${esc(sb.name)}</h3>
+        <table class="sg-pts"><tbody>${x.pts.map(p => `<tr><td class="sg-code">${esc(p.id)}</td><td class="sg-txt">${window.SPECPT ? SPECPT.heading(p) : ''}${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</td></tr>`).join('')}</tbody></table>
+        ${kw.length ? `<div class="sg-kw"><b>Key words</b><ul>${kw.map(([w, m]) => `<li><b>${esc(w)}</b>: ${esc(m)}</li>`).join('')}</ul></div>` : ''}
+        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', tokens([x]), `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', tokens([x]), `${T} · ${code}`)}">⚔️ Questing</a></div>` : ''}
       </section>`;
     }).join('');
-    const advice = `<section class="sg-adv"><h2 class="sg-topic" style="--c:#111">Exam advice</h2>${ADVICE.map(([h, t]) => `<p><b>${h}.</b> ${t}</p>`).join('')}
-      ${mode === 'print' && keys.length ? `<p class="sg-web">Revise online: sign in at <b>cakebreadscience.com</b> → <b>To do</b> → this study guide → <b>Revise</b> (${N} questions at a time on exactly these topics).</p>` : ''}</section>`;
-    return `<article class="sg sg-${mode}">${head}${list.length ? body : '<p>No sub-topics chosen yet.</p>'}${advice}</article>`;
+    const advice = `<section class="sg-adv"><h2 class="sg-topic" style="--c:#111">Exam advice</h2><ul>${ADVICE.map(([h, t]) => `<li><b>${h}:</b> ${t}</li>`).join('')}</ul></section>`;
+    return `<article class="sg sg-${mode}">${head}${list.length ? body : '<p>No spec points chosen yet.</p>'}${advice}</article>`;
   }
 
-  const CSS = `.sg{font-family:'Barlow',Arial,sans-serif;color:#111;line-height:1.4;background:#fff}
-.sg-head{border-bottom:3px solid #111;padding-bottom:8px;margin-bottom:10px}
-.sg-kick{font:700 12px 'Barlow',Arial;letter-spacing:1.5px;text-transform:uppercase;color:#5a5a5a}
-.sg h1{font:900 34px/1 'Barlow Condensed',Arial;text-transform:uppercase;margin:4px 0}
-.sg-date{font-weight:700;margin:2px 0}.sg-lede{font-size:14px;color:#333;margin:4px 0}
-.sg-box{display:inline-block;width:12px;height:12px;border:1.5px solid #111;border-radius:2px;vertical-align:-1px;margin:0 2px 0 6px}
+  const CSS = `.sg{font-family:'Barlow',Arial,sans-serif;color:#111;line-height:1.4;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.sg-head{border-bottom:3px solid #111;padding-bottom:8px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px}
+.sg-hl{flex:1;min-width:0}
+.sg h1{font:900 34px/1 'Barlow Condensed',Arial;text-transform:uppercase;margin:0}
+.sg-course{font:900 15px 'Barlow Condensed',Arial;text-transform:uppercase;letter-spacing:.5px;border:2px solid #111;padding:2px 8px;white-space:nowrap}
+.sg-date{font-weight:700;margin:4px 0 0}
 .sg-topic{font:900 22px 'Barlow Condensed',Arial;text-transform:uppercase;color:var(--c);border-bottom:2px solid var(--c);margin:16px 0 6px;break-after:avoid}
 .sg-sub{margin:8px 0 12px;break-inside:auto}
 .sg-sub h3{font:900 17px 'Barlow Condensed',Arial;text-transform:uppercase;margin:6px 0 4px;break-after:avoid}
@@ -94,14 +112,14 @@
 .sg-pts{width:100%;border-collapse:collapse;font-size:13.5px}
 .sg-pts td{border-bottom:1px solid #e3ddcf;padding:4px 4px;vertical-align:top}
 .sg-pts tr{break-inside:avoid}
-.sg-tick{width:66px;white-space:nowrap}.sg-tick .sg-box{margin:2px 2px 0 0}
 .sg-code{width:38px;font-weight:900;color:var(--c)}
 .sg-txt ul{margin:2px 0 0 18px}
-.sg-mis{margin:6px 0 2px;font-size:13px;background:#fff7e0;border-left:4px solid #e0a800;padding:5px 8px;break-inside:avoid}
-.sg-adv p{font-size:13.5px;margin:5px 0}
-.sg-web{background:#eef4ff;border-left:4px solid #1d4ed8;padding:5px 8px}
+.sg-kw{margin:6px 0 2px;font-size:13px;border-left:4px solid var(--c);background:#f6f4ee;padding:5px 8px;break-inside:avoid}
+.sg-kw ul{list-style:none;columns:2;column-gap:18px;margin-top:2px}.sg-kw li{break-inside:avoid;margin:1px 0}
+@media(max-width:600px){.sg-kw ul{columns:1}.sg h1{font-size:28px}}
+.sg-adv ul{margin-left:18px;font-size:13.5px}.sg-adv li{margin:3px 0}
 .sg-rev{margin:6px 0 4px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.sg-rev.big{background:#f6f4ee;border:2px solid #111;padding:8px 10px;margin-top:8px}
+.sg-rev.big{background:#f6f4ee;border:2px solid #111;padding:8px 10px;margin:0 0 8px}
 .sg-btn{display:inline-block;font:800 14px 'Barlow',Arial;background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;text-decoration:none;border-radius:4px}
 .sg-btn.q{background:#111;color:#fff}.sg-btn.sm{font-size:13px;padding:2px 9px}
 @media print{.sg-rev{display:none}.sg{font-size:12px}.sg h1{font-size:28px}@page{size:A4;margin:12mm}}`;
@@ -111,7 +129,7 @@
   /* guides for a student: their year (or any year if the guide has none ticked) and their course; until the day after the exam */
   function forMe(all, year, sa) {
     return Object.entries(all || {}).map(([id, g]) => Object.assign({ id }, g))
-      .filter(g => g && !g.hidden && (g.subs || []).length)
+      .filter(g => g && !g.hidden && (g.subs || []).length && (!g.pts || g.pts.length))
       .filter(g => (g.course === 'SA') === !!sa)
       .filter(g => !g.years || !Object.keys(g.years).length || (year && g.years['Y' + year]))
       .filter(g => { const d = daysTo(g.date); return d === null || d >= -1; })
@@ -130,9 +148,9 @@
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return; }
     el.innerHTML = `<div class="card"><h2>Study guides</h2><p class="small muted" style="margin-bottom:6px">What's in your test, with ${N} revision questions at a time on exactly those topics.</p>
-      ${mine.map(g => { const d = daysTo(g.date), k = g.subs;
+      ${mine.map(g => { const d = daysTo(g.date), k = tokens(chosen(g));
         return `<div class="sg-row" style="border-top:1px solid #e3ddcf;padding:8px 0"><b style="font-size:16px">📖 ${esc(g.title || 'Study guide')}</b>${g.date ? ` <span class="small muted">· ${esc(fmtDate(g.date))}${d > 1 ? ` · in ${d} days` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}</span>` : ''}
           <div class="sg-rev"><a class="sg-btn" style="background:#fff" href="/guide/?id=${encodeURIComponent(g.id)}">Open the guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}">⚔️ Revise in Questing</a></div></div>`; }).join('')}</div>`;
   }
-  window.CBSGuide = { N, subs, subsFor, pointsFor, render, style, forMe, loadAll, todo, reviseUrl, fmtDate, daysTo, ADVICE };
+  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, reviseUrl, fmtDate, daysTo, ADVICE };
 })();
