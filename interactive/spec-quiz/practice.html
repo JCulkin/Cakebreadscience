@@ -194,6 +194,21 @@ $('pick').addEventListener('click', e => {
 try { $('plain').checked = localStorage.getItem(PLAIN) === '1'; } catch (e) {}
 $('plain').onchange = () => { try { $('plain').checked ? localStorage.setItem(PLAIN, '1') : localStorage.removeItem(PLAIN); } catch (e) {} };
 
+/* study-guide revision (22 Nov): ?subs=C1a,C1b&n=15&t=<guide title> — n questions from those sub-topics; "another n" leaves out
+   the ones shown in this browser's last runs of the same set (sessionStorage), so each go brings new questions */
+const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
+function startGuide(keys, n, title) {
+  const subs = keys.map(k => subBy(k)).filter(Boolean); if (!subs.length) return false;
+  const set = new Set(); subs.forEach(x => x.keys.forEach(k => set.add(k)));
+  let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
+  const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
+  try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
+  PS = { sub: subs[0], guide: { keys, subs, n, title }, qs, i: 0, res: [], st0: QE.stats(), xp0: QE.prog.xp };
+  QE.busy = true;
+  $('pick').classList.add('hidden'); $('done').classList.add('hidden'); $('quiz').classList.remove('hidden');
+  $('qtitle').textContent = `${title || 'Study guide'} · ${subs.length === 1 ? `${subs[0].subj} ${subs[0].key.slice(1)} · ${subs[0].name}` : `${subs.length} sub-topics`}`;
+  scrollTo(0, 0); show(); return true;
+}
 /* ten questions: the engine picks ready-to-secure, then rusty, then ones you got wrong, then new */
 function start(k, point) {
   const sub = subBy(k); if (!sub) return;
@@ -274,16 +289,17 @@ function finish() {
   const wrong = PS.res.filter(r => !r.ok), sub = QE.allSubs().find(s => s.key === PS.sub.key) || PS.sub;
   const ready = PS.res.filter(r => r.ok && QE.qState(r.q.id).c === 1).length;
   $('quiz').classList.add('hidden'); $('done').classList.remove('hidden');
-  $('done').innerHTML = `<h1>${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}</h1>
+  const G = PS.guide;
+  $('done').innerHTML = `<h1>${G ? esc(G.title || 'Study guide') : `${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}`}</h1>
     <div class="card" style="margin-top:12px"><div class="score">${right} / ${PS.qs.length}</div>
       <ul class="gain">
         <li>${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b> today.` : 'No questions secured today.'}${ready ? ` ${ready} more will be secured if you get ${ready === 1 ? 'it' : 'them'} right again on another day.` : ''}</li>
-        <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.</li>
+        <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}${G ? `These ${G.subs.length > 1 ? `${G.subs.length} sub-topics` : 'sub-topic'}: ${G.subs.map(x => QE.allSubs().find(s => s.key === x.key) || x).reduce((n, x) => n + x.st.secured, 0)} of ${G.subs.reduce((n, x) => n + x.st.n, 0)} spec points secured.` : `This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.`}</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">To do</a></div>
+    <div class="acts"><button class="btn gold big" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button><a class="btn alt" href="${G ? '/today/' : 'practice.html'}">${G ? 'Back to To do' : 'Choose something else'}</a>${G ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe.'}</p>`;
-  $('again').onclick = () => start(PS.sub.key, PS.point);
+  $('again').onclick = () => G ? startGuide(G.keys, G.n, G.title) : start(PS.sub.key, PS.point);
   scrollTo(0, 0);
 }
 
@@ -295,7 +311,9 @@ function boot() {
   if (!$('pick').classList.contains('hidden')) drawPick();
   if (!started) { started = true; SUBS = QE.allSubs().filter(s => s.nq >= 4);
     const u = new URLSearchParams(location.search), pt = u.get('point'), sb = pt ? SUBS.find(x => x.keys.has(pt)) : subBy(u.get('sub'));
-    if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
+    const gs = (u.get('subs') || '').split(',').filter(Boolean), gn = Math.min(30, Math.max(5, +u.get('n') || 15));
+    if (gs.length && startGuide(gs, gn, u.get('t') || '')) {}
+    else if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
     else { const p = QE.picks()[0]; if (p) SCI = p.sub.key[0]; drawPick(); } }
 }
 boot(); QE.onChange(boot);

@@ -229,26 +229,41 @@ const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { c
 let MS = null;
 /* start(sub-topic key) — or start(sub-topic key, spec point) for a mission on one point (from the spec tracker's "Quiz me";
    its questions come first, topped up from the rest of the sub-topic) */
-function start(k, point) {
+function start(k, point, G) {
   const sub = subBy(k), foe = foeOf(sub);
   const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(k => topicKeys.add(k)));
-  const qs = point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
-  MS = { sub, foe, qs, point, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
+  const qs = G ? G.qs : point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
+  MS = { sub, foe, qs, point, guide: G ? G.guide : null, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
   QE.busy = true;
   $('choose').classList.add('hidden'); $('fight').classList.remove('hidden');
   $('arena').classList.remove('dead', 'hit', 'ouch', 'weak'); $('streak').classList.add('hidden'); $('wind').classList.add('hidden');
   $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
   $('youName').textContent = ADV.nick();
   $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
-  $('quote').textContent = `“${foe.o}”` + (point ? ` · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : '');
+  $('quote').textContent = `“${foe.o}”` + (G ? ` · ${G.guide.title || 'Study guide'}` : '') + (point ? ` · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : '');
   MS.nh = 0; MS.nw = 0; MS.streak = 0; MS.top = 0; MS.retry = null; MS.ri = 0; MS.fixed = 0; MS.fixedIds = new Set();
   scrollTo(0, 0); show();
+}
+/* study-guide revision (22 Nov): ?subs=C1a,C1b&n=15&t=<guide title> — a mission of n questions from those sub-topics against
+   one of their misconceptions; "another n" leaves out the questions shown in this browser's last runs of the same set */
+const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
+function startGuide(keys, n, title) {
+  const subs = keys.map(k => subBy(k)).filter(Boolean); if (!subs.length) return false;
+  const sub = subs[Math.floor(Math.random() * subs.length)], foe = foeOf(sub);
+  const set = new Set(); subs.forEach(x => x.keys.forEach(k => set.add(k)));
+  let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
+  const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
+  try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
+  start(sub.key, undefined, { qs, guide: { keys, n, title } });
+  return true;
 }
 /* ?point=B2.27 (from the spec tracker): go straight into a mission on that point */
 {
   const qs = new URLSearchParams(location.search), pt = qs.get('point');
   const sb = pt && SUBS.find(x => x.keys.has(pt));
-  if (sb) setTimeout(() => start(sb.key, pt), 0);
+  const gs = (qs.get('subs') || '').split(',').filter(Boolean), gn = Math.min(30, Math.max(5, +qs.get('n') || 15));
+  if (gs.length && gs.some(k => subBy(k))) setTimeout(() => startGuide(gs, gn, qs.get('t') || ''), 0);
+  else if (sb) setTimeout(() => start(sb.key, pt), 0);
   else if (subBy(qs.get('sub'))) setTimeout(() => start(qs.get('sub')), 0);   // ?sub=B2e: straight into that mission (the results page's buttons)
 }
 const DMG = 100 / 7;   // 7 right answers defeat it
@@ -361,7 +376,7 @@ function finish() {
   const flawless = right === MS.qs.length, coins = 10 + (won ? 10 : 0) + (flawless ? 10 : 0);
   /* your record on this mission (not for single-point missions from "Quiz me") */
   let record = '';
-  if (!MS.point) { const g = QE.game; g.best = g.best || {}; const b = g.best[MS.sub.key] || { r: 0, w: 0 };
+  if (!MS.point && !MS.guide) { const g = QE.game; g.best = g.best || {}; const b = g.best[MS.sub.key] || { r: 0, w: 0 };
     if (won && !b.w) record = `<li class="up">💥 First time you've busted this one: ${SUBS.filter(s => BEST(s.key).w).length + 1} of ${SUBS.length} misconceptions busted.</li>`;
     else if (right > b.r && b.r) record = `<li class="up">🏅 New best on this mission: ${right}/10 (was ${b.r}/10).</li>`;
     g.best[MS.sub.key] = { r: Math.max(b.r, right), w: b.w || won ? 1 : 0 }; }
@@ -394,9 +409,10 @@ function finish() {
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts">${(() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
+    <div class="acts">${MS.guide ? `<button class="btn gold big" id="guideAgain">Another ${MS.guide.n} →</button><a class="btn alt" href="/today/">Back to To do</a>` : ''}${MS.guide ? '' : (() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
       return (won ? '' : `<a class="btn gold big" href="adventurer-mission.html?sub=${MS.sub.key}">⚔ Fight it again</a>`) + (nx ? `<a class="btn ${won ? 'gold big' : 'alt'}" href="adventurer-mission.html?sub=${nx.key}">Next: ${esc(foeOf(nx).name)} →</a>` : ''); })()}<a class="btn alt" href="adventurer-mission.html">All missions</a><a class="btn alt" href="adventurer-home.html">🧁 Cakelab</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
     <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe and get on the leaderboards.'}</p>`;
+  if (MS.guide && $('guideAgain')) { const G = MS.guide; $('guideAgain').onclick = () => startGuide(G.keys, G.n, G.title); }
   if (QE.user) QE.onChange(() => { const n = $('saveNote'); if (n) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent; });
   scrollTo(0, 0);
 }

@@ -451,21 +451,27 @@ const QE = (() => {
      if they don't have ten questions between them, the rest come from `fill` (e.g. the whole topic) */
   /* diagram questions (diagq.js, 18 Nov): only where the page can draw them (DQ.ok()), and at most DG_CAP in a mission */
   const DG_CAP = 2, canDraw = () => typeof DQ !== 'undefined' && DQ.ok();
-  function buildMission(keys, fill) {
+  /* opts (study-guide revision, 22 Nov): n = how many (default MISSION_LEN), avoid = Set of ids shown in recent runs — left
+     until last, so "another 15" gives different questions while there are any */
+  function buildMission(keys, fill, opts = {}) {
+    const LEN = opts.n || MISSION_LEN, AV = opts.avoid || null, CAP = Math.max(DG_CAP, Math.round(LEN / 5));
     const pick = [], used = new Set(), draw = canDraw(); let nd = 0;
-    const take = (list, n) => { for (const q of shuffle(list)) { if (n <= 0 || pick.length >= MISSION_LEN) break; if (q.dg && (!draw || nd >= DG_CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
+    const take = (list, n) => { if (AV) list = list.filter(q => !AV.has(q.id)); for (const q of shuffle(list)) { if (n <= 0 || pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
     const fillFrom = pool => {
       const ready = pool.filter(q => { const s = qState(q.id); return s.c === 1 && s.d < TODAY; });
       const rusty = pool.filter(q => pointState(q.s).rusty);
       const learning = pool.filter(q => { const s = qState(q.id); return s.n && s.c === 0; });
       const fresh = pool.filter(q => !qState(q.id).n);
       take(ready, 4); take(rusty, 2); take(learning, 2);
-      take(fresh, MISSION_LEN); take(learning, MISSION_LEN);
-      take(pool.filter(q => qState(q.id).c === 1), MISSION_LEN);
-      take(pool, MISSION_LEN);
+      take(fresh, LEN); take(learning, LEN);
+      take(pool.filter(q => qState(q.id).c === 1), LEN);
+      take(pool, LEN);
     };
     fillFrom(QUESTIONS.filter(q => !keys || keys.has(q.s)));
-    if (fill && pick.length < MISSION_LEN) fillFrom(QUESTIONS.filter(q => fill.has(q.s)));
+    if (fill && pick.length < LEN) fillFrom(QUESTIONS.filter(q => fill.has(q.s)));
+    if (AV && pick.length < LEN) {   // not enough unseen ones: top up with recently seen
+      const again = QUESTIONS.filter(q => (!keys || keys.has(q.s)) && AV.has(q.id));
+      for (const q of shuffle(again)) { if (pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); if (q.dg) nd++; } } }
     return shuffle(pick).map(inst);
   }
   /* a finished mission: counts it, adds coins and loot, saves everything */
