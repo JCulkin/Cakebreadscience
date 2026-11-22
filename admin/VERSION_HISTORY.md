@@ -28,6 +28,7 @@
 - **Lessons:** new Biology drafts 1, 2a–2d, 2f (under review); 1f Ionic bonding and Biology 1 Living organisms checked; "Double Award only" / "Beyond GCSE" slide tags; Next slide ⏭ and ▦ All slides controls in projector mode (trial)
 
 #### Changed
+- Lessons (22 Nov): title slides now fill the screen with the picture and a clear title box (every lesson); question-bank diagram questions on the page and as slides in Biology 2b, 2c, 2d and Chemistry 1a, 1f, 1g, plus “Practise these points” links to Practice on every lesson; Biology 2a: flip-through examples for each level, own atom-to-ecosystem chain with a nod to Ecology, new moss-cell photo, checked (v2026-11-22); Biology 2b: new what-are-cells panels, eukaryotic/prokaryotic slides, shorter, bigger organelle cards, own respiration and animal-vs-plant diagrams, task shown on Comparing cells; slide tags no longer cover titles. Biology 1 and Chemistry 1f stay checked (new versions 22 Nov)
 - **Checked stays checked:** an edit you ask for no longer sends a checked question, worksheet or lesson back to review (only changes made without your say-so do). Chemistry 1fg1 worksheets (KS4, Single Award, KS3) marked checked; Biology lesson 1 Living organisms checked again with its latest edits (version 20 Nov 2026)
 - Lessons: simpler lesson list (no Checked badge, review dates or how-it-works box); the ✎ Review notes system is gone; 1f Ionic bonding content updates (hydroxide replaces phosphate and more); Separate Science mentions removed
 - Sitemap: archived worksheets removed

@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20",
+  "updated": "2026-11-22",
   "subjects": [
     {
       "id": "biology",
@@ -18,7 +18,8 @@
               "draftUpdated": "2026-11-20",
               "versions": [
                 "2026-11-18",
-                "2026-11-20"
+                "2026-11-20",
+                "2026-11-22"
               ]
             }
           ]
@@ -31,16 +32,18 @@
               "code": "2a",
               "title": "Level of organisation",
               "spec": "2.1",
-              "status": "draft",
+              "status": "checked",
               "draftUpdated": "2026-11-19",
-              "versions": []
+              "versions": [
+                "2026-11-22"
+              ]
             },
             {
               "code": "2b",
               "title": "Cell structure",
               "spec": "2.2–2.4",
               "status": "draft",
-              "draftUpdated": "2026-11-19",
+              "draftUpdated": "2026-11-22",
               "versions": []
             },
             {
@@ -48,7 +51,7 @@
               "title": "Biological molecules",
               "spec": "2.7–2.13",
               "status": "draft",
-              "draftUpdated": "2026-11-19",
+              "draftUpdated": "2026-11-22",
               "versions": []
             },
             {
@@ -56,7 +59,7 @@
               "title": "Movement of substances into and out of cells",
               "spec": "2.15–2.17",
               "status": "draft",
-              "draftUpdated": "2026-11-19",
+              "draftUpdated": "2026-11-22",
               "versions": []
             },
             {
@@ -69,7 +72,7 @@
               "title": "Respiration",
               "spec": "2.34–2.39",
               "status": "draft",
-              "draftUpdated": "2026-11-19",
+              "draftUpdated": "2026-11-22",
               "versions": []
             },
             {
@@ -173,7 +176,7 @@
               "title": "States of matter",
               "spec": "1.1–1.4",
               "status": "draft",
-              "draftUpdated": "2026-11-05",
+              "draftUpdated": "2026-11-22",
               "versions": []
             },
             {
@@ -203,7 +206,8 @@
               "status": "checked",
               "draftUpdated": "2026-11-18",
               "versions": [
-                "2026-11-18"
+                "2026-11-18",
+                "2026-11-22"
               ]
             },
             {
@@ -211,7 +215,7 @@
               "title": "Covalent bonding",
               "spec": "1.44–1.51",
               "status": "draft",
-              "draftUpdated": "2026-11-05",
+              "draftUpdated": "2026-11-22",
               "versions": []
             }
           ]

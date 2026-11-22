@@ -7,3 +7,4 @@
 .ps .stag.da::before{content:"Double Award only"}
 .ps .stag.beyond{color:#8e24aa}
 .ps .stag.beyond::before{content:"Beyond GCSE"}
+.ps:has(> .stag)>h2{padding-right:470px}

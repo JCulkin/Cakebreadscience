@@ -11,6 +11,54 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const fmtDate = d => { if(!d) return ''; const [y,m,dd]=d.split('-'); return `${+dd} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${y}`; };
 L.initComps = function(root){ $$('[data-comp]', root).forEach(el => { if(el._inited) return; const f = L.comps[el.dataset.comp]; if(f){ el._inited = true; try{ f(el); }catch(e){ console.error(e); el.textContent = 'Component error: '+e.message; } } }); };
 
+/* ---------- rolodex: a stack of examples per column; click the card, ▲▼ or scroll to flip (22 Nov) ---------- */
+L.comps.rolodex = el => {
+  $$('.rcol', el).forEach(col => {
+    const items = $$('.ritem', col), card = $('.rcard', col), cap = $('.rcap', col), cnt = $('.rc', col), crd = $('.rcr', col);
+    let i = 0, busy = 0;
+    const paint = () => { items.forEach((x,j) => x.classList.toggle('on', j===i)); cap.innerHTML = items[i].dataset.cap || ''; if(crd) crd.innerHTML = items[i].dataset.cr || ''; cnt.textContent = (i+1)+' / '+items.length; };
+    const go = d => { if(busy) return; busy = 1; card.classList.remove('fu','fd'); void card.offsetWidth; card.classList.add(d>0?'fd':'fu');
+      setTimeout(() => { i = (i + d + items.length) % items.length; paint(); }, 150); setTimeout(() => busy = 0, 320); };
+    paint();
+    const stop = (e, d) => { e.preventDefault(); e.stopPropagation(); go(d); };
+    $('.rn', col).onclick = e => stop(e, 1); $('.rp', col).onclick = e => stop(e, -1); card.onclick = e => stop(e, 1);
+    card.addEventListener('wheel', e => { if(Math.abs(e.deltaY) < 3) return; stop(e, e.deltaY > 0 ? 1 : -1); }, {passive:false});
+  });
+};
+
+/* ---------- diagram questions from the question bank (diagq.js ids, fixed seed on slides, "another example" on the page) ---------- */
+L.comps.dq = el => {
+  if(typeof DQ === 'undefined' || !DQ.ok()) { el.remove(); return; }
+  const id = el.dataset.id, onSlide = !!el.closest('#stage, #deck-src');
+  const shuf = (o, seed) => { const a = o.map((t,i) => [t,i]); let s = seed >>> 0; for(let i = a.length-1; i > 0; i--){ s = (s * 1103515245 + 12345) >>> 0; const j = s % (i+1); [a[i],a[j]] = [a[j],a[i]]; } return a; };
+  const draw = seed => {
+    const d = DQ.make(id, seed); if(!d){ el.textContent = ''; return; }
+    let opts = shuf(d.o, d.seed); const ord = DQ.order(opts, x => x[0]); opts = ord.opts;
+    const keys = ord.letters ? '1234' : 'ABCD', pt = id.split('-')[0];
+    if(onSlide){
+      el.innerHTML = `<div class="dqs-fig">${d.svg}</div><div class="dqs-side"><div class="dqs-q">${d.q}</div><div class="dqs-o">${opts.map(([t,i],k) =>
+        `<div class="${i===0?'ok':''}"${i===0?' data-s="1"':''}>${ord.letters?'':`<b>${keys[k]}</b>`}${t}</div>`).join('')}</div><div class="dqs-x" data-s="1">${d.x||''}</div></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="dq-fig">${d.svg}</div><div class="dq-q">${d.q}</div><div class="dq-o">${opts.map(([t,i],k) => `<button data-i="${i}">${ord.letters?'':`<b>${keys[k]}</b> `}${t}</button>`).join('')}</div>
+      <div class="dq-x"></div><div class="dq-bar"><button class="dq-new">↻ Another example</button><a href="/interactive/spec-quiz/practice.html?point=${pt}">📝 Practise ${pt} →</a></div>`;
+    $$('.dq-o button', el).forEach(b => b.onclick = () => { if(el.classList.contains('done')) return; el.classList.add('done');
+      $$('.dq-o button', el).forEach(x => x.classList.add(x.dataset.i === '0' ? 'ok' : (x === b ? 'no' : 'dim')));
+      $('.dq-x', el).innerHTML = (b.dataset.i === '0' ? '<b>✓ Correct.</b> ' : '<b>✗ Not quite.</b> ') + (d.x || ''); });
+    $('.dq-new', el).onclick = () => { el.classList.remove('done'); draw(); };
+  };
+  draw(el.dataset.seed ? +el.dataset.seed : undefined);
+};
+
+/* ---------- "practise these points" links, built from the spec chips on the page ---------- */
+function practise(){
+  const chk = $('#check'); if(!chk || $('.practise', chk)) return;
+  const sub = (body.className.match(/subj-(\w+)/)||[])[1], letter = {biology:'B', chemistry:'C', physics:'P'}[sub]; if(!letter) return;
+  const pts = [...new Set($$('.wrap .spec').map(e => e.textContent.trim()).filter(t => /^\d+\.\d+$/.test(t)))];
+  if(!pts.length) return;
+  chk.insertAdjacentHTML('beforeend', `<div class="practise"><h3>Practise these points</h3><div>${pts.map(p => `<a href="/interactive/spec-quiz/practice.html?point=${letter}${p}">📝 ${letter}${p}</a>`).join('')}</div></div>`);
+}
+
 /* ---------- header extras ---------- */
 function header(){
   const st = body.dataset.status || 'draft', upd = body.dataset.updated, ver = body.dataset.version;
@@ -188,7 +236,7 @@ function edgeColour(img){
 function whenLoaded(img, f){ if(img.complete && img.naturalWidth) f(); else img.addEventListener('load', f, {once:true}); }
 function matchBg(){
   $$('#stage .ps').forEach(p => {
-    if(p.hasAttribute('data-nomatch')) return;
+    if(p.hasAttribute('data-nomatch') || p.classList.contains('tslide')) return;
     const imgs = $$('img', p).filter(i => !i.closest('.linkcard,.ovs,.soft'));
     if(!imgs.length) return;
     let done = 0;
@@ -209,6 +257,6 @@ function matchBg(){
   });
 }
 
-function init(){ header(); newer(); L.initComps(document.querySelector('.wrap') || document); questions(); deck(); matchBg(); }
+function init(){ header(); newer(); L.initComps(document.querySelector('.wrap') || document); questions(); practise(); deck(); matchBg(); }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
