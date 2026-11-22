@@ -256,6 +256,9 @@ function shade(hex, amt) {
 /* fog of war: you see squares within SIGHT steps of anywhere you've been */
 /* gear (adventurer-items.js, 22 Nov): FX() = what the worn items do; numbers are percentages unless the item says otherwise */
 const FX = () => ADV.stats().gear.fx;
+/* activity log for the admin console (QE.log, 22 Nov) */
+const sqName = k => { const P = PLACES[k]; if (P) return P.name; const [c, r] = unkey(k), L = LAND[T_AT(c, r)]; return L ? L.name : k; };
+const LOG = (i, m) => { try { QE.log(i, m); } catch (e) {} };
 const coinsX = n => Math.round(n * (1 + (FX().coins || 0) / 100));
 const costOf = c => Math.max(1, c - (FX().spell || 0));
 const SIGHT = 2 + (FX().sight || 0);
@@ -579,6 +582,7 @@ function delve(k) {
     $('dunLeave').onclick = () => end(null);
   }
   function end(won) {
+    LOG('🕯', `${P.name}: ${won ? 'cleared to the bottom' : won === false ? `thrown out on floor ${D.floor + 1}` : `left after floor ${D.floor}`} · ${D.right} right, +${D.coins} coins`);
     body.innerHTML = `<h2 style="margin:0">${D.broke ? 'You break through!' : won ? `${P.name}: ${NF === 3 ? 'all three floors' : 'the bottom floor'} cleared!` : won === false ? `Floor ${D.floor + 1} throws you out` : 'Back in the daylight'}</h2>
       ${D.broke ? `<p class="new">The last wall of the deep seam gives way. Behind it: a rusty lift cage, a very long cable, and warm air coming up from below. <b>The Underworld is open to you.</b> Stand at the mine and take the lift down whenever you like.</p>` : ''}<p>${won === false ? `Two wrong on one floor and the room resets. ${P.keep ? 'You keep your place: next time you start from this floor. ' : ''}` : ''}You got <b>${D.right}</b> right${D.coins ? ` and carried out <span class="lt">${D.coins} coins</span>${D.got.length ? ', ' + D.got.map(g => `<span class="lt">${g}</span>`).join(', ') : ''}` : ''}. Right answers here count towards securing spec points, like a mission.</p>
       <p class="small">The rooms refill overnight: you can go in again tomorrow.</p><button class="btn gold" id="dunOut">Back to the map →</button>`;
@@ -599,14 +603,14 @@ function showSpells() {
   m.classList.add('on');
   $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
     const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
-    S.brews[id]--; QE.tally('brews'); let msg;
+    S.brews[id]--; QE.tally('brews'); LOG('🧪', `Drank ${br.name}`); let msg;
     if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `🥤 Health refilled (+${S.health - b0}).`; }
     else { S[id] = true; msg = `${br.ic} ${br.name}: ${br.what}`; }
     persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
   $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
-    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= costOf(sp.cost); QE.tally('spells'); const msg = sp.cast(); persist(); renderAll(); showSpells();
+    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= costOf(sp.cost); QE.tally('spells'); const msg = sp.cast(); LOG('🔮', `Cast ${sp.name}: ${String(msg).replace(/<[^>]+>/g, '')}`); persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
 }
@@ -690,7 +694,7 @@ function renderPanel() {
   if ($('goBtn')) $('goBtn').onclick = () => walk(path.slice(0, left));
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
     const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
-    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); persist(); renderAll();
+    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); LOG('🥤', `Bought ${br.name} (${br.cost} coins)`); persist(); renderAll();
     toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
   });
 }
@@ -711,7 +715,7 @@ function renderPerson(who) {
   $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
     const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
     try {
-      QE.tally('helped');
+      QE.tally('helped'); LOG('🩹', id === 'heal' ? `Patched up ${p.nick}` : `Gave ${p.nick} a ${BL.BREWS[id].name}`);
       if (id === 'heal') { if (S.mana < costOf(3)) return; S.mana -= costOf(3); await BL.aid(p.uid, { heal: 5 + (FX().heal || 0) }, ADV.nick()); }
       else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
       persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +${5 + (FX().heal || 0)} Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
@@ -773,7 +777,7 @@ function spendMove() {   // normal moves first, then the teacher's extra ones
   S.moves--; return true;
 }
 function knockOut(where) {
-  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); QE.tally('knockouts');
+  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); QE.tally('knockouts'); LOG('💫', `Knocked out by ${String(where).replace(/<[^>]+>/g, '')}: back in the Cakelab on ${S.health} Health`);
   toast(`💫 ${where} knocks you out. You wake up in the Cakelab on ${S.health} Health. Missions and flashcards heal you.`);
 }
 const hurtMe = h => { if (FX().armour) h = Math.max(1, Math.round(h * (1 - FX().armour / 100))); h = S.shield ? Math.ceil(h / 2) : h; S.health = Math.max(S.calm ? 1 : 0, S.health - h); return h; };
@@ -781,42 +785,42 @@ const fightStr = () => (ADV.stats().str + (S.aura ? 5 : 0)) * (S.fizz ? 1.5 : 1)
 const pause = ms => new Promise(r => setTimeout(r, ms));
 async function walk(steps) {
   if (walking || !shared) return;
-  walking = true; sel = null;
+  walking = true; sel = null; let nWalk = 0;
   try {
     for (const k of steps) {
       if (!spendMove()) break;
-      QE.tally('steps');
+      QE.tally('steps'); nWalk++;
       const from = S.at, stop = await arrive(k, from);
       persist(); renderAll(); if (k !== from) centreOnMe();
       if (stop) break;
       await pause(160);
     }
-  } finally { walking = false; persist(); sel = S.at; renderAll(); }
+  } finally { walking = false; if (nWalk) LOG('👣', `Walked ${nWalk} square${nWalk > 1 ? 's' : ''} to ${sqName(S.at)} (${BL.movesOf(S)} move${BL.movesOf(S) === 1 ? '' : 's'} left)`); persist(); sel = S.at; renderAll(); }
 }
 /* one step onto k: returns true if the walk should stop there */
 async function arrive(k, from) {
   const P = PLACES[k], [c, r] = unkey(k);
-  if (S.camp && S.camp.k !== k) { const n = S.camp.n; S.moves += n; S.camp = null; toast(`⛺ You break camp: ${n} move${n > 1 ? 's' : ''} back.`); }
+  if (S.camp && S.camp.k !== k) { const n = S.camp.n; S.moves += n; S.camp = null; toast(`⛺ You break camp: ${n} move${n > 1 ? 's' : ''} back.`); LOG('⛺', `Broke camp (${n} move${n > 1 ? 's' : ''} back)`); }
   S.at = k; if (!S.visited.includes(k)) S.visited.push(k);
   if (chestAt(k)) { await openChest(k); return true; }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
     S.camp = { k, n: (S.camp && S.camp.k === k ? S.camp.n : 0) + 1, day: BL.world.day };
-    QE.tally('attacks'); toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
+    QE.tally('attacks'); LOG('⛺', `Camped at ${P.name}: ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight`); toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
     return true;
   }
   if (P && P.type === 'monster' && denHp(k) > 0) { await fightMonster(k); return true; }
   if (P && P.type === 'home') {
-    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1) + (FX().rest || 0)); S.restDay = QE.TODAY; QE.tally('rests'); toast(`🛏 You rest in the Cakelab: +${S.health - b} Health.`); }
+    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1) + (FX().rest || 0)); S.restDay = QE.TODAY; QE.tally('rests'); if (S.health > b) LOG('🛏', `Rested in the Cakelab: +${S.health - b} Health`); toast(`🛏 You rest in the Cakelab: +${S.health - b} Health.`); }
     return true;
   }
   if (P && P.type === 'event') {
     if (S.puddleDay === QE.TODAY) toast('The puddle has nothing more for you today.');
-    else { S.puddleDay = QE.TODAY; QE.tally('puddles'); if (Math.random() < .4) { const n = coinsX(EVNOW() === 'coins' ? 10 : 5); S.coins = S.coins + n; toast(`You poke the puddle and fish out 🪙 ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
+    else { S.puddleDay = QE.TODAY; QE.tally('puddles'); if (Math.random() < .4) { const n = coinsX(EVNOW() === 'coins' ? 10 : 5); S.coins = S.coins + n; LOG('💧', `Poked the puddle: +${n} coins`); toast(`You poke the puddle and fish out 🪙 ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
     return true;
   }
   if (P) return k === from;   // shop, dungeon, lift…: you've arrived
   if (EVNOW() !== 'quiet' && !FX().critter && Math.random() < .3 && BL.WILD[T_AT(c, r)]) {
-    const h = hurtMe(1 + Math.floor(Math.random() * 3)); QE.tally('critters'); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
+    const h = hurtMe(1 + Math.floor(Math.random() * 3)); QE.tally('critters'); LOG('🐾', `Jumped by ${BL.WILD[T_AT(c, r)]}: −${h} Health`); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
     if (S.health === 0) { knockOut(BL.WILD[T_AT(c, r)].replace(/^an? /, 'A ')); return true; }
   }
   return false;
@@ -844,6 +848,7 @@ async function openChest(k) {
   if (L.item) { QE.game.bag = QE.game.bag || []; QE.game.bag.push(L.item.id); QE.game.lastLoot = L.item.id; QE.gameChanged(); }
   if (L.brew) { S.brews = S.brews || {}; S.brews[L.brew] = (S.brews[L.brew] || 0) + 1; }
   let bit = 0; if (L.mimic) { bit = FX().mimic ? 0 : hurtMe(3); QE.tally('mimics'); } else QE.tally('chest_' + ch.t);
+  LOG(L.mimic ? '👾' : '✨', L.mimic ? `Opened a mimic${bit ? `: bitten for ${bit}` : ' (spotted it)'}, +${L.coins} coins` : `Opened a ${C.name.toLowerCase()}: ${L.item ? L.item.name + ', ' : ''}+${L.coins} coins${L.brew ? ', ' + BL.BREWS[L.brew].name : ''}`);
   persist();   // saved before the pop-up, in case they head straight to the Wardrobe
   BL.logFind({ n: (QE.boardName() || 'Someone').split(' ')[0], t: ch.t, it: L.mimic ? 'it was a mimic' : L.item ? L.item.name : '', day: BL.world.day }).catch(() => {});
   const eq = L.item ? ADV_PUT(ADV.eq(), L.item) : ADV.eq();
@@ -882,9 +887,11 @@ function fightMonster(k) {
         const d = Math.round(fightStr() * (1.2 + Math.random() * 0.6) * (q.hard ? 1.25 : 1) * (1 + (FX().monster || 0) / 100)), hp = Math.max(0, hp0 - d);
         S.dens[k] = hp ? { hp } : { back: S.day + 2 }; $('mHp').style.width = (hp / P.max * 100) + '%';
         if (!hp) { S.coins = S.coins + monsterCoins(); done = true; QE.tally('monsters'); QE.mark('m:' + k); }
+        LOG('⚔️', `${P.name}: right answer, hit it for ${d}${hp ? ` (${hp} health left)` : `, beaten! +${monsterCoins()} coins`}`);
         msg = `<b class="good">Right: you hit it for ${d}!</b> ${hp ? `${P.name} has ${hp} health left.` : `<span class="lt">★ ${P.name} beaten! +${monsterCoins()} coins.</span> It'll be back in two days.`}`;
       } else {
         const h = hurtMe(Math.round(P.power * (0.5 + Math.random())));
+        LOG('⚔️', `${P.name}: wrong answer, it hit back for ${h}`);
         msg = `<b class="bad">Wrong: ${P.name} hits you (−${h} Health).</b>`; if (S.health === 0) out = true;
       }
       $('dunFb').innerHTML = `<div class="dx">${msg} ${q.x || ''}</div><button class="btn gold" id="dunNext">${out ? 'Ouch →' : 'Back to the map →'}</button>`;
@@ -906,6 +913,7 @@ function ride(to) {
   S.at = to; if (!S.visited.includes(to)) S.visited.push(to); sel = null; peek = null; ADV.save();
   if (shared) BL.saveMine({ at: to, visited: S.visited.slice() }).catch(e => console.warn('lift not saved', e));
   renderAll(); renderLegend(); centreOnMe(); window.scrollTo({ top: 0 });
+  LOG('🛗', layerOf(to) ? 'Took the lift down to the Underworld' : 'Took the lift back up');
   toast(layerOf(to) ? '🛗 The lift rattles down for a very long time. <b>Welcome to the Underworld.</b>' : '🛗 The lift hauls you back up into the daylight.');
 }
 function fromShared() {
@@ -935,6 +943,7 @@ async function claimPending() {
   QE.gameChanged();
   await BL.saveMine({ pending: null });
   toast(`From Breadventure Land: 🪙 +${p.coins || 0} coins${got.length ? ' · ' + got.join(', ') : ''}`);
+  LOG('🎁', `Collected rewards from the night: +${p.coins || 0} coins${got.length ? ', ' + got.join(', ') : ''}`);
 }
 async function applyOutbox() {
   const o = S.out; if (!o || !(o.hp || o.mana || o.move)) return;

@@ -284,6 +284,7 @@ $('repBtn').onclick = () => {
 function finish() {
   const right = PS.res.filter(r => r.ok).length;
   QE.finishMission({ coins: 10, right });
+  QE.log('📝', `Practice ${PS.point ? 'spec point ' + PS.point.slice(1) : PS.sub.key.slice(1) + ' ' + PS.sub.name}: ${right}/${PS.qs.length} right`);
   QE.busy = false;
   const st = QE.stats(), gainQ = st.securedQ - PS.st0.securedQ, gainP = st.securedP - PS.st0.securedP;
   const wrong = PS.res.filter(r => !r.ok), sub = QE.allSubs().find(s => s.key === PS.sub.key) || PS.sub;

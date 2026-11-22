@@ -1793,7 +1793,7 @@ updateDeckProgress(currentDeck);
             const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -6px">`;
             gain(faceImg + (wasDue ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
                 : (res.notes.length ? res.notes.join(' · ') : 'Not due yet: practice only (no XP)')));
-            if (res.done) showLoot(res.loot);
+            if (res.done) { showLoot(res.loot); try { const it = res.loot && ADV_ITEMS.find(i => i.id === res.loot); QE.log('🃏', `Finished today's flashcards${it ? ' · loot: ' + it.name : ''}`); } catch (e) {} }
 
             // Remove from queue and show next
             studyQueue.shift();

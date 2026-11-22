@@ -94,6 +94,15 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 .colbox{position:absolute;right:0;top:calc(100% + 4px);z-index:30;background:#fff;border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);padding:10px 12px;min-width:270px;max-height:70vh;overflow:auto}
 .colrow{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:2px 0;font-size:14px}.colrow label{flex:1;cursor:pointer}
 .colrow button{font:700 13px Barlow,Arial;border:1px solid #999;background:#f6f4ee;width:24px;height:22px;margin-left:2px;cursor:pointer}.colrow button:disabled{opacity:.3;cursor:default}
+.cfig{display:flex;gap:14px;align-items:flex-start}.cfig img{width:120px;image-rendering:pixelated;border:2px solid var(--ink);border-radius:8px;flex:none}
+.crow{display:flex;gap:10px;align-items:center;border-top:1px solid #e5e5e5;padding:5px 0}.crow img{width:34px;height:34px;image-rendering:pixelated;flex:none}.cslot{width:78px;flex:none;font-size:12px;font-weight:700;text-transform:uppercase;color:#666}
+.cbag{display:flex;flex-wrap:wrap;gap:4px}.cbag img{width:34px;height:34px;image-rendering:pixelated;border:2px solid #ddd;border-radius:6px;background:#fff}
+.cbag .r-uncommon{border-color:#16a34a}.cbag .r-rare{border-color:#2563eb}.cbag .r-lowkey{border-color:#7c3aed}.cbag .r-unhinged{border-color:#db2777}.cbag .r-legend{border-color:#d4a017}
+.ctab td{padding:3px 8px 3px 0;vertical-align:top}.ctab td:first-child{font-weight:700;white-space:nowrap;color:#555}
+.crep{background:#fffbeb;border:1px solid #e5d9a8;padding:6px 10px;margin-top:4px;font-size:14px}.crep p{margin:3px 0}
+.clog{list-style:none;margin:4px 0 0;padding:0;font-size:14px}.clog li{border-top:1px solid #eee;padding:3px 0}.clog li span:first-child{display:inline-block;min-width:80px;color:#777;font-size:12px}
+#dChar h4{margin:12px 0 4px;font-size:15px;text-transform:uppercase;letter-spacing:.5px}
+@media(max-width:520px){.cfig{flex-direction:column}}
 </style>
 </head>
 <body>
@@ -154,6 +163,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/interactive/spec-quiz/bland.js"></script>
+<script src="/interactive/spec-quiz/adventurer-items.js"></script>
+<script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
 <script src="/js/school.js"></script>
 <script src="/js/spec-index.js"></script>
 <script src="/admin/review-lib.js"></script>
@@ -404,6 +415,62 @@ function topicBars(a) {
   return TOPICS.map(t => { const x = a.topics[t.key] || { n: t.keys.length, s: 0, r: 0, l: 0 }; const w = v => (v / x.n * 100).toFixed(1) + '%';
     return `<tr><td class="small" style="white-space:nowrap"><b>${t.key}</b> ${esc(t.name)}</td><td style="width:45%"><div class="bar" title="${x.s} secured, ${x.r} rusty, ${x.l} learning of ${x.n}"><i class="s" style="width:${w(x.s)}"></i><i class="r" style="width:${w(x.r)}"></i><i class="l" style="width:${w(x.l)}"></i></div></td><td class="n small">${x.s + x.r}/${x.n}</td></tr>`; }).join('');
 }
+/* ---------- a student's character (22 Nov, user: "check out what's gone on with any particular student's character. Like find
+   out what just happened to them and what they've got on"): what they wear (gear, stats, abilities, set), their bag, where they
+   are on Breadventure Land, last night's report and their activity log (users/{uid}.questing.log, written by QE.log). ---------- */
+async function drawChar(s) {
+  const el = $('dChar'); if (!el) return;
+  const g = s.game || {}, eq = g.eq || {}, look = g.look || null;
+  if (typeof ADV_GEAR !== 'function' || typeof PIXEL === 'undefined') { el.innerHTML = '<h3 style="margin-top:0">Their character</h3><p class="muted">The item files didn\'t load.</p>'; return; }
+  if (!BL.world) { try { BL.init(RT, ME); await BL.load(); } catch (e) {} }
+  if (!$('dChar') || $('dChar') !== el) return;
+  const st = BL.states[s.uid] || null, pub = BL.pubs[s.uid] || null, w = BL.world || {};
+  const gear = ADV_GEAR(eq), set = gear.set ? ADV_SETS[gear.set] : null;
+  const pic = id => { try { return PIXEL.item(id); } catch (e) { return ''; } };
+  const statTxt = o => ['str', 'hp', 'mag'].filter(k => o[k]).map(k => `${o[k] > 0 ? '+' : '−'}${Math.abs(o[k])} ${ADV_STAT[k][0]}`).join(' ');
+  const shown = new Set();
+  const wearing = ADV_SLOTS.map(sl => { const id = eq[sl.k], it = id && ADV_BY[id];
+    if (it && it.two && shown.has(id)) return '';
+    if (it) shown.add(id);
+    return `<div class="crow"><span class="cslot">${it && it.two ? 'Both hands' : sl.name}</span>${it ? `<img class="px" src="${pic(id)}" alt=""><span><b>${esc(it.name)}</b> <span class="tag">${ADV_TAG(it)}</span>${it.s ? ` <span class="small" style="color:${ADV_SETS[it.s].col};font-weight:700">${ADV_SETS[it.s].name}</span>` : ''}<br><span class="small">${statTxt(it) || 'no stats'}${ADV_FX_TXT(it.fx).map(f => ' · ★ ' + esc(f)).join('')}</span></span>` : '<span class="muted small">nothing</span>'}</div>`; }).join('');
+  const bag = [...new Set([...ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id), ...(g.bag || [])])].map(id => ADV_BY[id]).filter(Boolean);
+  const RK = { common: 0, uncommon: 1, rare: 2, lowkey: 3, unhinged: 4, legend: 5 };
+  bag.sort((a, b) => RK[b.r] - RK[a.r] || (b.lv || 1) - (a.lv || 1));
+  const last = g.lastLoot && ADV_BY[g.lastLoot];
+  /* Breadventure Land */
+  let land = '<p class="muted small">Not on Breadventure Land yet.</p>';
+  if (st && st.at) {
+    const camp = st.camp && st.camp.day === w.day && BL.PLACES[st.camp.k];
+    const on = [st.shield && '🛡 Jam Shield', st.aura && '✨ Bottled Aura', st.fizz && '🫧 Fizzy Courage', st.calm && '☕ Decaf Panic'].filter(Boolean);
+    const brews = Object.entries(st.brews || {}).filter(([, n]) => n > 0).map(([b, n]) => `${(BL.BREWS[b] || {}).ic || ''} ${esc((BL.BREWS[b] || { name: b }).name)} ×${n}`);
+    land = `<table class="ctab"><tr><td>Where</td><td><b>${esc(placeName(st.at))}</b> <span class="small muted">(${esc(st.at)}${BL.isUnder(st.at) ? ', Underworld' : ''})</span></td></tr>
+      <tr><td>Health</td><td>${st.health ?? '–'} / ${pub ? pub.hp : '–'}${st.health === 0 ? ' <span class="tag red">knocked out</span>' : ''}</td></tr>
+      <tr><td>Mana</td><td>${st.mana || 0}</td></tr>
+      <tr><td>Moves</td><td>${BL.movesOf(st)}${st.bonus ? ` <span class="small muted">(${st.bonus} extra from you)</span>` : ''}</td></tr>
+      <tr><td>Tonight</td><td>${camp ? `⛺ camped at <b>${esc(camp.name)}</b> with ${st.camp.n} attack${st.camp.n > 1 ? 's' : ''}` : '<span class="muted">not camped</span>'}${on.length ? ' · ' + on.join(', ') : ''}</td></tr>
+      ${brews.length ? `<tr><td>Brews held</td><td>${brews.join(' · ')}</td></tr>` : ''}
+      ${st.under || (st.depth || {})[BL.MINE] ? `<tr><td>The mine</td><td>${st.under ? 'dug through: can reach the Underworld' : `deepest floor ${(st.depth || {})[BL.MINE]}`}</td></tr>` : ''}
+      ${st.pending ? `<tr><td>Waiting</td><td>🎁 ${st.pending.coins || 0} coins${(st.pending.items || []).length ? ' + ' + st.pending.items.map(i => esc((ADV_BY[i] || { name: i }).name)).join(', ') : ''} (collected next time they open the map)</td></tr>` : ''}
+      ${(st.inbox || []).length ? `<tr><td>Unread</td><td class="small">${st.inbox.map(esc).join('<br>')}</td></tr>` : ''}
+      ${pub ? `<tr><td>Last map visit</td><td>${ago(pub.t)} · stats then: 💪 ${pub.str} ❤ ${pub.hp} ✨ ${pub.mag}, level ${pub.lvl}</td></tr>` : ''}</table>
+      ${st.report ? `<details style="margin-top:8px"${st.reportDay === w.day ? ' open' : ''}><summary><b>Their last night's report</b> <span class="small muted">(${esc(st.reportDay || '')})</span></summary><div class="crep">${st.report}</div></details>` : ''}`;
+  }
+  const log = (g.log || []).slice().reverse();
+  el.innerHTML = `<h3 style="margin-top:0">Their character</h3>
+    <div class="cfig"><img class="px" src="${PIXEL.figure(eq, look)}" alt="" style="${set ? `background:${set.col}22` : ''}">
+      <div><b style="font-size:20px">${esc(s.nick || s.name)}</b><div class="small muted">“${set ? set.title : 'Side Quest Enjoyer'}”</div>
+        <p style="margin-top:6px">Level <b>${s.level}</b> · 🪙 ${g.coins || 0} coins</p>
+        <p class="small">Gear adds <b>${statTxt(gear) || 'nothing'}</b>${set ? ` · <b style="color:${set.col}">full ${set.name} set</b> (+15% ${ADV_STAT[set.stat][1]}, glowing)` : ''}</p>
+        ${ADV_FX_TXT(gear.fx).length ? `<ul class="small" style="margin:4px 0 0 18px">${ADV_FX_TXT(gear.fx).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
+        <p class="small muted" style="margin-top:4px">What they last saved from the Wardrobe (it reaches their account when they next open a Questing page).</p></div></div>
+    <h4>Wearing</h4>${wearing}
+    <h4>Owns ${bag.length} of ${ADV_ITEMS.filter(i => i.r !== 'legend').length} items${last ? ` · latest: <b>${esc(last.name)}</b>` : ''}</h4>
+    <div class="cbag">${bag.map(i => `<img class="px r-${i.r}" src="${pic(i.id)}" alt="${esc(i.name)}" title="${esc(i.name)} · ${ADV_TAG(i)}${eq.head === i.id || Object.values(eq).includes(i.id) ? ' · wearing' : ''}">`).join('')}</div>
+    <h4>Breadventure Land</h4>${land}
+    <h4>What they've been doing</h4>
+    ${log.length ? `<ul class="clog">${log.slice(0, 25).map(e => `<li><span title="${new Date(e.t).toLocaleString('en-GB')}">${ago(e.t)}</span> ${e.i || ''} ${esc(e.m)}</li>`).join('')}</ul>${log.length > 25 ? `<details><summary class="small">${log.length - 25} older</summary><ul class="clog">${log.slice(25).map(e => `<li><span>${new Date(e.t).toLocaleString('en-GB')}</span> ${e.i || ''} ${esc(e.m)}</li>`).join('')}</ul></details>` : ''}`
+      : '<p class="muted small">Nothing logged yet. The log started on 22 Nov 2026 and fills up as they play (missions, practice, flashcards, the map, the Wardrobe).</p>'}`;
+}
 function openStudent(uid) {
   const s = D.students.find(x => x.uid === uid); if (!s) return;
   const P = s.prog, missed = P ? Object.entries(P.q || {}).filter(([, x]) => x.n - (x.r || 0) >= 1).sort((a, b) => (b[1].n - (b[1].r || 0)) - (a[1].n - (a[1].r || 0))).slice(0, 8) : [];
@@ -415,6 +482,7 @@ function openStudent(uid) {
       ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
       <div class="acts"><input id="nn" placeholder="New name" maxlength="16" style="font:inherit;padding:5px 8px;border:2px solid var(--ink)"><button class="btn sm" id="ren">Rename</button><button class="btn alt sm" id="clr">Use their Google name</button>
       ${s.prog ? `<button class="btn alt sm" id="hid">${s.hide ? 'Hidden from boards ✓' : 'Hide from leaderboards'}</button>` : ''}</div><div class="msg" id="dMsg"></div></div>
+    <div class="card" id="dChar"><h3 style="margin-top:0">Their character</h3><p class="muted small">Loading…</p></div>
     ${P ? `<div class="kpis" style="margin-top:4px"><div class="kpi"><div class="big">${s.level}</div><small>level · ${s.xp} XP</small></div><div class="kpi"><div class="big">${s.pts}</div><small>spec points secured ${sciChips(s.per)}</small></div>
       <div class="kpi"><div class="big">${s.secQ}</div><small>questions secured</small></div><div class="kpi"><div class="big">${s.answered}</div><small>answers given · ${P.correct || 0} right</small></div>
       <div class="kpi"><div class="big">${P.missions || 0}</div><small>missions in total</small></div><div class="kpi"><div class="big">${s.coins}</div><small>coins · ${s.bag} items found</small></div></div>
@@ -425,6 +493,7 @@ function openStudent(uid) {
     : '<p class="muted" style="margin:12px 0">Hasn\'t played Cakebread Questing yet.</p>'}
     <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker, rated confident: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics ? esc(JSON.stringify(s.raw.longAnswersSummary.physics).slice(0, 120)) : 'none'}</p></div>`;
   $('dim').classList.add('on'); $('drawer').classList.add('on'); $('drawer').scrollTop = 0;
+  drawChar(s);
   const msg = (t, ok) => { $('dMsg').className = 'msg ' + (ok ? 'ok' : 'err'); $('dMsg').textContent = t; };
   const setNick = async nick => {
     try {

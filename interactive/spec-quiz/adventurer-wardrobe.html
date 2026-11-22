@@ -202,7 +202,7 @@ document.addEventListener('click', e => {
   const s = e.target.closest('[data-slot]');
   if (s) { slot = s.dataset.slot; sel = eq[slot] || null; render(); return; }
   const w = e.target.closest('[data-wear]');
-  if (w) { const i = byId[w.dataset.wear]; if (i && canWear(i)) { eq = ADV_PUT(eq, i, slot); save(); } render(); return; }
+  if (w) { const i = byId[w.dataset.wear]; if (i && canWear(i)) { eq = ADV_PUT(eq, i, slot); save(); QE.log('👕', `Put on ${i.name}`); } render(); return; }
   if (e.target.closest('[data-off]')) { eq = ADV_OFF(eq, slot); save(); render(); return; }
   const t = e.target.closest('.it[data-id]');
   if (t) { sel = t.dataset.id; render(); }

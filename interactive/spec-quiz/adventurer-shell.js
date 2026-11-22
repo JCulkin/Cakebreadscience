@@ -119,7 +119,7 @@ const ADV = (() => {
     if (S.lvSeen == null || S.lvSeen > l) { S.lvSeen = l; save(); return; }   // first time on this account: no flood of pop-ups
     if (l === S.lvSeen) return;
     const news = UNLOCKS.filter(u => u.lv > S.lvSeen && u.lv <= l), nx = UNLOCKS.find(u => u.lv > l);
-    S.lvSeen = l; save();
+    S.lvSeen = l; save(); try { QE.log('⭐', `Reached level ${l}`); } catch (e) {}
     storyModal(`<div class="ch">Level up</div><h2>Level ${l}!</h2><div class="pics"><img src="${PIXEL.figure(eq(), look())}" width="100" alt=""></div>
       ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${u.ic} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
       ${nx ? `<p style="color:#666;font-size:15px">Next: ${nx.ic} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
