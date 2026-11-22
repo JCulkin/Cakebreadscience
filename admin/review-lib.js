@@ -10,6 +10,7 @@
    Saved in the Realtime Database (admins write, signed-in read — the existing `school` rule, so no new rule is needed):
      school/review/q/{key} = { h, at, st: 'ok'|'fix', note }   key = question id with '.' → ','   (P3.2-01 → P3,2-01)
      school/review/w/{key} = { h, at, st, note }               key = path with '.' → ',' and '/' → '|'
+     school/review/k/{key} = { h, at, st, note }               key = spec point with '.' → ','  (key words, 22 Nov)
    Statuses: todo (never checked), changed (checked, then edited), fix (you said it needs fixing), ok (checked, unchanged). */
 (function () {
   const key = s => String(s).replace(/\./g, ',').replace(/\//g, '|');
@@ -25,6 +26,8 @@
      and the question-type pattern instead — edit a drawing type and its questions come back for review */
   const dgOf = q => { const D = typeof DG !== 'undefined' ? DG : null, row = window.DQ && DQ.BY && DQ.BY[q.id];
     return (D && D.M && D.M[q.dg] ? String(D.M[q.dg]) : 'maker:' + q.dg) + '|' + (row && row.rx ? String(row.rx) : ''); };
+  /* key words (22 Nov): one review item per spec point = its list of [word, meaning] in /js/key-words.js */
+  const kHash = k => hash(JSON.stringify([k, (window.KEYWORDS || {})[k] || []]));
   const qHash = q => hash(JSON.stringify([q.s, q.q || '', q.o || null, q.tf === undefined ? null : q.tf, q.x || '', !!q.hard, q.dg ? dgOf(q) : q.gen ? String(q.gen) : null]));
   function textOf(html) {
     const d = new DOMParser().parseFromString(html || '', 'text/html');
@@ -37,14 +40,15 @@
      account change it"). A chat that makes an edit the user asked for runs  node tools/review/keep.js q <id…> | w <path…>,
      which writes the new fingerprint to /admin/review-approved.json. That counts as checked until the content changes again.
      Worksheets use a plain-text fingerprint here (rawHash) because node has no DOM. */
-  let APPROVED = { q: {}, w: {} };
+  let APPROVED = { q: {}, w: {}, k: {} };
   const rawText = html => String(html || '').replace(/<(script|style|noscript|template)\b[\s\S]*?<\/\1>/gi, ' ')
     .replace(/<img\b[^>]*?\bsrc="([^"]*)"[^>]*>/gi, ' [img:$1] ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
   const rawHash = (sheet, ms) => hash(rawText(sheet) + '\u0002' + rawText(ms));
   const full = (rec, h, kept) => rec && rec.h === h ? (rec.st === 'fix' ? 'fix' : 'ok') : kept ? 'ok' : !rec ? 'todo' : 'changed';
   const statusQ = (recs, id, h) => full(recs[key(id)], h, (APPROVED.q[id] || {}).h === h);
   const statusW = (recs, s) => full(recs[key(s.p)], s.h, !!s.hr && (APPROVED.w[s.p] || {}).hr === s.hr);
-  const keptQ = id => APPROVED.q[id] || null, keptW = p => APPROVED.w[p] || null;
+  const statusK = (recs, k) => full(recs[key(k)], kHash(k), (APPROVED.k[k] || {}).h === kHash(k));
+  const keptQ = id => APPROVED.q[id] || null, keptW = p => APPROVED.w[p] || null, keptK = k => APPROVED.k[k] || null;
   const LABEL = { todo: 'To review', changed: 'Changed since checked', fix: 'Needs a fix', ok: 'Checked ✓' };
 
   /* the whole question bank in spec order (questions.js + gens.js must be loaded) */
@@ -55,10 +59,10 @@
   }
   async function loadReview(rt) {
     const get = async p => { try { return (window.CBSSchool && CBSSchool.rtGet) ? await CBSSchool.rtGet(rt, p, 15000) : (await rt.ref(p).once('value')).val(); } catch (e) { return null; } };
-    const [q, w, ap] = await Promise.all([get('school/review/q'), get('school/review/w'),
+    const [q, w, k, ap] = await Promise.all([get('school/review/q'), get('school/review/w'), get('school/review/k'),
       fetch('/admin/review-approved.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null)]);
-    APPROVED = { q: (ap && ap.q) || {}, w: (ap && ap.w) || {} };
-    return { q: q || {}, w: w || {} };
+    APPROVED = { q: (ap && ap.q) || {}, w: (ap && ap.w) || {}, k: (ap && ap.k) || {} };
+    return { q: q || {}, w: w || {}, k: k || {} };
   }
   async function save(rt, kind, id, rec) { await rt.ref(`school/review/${kind}/${key(id)}`).set(rec); }
   async function clear(rt, kind, id) { await rt.ref(`school/review/${kind}/${key(id)}`).remove(); }
@@ -83,5 +87,5 @@
     items.forEach(it => c[full(recs[key(idOf(it))], hOf(it), (APPROVED.q[idOf(it)] || {}).h === hOf(it))]++);
     return c;
   }
-  window.REVIEW = { key, hash, qHash, textOf, rawText, rawHash, status, statusQ, statusW, keptQ, keptW, LABEL, questions, loadReview, save, clear, sheets, counts };
+  window.REVIEW = { key, hash, qHash, kHash, textOf, rawText, rawHash, status, statusQ, statusW, statusK, keptQ, keptW, keptK, LABEL, questions, loadReview, save, clear, sheets, counts };
 })();

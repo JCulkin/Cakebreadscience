@@ -61,13 +61,13 @@
   const tokens = list => list.flatMap(x => x.whole ? [x.sb.key] : x.pts.map(p => p.key));
   const flat = p => JSON.stringify([p.text, p.bullets, p.eq, p.note, p.detail]).toLowerCase();
   /* key words for these points that the spec wording doesn't already contain (each word once per guide) */
-  function keyWords(pts, seen) {
-    const KW = window.KEYWORDS || {}, txt = pts.map(flat).join(' ');
+  function keyWords(pts, seen, txt) {
+    const KW = window.KEYWORDS || {}; txt = txt || pts.map(flat).join(' ');
     const out = [];
     pts.forEach(p => (KW[p.key] || []).forEach(([w, m]) => {
       const core = w.toLowerCase().replace(/\s*\(.*?\)\s*/g, ' ').trim(), id = core;
       if (seen.has(id)) return; seen.add(id);
-      if (core.length > 3 && txt.includes(core)) return;
+      if (core.length > 3 && new RegExp('(^|[^a-z])' + core.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(e?s)?([^a-z]|$)').test(txt)) return;   // whole words (or their plural) only
       out.push([w, m]);
     }));
     return out;
@@ -76,6 +76,10 @@
   /* the guide document. mode 'print' (A4 handout) or 'online' (with Revise buttons) */
   function render(g, mode = 'online') {
     const course = g.course === 'SA' ? 'SA' : 'DA', list = chosen(g), keys = tokens(list), seen = new Set();
+    /* key words (user, 22 Nov): bound to the ticked points, all in one section above the exam advice, grouped by sub-topic;
+       a word already in the wording of any point on this guide is left out */
+    const allTxt = list.flatMap(x => x.pts).map(flat).join(' ');
+    const kwGroups = list.map(x => ({ x, kw: keyWords(x.pts, seen, allTxt) })).filter(k => k.kw.length);
     const label = course === 'SA' ? 'Single Award' : 'Double Award';
     const dd = daysTo(g.date), T = g.title || 'Study guide';
     const head = `<header class="sg-head"><div class="sg-hl"><h1>${esc(T)}</h1>
@@ -85,18 +89,20 @@
         <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Cakebread Questing</a></div>` : ''}`;
     let lastTopic = '';
     const body = list.map(x => {
-      const sb = x.sb, kw = keyWords(x.pts, seen), code = sb.topic + sb.l;
+      const sb = x.sb, code = sb.topic + sb.l;
       const th = sb.L + sb.topic !== lastTopic ? `<h2 class="sg-topic" style="--c:${COL[sb.L]}">${SUBJ[sb.L]} ${sb.topic} · ${esc(sb.topicName)}</h2>` : '';
       lastTopic = sb.L + sb.topic;
       return th + `<section class="sg-sub" style="--c:${COL[sb.L]}">
         <h3><span>${code}</span> ${esc(sb.name)}</h3>
         <table class="sg-pts"><tbody>${x.pts.map(p => `<tr><td class="sg-code">${esc(p.id)}</td><td class="sg-txt">${window.SPECPT ? SPECPT.heading(p) : ''}${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</td></tr>`).join('')}</tbody></table>
-        ${kw.length ? `<div class="sg-kw"><b>Key words</b><ul>${kw.map(([w, m]) => `<li><b>${esc(w)}</b>: ${esc(m)}</li>`).join('')}</ul></div>` : ''}
         ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', tokens([x]), `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', tokens([x]), `${T} · ${code}`)}">⚔️ Questing</a></div>` : ''}
       </section>`;
     }).join('');
+    const kwSec = kwGroups.length ? `<section class="sg-kws"><h2 class="sg-topic" style="--c:#111">Key words</h2>
+      <p class="sg-kwlede">Not in the spec wording above, but you need to know them and use them in your answers.</p>
+      ${kwGroups.map(({ x, kw }) => `<div class="sg-kwg" style="--c:${COL[x.sb.L]}"><h4><span>${x.sb.topic}${x.sb.l}</span> ${esc(x.sb.name)}</h4><ul>${kw.map(([w, m]) => `<li><b>${esc(w)}</b>: ${esc(m)}</li>`).join('')}</ul></div>`).join('')}</section>` : '';
     const advice = `<section class="sg-adv"><h2 class="sg-topic" style="--c:#111">Exam advice</h2><ul>${ADVICE.map(([h, t]) => `<li><b>${h}:</b> ${t}</li>`).join('')}</ul></section>`;
-    return `<article class="sg sg-${mode}">${head}${list.length ? body : '<p>No spec points chosen yet.</p>'}${advice}</article>`;
+    return `<article class="sg sg-${mode}">${head}${list.length ? body : '<p>No spec points chosen yet.</p>'}${kwSec}${advice}</article>`;
   }
 
   const CSS = `.sg{font-family:'Barlow',Arial,sans-serif;color:#111;line-height:1.4;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -114,9 +120,12 @@
 .sg-pts tr{break-inside:avoid}
 .sg-code{width:38px;font-weight:900;color:var(--c)}
 .sg-txt ul{margin:2px 0 0 18px}
-.sg-kw{margin:6px 0 2px;font-size:13px;border-left:4px solid var(--c);background:#f6f4ee;padding:5px 8px;break-inside:avoid}
-.sg-kw ul{list-style:none;columns:2;column-gap:18px;margin-top:2px}.sg-kw li{break-inside:avoid;margin:1px 0}
-@media(max-width:600px){.sg-kw ul{columns:1}.sg h1{font-size:28px}}
+.sg-kwlede{font-size:13px;color:#444;margin:-2px 0 6px}
+.sg-kwg{margin:0 0 8px;border-left:4px solid var(--c);padding-left:8px}
+.sg-kwg h4{font:900 14px 'Barlow Condensed',Arial;text-transform:uppercase;margin:0 0 2px;break-after:avoid}
+.sg-kwg h4 span{color:var(--c)}
+.sg-kwg ul{list-style:none;columns:2;column-gap:18px;font-size:13px}.sg-kwg li{break-inside:avoid;margin:1px 0}
+@media(max-width:600px){.sg-kwg ul{columns:1}.sg h1{font-size:28px}}
 .sg-adv ul{margin-left:18px;font-size:13.5px}.sg-adv li{margin:3px 0}
 .sg-rev{margin:6px 0 4px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .sg-rev.big{background:#f6f4ee;border:2px solid #111;padding:8px 10px;margin:0 0 8px}
