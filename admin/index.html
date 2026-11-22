@@ -525,7 +525,7 @@ function drawBoards() {
     const best = rows.filter(r => !r.hide && r.l7[k]).sort((a, b) => b.l7[k] - a.l7[k])[0]; return `<tr><td>${s}</td><td class="small muted">${item}</td><td>${best ? `<b>${esc(best.name)}</b> (${best.l7[k]} right)` : '<span class="muted">nobody yet</span>'}</td></tr>`; }).join('');
   const boards = Object.keys(D.games).sort();
   $('p-boards').innerHTML = `${D.rtOk ? '' : '<div class="card" style="border-color:var(--bad)">Couldn\'t read the Realtime Database.</div>'}
-    <div class="card"><h2>Legendary holders · last 7 days</h2><table>${leg}</table></div>
+    <div class="card"><h2>Main Character items · last 7 days</h2><table>${leg}</table></div>
     <div class="card"><h2>Cakebread Questing board</h2><div class="wrapx"><table><thead><tr><th>Name on the board</th><th class="n">XP</th><th class="n">Points secured</th><th class="n">Last 7 days B / C / P</th><th>Last saved</th><th></th></tr></thead><tbody>
       ${rows.map(r => `<tr><td><b>${esc(r.name)}</b>${r.hide ? ' <span class="tag">hidden</span>' : ''}</td><td class="n">${r.xp || 0}</td><td class="n">${r.pts || 0}</td><td class="n">${r.l7.t ? `${r.l7.B} / ${r.l7.C} / ${r.l7.P}` : '–'}</td><td class="small">${ago(r.t)}</td><td><button class="btn alt sm" data-del="specQuizBoard/${r.uid}">Delete</button></td></tr>`).join('') || '<tr><td colspan="6" class="muted">Empty.</td></tr>'}</tbody></table></div></div>
     <div class="card"><h2>Game leaderboards</h2><div class="toolbar"><select id="gb">${boards.map(b => `<option>${b}</option>`).join('')}</select></div><div id="gbt"></div></div>

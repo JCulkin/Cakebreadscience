@@ -6,10 +6,10 @@
    - slot: head | top | bottom | shoes | hand. Hand items go in either hand (side = the hand they're drawn in, r = viewer's
      left; the other hand gets a mirror image); two: 1 = needs both hands. Worn gear lives in eq {head, top, bottom, shoes,
      rhand, lhand}; a two-handed item sits in both hand slots.
-   - r = rarity, lv = the level you need to wear it (hats 3+, things to hold 5+, legendaries 8: same as the unlocks), s = science
+   - r = rarity, lv = the level you need to wear it (hats 3+, things to hold 5+, Main Character items 8: same as the unlocks), s = science
      (b/c/p) for science sets, str/hp/mag = Strength/Health/Magic it adds, fx = what else it does (ADV_FX below; used by the
      map page and, through pub/{uid}.fx, by the midnight boss fights in bland.js), dark = can come from cursed chests.
-   - Stat budget (Claude's numbers): common 1, uncommon 2, rare 3, lowkey legendary 4, absolutely unhinged 5, legendary 6
+   - Stat budget (Claude's numbers): common 1, uncommon 2, rare 3, lowkey iconic 4, mythic 5, main character 6
      points; a two-handed item twice that; an fx costs about 1 point. Revision rewards (XP, securing) are never touched by gear.
    - Science set: at least 4 slots filled and every worn item from one science → +15% of that science's stat (at least +3),
      a small extra (ADV_SETS) and the figure glows the science's colour (adventurer-pixel.js).
@@ -23,20 +23,20 @@ const ADV_ITEMS = [
   {"id": "jumper", "slot": "top", "name": "School Jumper", "r": "common", "lv": 1, "hp": 1, "from": "Starter outfit", "d": "Name label says someone else's name. You've never asked."},
   {"id": "labcoat", "slot": "top", "name": "Lab Coat With One Mystery Stain", "r": "uncommon", "s": "c", "lv": 1, "mag": 1, "hp": 1, "from": "Missions, flashcards and wooden chests", "d": "Nobody knows. Nobody asks."},
   {"id": "npc", "slot": "top", "name": "NPC T-Shirt", "r": "uncommon", "lv": 2, "hp": 2, "from": "Missions, flashcards and wooden chests", "d": "Says “Greetings, traveller” when poked."},
-  {"id": "chainmail", "slot": "top", "name": "Chainmail of Covalent Bonds", "r": "rare", "s": "c", "lv": 4, "hp": 2, "fx": {"armour": 15}, "from": "Chemistry 1 · Gold", "d": "Shares electrons, not snacks."},
+  {"id": "chainmail", "slot": "top", "name": "Chainmail of Covalent Bonds", "r": "rare", "s": "c", "lv": 4, "hp": 2, "fx": {"armour": 15}, "from": "Helping beat the Rust Wyrm on Breadventure Land", "d": "Shares electrons, not snacks."},
   {"id": "joggers", "slot": "bottom", "name": "Grey Joggers", "r": "common", "lv": 1, "str": 1, "from": "Starter outfit", "d": "Comfortable. Shapeless. Honest."},
   {"id": "inertia", "slot": "bottom", "name": "Trousers of Moderate Inertia", "r": "uncommon", "s": "p", "lv": 1, "str": 2, "from": "Missions, flashcards and wooden chests", "d": "Hard to get going. Hard to stop."},
-  {"id": "kilt", "slot": "bottom", "name": "Kilt of Kinetic Energy", "r": "rare", "s": "p", "lv": 4, "str": 2, "hp": 1, "from": "Physics 4 · Gold", "d": "½mv² of pure swish."},
+  {"id": "kilt", "slot": "bottom", "name": "Kilt of Kinetic Energy", "r": "rare", "s": "p", "lv": 4, "str": 2, "hp": 1, "from": "Helping beat the Half-Life Horror on Breadventure Land", "d": "½mv² of pure swish."},
   {"id": "oddsocks", "slot": "shoes", "name": "Odd Socks", "r": "common", "lv": 1, "hp": 1, "from": "Starter outfit", "d": "One is red. One is a different red. Both are damp."},
   {"id": "brownian", "slot": "shoes", "name": "Socks of Brownian Motion", "r": "uncommon", "s": "p", "lv": 2, "str": 1, "hp": 1, "from": "Missions, flashcards and wooden chests", "d": "Random, jittery, never a matching pair."},
-  {"id": "grass", "slot": "shoes", "name": "Touch-Grass Boots", "r": "rare", "s": "b", "lv": 4, "hp": 3, "from": "Biology 4 · Silver", "d": "Grass grows wherever you step. You were warned."},
-  {"id": "frictionless", "slot": "shoes", "name": "Frictionless Slippers", "r": "lowkey", "s": "p", "lv": 7, "str": 1, "fx": {"move": 1}, "from": "Physics 1 · Gold", "d": "Stopping distance: yes."},
+  {"id": "grass", "slot": "shoes", "name": "Touch-Grass Boots", "r": "rare", "s": "b", "lv": 4, "hp": 3, "from": "Helping beat the Superbug on Breadventure Land", "d": "Grass grows wherever you step. You were warned."},
+  {"id": "frictionless", "slot": "shoes", "name": "Frictionless Slippers", "r": "lowkey", "s": "p", "lv": 7, "str": 1, "fx": {"move": 1}, "from": "Helping beat Granitus the Stone Golem on Breadventure Land", "d": "Stopping distance: yes."},
   {"id": "crisps", "slot": "hand", "side": "l", "name": "Empty Crisp Packet", "r": "common", "lv": 5, "hp": 1, "from": "Starter outfit", "d": "Rustles menacingly. Contains air and regret."},
-  {"id": "shield", "slot": "hand", "side": "l", "name": "Periodic Table Shield", "r": "rare", "s": "c", "lv": 6, "hp": 1, "mag": 1, "fx": {"guard": 20}, "from": "Chemistry 2 · Silver", "d": "The noble gases refuse to get involved."},
+  {"id": "shield", "slot": "hand", "side": "l", "name": "Periodic Table Shield", "r": "rare", "s": "c", "lv": 6, "hp": 1, "mag": 1, "fx": {"guard": 20}, "from": "Helping beat the Acid Hydra on Breadventure Land", "d": "The noble gases refuse to get involved."},
   {"id": "clipboard", "slot": "hand", "side": "l", "name": "Clipboard of Authority", "r": "uncommon", "lv": 5, "str": 1, "fx": {"rally": 10}, "from": "Missions, flashcards and wooden chests", "d": "Nobody questions someone with a clipboard."},
   {"id": "ruler", "slot": "hand", "side": "r", "name": "Slightly Bent Ruler", "r": "common", "lv": 5, "str": 1, "from": "Starter outfit", "d": "30 cm of pure intimidation. Well, 29.4 cm."},
   {"id": "glove", "slot": "hand", "side": "r", "name": "Newton's Third Glove", "r": "rare", "s": "p", "lv": 6, "str": 2, "fx": {"boss": 15}, "from": "Silver and golden chests", "d": "Every slap gets an equal and opposite slap."},
-  {"id": "mito", "slot": "hand", "side": "r", "name": "Mitochondria Gauntlet", "r": "lowkey", "s": "b", "lv": 8, "str": 3, "hp": 1, "from": "Biology 2 · Gold", "d": "The powerhouse of the hand."},
+  {"id": "mito", "slot": "hand", "side": "r", "name": "Mitochondria Gauntlet", "r": "lowkey", "s": "b", "lv": 8, "str": 3, "hp": 1, "from": "Helping beat the Spore Lord on Breadventure Land", "d": "The powerhouse of the hand."},
   {"id": "pipette", "slot": "hand", "side": "r", "name": "Pipette of Precise Disappointment", "r": "uncommon", "s": "c", "lv": 5, "mag": 2, "from": "Missions, flashcards and wooden chests", "d": "Delivers exactly 25.0 cm³ of sadness."},
   {"id": "calc67", "slot": "hand", "side": "r", "name": "The 6-7 Calculator", "r": "unhinged", "lv": 5, "str": 6, "fx": {"boss": 7}, "from": "Missions (1 in 67)", "d": "Answers every question with “six… seven…”. +6 Strength, +7% boss damage. Obviously."},
   {"id": "tiara", "slot": "head", "name": "Tiara of Noble Gases", "r": "rare", "s": "c", "lv": 5, "mag": 2, "hp": 1, "from": "Silver and golden chests", "d": "Refuses to react to anything you say. Glows a bit when you pass a current through it."},
@@ -109,7 +109,9 @@ const ADV_ITEMS = [
   {"id": "slinky", "slot": "hand", "side": "r", "two": 1, "name": "Slinky of Longitudinal Waves", "r": "uncommon", "s": "p", "lv": 5, "str": 2, "mag": 2, "from": "Missions, flashcards and wooden chests", "d": "Compressions, rarefactions and, eventually, a hopeless knot."},
   {"id": "trophy", "slot": "hand", "side": "r", "two": 1, "name": "Participation Trophy (Huge)", "r": "lowkey", "lv": 8, "str": 3, "hp": 2, "mag": 2, "fx": {"rally": 10}, "from": "Golden chests", "d": "Everyone gets one. Everyone fighting beside you hits a bit harder, out of pure validation."}
 ];
-const ADV_RARITY = {common:'Common', uncommon:'Uncommon', rare:'Rare', lowkey:'Lowkey Legendary', unhinged:'Absolutely Unhinged', legend:'Legendary'};
+/* rarity names (22 Nov, user): Common, Uncommon, Rare, Lowkey Iconic, Mythic. The three weekly science items aren't a rarity:
+   they're Main Character items, held while you top that science's board (ids stay lowkey / unhinged / legend so saved data is unchanged). */
+const ADV_RARITY = {common:'Common', uncommon:'Uncommon', rare:'Rare', lowkey:'Lowkey Iconic', unhinged:'Mythic', legend:'Main Character'};
 const ADV_SLOTS = [{k:'head',name:'Head'},{k:'top',name:'Top'},{k:'bottom',name:'Bottom'},{k:'shoes',name:'Shoes'},{k:'rhand',name:'Right hand'},{k:'lhand',name:'Left hand'}];
 const ADV_GROUPS = [{k:'head',name:'Head'},{k:'top',name:'Tops'},{k:'bottom',name:'Bottoms'},{k:'shoes',name:'Shoes'},{k:'hand',name:'Things to hold'}];
 
@@ -165,7 +167,7 @@ function ADV_GEAR(eq) {
   return g;
 }
 /* one tag: rarity and the level you need, e.g. "Rare · level 6" */
-const ADV_TAG = i => `${ADV_RARITY[i.r]} · level ${i.lv || 1}`;
+const ADV_TAG = i => i.legend ? `Main Character · ${i.legend}` : `${ADV_RARITY[i.r]} · level ${i.lv || 1}`;
 const ADV_WHERE = i => i.slot === 'hand' ? (i.two ? 'Two hands' : 'Either hand') : (ADV_SLOTS.find(s => s.k === i.slot) || { name: i.slot }).name;
 /* "+2 💪 Strength · +1 ✨ Magic" and the fx lines */
 const ADV_STATS_TXT = i => ['str', 'hp', 'mag'].filter(s => i[s]).map(s => `${i[s] > 0 ? '+' : '−'}${Math.abs(i[s])} ${ADV_STAT[s][0]} ${ADV_STAT[s][1]}`).join(' · ');

@@ -192,7 +192,7 @@ function render() {
         ${ADV_STATS_TXT(it) ? `<div class="dst">${ADV_STATS_TXT(it)}</div>` : ''}${fx.map(f => `<div class="dfx">★ ${f}</div>`).join('')}
         <div class="dd">${it.d}</div>
         <div class="ds">Got it from: ${it.legend ? 'top of the ' + it.legend + ' board over the last 7 days — keep practising to keep it!' : it.from}</div>
-        <div class="acts">${it.legend && !ADV.can('legend') ? `<span class="small">🔒 Legendaries can be worn from level ${ADV.unlockLv('legend')}.</span>`
+        <div class="acts">${it.legend && !ADV.can('legend') ? `<span class="small">🔒 Main Character items can be worn from level ${ADV.unlockLv('legend')}.</span>`
           : eq[slot] === it.id ? `<button class="btn alt" data-off="1">Take it off</button>`
           : !canWear(it) ? `<span class="small">🔒 You can wear this from level ${it.lv} (you're level ${lvNow()}). Secure spec points and keep revising to level up.</span>`
           : `<button class="btn" data-wear="${it.id}">${it.two ? 'Hold it in both hands' : slot.endsWith('hand') ? `Hold it in your ${slot === 'rhand' ? 'right' : 'left'} hand` : 'Wear it'}</button>`}</div></div></div>` : '';

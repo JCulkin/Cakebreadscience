@@ -247,7 +247,7 @@ const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same
 const CHESTS = {
   wood: { name: 'Wooden chest', col: '#57534e', glow: '#fbbf24', coins: [8, 15], rar: ['common', 'uncommon'], brew: 0, odds: 'Common or Uncommon item' },
   silver: { name: 'Silver chest', col: '#cbd5e1', glow: '#f1f5f9', coins: [15, 25], rar: ['uncommon', 'rare', 'rare'], brew: .3, odds: 'Uncommon or Rare item, maybe a brew' },
-  gold: { name: 'Golden chest', col: '#facc15', glow: '#fde047', coins: [30, 45], rar: ['rare', 'lowkey', 'lowkey', 'unhinged'], brew: 1, odds: 'Rare, Lowkey Legendary or (very rarely) Absolutely Unhinged item, plus a brew' },
+  gold: { name: 'Golden chest', col: '#facc15', glow: '#fde047', coins: [30, 45], rar: ['rare', 'lowkey', 'lowkey', 'unhinged'], brew: 1, odds: 'Rare, Lowkey Iconic or (very rarely) Mythic item, plus a brew' },
   cursed: { name: 'Cursed chest', col: '#7c3aed', glow: '#c084fc', coins: [20, 30], rar: ['uncommon', 'rare', 'lowkey'], dark: true, brew: .5, under: true, odds: 'one of the dark items, maybe a brew' },
 };
 const CHEST_TARGET = 3, CHEST_UNDER = 1, CHEST_DAYS = 5, MIMIC = 0.15;
