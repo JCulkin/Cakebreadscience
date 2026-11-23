@@ -133,7 +133,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
   <section class="panel" id="p-questions">
     <div class="toolbar"><select id="qSci"><option value="">All sciences</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option></select>
       <label class="small">At least <select id="qMin"><option>1</option><option>2</option><option selected>3</option><option>5</option><option>10</option></select> answers</label>
-      <select id="qSort"><option value="pct">Hardest first</option><option value="n">Most answered</option><option value="rep">Reported first</option></select>
+      <select id="qLv"><option value="">All levels</option><option value="1">Level 1</option><option value="2">Level 2</option><option value="3">Level 3 ★</option></select>
+      <select id="qSort"><option value="pct">Hardest first</option><option value="easy">Easiest first</option><option value="n">Most answered</option><option value="rep">Reported first</option></select>
       <a class="btn alt sm" href="/interactive/spec-quiz/reports.html">⚑ Student reports →</a></div>
     <div id="qSum" class="small muted" style="margin-bottom:8px"></div>
     <div class="wrapx" id="qTable"></div>
@@ -580,20 +581,22 @@ function qSample(q) {
   if (q.gen) { try { const g = q.gen(R); return { text: g.q + ' <i class="muted">(random numbers each time)</i>', ans: g.o ? g.o[0] : '' }; } catch (e) { return { text: '(calculation)', ans: '' }; } }
   return { text: q.q, ans: 'tf' in q ? (q.tf ? 'True' : 'False') : q.o[0] };
 }
+/* difficulty levels (questions.js): a level 2 or 3 question that 95%+ get right, over at least 10 answers, is probably giving itself away */
+const easyFlag = (q, x) => q && q.lv >= 2 && x.n >= 10 && x.pct >= 0.95;
 function qRow(x, compact) {
   const q = QBYID[x.id], smp = qSample(q), p = Math.round(x.pct * 100);
-  return `<tr><td class="small"><b>${x.id}</b>${x.rep ? ` <span class="tag red">⚑ ${x.rep}</span>` : ''}</td><td class="qtext small">${smp.text}${compact ? '' : `<br><span class="ans">✓ ${smp.ans}</span>`}</td>
-    <td class="n"><span class="pct ${p < 40 ? 'low' : ''}">${p}%</span><div class="small muted">${x.r}/${x.n}${compact ? '' : ` · ${x.who} student${x.who === 1 ? '' : 's'}`}</div></td></tr>`;
+  return `<tr><td class="small"><b>${x.id}</b>${q && q.lv ? `<div class="muted">Level ${q.lv}</div>` : ''}${x.rep ? ` <span class="tag red">⚑ ${x.rep}</span>` : ''}</td><td class="qtext small">${smp.text}${compact ? '' : `<br><span class="ans">✓ ${smp.ans}</span>`}</td>
+    <td class="n"><span class="pct ${p < 40 ? 'low' : ''}">${p}%</span>${easyFlag(q, x) ? '<div class="tag" title="Almost everyone gets this right: toughen the wrong answers or lower its level">too easy?</div>' : ''}<div class="small muted">${x.r}/${x.n}${compact ? '' : ` · ${x.who} student${x.who === 1 ? '' : 's'}`}</div></td></tr>`;
 }
 function drawQuestions() {
-  const all = questionStats(), sci = $('qSci').value, min = +$('qMin').value, sort = $('qSort').value;
-  let rows = all.filter(q => q.n >= min && (!sci || q.id[0] === sci));
-  rows.sort(sort === 'n' ? (a, b) => b.n - a.n : sort === 'rep' ? (a, b) => b.rep - a.rep || a.pct - b.pct : (a, b) => a.pct - b.pct || b.n - a.n);
+  const all = questionStats(), sci = $('qSci').value, lv = +$('qLv').value, min = +$('qMin').value, sort = $('qSort').value;
+  let rows = all.filter(q => q.n >= min && (!sci || q.id[0] === sci) && (!lv || (QBYID[q.id] && QBYID[q.id].lv === lv)));
+  rows.sort(sort === 'n' ? (a, b) => b.n - a.n : sort === 'rep' ? (a, b) => b.rep - a.rep || a.pct - b.pct : sort === 'easy' ? (a, b) => b.pct - a.pct || b.n - a.n : (a, b) => a.pct - b.pct || b.n - a.n);
   const answered = new Set(all.map(q => q.id));
-  $('qSum').textContent = `${answered.size} of ${QUESTIONS.length} questions have been answered at least once; ${all.reduce((n, q) => n + q.n, 0)} answers in total. % = answers right (all attempts, all students). Under 40% usually means a hard question — or a wrong answer key.`;
+  $('qSum').textContent = `${answered.size} of ${QUESTIONS.length} questions have been answered at least once; ${all.reduce((n, q) => n + q.n, 0)} answers in total. % = answers right (all attempts, all students). Under 40% usually means a hard question — or a wrong answer key. “Too easy?” marks a level 2 or 3 question that 95%+ get right.`;
   $('qTable').innerHTML = rows.length ? `<table><thead><tr><th>Question</th><th>Text and answer</th><th class="n">Right</th></tr></thead><tbody>${rows.slice(0, 300).map(q => qRow(q)).join('')}</tbody></table>` : '<div class="empty">No questions with that many answers yet.</div>';
 }
-['qSci', 'qMin', 'qSort'].forEach(id => $(id).onchange = drawQuestions);
+['qSci', 'qLv', 'qMin', 'qSort'].forEach(id => $(id).onchange = drawQuestions);
 
 /* ---------- Leaderboards ---------- */
 function drawBoards() {

@@ -223,7 +223,7 @@ function start(k, point) {
 function show() {
   const q = PS.qs[PS.i];
   $('prog').innerHTML = PS.qs.map((_, j) => `<i class="${j < PS.res.length ? (PS.res[j].ok ? 'ok' : 'no') : j === PS.i ? 'now' : ''}"></i>`).join('');
-  $('qnum').textContent = `Question ${PS.i + 1} of ${PS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
+  $('qnum').textContent = `Question ${PS.i + 1} of ${PS.qs.length} · ${lvLabel(q)}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)}`;
   $('qfig').innerHTML = typeof DQ !== 'undefined' ? DQ.fig(q) : '';   // diagram questions: the drawing above the question
   $('qtext').innerHTML = nuc(q.tf !== undefined ? `True or false? ${q.q}` : q.q);

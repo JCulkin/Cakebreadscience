@@ -271,7 +271,7 @@ const cur = () => MS.retry ? MS.retry[MS.ri] : MS.qs[MS.i];
 function show() {
   const q = cur();
   $('prog').innerHTML = MS.qs.map((x, j) => `<i class="${MS.retry && x === q ? 'now' : j < MS.res.length ? (MS.res[j].ok ? 'ok' : MS.fixedIds.has(x.id) ? 'fix' : 'no') : j === MS.i ? 'now' : ''}"></i>`).join('');
-  $('qnum').textContent = MS.retry ? `Second wind · ${MS.ri + 1} of ${MS.retry.length} · ${q.tf !== undefined ? 'quarter' : 'half'} a hit` : `Question ${MS.i + 1} of ${MS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
+  $('qnum').textContent = MS.retry ? `Second wind · ${MS.ri + 1} of ${MS.retry.length} · ${q.tf !== undefined ? 'quarter' : 'half'} a hit` : `Question ${MS.i + 1} of ${MS.qs.length} · ${lvLabel(q)}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)} · ${MS.sub.subj}`;
   $('qfig').innerHTML = typeof DQ !== 'undefined' ? DQ.fig(q) : '';   // diagram questions: the drawing above the question
   $('qtext').innerHTML = q.tf !== undefined ? `True or false? ${q.q}` : q.q;
@@ -296,7 +296,7 @@ $('opts').addEventListener('click', e => {
   const notes = again ? [ok ? 'Corrected. It only counts towards securing when you get it right first time, on another day.' : 'Read the explanation once more: this one will come round again in a later mission.'] : QE.recordAnswer(q, ok);
   if (again && ok) { MS.fixed++; MS.fixedIds.add(q.id); }
   if (!again) { MS.streak = ok ? MS.streak + 1 : 0; MS.top = Math.max(MS.top, MS.streak); const sk = $('streak'); sk.classList.toggle('hidden', MS.streak < 3); if (MS.streak >= 3) { sk.textContent = `🔥 ${MS.streak} in a row`; sk.style.animation = 'none'; void sk.offsetWidth; sk.style.animation = ''; } }
-  const HIT = DMG * (again ? (q.tf !== undefined ? .25 : .5) : q.hard ? 1.5 : 1);   // a true/false is a coin flip second time round: quarter hit
+  const HIT = DMG * (again ? (q.tf !== undefined ? .25 : .5) : ({ 2: 1.2, 3: 1.5 }[q.lv] || 1));   // level 2 hits a bit harder, level 3 half as hard again   // a true/false is a coin flip second time round: quarter hit
   const ar = $('arena');
   ar.classList.remove('hit', 'ouch'); void ar.offsetWidth;
   if (ok) {

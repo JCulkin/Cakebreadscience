@@ -5,7 +5,7 @@
    - A question is SECURED when answered right first time on two different days. A wrong answer drops it back.
    - True/false questions count half towards a spec point. A spec point is SECURED when its secured questions are worth
      at least min(4, total). A secured point goes RUSTY after 21 days with no correct answer; one correct answer polishes it.
-   - XP: 5 per correct answer (10 if ★ harder), +20 when a question is secured, +100 the first time a spec point is secured.
+   - XP: 5 per correct answer at level 1, 7 at level 2, 10 at level 3 (★ harder; questions.js), +20 when a question is secured, +100 the first time a spec point is secured.
 
    SAVED DATA
    Firestore users/{uid}.specQuiz = PROG, users/{uid}.specQuizSummary (+ points: {'B2.27': 's'|'r'|'l'} for the spec tracker), users/{uid}.questing = GAME
@@ -38,6 +38,9 @@ const QE = (() => {
     p.key = s.name[0] + p.id; POINTS[p.key] = { key: p.key, id: p.id, text: p.text, subject: s.name, topic: t.n, sub: sb.l };
   }))));
   const POINT_QS = {}; QUESTIONS.forEach(q => (POINT_QS[q.s] = POINT_QS[q.s] || []).push(q));
+  const LV_XP = { 1: 5, 2: 7, 3: 10 };
+  /* difficulty levels (questions.js, 23 Nov): shuffled, then lowest level first, so a run of questions climbs 1 → 3 */
+  const climb = a => shuffle(a).sort((x, y) => (x.lv || 1) - (y.lv || 1));
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const inst = q => (q.gen ? { ...q, ...q.gen(R) } : q);
 
@@ -360,7 +363,7 @@ const QE = (() => {
       PROG.ws = PROG.ws || {}; const w = PROG.ws[WEEK] = PROG.ws[WEEK] || {}; w[subj[0]] = (w[subj[0]] || 0) + 1;
       PROG.dc = PROG.dc || {}; const dd = PROG.dc[TODAY] = PROG.dc[TODAY] || {}; dd[subj[0]] = (dd[subj[0]] || 0) + 1;
       for (const d in PROG.dc) if (dayNum(d) < dayNum(TODAY) - 13) delete PROG.dc[d];
-      const xp = q.hard ? 10 : 5; PROG.xp += xp; if (q.hard) PROG.hard++;
+      const xp = LV_XP[q.lv] || 5; PROG.xp += xp; if (q.hard) PROG.hard++;
       notes.push(`+${xp} XP`);
       if (s.c === 0) { s.c = 1; s.d = TODAY; notes.push('Get it right again <b>on another day</b> to secure it.'); }
       else if (s.c === 1 && s.d < TODAY) { s.c = 2; s.d = TODAY; PROG.xp += 20; notes.push('🔒 <b>Question secured!</b> +20 XP'); }
@@ -459,14 +462,16 @@ const QE = (() => {
   function buildMission(keys, fill, opts = {}) {
     const LEN = opts.n || MISSION_LEN, AV = opts.avoid || null, CAP = Math.max(DG_CAP, Math.round(LEN / 5));
     const pick = [], used = new Set(), draw = canDraw(); let nd = 0;
-    const take = (list, n) => { if (AV) list = list.filter(q => !AV.has(q.id)); for (const q of shuffle(list)) { if (n <= 0 || pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
+    const take = (list, n, ordered) => { if (AV) list = list.filter(q => !AV.has(q.id)); for (const q of ordered ? list : shuffle(list)) { if (n <= 0 || pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
     const fillFrom = pool => {
       const ready = pool.filter(q => { const s = qState(q.id); return s.c === 1 && s.d < TODAY; });
       const rusty = pool.filter(q => pointState(q.s).rusty);
       const learning = pool.filter(q => { const s = qState(q.id); return s.n && s.c === 0; });
       const fresh = pool.filter(q => !qState(q.id).n);
       take(ready, 4); take(rusty, 2); take(learning, 2);
-      take(fresh, LEN); take(learning, LEN);
+      { const byL = l => fresh.filter(q => (q.lv || 1) === l), room = LEN - pick.length;   // new questions: about 40% level 1, 40% level 2, 20% level 3
+        take(byL(1), Math.ceil(room * .4)); take(byL(2), Math.ceil(room * .4)); take(byL(3), room); take(fresh, LEN); }
+      take(learning, LEN);
       take(pool.filter(q => qState(q.id).c === 1), LEN);
       take(pool, LEN);
     };
@@ -475,7 +480,7 @@ const QE = (() => {
     if (AV && pick.length < LEN) {   // not enough unseen ones: top up with recently seen
       const again = QUESTIONS.filter(q => (!keys || keys.has(q.s)) && AV.has(q.id));
       for (const q of shuffle(again)) { if (pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); if (q.dg) nd++; } } }
-    return shuffle(pick).map(inst);
+    return climb(pick).map(inst);   // the run climbs from level 1 to level 3
   }
   /* a finished mission: counts it, adds coins and loot, saves everything */
   function finishMission({ coins = 0, loot = null, right = 0 } = {}) {

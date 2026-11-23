@@ -147,8 +147,9 @@ var DQ = (function () {
     return null;
   }
   /* register in the bank: gen() is called by inst() wherever a question is built */
-  if (typeof QUESTIONS !== 'undefined') LIST.forEach(([id, maker, hard]) => QUESTIONS.push({ id, s: id.split('-')[0], hard: !!hard, dg: maker,
-    gen: () => make(id) || { q: '(Diagram question: open it in Practice or a mission to see the drawing.)', o: ['–', '–', '–', '–'], x: '' } }));
+  if (typeof QUESTIONS !== 'undefined') LIST.forEach(([id, maker, hard]) => { const q = { id, s: id.split('-')[0], hard: !!hard, dg: maker,
+    gen: () => make(id) || { q: '(Diagram question: open it in Practice or a mission to see the drawing.)', o: ['–', '–', '–', '–'], x: '' } };
+    QUESTIONS.push(typeof setLevel === 'function' ? setLevel(q) : q); });   // level 2, or 3 if hard (questions.js)
   /* ---------- showing them (missions, Practice, quick quiz, map, set work, admin, reports) ---------- */
   const isLetters = o => o.length > 1 && o.every(t => /^[A-Z][0-9]?$/.test(strip(t).trim()));
   function figure(q, cls = '') { return q && q.svg ? `<div class="dqfig ${cls}" role="img" aria-label="${(q.title || 'Diagram').replace(/"/g, '')}" title="Tap to enlarge">${q.svg}</div>` : ''; }

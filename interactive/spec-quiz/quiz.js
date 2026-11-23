@@ -100,13 +100,21 @@ function refreshChecks() {
   updateCount();
 }
 
-const keepQ = (q, hard, calc, diag) => (hard || !q.hard) && (calc || !q.calc) && (diag !== false || !q.dg);
-function selectedPool(hard = true, calc = true, diag = true) { return [...SEL].flatMap(k => QBY[k] || []).filter(q => keepQ(q, hard, calc, diag)); }
+/* lv = the difficulty levels to include, e.g. [1, 2] (questions.js); anything else = all levels */
+const lvOk = (lv, q) => !Array.isArray(lv) || lv.includes(q.lv || 1);
+const keepQ = (q, lv, calc, diag) => lvOk(lv, q) && (calc || !q.calc) && (diag !== false || !q.dg);
+function selectedPool(lv = null, calc = true, diag = true) { return [...SEL].flatMap(k => QBY[k] || []).filter(q => keepQ(q, lv, calc, diag)); }
+/* saved settings from before levels had hard: true|false */
+const cfgLv = s => { if (!Array.isArray(s.lv) || !s.lv.length) s.lv = s.hard === false ? [1, 2] : [1, 2, 3]; delete s.hard; return s; };
+const TEAM_PTS = { 1: 100, 2: 150, 3: 200 };
+const lvChips = s => `<h3 style="margin-top:16px">Levels</h3><div class="chips">${[1, 2, 3].map(l => `<button class="chip ${s.lv.includes(l) ? 'on' : ''}" data-lv="${l}">Level ${l}${l === 3 ? ' ★' : ''}</button>`).join('')}</div>
+        <p class="small" style="margin-top:6px">Level 1: facts and definitions. Level 2: explain, apply, calculate. Level 3 ★: several steps or a trap.</p>`;
+const lvWire = (box, s, draw) => box.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const l = +b.dataset.lv, on = s.lv.includes(l); if (on && s.lv.length === 1) return; s.lv = on ? s.lv.filter(x => x !== l) : s.lv.concat(l).sort(); draw(); });
 
 function updateCount() {
   const pool = selectedPool();
-  const pts = new Set(pool.map(q => q.s)).size, hard = pool.filter(q => q.hard).length;
-  $('selCount').innerHTML = pool.length ? `<b>${pool.length}</b> questions from ${pts} spec point${pts === 1 ? '' : 's'}${hard ? ` <span class="small" style="color:#bbb">(${hard} ★ harder)</span>` : ''}` : '<b>0</b> questions: tick some spec points with questions';
+  const pts = new Set(pool.map(q => q.s)).size, byLv = [1, 2, 3].map(l => pool.filter(q => (q.lv || 1) === l).length);
+  $('selCount').innerHTML = pool.length ? `<b>${pool.length}</b> questions from ${pts} spec point${pts === 1 ? '' : 's'} <span class="small" style="color:#bbb">(level 1: ${byLv[0]} · level 2: ${byLv[1]} · level 3 ★: ${byLv[2]})</span>` : '<b>0</b> questions: tick some spec points with questions';
   $('soloBtn').disabled = $('teamBtn').disabled = !pool.length;
 }
 
@@ -152,12 +160,12 @@ function scopeText() {
 }
 
 /* build a quiz of n questions spread evenly over the selected spec points */
-function buildQuiz(n, hard = true, calc = true, diag = true) {
-  const groups = shuffle([...SEL].filter(k => QBY[k]).map(k => shuffle(QBY[k].filter(q => keepQ(q, hard, calc, diag)))).filter(g => g.length));
+function buildQuiz(n, lv = null, calc = true, diag = true) {
+  const groups = shuffle([...SEL].filter(k => QBY[k]).map(k => shuffle(QBY[k].filter(q => keepQ(q, lv, calc, diag)))).filter(g => g.length));
   const out = [], cap = Math.ceil(n / 3); let nd = 0;   // diagram questions: at most a third of the quiz
   const can = q => !q.dg || nd < cap;
   while (out.length < n && groups.some(g => g.some(can))) groups.forEach(g => { if (out.length >= n) return; const j = g.map(can).lastIndexOf(true); if (j < 0) return; const q = g.splice(j, 1)[0]; if (q.dg) nd++; out.push(q); });
-  return shuffle(out).map(inst);
+  return shuffle(out).sort((a, b) => (a.lv || 1) - (b.lv || 1)).map(inst);   // climbs from level 1 to level 3
 }
 
 /* ---------- "Report this question" ----------
@@ -228,7 +236,7 @@ function renderQ(q, box, onAnswer) {
   let opts = isTF ? [{ t: 'True', ok: q.tf === true }, { t: 'False', ok: q.tf === false }] : shuffle(q.o.map((t, i) => ({ t, ok: i === 0 })));
   let keys = isTF ? ['T', 'F'] : ['A', 'B', 'C', 'D'];
   if (q.svg && typeof DQ !== 'undefined') { const d = DQ.order(opts, o => o.t); opts = d.opts; if (d.letters) keys = ['1', '2', '3', '4']; }   // letter answers in order, numbered keys
-  box.innerHTML = `<span class="qtag" style="--sc:${SUBJ_COL[p.subject]}">${p.subject} ${p.id} <span class="tf">· ${isTF ? 'True or false?' : 'Multiple choice'}</span>${q.hard ? '<span class="hardtag">★ Harder</span>' : ''}</span>
+  box.innerHTML = `<span class="qtag" style="--sc:${SUBJ_COL[p.subject]}">${p.subject} ${p.id} <span class="tf">· ${isTF ? 'True or false?' : 'Multiple choice'}</span>${q.lv ? `<span class="hardtag lv${q.lv}">${lvLabel(q)}</span>` : ''}</span>
     ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="prompt">${nuc(q.q)}</div>
     <div class="opts ${isTF ? 'n2' : ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="key">${keys[i]}</span><span>${nuc(o.t)}</span></button>`).join('')}</div>
     <div class="qfoot"><button class="replink" type="button">⚑ Report this question</button><div class="repbox hidden"></div></div>`;
@@ -256,11 +264,11 @@ document.addEventListener('keydown', e => {
 
 /* ---------- solo ---------- */
 $('soloBtn').onclick = () => {
-  const s = Object.assign({ n: 10, hard: true, calc: true, diag: true }, store.get('solocfg') || {});
+  const s = cfgLv(Object.assign({ n: 10, calc: true, diag: true }, store.get('solocfg') || {}));
   const box = $('solosetup');
   const draw = () => {
-    const total = selectedPool(s.hard, s.calc, s.diag).length;
-    if (!total && !(s.calc && s.hard && s.diag)) { s.calc = s.hard = s.diag = true; return draw(); }
+    const total = selectedPool(s.lv, s.calc, s.diag).length;
+    if (!total && !(s.calc && s.lv.length === 3 && s.diag)) { s.calc = s.diag = true; s.lv = [1, 2, 3]; return draw(); }
     const choices = [5, 10, 20, 30].filter(n => n < total).concat([total]);
     if (!choices.includes(s.n)) s.n = Math.min(10, total);
     box.innerHTML = `<a class="back" href="#" id="ssBack">← Choose content</a><h1>Solo</h1>
@@ -268,23 +276,23 @@ $('soloBtn').onclick = () => {
       <div class="card" style="margin-top:14px"><div class="in setup">
         <h3>How many questions?</h3>
         <div class="chips">${choices.map(n => `<button class="chip ${s.n === n ? 'on' : ''}" data-n="${n}">${n === total ? `All ${n}` : n}</button>`).join('')}</div>
-        <label class="toggle"><input type="checkbox" id="hardOn" ${s.hard ? 'checked' : ''}> Include ★ harder questions</label>
+        ${lvChips(s)}
         <label class="toggle"><input type="checkbox" id="calcOn" ${s.calc ? 'checked' : ''}> Include calculation questions</label>
         <label class="toggle"><input type="checkbox" id="diagOn" ${s.diag ? 'checked' : ''}> Include diagram and graph questions</label>
         <div style="margin-top:18px"><button class="btn big green" id="ssGo">Start →</button></div>
       </div></div>`;
     box.querySelector('#ssBack').onclick = ev => { ev.preventDefault(); menu(); };
     box.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { s.n = +b.dataset.n; draw(); });
-    box.querySelector('#hardOn').onchange = ev => { s.hard = ev.target.checked; draw(); };
+    lvWire(box, s, draw);
     box.querySelector('#calcOn').onchange = ev => { s.calc = ev.target.checked; draw(); };
     box.querySelector('#diagOn').onchange = ev => { s.diag = ev.target.checked; draw(); };
-    box.querySelector('#ssGo').onclick = () => { store.set('solocfg', s); startSolo(s.n, s.hard, s.calc, s.diag); };
+    box.querySelector('#ssGo').onclick = () => { store.set('solocfg', s); startSolo(s.n, s.lv, s.calc, s.diag); };
   };
   draw(); show('solosetup');
 };
 
-function startSolo(n, hard, calc, diag) {
-  SOLO = { qs: buildQuiz(n, hard, calc, diag), qi: -1, score: 0, res: [], n, hard, calc, diag };
+function startSolo(n, lv, calc, diag) {
+  SOLO = { qs: buildQuiz(n, lv, calc, diag), qi: -1, score: 0, res: [], n, lv, calc, diag };
   TEAM = null; show('play'); nextSolo();
 }
 function soloHud() {
@@ -318,7 +326,7 @@ function soloResults() {
     ${pts.length ? `<h3>Revise these spec points</h3><ul class="revise">${pts.map(k => { const p = POINTS[k]; return `<li style="--sc:${SUBJ_COL[p.subject]}"><b>${p.subject} ${p.id}</b>${esc(p.text)}${missed.filter(q => q.s === k).map(q => `<span class="q">✗ ${nuc(q.q)}</span>`).join('')}</li>`; }).join('')}</ul>` : ''}
     <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="tomenu">Change content</button></div>
   </div></div>`;
-  $('again').onclick = () => startSolo(SOLO.n, SOLO.hard, SOLO.calc, SOLO.diag);
+  $('again').onclick = () => startSolo(SOLO.n, SOLO.lv, SOLO.calc, SOLO.diag);
   $('tomenu').onclick = menu;
   show('results');
 }
@@ -327,11 +335,11 @@ function soloResults() {
 /* ?team (the admin's "Team quiz" button, 17 Nov): team game only */
 if (new URLSearchParams(location.search).has('team')) { $('soloBtn').hidden = true; $('teamBtn').textContent = 'Set up the teams →'; $('teamBtn').classList.remove('alt'); $('teamBtn').classList.add('green'); }
 $('teamBtn').onclick = () => {
-  const s = Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, hard: true, calc: false, diag: true }, store.get('teamcfg') || {});
+  const s = cfgLv(Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, calc: false, diag: true }, store.get('teamcfg') || {}));
   const box = $('teamsetup');
   const draw = () => {
-    const total = selectedPool(s.hard, s.calc, s.diag).length;
-    if (!total && !(s.calc && s.diag)) { s.calc = s.diag = true; return draw(); }
+    const total = selectedPool(s.lv, s.calc, s.diag).length;
+    if (!total && !(s.calc && s.diag && s.lv.length === 3)) { s.calc = s.diag = true; s.lv = [1, 2, 3]; return draw(); }
     const perChoices = [2, 3, 5, 8, 10].filter(p => p * s.n <= total);
     if (!perChoices.length) perChoices.push(Math.max(1, Math.floor(total / s.n)));
     if (!perChoices.includes(s.per)) s.per = perChoices.reduce((a, b) => Math.abs(b - 3) < Math.abs(a - 3) ? b : a);
@@ -345,7 +353,7 @@ $('teamBtn').onclick = () => {
         <p class="small" style="margin-top:6px">${s.n * s.per} questions in total (${total} available in the content you ticked).</p>
         <h3>3. Timer (optional)</h3><div class="chips">${[0, 20, 30, 45, 60].map(n => `<button class="chip ${s.timer === n ? 'on' : ''}" data-t="${n}">${n ? n + ' s' : 'Off'}</button>`).join('')}</div>
         <label class="toggle"><input type="checkbox" id="steal" ${s.steal ? 'checked' : ''}> Steals: a wrong answer passes to a random other team for half points (not on true-or-false questions)</label>
-        <label class="toggle"><input type="checkbox" id="hardOn" ${s.hard ? 'checked' : ''}> Include ★ harder questions: worth 200 points instead of 100 (steal 100)</label>
+        ${lvChips(s).replace('Level 3 ★: several steps or a trap.', 'Level 3 ★: several steps or a trap. Points: 100, 150 and 200 (half for a steal).')}
         <label class="toggle"><input type="checkbox" id="calcOn" ${s.calc ? 'checked' : ''}> Include calculation questions (off by default: they need working out, which is slow on the board)</label>
         <label class="toggle"><input type="checkbox" id="diagOn" ${s.diag ? 'checked' : ''}> Include diagram and graph questions</label>
         <div style="margin-top:18px"><button class="btn big green" id="tsGo">Start: ${s.n * s.per} questions →</button></div>
@@ -356,7 +364,7 @@ $('teamBtn').onclick = () => {
     box.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { s.timer = +b.dataset.t; draw(); });
     box.querySelectorAll('.teamnames input').forEach(i => i.oninput = () => { s.names[+i.dataset.i] = i.value; });
     box.querySelector('#steal').onchange = ev => { s.steal = ev.target.checked; };
-    box.querySelector('#hardOn').onchange = ev => { s.hard = ev.target.checked; draw(); };
+    lvWire(box, s, draw);
     box.querySelector('#calcOn').onchange = ev => { s.calc = ev.target.checked; draw(); };
     box.querySelector('#diagOn').onchange = ev => { s.diag = ev.target.checked; draw(); };
     box.querySelector('#tsGo').onclick = () => { store.set('teamcfg', s); startTeam(s); };
@@ -366,7 +374,7 @@ $('teamBtn').onclick = () => {
 
 function startTeam(s) {
   SOLO = null;
-  TEAM = { cfg: s, teams: Array.from({ length: s.n }, (_, i) => ({ name: (s.names[i] || '').trim() || TEAM_NAMES[i], col: TEAM_COLS[i], score: 0, right: 0 })), qs: buildQuiz(s.n * s.per, s.hard, s.calc, s.diag), qi: -1 };
+  TEAM = { cfg: s, teams: Array.from({ length: s.n }, (_, i) => ({ name: (s.names[i] || '').trim() || TEAM_NAMES[i], col: TEAM_COLS[i], score: 0, right: 0 })), qs: buildQuiz(s.n * s.per, s.lv, s.calc, s.diag), qi: -1 };
   show('play'); nextTeamQ();
 }
 
@@ -377,7 +385,7 @@ function nextTeamQ() {
   const q = TEAM.qs[TEAM.qi], n = TEAM.teams.length;
   let turn = TEAM.qi % n, steal = false, over = false, timer = null;
   const hud = () => {
-    $('hud').innerHTML = `<div class="teamturn" style="--c:${TEAM.teams[turn].col}"><span class="meta">Question ${TEAM.qi + 1} of ${TEAM.qs.length}${q.hard ? ' · ★ Harder: 200 points' : ''}</span><span class="tname">${steal ? 'STEAL! ' : ''}${esc(TEAM.teams[turn].name)}${steal ? ' (half points)' : '’s turn'}</span></div>
+    $('hud').innerHTML = `<div class="teamturn" style="--c:${TEAM.teams[turn].col}"><span class="meta">Question ${TEAM.qi + 1} of ${TEAM.qs.length}${` · ${lvLabel(q)}: ${TEAM_PTS[q.lv] || 100} points`}</span><span class="tname">${steal ? 'STEAL! ' : ''}${esc(TEAM.teams[turn].name)}${steal ? ' (half points)' : '’s turn'}</span></div>
       <div class="board">${TEAM.teams.map((t, i) => `<div class="tscore ${i === turn && !over ? 'now' : ''}" style="--c:${t.col}"><span>${esc(t.name)}</span><b>${t.score}</b></div>`).join('')}</div>`;
   };
   $('stage').innerHTML = `<div class="tbar hidden" id="tbar"><i></i><span></span></div><div id="qbox"></div><div id="fb"></div>
@@ -396,7 +404,7 @@ function nextTeamQ() {
   const ctl = renderQ(q, $('qbox'), ok => { if (over) return; clearInterval(timer); ok ? onRight() : onWrong(false); });
   KEYS = ctl;
   function onRight() {
-    over = true; const base = q.hard ? 200 : 100, pts = steal ? base / 2 : base;
+    over = true; const base = TEAM_PTS[q.lv] || 100, pts = steal ? base / 2 : base;
     TEAM.teams[turn].score += pts; TEAM.teams[turn].right++; ctl.stop();
     $('fb').innerHTML = `<div class="fb"><span class="pts">+${pts}</span><b>${esc(TEAM.teams[turn].name)} ${steal ? 'steal it!' : 'got it!'}</b> ${nuc(q.x)}</div>`;
     finish();

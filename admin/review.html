@@ -199,7 +199,7 @@ function card(x) {
       + `<button class="btn ghost" id="again" style="margin-top:8px">🎲 New examples</button>`;
   } else body = one(q);
   return `<div class="qcard">
-    <div class="qtop"><span class="qid">${esc(q.id)}</span><span class="st ${st}">${REVIEW.LABEL[st]}</span><span class="tag">${type}</span>${q.hard ? '<span class="tag">★ Harder</span>' : ''}
+    <div class="qtop"><span class="qid">${esc(q.id)}</span><span class="st ${st}">${REVIEW.LABEL[st]}</span><span class="tag">${type}</span>${q.lv ? `<span class="tag">Level ${q.lv}${q.lv === 3 ? ' ★' : ''}</span>` : ''}
       <span class="pos">${RV.i + 1} of ${RV.list.length} in this list</span></div>
     <div class="spec"><b>${esc(q.s)}</b> ${esc(strip(P.p ? P.p.text : ''))}${P.p && P.p.bullets ? ': ' + esc(P.p.bullets.join('; ')) : ''}${P.sub ? ` <span class="muted">· ${esc(P.sub)} ${esc(P.subName)}</span>` : ''}${P.p && window.SPECPT ? SPECPT.extras(P.p) : ''}</div>
     ${st === 'changed' ? `<div class="prev">✏️ <b>Changed since you checked it</b> on ${new Date(rec.at).toLocaleDateString('en-GB')}${rec.st === 'fix' && rec.note ? ` (you'd asked: “${esc(rec.note)}”)` : ''}. Check the new version.</div>` : ''}

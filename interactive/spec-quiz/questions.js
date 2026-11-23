@@ -3,14 +3,48 @@
    for its point, and if a question is wrong, fix its wording rather than replacing it. Randomised calculations live in gens.js.
    M(id, question, [correct, wrong, wrong, wrong], explanation)  → multiple choice (options are shuffled at runtime)
    T(id, statement, true|false, explanation)                     → true or false
-   MH / TH → the same, marked ★ harder (worth double in team mode; shown only if 'Include harder questions' is ticked)
-   Keep to the Edexcel International GCSE Science (Double Award) wording and scope. */
+   MH / TH → the same, marked ★ harder (level 3)
+   WRONG ANSWERS: each one should be a mistake a real student makes (a misconception, a mixed-up word, a slip in the maths),
+   about as long as the right answer and in the same style. No joke options: one silly option turns four choices into three.
+   Keep to the Edexcel International GCSE Science (Double Award) wording and scope.
+
+   DIFFICULTY LEVELS (23 Nov). Every question gets q.lv = 1, 2 or 3:
+     1 = recall: a fact, a name, a definition, most true/false
+     2 = use it: explain why, apply it to a new situation, a calculation, read a diagram or data
+     3 = ★ harder: several steps, data to interpret, or a trap most students fall into (MH/TH, hard generators and diagrams)
+   MH/TH are always 3; generators and diagram questions are 2 (3 if marked hard); M/T are sorted into 1 or 2 by _autoLevel.
+   To set a level by hand, add the id to LEVEL below. q.hard stays true exactly when lv is 3, so older code keeps working.
+   Levels are used by: missions and Practice (questions climb 1 → 3), the dungeon floors, XP (5/7/10), the quiz
+   level picker and team points (100/150/200), and the admin Questions table. */
 const QUESTIONS = [];
+const LEVEL = {   // set by hand (23 Nov): ★ questions that are really one step go down; unit traps go up
+  'P1.19-05': 1, 'P8.2-04': 2, 'P8.7-04': 2, 'P2.11-03': 2, 'P2.11-05': 2, 'P1.3-04': 2, 'P3.11-08': 2, 'P7.2-03': 2,
+  'P8.3-04': 2, 'P8.4-04': 2, 'P8.5-04': 2, 'P2.6-04': 2, 'P6.7-04': 2, 'P5.17-04': 2, 'P5.5-04': 2, 'P5.6-04': 2,
+  'P2.7-03': 2, 'P5.19-04': 3, 'P5.19-05': 3, 'P3.22-01': 2, 'P6.6-02': 2, 'P7.8-01': 2, 'P5.17-02': 2, 'P3.19-01': 2,
+  'P4.12-01': 1,
+  'C1.17-01': 2, 'C1.26-01': 2, 'C1.26-02': 2, 'C1.26-03': 2, 'C1.29-01': 2, 'C1.46-05': 2, 'C1.40-01': 2, 'C2.29-04': 2,
+  'C2.30-04': 2, 'C2.5-05': 2, 'C2.3-04': 2, 'C4.21-04': 2, 'C4.24-04': 2, 'C4.26-04': 2, 'C4.3-05': 2, 'C1.25-04': 2,
+  'C4.14-04': 2, 'C1.39-07': 2, 'C1.46-07': 2, 'C1.14-04': 2, 'C1.48-03': 2, 'C2.13-05': 2, 'C1.21-05': 2,
+  'B3.19-05': 1, 'B3.9-05': 2, 'B2.82-05': 2, 'B2.71-05': 2, 'B2.30-05': 2, 'B2.37-05': 2, 'B3.32-04': 2, 'B3.27-04': 2,
+  'B3.26-04': 2, 'B4.6-05': 2, 'B4.1-05': 2, 'B2.59-04': 2, 'B2.2-05': 2, 'B2.1-05': 2, 'B2.9-05': 2, 'B2.7-04': 2,
+  'B2.38-03': 2, 'B2.35-03': 2, 'B2.68-04': 2, 'B2.54-04': 2, 'B2.60-04': 2, 'B2.86-04': 2, 'B2.91-04': 2, 'B3.13-04': 2,
+  'B3.29-04': 2, 'B5.3-05': 2, 'B2.83-04': 2, 'B2.16-02': 2, 'B2.39-01': 2, 'B3.24-02': 2,
+};
 const _sp = id => id.split('-')[0];
-function M(id, q, o, x) { QUESTIONS.push({ id, s: _sp(id), q, o, x }); }
-function T(id, q, tf, x) { QUESTIONS.push({ id, s: _sp(id), q, tf, x }); }
-function MH(id, q, o, x) { QUESTIONS.push({ id, s: _sp(id), q, o, x, hard: true }); }   // ★ harder
-function TH(id, q, tf, x) { QUESTIONS.push({ id, s: _sp(id), q, tf, x, hard: true }); }
+const _txt = h => String(h).replace(/<[^>]+>/g, '').replace(/&[a-z]+;/g, ' ').trim(), _w = h => _txt(h).split(/\s+/).length;
+const _THINK = /^(why|explain|suggest|predict|how does|how do|how would|what would|what happens|what will|a student|a teacher|which conclusion|which statement best|which is the best|which change|which would)|\bbecause\b|\bso that\b|\bif\b|\bwould\b|\bmost likely\b|\bbest explains?\b|\bcalculate\b|\d+(\.\d+)?\s?(g|kg|cm|mm|m|s|N|J|W|V|A|Ω|°C|%|mol|dm³|cm³|Hz|kPa|Pa)\b/i;
+function _autoLevel(q) {
+  if (q.gen || q.dg) return 2;
+  const s = _txt(q.q);
+  if ('tf' in q) return _w(s) >= 20 || /\bbecause\b|\bso\b|\btherefore\b/i.test(s) ? 2 : 1;
+  return _THINK.test(s) || _w(s) >= 18 || q.o.reduce((n, o) => n + _w(o), 0) / q.o.length >= 9 ? 2 : 1;
+}
+function setLevel(q) { q.lv = LEVEL[q.id] || (q.hard ? 3 : _autoLevel(q)); q.hard = q.lv === 3; return q; }   // also used by gens.js and diagq.js
+const lvLabel = q => q && q.lv ? `Level ${q.lv}${q.lv === 3 ? ' ★' : ''}` : '';   // how a level is shown to students
+function M(id, q, o, x) { QUESTIONS.push(setLevel({ id, s: _sp(id), q, o, x })); }
+function T(id, q, tf, x) { QUESTIONS.push(setLevel({ id, s: _sp(id), q, tf, x })); }
+function MH(id, q, o, x) { QUESTIONS.push(setLevel({ id, s: _sp(id), q, o, x, hard: true })); }   // ★ harder
+function TH(id, q, tf, x) { QUESTIONS.push(setLevel({ id, s: _sp(id), q, tf, x, hard: true })); }
 
 /* ===================== PHYSICS 3(b) Properties of waves ===================== */
 M('P3.2-01', 'In a <b>transverse</b> wave, the oscillations are…',
@@ -132,7 +166,7 @@ M('P3.12-07', 'Which electromagnetic radiation is used for <b>broadcasting</b> T
   ['Radio waves', 'Gamma rays', 'Ultraviolet', 'X-rays'],
   'Radio waves: broadcasting and communications.');
 M('P3.13-01', 'Too much <b>ultraviolet</b> can cause…',
-  ['damage to surface cells and blindness', 'internal heating of body tissue', 'skin burns from heat', 'no harm at all'],
+  ['damage to surface cells and blindness', 'internal heating of body tissue', 'skin burns from heat', 'cancer deep inside the body’s organs'],
   'UV damages surface cells (skin) and the eyes. Protect yourself with sunscreen and sunglasses.');
 M('P3.13-02', 'Excessive exposure to <b>microwaves</b> can cause…',
   ['internal heating of body tissue', 'damage to surface skin cells', 'blindness and sunburn', 'mutations and cancer in DNA'],
@@ -144,7 +178,7 @@ M('P3.13-04', 'Which electromagnetic radiation can cause <b>cancer and mutation<
   ['Gamma rays', 'Infrared', 'Radio waves', 'Visible light'],
   'Gamma rays are ionising. Protection: lead or thick concrete shielding and limiting exposure time.');
 M('P3.13-05', 'Which is a simple way to protect yourself from <b>ultraviolet</b>?',
-  ['Wear sunscreen and sunglasses', 'Stand behind a sheet of paper', 'Turn off your mobile phone', 'Stay near a radiator'],
+  ['Wear sunscreen and sunglasses', 'Keep your mobile phone switched off', 'Stand well back from microwave ovens', 'Drink plenty of water while outside'],
   'Sunscreen and sunglasses absorb UV before it reaches skin cells and eyes.');
 
 /* ===================== PHYSICS 7(b) Radioactivity ===================== */
@@ -203,7 +237,7 @@ M('P7.8-02', 'Complete the equation: <span class="nuc"><sup>14</sup><sub>6</sub>
   ['<span class="nuc"><sup>0</sup><sub>−1</sub>e</span> (beta)', '<span class="nuc"><sup>4</sup><sub>2</sub>He</span> (alpha)', 'γ (gamma)', '<span class="nuc"><sup>1</sup><sub>0</sub>n</span> (neutron)'],
   'Mass: 14 = 14 + 0. Charge: 6 = 7 + (−1). So the missing particle is a beta particle.');
 M('P7.9-01', 'Which of these can detect ionising radiation?',
-  ['A Geiger-Müller detector', 'A voltmeter', 'A thermometer', 'A magnifying glass'],
+  ['A Geiger-Müller detector', 'A voltmeter', 'A thermometer', 'A light meter'],
   'Geiger-Müller detectors and photographic film both detect ionising radiation.');
 M('P7.10-01', 'Which is a source of background radiation from <b>space</b>?',
   ['Cosmic rays', 'Radon gas', 'Rocks such as granite', 'Food and drink'],
@@ -230,7 +264,7 @@ M('P7.14-01', 'A factory checks the thickness of paper by passing radiation thro
   ['Beta', 'Alpha', 'Gamma', 'Any of them'],
   'Alpha would be completely stopped and gamma would pass straight through. Beta is partly absorbed, so the count changes with thickness.');
 M('P7.14-02', 'Which is a medical use of radioactivity?',
-  ['Using gamma rays to kill cancer cells (radiotherapy)', 'Using alpha particles to take images of broken bones', 'Using beta particles to warm and cook hospital food', 'Using radon gas to clean and sterilise wounds'],
+  ['Using gamma rays to kill cancer cells (radiotherapy)', 'Using an alpha emitter as a tracer inside the body', 'Using beta particles to take images of broken bones', 'Using a long half-life source as a medical tracer'],
   'Others include tracers to see inside the body and gamma sterilisation of medical equipment.');
 M('P7.15-01', 'What is meant by <b>contamination</b>?',
   ['Radioactive material gets onto or into an object or person', 'An object is exposed to radiation from a source outside it', 'An object becomes radioactive after being irradiated', 'Radiation is blocked by a shield'],
@@ -238,10 +272,10 @@ M('P7.15-01', 'What is meant by <b>contamination</b>?',
 T('P7.15-02', 'An object that has been irradiated becomes radioactive.', false,
   'False. Irradiation does not make an object radioactive. That is why gamma-sterilised food is safe to eat.');
 M('P7.16-01', 'Why is ionising radiation dangerous to living organisms?',
-  ['It can damage cells and tissue and cause mutations', 'It makes the whole body permanently radioactive', 'It only harms metals and electronic equipment', 'It makes cells grow faster and become stronger'],
+  ['It can damage cells and tissue and cause mutations', 'It makes the whole body permanently radioactive', 'It can only harm you if you swallow the source', 'It heats tissue from the inside, like microwaves do'],
   'Ionising radiation can damage or kill cells and cause mutations in DNA, which may lead to cancer.');
 M('P7.16-02', 'Why is the disposal of radioactive waste a problem?',
-  ['Some of it stays radioactive for thousands of years', 'It is far too heavy to move to a safe storage site', 'It quickly turns into gamma rays once it is buried', 'It stops being dangerous as soon as it is put underground'],
+  ['Some of it stays radioactive for thousands of years', 'It gives off carbon dioxide as the nuclei decay', 'It becomes more radioactive the older it gets', 'It stops being dangerous as soon as it is put underground'],
   'Long half-life waste must be stored securely, often deep underground, so it cannot leak into the environment.');
 
 /* ===================== CHEMISTRY 1(d) The Periodic Table ===================== */
@@ -418,7 +452,7 @@ MH('P3.3-07', 'The distance from the 1st crest to the 5th crest of a wave is 8 m
   ['2 m', '1.6 m', '8 m', '40 m'],
   'From the 1st to the 5th crest is <b>4</b> wavelengths, not 5. 8 ÷ 4 = <b>2 m</b>.');
 MH('P3.4-03', 'A loud sound makes a window rattle, but the air near the speaker does not travel to the window. What does this show?',
-  ['Sound waves transfer energy without transferring the air', 'Sound waves carry air particles from the speaker to the window', 'Sound is a transverse wave', 'The window makes its own sound'],
+  ['Sound waves transfer energy without transferring the air', 'Sound waves carry air particles from the speaker to the window', 'Sound is a transverse wave', 'Sound can only travel through solids such as glass'],
   'The air particles only vibrate back and forth about fixed positions. The energy is passed on to the window.');
 MH('P3.6-03', 'A wave has a time period of 2 ms (0.002 s). What is its frequency?',
   ['500 Hz', '0.5 Hz', '2 Hz', '2000 Hz'],
@@ -432,7 +466,7 @@ MH('P3.8-04', 'Light from a distant galaxy arrives with a longer wavelength than
 T('P3.9-03', 'Sound waves can be reflected.', true,
   'True. An echo is a reflected sound wave.');
 MH('P3.9-04', 'Light slows down as it passes from air into glass. Its frequency stays the same. What happens to its wavelength?',
-  ['It gets shorter', 'It gets longer', 'It stays the same', 'It becomes zero'],
+  ['It gets shorter', 'It gets longer', 'It stays the same', 'It depends on the colour of the light'],
   'v = f × λ. If v falls and f is unchanged, λ must fall too.');
 MH('P3.11-08', 'Which electromagnetic wave could have a wavelength of about 10⁻¹² m?',
   ['Gamma rays', 'Radio waves', 'Infrared', 'Microwaves'],
@@ -441,7 +475,7 @@ MH('P3.12-08', 'Why are gamma rays, not ultraviolet, used to sterilise food that
   ['Gamma rays pass through the packaging and kill the bacteria inside', 'Ultraviolet would heat and partly cook the food inside the packet', 'Gamma rays make the food radioactive, so the bacteria then die', 'Ultraviolet cannot kill bacteria, even on an open surface'],
   'Gamma is very penetrating. UV is absorbed at the surface. (Irradiated food does not become radioactive.)');
 MH('P3.13-06', 'Why do radiographers stand behind a lead screen when taking X-ray images?',
-  ['They are exposed many times a day, so must reduce their total dose', 'X-rays only harm adults, not the children who are being scanned', 'The lead screen makes the X-ray image sharper and clearer', 'X-rays cannot travel through air, so the screen stops reflections'],
+  ['They are exposed many times a day, so must reduce their total dose', 'The screen absorbs X-rays so the patient gets a lower dose', 'The lead screen makes the X-ray image sharper and clearer', 'X-rays cannot travel through air, so the screen stops reflections'],
   'One X-ray is a small dose, but repeated exposure every day would add up. Lead absorbs X-rays.');
 MH('P7.2-03', 'How many more neutrons does a uranium-238 nucleus have than a uranium-235 nucleus?',
   ['3', '0', '235', '92'],
@@ -450,7 +484,7 @@ M('P7.3-03', 'What does the atomic (proton) number tell you?',
   ['The number of protons in the nucleus', 'The number of neutrons in the nucleus', 'The number of protons plus neutrons', 'The mass of the atom'],
   'The atomic number decides which element it is.');
 MH('P7.4-03', 'A Geiger counter next to a source records 52, 47, 55 and 49 counts in four 10-second intervals. Why are the readings different?',
-  ['Radioactive decay is random', 'The source is running out', 'The detector is broken', 'The source decays faster when it is warm'],
+  ['Radioactive decay is random', 'The source is running out', 'The detector needs time to warm up', 'The source decays faster when it is warm'],
   'Decay is random, so the count in each interval varies around an average.');
 MH('P7.6-02', 'Paper in front of a source makes no difference. 3 mm of aluminium reduces the count a lot, but it stays above background. Thick lead brings it down to background. The source emits…',
   ['beta and gamma', 'alpha and beta', 'alpha only', 'gamma only'],
@@ -477,13 +511,13 @@ M('P7.14-03', 'Which radiation is used in smoke detectors?',
   ['Alpha', 'Beta', 'Gamma', 'Neutron'],
   'Alpha ionises the air so a small current flows. Smoke absorbs the alpha particles, the current drops and the alarm sounds.');
 MH('P7.14-04', 'Why is a gamma emitter with a short half-life chosen as a medical tracer?',
-  ['Gamma escapes the body to be detected; a short half-life limits the dose', 'Gamma is the most ionising, so it shows up most clearly on the image', 'A short half-life means it never decays while inside the body', 'Gamma makes the organ glow, so doctors can see it with their eyes'],
+  ['Gamma escapes the body to be detected; a short half-life limits the dose', 'Gamma is the most ionising, so it shows up most clearly on the image', 'A short half-life means it never decays while inside the body', 'Gamma lasts longest in the body, so the image stays clear'],
   'It must be detectable outside the body (penetrating) and not stay active in the body for long.');
 M('P7.15-03', 'Why is contamination usually more dangerous than irradiation?',
-  ['The radioactive material stays on or in you, so exposure continues', 'Contamination only happens with gamma, the most penetrating type', 'Irradiation makes you radioactive, but contamination does not', 'Contamination always comes from space, so it can’t be blocked'],
+  ['The radioactive material stays on or in you, so exposure continues', 'Contamination only happens with gamma, the most penetrating type', 'Irradiation makes you radioactive, but contamination does not', 'A contaminated object gives out more radiation than the source'],
   'Once you are contaminated, you keep being exposed until the material is removed or decays.');
 M('P7.16-03', 'Which is a sensible way to reduce the risk when using a radioactive source in the lab?',
-  ['Hold it with tongs, point it away from people and keep exposure short', 'Hold it in your hand so you have a firm grip and do not drop it', 'Keep it in your pocket between experiments so it does not get lost', 'Stand close to it so you can read the Geiger counter accurately'],
+  ['Hold it with tongs, point it away from people and keep exposure short', 'Wear rubber gloves so the radiation cannot reach your hands', 'Use the source with the longest half-life so readings stay steady', 'Stand close to it so you can read the Geiger counter accurately'],
   'Distance, short time and shielding all reduce the dose.');
 MH('P7.5-07', 'Why are alpha particles the most ionising radiation?',
   ['They have a large charge and mass, so they collide with many atoms', 'They travel faster than any other radiation, so they hit harder', 'They have no charge, so nothing slows them down as they travel', 'They are electromagnetic waves with a very high frequency'],
@@ -737,7 +771,7 @@ M('P3.21-01', 'What is the <b>critical angle</b>?',
   ['The angle of incidence in the denser material that gives refraction at 90°', 'The angle of incidence at which light first enters the glass block', 'The angle between the two faces of a triangular prism', 'The angle at which all of the light is absorbed by the glass'],
   'Above the critical angle, all the light is reflected back inside.');
 MH('P3.21-02', 'Light in glass hits the surface with an angle of incidence bigger than the critical angle. What happens?',
-  ['It is totally internally reflected', 'It refracts out along the surface', 'It passes straight out without bending', 'It stops'],
+  ['It is totally internally reflected', 'It refracts out along the surface', 'It passes straight out without bending', 'It is absorbed by the glass'],
   'At exactly the critical angle the ray runs along the surface; above it, total internal reflection.');
 M('P3.22-01', 'Glass has a refractive index of 1.5. What is its critical angle? (sin⁻¹ 0.667 = 41.8°)',
   ['42°', '56°', '67°', '1.5°'],
@@ -748,7 +782,7 @@ MH('P3.22-02', 'Diamond has a critical angle of 24.4° (sin 24.4° = 0.413). Wha
 T('P3.23-01', 'Sound waves are longitudinal.', true,
   'True. The air particles vibrate back and forth in the same direction as the wave travels.');
 M('P3.23-02', 'What is an <b>echo</b>?',
-  ['A reflected sound wave', 'A refracted sound wave', 'A sound that is too high to hear', 'A sound in a vacuum'],
+  ['A reflected sound wave', 'A refracted sound wave', 'A sound that is too high to hear', 'A sound diffracted round a corner'],
   'Sound reflects off hard surfaces like walls and cliffs.');
 MH('P3.23-03', 'Why can sound not travel through a vacuum (e.g. space)?',
   ['Sound needs particles to vibrate and pass the wave on', 'Sound is an electromagnetic wave, which needs air', 'Sound travels too slowly to cross empty space', 'A vacuum absorbs all of the energy in sound'],
@@ -880,7 +914,7 @@ MH('C1.3-03', 'Cotton wool soaked in ammonia is put at one end of a tube and cot
 T('C1.3-04', 'Gases diffuse more slowly at higher temperatures.', false,
   'False. At higher temperatures the particles move faster, so gases diffuse <b>faster</b>.');
 M('C1.4-01', 'Salt is dissolved in water. Which is the <b>solvent</b>?',
-  ['Water', 'Salt', 'Salt water', 'The beaker'],
+  ['Water', 'Salt', 'Salt water', 'Both: they mix together'],
   'Solute (salt) dissolves in the solvent (water) to make a solution (salt water).');
 M('C1.4-02', 'What is a <b>saturated solution</b>?',
   ['A solution in which no more solute will dissolve at that temperature', 'A solution that contains only water and no dissolved substances', 'A solution in which the solute has spread out evenly everywhere', 'A solution that has been heated until all the water evaporated'],
@@ -997,7 +1031,7 @@ M('C1.31-01', 'Copper(II) sulfate crystals are heated until they turn white. The
   ['Water of crystallisation', 'Copper', 'Sulfur dioxide', 'Oxygen'],
   'Blue hydrated CuSO₄·5H₂O loses its water to become white anhydrous CuSO₄. The loss in mass is the water.');
 MH('C1.31-02', 'Why is a metal oxide heated repeatedly until its mass stops changing?',
-  ['To make sure the reaction is complete', 'To make the crucible cooler', 'To remove the lid', 'To make the oxide react with the crucible'],
+  ['To make sure the reaction is complete', 'To let water from the crucible evaporate', 'To make the oxide decompose back into the metal', 'To make the readings more precise by repeating them'],
   'Heating to constant mass means no more change is happening, so the reaction has finished.');
 M('C1.32-01', 'What is an <b>empirical formula</b>?',
   ['The simplest whole-number ratio of atoms of each element in a compound', 'The actual number of atoms of each element in a molecule', 'The formula of an element', 'The formula showing all the bonds'],
@@ -1044,7 +1078,7 @@ M('P7.20-01', 'How is a chain reaction set up?',
   ['Neutrons released by one fission go on to split other U-235 nuclei', 'The daughter nuclei join back together to make new U-235 nuclei', 'Electrons released by each fission go on to start the next one', 'Gamma rays released by each fission split the nearby nuclei'],
   'Each fission releases 2–3 neutrons, which can cause more fissions.');
 MH('P7.20-02', 'Each fission releases about 3 neutrons. What would happen if every one of them caused another fission?',
-  ['The number of fissions would grow rapidly, out of control', 'The reaction would stop after the very first fission', 'The number of fissions would stay exactly the same', 'All the uranium would turn into lead straight away'],
+  ['The number of fissions would grow rapidly, out of control', 'The reaction would stop after the very first fission', 'The number of fissions would stay exactly the same', 'The extra neutrons would be absorbed and the core would cool'],
   '1 → 3 → 9 → 27… That is why reactors must control the number of neutrons.');
 M('P7.21-01', 'What do <b>control rods</b> do in a nuclear reactor?',
   ['Absorb neutrons to control the rate of fission', 'Slow neutrons down so they cause fission', 'Absorb radiation to protect workers', 'Carry heat away to the boiler'],
@@ -1072,7 +1106,7 @@ M('P7.24-01', 'What is nuclear fusion?',
   ['Small nuclei joining to form a larger nucleus, releasing energy', 'A large nucleus splitting into two smaller ones, releasing energy', 'An unstable nucleus emitting an alpha particle and a gamma ray', 'Two atoms joining together by sharing a pair of electrons'],
   'For example, hydrogen nuclei fuse to make helium.');
 MH('P7.24-02', 'In fusion, the mass of the new nucleus is slightly less than the total mass of the nuclei that joined. What happened to the missing mass?',
-  ['It was released as energy', 'It escaped as fast electrons', 'It turned into extra neutrons', 'It was simply measured wrongly'],
+  ['It was released as energy', 'It escaped as fast electrons', 'It turned into extra neutrons', 'It was turned into extra protons'],
   'The loss of mass is accompanied by a release of energy.');
 M('P7.25-01', 'What is the energy source of stars?',
   ['Nuclear fusion', 'Nuclear fission', 'Burning hydrogen gas in oxygen', 'Radioactive decay of uranium'],
@@ -1250,7 +1284,7 @@ M('C1.47-04', 'Which is most likely to be a simple molecular substance?',
 T('C1.47-05', 'Simple molecular substances are often gases or liquids at room temperature.', true,
   'True. Weak intermolecular forces need little energy to overcome.');
 M('C1.48-04', 'Which has the higher boiling point, ethane (C₂H₆, Mr 30) or pentane (C₅H₁₂, Mr 72)?',
-  ['Pentane', 'Ethane', 'They are the same', 'It depends on the container'],
+  ['Pentane', 'Ethane', 'They are the same', 'It depends on how much of each there is'],
   'Pentane has a higher Mr and stronger intermolecular forces.');
 T('C1.48-05', 'Larger simple molecules generally have higher boiling points.', true,
   'True. Intermolecular forces get stronger as relative molecular mass increases.');
@@ -1270,7 +1304,7 @@ MH('P3.2-05', 'A slinky spring is pushed and pulled along its length. Which kind
   ['Longitudinal: the coils move back and forth along the direction the wave travels', 'Transverse: the coils move up and down at right angles to the wave', 'Longitudinal: the coils move up and down at right angles to the wave', 'Transverse: the coils move along the direction the wave travels'],
   'Pushing and pulling along the length makes compressions and rarefactions.');
 M('P3.4-04', 'Which of these shows that waves can transfer <b>information</b>?',
-  ['A radio receiving a broadcast', 'A ball rolling down a hill', 'Water flowing in a river', 'Wind blowing leaves'],
+  ['A radio receiving a broadcast', 'A microwave oven heating food', 'Ripples spreading across a pond', 'A sunbed tanning someone’s skin'],
   'Radio waves carry information from the transmitter to the receiver without any matter travelling.');
 T('P3.4-05', 'When a sound wave travels across a room, the air particles move from one side of the room to the other.', false,
   'False. The particles vibrate about fixed positions. Only the energy travels across the room.');
@@ -1357,7 +1391,7 @@ M('P7.6-04', 'In the penetration practical, why is the background count measured
   ['So it can be subtracted from each reading', 'To check the radioactive source is working', 'To give the Geiger counter time to warm up', 'To find the half-life of the source used'],
   'Background radiation is always present.');
 M('P7.6-05', 'Which safety step is needed in the penetration practical?',
-  ['Handle the source with tongs and put it back in its lead box quickly', 'Wear sunglasses to protect your eyes from the gamma rays', 'Hold the source close to your body so you cannot drop it', 'Leave the source out of its box so you can use it again later'],
+  ['Handle the source with tongs and put it back in its lead box quickly', 'Stand behind the Geiger counter, as it blocks the radiation', 'Hold the source in a gloved hand so the radiation can’t reach you', 'Leave the source out of its box so you can use it again later'],
   'Distance, short time and shielding reduce the dose.');
 M('P7.8-04', 'In a balanced nuclear equation, what must be the same on both sides?',
   ['The total of the mass numbers and the total of the atomic numbers', 'The number of nuclei on the left and the number on the right', 'The total number of electrons around the nuclei on each side', 'The names and symbols of the elements on each side'],
@@ -1366,12 +1400,12 @@ MH('P7.8-05', 'Strontium-90 (<span class="nuc"><sup>90</sup><sub>38</sub>Sr</spa
   ['<span class="nuc"><sup>90</sup><sub>39</sub>Y</span>', '<span class="nuc"><sup>90</sup><sub>37</sub>Rb</span>', '<span class="nuc"><sup>86</sup><sub>36</sub>Kr</span>', '<span class="nuc"><sup>89</sup><sub>38</sub>Sr</span>'],
   'Beta: mass number stays 90, atomic number goes up by 1 to 39 (yttrium).');
 M('P7.9-04', 'What does a Geiger-Müller tube measure?',
-  ['The count rate of ionising radiation', 'The temperature of a radioactive source', 'The mass of the source in grams', 'The half-life of the source directly'],
+  ['The count rate of ionising radiation', 'The temperature of a radioactive source', 'The energy of each particle that hits it', 'The half-life of the source directly'],
   'It clicks or counts each time ionising radiation passes through it.');
 T('P7.9-05', 'A Geiger-Müller detector protects you by stopping ionising radiation.', false,
   'False. It <b>detects</b> ionising radiation; it does not block it.');
 M('P7.10-04', 'Which of these is a source of background radiation from the Earth?',
-  ['Rocks such as granite', 'Cosmic rays', 'The Sun’s visible light', 'Radio waves'],
+  ['Rocks such as granite', 'Cosmic rays', 'Medical X-rays', 'Ultraviolet from the Sun'],
   'Some rocks contain radioactive elements, and radon gas seeps out of the ground.');
 MH('P7.10-05', 'Why do airline pilots receive a higher dose of background radiation than most people?',
   ['They spend a lot of time high up, where there is less atmosphere to absorb cosmic rays', 'The metal in the plane’s body is slightly radioactive and gives them a dose', 'They breathe more radon gas because the air in the cabin is recycled', 'The jet fuel in the wings is radioactive and gives off gamma rays'],
@@ -1402,7 +1436,7 @@ M('P7.17-03', 'Where does the energy released in a nuclear reaction come from?',
   ['The nucleus', 'The electron shells', 'Chemical bonds between atoms', 'Burning the fuel in oxygen'],
   'Nuclear reactions change the nucleus. Chemical reactions involve electrons.');
 MH('P7.17-04', 'Compared with burning the same mass of coal, how much energy does nuclear fission release?',
-  ['Millions of times more', 'About the same amount', 'Much less than coal', 'Exactly twice as much'],
+  ['Millions of times more', 'About the same amount', 'Much less than coal', 'About ten times more'],
   'Nuclear reactions release vastly more energy per kilogram than chemical reactions.');
 M('P7.18-04', 'What does a U-235 nucleus become just after it absorbs a neutron?',
   ['An unstable U-236 nucleus that splits', 'A stable U-234 nucleus that stays whole', 'A helium nucleus and two free protons', 'A U-235 ion with an extra negative charge'],
@@ -1410,26 +1444,26 @@ M('P7.18-04', 'What does a U-235 nucleus become just after it absorbs a neutron?
 T('P7.18-05', 'In fission, two small nuclei join to make a larger nucleus.', false,
   'False. That is fusion. In fission a large nucleus splits into two smaller nuclei.');
 M('P7.19-03', 'Roughly how many neutrons are released in one fission of U-235?',
-  ['2 or 3', 'None', 'About 100', 'Exactly 1'],
+  ['2 or 3', 'None', 'About 10', 'Exactly 1'],
   'Usually two or three. These can go on to cause more fissions.');
 MH('P7.19-04', 'Why must used nuclear fuel be handled as radioactive waste?',
-  ['It contains radioactive daughter nuclei made by fission', 'It has all turned into lead, which is a toxic metal', 'It contains no uranium at all, so it cannot be reused', 'It has become extremely cold after leaving the reactor'],
+  ['It contains radioactive daughter nuclei made by fission', 'The U-235 left in it now has a much shorter half-life', 'It contains no uranium at all, so it cannot be reused', 'The neutrons it absorbed have made the steel rods radioactive'],
   'The fission products are unstable and emit radiation.');
 T('P7.19-05', 'Fission of U-235 always produces the same two daughter nuclei.', false,
   'False. Many different pairs of daughter nuclei are possible.');
 M('P7.20-03', 'Why is a chain reaction possible in uranium-235?',
-  ['Each fission releases neutrons that can cause more fissions', 'Uranium atoms are strongly attracted to each other', 'Each fission releases protons that split other nuclei', 'Uranium is a metal, so it conducts the energy along'],
+  ['Each fission releases neutrons that can cause more fissions', 'Uranium-235 has a very short half-life', 'Each fission releases protons that split other nuclei', 'Each fission releases gamma rays that split other nuclei'],
   'One neutron in, 2–3 neutrons out.');
 T('P7.20-04', 'In a nuclear power station, the chain reaction is controlled so that on average one neutron from each fission causes another fission.', true,
   'True. This keeps the rate of fission (and heat output) steady.');
 MH('P7.20-05', 'What would happen to a chain reaction if most neutrons escaped from the fuel without hitting U-235 nuclei?',
-  ['It would die out', 'It would speed up', 'It would become fusion', 'It would carry on at the same rate'],
+  ['It would die out', 'It would speed up', 'Each fission would release more energy', 'It would carry on at the same rate'],
   'Fewer than one new fission per fission means the reaction stops.');
 M('P7.21-05', 'What is the moderator usually made of?',
   ['Graphite or water', 'Boron or cadmium', 'Lead', 'Concrete'],
   'Boron and cadmium absorb neutrons, so they are used in control rods.');
 M('P7.22-03', 'What is the shielding around a reactor made of?',
-  ['Thick steel and concrete', 'Thin aluminium foil', 'Plastic and glass', 'Paper and cardboard'],
+  ['Thick steel and concrete', 'Boron, like the control rods', 'Graphite, like the moderator', 'Thick sheets of aluminium'],
   'Thick, dense materials absorb gamma rays and neutrons.');
 T('P7.22-04', 'The shielding around a reactor stops radiation escaping to the surroundings.', true,
   'True. It protects workers and the public.');
@@ -1453,12 +1487,12 @@ MH('P7.24-05', 'Which statement about the mass in fusion is correct?',
   ['The mass of the products is slightly less than the mass of the nuclei that fused', 'The mass of the products is more than the mass of the nuclei that fused', 'The mass is exactly the same before and after', 'All the mass is turned into energy'],
   'A small loss of mass goes with the release of energy.');
 M('P7.25-02', 'Why do stars give out so much light and heat?',
-  ['Fusion in their cores releases huge amounts of energy', 'They are burning huge amounts of coal and natural gas', 'Fission of uranium in their cores releases energy', 'They reflect light that comes from other, brighter stars'],
+  ['Fusion in their cores releases huge amounts of energy', 'They are burning hydrogen gas in oxygen', 'Fission of uranium in their cores releases energy', 'They reflect light that comes from other, brighter stars'],
   'Fusion is the energy source for stars.');
 T('P7.25-03', 'Stars get their energy from nuclear fission.', false,
   'False. Stars are powered by nuclear fusion.');
 MH('P7.25-04', 'Why can fusion happen in the core of a star?',
-  ['The temperature and pressure are extremely high', 'There is a lot of uranium there', 'It is very cold, so nuclei slow down and stick', 'Stars are made of neutrons only'],
+  ['The temperature and pressure are extremely high', 'Fission of uranium in the core starts it off', 'The nuclei there have no charge, so they don’t repel', 'The core is solid, so the nuclei are packed together'],
   'Only at very high temperatures do nuclei move fast enough to overcome their repulsion.');
 M('P7.26-04', 'What force must be overcome for two nuclei to fuse?',
   ['The electrostatic repulsion between their positive charges', 'The magnetic attraction between their spinning protons', 'The gravitational pull of the rest of the star on them', 'The attraction between their electrons and the other nucleus'],
@@ -1558,7 +1592,7 @@ M('P1.11-01', 'Which of these can a force <b>not</b> change about an object on i
 T('P1.11-02', 'A force can change the shape of an object.', true,
   'True. For example, squashing a ball or stretching a spring.');
 M('P1.11-03', 'A footballer kicks a moving ball sideways. Which effect of a force does this show?',
-  ['A change of direction', 'A change of mass', 'A change of state', 'No effect at all'],
+  ['A change of direction', 'A change of mass', 'A change of state', 'A change of weight'],
   'Forces can change speed, direction or shape.');
 M('P1.12-01', 'Which force acts between two charged balloons?',
   ['Electrostatic force', 'Gravitational force only', 'Friction', 'Upthrust'],
@@ -1650,7 +1684,7 @@ M('P1.21-02', 'Just after a skydiver jumps, why does she accelerate?',
   ['Her weight is bigger than the air resistance', 'Air resistance is bigger than her weight', 'The forces are balanced', 'There is no gravity in the air'],
   'At first she is slow, so air resistance is small and there is a large resultant force downwards.');
 MH('P1.21-03', 'Why does a skydiver slow down when she opens her parachute?',
-  ['The air resistance becomes much bigger than her weight', 'Her weight decreases', 'Gravity stops acting', 'The parachute pulls her upwards with a magnetic force'],
+  ['The air resistance becomes much bigger than her weight', 'Air resistance becomes equal to her weight straight away', 'The resultant force is now zero, and that slows her down', 'Her weight is now spread over a much bigger area'],
   'The larger area increases air resistance, giving a resultant force upwards until a new, lower terminal velocity is reached.');
 T('P1.21-04', 'At terminal velocity, the resultant force on a falling object is zero.', true,
   'True. Weight and air resistance are balanced.');
@@ -1658,7 +1692,7 @@ M('P1.22-01', 'In the spring experiment, what is the <b>extension</b>?',
   ['The new length minus the original length', 'The new length of the spring', 'The original length of the spring', 'The force added'],
   'Measure the original length first, then subtract it from each new length.');
 M('P1.22-02', 'How is the force on a spring changed in the experiment?',
-  ['By adding masses (weights) to a hanger', 'By heating the spring with a Bunsen burner', 'By cutting the spring to make it shorter', 'By pulling on it harder with your hand'],
+  ['By adding masses (weights) to a hanger', 'By clamping the spring higher up the stand', 'By moving the ruler closer to the spring', 'By pulling on it harder with your hand'],
   'Each 100 g mass adds about 1 N of weight.');
 MH('P1.22-03', 'How can you make length readings in the spring practical more accurate?',
   ['Read the ruler at eye level, using a pointer on the spring', 'Use the shortest ruler you can, so it is easier to read', 'Add all the masses at once to save time between readings', 'Read the ruler from below so you can see the scale clearly'],
@@ -1675,7 +1709,7 @@ MH('P1.23-03', 'On a force–extension graph for a spring, the line is straight 
   ['The spring no longer obeys Hooke’s law', 'The spring is obeying Hooke’s law more closely', 'The spring has become shorter', 'The force has stopped increasing'],
   'Beyond the limit of proportionality, extension is no longer proportional to force.');
 M('P1.24-01', 'What is <b>elastic</b> behaviour?',
-  ['Returning to the original shape when the force is removed', 'Staying stretched in a new shape after the force is removed', 'Breaking suddenly when only a small force is applied', 'Getting heavier the more it is stretched by a force'],
+  ['Returning to the original shape when the force is removed', 'Staying stretched in a new shape after the force is removed', 'Breaking suddenly when only a small force is applied', 'Stretching further and further under a constant force'],
   'A spring stretched only a little behaves elastically.');
 T('P1.24-02', 'If a spring is stretched too far, it may not return to its original shape.', true,
   'True. It has been permanently deformed and no longer behaves elastically.');
@@ -1707,7 +1741,7 @@ M('P2.3-02', 'Which appliance makes use of the heating effect of a current?',
 T('P2.3-03', 'The heating effect of a current is always useful.', false,
   'False. It is useful in a kettle, but in wires, computers and light bulbs it wastes energy.');
 MH('P2.3-04', 'Why do the cables for an electric cooker need to be thicker than those for a lamp?',
-  ['The cooker draws a much larger current, which would overheat thin wires', 'Thick wires look safer, so people are less likely to touch them', 'The cooker uses a lower voltage, so it needs extra copper to carry it', 'Lamps need a higher resistance, so their wires must be thinner'],
+  ['The cooker draws a much larger current, which would overheat thin wires', 'Thin wires have less resistance, so they would take too much current', 'The cooker uses a lower voltage, so it needs extra copper to carry it', 'Lamps need a higher resistance, so their wires must be thinner'],
   'A larger current produces more heating in a wire, so cookers need low-resistance, thick cables.');
 M('P2.4-01', 'A kettle runs on 230 V and draws 10 A. What is its power?',
   ['2300 W', '23 W', '240 W', '0.043 W'],
@@ -1733,7 +1767,7 @@ M('P2.6-01', 'What kind of current does a battery supply?',
   ['Direct current (d.c.)', 'Alternating current (a.c.)', 'Both at once', 'Neither'],
   'Direct current flows in one direction only.');
 M('P2.6-02', 'What is <b>alternating current</b> (a.c.)?',
-  ['Current that keeps changing direction', 'Current that flows in one direction only', 'Current from a battery', 'Current that is always zero'],
+  ['Current that keeps changing direction', 'Current that flows in one direction only', 'Current from a battery', 'Current that changes size but not direction'],
   'Mains electricity is a.c.');
 T('P2.6-03', 'Mains electricity is direct current.', false,
   'False. Mains electricity is alternating current (a.c.). Cells and batteries supply direct current (d.c.).');
@@ -1796,7 +1830,7 @@ MH('P2.11-03', 'A circuit switches on a street lamp when it gets dark. Which com
 T('P2.11-04', 'A thermistor’s resistance increases when it is heated.', false,
   'False. A thermistor’s resistance <b>decreases</b> as its temperature increases.');
 M('P2.12-01', 'How can you tell, without a meter, that a current is flowing in a simple circuit?',
-  ['A lamp or LED in the circuit lights up', 'The wires change colour as they warm up', 'The battery gets slightly bigger', 'The switch moves on its own'],
+  ['A lamp or LED in the circuit lights up', 'The wires feel cold to the touch', 'The cell gets heavier as charge collects in it', 'The switch makes a buzzing sound'],
   'Lamps and LEDs indicate that a current is flowing.');
 M('P2.12-02', 'Why are LEDs often used as indicator lights on electrical equipment?',
   ['They show a current is flowing and use very little energy', 'They make the current bigger so the device works better', 'They protect the circuit by melting, just like a fuse', 'They only work with a.c., so they show mains is connected'],
@@ -1841,7 +1875,7 @@ M('P2.16-01', 'In a metal wire, what moves to carry the current?',
 T('P2.16-02', 'In a metal wire, the current is a flow of positive charges.', false,
   'False. In metals the charges that move are negatively charged electrons.');
 MH('P2.16-03', 'Why do metals conduct electricity well?',
-  ['They contain free electrons that can move through the metal', 'Their atoms are positively charged and attract the current', 'They contain ions that are free to move when solid', 'They are always warm, which helps the current flow'],
+  ['They contain free electrons that can move through the metal', 'Their atoms are positively charged and attract the current', 'They contain ions that are free to move when solid', 'Their nuclei are free to move through the metal'],
   'The delocalised electrons can drift through the metal lattice when a voltage is applied.');
 M('P2.17-01', '3 A flows into a junction. 1 A leaves along one branch. What current leaves along the other branch?',
   ['2 A', '4 A', '3 A', '1 A'],
@@ -2064,7 +2098,7 @@ M('C2.13-01', 'Why does increasing carbon dioxide in the atmosphere matter?',
 T('C2.13-02', 'Carbon dioxide is a greenhouse gas.', true,
   'True. Increasing amounts may contribute to climate change.');
 M('C2.13-03', 'Which human activity adds most carbon dioxide to the atmosphere?',
-  ['Burning fossil fuels', 'Planting trees', 'Using solar panels', 'Recycling paper'],
+  ['Burning fossil fuels', 'Breathing (respiration in people)', 'Volcanic eruptions', 'Keeping cattle, which give off methane'],
   'Burning coal, oil and gas releases carbon dioxide.');
 M('C2.14-01', 'In the copper experiment to find the percentage of oxygen, why is the air pushed back and forth over the hot copper many times?',
   ['So that all the oxygen reacts with the copper', 'To cool the copper so it does not melt', 'To add extra oxygen from outside the syringes', 'To stop the syringe plungers from sticking'],
@@ -2156,7 +2190,7 @@ M('C2.21-02', 'In the metals-and-acids practical, which variable must be kept th
   ['The concentration and volume of acid', 'The type of metal used each time', 'The amount of bubbling produced', 'The colour of the final solution'],
   'Also the size of the metal pieces and the starting temperature.');
 MH('C2.21-03', 'How else, besides bubbling, could you compare the reactivity of metals with acid?',
-  ['Measure the temperature rise', 'Measure the colour of the metal', 'Weigh the acid before adding the metal', 'Measure the pH of the metal'],
+  ['Measure the temperature rise', 'Measure how much the metal’s mass increases', 'Measure the pH of the acid before adding the metal', 'Measure the pH of the metal'],
   'More reactive metals release energy faster, giving a bigger temperature rise.');
 T('C2.21-04', 'Copper fizzes slowly in dilute hydrochloric acid.', false,
   'False. Copper does not react with dilute hydrochloric acid at all.');
@@ -2267,7 +2301,7 @@ MH('C2.38-04', 'Ammonia solution turns red litmus blue. Why is ammonia classed a
   ['It accepts protons and neutralises acids', 'It contains metal ions that make it basic', 'It donates protons to the water it dissolves in', 'It is a gas, and all gases are bases'],
   'NH₃ + H⁺ → NH₄⁺.');
 M('C2.39-01', 'To make a pure, dry salt from an insoluble base and an acid, why is the base added in <b>excess</b>?',
-  ['To make sure all the acid is used up', 'To make the salt more colourful', 'To speed up evaporation', 'So the salt is wet'],
+  ['To make sure all the acid is used up', 'To make the salt solution more concentrated', 'So some unreacted base is left in the salt', 'So the acid is in excess at the end'],
   'The leftover solid base is then easily filtered off.');
 M('C2.39-02', 'After reacting excess insoluble base with acid, what is the next step?',
   ['Filter to remove the unreacted base', 'Add more acid', 'Boil the mixture dry immediately', 'Add universal indicator'],
@@ -2817,7 +2851,7 @@ M('B2.48-01', 'Which feature of alveoli helps gas exchange?',
   ['Walls one cell thick, giving a short diffusion distance', 'Thick walls, which stop the alveoli bursting', 'Few capillaries, so the blood moves slowly past', 'A dry surface, so gases do not dissolve'],
   'Alveoli also have a huge surface area, a moist lining and a rich blood supply.');
 M('B2.48-02', 'Why do the lungs contain millions of alveoli?',
-  ['To give a very large surface area for gas exchange', 'To make the lungs heavier and more stable', 'To store oxygen for use during exercise', 'To filter dust out of the air'],
+  ['To give a very large surface area for gas exchange', 'To make the lung walls thicker and stronger', 'To store oxygen for use during exercise', 'To filter dust out of the air'],
   'More surface area → faster diffusion.');
 MH('B2.48-03', 'How does breathing (ventilation) help gas exchange in the alveoli?',
   ['It keeps the oxygen concentration high in the alveoli, so the gradient stays steep', 'It pushes oxygen through the alveolus walls by force, so it enters faster', 'It cools the blood in the lungs so that it can carry more oxygen', 'It removes water from the alveoli so that the walls stay dry'],
@@ -2860,7 +2894,7 @@ MH('B2.51-03', 'If an <i>Amoeba</i> grew much larger, why might diffusion no lon
   ['Its volume would increase faster than its surface area', 'Its surface area would increase faster than its volume', 'Oxygen cannot diffuse into larger cells at all', 'Larger cells need no oxygen'],
   'Its surface area to volume ratio would fall and the distances to the centre would increase.');
 M('B2.51-04', 'What limits the size of single-celled organisms?',
-  ['Diffusion becomes too slow over larger distances', 'They cannot absorb enough light for their energy', 'They run out of DNA once they grow past a set size', 'They would need a skeleton to hold a larger shape'],
+  ['Diffusion becomes too slow over larger distances', 'They cannot absorb enough light for their energy', 'Their cell wall cannot stretch any further', 'They would need a skeleton to hold a larger shape'],
   'Diffusion is only fast over short distances.');
 M('B2.52-01', 'Why do large multicellular organisms need a transport system?',
   ['Their small surface area to volume ratio and long distances make diffusion too slow', 'Their large surface area to volume ratio makes them lose too much water', 'Their cells do not need oxygen, so it must be removed', 'They cannot carry out diffusion at all'],
@@ -2871,7 +2905,7 @@ MH('B2.52-03', 'Which two features do all transport systems of large organisms h
   ['A network of vessels and a way of moving substances through them', 'A heart to pump blood and a pair of lungs to add oxygen to it', 'Xylem to carry water and phloem to carry sugars around', 'Large surface areas and no need for any vessels at all'],
   'Plants move substances by transpiration and translocation; animals pump blood.');
 M('B2.52-04', 'Why does a whale need a circulatory system but a bacterium does not?',
-  ['Most whale cells are too far from the surface for diffusion', 'Bacteria are larger than whales, so they need no transport', 'Whales do not respire, so they need a system to bring food', 'Bacteria have tiny hearts that pump their cytoplasm around'],
+  ['Most whale cells are too far from the surface for diffusion', 'Bacteria do not need oxygen, so they need no transport', 'Whales do not respire, so they need a system to bring food', 'Whale cells have a smaller surface area each than bacteria'],
   'Diffusion is fast only over very short distances.');
 M('B2.53-01', 'What does phloem transport?',
   ['Sucrose and amino acids', 'Water and mineral ions', 'Oxygen and carbon dioxide', 'Starch and cellulose'],
@@ -3070,7 +3104,7 @@ M('B2.83-03', 'Why is it useful for a plant shoot to grow towards light?',
   ['It can absorb more light for photosynthesis', 'It can absorb more water through its leaves', 'It can reach more minerals in the air', 'It avoids being reached by pollinators'],
   'More light → more photosynthesis → more glucose.');
 MH('B2.83-04', 'Which two stimuli are plant roots and shoots mainly responding to when a seed germinates underground?',
-  ['Gravity and light', 'Sound and touch', 'Temperature and sound', 'Oxygen and nitrogen'],
+  ['Gravity and light', 'Water and carbon dioxide', 'Temperature and touch', 'Oxygen and nitrogen'],
   'Roots grow down (gravity); shoots grow up and towards light.');
 M('B2.84-01', 'How do roots respond to gravity?',
   ['They grow downwards (positive geotropism)', 'They grow upwards (negative geotropism)', 'They grow sideways', 'They do not respond'],
@@ -3099,7 +3133,7 @@ M('B2.86-01', 'How does nervous communication compare with hormonal communicatio
   ['Nervous: faster, short-lived. Hormonal: slower, longer-lasting', 'Nervous: slower, longer-lasting. Hormonal: faster, short-lived', 'Both equally fast, and both use chemicals carried in the blood', 'Nervous uses the blood; hormonal uses electrical impulses in nerves'],
   'Nerves use electrical impulses; hormones travel in the blood.');
 M('B2.86-02', 'How do hormones travel to their target organs?',
-  ['In the blood', 'Along nerves', 'Through the air', 'Through the gut'],
+  ['In the blood', 'Along nerves', 'Inside red blood cells', 'Along the spinal cord'],
   'Hormones are made in glands and carried in the plasma.');
 T('B2.86-03', 'Hormonal responses are usually faster than nervous responses.', false,
   'False. Nervous responses are faster; hormonal responses are slower but last longer.');
@@ -3118,10 +3152,10 @@ MH('B2.87-04', 'A person’s spinal cord is damaged in the neck. Why might they 
   ['Impulses from the legs can no longer reach the brain', 'The legs stop making blood cells after the injury', 'Hormones can no longer travel to the leg muscles', 'The receptors in the legs are all destroyed'],
   'The spinal cord carries impulses between the body and the brain.');
 M('B2.88-01', 'In what form is information carried along nerves?',
-  ['Electrical impulses', 'Hormones in the blood', 'Sound waves', 'Light signals'],
+  ['Electrical impulses', 'Hormones in the blood', 'Neurotransmitter flowing along the nerve', 'Waves of muscle contraction'],
   'This makes nervous responses rapid.');
 M('B2.88-02', 'Which neurones carry impulses <b>from</b> receptors to the CNS?',
-  ['Sensory neurones', 'Motor neurones', 'Relay neurones', 'Hormone neurones'],
+  ['Sensory neurones', 'Motor neurones', 'Relay neurones', 'Effector neurones'],
   'Motor neurones carry impulses from the CNS to effectors.');
 T('B2.88-03', 'Sensory neurones carry impulses from the CNS to effectors.', false,
   'False. Motor neurones carry impulses to effectors. Sensory neurones carry impulses from receptors to the CNS.');
@@ -3229,7 +3263,7 @@ M('C3.1-05', 'In an exothermic reaction, what happens to the temperature of the 
   ['It rises', 'It falls', 'It stays exactly the same', 'It falls, then rises sharply'],
   'Heat energy is released into the mixture and surroundings.');
 M('C3.2-01', 'Why is a polystyrene cup with a lid used for calorimetry of reactions in solution?',
-  ['It is a good insulator, so less heat is lost to the surroundings', 'It reacts with the solution to speed up the reaction', 'It conducts heat quickly to the thermometer', 'It stops the solution from changing colour'],
+  ['It is a good insulator, so less heat is lost to the surroundings', 'It has a high heat capacity, so it stores the heat', 'It conducts heat quickly to the thermometer', 'It absorbs heat, so the reading is more accurate'],
   'Heat loss is the main source of error.');
 M('C3.2-02', 'What must be measured to find the heat energy change in a calorimetry experiment?',
   ['The mass of the water or solution and its temperature change', 'The volume of the gas given off and the time it takes', 'The mass of the solid and the colour of the solution', 'The starting temperature and the time the reaction lasts'],
@@ -3516,7 +3550,7 @@ MH('P4.15-02', 'A 1 kg ball falls 5 m. Ignoring air resistance, how fast is it m
 T('P4.15-03', 'With air resistance, a falling object gains less kinetic energy than the GPE it loses.', true,
   'True. Some energy is transferred to thermal stores of the object and air.');
 M('P4.15-04', 'A roller coaster car rolls down a slope. Why is it slower at the bottom than the ideal calculation predicts?',
-  ['Work is done against friction and air resistance', 'Its mass increases as it falls', 'Gravity gets weaker at the bottom', 'Energy is created at the top of the slope'],
+  ['Work is done against friction and air resistance', 'Heavier cars go slower, and the calculation ignores mass', 'Gravity gets weaker at the bottom', 'Some kinetic energy turns back into GPE at the bottom'],
   'That work transfers energy to thermal stores.');
 M('P4.16-01', 'What is power?',
   ['The rate of transfer of energy', 'The total energy transferred', 'The force on an object', 'The energy stored in a battery'],
@@ -3699,7 +3733,7 @@ MH('P6.2-04', 'A bar of metal is attracted to both ends of a magnet. What does t
   ['It is a magnetic material, but not a magnet', 'It must be a permanent magnet, with two poles', 'It is not a magnetic material of any kind', 'It is a north pole, attracted by both ends'],
   'Only repulsion proves something is a magnet.');
 M('P6.3-01', 'Why is soft iron used for the core of an electromagnet?',
-  ['It magnetises and demagnetises easily', 'It stays magnetised permanently', 'It is a very good insulator', 'It cannot be magnetised at all'],
+  ['It magnetises and demagnetises easily', 'It stays magnetised permanently', 'It conducts electricity better than copper', 'It keeps its magnetism after the current is switched off'],
   'The magnet can be switched off.');
 M('P6.3-02', 'Which material is magnetically <b>hard</b>?',
   ['Steel', 'Soft iron', 'Copper', 'Plastic'],
@@ -3732,7 +3766,7 @@ MH('P6.5-04', 'The north pole of a magnet touches one end of an iron nail. What 
   ['A south pole', 'A north pole', 'No pole', 'Both poles'],
   'Opposite poles form, so the nail is attracted.');
 M('P6.6-01', 'How can you show the field pattern around a bar magnet?',
-  ['Use a plotting compass and mark the direction at many points', 'Measure the mass of the magnet on an electronic balance', 'Hold a thermometer near each pole and record the readings', 'Connect a voltmeter across the two poles of the magnet'],
+  ['Use a plotting compass and mark the direction at many points', 'Sprinkle salt crystals round it and tap the card', 'Hang it from a newton meter and read the force at each end', 'Connect a voltmeter across the two poles of the magnet'],
   'Iron filings sprinkled on paper also show the pattern.');
 M('P6.6-02', 'Two bar magnets are placed with their north poles facing. What is found midway between them?',
   ['A neutral point where the fields cancel', 'The strongest part of the field', 'A uniform field', 'A new south pole'],
@@ -3754,7 +3788,7 @@ MH('P6.7-04', 'Where is a uniform magnetic field found with two flat magnets?',
   ['In the gap between opposite poles facing each other', 'Around the outside of the two magnets, near the ends', 'In the gap between two like poles facing each other', 'At the two ends of the magnets that are furthest apart'],
   'The lines run straight across the gap from N to S.');
 M('P6.8-01', 'What is produced around a wire carrying an electric current?',
-  ['A magnetic field', 'A gravitational field only', 'A uniform electric current', 'Nothing'],
+  ['A magnetic field', 'An electric field only', 'A uniform field, like the one between two magnets', 'Static charge on the surface of the wire'],
   'The field lines are circles around the wire.');
 M('P6.8-02', 'What shape is the magnetic field around a long straight wire carrying a current?',
   ['Concentric circles around the wire', 'Straight lines parallel to the wire', 'Like a bar magnet\'s field', 'Uniform parallel lines'],
@@ -3801,7 +3835,7 @@ MH('P6.14-04', 'Both the current and the magnetic field direction are reversed. 
   ['It stays in the same direction', 'It reverses its direction', 'It becomes zero straight away', 'It doubles in size but not direction'],
   'Two reversals cancel out.');
 M('P6.15-01', 'When is a voltage induced in a wire?',
-  ['When it moves through a magnetic field, cutting field lines', 'When it is held still right next to a strong magnet', 'When it is heated strongly with a Bunsen burner', 'When it is placed in a beaker of salty water'],
+  ['When it moves through a magnetic field, cutting field lines', 'When it is held still right next to a strong magnet', 'When a steady current flows through it', 'When it is wound around a soft iron core'],
   'A changing field through a coil also induces a voltage.');
 M('P6.15-02', 'A magnet is pushed into a coil connected to a meter. Which change gives a <b>bigger</b> induced voltage?',
   ['Pushing the magnet in faster', 'Pushing it in more slowly', 'Using fewer turns on the coil', 'Holding the magnet still inside'],
@@ -3812,7 +3846,7 @@ MH('P6.15-04', 'A magnet rests inside a coil. Why does the meter read zero?',
   ['The magnetic field through the coil is not changing', 'The magnet has lost its magnetism', 'The coil has too many turns', 'The meter is in parallel with the coil'],
   'Induction needs movement or a changing field.');
 M('P6.16-01', 'In a simple generator, what is rotated to produce electricity?',
-  ['A coil in a magnetic field (or a magnet in a coil)', 'A battery connected in a closed circuit', 'A resistor placed between two magnets', 'A plastic disc spinning close to a magnet'],
+  ['A coil in a magnetic field (or a magnet in a coil)', 'A battery connected in a closed circuit', 'A magnet held still inside a coil', 'A soft iron core inside a coil carrying current'],
   'This induces an alternating voltage.');
 M('P6.16-02', 'Which would increase the output voltage of a generator?',
   ['Rotating the coil faster', 'Using a weaker magnet', 'Using fewer turns of wire', 'Rotating the coil more slowly'],
@@ -3844,7 +3878,7 @@ M('P8.3-02', 'A 60 kg astronaut is on the Moon (g = 1.6 N/kg). What is their wei
 T('P8.3-03', 'Gravitational field strength is the same on every planet.', false,
   'False. It depends on the planet\'s mass and radius.');
 MH('P8.3-04', 'Why is g bigger on Jupiter than on Earth?',
-  ['Jupiter has a much greater mass', 'Jupiter is further from the Sun', 'Jupiter spins more slowly', 'Jupiter has more moons'],
+  ['Jupiter has a much greater mass', 'Jupiter is further from the Sun', 'Jupiter has a thicker atmosphere pressing down', 'Jupiter is made mostly of gas'],
   'More mass → stronger gravitational field (at its surface).');
 M('P8.4-01', 'What force keeps the planets in orbit around the Sun?',
   ['Gravity', 'Magnetism', 'Friction', 'Air resistance'],
@@ -3891,12 +3925,12 @@ MH('P8.7-04', 'Which list puts stars in order from hottest to coolest?',
   ['Blue, white, yellow, red', 'Red, yellow, white, blue', 'Yellow, blue, red, white', 'White, blue, red, yellow'],
   'Our Sun is a yellow star.');
 M('P8.8-01', 'What does the colour of a star tell us?',
-  ['Its surface temperature', 'Its distance from Earth', 'Its age only', 'Its number of planets'],
+  ['Its surface temperature', 'Its distance from Earth', 'Its age only', 'How fast it is spinning'],
   'Hotter stars emit more blue light.');
 T('P8.8-02', 'A red star is hotter than a blue star.', false,
   'False. Blue stars are the hottest; red stars are the coolest.');
 M('P8.8-03', 'The Sun is yellow. How does its temperature compare with a blue star?',
-  ['The Sun is cooler', 'The Sun is hotter', 'They are the same temperature', 'The Sun has no temperature'],
+  ['The Sun is cooler', 'The Sun is hotter', 'They are the same temperature', 'You can’t compare stars by their colour'],
   'Blue stars are hotter than yellow stars.');
 MH('P8.8-04', 'Why does a hotter star look bluer?',
   ['It emits more of its light at shorter wavelengths', 'It is much closer to the Earth than other stars', 'It contains far more blue-coloured gas than others', 'It is moving away from us faster than other stars'],
@@ -3913,7 +3947,7 @@ MH('P8.9-04', 'Why does a main sequence star stay stable for billions of years?'
   ['The outward pressure from fusion balances the inward pull of gravity', 'It has no gravity, so nothing pulls its outer layers inwards', 'It is not hot enough for its gases to expand outwards at all', 'Its fusion has stopped, so it no longer changes in any way'],
   'When the hydrogen runs out, the balance changes and it becomes a red giant.');
 M('P8.10-01', 'What happens at the end of the life of a star much more massive than the Sun?',
-  ['It explodes as a supernova', 'It quietly becomes a white dwarf', 'It turns back into a nebula', 'It becomes a planet'],
+  ['It explodes as a supernova', 'It quietly becomes a white dwarf', 'It turns back into a nebula', 'It shrinks straight to a black dwarf'],
   'After the red supergiant stage.');
 M('P8.10-02', 'What can be left behind after a supernova?',
   ['A neutron star or a black hole', 'A white dwarf and nothing else', 'A red giant like the Sun\'s', 'A new main sequence star'],
@@ -4078,7 +4112,7 @@ M('C4.13-03', 'Why are carbon monoxide detectors fitted in homes with gas boiler
   ['A faulty boiler may burn gas incompletely and make CO, which cannot be seen or smelt', 'Gas boilers always produce carbon monoxide, even when they are working correctly', 'Carbon monoxide has a strong smell that people find unpleasant and want to avoid', 'They are needed to detect leaks of carbon dioxide gas from the main gas supply pipe'],
   'A poor air supply leads to incomplete combustion.');
 MH('C4.13-04', 'What symptom would carbon monoxide poisoning most likely cause?',
-  ['Drowsiness and headaches, due to less oxygen reaching the cells', 'A red rash spreading over the skin of the arms', 'A large increase in the sugar level of the blood', 'Better concentration and a faster reaction time'],
+  ['Drowsiness and headaches, due to less oxygen reaching the cells', 'Coughing and wheezing from damaged airways', 'A large increase in the sugar level of the blood', 'A blue colour in the lips because it is an acid gas'],
   'It can lead to unconsciousness and death.');
 M('C4.14-01', 'How are oxides of nitrogen formed in car engines?',
   ['Nitrogen and oxygen from the air react at the high temperature', 'Nitrogen compounds in the petrol react with water vapour', 'They are released from the petrol unchanged as it burns', 'Carbon dioxide from burning reacts with nitrogen in petrol'],
@@ -4103,7 +4137,7 @@ MH('C4.15-04', 'How can the amount of sulfur dioxide from burning fuels be reduc
   ['Remove sulfur from the fuel before it is burned', 'Burn the fuel at a higher temperature', 'Burn the fuel with less oxygen', 'Add more sulfur to the fuel'],
   'Power stations also remove SO₂ from waste gases.');
 M('C4.16-01', 'How does sulfur dioxide cause acid rain?',
-  ['It dissolves in rainwater to form an acidic solution', 'It makes clouds alkaline', 'It reacts with carbon dioxide to make rain', 'It removes oxygen from rain'],
+  ['It dissolves in rainwater to form an acidic solution', 'It reacts with nitrogen in the air to make nitric acid', 'It reacts with carbon dioxide to make rain', 'It traps heat, which makes the rain more acidic'],
   'Oxides of nitrogen also dissolve to make acid rain.');
 M('C4.16-02', 'Which is a problem caused by acid rain?',
   ['It damages buildings, statues and trees and makes lakes acidic', 'It traps heat in the atmosphere and causes global warming', 'It breaks down the ozone layer high in the atmosphere', 'It makes rivers and lakes more alkaline than normal'],
@@ -4285,7 +4319,7 @@ M('C4.47-01', 'Why do addition polymers cause problems in landfill?',
   ['They are inert and do not biodegrade', 'They decompose very quickly', 'They dissolve in rainwater', 'They react with soil to form acids'],
   'They can last for hundreds of years.');
 M('C4.47-02', 'What is a problem with burning addition polymers?',
-  ['Toxic gases can be produced', 'They release no energy at all', 'They do not burn at all', 'They only produce oxygen'],
+  ['Toxic gases can be produced', 'They turn back into monomers that pollute the air', 'They do not burn at all', 'They always give off sulfur dioxide'],
   'PVC releases hydrogen chloride; incomplete combustion releases CO.');
 T('C4.47-03', 'Addition polymers are easily broken down by bacteria.', false,
   'False. Most are not biodegradable.');
@@ -4728,7 +4762,7 @@ M('B4.9-01', 'About what percentage of energy is passed from one trophic level t
   ['10%', '50%', '90%', '1%'],
   'About 90% is lost.');
 M('B4.9-02', 'Which is a way energy is lost between trophic levels?',
-  ['Heat from respiration', 'Energy used in photosynthesis', 'Absorbing sunlight', 'Taking in oxygen'],
+  ['Heat from respiration', 'Energy used in photosynthesis', 'Energy stored in new body tissue', 'Energy recycled to plants by decomposers'],
   'Also undigested food (faeces) and parts not eaten.');
 T('B4.9-03', 'Most of the energy in an organism is passed on to the next trophic level.', false,
   'False. Only about 10% is passed on.');
@@ -4772,7 +4806,7 @@ MH('B4.13-04', 'Which greenhouse gas is mainly made by human activity and also d
   ['CFCs', 'Water vapour', 'Methane', 'Carbon dioxide'],
   'CFCs were used in fridges and aerosols.');
 M('B4.14-01', 'Which human activity releases large amounts of methane?',
-  ['Rearing cattle and growing rice', 'Planting new forests on farmland', 'Using solar panels', 'Recycling waste paper'],
+  ['Rearing cattle and growing rice', 'Cutting down rainforests', 'Using aerosol sprays containing CFCs', 'Spreading nitrogen fertiliser on fields'],
   'Landfill sites also release methane.');
 M('B4.14-02', 'How does deforestation increase carbon dioxide levels?',
   ['Fewer trees remove CO₂, and burning trees releases more', 'Trees produce carbon dioxide, so removing them helps', 'It adds more oxygen to the air', 'It stops respiration in animals'],
@@ -4780,7 +4814,7 @@ M('B4.14-02', 'How does deforestation increase carbon dioxide levels?',
 T('B4.14-03', 'Burning fossil fuels increases the level of carbon dioxide in the air.', true,
   'True.');
 MH('B4.14-04', 'Which human activity releases nitrous oxide?',
-  ['Using nitrogen fertilisers on fields', 'Cutting down large areas of forest', 'Fitting solar panels on roofs', 'Recycling plastic bottles'],
+  ['Using nitrogen fertilisers on fields', 'Cutting down large areas of forest', 'Rearing cattle in large herds', 'Using aerosol sprays containing CFCs'],
   'Bacteria in soil convert some fertiliser into N₂O.');
 M('B4.15-01', 'How do greenhouse gases warm the Earth?',
   ['They absorb heat radiated from the Earth and re-emit it', 'They let all the heat from the Earth escape into space', 'They reflect sunlight away from the Earth', 'They make the ozone layer thicker'],
@@ -4925,7 +4959,7 @@ M('B5.11-01', 'A farmer wants cows that produce more milk. What should the farme
 T('B5.11-02', 'Selective breeding of animals produces results in a single generation.', false,
   'False. It takes many generations.');
 M('B5.11-03', 'Which characteristic might be selected for in sheep?',
-  ['Thick, high-quality wool', 'Short life span', 'Low resistance to disease', 'Small amount of meat'],
+  ['Thick, high-quality wool', 'A scar left from a shearing cut', 'Low resistance to disease', 'Small amount of meat'],
   'Farmers choose features that are useful to them.');
 MH('B5.11-04', 'Why do some selectively bred dog breeds have health problems?',
   ['Inbreeding increases the chance of inheriting two harmful recessive alleles', 'Selective breeding removes all recessive alleles from the breed completely', 'Dogs are bred to have extra chromosomes, which causes health problems', 'The dogs carry genes from other species, which their bodies reject'],
@@ -5355,7 +5389,7 @@ M('P8.2-05', 'What is the universe?',
 T('P8.2-06', 'The Milky Way is our solar system.', false,
   'False. The Milky Way is the galaxy that our solar system is in.')
 M('P8.4-05', 'What keeps a comet in orbit around the Sun?',
-  ['The gravitational force of the Sun', 'The heat given out by the Sun', 'The comet’s own tail', 'The magnetic field of the Earth'],
+  ['The gravitational force of the Sun', 'The pull of the planets it passes', 'The solar wind pushing on its tail', 'The magnetic field of the Earth'],
   'Gravitational force causes comets, like planets, to orbit the Sun.')
 M('P8.4-06', 'What does the Moon orbit?',
   ['The Earth', 'The Sun directly', 'Mars', 'The Milky Way'],
@@ -5564,7 +5598,7 @@ M('C2.30-05', 'Universal indicator turns red in a solution. What does this show?
 T('C2.31-05', 'Sodium hydroxide solution is a source of hydroxide ions.', true,
   'True. Alkalis in aqueous solution are a source of OH⁻ ions.')
 M('C2.32-05', 'Why is an alkali used to treat an acid spill?',
-  ['It neutralises the acid', 'It makes the acid evaporate', 'It turns the acid into a metal', 'It makes the acid stronger'],
+  ['It neutralises the acid', 'It makes the acid evaporate', 'It dilutes the acid so it is less harmful', 'It soaks up the acid like a sponge'],
   'Alkalis neutralise acids, forming a salt and water.')
 MH('C2.35-05', 'When sulfuric acid reacts with copper(II) oxide, which substance accepts protons?',
   ['The oxide ion in copper(II) oxide', 'The sulfate ion in sulfuric acid', 'The copper ion in copper(II) oxide', 'The water that is formed'],
@@ -5621,7 +5655,7 @@ M('C4.10-05', 'Which fraction has the lowest boiling point?',
 T('C4.11-05', 'Burning a fuel is an endothermic reaction.', false,
   'False. It is exothermic: a fuel releases heat energy when it burns.')
 M('C4.12-05', 'What solid can be produced by the incomplete combustion of a hydrocarbon?',
-  ['Carbon (soot)', 'Sulfur', 'Carbon dioxide', 'Ice'],
+  ['Carbon (soot)', 'Sulfur', 'Carbon dioxide', 'Calcium carbonate'],
   'With too little oxygen, carbon monoxide and carbon (soot) can form as well as water.')
 T('C4.14-05', 'Oxides of nitrogen form in car engines because petrol contains a lot of nitrogen.', false,
   'False. The nitrogen and oxygen come from the air, and they react at the high temperature in the engine.')
@@ -5629,7 +5663,7 @@ M('C4.15-05', 'Which gas is formed when sulfur impurities in a fuel burn?',
   ['Sulfur dioxide', 'Hydrogen sulfide', 'Carbon monoxide', 'Nitrogen dioxide'],
   'The sulfur reacts with oxygen to form sulfur dioxide.')
 M('C4.16-05', 'Which two pollutants contribute to acid rain?',
-  ['Sulfur dioxide and oxides of nitrogen', 'Carbon monoxide and soot', 'Carbon dioxide and methane', 'Argon and water vapour'],
+  ['Sulfur dioxide and oxides of nitrogen', 'Carbon monoxide and soot', 'Carbon dioxide and methane', 'Methane and carbon monoxide'],
   'Sulfur dioxide and oxides of nitrogen dissolve in rainwater to form acids.')
 T('C4.18-05', 'Cracking breaks long-chain hydrocarbons into shorter ones.', true,
   'True. Long-chain fractions are in low demand, so they are cracked into more useful short-chain alkanes and alkenes.')
@@ -5740,7 +5774,7 @@ T('B2.83-05', 'Plant shoots grow away from light.', false,
 T('B2.84-05', 'Roots are positively phototropic.', false,
   'False. Roots grow away from light. They are positively geotropic: they grow towards gravity.')
 M('B2.85-05', 'What does auxin do to the cells in a shoot?',
-  ['Makes them grow longer', 'Makes them shrink', 'Kills them', 'Turns them green'],
+  ['Makes them grow longer', 'Makes them shrink', 'Kills them', 'Makes them divide by meiosis'],
   'Auxin makes shoot cells elongate. More auxin on the shaded side makes that side grow more.')
 M('B2.86-05', 'How are messages carried in the nervous system?',
   ['As electrical impulses along neurones', 'As chemicals in the blood', 'As light along nerves', 'As gases by diffusion'],
@@ -5824,7 +5858,7 @@ T('B4.12-05', 'Carbon monoxide reduces the amount of oxygen the blood can carry.
 T('B4.13-05', 'Nitrogen is a greenhouse gas.', false,
   'False. The greenhouse gases are water vapour, carbon dioxide, nitrous oxide, methane and CFCs.')
 M('B4.14-05', 'Which human activity adds carbon dioxide to the atmosphere?',
-  ['Burning coal in power stations', 'Planting new forests', 'Using wind turbines', 'Recycling glass bottles'],
+  ['Burning coal in power stations', 'Growing rice in flooded fields', 'Using aerosol sprays containing CFCs', 'Spreading nitrogen fertiliser on fields'],
   'Burning fossil fuels releases carbon dioxide.')
 MH('B4.16-05', 'What happens to the oxygen level in a river just downstream of a sewage outflow?',
   ['It falls sharply', 'It rises sharply', 'It stays the same', 'It rises then stays high'],
@@ -5868,7 +5902,7 @@ M('B5.16-05', 'A sheep is given a human gene so that its milk contains a human p
   'Transgenic means genetic material has been transferred from one species to a different species.')
 /* 19 Nov 2026: extra questions on the narrower Single Award wording (still correct for everyone) */
 M('C2.19-06', 'Which of these is a <b>barrier method</b> of stopping iron rusting?',
-  ['Oiling a bicycle chain', 'Leaving it outside in the rain', 'Keeping it near the sea', 'Storing it in damp air'],
+  ['Oiling a bicycle chain', 'Bolting a block of magnesium to it', 'Adding more carbon to the iron', 'Attaching it to a copper plate'],
   'Oil, grease, paint and plastic keep oxygen and water away from the iron.');
 T('C2.19-07', 'Galvanising means coating iron with a layer of zinc.', true,
   'True. The zinc layer keeps oxygen and water away from the iron.');

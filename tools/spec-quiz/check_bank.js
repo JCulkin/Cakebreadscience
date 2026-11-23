@@ -18,5 +18,8 @@ for(const q of QUESTIONS){
 }
 const per={};QUESTIONS.forEach(q=>per[q.s]=(per[q.s]||0)+1);
 console.log(QUESTIONS.length,'questions,',QUESTIONS.filter(q=>q.gen).length,'generators,',QUESTIONS.filter(q=>q.hard).length,'harder,',QUESTIONS.filter(q=>'tf' in q).length,'T/F,',Object.keys(per).length,'points; min per point',Math.min(...Object.values(per)),'; problems',bad);
+const lvs=[1,2,3].map(l=>QUESTIONS.filter(q=>q.lv===l).length),nolv=QUESTIONS.filter(q=>![1,2,3].includes(q.lv)||q.hard!==(q.lv===3));if(nolv.length){console.log('level problems',nolv.slice(0,10).map(q=>q.id).join(' '));bad+=nolv.length}
+console.log('levels 1/2/3:',lvs.join(' / '));
+const LEVEL=vm.runInThisContext('LEVEL'),unk=Object.keys(LEVEL).filter(id=>!QUESTIONS.some(q=>q.id===id));if(unk.length)console.log('LEVEL ids not in the bank:',unk.join(' '));
 console.log('thin:',Object.entries(per).filter(([k,v])=>v<3).map(e=>e.join(':')).join(' '));
 if(process.argv[3]){for(const id of process.argv[3].split(',')){const q=QUESTIONS.find(x=>x.id===id);for(let i=0;i<3;i++){const v=q.gen(R);console.log(id,'|',v.q,'|',v.o.join(' / '),'|',v.x)}}}
