@@ -2,6 +2,17 @@
 
 ---
 
+## [Unreleased]
+
+#### Added
+
+#### Changed
+- **To do:** study guides now come first (right under the greeting); **Covered in class** has moved into The spec box as a small closed section (📚 Covered in class · n sub-topics), opened with a tap
+
+#### Fixed
+
+---
+
 ## [5.1.0] - 2026-11-23
 ### New worksheets, Single Award, diagram questions, study guides and the Review portal
 

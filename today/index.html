@@ -62,7 +62,10 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);padding:3px 9px;font-size:14px;font-weight:700;text-decoration:none;color:var(--ink)}
 .chip:hover{background:#fef3c7}.chip i{font-style:normal;font-weight:600;color:var(--muted);font-size:12px}
 .chip.B{border-color:var(--bio)}.chip.C{border-color:var(--chem)}.chip.P{border-color:var(--phys)}
-.covered h3{font-size:16px;margin:10px 0 6px}.covered h3:first-of-type{margin-top:0}
+.covered{margin-top:10px;border-top:1px solid #e3ddcf;padding-top:8px}
+.covered summary{cursor:pointer;font-weight:800;font-size:15px;list-style:none}.covered summary::-webkit-details-marker{display:none}
+.covered summary::after{content:' ▾';color:var(--muted)}.covered[open] summary::after{content:' ▴'}
+.covered h3{font-size:14px;margin:8px 0 4px}.covered .chip{font-size:13px;padding:2px 7px}.covered .chip i{font-size:11px}
 @media(max-width:560px){.tline a.go{margin-left:0}}
 </style>
 </head>
@@ -184,12 +187,13 @@ async function draw() {
   const streak = (() => { let n = 0; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i < days.length - 1) break; } return n; })();
 
   $('main').innerHTML = `<div class="hello"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} spec points secured${streak > 1 ? ` · 🔥 ${streak} days in a row` : ''}</p></div></div>
+    <div id="guides"></div>
     <div class="tline"><b>Today</b>
       <a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission to do'}</a>
       <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} card${due > 1 ? 's' : ''} due` : 'New cards'}</a>
       <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
       <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a></div>
-    <div id="school"></div><div id="guides"></div>
+    <div id="school"></div>
     <h2 style="font-size:22px;margin:4px 0 8px">What to revise</h2>
     <div class="cols">
       <div>
@@ -201,7 +205,7 @@ async function draw() {
       </div>
       <div>
         <div class="card"><h2>The spec</h2><div class="sci">${sciRow('B', 'biology', 'var(--bio)')}${sciRow('C', 'chemistry', 'var(--chem)')}${sciRow('P', 'physics', 'var(--phys)')}</div>
-          <p class="small muted" style="margin-top:8px">Bars = spec points secured (Practice Questions, missions and flashcards).</p></div>
+          <p class="small muted" style="margin-top:8px">Bars = spec points secured (Practice Questions, missions and flashcards).</p><div id="covered"></div></div>
         <div class="card"><h2>Last 14 days</h2><div class="strip">${days.map(d => `<i class="${did(d) ? 'y' : ''}" title="${d}"></i>`).join('')}</div><p class="small muted" style="margin-top:6px">Green = you revised that day.</p></div>
         <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice Questions</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
       </div>
@@ -253,8 +257,9 @@ async function drawSchool() {
   const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
   const staleNote = SCHOOL.stale ? `<p class="small muted" style="margin-bottom:6px">⚠️ Showing the copy saved on ${new Date(SCHOOL.savedAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}: the network wouldn't answer just now, so anything set since then is missing. Reload to try again.</p>` : '';
-  box.innerHTML = noYear + (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${staleNote}${setHtml}</div>` : staleNote ? `<div class="card">${staleNote}</div>` : '')
-    + (taught.length ? `<div class="card covered"><h2>Covered in class</h2><p class="small muted" style="margin-bottom:8px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</div>` : '');
+  box.innerHTML = noYear + (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${staleNote}${setHtml}</div>` : staleNote ? `<div class="card">${staleNote}</div>` : '');
+  /* covered in class (user, 23 Nov: "moved down … shrunk or made expandable only from within the spec box"): closed by default */
+  const cv = $('covered'); if (cv) cv.innerHTML = taught.length ? `<details class="covered"><summary>📚 Covered in class <span class="muted">· ${taught.length} sub-topic${taught.length > 1 ? 's' : ''}</span></summary><p class="small muted" style="margin:4px 0 6px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</details>` : '';
   if (y && !set.length && !taught.length) box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p class="muted">Nothing set for you right now.</p></div>`;
   if ($('yrBtn2')) $('yrBtn2').onclick = () => CBSYear.ask();
   slowNote();
@@ -265,7 +270,7 @@ function safeDraw() {
     console.error('To do', e);
     if (!QE.user) return;
     $('main').innerHTML = `<div class="hello"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div>
-      <div id="school"></div><div id="guides"></div>
+      <div id="guides"></div><div id="school"></div>
       <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ Breadventure Land</a><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice</a></div>
       <p class="small muted" style="margin-top:8px">Part of this page couldn't load, so here's the short version.</p></div>`;
     drawSchool();
