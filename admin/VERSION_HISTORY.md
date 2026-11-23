@@ -2,8 +2,8 @@
 
 ---
 
-## [Unreleased]
-### New worksheets, Single Award, diagram questions and the admin Review portal
+## [5.1.0] - 2026-11-23
+### New worksheets, Single Award, diagram questions, study guides and the Review portal
 
 #### Added
 - Admin: open a student to see **their character**: what they're wearing (stats, abilities, set), everything they own, where they are on Breadventure Land (health, moves, camp, brews, rewards waiting), their last night's report, and a log of what they've been doing (missions, practice, flashcards, map moves, fights, chests, dungeons, spells, brews, outfit changes, level-ups). The log starts now.

@@ -205,6 +205,13 @@ Keep these in sync when adding/removing admin users.
 
 ## 📊 Recent Updates
 
+### 2026-11-23 - v5.1.0 Worksheets, Study Guides and Review
+- **New worksheets home** with separate KS4 and KS3 lists (opens on the student's year), new sheets for Chemistry topic 1, Biology 1–2 and Physics, mark schemes, greyscale-safe drawings
+- **Science (Single Award)** per student, set by the admin: only their course across Questing, Practice, trackers, To do, Flashcards, set work and worksheets
+- **219 diagram and graph questions** in the bank; Questing gear with stats, levels, abilities and science sets
+- **Study guides**: the admin picks spec points and prints an A4 guide with key words; students see it on To do with Revise buttons (15 questions at a time)
+- Admin: Review portal (questions, worksheets, key words), Building the site box, a student's character and activity log, one grouped admin menu; lessons checked and new drafts
+
 ### 2026-11-18 - v5.0.0 One Site
 - **One spec tracker** for Biology, Chemistry and Physics: every point coloured by what the student has proved (Practice Questions, Questing or Flashcards — the game is optional), their own confidence rating, "Covered in class", and links to practise, flashcards and worksheets; every point has its own link
 - **To do** (was My day) lists points to check, nearly secured and gone rusty, with Prove it buttons
@@ -312,4 +319,4 @@ Educational use only. All content aligned with IGCSE Edexcel curriculum specific
 
 This project is maintained as a personal educational resource collection.
 
-**Last Updated:** June 2026
+**Last Updated:** November 2026
