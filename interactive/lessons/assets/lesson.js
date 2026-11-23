@@ -107,6 +107,18 @@ let deckApi = null;
 function deck(){
   const src = $('#deck-src'); if(!src) return;
   const L4 = 'ABCD';
+  // long true/false slides: split into slides of at most 5 statements, big type (user rule: big fonts)
+  $$('section.ps', src).forEach(sec => {
+    const tf = $('[data-comp="tf"]', sec); if(!tf) return;
+    const items = $$('.tfi', tf); if(items.length <= 6) return;
+    const n = Math.ceil(items.length / 5), per = Math.ceil(items.length / n), h = $('h2', sec), title = h ? h.innerHTML : 'True or false?';
+    let html = '';
+    for(let k = 0; k < n; k++){
+      const part = items.slice(k*per, (k+1)*per).map(x => x.outerHTML).join('');
+      html += `<section class="${sec.className}"><h2>${title} (${k+1} of ${n})</h2><div class="tfbig"><div data-comp="tf" data-start="${k*per+1}">${part}</div></div></section>`;
+    }
+    sec.outerHTML = html;
+  });
   // expand auto slides
   $$('section[data-auto]', src).forEach(sec => {
     const kind = sec.dataset.auto; let html = '';

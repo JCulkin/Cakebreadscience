@@ -139,7 +139,7 @@ C['kingdom-explorer'] = el => {
 C['tf'] = el => {
   const items = $$('.tfi', el).map(d => ({q:d.innerHTML, a:d.dataset.a==='t', why:d.dataset.why||''}));
   if(isDeck(el)){
-    el.innerHTML = `<ol class="tfdeck">${items.map((it,i)=>`<li><span>${it.q}</span><b class="tfans ${it.a?'t':'f'}" data-s="${i+1}">${it.a?'✔ True':'✘ False'}</b></li>`).join('')}</ol>`;
+    el.innerHTML = `<ol class="tfdeck" start="${el.dataset.start||1}">${items.map((it,i)=>`<li><span>${it.q}</span><b class="tfans ${it.a?'t':'f'}" data-s="${i+1}">${it.a?'✔ True':'✘ False'}</b></li>`).join('')}</ol>`;
     return;
   }
   let got = 0, done = 0;

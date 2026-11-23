@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-22",
+  "updated": "2026-11-23",
   "subjects": [
     {
       "id": "biology",
@@ -19,7 +19,8 @@
               "versions": [
                 "2026-11-18",
                 "2026-11-20",
-                "2026-11-22"
+                "2026-11-22",
+                "2026-11-23"
               ]
             }
           ]
@@ -43,7 +44,7 @@
               "title": "Cell structure",
               "spec": "2.2–2.4",
               "status": "draft",
-              "draftUpdated": "2026-11-22",
+              "draftUpdated": "2026-11-23",
               "versions": []
             },
             {
@@ -51,7 +52,7 @@
               "title": "Biological molecules",
               "spec": "2.7–2.13",
               "status": "draft",
-              "draftUpdated": "2026-11-22",
+              "draftUpdated": "2026-11-23",
               "versions": []
             },
             {
@@ -59,7 +60,7 @@
               "title": "Movement of substances into and out of cells",
               "spec": "2.15–2.17",
               "status": "draft",
-              "draftUpdated": "2026-11-22",
+              "draftUpdated": "2026-11-23",
               "versions": []
             },
             {
@@ -72,7 +73,7 @@
               "title": "Respiration",
               "spec": "2.34–2.39",
               "status": "draft",
-              "draftUpdated": "2026-11-22",
+              "draftUpdated": "2026-11-23",
               "versions": []
             },
             {
@@ -176,7 +177,7 @@
               "title": "States of matter",
               "spec": "1.1–1.4",
               "status": "draft",
-              "draftUpdated": "2026-11-22",
+              "draftUpdated": "2026-11-23",
               "versions": []
             },
             {
@@ -203,8 +204,8 @@
               "code": "1f",
               "title": "Ionic bonding",
               "spec": "1.37–1.43",
-              "status": "checked",
-              "draftUpdated": "2026-11-18",
+              "status": "draft",
+              "draftUpdated": "2026-11-23",
               "versions": [
                 "2026-11-18",
                 "2026-11-22"
@@ -215,7 +216,7 @@
               "title": "Covalent bonding",
               "spec": "1.44–1.51",
               "status": "draft",
-              "draftUpdated": "2026-11-22",
+              "draftUpdated": "2026-11-23",
               "versions": []
             }
           ]
