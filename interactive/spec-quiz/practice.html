@@ -115,6 +115,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
     <div class="progress" id="prog"></div>
     <div class="card qcard">
       <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
+      <div id="qfig"></div>
       <div class="qtext" id="qtext"></div>
       <div class="opts" id="opts"></div>
       <div id="fb"></div>
@@ -133,12 +134,17 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="/interactive/cell-game/cells.js"></script>
+<script src="diagrams.js"></script>
+<script src="diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="/js/year.js"></script>
 <script src="/js/admin-config.js"></script>
 <script src="/js/account.js"></script>
 <script src="/js/school.js"></script>
+<script src="/js/spec-point.js"></script>
 <script>
 /* Practice (16 Nov 2026): a plain front door to the Questing engine. Same question bank, same securing rules,
    same saved progress (users/{uid}.specQuiz); no adventurer, monsters or loot on screen. */
@@ -175,9 +181,9 @@ function drawPick() {
       const open = OPEN.has(s.key);
       return `<div class="sub"><div class="subrow"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><div class="pb"><i style="width:${s.st.n ? s.st.secured / s.st.n * 100 : 0}%"></i></div><span class="n">${s.st.secured}/${s.st.n}${s.st.rusty ? ` · ${s.st.rusty} rusty` : ''}</span>
         <button type="button" class="tgl" data-tgl="${s.key}" aria-expanded="${open}">Spec points ${open ? '▴' : '▾'}</button><button type="button" class="go" data-sub="${s.key}">Practise →</button></div>
-        ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = QE.POINTS[k]; if (!p.has) return '';
+        ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = (window.SPECPT && SPECPT.of(k)) || QE.POINTS[k]; if (!p.has) return '';
           const [c, w] = p.rusty ? ['r', 'Rusty'] : p.secured ? ['s', 'Secured'] : p.started ? ['l', 'Learning'] : ['n', 'New'];
-          return `<div class="pt"><span class="id">${P.id}</span><span>${esc(strip(P.text))}${P.bullets ? ' ' + esc(P.bullets.map(strip).join('; ')) : ''}</span><span class="st ${c}">${w}</span><button type="button" data-point="${k}">Practise</button></div>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div>`; }).join('');
+          return `<div class="pt"><span class="id">${P.id}</span><span>${esc(strip(P.text))}${P.bullets ? ' ' + esc(P.bullets.map(strip).join('; ')) : ''}${window.SPECPT ? SPECPT.extras(P) : ''}</span><span class="st ${c}">${w}</span><button type="button" data-point="${k}">Practise</button></div>`; }).join('')}</div>` : ''}</div>`; }).join('')}</div>`; }).join('');
 }
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-sci]'); if (b) { SCI = b.dataset.sci; drawPick(); } });
 $('pick').addEventListener('click', e => {
@@ -188,6 +194,21 @@ $('pick').addEventListener('click', e => {
 try { $('plain').checked = localStorage.getItem(PLAIN) === '1'; } catch (e) {}
 $('plain').onchange = () => { try { $('plain').checked ? localStorage.setItem(PLAIN, '1') : localStorage.removeItem(PLAIN); } catch (e) {} };
 
+/* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — n questions from those sub-topics; "another n" leaves out
+   the ones shown in this browser's last runs of the same set (sessionStorage), so each go brings new questions */
+const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
+function startGuide(keys, n, title) {
+  const subs = [...new Set(keys.map(k => subBy(k) || SUBS.find(x => x.keys.has(k))).filter(Boolean))]; if (!subs.length) return false;
+  const set = new Set(); keys.forEach(k => { const x = subBy(k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
+  let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
+  const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
+  try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
+  PS = { sub: subs[0], guide: { keys, subs, n, title }, qs, i: 0, res: [], st0: QE.stats(), xp0: QE.prog.xp };
+  QE.busy = true;
+  $('pick').classList.add('hidden'); $('done').classList.add('hidden'); $('quiz').classList.remove('hidden');
+  $('qtitle').textContent = `${title || 'Study guide'} · ${subs.length === 1 ? `${subs[0].subj} ${subs[0].key.slice(1)} · ${subs[0].name}` : `${subs.length} sub-topics`}`;
+  scrollTo(0, 0); show(); return true;
+}
 /* ten questions: the engine picks ready-to-secure, then rusty, then ones you got wrong, then new */
 function start(k, point) {
   const sub = subBy(k); if (!sub) return;
@@ -204,10 +225,13 @@ function show() {
   $('prog').innerHTML = PS.qs.map((_, j) => `<i class="${j < PS.res.length ? (PS.res[j].ok ? 'ok' : 'no') : j === PS.i ? 'now' : ''}"></i>`).join('');
   $('qnum').textContent = `Question ${PS.i + 1} of ${PS.qs.length}${q.hard ? ' · ★ harder' : ''}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)}`;
+  $('qfig').innerHTML = typeof DQ !== 'undefined' ? DQ.fig(q) : '';   // diagram questions: the drawing above the question
   $('qtext').innerHTML = nuc(q.tf !== undefined ? `True or false? ${q.q}` : q.q);
-  const opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0]));
+  let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0])), keys = 'ABCD';
+  if (q.svg && typeof DQ !== 'undefined') ({ opts, keys } = DQ.order(opts, o => o[0]));   // letter answers in order, numbered keys
+  PS.keys = keys;
   $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
-  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${'ABCD'[j]}</span><span>${nuc(t)}</span></button>`).join('');
+  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${nuc(t)}</span></button>`).join('');
   $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
   PS.opts = opts; PS.picked = -1;
   $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
@@ -227,7 +251,8 @@ $('opts').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => {
   if ($('quiz').classList.contains('hidden') || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
-  const i = 'abcd'.indexOf(e.key.toLowerCase()), bs = [...$('opts').children];
+  const k = e.key.toLowerCase(), bs = [...$('opts').children];
+  let i = PS.keys === '1234' ? bs.findIndex(o => o.textContent.slice(1).trim().toLowerCase() === k) : 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k);
   if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click();
 });
 $('nextBtn').onclick = () => { PS.i++; if (PS.i < PS.qs.length) show(); else finish(); };
@@ -259,21 +284,23 @@ $('repBtn').onclick = () => {
 function finish() {
   const right = PS.res.filter(r => r.ok).length;
   QE.finishMission({ coins: 10, right });
+  QE.log('📝', `Practice ${PS.point ? 'spec point ' + PS.point.slice(1) : PS.sub.key.slice(1) + ' ' + PS.sub.name}: ${right}/${PS.qs.length} right`);
   QE.busy = false;
   const st = QE.stats(), gainQ = st.securedQ - PS.st0.securedQ, gainP = st.securedP - PS.st0.securedP;
   const wrong = PS.res.filter(r => !r.ok), sub = QE.allSubs().find(s => s.key === PS.sub.key) || PS.sub;
   const ready = PS.res.filter(r => r.ok && QE.qState(r.q.id).c === 1).length;
   $('quiz').classList.add('hidden'); $('done').classList.remove('hidden');
-  $('done').innerHTML = `<h1>${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}</h1>
+  const G = PS.guide;
+  $('done').innerHTML = `<h1>${G ? esc(G.title || 'Study guide') : `${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}`}</h1>
     <div class="card" style="margin-top:12px"><div class="score">${right} / ${PS.qs.length}</div>
       <ul class="gain">
         <li>${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b> today.` : 'No questions secured today.'}${ready ? ` ${ready} more will be secured if you get ${ready === 1 ? 'it' : 'them'} right again on another day.` : ''}</li>
-        <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.</li>
+        <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}${G ? `These ${G.subs.length > 1 ? `${G.subs.length} sub-topics` : 'sub-topic'}: ${G.subs.map(x => QE.allSubs().find(s => s.key === x.key) || x).reduce((n, x) => n + x.st.secured, 0)} of ${G.subs.reduce((n, x) => n + x.st.n, 0)} spec points secured.` : `This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.`}</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><button class="btn gold big" id="again">10 more on this →</button><a class="btn alt" href="practice.html">Choose something else</a><a class="btn alt" href="/today/">To do</a></div>
+    <div class="acts"><button class="btn gold big" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button><a class="btn alt" href="${G ? '/today/' : 'practice.html'}">${G ? 'Back to To do' : 'Choose something else'}</a>${G ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe.'}</p>`;
-  $('again').onclick = () => start(PS.sub.key, PS.point);
+  $('again').onclick = () => G ? startGuide(G.keys, G.n, G.title) : start(PS.sub.key, PS.point);
   scrollTo(0, 0);
 }
 
@@ -285,7 +312,9 @@ function boot() {
   if (!$('pick').classList.contains('hidden')) drawPick();
   if (!started) { started = true; SUBS = QE.allSubs().filter(s => s.nq >= 4);
     const u = new URLSearchParams(location.search), pt = u.get('point'), sb = pt ? SUBS.find(x => x.keys.has(pt)) : subBy(u.get('sub'));
-    if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
+    const gs = (u.get('subs') || '').split(',').filter(Boolean), gn = Math.min(30, Math.max(5, +u.get('n') || 15));
+    if (gs.length && startGuide(gs, gn, u.get('t') || '')) {}
+    else if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
     else { const p = QE.picks()[0]; if (p) SCI = p.sub.key[0]; drawPick(); } }
 }
 boot(); QE.onChange(boot);
@@ -295,12 +324,12 @@ const withinP = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => 
 async function drawSet() {
   const box = $('setwork'); if (!box) return;
   const y = window.CBSYear && CBSYear.year;
-  if (!QE.user || !y || !window.firebase || !firebase.database) { box.innerHTML = ''; return; }
-  if (!SCH) { try { SCH = await withinP(CBSSchool.load(firebase.database()), 6000); } catch (e) { box.innerHTML = ''; return; } }
+  if (!QE.user || !window.firebase || !firebase.database) { box.innerHTML = ''; return; }
+  if (!SCH) { try { SCH = await withinP(CBSSchool.load(firebase.database()), 16000); } catch (e) { SCH = CBSSchool.cached(); if (!SCH) { box.innerHTML = ''; return; } } }
   let udoc = {}; try { udoc = (await withinP(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000)).data() || {}; } catch (e) {}
   const S = CBSSchool, today = QE.TODAY;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const open = S.forYear(SCH.assign, y).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
+  const open = S.forMe(SCH.assign, y, QE.user.uid).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
     .filter(x => x.t ? x.t.state !== 'done' : !x.p.done);
   if (!open.length) { box.innerHTML = ''; return; }
   box.innerHTML = `<div class="setw"><h2>Set by your teacher</h2>${open.map(({ a, t, p }) => {

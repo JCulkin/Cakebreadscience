@@ -1,17 +1,17 @@
-/* "What's new" box (v5.0.0, 18 Nov 2026). Shown once per browser until dismissed; one dismissal hides it on every page.
+/* "What's new" box (v5.0.0, 18 Nov 2026; items and key updated for v5.1.0, 23 Nov). Shown once per browser until dismissed; one dismissal hides it on every page.
    <script src="/js/whats-new.js" data-place="prepend" data-target="main.wrap"></script>
    data-place: "prepend" = first thing inside the target; default = just before the target (for pages that redraw <main>).
    For the next round of news, change KEY (e.g. cbs.whatsnew.v6) so it shows again. */
 (function () {
-  const KEY = 'cbs.whatsnew.v5';
+  const KEY = 'cbs.whatsnew.v51';
   try { if (localStorage.getItem(KEY)) return; } catch (e) { return; }
   const me = document.currentScript;
   const ITEMS = [
-    ['🧁', 'Cakebread Questing', 'level up to unlock more, a Stats page, treasure chests', '/interactive/spec-quiz/'],
-    ['📋', 'Spec trackers', 'points turn green when you prove them', '/specifications/science.html'],
-    ['📝', 'Practice Questions', 'any spec point, no game needed', '/interactive/spec-quiz/practice.html'],
-    ['🃏', 'Flashcards', 'a brand new look', '/Flashcards/'],
-    ['✅', 'To do', 'what to revise next', '/today/']
+    ['📄', 'Worksheets', 'new sheets for your year: KS4 and KS3 lists', '/worksheets/science.html'],
+    ['📖', 'Study guides', 'what\'s in your test, on To do, with Revise buttons', '/today/'],
+    ['📊', 'Diagram questions', 'graphs, circuits, cells and more in Practice and Questing', '/interactive/spec-quiz/practice.html'],
+    ['🗡️', 'Questing gear', 'items with stats and abilities, science sets that glow', '/interactive/spec-quiz/'],
+    ['📋', 'Spec trackers', 'points turn green when you prove them', '/specifications/science.html']
   ];
   const css = `.cbs-new{position:relative;max-width:1100px;margin:14px auto;background:#fff;border:2px solid #111;box-shadow:0 4px 0 #111;padding:12px 44px 12px 14px;font-family:'Barlow',Arial,sans-serif;color:#111;line-height:1.35}
 .cbs-new-wrap{padding:0 18px}.cbs-new-wrap .cbs-new{max-width:1064px}.cbs-new-wrap.in{padding:0}.cbs-new-wrap.in .cbs-new{max-width:none;margin-top:0}

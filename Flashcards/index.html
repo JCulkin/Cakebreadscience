@@ -864,6 +864,8 @@ h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:90
     <script src="/interactive/spec-quiz/spec.js"></script>
     <script src="/interactive/spec-quiz/questions.js"></script>
     <script src="/interactive/spec-quiz/gens.js"></script>
+    <script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/course.js"></script>
     <script src="/interactive/spec-quiz/cards.js"></script>
     <script src="/interactive/spec-quiz/questing-engine.js"></script>
     <script src="/js/admin-config.js"></script>
@@ -1196,7 +1198,8 @@ h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:90
                 const response = await fetch(filePath);
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const cards = await response.json();
-                return cards.map(c => ({ id: c.id, front: processHtmlWithImages(c.front), back: processHtmlWithImages(c.back), spec: c.spec, topic: c.topic }));
+                /* Single Award students only get cards on their course's points (/js/course.js) */
+                return cards.filter(c => !window.CBSCourse || CBSCourse.has(c.spec)).map(c => ({ id: c.id, front: processHtmlWithImages(c.front), back: processHtmlWithImages(c.back), spec: c.spec, topic: c.topic }));
             } catch (error) {
                 console.error(`[DECK] could not load ${filePath}:`, error);
                 return [];
@@ -1790,7 +1793,7 @@ updateDeckProgress(currentDeck);
             const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -6px">`;
             gain(faceImg + (wasDue ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
                 : (res.notes.length ? res.notes.join(' · ') : 'Not due yet: practice only (no XP)')));
-            if (res.done) showLoot(res.loot);
+            if (res.done) { showLoot(res.loot); try { const it = res.loot && ADV_ITEMS.find(i => i.id === res.loot); QE.log('🃏', `Finished today's flashcards${it ? ' · loot: ' + it.name : ''}`); } catch (e) {} }
 
             // Remove from queue and show next
             studyQueue.shift();

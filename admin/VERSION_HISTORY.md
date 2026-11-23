@@ -2,6 +2,40 @@
 
 ---
 
+## [5.1.0] - 2026-11-23
+### New worksheets, Single Award, diagram questions, study guides and the Review portal
+
+#### Added
+- Admin: open a student to see **their character**: what they're wearing (stats, abilities, set), everything they own, where they are on Breadventure Land (health, moves, camp, brews, rewards waiting), their last night's report, and a log of what they've been doing (missions, practice, flashcards, map moves, fights, chests, dungeons, spells, brews, outfit changes, level-ups). The log starts now.
+- **Key words review** (`/admin/review.html#keywords`): 542 key words on 278 spec points, one point at a time with **✓ They're good** / Needs a fix; changing a point's words sends it back to review (`node tools/review/keep.js k <point>` keeps an asked-for edit checked).
+- **Study guides** (admin → 📄 Study guides): pick topics, sub-topics or exact spec points and Double or Single Award; get a printable A4 guide (title, Double/Single Award, every chosen spec point in full, a compact Key words section above the exam advice (sub-topic code and colour bar, no headings) — terms the spec wording doesn't contain, tied to the exact points ticked — and four lines of exam advice) to print or save as PDF. Save it for a year group and it appears on their **To do** (`/guide/?id=…`) with **Revise** buttons: 15 questions on exactly those points in Practice or as a Cakebread Questing mission, with "Another 15" bringing new questions each time
+- Cakebread Questing gear: every item now adds Strength, Health or Magic and has its own level (one tag, e.g. "Rare · level 6"); some do something special (an extra move each night, more damage for teammates, less damage for everyone camped with you, more coins, cheaper spells, spotting mimics, seeing further through the fog…). Anything you hold goes in either hand, and some things need both. Wear 4+ items from one science for a set bonus and a coloured glow. Rarities are now Common, Uncommon, Rare, Lowkey Iconic and Mythic; the three weekly science items are Main Character items. Boss items say which boss drops them. 19 new items (93 in all). The Stats page shows percentages instead of totals.
+- **New worksheets home** (`/worksheets/science.html`): separate **KS4** (Years 10–11) and **KS3** (Years 8–9) lists with a switch, opening on the signed-in student's year. New sets: KS4 Chemistry topic 1 (12 sheets + mark schemes), KS3 Chemistry topic 1, Biology 1 and 2ab (KS4 + KS3), KS4 Biology 2c1, 2c2, 2d, 2f, KS4 Physics waves, KS3 Physics space. Codes name the spec sub-topics each sheet covers (e.g. `2ab`, `1fg1`); new sheets carry an "Under review" tag; older sheets moved to an archive page
+- **Science (Single Award) students:** set a student's course in the admin console (Students → open the student → Course; new Course column). They see only their course across Questing, Practice, the trackers, To do, Flashcards and set work; worksheets show Single Award versions where they differ, and set work targets are sized to their course
+- **219 diagram and graph questions in the question bank** (93 spec points): code-drawn graphs, circuits, ray diagrams, dot-and-cross, food webs, cells and more, a new drawing each time; in missions, Practice, the Quick/Team quiz (new toggle), Breadventure Land and set-work tests (each student's drawing is saved with their answer)
+- **Admin Review portal** (`/admin/review.html`, ✅ Review tab): the whole question bank one question at a time (spec point, question, answer, explanation, diagrams and calculation examples, student reports) with a big **✓ It's good** button (or Enter), **Needs a fix** with a note, filters and jump to an id; worksheets by subject and KS4 / KS3 with Good / Needs a fix. **Anything edited after you checked it goes back to review automatically**
+- Admin Overview: **Building the site** box: lessons checked / under review per subject, worksheet coverage per subject, maths sections with no sheet, and how many questions and worksheets you've reviewed
+- **Full spec wording everywhere:** trackers, Practice and Review show the physics equations, the spec's scope notes, the long Biology 1.2–1.4 descriptions (behind "… more", 1.2 as Plants / Animals / Fungi / Protoctists tabs) and section labels such as "Flowering plants". Practice also shows the bullet points it was missing
+- **Set work:** edit work after setting it (title, years, sub-topics, number, due date, note), set work for students by name, an "All set work" view; the **To do** button turns red with a "!" and a count while a student has open work
+- Admin Students: choose and reorder the columns (remembered), new Questions attempted column and more optional columns
+- **Lessons:** Chemistry 1f Ionic bonding, Biology 1 Living organisms and Biology 2a checked; new drafts (under review) Biology 2b–2d, 2f, Chemistry 1a and 1g, and a reworked 1f draft (the checked 1f stays live); "Double Award only" / "Beyond GCSE" slide tags; Next slide ⏭ and ▦ All slides controls in projector mode (trial)
+
+#### Changed
+- **Admin menu tidied** (`/admin/admin-nav.js`): the side-scrolling tab bar is now four labelled groups that wrap (Students: Overview, Students, Spec map, Teaching · Content: Questions, Review, Study guides · Games: Leaderboards, Breadventure Land, Games, Game showcase · Site: Backup) and the same menu is on the Review, Study guides and Game showcase pages. Nothing removed.
+- Lessons (23 Nov): every lesson checked against the slide rules. Long true/false slides split into slides of 5 with big type (Biology 1, 2b, 2c, 2d, 2f); Chemistry 1a: full-screen section titles, pictures on the word-only slides, overlaps fixed, key words split in two, recap slide removed; Chemistry 1g: pictures on Think / Ionic or covalent / Conduct / Giant covalent, readable allotropes slide, recap removed; Chemistry 1f: ions drawn as charged balls, formula practice split in two with the ion-charge table, back under review; Biology 2b organelle icons in the summary tables, 2d water-potential diagram, 2c bigger thermometer. Biology 1 stays checked (version 23 Nov)
+- Lessons (22 Nov): title slides now fill the screen with the picture and a clear title box (every lesson); question-bank diagram questions on the page and as slides in Biology 2b, 2c, 2d and Chemistry 1a, 1f, 1g, plus “Practise these points” links to Practice on every lesson; Biology 2a: flip-through examples for each level, own atom-to-ecosystem chain with a nod to Ecology, new moss-cell photo, checked (v2026-11-22); Biology 2b: new what-are-cells panels, eukaryotic/prokaryotic slides, shorter, bigger organelle cards, own respiration and animal-vs-plant diagrams, task shown on Comparing cells; slide tags no longer cover titles. Biology 1 and Chemistry 1f stay checked (new versions 22 Nov)
+- **Checked stays checked:** an edit you ask for no longer sends a checked question, worksheet or lesson back to review (only changes made without your say-so do). Chemistry 1fg1 worksheets (KS4, Single Award, KS3) marked checked; Biology lesson 1 Living organisms checked again with its latest edits (version 20 Nov 2026)
+- Lessons: simpler lesson list (no Checked badge, review dates or how-it-works box); the ✎ Review notes system is gone; 1f Ionic bonding content updates (hydroxide replaces phosphate and more); Separate Science mentions removed
+- Sitemap: archived worksheets removed
+- Worksheets read in greyscale: atoms carry their symbols, ions their charges, chromatogram spots a letter; no overlapping atoms in chemistry drawings
+
+#### Fixed
+- Set work and To do reach the Realtime Database another way when a network blocks its live connection, and show the last saved copy if both fail
+- Students with no year chosen couldn't see set work: To do now asks for the year, and work can be set by name
+- Every new worksheet has a link back to the homepage
+
+---
+
 ## [5.0.0] - 2026-11-18
 ### One site: one spec tracker, one sign-in, To do, and revision that works with or without the game
 

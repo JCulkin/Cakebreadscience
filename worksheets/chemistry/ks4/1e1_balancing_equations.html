@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=820">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Cakebread Science">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>1e1 · Equations &amp; Formula Mass</title>
+<link rel="stylesheet" href="../../../css/chemistry.css">
+<link rel="stylesheet" href="../../../css/print-sheet.css">
+<style>
+  .ps .grid td.ka { color: var(--ps-answer); font-weight: bold; background: var(--ps-answer-bg); }
+  .ps .grid td.ex, .ps .ex { color: var(--ps-example); font-style: italic; }
+  .ps .grid td.l, .ps .grid th.l { text-align: left; }
+  .ps .grid td.c { width: 30mm; }
+  .ps .rule { font-size: 9.5pt; }
+  .ps .rule b { color: var(--primary-color); }
+  .ps .bank { display: inline-block; border: 1px solid var(--accent-border); background: var(--accent-lighter); padding: .4mm 2mm; margin: .5mm .5mm; font-weight: bold; font-size: 9pt; }
+  .ps .gap { display: inline-block; border-bottom: 1px solid #111; width: 24mm; }
+  .ps .gap.s { width: 14mm; } .ps .gap.l { width: 40mm; }
+  .ps .fill { line-height: 2.1; font-size: 10pt; }
+  .ps .fig { text-align: center; }
+  .ps .q2 { margin-top: 1.6mm; }
+  .ps .qn { font-weight: bold; color: var(--primary-color); }
+  .ps .draw { border: 1px dashed #888; border-radius: 1.5mm; position: relative; }
+  .ps .draw .lbl { position: absolute; top: 1mm; left: 2mm; font-weight: bold; font-size: 10pt; }
+  .ps .draw .foot2 { position: absolute; bottom: 1mm; left: 2mm; right: 2mm; font-size: 8.5pt; color: #333; }
+  .ps .example { border: 1.5px solid var(--ps-example); border-radius: 2mm; padding: 1.5mm 3mm; color: #111; }
+  .ps .example .t { font-weight: bold; font-size: 9pt; text-transform: uppercase; letter-spacing: .5px; color: var(--ps-example); }
+  .ps .eqn { font-family: "Segoe UI", Arial, sans-serif; letter-spacing: .2px; }
+  .ps .box { border: 1.5px solid #111; display: inline-block; min-width: 9mm; height: 7mm; vertical-align: middle; }
+  .ps .steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; }
+  .ps .step { border: 1px dashed #888; border-radius: 1.5mm; padding: 1mm 2mm; font-size: 9pt; color: #333; position: relative; }
+  .ps .step b { color: var(--primary-color); }
+  .ps sup, .ps sub { font-size: 70%; line-height: 0; }
+  .ps .nuc { display: inline-flex; align-items: center; }
+  .ps .nuc .ms { display: inline-flex; flex-direction: column; font-size: 70%; line-height: 1; text-align: right; margin-right: 1px; }
+  .ps .nuc sup { align-self: flex-start; margin-top: .3em; }
+  .ps .mk { float: right; font-size: 8.5pt; color: #333; font-weight: normal; }
+  .ps .grid.h7 td { height: 7mm; } .ps .grid.h8 td { height: 8mm; } .ps .grid.h10 td { height: 10mm; } .ps .grid.h12 td { height: 12mm; } .ps .grid.h16 td { height: 16mm; } .ps .grid.h20 td { height: 20mm; }
+  .ps .page > .g { flex: 1 1 auto; }
+  .ps .page > .q2.g { display: flex; flex-direction: column; }
+  .ps .q2.g > .work { flex: 1 1 auto; }
+  .ps .page > table.g { flex: 1 1 auto; }
+  .ps table.g tr:first-child { height: 1px; } .ps table.g tr:first-child th { height: auto; }
+  .ps .lns { flex: 1 1 0; height: 0; overflow: hidden; }
+  .ps .tiny { font-size: 8.5pt; color: #333; }
+  
+</style>
+</head>
+<body class="ps">
+<div class="screen-links"><a href="../../ks4.html">← KS4 worksheets</a><a href="1e1_balancing_equations_ms.html">Mark scheme →</a><span class="review-chip"></span></div>
+<div class="page">
+  <div class="header">
+    <div class="titles">
+      <h1>1e1 · Equations &amp; Formula Mass</h1>
+      <div class="ps-sub">IGCSE Edexcel Chemistry · KS4</div>
+      <div class="ps-spec">1.25–1.26 · spec sub-topic 1(e) part 1: word equations, balanced equations with state symbols, relative formula mass</div>
+    </div>
+    <div class="name">Name: <span></span></div>
+  </div>
+  <div class="reminder">
+    <div class="title">Reminder: balancing</div>
+    <div class="rule">Atoms are not made or destroyed in a reaction, so there must be the <b>same number of each atom</b> on both sides.
+    Balance by writing <b>big numbers in front</b> of formulae. <b>Never change the small numbers</b> — that would make a different substance.
+    A big number multiplies everything in the formula after it, including anything in brackets: 2Ca(OH)<sub>2</sub> has 2 Ca, 4 O and 4 H.</div>
+  </div>
+  <div class="example"><div class="t">Worked example: hydrogen + oxygen → water</div>
+  <div class="two" style="grid-template-columns:1.2fr 1fr;align-items:center;font-size:10pt">
+  <div>H<sub>2</sub> + O<sub>2</sub> → H<sub>2</sub>O &nbsp; <span class="tiny">O: 2 on the left, 1 on the right ✗</span><br>
+  H<sub>2</sub> + O<sub>2</sub> → <b>2</b>H<sub>2</sub>O &nbsp; <span class="tiny">O fixed, but now H: 2 left, 4 right ✗</span><br>
+  <b>2</b>H<sub>2</sub> + O<sub>2</sub> → <b>2</b>H<sub>2</sub>O &nbsp; <span class="tiny">H 4 = 4, O 2 = 2 ✓</span></div>
+  <table class="grid" style="font-size:9.5pt"><tr><th>atom</th><th>left</th><th>right</th></tr><tr><td>H</td><td>2 × 2 = 4</td><td>2 × 2 = 4</td></tr><tr><td>O</td><td>2</td><td>2 × 1 = 2</td></tr></table></div></div>
+  <h2>A &nbsp;Count the atoms <small>the first row is done for you</small></h2>
+  <table class="grid h10"><tr><th style="width:28%">formula</th><th>atoms of each element</th><th style="width:22%">total atoms</th></tr>
+    <tr><td>H<sub>2</sub>SO<sub>4</sub></td><td class="ex">H 2, S 1, O 4</td><td class="ex">7</td></tr><tr><td>2H<sub>2</sub>O</td><td></td><td></td></tr><tr><td>3CO<sub>2</sub></td><td></td><td></td></tr><tr><td>Ca(OH)<sub>2</sub></td><td></td><td></td></tr><tr><td>2Mg(NO<sub>3</sub>)<sub>2</sub></td><td></td><td></td></tr><tr><td>Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub></td><td></td><td></td></tr><tr><td>4NH<sub>3</sub></td><td></td><td></td></tr></table>
+  <h2>B &nbsp;Balance the equations <small>write a number in every box; write 1 if none is needed</small></h2>
+  <div class="tiny" style="font-weight:bold;color:var(--primary-color)">Level 1 · one or two numbers needed</div>
+  <div style="padding:4.4mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">1.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;H<sub>2</sub> + <span class="box"></span>&thinsp;Cl<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;HCl</span></div><div style="padding:4.4mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">2.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Mg + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;MgO</span></div><div style="padding:4.4mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">3.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Na + <span class="box"></span>&thinsp;Cl<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;NaCl</span></div><div style="padding:4.4mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">4.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;H<sub>2</sub> + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div><div style="padding:4.4mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">5.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Zn + <span class="box"></span>&thinsp;HCl &nbsp;→&nbsp; <span class="box"></span>&thinsp;ZnCl<sub>2</sub> + <span class="box"></span>&thinsp;H<sub>2</sub></span></div><div style="padding:4.4mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">6.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Li + <span class="box"></span>&thinsp;F<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;LiF</span></div>
+
+  <div class="foot">Side 1 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>B &nbsp;continued</h2>
+  <div class="tiny" style="font-weight:bold;color:var(--primary-color)">Level 2 · more than one element to sort out</div>
+  <div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">7.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;CH<sub>4</sub> + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;CO<sub>2</sub> + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">8.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Na + <span class="box"></span>&thinsp;H<sub>2</sub>O &nbsp;→&nbsp; <span class="box"></span>&thinsp;NaOH + <span class="box"></span>&thinsp;H<sub>2</sub></span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">9.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Al + <span class="box"></span>&thinsp;Cl<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;AlCl<sub>3</sub></span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">10.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Fe + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;Fe<sub>2</sub>O<sub>3</sub></span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">11.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Na + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;Na<sub>2</sub>O</span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">12.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Mg + <span class="box"></span>&thinsp;HCl &nbsp;→&nbsp; <span class="box"></span>&thinsp;MgCl<sub>2</sub> + <span class="box"></span>&thinsp;H<sub>2</sub></span></div>
+  <div class="tiny" style="font-weight:bold;color:var(--primary-color);margin-top:3mm">Level 3 · keep brackets and groups like NO<sub>3</sub>, SO<sub>4</sub> and OH together</div>
+  <div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">13.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Ca(OH)<sub>2</sub> + <span class="box"></span>&thinsp;HNO<sub>3</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;Ca(NO<sub>3</sub>)<sub>2</sub> + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">14.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;H<sub>2</sub>SO<sub>4</sub> + <span class="box"></span>&thinsp;NaOH &nbsp;→&nbsp; <span class="box"></span>&thinsp;Na<sub>2</sub>SO<sub>4</sub> + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">15.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;Fe<sub>2</sub>O<sub>3</sub> + <span class="box"></span>&thinsp;CO &nbsp;→&nbsp; <span class="box"></span>&thinsp;Fe + <span class="box"></span>&thinsp;CO<sub>2</sub></span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">16.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;C<sub>3</sub>H<sub>8</sub> + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;CO<sub>2</sub> + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">17.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;KI + <span class="box"></span>&thinsp;Pb(NO<sub>3</sub>)<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;KNO<sub>3</sub> + <span class="box"></span>&thinsp;PbI<sub>2</sub></span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">18.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;NaOH + <span class="box"></span>&thinsp;H<sub>3</sub>PO<sub>4</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;Na<sub>3</sub>PO<sub>4</sub> + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div>
+  <div class="tiny" style="font-weight:bold;color:var(--primary-color);margin-top:3mm">Stretch · tip: if you end up with half a molecule, double everything</div>
+  <div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">19.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;C<sub>2</sub>H<sub>6</sub> + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;CO<sub>2</sub> + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div><div style="padding:3.8mm 0;border-bottom:1px dotted #bbb;font-size:12pt"><span class="qn">20.</span>&nbsp; <span class="eqn"><span class="box"></span>&thinsp;NH<sub>3</sub> + <span class="box"></span>&thinsp;O<sub>2</sub> &nbsp;→&nbsp; <span class="box"></span>&thinsp;NO + <span class="box"></span>&thinsp;H<sub>2</sub>O</span></div>
+  <div class="tip" style="margin-top:3mm">If a group like SO<sub>4</sub> or NO<sub>3</sub> appears unchanged on both sides, count it as one unit instead of counting S and O separately.</div>
+  <div class="q2"><span class="qn">B21.</span> A student balanced 15 like this: Fe<sub>2</sub>O<sub>3</sub> + CO → 2Fe + CO<sub>3</sub>. Explain what they did wrong.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 2 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>C &nbsp;From words to symbols <small>write a balanced equation with state symbols</small></h2>
+  <div class="reminder" style="margin-top:0"><div class="rule">State symbols: <b>(s)</b> solid · <b>(l)</b> liquid · <b>(g)</b> gas · <b>(aq)</b> aqueous, dissolved in water. &nbsp;
+  Gases made of two atoms: H<sub>2</sub>, O<sub>2</sub>, N<sub>2</sub>, Cl<sub>2</sub>. Metals and carbon are written as single atoms: Mg, Na, C.</div></div>
+  <div class="q2"><span class="qn">C1.</span> magnesium + oxygen → magnesium oxide <span class="tiny">(Mg, MgO)</span><span class="ans"></span><span class="ans"></span></div><div class="q2"><span class="qn">C2.</span> sodium + water → sodium hydroxide + hydrogen <span class="tiny">(NaOH)</span><span class="ans"></span><span class="ans"></span></div><div class="q2"><span class="qn">C3.</span> calcium carbonate → calcium oxide + carbon dioxide <span class="tiny">(on heating)</span> <span class="tiny">(CaCO<sub>3</sub>, CaO)</span><span class="ans"></span><span class="ans"></span></div><div class="q2"><span class="qn">C4.</span> hydrochloric acid + sodium hydroxide → sodium chloride + water <span class="tiny">(HCl, NaOH)</span><span class="ans"></span><span class="ans"></span></div><div class="q2"><span class="qn">C5.</span> glucose + oxygen → carbon dioxide + water <span class="tiny">(respiration)</span> <span class="tiny">(glucose C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>)</span><span class="ans"></span><span class="ans"></span></div><div class="q2"><span class="qn">C6.</span> glucose → ethanol + carbon dioxide <span class="tiny">(fermentation)</span> <span class="tiny">(ethanol C<sub>2</sub>H<sub>5</sub>OH)</span><span class="ans"></span><span class="ans"></span></div>
+  <h2>D &nbsp;Write the word equation, then the symbol equation</h2>
+  <div class="q2"><span class="qn">D1.</span> Zinc reacts with sulfuric acid, H<sub>2</sub>SO<sub>4</sub>, to make zinc sulfate, ZnSO<sub>4</sub>, and hydrogen gas.<br>word:<span class="ans"></span>symbols:<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">D2.</span> Hydrogen peroxide, H<sub>2</sub>O<sub>2</sub>, breaks down into water and oxygen gas.<br>word:<span class="ans"></span>symbols:<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">D3.</span> Aluminium burns in oxygen to make aluminium oxide, Al<sub>2</sub>O<sub>3</sub>.<br>word:<span class="ans"></span>symbols:<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">D4.</span> When copper carbonate, CuCO<sub>3</sub>, is heated it makes copper oxide, CuO, and carbon dioxide.<br>word:<span class="ans"></span>symbols:<span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 3 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2><span>E &nbsp;Relative formula mass, M<sub>r</sub></span> <small>add up the A<sub>r</sub> of every atom</small></h2>
+  <div class="reminder" style="margin-top:0"><div class="rule"><b>A<sub>r</sub> values:</b> H 1 · C 12 · N 14 · O 16 · Na 23 · Mg 24 · Al 27 · S 32 · Cl 35.5 · K 39 · Ca 40 · Fe 56 · Cu 63.5 · Zn 65 · I 127 · Pb 207</div></div>
+  <table class="grid h12"><tr><th style="width:22%">formula</th><th>working</th><th style="width:18%">M<sub>r</sub></th></tr><tr><td>H<sub>2</sub>O</td><td class="ex">2 × 1 + 16</td><td class="ex">18</td></tr><tr><td>CO<sub>2</sub></td><td></td><td></td></tr><tr><td>NaCl</td><td></td><td></td></tr><tr><td>CaCO<sub>3</sub></td><td></td><td></td></tr><tr><td>H<sub>2</sub>SO<sub>4</sub></td><td></td><td></td></tr><tr><td>Ca(OH)<sub>2</sub></td><td></td><td></td></tr><tr><td>MgCl<sub>2</sub></td><td></td><td></td></tr><tr><td>Al<sub>2</sub>(SO<sub>4</sub>)<sub>3</sub></td><td></td><td></td></tr><tr><td>CuSO<sub>4</sub></td><td></td><td></td></tr></table>
+  <div class="mistake" style="margin-top:2mm"><b>Spot the mistake.</b> A student wrote: M<sub>r</sub> of Ca(OH)<sub>2</sub> = 40 + 16 + 1 × 2 = 58. Explain the mistake and give the right answer.<span class="ans"></span><span class="ans"></span></div>
+  <h2>F &nbsp;Conservation of mass</h2>
+  <div class="q2"><span class="qn">F1.</span> 2Mg + O<sub>2</sub> → 2MgO. Use M<sub>r</sub> values to show that the total mass of the reactants equals the total mass of the products.<div class="work" style="height:26mm"></div></div>
+  <div class="q2"><span class="qn">F2.</span> Marble chips (calcium carbonate) are added to acid in an open flask on a balance. The mass goes <b>down</b>. Explain why mass is still conserved.<span class="ans"></span><span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">F3.</span> Magnesium ribbon is heated in a crucible. The mass goes <b>up</b>. Explain why.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 4 of 4</div>
+</div>
+<script src="/js/home-link.js" data-back="/worksheets/science.html#ks4" data-back-label="Science worksheets"></script>
+</body>
+</html>

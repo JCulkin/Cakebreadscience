@@ -79,6 +79,8 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 <script src="/interactive/spec-quiz/spec.js"></script>
 <script src="/interactive/spec-quiz/questions.js"></script>
 <script src="/interactive/spec-quiz/gens.js"></script>
+<script src="/interactive/spec-quiz/diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="/interactive/spec-quiz/cards.js"></script>
 <script src="/interactive/spec-quiz/questing-engine.js"></script>
 <script src="/interactive/spec-quiz/adventurer-items.js"></script>
@@ -88,6 +90,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 <script src="/js/admin-config.js"></script>
 <script src="/js/year.js"></script>
 <script src="/js/school.js"></script>
+<script src="/js/study-guide.js"></script>
 <script>
 /* To do (10 Nov 2026): one page that answers "what should I do today?" across the site — the v4 "one revision journey".
    Reads Cakebread Questing (QE), the account doc (flashcard reviews due, spec tracker ticks) and Breadventure Land (bland/). */
@@ -127,7 +130,7 @@ async function draw() {
   const [dR, sR, lR] = await Promise.allSettled([
     within(fs.collection('users').doc(u.uid).get(), 6000, 'your account (Firestore)'),
     within(fs.collection('specProgress').doc(u.uid).get(), 6000, 'the spec trackers (Firestore)'),
-    within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => rt0.ref(p).once('value').then(x => x.val()))), 6000, 'Breadventure Land (Realtime Database)')]);
+    within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => CBSSchool.rtGet(rt0, p, 15000))), 15000, 'Breadventure Land (Realtime Database)')]);
   if (dR.status === 'fulfilled') doc = dR.value.data() || {};
   let conf = null;
   if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; conf = (s.exists && s.data().conf) || null; } else spec = doc.specSubjects || {};
@@ -186,7 +189,7 @@ async function draw() {
       <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} card${due > 1 ? 's' : ''} due` : 'New cards'}</a>
       <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
       <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a></div>
-    <div id="school"></div>
+    <div id="school"></div><div id="guides"></div>
     <h2 style="font-size:22px;margin:4px 0 8px">What to revise</h2>
     <div class="cols">
       <div>
@@ -207,20 +210,31 @@ async function draw() {
 }
 /* from your teacher (17 Nov 2026): work set for your year + what's been covered in class (js/school.js, js/year.js) */
 let SCHOOL = null;
+/* study guides (22 Nov): the student's guides for their year and course, with Revise buttons (js/study-guide.js) */
+let GUIDES = { at: 0, html: null, busy: false };   // one read per 30 s; redraws of the page reuse it
+function drawGuides() { const el = $('guides'); if (!el || !QE.user || !window.CBSGuide) return;
+  if (window.CBSYear && !CBSYear.known) return;   // the year decides which guides show; drawSchool runs again once it's known
+  if (GUIDES.html !== null && Date.now() - GUIDES.at < 30000) { el.innerHTML = GUIDES.html; return; }
+  if (GUIDES.busy) return; GUIDES.busy = true; GUIDES.at = Date.now();
+  CBSGuide.todo(el).then(() => { GUIDES.html = el.innerHTML; }).catch(() => {}).finally(() => { GUIDES.busy = false; const e2 = $('guides'); if (e2 && e2 !== el && GUIDES.html !== null) e2.innerHTML = GUIDES.html; }); }
 async function drawSchool() {
+  drawGuides();
   const box = $('school'); if (!box || !QE.user) return;
+  if (window.CBSYear && !CBSYear.known && !waited) return;   // wait for the year, at most 5 s (CBSYear.onChange redraws)
   const y = window.CBSYear && CBSYear.year;
   const hp = document.querySelector('.hello p'), old = $('yrBtn'); if (old) old.remove();
   if (hp) hp.insertAdjacentHTML('beforeend', y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>');
   if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
-  if (!y) { box.innerHTML = ''; return; }
   if (!SCHOOL) {
-    try { SCHOOL = await within(CBSSchool.load(firebase.database()), 6000, "your teacher's work (Realtime Database)"); }
-    catch (e) { console.warn('school', e); box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p>Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`; slowNote(); return; }
+    try { SCHOOL = await within(CBSSchool.load(firebase.database()), 16000, "your teacher's work (Realtime Database)"); SLOW.delete("your teacher's work (Realtime Database)"); }
+    catch (e) { console.warn('school', e); SCHOOL = CBSSchool.cached();
+      if (!SCHOOL) { box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p>Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`; slowNote(); return; }
+      SCHOOL.stale = true; }
   }
   let udoc = {}; try { udoc = (await within(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000, 'your account (Firestore)')).data() || {}; } catch (e) {}
   const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
-  const set = S.forYear(SCHOOL.assign, y);
+  const set = S.forMe(SCHOOL.assign, y, QE.user.uid);   // your year's work + anything set for you by name (18 Nov)
+  if (window.CBSWork) CBSWork.refresh();   // keep the red "To do !" buttons in step with this page
   const secured = k => QE.pointState(k).secured;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
   const chip = k => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length} secured</i></a>`; };
@@ -234,12 +248,15 @@ async function drawSchool() {
       ${a.note ? `<p class="small">${esc(a.note)}</p>` : ''}
       <div class="bar" style="margin-top:6px" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%;background:${p.done ? 'var(--s)' : 'var(--l)'}"></i></div>
       <p class="small muted">Practise until you've got ${p.target} different questions right (${p.got} so far). Any of these:</p><div class="items">${(a.items || []).map(chip).join('')}</div></div>`; }).join('');
-  const taught = Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]);
+  const taught = y ? Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]) : [];
+  const noYear = y ? '' : `<div class="card setw"><h2>Which year are you in?</h2><p>Choose your year to see the work your teacher sets for it.</p><p style="margin-top:8px"><button class="btn" id="yrBtn2">Choose your year</button></p></div>`;
   const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
   const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
-  box.innerHTML = (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${setHtml}</div>` : '')
+  const staleNote = SCHOOL.stale ? `<p class="small muted" style="margin-bottom:6px">⚠️ Showing the copy saved on ${new Date(SCHOOL.savedAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}: the network wouldn't answer just now, so anything set since then is missing. Reload to try again.</p>` : '';
+  box.innerHTML = noYear + (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${staleNote}${setHtml}</div>` : staleNote ? `<div class="card">${staleNote}</div>` : '')
     + (taught.length ? `<div class="card covered"><h2>Covered in class</h2><p class="small muted" style="margin-bottom:8px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</div>` : '');
-  if (!set.length && !taught.length) box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p class="muted">Nothing set for Year ${y} right now.</p></div>`;
+  if (y && !set.length && !taught.length) box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p class="muted">Nothing set for you right now.</p></div>`;
+  if ($('yrBtn2')) $('yrBtn2').onclick = () => CBSYear.ask();
   slowNote();
 }
 /* never leave a student on "Loading your day…": if anything above throws (odd saved data), show a simple page instead */
@@ -248,7 +265,7 @@ function safeDraw() {
     console.error('To do', e);
     if (!QE.user) return;
     $('main').innerHTML = `<div class="hello"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div>
-      <div id="school"></div>
+      <div id="school"></div><div id="guides"></div>
       <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ Breadventure Land</a><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice</a></div>
       <p class="small muted" style="margin-top:8px">Part of this page couldn't load, so here's the short version.</p></div>`;
     drawSchool();

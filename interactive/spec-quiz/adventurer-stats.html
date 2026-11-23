@@ -68,6 +68,8 @@ h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppe
 <script src="spec.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
+<script src="diagq.js"></script>
+<script src="/js/course.js"></script>
 <script src="cards.js"></script>
 <script src="questing-engine.js"></script>
 <script src="adventurer-items.js"></script>
@@ -90,9 +92,27 @@ async function readLand() {
   } catch (e) { console.warn('Stats: shared world not read', e); }
 }
 
+/* the map's counters (GAME.tally, QE.tally on the map page): [key, label, section, sub-row] */
+const TALLIES = [
+  ['steps', 'Moves made', 'Exploring'],
+  ['attacks', 'Boss attacks made', 'Fighting', true], ['monsters', 'Small monsters beaten', 'Fighting', true], ['monsterQs', 'Monster questions answered', 'Fighting', true],
+  ['critters', 'Wild critters fended off', 'Fighting'], ['knockouts', 'Times knocked out', 'Fighting'],
+  ['floors', 'Dungeon floors cleared', 'Dungeons and treasure', true], ['mimics', 'Mimics found', 'Dungeons and treasure', true],
+  ['rests', 'Rests in the Cakelab', 'Odds and ends'], ['puddles', 'Puddle pokes', 'Odds and ends'], ['spells', 'Spells cast', 'Odds and ends'],
+  ['bought', 'Brews bought', 'Odds and ends'], ['brews', 'Brews drunk', 'Odds and ends'], ['helped', 'Times you helped another player', 'Odds and ends'],
+];
+const TALLY_KEYS = new Set(TALLIES.map(t => t[0]));
+const tallies = (R, T, sec) => TALLIES.filter(t => t[2] === sec).forEach(([k, label, , sub]) => R('land', label, T[k] || 0, null, '', !!sub));
+const pctOf = x => x.of ? Math.min(100, x.v / x.of * 100) : 0;
+const pctTxt = x => { const p = pctOf(x); return p >= 100 ? '100%' : p > 0 && p < 1 ? '<1%' : Math.floor(p) + '%'; };
 function build() {
   const P = QE.prog, G = QE.game, T = G.tally || {}, SEEN = G.seen || {}, st = QE.stats(), s = ADV.stats();
-  /* rows: [label, value, of (→ a bar, counts towards completion), note, sub] */
+  /* HOW TO ADD A STAT (22 Nov): one R(tab, label, value, of, note, sub) line.
+     - Give `of` (the total) for anything there's a fixed amount of: it shows as a percentage with a bar (never the total, so
+       students don't see how much is still to come) and counts towards Game completion. Sub-rows (sub = true) are breakdowns.
+     - Leave `of` out for an open-ended count (moves made, monsters beaten…): it shows as a plain number.
+     - A new map counter: call QE.tally('key') where it happens on the map page and add [key, label] to TALLIES below.
+       Any tally key not in TALLIES still shows (under "More") with its key as the label, so nothing is lost. */
   const sec = {};
   const R = (cat, label, v, of, note, sub) => (sec[cat] = sec[cat] || []).push({ label, v, of, note, sub });
   const H = (cat, label) => (sec[cat] = sec[cat] || []).push({ head: label });
@@ -136,42 +156,34 @@ function build() {
     const dungeons = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'dungeon'), hit = w.hit || {}, boss = BL.bossNow(w);
     const fought = bosses.filter(([k]) => (hit[k] || {})[uid]), beat = bosses.filter(([k]) => (hit[k] || {})[uid] && boss[k] === 0);
     H('land', 'Exploring');
-    R('land', 'Squares stepped on', walked.size, me.under ? all.length : surf.length, me.under ? '' : 'The Underworld adds ' + under.length + ' more once you dig through the mine');
+    R('land', 'Squares stepped on', walked.size, me.under ? all.length : surf.length, me.under ? '' : 'Something else opens up once you dig through the mine');
     R('land', 'Squares uncovered from the fog', all.filter(k => seen.has(k)).length, me.under ? all.length : surf.length, '', true);
     R('land', 'Regions walked in', regSeen.size, regions.size);
     R('land', 'Places found', places.filter(([k]) => seen.has(k)).length, places.length);
     R('land', 'Reached the Underworld', me.under ? 1 : 0, 1);
-    R('land', 'Moves made', T.steps || 0);
+    tallies(R, T, 'Exploring');
     H('land', 'Fighting');
     R('land', 'Bosses fought', fought.length, bosses.length);
     R('land', 'Bosses beaten (you were in the fight)', beat.length, bosses.length);
-    R('land', 'Boss attacks made', T.attacks || 0, null, '', true);
+    tallies(R, T, 'Fighting');
     R('land', 'Kinds of small monster beaten', dens.filter(([k]) => SEEN['m:' + k]).length, dens.length);
-    R('land', 'Small monsters beaten', T.monsters || 0, null, '', true);
-    R('land', 'Monster questions answered', T.monsterQs || 0, null, '', true);
-    R('land', 'Wild critters fended off', T.critters || 0);
-    R('land', 'Times knocked out', T.knockouts || 0);
     H('land', 'Dungeons and treasure');
     R('land', 'Dungeons cleared to the bottom', dungeons.filter(([k]) => SEEN['d:' + k]).length, dungeons.length);
-    R('land', 'Dungeon floors cleared', T.floors || 0, null, '', true);
     const chests = ['wood', 'silver', 'gold', 'cursed'].reduce((a, t) => a + (T['chest_' + t] || 0), 0);
     R('land', 'Treasure chests opened', chests);
     [['wood', 'Wooden'], ['silver', 'Silver'], ['gold', 'Golden'], ['cursed', 'Cursed']].forEach(([t, n]) => { if (T['chest_' + t]) R('land', n, T['chest_' + t], null, '', true); });
-    R('land', 'Mimics that bit you', T.mimics || 0, null, '', true);
+    tallies(R, T, 'Dungeons and treasure');
     H('land', 'Odds and ends');
-    R('land', 'Rests in the Cakelab', T.rests || 0);
-    R('land', 'Puddle pokes', T.puddles || 0);
-    R('land', 'Spells cast', T.spells || 0);
-    R('land', 'Brews bought', T.bought || 0);
-    R('land', 'Brews drunk', T.brews || 0);
-    R('land', 'Times you helped another player', T.helped || 0);
+    tallies(R, T, 'Odds and ends');
+    const extra = Object.keys(T).filter(k => !TALLY_KEYS.has(k) && !/^chest_/.test(k) && T[k]);
+    if (extra.length) { H('land', 'More'); extra.forEach(k => R('land', k.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()), T[k])); }
   }
 
   /* ---- collection ---- */
   const bag = new Set([...(G.bag || []), ...ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id)]);
   const items = ADV_ITEMS.filter(i => i.r !== 'legend');
   R('items', 'Items collected', items.filter(i => bag.has(i.id)).length, items.length, 'Missions, flashcards, dungeons, bosses and treasure chests');
-  ADV_SLOTS.forEach(sl => { const a = items.filter(i => i.slot === sl.k); R('items', sl.name, a.filter(i => bag.has(i.id)).length, a.length, '', true); });
+  ADV_GROUPS.forEach(sl => { const a = items.filter(i => i.slot === sl.k); R('items', sl.name, a.filter(i => bag.has(i.id)).length, a.length, '', true); });
   H('items', 'By rarity');
   Object.entries(ADV_RARITY).filter(([r]) => r !== 'legend').forEach(([r, n]) => { const a = items.filter(i => i.r === r); R('items', n, a.filter(i => bag.has(i.id)).length, a.length, '', true); });
   return sec;
@@ -181,8 +193,8 @@ const CATS = [['all', 'Summary'], ['rev', 'Revision'], ['land', 'Breadventure La
 function rowHTML(x) {
   if (x.head) return `<div class="h">${x.head}</div>`;
   const has = x.of != null, done = has && x.v >= x.of;
-  return `<div class="row${x.sub ? ' sub' : ''}${done ? ' done' : ''}"><span class="l">${x.label}</span><span class="v">${fmt(x.v)}${has ? ` <small>/ ${fmt(x.of)}</small>` : ''}</span>`
-    + (has ? `<div class="bar"><i style="width:${Math.min(100, x.of ? x.v / x.of * 100 : 0)}%"></i></div>` : '') + (x.note ? `<div class="n">${x.note}</div>` : '') + `</div>`;
+  return `<div class="row${x.sub ? ' sub' : ''}${done ? ' done' : ''}"><span class="l">${x.label}</span><span class="v">${has ? pctTxt(x) : fmt(x.v)}</span>`
+    + (has ? `<div class="bar"><i style="width:${pctOf(x)}%"></i></div>` : '') + (x.note ? `<div class="n">${x.note}</div>` : '') + `</div>`;
 }
 function render() {
   const sec = build();
@@ -198,7 +210,7 @@ function render() {
     + (sec.land ? '' : `<div class="h">Breadventure Land</div><div class="row"><span class="l">${QE.user ? 'Open Breadventure Land once to start your map stats.' : 'Sign in to see your Breadventure Land stats.'}</span></div>`);
   else h = (sec[tab] || []).map(rowHTML).join('') || `<div class="row"><span class="l">${tab === 'land' ? (QE.user ? 'Open Breadventure Land once to start your map stats.' : 'Sign in to see your Breadventure Land stats.') : 'Nothing yet.'}</span></div>`;
   $('panel').innerHTML = h;
-  $('note').textContent = tab === 'all' ? 'Game completion is the average of every bar on this page. The other tabs have the full counts.' : '';
+  $('note').textContent = tab === 'all' ? 'Game completion is the average of every bar on this page. The other tabs have the rest.' : '';
   $('tabs').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { tab = b.dataset.t; render(); });
 }
 render(); readLand(); QE.onChange(() => { readLand(); render(); });

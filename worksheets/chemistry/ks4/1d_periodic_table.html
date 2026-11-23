@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=820">
+<meta name="robots" content="noindex, nofollow">
+<meta name="author" content="Cakebread Science">
+<link rel="icon" type="image/png" href="/favicon.png">
+<title>1d · The Periodic Table</title>
+<link rel="stylesheet" href="../../../css/chemistry.css">
+<link rel="stylesheet" href="../../../css/print-sheet.css">
+<style>
+  .ps .grid td.ka { color: var(--ps-answer); font-weight: bold; background: var(--ps-answer-bg); }
+  .ps .grid td.ex, .ps .ex { color: var(--ps-example); font-style: italic; }
+  .ps .grid td.l, .ps .grid th.l { text-align: left; }
+  .ps .grid td.c { width: 30mm; }
+  .ps .rule { font-size: 9.5pt; }
+  .ps .rule b { color: var(--primary-color); }
+  .ps .bank { display: inline-block; border: 1px solid var(--accent-border); background: var(--accent-lighter); padding: .4mm 2mm; margin: .5mm .5mm; font-weight: bold; font-size: 9pt; }
+  .ps .gap { display: inline-block; border-bottom: 1px solid #111; width: 24mm; }
+  .ps .gap.s { width: 14mm; } .ps .gap.l { width: 40mm; }
+  .ps .fill { line-height: 2.1; font-size: 10pt; }
+  .ps .fig { text-align: center; }
+  .ps .q2 { margin-top: 1.6mm; }
+  .ps .qn { font-weight: bold; color: var(--primary-color); }
+  .ps .draw { border: 1px dashed #888; border-radius: 1.5mm; position: relative; }
+  .ps .draw .lbl { position: absolute; top: 1mm; left: 2mm; font-weight: bold; font-size: 10pt; }
+  .ps .draw .foot2 { position: absolute; bottom: 1mm; left: 2mm; right: 2mm; font-size: 8.5pt; color: #333; }
+  .ps .example { border: 1.5px solid var(--ps-example); border-radius: 2mm; padding: 1.5mm 3mm; color: #111; }
+  .ps .example .t { font-weight: bold; font-size: 9pt; text-transform: uppercase; letter-spacing: .5px; color: var(--ps-example); }
+  .ps .eqn { font-family: "Segoe UI", Arial, sans-serif; letter-spacing: .2px; }
+  .ps .box { border: 1.5px solid #111; display: inline-block; min-width: 9mm; height: 7mm; vertical-align: middle; }
+  .ps .steps3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2mm; }
+  .ps .step { border: 1px dashed #888; border-radius: 1.5mm; padding: 1mm 2mm; font-size: 9pt; color: #333; position: relative; }
+  .ps .step b { color: var(--primary-color); }
+  .ps sup, .ps sub { font-size: 70%; line-height: 0; }
+  .ps .nuc { display: inline-flex; align-items: center; }
+  .ps .nuc .ms { display: inline-flex; flex-direction: column; font-size: 70%; line-height: 1; text-align: right; margin-right: 1px; }
+  .ps .nuc sup { align-self: flex-start; margin-top: .3em; }
+  .ps .mk { float: right; font-size: 8.5pt; color: #333; font-weight: normal; }
+  .ps .grid.h7 td { height: 7mm; } .ps .grid.h8 td { height: 8mm; } .ps .grid.h10 td { height: 10mm; } .ps .grid.h12 td { height: 12mm; }
+  .ps .tiny { font-size: 8.5pt; color: #333; }
+  
+</style>
+</head>
+<body class="ps">
+<div class="screen-links"><a href="../../ks4.html">← KS4 worksheets</a><a href="1d_periodic_table_ms.html">Mark scheme →</a><span class="review-chip"></span></div>
+<div class="page">
+  <div class="header">
+    <div class="titles">
+      <h1>1d · The Periodic Table</h1>
+      <div class="ps-sub">IGCSE Edexcel Chemistry · KS4 · <span class="ctag">Double Award</span></div>
+      <div class="ps-spec">1.18–1.24 · spec sub-topic 1(d): groups and periods, electronic configurations, metals and non-metals, why groups react alike, noble gases</div>
+    </div>
+    <div class="name">Name: <span></span></div>
+  </div>
+  <div class="reminder">
+    <div class="title">Reminder</div>
+    <div class="two" style="grid-template-columns:1fr 32mm;align-items:center">
+    <div class="rule">Elements are arranged in order of <b>atomic number</b>. A column is a <b>group</b>; a row is a <b>period</b>.
+    Electrons fill shells in order: <b>2</b> in the first shell, then <b>8</b>, then <b>8</b> (for the first 20 elements). Sodium is <b>2.8.1</b>.<br>
+    <b>group number</b> = number of outer electrons &nbsp;·&nbsp; <b>period number</b> = number of shells</div>
+    <div class="fig"><svg viewBox="-58 -58 116 116" xmlns="http://www.w3.org/2000/svg" style="width:30mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-50.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Na</text></svg></div></div>
+  </div>
+  <h2>A &nbsp;Find your way around <small>the letters are not the chemical symbols</small></h2>
+  <div class="fig"><svg viewBox="-6 0 366 160" xmlns="http://www.w3.org/2000/svg" style="width:152mm;height:auto"><rect x="10" y="24" width="34" height="30" fill="#fff" stroke="#111" stroke-dasharray="4,3"/><rect x="316" y="24" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="10" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="44" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="146" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="180" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="214" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="248" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="282" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="316" y="54" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="10" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="44" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="146" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="180" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="214" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="248" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="282" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="316" y="84" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="10" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="44" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="146" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="180" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="214" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="248" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="282" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="316" y="114" width="34" height="30" fill="#fff" stroke="#111" stroke-width="1"/><rect x="78" y="114" width="68" height="30" fill="#eee" stroke="#111"/><text x="112" y="133" font-size="9" text-anchor="middle" font-family="Arial">transition metals</text><text x="333.0" y="45" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">P</text><text x="27.0" y="75" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">Q</text><text x="61.0" y="105" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">R</text><text x="197.0" y="75" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">S</text><text x="265.0" y="105" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">T</text><text x="333.0" y="75" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">U</text><text x="27.0" y="135" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">V</text><text x="299.0" y="105" font-size="16" font-weight="bold" text-anchor="middle" font-family="Arial" fill="#8c0013">W</text></svg></div>
+  <div class="q2"><span class="qn">A1.</span> Write the group numbers above the table and the period numbers down the side.</div>
+  <div class="q2"><span class="qn">A2.</span> Shade the area where the metals are, then answer using the letters.</div>
+  <table class="grid h10" style="margin-top:1mm">
+    <tr><td class="l" style="width:62%">Which two elements are in the same group?</td><td></td></tr>
+    <tr><td class="l">Which three elements are in Period 2?</td><td></td></tr>
+    <tr><td class="l">Which two elements are noble gases?</td><td></td></tr>
+    <tr><td class="l">Which three elements are metals?</td><td></td></tr>
+    <tr><td class="l">Which element has 7 outer electrons?</td><td></td></tr>
+    <tr><td class="l">Which element has 4 shells of electrons?</td><td></td></tr>
+  </table>
+  <div class="q2"><span class="qn">A3.</span> Write the electronic configuration of each lettered element.</div>
+  <table class="grid h12" style="margin-top:1mm"><tr><th>P</th><th>Q</th><th>R</th><th>S</th><th>T</th><th>U</th><th>V</th><th>W</th></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>
+  <div class="q2"><span class="qn">A4.</span> Element R is burned in oxygen and the oxide is added to water. Predict whether the solution is acidic or basic. Explain.<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">A5.</span> How many protons are in an atom of element W? How do you know?<span class="ans"></span></div>
+
+  <div class="foot">Side 1 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>B &nbsp;Electronic configurations <small>the first row is done for you</small></h2>
+  <table class="grid h10"><tr><th>element</th><th>atomic number</th><th>electronic configuration</th><th>group</th><th>period</th></tr><tr><td class="ex">sodium</td><td class="ex">11</td><td class="ex">2.8.1</td><td class="ex">1</td><td class="ex">3</td></tr><tr><td>oxygen</td><td>8</td><td></td><td></td><td></td></tr><tr><td>aluminium</td><td>13</td><td></td><td></td><td></td></tr><tr><td>nitrogen</td><td>7</td><td></td><td></td><td></td></tr><tr><td>argon</td><td>18</td><td></td><td></td><td></td></tr><tr><td>calcium</td><td>20</td><td></td><td></td><td></td></tr><tr><td>fluorine</td><td>9</td><td></td><td></td><td></td></tr><tr><td>phosphorus</td><td>15</td><td></td><td></td><td></td></tr><tr><td>beryllium</td><td>4</td><td></td><td></td><td></td></tr></table>
+  <div class="q2"><span class="qn">B2.</span> Draw the electrons on each shell diagram.</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:3mm;text-align:center;margin-top:1mm">
+    <div><svg viewBox="-44 -44 88 88" xmlns="http://www.w3.org/2000/svg" style="width:44mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">O</text></svg><div><b>oxygen</b> (8)</div></div><div><svg viewBox="-58 -58 116 116" xmlns="http://www.w3.org/2000/svg" style="width:44mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Mg</text></svg><div><b>magnesium</b> (12)</div></div><div><svg viewBox="-58 -58 116 116" xmlns="http://www.w3.org/2000/svg" style="width:44mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Cl</text></svg><div><b>chlorine</b> (17)</div></div><div><svg viewBox="-72 -72 144 144" xmlns="http://www.w3.org/2000/svg" style="width:44mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0" cy="0" r="64" fill="none" stroke="#111" stroke-width="1.2"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">K</text></svg><div><b>potassium</b> (19)</div></div>
+  </div>
+  <h2>C &nbsp;Working backwards <small>use the configuration to place the element</small></h2>
+  <table class="grid h10"><tr><th>electronic configuration</th><th>group</th><th>period</th><th>element</th></tr>
+    <tr><td>2.8.3</td><td></td><td></td><td></td></tr><tr><td>2.5</td><td></td><td></td><td></td></tr><tr><td>2.8.8.2</td><td></td><td></td><td></td></tr><tr><td>2.8.7</td><td></td><td></td><td></td></tr><tr><td>2.8.8</td><td></td><td></td><td></td></tr><tr><td>2.1</td><td></td><td></td><td></td></tr></table>
+  <div class="q2"><span class="qn">C2.</span> An element is in Group 3 and Period 2. Write its electronic configuration and name it.<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">C3.</span> Element Z has 3 shells and 6 outer electrons. Give its group, its period, its atomic number and its name.<span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 2 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>D &nbsp;Metal or non-metal? <small>use the evidence</small></h2>
+  <div class="reminder" style="margin-top:0"><div class="rule">Each element was burned in oxygen. The oxide was added to water with universal indicator.
+  Metal oxides are <b>basic</b> (pH above 7 if they dissolve); non-metal oxides are <b>acidic</b> (pH below 7). Metals also <b>conduct electricity</b>.</div></div>
+  <table class="grid h10"><tr><th class="l">element</th><th>pH of oxide in water</th><th>conducts electricity?</th><th>metal or non-metal?</th></tr>
+    <tr><td class="l">magnesium</td><td>10</td><td>yes</td><td></td></tr><tr><td class="l">sulfur</td><td>3</td><td>no</td><td></td></tr><tr><td class="l">sodium</td><td>13</td><td>yes</td><td></td></tr><tr><td class="l">phosphorus</td><td>2</td><td>no</td><td></td></tr><tr><td class="l">carbon (graphite)</td><td>5</td><td>yes</td><td></td></tr><tr><td class="l">calcium</td><td>12</td><td>yes</td><td></td></tr></table>
+  <div class="q2"><span class="qn">D2.</span> Graphite conducts electricity, but carbon is a non-metal. Which piece of evidence shows carbon is a non-metal? Explain.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">D3.</span> Which test is more reliable for deciding if an element is a metal? Explain.<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">D4.</span> Describe how you would test whether the oxide of an element is acidic or basic.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">D5.</span> Magnesium oxide is a metal oxide, so it is a <b>base</b>. Name one other type of substance a metal oxide will react with, and what forms.<span class="ans"></span><span class="ans"></span></div>
+  <h2>E &nbsp;True or false? <small>correct the false ones</small></h2>
+  <table class="grid h12"><tr><th class="l">statement</th><th style="width:16mm">T / F</th><th style="width:62mm">correction</th></tr>
+    <tr><td class="l">1. Elements in the same period have the same number of outer electrons.</td><td></td><td></td></tr><tr><td class="l">2. The group number of a main group element equals its number of outer electrons.</td><td></td><td></td></tr><tr><td class="l">3. Metals are found on the right of the Periodic Table.</td><td></td><td></td></tr><tr><td class="l">4. Elements are arranged in order of mass number.</td><td></td><td></td></tr><tr><td class="l">5. Most elements are metals.</td><td></td><td></td></tr><tr><td class="l">6. Helium is in Group 0 even though it has only 2 outer electrons.</td><td></td><td></td></tr></table>
+
+  <div class="foot">Side 3 of 4 · Turn over →</div>
+</div>
+<div class="page">
+  <h2>F &nbsp;Why do groups behave alike?</h2>
+  <div class="two" style="grid-template-columns:1fr 1fr 1fr;gap:3mm;text-align:center">
+    <div><svg viewBox="-44 -44 88 88" xmlns="http://www.w3.org/2000/svg" style="width:30mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-36.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Li</text></svg><div>lithium</div></div><div><svg viewBox="-58 -58 116 116" xmlns="http://www.w3.org/2000/svg" style="width:34mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-50.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Na</text></svg><div>sodium</div></div><div><svg viewBox="-72 -72 144 144" xmlns="http://www.w3.org/2000/svg" style="width:40mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-10.4" cy="-48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="48.9" cy="-10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="10.4" cy="48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-48.9" cy="10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="10.4" cy="-48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="48.9" cy="10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-10.4" cy="48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-48.9" cy="-10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="64" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-64.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">K</text></svg><div>potassium</div></div>
+  </div>
+  <div class="q2"><span class="qn">F1.</span> Lithium, sodium and potassium all react with water in a similar way. Use the diagrams to explain why.<span class="ans"></span><span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">F2.</span> What is <b>different</b> about the three atoms?<span class="ans"></span></div>
+  <div class="q2"><span class="qn">F3.</span> Fluorine is 2.7 and chlorine is 2.8.7. Would you expect them to react in a similar way? Explain.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">F4.</span> Oxygen (2.6) and sulfur (2.8.6) are in the same group. Nitrogen (2.5) and oxygen (2.6) are in the same period. Which pair has more similar chemical properties? Explain.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <h2>G &nbsp;The noble gases</h2>
+  <div class="two" style="grid-template-columns:1fr 1fr 1fr;gap:3mm;text-align:center">
+    <div><svg viewBox="-30 -30 60 60" xmlns="http://www.w3.org/2000/svg" style="width:22mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">He</text></svg><div>helium</div></div><div><svg viewBox="-44 -44 88 88" xmlns="http://www.w3.org/2000/svg" style="width:28mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Ne</text></svg><div>neon</div></div><div><svg viewBox="-58 -58 116 116" xmlns="http://www.w3.org/2000/svg" style="width:34mm;height:auto"><circle cx="0" cy="0" r="22" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="0.0" cy="-22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0.0" cy="22.0" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="36" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="7.5" cy="-35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="35.2" cy="7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-7.5" cy="35.2" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-35.2" cy="-7.5" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="0" cy="0" r="50" fill="none" stroke="#111" stroke-width="1.2"/><circle cx="-10.4" cy="-48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="48.9" cy="-10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="10.4" cy="48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-48.9" cy="10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="10.4" cy="-48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="48.9" cy="10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-10.4" cy="48.9" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><circle cx="-48.9" cy="-10.4" r="3.6" fill="#1f6fb2" stroke="#111" stroke-width=".6"/><text x="0" y="5" text-anchor="middle" font-size="15" font-weight="bold" font-family="Arial">Ar</text></svg><div>argon</div></div>
+  </div>
+  <div class="q2"><span class="qn">G1.</span> Explain why the noble gases do not readily react.<span class="ans"></span><span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">G2.</span> Argon is used to fill light bulbs instead of air. Suggest why.<span class="ans"></span><span class="ans"></span></div>
+  <div class="q2"><span class="qn">G3.</span> Element 19 comes straight after argon. Write its configuration and explain why it is in Group 1, not Group 0.<span class="ans"></span><span class="ans"></span><span class="ans"></span></div>
+
+  <div class="foot">Side 4 of 4</div>
+</div>
+<script src="/js/home-link.js" data-back="/worksheets/science.html#ks4" data-back-label="Science worksheets"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Study guide | Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+<!-- A study guide for students (22 Nov 2026): /guide/?id=<school/guides id>. Made in /admin/study-guide.html; drawn by
+     /js/study-guide.js with Revise buttons (15 questions in Practice or Cakebread Questing). Reading needs a signed-in account. -->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}[hidden]{display:none!important}
+body{font-family:'Barlow',Arial,sans-serif;background:#eeeae0;color:#111;line-height:1.4}
+main{max-width:900px;margin:0 auto;padding:18px 14px 60px}
+.paper{background:#fff;border:2px solid #111;padding:18px 20px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.btn{display:inline-block;background:#111;color:#fff;border:2px solid #111;padding:6px 14px;font:800 14px 'Barlow',Arial;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:#111}
+.note{background:#fff;border:2px solid #111;padding:18px;text-align:center}
+@media(max-width:600px){.paper{padding:12px}.sg-pts .sg-tick{display:none}}
+@media print{.cbs-sitebar,.bar,.cbs-home{display:none!important}body{background:#fff;padding-top:0!important}main{padding:0;max-width:none}.paper{border:0;padding:0}}
+</style>
+</head>
+<body>
+<main>
+  <div class="bar"><a class="btn ghost" href="/today/">← To do</a><button class="btn" id="printBtn" hidden>🖨 Print</button></div>
+  <div id="box"><div class="note">Loading the study guide…</div></div>
+</main>
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="/interactive/spec-quiz/spec.js"></script>
+<script src="/js/key-words.js"></script>
+<script src="/js/course.js"></script>
+<script src="/js/spec-point.js"></script>
+<script src="/js/study-guide.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="/js/account.js" data-bar></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id), id = new URLSearchParams(location.search).get('id');
+  const note = h => { $('box').innerHTML = `<div class="note">${h}</div>`; };
+  CBSGuide.style();
+  /* the guide once, with a time limit; the plain REST address as well in case the live connection is blocked */
+  async function get(u) {
+    const sdk = firebase.database().ref('school/guides/' + id).once('value').then(x => x.val());
+    const rest = (async () => { await new Promise(r => setTimeout(r, 1500)); const t = await u.getIdToken();
+      const r = await fetch(`${window.firebaseConfig.databaseURL}/school/guides/${encodeURIComponent(id)}.json?auth=${encodeURIComponent(t)}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error('rest ' + r.status); return r.json(); })();
+    const any = Promise.any ? Promise.any([sdk, rest]) : sdk;
+    return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), 15000); any.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
+  }
+  if (!id) return note('No study guide chosen. <a href="/today/">Back to To do</a>');
+  try {
+    if (!window.firebase || !window.firebaseConfig) throw new Error('no firebase');
+    if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
+    firebase.auth().onAuthStateChanged(async u => {
+      if (!u) return note('<b>Sign in</b> (top right) to see this study guide.');
+      try { const g = await get(u); if (!g) return note('This study guide has been taken down. <a href="/today/">Back to To do</a>');
+        document.title = (g.title || 'Study guide') + ' | Cakebread Science';
+        $('box').innerHTML = `<div class="paper">${CBSGuide.render(g, 'online')}</div>`; $('printBtn').hidden = false;
+      } catch (e) { note("Couldn't load the study guide just now. Check your connection and reload. If it keeps happening at school, the network may be blocking part of Firebase."); }
+    });
+  } catch (e) { note("Couldn't load the study guide just now (Firebase didn't load)."); }
+  $('printBtn').onclick = () => window.print();
+})();
+</script>
+</body>
+</html>

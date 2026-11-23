@@ -111,7 +111,7 @@
     const S = specOf(SUBJ[subject]), L = LET[subject];
     if (!FILTERS.some(f => f[0] === FILTER)) FILTER = 'all';
     root.innerHTML = `
-      <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE Science (Double Award)</div>
+      <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE ${window.CBSCourse ? CBSCourse.label : 'Science (Double Award)'}</div>
         <h1>${SUBJ[subject]}</h1>
         <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it: get its questions right on two different days in <a href="${Q}practice.html">Practice Questions</a> or Questing, or secure its flashcards. Your own rating just records how you feel.</p></div>
       <div class="tr-sum" id="trSum"></div>
@@ -121,7 +121,7 @@
         ${t.subs.map(sb => { const sk = L + t.n + sb.l;
           return `<div class="tr-sub" data-sub="${sk}"><h3><span class="sl">${t.n}${sb.l}</span> ${esc(sb.name)} <em class="cic" data-cic="${sk}" hidden>✓ Covered in class</em>
               ${sb.name !== 'Units' && CBSSchool.SUBS[sk] && CBSSchool.qsOf(sk).length ? `<a class="tr-subgo" href="${Q}practice.html?sub=${sk}">Practise ${t.n}${sb.l} →</a>` : ''}</h3>
-            ${sb.points.map(p => row(p, sk)).join('')}</div>`; }).join('')}
+            ${sb.points.map(p => (window.SPECPT ? SPECPT.heading(p) : '') + row(p, sk)).join('')}</div>`; }).join('')}
       </section>`).join('')}`;
     root.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { FILTER = b.dataset.f; root.querySelectorAll('[data-f]').forEach(x => x.classList.toggle('on', x === b)); applyFilter(); });
     root.addEventListener('click', e => {
@@ -135,7 +135,7 @@
     const groups = {}; res.forEach(([kind, title, url]) => (groups[kind] = groups[kind] || []).push(`<a href="${esc(url)}">${esc(title)}</a>`));
     return `<div class="tr-pt" id="${k}" data-k="${k}" data-sub="${sk}">
       <div class="tr-main"><a class="code" href="#${k}" title="Link to this spec point">${k.slice(1)}</a>
-        <div class="txt">${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}</div></div>
+        <div class="txt">${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</div></div>
       <div class="tr-side">
         <span class="pill" data-pill></span>
         <div class="conf" role="group" aria-label="How sure do you feel?"><button type="button" data-conf="1" title="Not yet">Not yet</button><button type="button" data-conf="2" title="Unsure">Unsure</button><button type="button" data-conf="3" title="Confident">Confident</button></div>
@@ -184,8 +184,8 @@
 
   /* ---------- overview page ---------- */
   function drawOverview() {
-    root.innerHTML = `<div class="tr-head"><div class="tr-kick">Edexcel International GCSE · Science (Double Award) and Maths</div><h1>Spec Trackers</h1>
-      <p class="tr-lede">Every spec point in one place, with how much you've proved, how sure you feel, and everything on the site that teaches it.</p></div>
+    root.innerHTML = `<div class="tr-head"><div class="tr-kick">Edexcel International GCSE · ${window.CBSCourse ? CBSCourse.label : 'Science (Double Award)'} and Maths</div><h1>Spec Trackers</h1>
+      <p class="tr-lede">Every spec point in one place, with how much you've proved, how sure you feel, and everything on the site that teaches it.${window.CBSCourse && CBSCourse.sa ? ` Your course is <b>Science (Single Award)</b>: only its spec points are shown. The exam is ${CBSCourse.exam}.` : ''}</p></div>
       <div class="ov">${['biology', 'chemistry', 'physics'].map(s => { const c = counts(LET[s]), q = c.total - c.na;
         return `<a class="ovc s-${s}" href="${s}.html"><h2>${SUBJ[s]}</h2>${bar(c)}<p><b>${c.secured}</b> of ${q} secured · ${c.learning} learning${c.rusty ? ` · ${c.rusty} rusty` : ''}</p>
           <p class="muted">${c.conf} rated confident${c.check ? ` · <b>${c.check} to check</b>` : ''}</p><span class="go">Open ${SUBJ[s]} →</span></a>`; }).join('')}
