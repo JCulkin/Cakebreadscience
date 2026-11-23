@@ -127,7 +127,8 @@
 .sg-rev{margin:6px 0 4px;font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .sg-rev.big{background:#f6f4ee;border:2px solid #111;padding:8px 10px;margin:0 0 8px}
 .sg-btn{display:inline-block;font:800 14px 'Barlow',Arial;background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;text-decoration:none;border-radius:4px}
-.sg-btn.q{background:#111;color:#fff}.sg-btn.sm{font-size:13px;padding:2px 9px}
+.sg-btn.q{background:#111;color:#fff}
+.sg-prog{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}.sg-bar{flex:0 1 220px;height:12px;border:1.5px solid #111;background:#ece7da;display:flex;overflow:hidden}.sg-bar i{display:block;height:100%}.sg-bar .s{background:#16a34a}.sg-bar .l{background:#facc15}.sg-btn.sm{font-size:13px;padding:2px 9px}
 @media print{.sg-rev{display:none}.sg{font-size:12px}.sg h1{font-size:28px}@page{size:A4;margin:12mm}}`;
   let styled = false;
   function style() { if (styled || typeof document === 'undefined') return; styled = true; const s = document.createElement('style'); s.textContent = CSS; document.head.appendChild(s); }
@@ -145,18 +146,32 @@
     if (window.CBSSchool && CBSSchool.rtGet) return (await CBSSchool.rtGet(rt, 'school/guides', 15000)) || {};
     return (await rt.ref('school/guides').once('value')).val() || {};
   }
-  /* To do: one card listing this student's study guides */
-  async function todo(el) {
-    if (!el || !window.firebase || !firebase.database) return;
+  /* how much of a guide this student has secured on the site (needs the Questing engine QE, as on To do) */
+  function progress(g) {
+    const Q = typeof QE !== 'undefined' ? QE : window.QE; if (!Q || !Q.POINT_QS || !Q.pointState) return null;   // QE is a top-level const, not on window
+    const keys = chosen(g).flatMap(x => x.pts.map(p => p.key)).filter(k => Q.POINT_QS[k]);
+    if (!keys.length) return null;
+    let sec = 0, started = 0;
+    keys.forEach(k => { const s = Q.pointState(k); if (s.secured) sec++; else if (s.started) started++; });
+    return { n: keys.length, sec, started };
+  }
+  /* To do: "Upcoming tests" (user, 23 Nov: rename; show how much is secured; the guide button says "Study guide").
+     pre = the guides already loaded (To do keeps them for 30 s so progress can redraw without another read) */
+  async function todo(el, pre) {
+    if (!el || (!pre && (!window.firebase || !firebase.database))) return null;
     style();
-    let all = null; try { all = await loadAll(firebase.database()); } catch (e) { el.innerHTML = ''; return; }
+    let all = pre || null;
+    if (!all) { try { all = await loadAll(firebase.database()); } catch (e) { el.innerHTML = ''; return null; } }
     const y = window.CBSYear && CBSYear.year, sa = !!(window.CBSCourse && CBSCourse.sa);
     const mine = forMe(all, y, sa);
-    if (!mine.length) { el.innerHTML = ''; return; }
-    el.innerHTML = `<div class="card"><h2>Study guides</h2><p class="small muted" style="margin-bottom:6px">What's in your test, with ${N} revision questions at a time on exactly those topics.</p>
-      ${mine.map(g => { const d = daysTo(g.date), k = tokens(chosen(g));
-        return `<div class="sg-row" style="border-top:1px solid #e3ddcf;padding:8px 0"><b style="font-size:16px">📖 ${esc(g.title || 'Study guide')}</b>${g.date ? ` <span class="small muted">· ${esc(fmtDate(g.date))}${d > 1 ? ` · in ${d} days` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}</span>` : ''}
-          <div class="sg-rev"><a class="sg-btn" style="background:#fff" href="/guide/?id=${encodeURIComponent(g.id)}">Open the guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}">⚔️ Revise in Questing</a></div></div>`; }).join('')}</div>`;
+    if (!mine.length) { el.innerHTML = ''; return all; }
+    el.innerHTML = `<div class="card"><h2>Upcoming tests</h2><p class="small muted" style="margin-bottom:6px">What's in each test, and ${N} revision questions at a time on exactly those spec points.</p>
+      ${mine.map(g => { const d = daysTo(g.date), k = tokens(chosen(g)), pr = progress(g);
+        const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
+          <span class="small"><b>${pr.sec} of ${pr.n}</b> spec points secured${pr.started ? ` · ${pr.started} started` : ''}${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
+        return `<div class="sg-row" style="border-top:1px solid #e3ddcf;padding:8px 0"><b style="font-size:16px">📖 ${esc(g.title || 'Test')}</b>${g.date ? ` <span class="small muted">· ${esc(fmtDate(g.date))}${d > 1 ? ` · in ${d} days` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}</span>` : ''}
+          ${bar}<div class="sg-rev"><a class="sg-btn" style="background:#fff" href="/guide/?id=${encodeURIComponent(g.id)}">📄 Study guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}">⚔️ Revise in Questing</a></div></div>`; }).join('')}</div>`;
+    return all;
   }
-  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, reviseUrl, fmtDate, daysTo, ADVICE };
+  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, progress, reviseUrl, fmtDate, daysTo, ADVICE };
 })();

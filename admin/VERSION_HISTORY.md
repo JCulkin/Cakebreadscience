@@ -9,7 +9,7 @@
 #### Changed
 - **Admin menu:** cleaner tabs with an underline for the current one; Leaderboards now sit inside **Games** and the Game showcase is opened from **Breadventure Land** (nothing removed; old #boards links open Games); Backup on its own on the right; the header has its own ← Website link instead of the floating home button
 - **Admin spec map:** columns show students' real names (first name and initial, full name on hover), not their Questing names
-- **To do:** study guides now come first (right under the greeting); **Covered in class** has moved into The spec box as a small closed section (📚 Covered in class · n sub-topics), opened with a tap
+- **To do:** the study guides card is now **Upcoming tests**: each test shows a bar and "n of m spec points secured" (and how many started) for that student, and the button to the online guide says **Study guide**; the card comes first (right under the greeting); **Covered in class** has moved into The spec box as a small closed section (📚 Covered in class · n sub-topics), opened with a tap
 
 #### Fixed
 
