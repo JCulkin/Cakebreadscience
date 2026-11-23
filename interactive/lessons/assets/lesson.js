@@ -249,7 +249,7 @@ function whenLoaded(img, f){ if(img.complete && img.naturalWidth) f(); else img.
 function matchBg(){
   $$('#stage .ps').forEach(p => {
     if(p.hasAttribute('data-nomatch') || p.classList.contains('tslide')) return;
-    const imgs = $$('img', p).filter(i => !i.closest('.linkcard,.ovs,.soft'));
+    const imgs = $$('img', p).filter(i => !i.closest('.linkcard,.ovs,.soft,.terms'));
     if(!imgs.length) return;
     let done = 0;
     imgs.forEach(img => whenLoaded(img, () => {
