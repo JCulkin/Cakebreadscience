@@ -18,7 +18,7 @@
 - **Full spec wording everywhere:** trackers, Practice and Review show the physics equations, the spec's scope notes, the long Biology 1.2–1.4 descriptions (behind "… more", 1.2 as Plants / Animals / Fungi / Protoctists tabs) and section labels such as "Flowering plants". Practice also shows the bullet points it was missing
 - **Set work:** edit work after setting it (title, years, sub-topics, number, due date, note), set work for students by name, an "All set work" view; the **To do** button turns red with a "!" and a count while a student has open work
 - Admin Students: choose and reorder the columns (remembered), new Questions attempted column and more optional columns
-- **Lessons:** Chemistry 1f Ionic bonding, Biology 1 Living organisms and Biology 2a checked; new drafts (under review) Biology 2b–2d, 2f; "Double Award only" / "Beyond GCSE" slide tags; Next slide ⏭ and ▦ All slides controls in projector mode (trial)
+- **Lessons:** Chemistry 1f Ionic bonding, Biology 1 Living organisms and Biology 2a checked; new drafts (under review) Biology 2b–2d, 2f, Chemistry 1a and 1g, and a reworked 1f draft (the checked 1f stays live); "Double Award only" / "Beyond GCSE" slide tags; Next slide ⏭ and ▦ All slides controls in projector mode (trial)
 
 #### Changed
 - **Admin menu tidied** (`/admin/admin-nav.js`): the side-scrolling tab bar is now four labelled groups that wrap (Students: Overview, Students, Spec map, Teaching · Content: Questions, Review, Study guides · Games: Leaderboards, Breadventure Land, Games, Game showcase · Site: Backup) and the same menu is on the Review, Study guides and Game showcase pages. Nothing removed.
@@ -27,6 +27,7 @@
 - **Checked stays checked:** an edit you ask for no longer sends a checked question, worksheet or lesson back to review (only changes made without your say-so do). Chemistry 1fg1 worksheets (KS4, Single Award, KS3) marked checked; Biology lesson 1 Living organisms checked again with its latest edits (version 20 Nov 2026)
 - Lessons: simpler lesson list (no Checked badge, review dates or how-it-works box); the ✎ Review notes system is gone; 1f Ionic bonding content updates (hydroxide replaces phosphate and more); Separate Science mentions removed
 - Sitemap: archived worksheets removed
+- Worksheets read in greyscale: atoms carry their symbols, ions their charges, chromatogram spots a letter; no overlapping atoms in chemistry drawings
 
 #### Fixed
 - Set work and To do reach the Realtime Database another way when a network blocks its live connection, and show the last saved copy if both fail
