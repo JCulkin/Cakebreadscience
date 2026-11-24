@@ -11,6 +11,7 @@
      school/review/q/{key} = { h, at, st: 'ok'|'fix', note }   key = question id with '.' → ','   (P3.2-01 → P3,2-01)
      school/review/w/{key} = { h, at, st, note }               key = path with '.' → ',' and '/' → '|'
      school/review/k/{key} = { h, at, st, note }               key = spec point with '.' → ','  (key words, 22 Nov)
+     school/review/l/{key} = { h, at, st, note, d }            key = 'biology|2b' (lessons, 24 Nov; h = the draft's visible text, d = its draftUpdated)
    Statuses: todo (never checked), changed (checked, then edited), fix (you said it needs fixing), ok (checked, unchanged). */
 (function () {
   const key = s => String(s).replace(/\./g, ',').replace(/\//g, '|');
@@ -59,10 +60,10 @@
   }
   async function loadReview(rt) {
     const get = async p => { try { return (window.CBSSchool && CBSSchool.rtGet) ? await CBSSchool.rtGet(rt, p, 15000) : (await rt.ref(p).once('value')).val(); } catch (e) { return null; } };
-    const [q, w, k, ap] = await Promise.all([get('school/review/q'), get('school/review/w'), get('school/review/k'),
+    const [q, w, k, l, ap] = await Promise.all([get('school/review/q'), get('school/review/w'), get('school/review/k'), get('school/review/l'),
       fetch('/admin/review-approved.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null)]);
     APPROVED = { q: (ap && ap.q) || {}, w: (ap && ap.w) || {}, k: (ap && ap.k) || {} };
-    return { q: q || {}, w: w || {}, k: k || {} };
+    return { q: q || {}, w: w || {}, k: k || {}, l: l || {} };
   }
   async function save(rt, kind, id, rec) { await rt.ref(`school/review/${kind}/${key(id)}`).set(rec); }
   async function clear(rt, kind, id) { await rt.ref(`school/review/${kind}/${key(id)}`).remove(); }

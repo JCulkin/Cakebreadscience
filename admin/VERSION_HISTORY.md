@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 #### Added
+- **Review → Lessons tab** (`/admin/review.html#lessons`): every lesson with its status (Checked / To review / Approved / Needs a fix / Changed since you checked), links to the draft, ▶ Present and the checked version, ✓ Good / ✏️ Needs a fix on the current draft, and **Copy for the lessons chat** to hand the marks over so approved drafts get frozen as checked
 - Lessons: **Physics tab** on the lessons page, and the first Physics lesson, **8 Astrophysics** (under review): structure of the universe, the solar system, orbits, gravitational field strength, orbital speed, how stars are born, star colours and the life cycles of stars; full-screen galaxy and nebula photos from the deck, own diagrams (universe, three kinds of orbit, orbital speed, star classes, both life cycles, gravity vs pressure), the 'You are still the Big Bang' artwork, all the deck's links, practice calculations with answers, quiz and exam questions
 - **Question difficulty levels (1–3):** every question in the bank has a level (1 recall, 2 explain/apply/calculate, 3 ★ several steps or a trap). Missions and Practice climb from level 1 to 3 (new questions about 40/40/20), dungeon floors get harder as you go down, XP is 5/7/10 by level, the quick quiz has level chips instead of the ★ tick box, and team points are 100/150/200. Admin Questions can filter by level, sort easiest first, and flags level 2–3 questions that 95%+ get right
 

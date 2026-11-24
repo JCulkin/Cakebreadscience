@@ -79,6 +79,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
 .wrow .acts .wgood{background:var(--ok);color:#fff;border-color:#0f5132}
 .wrow .acts .wfix{color:var(--fix);border-color:var(--fix)}
 .wrow .note{grid-column:2/-1;font-size:13.5px;color:var(--fix)}
+.filters .lcopy{margin-left:auto;background:#111;color:#fff;border-color:#111;border-radius:4px}.filters .lcopy:disabled{opacity:.35;cursor:default}
 .wband{margin:10px 0 4px;font:700 12px Barlow,Arial;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted)}
 @media(max-width:640px){.wrow{grid-template-columns:1fr}.wrow .acts{justify-content:flex-start}.qtext{font-size:18px}.good{font-size:28px}}
 .kwt{width:100%;border-collapse:collapse;margin:4px 0 6px;font-size:16px}.kwt th{text-align:left;font:700 12px Barlow,Arial;text-transform:uppercase;color:var(--muted);border-bottom:2px solid #111;padding:4px 6px}
@@ -90,11 +91,12 @@ main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
 <header><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Cakebread <span>Review</span></h1>
   <a class="back" href="/admin/">← Admin</a><div class="who" id="who"></div></header>
 <script src="/admin/admin-nav.js"></script>
-<nav class="tabs" id="tabs" hidden><button data-tab="q" class="on">Question bank</button><button data-tab="w">Worksheets</button><button data-tab="k">Key words</button></nav>
+<nav class="tabs" id="tabs" hidden><button data-tab="q" class="on">Question bank</button><button data-tab="w">Worksheets</button><button data-tab="l">Lessons</button><button data-tab="k">Key words</button></nav>
 <main>
   <div class="gate" id="gate"><h2>Review</h2><p id="gateMsg" class="muted" style="margin:10px 0 16px">Checking your account…</p><div id="gateBtn"></div></div>
   <section class="panel" id="p-q"></section>
   <section class="panel" id="p-w"></section>
+  <section class="panel" id="p-l"></section>
   <section class="panel" id="p-k"></section>
 </main>
 
@@ -117,7 +119,7 @@ main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
 /* Page state is RV (not T/M/G/R — those are question-bank globals). */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const RV = { recs: { q: {}, w: {}, k: {} }, reps: {}, qs: [], filter: 'todo', subj: '', sub: '', list: [], i: 0, sheets: null, wfilter: 'todo', user: null,
+const RV = { recs: { q: {}, w: {}, k: {}, l: {} }, lessons: null, lfilter: 'todo', reps: {}, qs: [], filter: 'todo', subj: '', sub: '', list: [], i: 0, sheets: null, wfilter: 'todo', user: null,
   kf: 'todo', ksubj: '', klist: [], ki: 0 };   // k… = key words tab
 firebase.initializeApp(window.firebaseConfig);
 const auth = firebase.auth(), RT = firebase.database();
@@ -139,14 +141,14 @@ auth.onAuthStateChanged(async u => {
   const [recs, reps] = await Promise.all([REVIEW.loadReview(RT), RT.ref('specQuizReports').once('value').then(x => x.val() || {}).catch(() => ({}))]);
   RV.recs = recs; RV.reps = {};
   Object.entries(reps).forEach(([k, r]) => { if (r && !r.resolved && r.qid) (RV.reps[r.qid] = RV.reps[r.qid] || []).push(r); });
-  tab(location.hash === '#worksheets' ? 'w' : location.hash === '#keywords' ? 'k' : 'q');
+  tab(({ '#worksheets': 'w', '#keywords': 'k', '#lessons': 'l' })[location.hash] || 'q');
 });
 document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => tab(b.dataset.tab));
 function tab(t) {
   document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + t));
-  history.replaceState(null, '', t === 'w' ? '#worksheets' : t === 'k' ? '#keywords' : '#questions');
-  if (t === 'q') { buildList(); drawQ(); } else if (t === 'k') { buildK(); drawK(); } else drawW();
+  history.replaceState(null, '', ({ w: '#worksheets', k: '#keywords', l: '#lessons' })[t] || '#questions');
+  if (t === 'q') { buildList(); drawQ(); } else if (t === 'k') { buildK(); drawK(); } else if (t === 'l') drawL(); else drawW();
 }
 
 /* ---------- question bank ---------- */
@@ -297,6 +299,79 @@ function keyK(e) {
   if (e.key === 'Enter' || e.key === 'g') { e.preventDefault(); if ($('kgood')) markK('ok'); }
   else if (e.key === 'f') { e.preventDefault(); if ($('kfixb')) $('kfixb').click(); }
   else if (e.key === 'ArrowRight') moveK(1); else if (e.key === 'ArrowLeft') moveK(-1);
+}
+
+/* ---------- lessons (24 Nov). User: "within review in the admin tab, Lessons should have its own tab alongside questions and
+   key words". Lessons keep their own lifecycle (lessons chat, interactive/lessons/lessons.json: draft "Under review" → frozen
+   checked versions by tools/lessons/freeze.py). Here the user checks the current DRAFT: ✓ Good / Needs a fix, saved in
+   school/review/l with a fingerprint of the draft's visible text, so any edit to the draft shows "Changed since you checked".
+   The lessons chat can't read the database, so "Copy for the lessons chat" turns the marks into a message to paste there. ---------- */
+const LSUBJ = { biology: 'Biology', chemistry: 'Chemistry', physics: 'Physics' };
+const lkey = (subj, code) => subj + '|' + code;
+async function loadLessons(onProgress) {
+  const d = await (await fetch('/interactive/lessons/lessons.json', { cache: 'no-store' })).json();
+  const out = [];
+  (d.subjects || []).forEach(s => (s.sections || []).forEach(sec => (sec.topics || []).forEach(t => { if (t.status) out.push({ subj: s.id, code: t.code, title: t.title, spec: t.spec, status: t.status, draftUpdated: t.draftUpdated || '', versions: t.versions || [], url: `/interactive/lessons/${s.id}/${t.code}/` }); })));
+  let done = 0;
+  await Promise.all(out.map(async L => { const html = await fetch(L.url + 'draft/', { cache: 'no-cache' }).then(r => r.ok ? r.text() : '').catch(() => '');
+    L.missing = !html; L.h = REVIEW.hash(REVIEW.textOf(html)); done++; if (onProgress) onProgress(done, out.length); }));
+  return out;
+}
+/* a lesson needs your check when its draft is newer than its last checked version (or it has none) */
+const lNeeds = L => L.status !== 'checked' || !L.versions.length || (L.draftUpdated && L.draftUpdated > L.versions[L.versions.length - 1]);
+function lSt(L) {
+  if (!lNeeds(L)) return 'checked';
+  const r = RV.recs.l[REVIEW.key(lkey(L.subj, L.code))];
+  return !r ? 'todo' : r.h !== L.h ? 'changed' : r.st === 'fix' ? 'fix' : 'ok';
+}
+const LLABEL = { checked: 'Checked ✓', ok: 'Approved ✓', fix: 'Needs a fix', changed: 'Changed', todo: 'To review' };
+async function drawL(msg) {
+  const box = $('p-l');
+  if (!RV.lessons) {
+    box.innerHTML = '<p class="muted" id="lload">Reading the lessons…</p>';
+    try { RV.lessons = await loadLessons((d, n) => { const e = $('lload'); if (e) e.textContent = `Reading the lessons… ${d} of ${n}`; }); }
+    catch (e) { box.innerHTML = '<p>Couldn\'t load the lesson list (/interactive/lessons/lessons.json).</p>'; return; }
+  }
+  const S = RV.lessons;
+  const c = { checked: 0, ok: 0, fix: 0, changed: 0, todo: 0 }; S.forEach(L => c[lSt(L)]++);
+  const want = { todo: s => s === 'todo' || s === 'changed', ok: s => s === 'ok', fix: s => s === 'fix', checked: s => s === 'checked', all: () => true }[RV.lfilter];
+  const F = [['todo', `To review (${c.todo + c.changed})`], ['ok', `Approved, not frozen yet (${c.ok})`], ['fix', `Needs a fix (${c.fix})`], ['checked', `Checked (${c.checked})`], ['all', `All (${S.length})`]];
+  const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+  const rows = Object.keys(LSUBJ).map(sj => {
+    const all = S.filter(L => L.subj === sj); if (!all.length) return '';
+    const list = all.filter(L => want(lSt(L)));
+    return `<div class="wsub">${LSUBJ[sj]} <span class="muted small" style="font-family:Barlow;text-transform:none">${all.filter(L => lSt(L) === 'checked').length} of ${all.length} checked</span></div>`
+      + (list.length ? list.map(L => { const st = lSt(L), r = RV.recs.l[REVIEW.key(lkey(L.subj, L.code))], last = L.versions[L.versions.length - 1];
+        const chip = { checked: 'ok', ok: 'ok', fix: 'fix', changed: 'changed', todo: 'todo' }[st];
+        return `<div class="wrow" data-l="${esc(lkey(L.subj, L.code))}"><span><span class="st ${chip}">${LLABEL[st]}</span></span>
+          <span class="t"><b>${esc(L.code)} · ${esc(L.title)}</b><small>Spec ${esc(L.spec || '')}${L.draftUpdated ? ` · draft updated ${fmt(L.draftUpdated)}` : ''}${last ? ` · checked version ${fmt(last)}` : ' · no checked version yet'}${L.missing ? ' · ⚠️ draft page not found' : ''}${st === 'ok' && r ? ` · you approved this draft ${new Date(r.at).toLocaleDateString('en-GB')}; the lessons chat freezes it as checked when you send it the list` : ''}${st === 'changed' ? ' · the draft changed since you checked it' : ''}</small>
+            <small><a href="${L.url}draft/" target="_blank">Open draft</a> · <a href="${L.url}draft/#present" target="_blank">▶ Present draft</a>${last ? ` · <a href="${L.url}v${last}/" target="_blank">Checked version</a>` : ''}</small></span>
+          <span class="acts">${st === 'checked' ? '' : st !== 'ok' ? '<button class="wgood">✓ Good</button>' : '<button class="wun">Send back</button>'}${st === 'checked' ? '' : '<button class="wfix">✏️ Needs a fix</button>'}</span>
+          ${r && r.note && (st === 'fix' || st === 'changed') ? `<span class="note">Your note: “${esc(r.note)}”</span>` : ''}</div>`; }).join('')
+        : '<p class="muted small">Nothing in this list.</p>');
+  }).join('');
+  const toSend = S.filter(L => ['ok', 'fix'].includes(lSt(L)));
+  box.innerHTML = `<div class="sum"><div class="chips"><span><b>${c.checked}</b> of ${S.length} lessons checked</span><span><b>${c.todo + c.changed}</b> drafts to review</span><span><b style="color:var(--ok)">${c.ok}</b> approved, not frozen yet</span><span><b style="color:var(--fix)">${c.fix}</b> need a fix</span></div></div>
+    <div class="filters">${F.map(([k, t]) => `<button data-lf="${k}" class="${RV.lfilter === k ? 'on' : ''}">${t}</button>`).join('')}
+      <button class="lcopy" id="lCopy" ${toSend.length ? '' : 'disabled'}>📋 Copy for the lessons chat (${toSend.length})</button></div>
+    <p class="small muted" style="margin-bottom:6px">Open the draft (or present it), then ✓ Good or ✏️ Needs a fix with slide numbers. Your marks are kept here; paste the copied list into the lessons chat so it freezes approved drafts as checked and fixes the rest. Any change to a draft shows up as "Changed since you checked".</p>
+    ${msg ? `<p class="saved">${msg}</p>` : ''}${rows}`;
+  box.querySelectorAll('[data-lf]').forEach(b => b.onclick = () => { RV.lfilter = b.dataset.lf; drawL(); });
+  $('lCopy').onclick = async () => {
+    const ok = toSend.filter(L => lSt(L) === 'ok'), fx = toSend.filter(L => lSt(L) === 'fix');
+    const t = ['Review portal → Lessons (' + new Date().toLocaleDateString('en-GB') + '):',
+      ok.length ? 'Mark checked (freeze the current draft): ' + ok.map(L => `${L.subj}/${L.code} (draft ${L.draftUpdated})`).join(', ') + '.' : '',
+      ...fx.map(L => `Needs a fix — ${L.subj}/${L.code}: ${(RV.recs.l[REVIEW.key(lkey(L.subj, L.code))] || {}).note || ''}`)].filter(Boolean).join('\n');
+    try { await navigator.clipboard.writeText(t); drawL('Copied. Paste it into the lessons chat.'); } catch (e) { prompt('Copy this for the lessons chat:', t); }
+  };
+  box.querySelectorAll('.wrow[data-l]').forEach(row => {
+    const L = S.find(x => lkey(x.subj, x.code) === row.dataset.l);
+    const set = async (st, note) => { const rec = { h: L.h, d: L.draftUpdated, at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 1000);
+      try { await REVIEW.save(RT, 'l', lkey(L.subj, L.code), rec); RV.recs.l[REVIEW.key(lkey(L.subj, L.code))] = rec; drawL(); } catch (e) { alert('Not saved — check your connection.'); } };
+    const g = row.querySelector('.wgood'); if (g) g.onclick = () => set('ok');
+    const u = row.querySelector('.wun'); if (u) u.onclick = async () => { await REVIEW.clear(RT, 'l', lkey(L.subj, L.code)); delete RV.recs.l[REVIEW.key(lkey(L.subj, L.code))]; drawL(); };
+    const f = row.querySelector('.wfix'); if (f) f.onclick = () => { const n = prompt(`What needs fixing in ${L.subj} ${L.code}? (slide numbers help)`, (RV.recs.l[REVIEW.key(lkey(L.subj, L.code))] || {}).note || ''); if (n !== null) set('fix', n); };
+  });
 }
 
 /* ---------- worksheets ---------- */
