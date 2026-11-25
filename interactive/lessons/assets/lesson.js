@@ -193,7 +193,7 @@ function deck(){
   });
   addEventListener('keydown', e => {
     if(!isP() || e.target.closest('textarea,input')) return;
-    const v2 = body.dataset.deckUi === 'v2';
+    const v2 = body.dataset.deckUi !== 'v1';
     if(ovOpen()){ if(e.key==='Escape'||e.key==='g'||e.key==='G'){ e.preventDefault(); ovClose(); } return; }
     if(v2 && e.shiftKey && e.key==='ArrowRight'){ e.preventDefault(); nextSlide(); }
     else if(v2 && e.shiftKey && e.key==='ArrowLeft'){ e.preventDefault(); prevSlide(); }

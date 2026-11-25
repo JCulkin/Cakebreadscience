@@ -200,9 +200,8 @@ details.specbox ol{margin:8px 0 0 0;list-style:none}
 details.specbox li{margin:5px 0;display:grid;grid-template-columns:44px 1fr}
 details.specbox li b{color:var(--acc)}
 
-/* presenter v2: next-slide button + all-slides overview (opt-in: <body data-deck-ui="v2">) */
-.dbar button.v2only{display:none}
-body[data-deck-ui="v2"] .dbar button.v2only{display:inline-block}
+/* presenter v2: next-slide button + all-slides overview (enabled on all lessons) */
+.dbar button.v2only{display:inline-block}
 .dbar #dNextS,.dbar #dAll{background:#3a3a3a}
 #overview{position:fixed;inset:0;z-index:58;background:#111;overflow:auto;display:none;padding:0 18px 30px}
 #overview.on{display:block}
