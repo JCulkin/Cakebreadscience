@@ -4,7 +4,9 @@ description: Release checklist for merging staging into main (publishing the sit
 ---
 # Releasing staging → main
 
-Only when the user says **"release" / "publish to main"**. Each production deploy costs 15 Netlify credits (300 a month,
+**Release-chat only:** Only the dedicated Antigravity release chat (`Cakebread Science - Release (staging -> main)`) may merge
+`staging` → `main` or trigger a production deploy, and only when the user says **"release" / "publish to main"**. All other chats
+must stop at `staging` and direct the user to the release chat to publish. Each production deploy costs 15 Netlify credits (300 a month,
 renewing on the 29th); previews are free. Versions: major = platform change, minor = new feature, patch = fixes/content.
 Last release: **v5.1.0 "Worksheets, study guides and the Review portal"** (23 Nov 2026, PR #7). Next PR: #8.
 

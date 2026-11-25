@@ -16,7 +16,9 @@ something different now, the user wins** — and say so, so the rules can be upd
 
 ## Hard rules (never break these)
 1. **Never push or merge to `main`.** Work on `staging`. `main` deploys live and costs Netlify credits (15 per deploy, 300 a month,
-   renews on the 29th). Only merge when the user says **"release"** / **"publish to main"** (checklist: `.agents/rules/release.md`).
+   renews on the 29th). **Only the dedicated Antigravity release chat** (`Cakebread Science - Release (staging -> main)`) may merge
+   `staging` → `main` or trigger a production deploy, and only when the user says **"release"** / **"publish to main"** (checklist:
+   `.agents/rules/release.md`). All other chats (lessons, flashcards, worksheets, questing, etc.) work on `staging` only.
 2. **Past-paper material (Pearson copyright) never goes in this repo, on the website or in anything published**: real exam
    questions, mark schemes, their diagrams or scans. The repo is public and Netlify serves every file. Questions *in the style of*
    past papers that we wrote ourselves are fine. (The exam-building tool is local-only: `.agents/rules/exams-local.md`.)
