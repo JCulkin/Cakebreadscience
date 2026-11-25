@@ -20,6 +20,7 @@
 - **To do:** the study guides card is now **Upcoming tests**: each test shows a bar and "n of m spec points secured" (and how many started) for that student, and the button to the online guide says **Study guide**; the card comes first (right under the greeting); **Covered in class** has moved into The spec box as a small closed section (📚 Covered in class · n sub-topics), opened with a tap
 
 #### Fixed
+- **Admin Review (`← Back` button):** pressing Back (or `←`) while checking questions or key words now returns to the item you just checked/marked (and `Skip →` steps back forward), instead of wrapping to the end of the remaining list after the checked item dropped out
 
 ---
 

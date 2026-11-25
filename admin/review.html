@@ -119,8 +119,8 @@ main{max-width:1000px;margin:0 auto;padding:18px 18px 60px}
 /* Page state is RV (not T/M/G/R — those are question-bank globals). */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const RV = { recs: { q: {}, w: {}, k: {}, l: {} }, lessons: null, lfilter: 'todo', reps: {}, qs: [], filter: 'todo', subj: '', sub: '', list: [], i: 0, sheets: null, wfilter: 'todo', user: null,
-  kf: 'todo', ksubj: '', klist: [], ki: 0 };   // k… = key words tab
+const RV = { recs: { q: {}, w: {}, k: {}, l: {} }, lessons: null, lfilter: 'todo', reps: {}, qs: [], filter: 'todo', subj: '', sub: '', list: [], i: 0, cur: null, hist: [], fwd: [], sheets: null, wfilter: 'todo', user: null,
+  kf: 'todo', ksubj: '', klist: [], ki: 0, kcur: null, khist: [], kfwd: [] };   // k… = key words tab
 firebase.initializeApp(window.firebaseConfig);
 const auth = firebase.auth(), RT = firebase.database();
 const SUBJ = { B: 'Biology', C: 'Chemistry', P: 'Physics' };
@@ -153,10 +153,13 @@ function tab(t) {
 
 /* ---------- question bank ---------- */
 const stOf = x => REVIEW.statusQ(RV.recs.q, x.q.id, x.h);
+const qWant = () => ({ todo: s => s === 'todo' || s === 'changed', changed: s => s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.filter]);
 function buildList(keepId) {
-  const want = { todo: s => s === 'todo' || s === 'changed', changed: s => s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.filter];
+  const want = qWant();
   RV.list = RV.qs.filter(x => (!RV.subj || x.q.s[0] === RV.subj) && (!RV.sub || (POINTS[x.q.s] || {}).sub === RV.sub) && want(stOf(x)));
   RV.i = keepId ? Math.max(0, RV.list.findIndex(x => x.q.id === keepId)) : 0;
+  RV.cur = RV.list[RV.i] || null;
+  RV.hist = []; RV.fwd = [];
 }
 function summary(c, noun) {
   const t = c.total || 1;
@@ -166,28 +169,36 @@ function summary(c, noun) {
 function drawQ(msg) {
   const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: RV.qs.length }; RV.qs.forEach(x => c[stOf(x)]++);
   const F = [['todo', `To review (${c.todo + c.changed})`], ['changed', `Changed (${c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', 'All']];
-  const x = RV.list[RV.i];
+  const x = RV.cur;
   $('p-q').innerHTML = summary(c, 'questions') + `<div class="filters">${F.map(([k, t]) => `<button data-f="${k}" class="${RV.filter === k ? 'on' : ''}">${t}</button>`).join('')}
       <select id="fSubj"><option value="">All subjects</option>${Object.entries(SUBJ).map(([k, v]) => `<option value="${k}" ${RV.subj === k ? 'selected' : ''}>${v}</option>`).join('')}</select>
       <select id="fSub"><option value="">All sub-topics</option>${SUBS.filter(([k]) => !RV.subj || k[0] === RV.subj).map(([k, v]) => `<option value="${k}" ${RV.sub === k ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>
       <input id="fGo" placeholder="Go to id, e.g. P3.3-07" size="18"></div>
-    ${x ? card(x) : `<div class="done">🎉 Nothing ${RV.filter === 'all' ? 'here' : 'left in this list'}.${RV.filter === 'todo' && (RV.subj || RV.sub) ? ' Try another subject or sub-topic.' : ''}</div>`}
+    ${x ? card(x) : `<div class="done">🎉 Nothing ${RV.filter === 'all' ? 'here' : 'left in this list'}.${RV.filter === 'todo' && (RV.subj || RV.sub) ? ' Try another subject or sub-topic.' : ''}${RV.hist.length ? '<div style="margin-top:14px"><button class="btn ghost" id="back">← Back to previous question</button></div>' : ''}</div>`}
     ${msg ? `<p class="saved" style="margin-top:8px">${msg}</p>` : ''}`;
   document.querySelectorAll('#p-q [data-f]').forEach(b => b.onclick = () => { RV.filter = b.dataset.f; buildList(); drawQ(); });
   $('fSubj').onchange = e => { RV.subj = e.target.value; RV.sub = ''; buildList(); drawQ(); };
   $('fSub').onchange = e => { RV.sub = e.target.value; buildList(); drawQ(); };
   $('fGo').onkeydown = e => { if (e.key !== 'Enter') return; e.preventDefault(); e.stopPropagation(); const id = e.target.value.trim(); const j = RV.qs.findIndex(y => y.q.id.toLowerCase() === id.toLowerCase());
     if (j < 0) { e.target.style.borderColor = 'var(--fix)'; return; } RV.filter = 'all'; RV.subj = ''; RV.sub = ''; buildList(RV.qs[j].q.id); drawQ(); };
+  if ($('back')) $('back').onclick = () => move(-1);
   if (!x) return;
   $('good').onclick = () => mark('ok');
   $('fixb').onclick = () => { $('fixbox').hidden = false; $('fixNote').focus(); };
   $('fixSave').onclick = () => mark('fix', $('fixNote').value.trim());
-  $('skip').onclick = () => move(1); $('back').onclick = () => move(-1);
+  $('skip').onclick = () => move(1);
   if ($('again')) $('again').onclick = () => drawQ();
-  if ($('unmark')) $('unmark').onclick = async () => { await REVIEW.clear(RT, 'q', x.q.id); delete RV.recs.q[REVIEW.key(x.q.id)]; drawQ('Sent back to review.'); };
+  if ($('unmark')) $('unmark').onclick = async () => {
+    await REVIEW.clear(RT, 'q', x.q.id);
+    delete RV.recs.q[REVIEW.key(x.q.id)];
+    if (qWant()(stOf(x)) && RV.list.indexOf(x) < 0) RV.list.splice(RV.i, 0, x);
+    drawQ('Sent back to review.');
+  };
 }
 function card(x) {
   const q = x.q, P = POINTS[q.s] || {}, st = stOf(x), rec = RV.recs.q[REVIEW.key(q.id)], reps = RV.reps[q.id] || [];
+  const inList = RV.list.indexOf(x);
+  const posTxt = inList >= 0 ? `${inList + 1} of ${RV.list.length} in this list` : `Previously reviewed · ${RV.list.length} left in list`;
   const type = q.dg ? '🖼️ Diagram' : q.gen ? '🎲 Calculation (new numbers each time)' : q.tf !== undefined ? 'True / false' : 'Multiple choice';
   const one = d => {
     const fig = d.svg && window.DQ ? DQ.fig(d) : '';
@@ -202,7 +213,7 @@ function card(x) {
   } else body = one(q);
   return `<div class="qcard">
     <div class="qtop"><span class="qid">${esc(q.id)}</span><span class="st ${st}">${REVIEW.LABEL[st]}</span><span class="tag">${type}</span>${q.lv ? `<span class="tag">Level ${q.lv}${q.lv === 3 ? ' ★' : ''}</span>` : ''}
-      <span class="pos">${RV.i + 1} of ${RV.list.length} in this list</span></div>
+      <span class="pos">${posTxt}</span></div>
     <div class="spec"><b>${esc(q.s)}</b> ${esc(strip(P.p ? P.p.text : ''))}${P.p && P.p.bullets ? ': ' + esc(P.p.bullets.join('; ')) : ''}${P.sub ? ` <span class="muted">· ${esc(P.sub)} ${esc(P.subName)}</span>` : ''}${P.p && window.SPECPT ? SPECPT.extras(P.p) : ''}</div>
     ${st === 'changed' ? `<div class="prev">✏️ <b>Changed since you checked it</b> on ${new Date(rec.at).toLocaleDateString('en-GB')}${rec.st === 'fix' && rec.note ? ` (you'd asked: “${esc(rec.note)}”)` : ''}. Check the new version.</div>` : ''}
     ${st === 'ok' && (!rec || rec.h !== x.h) && REVIEW.keptQ(q.id) ? `<div class="prev" style="border-color:var(--ok);background:#ecfdf3">✓ Kept checked after the edit you asked for${REVIEW.keptQ(q.id).at ? ` (${esc(REVIEW.keptQ(q.id).at)})` : ''}${REVIEW.keptQ(q.id).why ? `: ${esc(REVIEW.keptQ(q.id).why)}` : ''}.</div>` : ''}
@@ -217,18 +228,56 @@ function card(x) {
   </div>`;
 }
 async function mark(st, note) {
-  const x = RV.list[RV.i]; if (!x) return;
+  const x = RV.cur; if (!x) return;
   const rec = { h: x.h, at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 500);
   try { await REVIEW.save(RT, 'q', x.q.id, rec); } catch (e) { alert('Not saved — check your connection. (' + e.message + ')'); return; }
   RV.recs.q[REVIEW.key(x.q.id)] = rec;
+  RV.hist.push(x); if (RV.hist.length > 200) RV.hist.shift();
   /* in the To review list the item drops out, so the next one slides into place; elsewhere move on */
   const stays = RV.filter === 'all' || RV.filter === st;
-  if (stays) RV.i++; else RV.list.splice(RV.i, 1);
+  const idx = RV.list.indexOf(x);
+  if (idx >= 0) {
+    if (stays) RV.i = idx + 1; else { RV.list.splice(idx, 1); RV.i = idx; }
+  }
   if (RV.i >= RV.list.length) RV.i = Math.max(0, RV.list.length - 1);
+  if (RV.fwd.length) {
+    RV.cur = RV.fwd.pop();
+    const ni = RV.list.indexOf(RV.cur); if (ni >= 0) RV.i = ni;
+  } else {
+    RV.cur = RV.list[RV.i] || null;
+  }
   drawQ(st === 'ok' ? `✓ ${x.q.id} checked` : `✏️ ${x.q.id} marked as needing a fix`);
   window.scrollTo({ top: 0 });
 }
-function move(d) { if (!RV.list.length) return; RV.i = (RV.i + d + RV.list.length) % RV.list.length; drawQ(); window.scrollTo({ top: 0 }); }
+function move(d) {
+  if (d < 0) {
+    if (RV.hist.length) {
+      if (RV.cur) RV.fwd.push(RV.cur);
+      RV.cur = RV.hist.pop();
+      const idx = RV.list.indexOf(RV.cur); if (idx >= 0) RV.i = idx;
+    } else {
+      if (!RV.list.length) return;
+      RV.i = (RV.i - 1 + RV.list.length) % RV.list.length;
+      RV.cur = RV.list[RV.i];
+    }
+  } else {
+    if (RV.fwd.length) {
+      if (RV.cur) { RV.hist.push(RV.cur); if (RV.hist.length > 200) RV.hist.shift(); }
+      RV.cur = RV.fwd.pop();
+      const idx = RV.list.indexOf(RV.cur); if (idx >= 0) RV.i = idx;
+    } else if (!RV.list.length) {
+      if (!RV.cur) return;
+      RV.hist.push(RV.cur); if (RV.hist.length > 200) RV.hist.shift();
+      RV.cur = null;
+    } else {
+      const idx = RV.list.indexOf(RV.cur);
+      if (RV.cur) { RV.hist.push(RV.cur); if (RV.hist.length > 200) RV.hist.shift(); }
+      RV.i = idx >= 0 ? (idx + 1) % RV.list.length : Math.min(RV.i, RV.list.length - 1);
+      RV.cur = RV.list[RV.i];
+    }
+  }
+  drawQ(); window.scrollTo({ top: 0 });
+}
 document.addEventListener('keydown', e => {
   if ($('p-k').classList.contains('on')) return keyK(e);
   if (!$('p-q').classList.contains('on') || /TEXTAREA|INPUT|SELECT|BUTTON/.test((e.target && e.target.tagName) || '') || /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName) || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
@@ -242,35 +291,46 @@ document.addEventListener('keydown', e => {
    words changes its fingerprint and sends it back here. ---------- */
 const KPTS = Object.keys(window.KEYWORDS || {}).filter(k => POINTS[k]);
 const kst = k => REVIEW.statusK(RV.recs.k, k);
+const kWant = () => ({ todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.kf]);
 function buildK(keep) {
-  const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.kf];
+  const want = kWant();
   RV.klist = KPTS.filter(k => (!RV.ksubj || k[0] === RV.ksubj) && want(kst(k)));
   RV.ki = keep ? Math.max(0, RV.klist.indexOf(keep)) : 0;
+  RV.kcur = RV.klist[RV.ki] || null;
+  RV.khist = []; RV.kfwd = [];
 }
 function drawK(msg) {
   const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: KPTS.length }; KPTS.forEach(k => c[kst(k)]++);
   const nw = KPTS.reduce((a, k) => a + KEYWORDS[k].length, 0);
   const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', 'All']];
-  const k = RV.klist[RV.ki];
+  const k = RV.kcur;
   $('p-k').innerHTML = summary(c, 'spec points’ key words') + `<p class="small muted" style="margin:-4px 0 10px">${nw} key words on ${KPTS.length} spec points. They show on study guides only for the points you tick, and never repeat words already in the spec wording.</p>
     <div class="filters">${F.map(([f, t]) => `<button data-kf="${f}" class="${RV.kf === f ? 'on' : ''}">${t}</button>`).join('')}
       <select id="kSubj"><option value="">All subjects</option>${Object.entries(SUBJ).map(([s, v]) => `<option value="${s}" ${RV.ksubj === s ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
-    ${k ? kcard(k) : `<div class="done">🎉 Nothing ${RV.kf === 'all' ? 'here' : 'left in this list'}.</div>`}
+    ${k ? kcard(k) : `<div class="done">🎉 Nothing ${RV.kf === 'all' ? 'here' : 'left in this list'}.${RV.khist.length ? '<div style="margin-top:14px"><button class="btn ghost" id="kback">← Back to previous point</button></div>' : ''}</div>`}
     ${msg ? `<p class="saved" style="margin-top:8px">${msg}</p>` : ''}`;
   document.querySelectorAll('#p-k [data-kf]').forEach(b => b.onclick = () => { RV.kf = b.dataset.kf; buildK(); drawK(); });
   $('kSubj').onchange = e => { RV.ksubj = e.target.value; buildK(); drawK(); };
+  if ($('kback')) $('kback').onclick = () => moveK(-1);
   if (!k) return;
   $('kgood').onclick = () => markK('ok');
   $('kfixb').onclick = () => { $('kfixbox').hidden = false; $('kfixNote').focus(); };
   $('kfixSave').onclick = () => markK('fix', $('kfixNote').value.trim());
-  $('kskip').onclick = () => moveK(1); $('kback').onclick = () => moveK(-1);
-  if ($('kunmark')) $('kunmark').onclick = async () => { await REVIEW.clear(RT, 'k', k); delete RV.recs.k[REVIEW.key(k)]; drawK('Sent back to review.'); };
+  $('kskip').onclick = () => moveK(1);
+  if ($('kunmark')) $('kunmark').onclick = async () => {
+    await REVIEW.clear(RT, 'k', k);
+    delete RV.recs.k[REVIEW.key(k)];
+    if (kWant()(kst(k)) && RV.klist.indexOf(k) < 0) RV.klist.splice(RV.ki, 0, k);
+    drawK('Sent back to review.');
+  };
 }
 function kcard(k) {
   const P = POINTS[k], st = kst(k), rec = RV.recs.k[REVIEW.key(k)], kept = REVIEW.keptK(k);
+  const inList = RV.klist.indexOf(k);
+  const posTxt = inList >= 0 ? `${inList + 1} of ${RV.klist.length} in this list` : `Previously reviewed · ${RV.klist.length} left in list`;
   return `<div class="qcard">
     <div class="qtop"><span class="qid">${esc(k)}</span><span class="st ${st}">${REVIEW.LABEL[st]}</span><span class="tag">${SUBJ[k[0]]} ${esc(P.sub.slice(1))} ${esc(P.subName)}</span>
-      <span class="pos">${RV.ki + 1} of ${RV.klist.length} in this list</span></div>
+      <span class="pos">${posTxt}</span></div>
     <div class="spec"><b>Spec ${esc(P.p.id)}</b> ${window.SPECPT ? SPECPT.heading(P.p) : ''}${esc(strip(P.p.bullets ? P.p.text.replace(/:\s*$/, '') : P.p.text))}${P.p.bullets ? ': ' + esc(P.p.bullets.join('; ')) : ''}${window.SPECPT ? SPECPT.extras(P.p) : ''}</div>
     ${st === 'changed' ? `<div class="prev">✏️ <b>Changed since you checked it</b> on ${new Date(rec.at).toLocaleDateString('en-GB')}${rec.st === 'fix' && rec.note ? ` (you'd asked: “${esc(rec.note)}”)` : ''}.</div>` : ''}
     ${st === 'ok' && (!rec || rec.h !== REVIEW.kHash(k)) && kept ? `<div class="prev" style="border-color:var(--ok);background:#ecfdf3">✓ Kept checked after the edit you asked for${kept.why ? `: ${esc(kept.why)}` : ''}.</div>` : ''}
@@ -284,16 +344,55 @@ function kcard(k) {
   </div>`;
 }
 async function markK(st, note) {
-  const k = RV.klist[RV.ki]; if (!k) return;
+  const k = RV.kcur; if (!k) return;
   const rec = { h: REVIEW.kHash(k), at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 500);
   try { await REVIEW.save(RT, 'k', k, rec); } catch (e) { alert('Not saved — check your connection. (' + e.message + ')'); return; }
   RV.recs.k[REVIEW.key(k)] = rec;
-  if (RV.kf === 'all' || RV.kf === st) RV.ki++; else RV.klist.splice(RV.ki, 1);
+  RV.khist.push(k); if (RV.khist.length > 200) RV.khist.shift();
+  const stays = RV.kf === 'all' || RV.kf === st;
+  const idx = RV.klist.indexOf(k);
+  if (idx >= 0) {
+    if (stays) RV.ki = idx + 1; else { RV.klist.splice(idx, 1); RV.ki = idx; }
+  }
   if (RV.ki >= RV.klist.length) RV.ki = Math.max(0, RV.klist.length - 1);
+  if (RV.kfwd.length) {
+    RV.kcur = RV.kfwd.pop();
+    const ni = RV.klist.indexOf(RV.kcur); if (ni >= 0) RV.ki = ni;
+  } else {
+    RV.kcur = RV.klist[RV.ki] || null;
+  }
   drawK(st === 'ok' ? `✓ ${k} key words checked` : `✏️ ${k} key words marked as needing a fix`);
   window.scrollTo({ top: 0 });
 }
-function moveK(d) { if (!RV.klist.length) return; RV.ki = (RV.ki + d + RV.klist.length) % RV.klist.length; drawK(); window.scrollTo({ top: 0 }); }
+function moveK(d) {
+  if (d < 0) {
+    if (RV.khist.length) {
+      if (RV.kcur) RV.kfwd.push(RV.kcur);
+      RV.kcur = RV.khist.pop();
+      const idx = RV.klist.indexOf(RV.kcur); if (idx >= 0) RV.ki = idx;
+    } else {
+      if (!RV.klist.length) return;
+      RV.ki = (RV.ki - 1 + RV.klist.length) % RV.klist.length;
+      RV.kcur = RV.klist[RV.ki];
+    }
+  } else {
+    if (RV.kfwd.length) {
+      if (RV.kcur) { RV.khist.push(RV.kcur); if (RV.khist.length > 200) RV.khist.shift(); }
+      RV.kcur = RV.kfwd.pop();
+      const idx = RV.klist.indexOf(RV.kcur); if (idx >= 0) RV.ki = idx;
+    } else if (!RV.klist.length) {
+      if (!RV.kcur) return;
+      RV.khist.push(RV.kcur); if (RV.khist.length > 200) RV.khist.shift();
+      RV.kcur = null;
+    } else {
+      const idx = RV.klist.indexOf(RV.kcur);
+      if (RV.kcur) { RV.khist.push(RV.kcur); if (RV.khist.length > 200) RV.khist.shift(); }
+      RV.ki = idx >= 0 ? (idx + 1) % RV.klist.length : Math.min(RV.ki, RV.klist.length - 1);
+      RV.kcur = RV.klist[RV.ki];
+    }
+  }
+  drawK(); window.scrollTo({ top: 0 });
+}
 function keyK(e) {
   if (/TEXTAREA|INPUT|SELECT|BUTTON/.test((e.target && e.target.tagName) || '') || /TEXTAREA|INPUT|SELECT/.test(document.activeElement.tagName) || e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
   if (e.key === 'Enter' || e.key === 'g') { e.preventDefault(); if ($('kgood')) markK('ok'); }
