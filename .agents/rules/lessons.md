@@ -19,7 +19,7 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 3. When he says it's checked: `python tools/lessons/freeze.py <subject>/<code> --date <today>` (after adding a new lesson folder:
    `freeze.py --roots`). An edit he asks for on a checked lesson → freeze a new checked version. Your own changes → it stays a draft.
    After a rules sweep, only **big** changes send a checked lesson back to review.
-4. `node tools/spec/build_index.js`, changelog line, push to staging.
+4. `node tools/spec/build_index.js`, `python tools/lessons/build_diff.py` (refreshes the staging-only split-screen comparer at `/interactive/lessons/diff/`), changelog line, push to staging.
 - Review portal: his marks live in RTDB `school/review/l/{subject|code}`; he copies a "Mark checked / Needs a fix" message to whoever builds lessons.
 
 ## Slide style guide (the user's rules, 23 Nov 2026 — check every slide)

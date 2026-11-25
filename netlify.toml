@@ -58,6 +58,19 @@
   status = 404
   force = true
 
+# Block the staging-only lesson comparer on the live production domain
+[[redirects]]
+  from = "https://cakebreadscience.com/interactive/lessons/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.cakebreadscience.com/interactive/lessons/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Security headers site-wide
 [[headers]]
   for = "/*"
@@ -105,5 +118,10 @@
 
 [[headers]]
   for = "/play/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/interactive/lessons/diff/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"
