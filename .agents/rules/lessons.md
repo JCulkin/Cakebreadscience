@@ -11,7 +11,7 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
   `<subject>/<code>/index.html` redirect (written by freeze.py) · `assets/lesson.css`, `lesson.js` (engine), `chem.js`, `bio.js`,
   `cells.js` (copy of `/interactive/cell-game/cells.js`), `diagrams.js` + `diagq.js` (frozen copies from spec-quiz) · `tags.css`.
 - Landing page and lesson headers stay minimal (user): code, title, spec, Open / ▶ Present, a plain "Under review" chip on drafts. No badges,
-  dates or progress bars.
+  dates, progress bars, or links to older checked versions.
 
 ## Lifecycle (everything starts as a draft)
 1. Edit the draft only; every edit bumps `data-updated` on `<body>` and `draftUpdated` in lessons.json.
@@ -24,17 +24,16 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 
 ## Slide style guide (the user's rules, 23 Nov 2026 — check every slide)
 1. **A picture or diagram on every slide.** No word-only slides, no recap slide at the end (auto quiz/exam slides excepted).
-2. **Big type:** body 50px (`mid`) or bigger, labels ~30px, never below ~34px body — split the slide instead.
-3. Fewer, bigger points; key terms kept, in **bold**.
+2. **Clear visual hierarchy (don't crowd the visual field):** big readable type, but don't make every line giant (`big`) or crowd the slide. Use font-size contrast, **bold** selectively, and **indented lists** rather than walls of text or inline middle dots (`·`). Prefer hyphens (`-`) or indented sub-bullets over middle-dot lists.
+3. Fewer, cleaner points; key terms kept, in **bold**.
 4. Activity slides say the task ("Your turn: …, then click to check"). Discussion slides are pictures only.
-5. Title and section slides: picture fills the screen, title in a cream box (`tslide`).
-6. Our own clear diagrams (circle photo nodes with coloured rings, coloured boxes, revealed per click) instead of screenshots of text.
+5. Title and section slides: **genuinely high-resolution** picture (≥1600px wide) fills the screen, title in a cream box (`tslide`) that doesn't cover the main subject.
+6. Our own clear diagrams (circle photo nodes with coloured rings, coloured boxes, revealed per click) instead of screenshots of text or blurry rasters.
 7. Comparisons: same object drawn the same way in each panel; shared parts labelled once.
 8. Photos of individual organisms, not scenery; short captions; many examples → rolodex.
 9. **Question-bank diagrams first** (`dq` component, ids from `DQ.LIST` + a fixed seed) before drawing new ones.
 10. Mnemonics/cartoons big; acrostics vertical (Mrs C Gren).
-11. Ions = balls with a floating charge; dot-and-cross only where the spec asks. Equations = colour-coded boxes. Data tables colour-shaded,
-    highest at top. Readable colours on dark slides.
+11. Ions = balls with a floating charge; dot-and-cross only where the spec asks (using the overlapping-lens model so shared electrons never overlap orbital rings). Equations = colour-coded boxes on one line where possible, with a **large, well-spaced arrow** separating reactants and products. Data tables colour-shaded, highest at top. Readable colours on dark slides.
 12. Keep the deck's images, links (one linkcard per slide), order and examples. 13. **Never mention Separate Science.**
 14. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
 15. Tags only "Double Award only" / "Beyond GCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
