@@ -36,7 +36,7 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 11. Ions = balls with a floating charge; dot-and-cross only where the spec asks (using the overlapping-lens model so shared electrons never overlap orbital rings). Equations = colour-coded boxes on one line where possible, with a **large, well-spaced arrow** separating reactants and products. Data tables colour-shaded, highest at top. Readable colours on dark slides.
 12. Keep the deck's images, links (one linkcard per slide), order and examples. 13. **Never mention Separate Science.**
 14. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
-15. Tags only "Double Award only" / "Beyond GCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
+15. Tags only "Double Award only" / "Beyond IGCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
     no spec numbers on slides. Mixed slides stay untagged. Tag every new lesson.
 16. Before pushing: look at every slide fully revealed for word-only slides, text off the slide or under the title, tiny pictures, overlaps.
 

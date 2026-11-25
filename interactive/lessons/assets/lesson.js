@@ -130,12 +130,12 @@ function deck(){
   });
   const root = document.createElement('div'); root.id = 'deck';
   root.innerHTML = `<div id="stageWrap"><div id="stage"></div></div>
-   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, skipping reveals (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button id="dExit" title="Esc">✕ Exit</button></div>
+   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, fully revealed (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button id="dExit" title="Esc">✕ Exit</button></div>
    <div id="black"></div><div id="overview"><div class="ovhead"><b>All slides</b><span>Click a slide to jump to it · Esc to close</span><button id="ovClose">✕ Close</button></div><div class="ovgrid"></div></div>`;
   document.body.appendChild(root);
   const stage = $('#stage');
   const slides = $$('section.ps', src);
-  stage.innerHTML = slides.map((s,i) => `<section class="ps ${s.className.replace('ps','')}" ${s.getAttribute('style')?`style="${s.getAttribute('style')}"`:''}><div class="sbar"></div>${s.innerHTML}<div class="num">${i+1} / ${slides.length}</div></section>`).join('');
+  stage.innerHTML = slides.map((s,i) => `<section class="ps ${s.className.replace('ps','')}" ${s.hasAttribute('data-nomatch')?'data-nomatch ':''}${s.getAttribute('style')?`style="${s.getAttribute('style')}"`:''}><div class="sbar"></div>${s.innerHTML}<div class="num">${i+1} / ${slides.length}</div></section>`).join('');
   src.remove();
   L.initComps(stage);
   const ps = $$('.ps', stage);
@@ -152,7 +152,7 @@ function deck(){
   function show(i){ cur = Math.max(0, Math.min(ps.length-1, i)); ps.forEach((p,j) => p.classList.toggle('cur', j===cur)); apply(ps[cur]); $('#dCount').textContent = (cur+1)+' / '+ps.length; ps[cur].dispatchEvent(new CustomEvent('shown')); }
   function next(){ const p = ps[cur]; if(p.shown < p.max){ p.shown++; apply(p); } else show(cur+1); }
   function prev(){ const p = ps[cur]; if(p.shown > 0){ p.shown--; apply(p); } else show(cur-1); }
-  function nextSlide(){ if(cur < ps.length-1){ ps[cur+1].shown = 0; show(cur+1); } }
+  function nextSlide(){ if(cur < ps.length-1){ ps[cur+1].shown = ps[cur+1].max; show(cur+1); } }
   function prevSlide(){ if(cur > 0){ ps[cur-1].shown = 0; show(cur-1); } }
   /* overview: grid of every slide, fully revealed; click to jump */
   const ov = $('#overview'), ovGrid = $('.ovgrid', ov); let ovBuilt = false;
