@@ -42,7 +42,7 @@ const KEY = 'cbs.games.ok';
 const face = n => `<img class="prof" src="/img/mascot/head-${n}.webp" alt="">`;
 const links = `<p style="margin-top:16px"><a class="btn alt" href="/Elevenstudents/">Student games</a><a class="btn alt" href="/">Home</a></p>`;
 function show(html) { $box.innerHTML = html; }
-function whoLine(u) { return `<div class="who">Signed in as ${esc(u.displayName || u.email)} · <button id="out">Use another account</button></div>`; }
+function whoLine(u) { return `<div class="who">Signed in as ${esc((u.displayName || '').trim() || 'Student')} · <button id="out">Use another account</button></div>`; }
 function bindOut() { const b = document.getElementById('out'); if (b) b.onclick = () => firebase.auth().signOut(); }
 function signIn() { firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => { if (e && e.code !== 'auth/popup-closed-by-user') alert('Sign-in did not work: ' + (e.message || e)); }); }
 function go(u) {

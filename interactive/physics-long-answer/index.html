@@ -569,7 +569,7 @@ const STATUS_TEXT = {
 };
 const renderAccount = () => {
   const u = Store.user;
-  statusEl.textContent = (u ? `Signed in as ${u.displayName || u.email}. ` : "") + STATUS_TEXT[Store.status];
+  statusEl.textContent = (u ? (u.displayName ? `Signed in as ${u.displayName}. ` : "Signed in. ") : "") + STATUS_TEXT[Store.status];
   statusEl.dataset.status = Store.status;
   signInBtn.hidden = !Store.available || !!u;
   signOutBtn.hidden = !u;

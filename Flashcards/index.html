@@ -1108,7 +1108,8 @@ h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:90
             document.querySelector(`.${screenName}`).classList.add('active');
 
             if (screenName === 'deck-selector' && currentUser) {
-                document.getElementById('userInfo').textContent = `Signed in as ${currentUser.email}`;
+                const first = (currentUser.displayName || '').trim().split(/\s+/)[0];
+                document.getElementById('userInfo').textContent = first ? `Signed in as ${first}` : 'Signed in';
             }
         }
 
