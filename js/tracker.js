@@ -140,7 +140,7 @@
     const k = p.key, res = resOf(k), nc = cardsOf(k), kws = kwOf(k), hasQ = QEx() && QEx().POINT_QS[k];
     const groups = {}; res.forEach(([kind, title, url]) => (groups[kind] = groups[kind] || []).push(`<a href="${esc(url)}">${esc(title)}</a>`));
     const hasDrawer = res.length || kws.length;
-    const kwHtml = kws.length ? `<div><b>🔑 Key words</b> ${kws.map(([w, m]) => `<span title="${esc(m)}"><b>${esc(w)}</b> (${esc(m)})</span>`).join(' · ')}</div>` : '';
+    const kwHtml = kws.length ? `<div><b>🔑 Key words</b> ${kws.map(([w, m]) => `<span title="${esc(m)}"><b>${esc(w)}</b> (${esc(m)})</span>`).join(' · ')} · <a href="/Flashcards/?spec=${k}&deck=keywords">Practise as flashcards →</a></div>` : '';
     return `<div class="tr-pt" id="${k}" data-k="${k}" data-sub="${sk}">
       <div class="tr-main"><a class="code" href="#${k}" title="Link to this spec point">${k.slice(1)}</a>
         <div class="txt">${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</div></div>

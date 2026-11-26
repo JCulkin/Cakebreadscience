@@ -120,6 +120,7 @@
       </section>`;
     }).join('');
     const kwSec = kwGroups.length ? `<section class="sg-kws"><h2 class="sg-topic" style="--c:#111">Key words</h2>
+      ${mode === 'online' && keys.length ? `<div class="sg-rev"><a class="sg-btn sm f" href="${flashcardsUrl(keys, T)}&deck=keywords">🔑 Practise these key words as flashcards</a></div>` : ''}
       ${kwGroups.map(({ x, kw }) => `<div class="sg-kwg" style="--c:${COL[x.sb.L]}"><span class="sg-kwc">${x.sb.topic}${x.sb.l}</span><ul>${kw.map(([w, m]) => `<li><b>${esc(w)}</b>: ${esc(m)}</li>`).join('')}</ul></div>`).join('')}</section>` : '';
     const advice = `<section class="sg-adv"><h2 class="sg-topic" style="--c:#111">Exam advice</h2><ul>${ADVICE.map(([h, t]) => `<li><b>${h}:</b> ${t}</li>`).join('')}</ul></section>`;
     return `<article class="sg sg-${mode}">${head}${list.length ? body : '<p>No spec points chosen yet.</p>'}${kwSec}${advice}</article>`;

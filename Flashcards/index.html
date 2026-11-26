@@ -1323,6 +1323,7 @@
   <script src="/js/school.js"></script>
   <script src="/js/spec-point.js"></script>
   <script src="/js/key-words.js"></script>
+  <script src="/js/spec-index.js"></script>
   <script src="/js/admin-config.js"></script>
   <script src="/js/account.js" data-bar></script>
   <script src="/interactive/spec-quiz/adventurer-items.js"></script>
@@ -2220,9 +2221,12 @@
       const sub = q.get('sub');
       const subs = q.get('subs');
       const topic = q.get('topic');
+      const deckParam = q.get('deck');
       const title = q.get('t');
       const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
+      const deckMeta = deckParam && DECK_META[deckParam] ? DECK_META[deckParam] : null;
       const pickPool = fn => {
+        if (deckMeta) return (deckCards[deckParam] || []).filter(fn);
         const primary = enabledDeckCards(false).filter(fn);
         return primary.length ? primary : Object.values(deckCards).flat().filter(fn);
       };
@@ -2235,24 +2239,31 @@
           return;
         }
         const firstL = cards[0].spec ? cards[0].spec[0] : (cards[0].sub ? cards[0].sub[0] : 'B');
-        const label = title ? `${title} · Flashcards (${cards.length})` : `Study guide · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
-        beginSession(shuffle(cards), label, colors[firstL] || '#111', 'topic', cards[0].deck);
+        const label = title ? `${title} · ${deckMeta ? deckMeta.name : 'Flashcards'} (${cards.length})` : `${deckMeta ? deckMeta.name : 'Study guide'} · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
+        beginSession(shuffle(cards), label, (deckMeta && deckMeta.color) || colors[firstL] || '#111', 'topic', cards[0].deck);
       } else if (spec) {
         const cards = pickPool(c => c.spec === spec);
         if (!cards.length) return;
         const L = spec[0];
-        beginSession(cards, `${SUBJ_NAME[L] || ''} ${spec.slice(1)} · ${cards.length} card${cards.length === 1 ? '' : 's'}`, colors[L], 'spec', cards[0].deck);
+        const label = deckMeta
+          ? `${deckMeta.icon} ${deckMeta.name} · ${spec} (${cards.length})`
+          : `${SUBJ_NAME[L] || ''} ${spec.slice(1)} · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
+        beginSession(cards, label, (deckMeta && deckMeta.color) || colors[L], 'spec', cards[0].deck);
       } else if (sub) {
         const L = sub[0];
         let subName = sub;
         (TOPIC_TREE[L] || []).forEach(t => t.subs.forEach(sb => { if (sb.key === sub) subName = `${t.n}${sb.l} · ${sb.name}`; }));
         const chosen = pickPool(c => c.sub === sub);
-        if (chosen.length) beginSession(shuffle(chosen), `${SUBJ_NAME[L]} ${subName}`, colors[L], 'topic', chosen[0]?.deck);
+        if (chosen.length) beginSession(shuffle(chosen), `${deckMeta ? deckMeta.icon + ' ' + deckMeta.name + ' · ' : ''}${SUBJ_NAME[L]} ${subName}`, (deckMeta && deckMeta.color) || colors[L], 'topic', chosen[0]?.deck);
       } else if (topic) {
         const L = topic[0];
         const tObj = (TOPIC_TREE[L] || []).find(t => t.key === topic);
         const chosen = pickPool(c => c.topic === topic || (c.spec && c.spec.startsWith(topic + '.')));
-        if (chosen.length) beginSession(shuffle(chosen), `${SUBJ_NAME[L]} ${tObj ? tObj.n + ' · ' + tObj.name : topic}`, colors[L], 'topic', chosen[0]?.deck);
+        if (chosen.length) beginSession(shuffle(chosen), `${deckMeta ? deckMeta.icon + ' ' + deckMeta.name + ' · ' : ''}${SUBJ_NAME[L]} ${tObj ? tObj.n + ' · ' + tObj.name : topic}`, (deckMeta && deckMeta.color) || colors[L], 'topic', chosen[0]?.deck);
+      } else if (deckMeta) {
+        const cards = activeCards(deckParam);
+        const label = `${deckMeta.icon} ${deckMeta.name}` + (isCoveredOnly() ? ' · Covered in class' : '');
+        beginSession(shuffle(cards).slice(0, Math.max(settings.newCardsPerDay, 10)), label, deckMeta.color, 'topic', deckParam);
       }
     }
 
@@ -2280,6 +2291,12 @@
       const extras = pt && window.SPECPT ? SPECPT.extras(pt) : '';
       const specUrl = (SUBJ_URL[L] || '/specifications/science.html') + '#' + encodeURIComponent(sp);
       const pracUrl = '/interactive/spec-quiz/practice.html?point=' + encodeURIComponent(sp);
+      const resIcons = { lesson: '🎓', booklet: '📚', sheet: '📄', long: '✍️', eq: '🧮', game: '🎮' };
+      const idxPt = window.SPEC_INDEX && SPEC_INDEX.pts && SPEC_INDEX.pts[sp];
+      const extraLinks = idxPt && idxPt.r && SPEC_INDEX.res
+        ? idxPt.r.map(i => SPEC_INDEX.res[i]).filter(Boolean).slice(0, 4)
+            .map(([kind, title, url]) => `<a href="${esc(url)}">${resIcons[kind] || '🔗'} ${esc(title)}</a>`).join('')
+        : '';
       return `<div class="card-meta">
         <details class="spec-drawer">
           <summary><span class="sd-code">${esc(sp)}</span> <span>Spec point &amp; practice ▾</span></summary>
@@ -2288,6 +2305,7 @@
             <div class="spec-box-links">
               <a href="${specUrl}">📋 Spec tracker</a>
               <a href="${pracUrl}">📝 Practice questions on ${esc(sp)}</a>
+              ${extraLinks}
             </div>
           </div>
         </details>
