@@ -13,9 +13,12 @@
 body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:17px}
 a{color:var(--dk)}
 h1,h2,.btn{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
-header{background:#111;padding:12px 18px;display:flex;align-items:center;gap:10px}
-header img{width:40px}header a{font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:var(--cream);text-decoration:none}header a span{color:#00a03a}
-header .back{margin-left:auto;font:700 15px Barlow,Arial;text-transform:none;color:#ddd}
+header{background:#111;border-bottom:3px solid #00a03a;padding:10px 18px;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+header a.brand{display:inline-flex;align-items:center;gap:9px;font:900 24px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:-.3px;color:var(--cream);text-decoration:none;transition:color .14s}
+header a.brand img{width:32px;height:32px;object-fit:contain;display:block}
+header a.brand span{color:#00a03a;transition:color .14s}
+header a.brand:hover{color:#fff}header a.brand:hover span{color:#4ade80}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9a968c}
 main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
 .card{background:var(--paper);border:2px solid var(--ink);padding:16px 18px;margin-bottom:14px}
 h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
@@ -40,7 +43,7 @@ h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
 </style>
 </head>
 <body>
-<header><img src="/img/mascot/head-pixel-hd.webp" alt=""><a href="/">Cakebread <span>Science</span></a><div id="cbs-account" style="margin-left:auto"></div></header>
+<header><a class="brand" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Set work</span><div id="cbs-account" style="margin-left:auto"></div></header>
 <main id="main"><p class="muted">Loading…</p></main>
 
 <script src="/js/firebase-config.js"></script>

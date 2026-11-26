@@ -777,6 +777,37 @@
     }
     .fc-points li { margin: 5px 0; }
     .fc-points li b { color: var(--ink); }
+    .fc-punnett {
+      margin: 10px auto;
+      border-collapse: collapse;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .fc-punnett th, .fc-punnett td {
+      border: 2px solid var(--ink);
+      padding: 6px 14px;
+      text-align: center;
+      min-width: 48px;
+    }
+    .fc-punnett th { background: #f3f1ea; }
+    .fc-ind-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0 4px;
+    }
+    .fc-ind {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      border: 2px solid var(--ink);
+      padding: 6px 12px;
+      min-width: 104px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .fc-ind small { font-size: 11px; text-transform: uppercase; letter-spacing: .8px; opacity: .8; }
     @media (max-width: 680px) {
       .fc-eq-card { padding: 10px 12px; width: 100%; }
       .fc-eq-words { font-size: 15px; }
@@ -1325,7 +1356,7 @@
   <script src="/js/key-words.js"></script>
   <script src="/js/spec-index.js"></script>
   <script src="/js/admin-config.js"></script>
-  <script src="/js/account.js" data-bar></script>
+  <script src="/js/account.js" data-bar data-section="Flashcards"></script>
   <script src="/interactive/spec-quiz/adventurer-items.js"></script>
   <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
   <script>
@@ -2770,6 +2801,5 @@
       });
     })();
   </script>
-  <script src="/js/home-link.js" data-mode="float"></script>
-</body>
+  </body>
 </html>

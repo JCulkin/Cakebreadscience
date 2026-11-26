@@ -15,10 +15,12 @@
 body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4;font-size:16px}
 a{color:var(--dk)}
 h1,h2,h3,.big,.btn{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
-header{background:#111;padding:14px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-header img{width:46px}
-header a.home{font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;color:var(--cream);text-decoration:none}
-header a.home span{color:var(--green)}
+header{background:#111;border-bottom:3px solid var(--green);padding:10px 18px;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+header a.home{display:inline-flex;align-items:center;gap:9px;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:clamp(22px,4.5vw,28px);line-height:1;text-transform:uppercase;letter-spacing:-.3px;color:var(--cream);text-decoration:none;transition:color .14s}
+header a.home img{width:34px;height:34px;object-fit:contain;display:block}
+header a.home span{color:var(--green);transition:color .14s}
+header a.home:hover{color:#fff}header a.home:hover span{color:#4ade80}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9a968c}
 header #cbs-account{margin-left:auto}
 main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .hello{display:flex;gap:16px;align-items:center;margin-bottom:18px}
@@ -70,7 +72,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 </style>
 </head>
 <body>
-<header><img src="/img/mascot/head-pixel-hd.webp" alt=""><a class="home" href="/">Cakebread <span>Science</span></a><div id="cbs-account"></div></header>
+<header><a class="home" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">To do</span><div id="cbs-account"></div></header>
 <main id="main"><p class="muted">Loading your day…</p></main>
 
 <script src="/js/firebase-config.js"></script>

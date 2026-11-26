@@ -12,10 +12,12 @@
 <style>
 /* Practice: the same questions and the same progress as Cakebread Questing, with no game on top */
 body{background:#f4f4f1}
-.bar0{background:#111;color:#fff;display:flex;align-items:center;gap:14px;padding:10px 16px;flex-wrap:wrap}
-.bar0 a.brand{color:#fff;text-decoration:none;font:900 22px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase}
-.bar0 a.brand span{color:#22c55e}
-.bar0 .sub{color:#bbb;font-size:14px}
+.bar0{background:#111;border-bottom:3px solid #00a03a;color:#fff;display:flex;align-items:center;gap:10px 14px;padding:9px 18px;flex-wrap:wrap}
+.bar0 a.brand{display:inline-flex;align-items:center;gap:9px;color:#eeeae0;text-decoration:none;font:900 24px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:-.3px;transition:color .14s}
+.bar0 a.brand img{width:32px;height:32px;object-fit:contain;display:block}
+.bar0 a.brand span{color:#00a03a;transition:color .14s}
+.bar0 a.brand:hover{color:#fff}.bar0 a.brand:hover span{color:#4ade80}
+.bar0 .sub{color:#9a968c;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px}
 .bar0 .acct{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:14px}
 .bar0 button{font:600 14px Barlow,Arial;background:none;color:#fff;border:1.5px solid #777;padding:3px 10px;cursor:pointer}
 .wrap{max-width:900px}
@@ -94,7 +96,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 </style>
 </head>
 <body>
-<div class="bar0"><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Practice</span><div id="cbs-account" style="margin-left:auto"></div></div>
+<div class="bar0"><a class="brand" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Practice</span><div id="cbs-account" style="margin-left:auto"></div></div>
 <main class="wrap">
 
   <section id="pick">
