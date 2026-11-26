@@ -20,13 +20,13 @@ Strict split between the two audiences:
   - **Handoffs (`.next-hub`):** Link to **Flashcards** (`?sub=`), **Practice** (`practice.html?sub=`), **Cakebread Questing** (`adventurer-mission.html?sub=`), matching **Worksheets**, and any matching **Topic Booklet** (`/booklets/…`). Never build a separate flashcard/SRS engine inside a lesson.
 
 ## Format & lifecycle
-- **Split lessons (`"split": true`, default for new lessons & migrations):** `draft/index.html` (`study.css` + `study.js`, with `<script>if(location.hash==='#present')location.replace('deck.html'+location.search+'#present');</script>` in `<head>`) + `draft/deck.html` (`lesson.css` + `lesson.js` + `tags.css`, clean deck launcher + `#qsrc` + `#deck-src`). `freeze.py` and `build_diff.py` handle both split and legacy single-file lessons.
-- `lessons.json`: `{code, title, spec, status 'checked'|'draft', split?, draftUpdated, versions[]}`. Frozen `<subject>/<code>/v<date>/` folders: **never edit**.
+- **Format:** All lessons use the split architecture (`"split": true`): `draft/index.html` (`study.css` + `study.js`, with `#present` → `deck.html#present` redirect) + `draft/deck.html` (`lesson.css` + `lesson.js` + `tags.css`, clean launcher + `#qsrc` + `#deck-src`).
+- `lessons.json`: `{code, title, spec, status 'checked'|'draft', studentStatus 'checked'|'draft', split: true, draftUpdated, versions[]}`. Frozen `<subject>/<code>/v<date>/` folders: **never edit**.
 - Keep `/interactive/lessons/` landing & headers minimal: code, title, spec, Open / ▶ Present, plain "Under review" chip on drafts (no extra badges, dates, or older-version dropdowns).
 - **Workflow:**
   1. Edit `draft/` only; bump `data-updated` on `<body>` and `draftUpdated` in `lessons.json`.
-  2. Teacher reviews by projector slide number (Admin → Review → Lessons, RTDB `school/review/l/{subject|code}`). Give a numbered slide list.
-  3. When marked checked (or user-asked edit on checked): `python tools/lessons/freeze.py <subject>/<code> --date <today>` (`--roots` after adding a new lesson folder). Unrequested edits stay draft.
+  2. Teacher reviews **Projector decks** (by slide number, `school/review/l/{subj|code}`) and **Student study guides** (`school/review/l/{subj|code|student}`) independently on Admin → Review → Lessons. Give a numbered slide list for deck edits.
+  3. When marked checked (or user-asked edit on checked): `python tools/lessons/freeze.py <subject>/<code> --date <today>` (`--roots` after adding a new lesson folder) and update `status` / `studentStatus` in `lessons.json`. Unrequested edits stay draft.
   4. Run `node tools/spec/build_index.js`, `python tools/lessons/build_diff.py --base <commit-before-prompt> --label "before last prompt"`, update `VERSION_HISTORY.md` (read top ~40 lines only), push to `staging`.
 
 ## Slide style guide (check every projector slide)
@@ -55,12 +55,11 @@ Strict split between the two audiences:
 - Final step `<section class="step" id="check" data-toc="End-of-topic test">`: `#qs` (built from hidden `#qsrc`), optional `[data-comp="dq"]`, and `.next-hub` (Flashcards + Practice + Questing + Worksheets + matching Topic Booklet).
 - Scripts last: `cells.js` (if needed), `diagrams.js` + `diagq.js`, `bio.js`/`chem.js`, then `study.js`.
 
-## Teacher Projector Deck (`draft/deck.html`) & Legacy single-file (`lesson.js`)
-*(Delete legacy single-file notes here once all 8 remaining single-file lessons migrate to `split: true`.)*
-- `<body class="subj-…" data-status="draft" data-updated="…" data-deck-ui="v2">`; `.lhead` + `<details class="specbox">`. `lesson.js` adds the home link and loads `/js/auth-gate.js` — don't load `home-link.js`.
+## Teacher Projector Deck (`draft/deck.html`)
+- `<body class="subj-…" data-status="draft" data-updated="…" data-deck-ui="v2">`; `.lhead` + launcher card (`.pbtn,#hdrPresent{display:none!important}`). `lesson.js` adds the home link and loads `/js/auth-gate.js` — don't load `home-link.js`.
 - Slides in `#deck-src`: `<section class="ps">…</section>`; `data-s`, `data-hide-from`, `data-hide-until`, `data-auto="quiz"|"exam"`. Unique inline SVG IDs per copy. **Check every `<section>` is closed.**
-- Scripts last: `cells.js`, `diagrams.js` + `diagq.js`, `bio.js`/`chem.js`, then `lesson.js`. Note hand-edited HTML in commits/changelog (private Claude builders exist for older drafts).
+- Scripts last: `cells.js` (if needed), `diagrams.js` + `diagq.js`, `bio.js`/`chem.js`, then `lesson.js`. Note hand-edited HTML in commits/changelog.
 
 ## Sources & status
 - Source decks: teacher's Google Drive (`2. Science\<Subject>\…`). Never publish from `# Resources/`, no watermarked/past-paper images, keep CC credits, GIFs → MP4.
-- **Current status:** Checked split (`Bio 2c`) · Split drafts under review (`Chem 1a, 1f, 1g`) · Checked single-file (`Bio 1, 2a, 2b, 2f`) · Unsplit drafts (`Bio 2d`, `Phys 8`).
+- **Current status (all 10 lessons split):** Deck & Student checked (`Bio 2c`) · Student checked / Deck draft (`Chem 1g`) · Both halves under review (`Bio 1, 2a, 2b, 2d, 2f`, `Chem 1a, 1f`, `Phys 8`).

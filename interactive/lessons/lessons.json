@@ -14,12 +14,14 @@
               "code": "1",
               "title": "Living organisms (1a characteristics, 1b variety)",
               "spec": "1.1–1.4",
-              "status": "checked",
+              "status": "draft",
               "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-23",
                 "2026-11-26"
-              ]
+              ],
+              "split": true,
+              "studentStatus": "draft"
             }
           ]
         },
@@ -31,23 +33,27 @@
               "code": "2a",
               "title": "Level of organisation",
               "spec": "2.1",
-              "status": "checked",
-              "draftUpdated": "2026-11-25",
+              "status": "draft",
+              "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-22",
                 "2026-11-25"
-              ]
+              ],
+              "split": true,
+              "studentStatus": "draft"
             },
             {
               "code": "2b",
               "title": "Cell structure",
               "spec": "2.2–2.4",
-              "status": "checked",
+              "status": "draft",
               "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-25",
                 "2026-11-26"
-              ]
+              ],
+              "split": true,
+              "studentStatus": "draft"
             },
             {
               "code": "2c",
@@ -59,15 +65,18 @@
               "versions": [
                 "2026-11-26",
                 "2026-11-26-2"
-              ]
+              ],
+              "studentStatus": "checked"
             },
             {
               "code": "2d",
               "title": "Movement of substances into and out of cells",
               "spec": "2.15–2.17",
               "status": "draft",
-              "draftUpdated": "2026-11-25",
-              "versions": []
+              "draftUpdated": "2026-11-26",
+              "versions": [],
+              "split": true,
+              "studentStatus": "draft"
             },
             {
               "code": "2e",
@@ -78,11 +87,13 @@
               "code": "2f",
               "title": "Respiration",
               "spec": "2.34–2.39",
-              "status": "checked",
+              "status": "draft",
               "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-26"
-              ]
+              ],
+              "split": true,
+              "studentStatus": "draft"
             },
             {
               "code": "2g",
@@ -187,7 +198,8 @@
               "status": "draft",
               "split": true,
               "draftUpdated": "2026-11-26",
-              "versions": []
+              "versions": [],
+              "studentStatus": "draft"
             },
             {
               "code": "1b",
@@ -220,7 +232,8 @@
                 "2026-11-18",
                 "2026-11-22",
                 "2026-11-26"
-              ]
+              ],
+              "studentStatus": "draft"
             },
             {
               "code": "1g",
@@ -232,7 +245,8 @@
               "versions": [
                 "2026-11-26",
                 "2026-11-26-2"
-              ]
+              ],
+              "studentStatus": "checked"
             }
           ]
         },
@@ -468,7 +482,9 @@
               "spec": "8.1–8.10",
               "status": "draft",
               "draftUpdated": "2026-11-26",
-              "versions": []
+              "versions": [],
+              "split": true,
+              "studentStatus": "draft"
             }
           ]
         }
