@@ -1638,7 +1638,6 @@
         taughtSubs = new Set(keys);
       }
       updateTaughtBar();
-      renderAllDeckUI();
     }
 
     function showSyncBanner(mode) {
@@ -2301,15 +2300,24 @@
       if (studyQueue.length === 0) {
         currentCard = null;
         isFlipped = false;
-        const canAddMore = sessionMode === 'deck' && currentDeck && getCardListStats(activeCards(currentDeck)).unseen > 0;
+        const deckActive = currentDeck ? activeCards(currentDeck) : [];
+        const noneCovered = sessionDone === 0 && sessionMode === 'deck' && currentDeck && deckActive.length === 0 && isCoveredOnly();
+        const canAddMore = sessionMode === 'deck' && currentDeck && getCardListStats(deckActive).unseen > 0;
+        const doneHead = sessionDone > 0
+          ? 'Session complete!'
+          : (noneCovered ? 'Not covered in class yet' : 'Nothing due right now!');
+        const doneBody = sessionDone > 0
+          ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or keep going in Cakebread Questing.`
+          : (noneCovered
+            ? `None of this deck has been marked as covered in class for Year ${userYear} yet. Turn on Study ahead if you want to revise topics ahead of lessons.`
+            : 'All caught up on this deck for today.');
         box.innerHTML = `<div class="fc-done">
           <img src="/img/mascot/head-laugh.webp" alt="">
-          <h2>${sessionDone > 0 ? 'Session complete!' : 'Nothing due right now!'}</h2>
-          <p>${sessionDone > 0
-            ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or keep going in Cakebread Questing.`
-            : 'All caught up on this deck for today.'}</p>
+          <h2>${doneHead}</h2>
+          <p>${doneBody}</p>
           <div class="fc-done-acts">
             <button type="button" class="btn" onclick="backToDecks()">Back to decks</button>
+            ${noneCovered ? `<button type="button" class="btn alt" onclick="toggleStudyAhead(true);startDeck('${currentDeck}',false)">🚀 Study ahead</button>` : ''}
             ${canAddMore ? `<button type="button" class="btn alt" onclick="startDeck('${currentDeck}',true)">+5 new cards</button>` : ''}
             <a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a>
             <a class="btn alt" href="/interactive/spec-quiz/practice.html">📝 Practice Questions</a>
@@ -2686,6 +2694,7 @@
       if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
 
       if ((e.key === ' ' || e.key === 'Enter') && !isFlipped) {
+        if (/^(BUTTON|A|SUMMARY)$/.test(tag)) return;
         e.preventDefault();
         flipCard();
       } else if (['1', '2', '3', '4'].includes(e.key) && isFlipped) {
