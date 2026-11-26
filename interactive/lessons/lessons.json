@@ -53,9 +53,11 @@
               "code": "2c",
               "title": "Biological molecules",
               "spec": "2.7–2.13",
-              "status": "draft",
+              "status": "checked",
               "draftUpdated": "2026-11-26",
-              "versions": []
+              "versions": [
+                "2026-11-26"
+              ]
             },
             {
               "code": "2d",
