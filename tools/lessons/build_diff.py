@@ -148,7 +148,56 @@ def slide_similarity(a: dict, b: dict) -> float:
     return 0.45 * h_sim + 0.40 * t_sim + 0.15 * i_sim
 
 
-def align_and_diff(old_slides: list[dict], new_slides: list[dict], chem_js_changed: bool) -> list[dict]:
+def changed_chem_components(old_js: str | None, new_js: str | None) -> set[str]:
+    """Return the exact set of chem.js data-comp names whose rendering code changed."""
+    if not old_js or not new_js or old_js == new_js:
+        return set()
+
+    def split_comps(src: str) -> dict[str, str]:
+        matches = list(re.finditer(r"C\[['\"]([^'\"]+)['\"]\]\s*=", src))
+        out: dict[str, str] = {}
+        for idx, m in enumerate(matches):
+            name = m.group(1)
+            end = matches[idx + 1].start() if idx + 1 < len(matches) else len(src)
+            chunk = src[m.start():end]
+            # Trim trailing section comment or IIFE closing belonging to the end of the file / next component
+            chunk = re.split(r"\n/\*\s*(?:={4,}|-{4,})", chunk, maxsplit=1)[0]
+            chunk = re.sub(r"\n\}\)\(\);\s*$", "", chunk)
+            out[name] = chunk.strip()
+        return out
+
+    def slice_between(src: str, start_pat: str, end_pat: str) -> str:
+        ms = re.search(start_pat, src)
+        if not ms:
+            return ""
+        me = re.search(end_pat, src[ms.start():])
+        return src[ms.start(): ms.start() + me.start()] if me else src[ms.start():]
+
+    changed: set[str] = set()
+    old_c = split_comps(old_js)
+    new_c = split_comps(new_js)
+    for name in set(old_c) | set(new_c):
+        if old_c.get(name) != new_c.get(name):
+            changed.add(name)
+
+    # Shared helpers that feed multiple components
+    helper_deps = [
+        (r"/\*\s*=+\s*covalent dot-and-cross", r"function molFacts\(", ("dc-mol", "dc-deck", "dc-explorer")),
+        (r"function molFacts\(", r"C\['dc-mol'\]", ("dc-facts", "dc-explorer")),
+        (r"/\*\s*=+\s*ionic dot-and-cross", r"C\['ionic'\]", ("ionic", "ionic-explorer")),
+        (r"/\*\s*=+\s*ionic formula builder", r"C\['formula-builder'\]", ("formula-builder",)),
+        (r"/\*\s*=+\s*particle simulations", r"C\['particles'\]", ("particles",)),
+        (r"const SUBST\s*=", r"C\['state-predictor'\]", ("state-predictor",)),
+        (r"const COND_SUB\s*=", r"C\['conduct-test'\]", ("conduct-test",)),
+    ]
+    for sp, ep, deps in helper_deps:
+        if slice_between(old_js, sp, ep) != slice_between(new_js, sp, ep):
+            changed.update(deps)
+
+    return changed
+
+
+def align_and_diff(old_slides: list[dict], new_slides: list[dict], changed_chem_comps: set[str]) -> list[dict]:
     old_norms = [s["norm"] for s in old_slides]
     new_norms = [s["norm"] for s in new_slides]
     sm = difflib.SequenceMatcher(None, old_norms, new_norms, autojunk=False)
@@ -177,9 +226,9 @@ def align_and_diff(old_slides: list[dict], new_slides: list[dict], chem_js_chang
     entries: list[dict] = []
 
     def needs_chem_engine_diff(s: dict) -> bool:
-        if not chem_js_changed:
+        if not changed_chem_comps:
             return False
-        return any(c in ("dc-mol", "dc-deck", "dc-explorer", "dc-facts", "states-tri", "state-change", "bp-chart", "particles") for c in s["comps"])
+        return any(c in changed_chem_comps for c in s["comps"])
 
     for tag, i1, i2, j1, j2 in ops:
         if tag == "equal":
@@ -306,10 +355,17 @@ def snapshot_base_assets(base_ref: str) -> dict[str, bool]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--base", default="origin/main", help="Git ref to compare staging drafts against")
+    ap.add_argument("--label", default=None, help="Human-readable baseline label shown in the comparer UI")
     args = ap.parse_args()
+
+    base_label = args.label or ("live main" if args.base in ("origin/main", "main") else args.base)
 
     DIFF_DIR.mkdir(parents=True, exist_ok=True)
     asset_changed = snapshot_base_assets(args.base)
+    old_chem_js = git_show(args.base, "interactive/lessons/assets/chem.js")
+    cur_chem_p = ROOT / "interactive/lessons/assets/chem.js"
+    cur_chem_js = cur_chem_p.read_text(encoding="utf-8", errors="replace") if cur_chem_p.exists() else None
+    chem_comps_changed = changed_chem_components(old_chem_js, cur_chem_js)
 
     manifest = json.loads((LESSONS_DIR / "lessons.json").read_text(encoding="utf-8"))
     lessons_out = []
@@ -345,7 +401,7 @@ def main() -> int:
                         for s in new_slides
                     ]
                 else:
-                    entries = align_and_diff(old_slides, new_slides, asset_changed.get("chem.js", False))
+                    entries = align_and_diff(old_slides, new_slides, chem_comps_changed)
 
                 if not entries:
                     continue
@@ -382,6 +438,7 @@ def main() -> int:
 
     out = {
         "baseRef": args.base,
+        "baseLabel": base_label,
         "baseCommit": git_rev_short(args.base),
         "headCommit": git_rev_short("HEAD"),
         "assetChanged": asset_changed,
@@ -391,7 +448,9 @@ def main() -> int:
     data_text = json.dumps(out, ensure_ascii=False, separators=(",", ":"))
     data_path.write_text(data_text, encoding="utf-8")
 
-    print(f"Wrote {data_path.relative_to(ROOT)} ({len(data_text)/1024:.1f} KB) · {len(lessons_out)} lessons changed vs {args.base} ({out['baseCommit']})")
+    print(f"Wrote {data_path.relative_to(ROOT)} ({len(data_text)/1024:.1f} KB) · {len(lessons_out)} lessons changed vs {base_label} ({out['baseCommit']})")
+    if chem_comps_changed:
+        print("  chem.js changed components:", ", ".join(sorted(chem_comps_changed)))
     for l in lessons_out:
         c = l["counts"]
         tag = "NEW" if l["isNew"] else f"status={l['status']}"

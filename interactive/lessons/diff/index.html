@@ -180,10 +180,11 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
     return;
   }
 
-  document.getElementById('baseInfo').textContent = `Comparing staging (${DATA.headCommit}) vs ${DATA.baseRef} (${DATA.baseCommit})`;
+  const baseLbl = DATA.baseLabel || DATA.baseRef;
+  document.getElementById('baseInfo').textContent = `Comparing staging (${DATA.headCommit}) vs ${baseLbl} (${DATA.baseCommit})`;
   const drafts = DATA.lessons.filter(l => l.status !== 'checked');
   const checked = DATA.lessons.filter(l => l.status === 'checked');
-  document.getElementById('summaryText').textContent = `${drafts.length} under review · ${checked.length} checked since live`;
+  document.getElementById('summaryText').textContent = `${DATA.lessons.length} lesson${DATA.lessons.length === 1 ? '' : 's'} changed (${drafts.length} under review · ${checked.length} checked)`;
 
   function renderCard(l) {
     const c = l.counts;
@@ -215,12 +216,12 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
   const listEl = document.getElementById('lessonList');
   let html = '';
   if (drafts.length) {
-    html += `<section class="grp"><h2>Needs review <small>drafts modified or added on staging</small></h2>${drafts.map(renderCard).join('')}</section>`;
+    html += `<section class="grp"><h2>Needs review <small>drafts changed vs ${esc(baseLbl)}</small></h2>${drafts.map(renderCard).join('')}</section>`;
   }
   if (checked.length) {
-    html += `<section class="grp"><h2>Checked on staging <small>already marked checked, changed since live</small></h2>${checked.map(renderCard).join('')}</section>`;
+    html += `<section class="grp"><h2>Checked on staging <small>marked checked, changed vs ${esc(baseLbl)}</small></h2>${checked.map(renderCard).join('')}</section>`;
   }
-  if (!html) html = '<p>No lesson differences between staging and live main.</p>';
+  if (!html) html = `<p>No lesson differences vs ${esc(baseLbl)}.</p>`;
   listEl.innerHTML = html;
 
   // Split-screen state
@@ -344,7 +345,7 @@ window.addEventListener('load', function(){
       if (i === slideIdx) c.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     });
 
-    const beforeLabel = s.oldNum ? `Slide ${s.oldNum} / ${activeLesson.oldTotal}` : 'Not in live version';
+    const beforeLabel = s.oldNum ? `Slide ${s.oldNum} / ${activeLesson.oldTotal}` : `Not in ${baseLbl}`;
     const afterLabel = s.newNum ? `Slide ${s.newNum} / ${activeLesson.newTotal}` : 'Removed in staging';
     document.getElementById('beforeNum').textContent = beforeLabel;
     document.getElementById('beforeTitle').textContent = s.oldHtml ? s.title : '';
@@ -362,7 +363,7 @@ window.addEventListener('load', function(){
       s.oldNum ? `${s.oldNum} / ${activeLesson.oldTotal}` : '',
       true,
       activeLesson.isNew ? 'Brand-new lesson' : 'New slide added',
-      activeLesson.isNew ? 'This lesson did not exist on the live site.' : 'This slide did not exist before your staging edits.'
+      activeLesson.isNew ? `This lesson did not exist in ${baseLbl}.` : `This slide did not exist in ${baseLbl}.`
     );
     mountPane(
       document.getElementById('afterWrap'),
