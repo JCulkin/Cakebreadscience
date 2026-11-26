@@ -10,6 +10,12 @@ description: Printable worksheets and booklets (worksheets/, booklets/) — code
   - **Worksheets (`worksheets/`, 2–4 sides):** Single-lesson / sub-topic scaffolded classwork & homework (KS3 + KS4 + Single Award twins), used *during* a topic right after a projector lesson.
   - **Topic Booklets (`booklets/<subject>/<slug>.html` + `…_ms.html`, 10–14 pages):** Whole-topic printed workbooks (class packs, cover work, pre-exam paper revision) with compact `Key ideas` refreshers fading into unguided `★ Exam-style` synthesis. Cover must carry `.cv-title` + `.cv-sub` starting with `Spec X.Y–Z.W` so `node tools/spec/build_index.js` indexes them onto Spec Trackers and Study Guides automatically. Load `booklets/assets/booklet.js` + `/js/home-link.js`; list on `booklets/index.html`.
   - **6-Marker Long-Answer Booklets (`interactive/physics-long-answer/`):** Extended 4–6 mark exam technique with online **black-then-purple** self-marking and a `learned.html` gap bank (also printable).
+- **Concrete research checklist for every worksheet + mark scheme:**
+  - **Worked example + fading:** worked first row (`.ex` italic blue) on KS3/SA/drill tables; worked model or scaffolded starter before unguided KS4 explanations/calculations.
+  - **Refutation:** at least one *"Spot the mistake" / "A student wrote… explain why this is wrong"* (KS4) or guided T/F-and-fix / circle-the-correction check (KS3/SA) targeting a real IGCSE misconception.
+  - **Examiner Key Words (`/js/key-words.js`):** reinforce the exact mark-earning terms for the sheet's spec points; avoid banned/vague exam phrasing (`amount of` for measurable quantities, `reliable` alone, `germs`, `enzymes are killed` outside refutation).
+  - **Attempt-first self-marking (mark schemes):** `.howto` banner at the top (*mark in a different colour, add missing key words*), explicit bulleted credit points with **bolded key words** on extended answers, and **≥2 targeted `.tip` misconception notes** explaining *why* common slips lose marks.
+  - **Cross-layer glue (screen-only):** `worksheets/science.html` links to Topic Booklets and 6-Marker Booklets; individual sheets inject screen-only (`@media print { display: none }`) Flashcards / Practice / Study Guide links via `worksheets/sheet-links.js`.
 
 ## Products
 - **Worksheet** (KS4 and KS3 sets) and **Booklet** (whole topic, 10–14 pages). Built in teaching order
@@ -55,5 +61,5 @@ description: Printable worksheets and booklets (worksheets/, booklets/) — code
   He reviews in Admin → Review → Worksheets (fingerprint of visible text + images + mark scheme).
 - When he approves a sheet (or asks for an edit to a checked one): `node tools/review/keep.js w <path under worksheets/> --why "…"`,
   commit `admin/review-approved.json`, and remove that sheet's "Under review" chip. Your own changes are not kept.
-- **Staging Worksheet Comparer (`/worksheets/diff/`):** whenever you add or edit any worksheet or mark scheme, run `python tools/worksheets/build_diff.py --base <commit-before-prompt> --label "before last prompt"` (or `--base origin/main` for the full release diff) and commit `worksheets/diff/data.json` + `worksheets/diff/base-assets/`.
+- **Staging Worksheet Comparer (`/worksheets/diff/`):** whenever you add or edit any worksheet or mark scheme, run `python tools/worksheets/build_diff.py --base <commit-before-prompt> --label "before last prompt"` (or `node tools/worksheets/build_diff.js --base <commit-before-prompt> --label "before last prompt"` where Python is unavailable) and commit `worksheets/diff/data.json` + `worksheets/diff/base-assets/`.
 - Changelog line under `## [Unreleased]` → Added / Changed.
