@@ -14,10 +14,11 @@
               "code": "1",
               "title": "Living organisms (1a characteristics, 1b variety)",
               "spec": "1.1–1.4",
-              "status": "draft",
+              "status": "checked",
               "draftUpdated": "2026-11-26",
               "versions": [
-                "2026-11-23"
+                "2026-11-23",
+                "2026-11-26"
               ]
             }
           ]
@@ -41,10 +42,11 @@
               "code": "2b",
               "title": "Cell structure",
               "spec": "2.2–2.4",
-              "status": "draft",
+              "status": "checked",
               "draftUpdated": "2026-11-26",
               "versions": [
-                "2026-11-25"
+                "2026-11-25",
+                "2026-11-26"
               ]
             },
             {
@@ -72,9 +74,11 @@
               "code": "2f",
               "title": "Respiration",
               "spec": "2.34–2.39",
-              "status": "draft",
+              "status": "checked",
               "draftUpdated": "2026-11-26",
-              "versions": []
+              "versions": [
+                "2026-11-26"
+              ]
             },
             {
               "code": "2g",
@@ -204,11 +208,12 @@
               "code": "1f",
               "title": "Ionic bonding",
               "spec": "1.37–1.43",
-              "status": "draft",
+              "status": "checked",
               "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-18",
-                "2026-11-22"
+                "2026-11-22",
+                "2026-11-26"
               ]
             },
             {

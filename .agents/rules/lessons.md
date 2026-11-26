@@ -33,7 +33,7 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 8. Photos of individual organisms, not scenery; short captions; many examples → rolodex.
 9. **Question-bank diagrams first** (`dq` component, ids from `DQ.LIST` + a fixed seed) before drawing new ones.
 10. Mnemonics/cartoons big; acrostics vertical (Mrs C Gren).
-11. Ions = balls with a floating charge; dot-and-cross only where the spec asks (using the overlapping-lens model with **no light background fill** and **dead-centred nuclei** so shared electrons never overlap orbital rings). Equations = colour-coded boxes on one line where possible, centred with **reaction arrows vertically aligned** when stacked, and a **large, well-spaced arrow** separating reactants and products. Data tables colour-shaded, highest at top. Readable colours on dark slides.
+11. Ions = balls with a floating charge; dot-and-cross only where the spec asks (using the overlapping-lens model with **no light background fill** on the shells and nuclei nudged away from shared overlaps so orbital rings don't cross nuclei). Equations = colour-coded boxes on one line where possible, centred with **reaction arrows vertically aligned** when stacked, and a **large, well-spaced arrow** separating reactants and products. Data tables colour-shaded, highest at top. Readable colours on dark slides.
 12. Keep the deck's images, links (one linkcard per slide), order and examples. 13. **Never mention Separate Science.**
 14. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
 15. Tags only "Double Award only" / "Beyond IGCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
