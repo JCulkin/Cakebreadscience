@@ -5,7 +5,7 @@ description: Flashcards (Flashcards/) and Examiner Key Words (js/key-words.js) â
 # Flashcards & Examiner Key Words (`Flashcards/`, `js/key-words.js`)
 
 ## Role in the site learning strategy
-- Flashcards own **Layer 2 (cold recall of AO1 facts + mark-scheme wording)**, kept alive over months via spaced repetition (SM-2).
+- Flashcards own **Layer 2 (cold recall of AO1 facts + mark-scheme wording)**, grounded in the **Testing Effect** (Roediger & Karpicke), **Spaced Repetition** (SM-2 / Cepeda), and **Transfer-Appropriate Processing** (Option A securing cap + `PROG.weak` feeding missed cards into next-day Questing/Practice).
 - **Good flashcard targets:** definitions, examiner key words, chemical tests & colour changes, equations & units, ion charges/formulae, organelle/structure functions, circuit symbols, core AO3 practical steps/variables.
 - **Bad flashcard targets:** long prose essays (belong in Worksheets / Long-Answer) and calculation/graph/diagram transfer drills (belong in Questing / Practice).
 - **Keep self-grading fast and simple (1â€“4):** Again / Hard / Good / Easy with 1-tap / 1-key grading (no tickable checklists, no mandatory "type it first" box). Format multi-point backs as crisp bulleted idea units with bolded mark-scheme terms.

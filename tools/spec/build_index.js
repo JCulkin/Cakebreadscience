@@ -100,6 +100,20 @@ for (const subj of Object.keys(L)) {
   }
 }
 
+/* ---- topic booklets ---- */
+for (const subj of Object.keys(L)) {
+  const dir = path.join(ROOT, 'booklets', subj);
+  if (!fs.existsSync(dir)) continue;
+  for (const f of fs.readdirSync(dir).sort()) {
+    if (!f.endsWith('.html') || f.endsWith('_ms.html')) continue;
+    const h = fs.readFileSync(path.join(dir, f), 'utf8');
+    const spec = (h.match(/class="cv-sub"[^>]*>[^<]*?Spec\s+([\d.,\s–\-—]+)/i) || h.match(/class="ps-spec"[^>]*>\s*([\d.,\s–\-—]+)/) || [])[1];
+    if (!spec) continue;
+    const title = ((h.match(/class="cv-title"[^>]*>([\s\S]*?)<\/div>/) || h.match(/<title>([^<·]*)/) || [])[1] || f).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+    addRes('booklet', `Topic booklet: ${title}`, `/booklets/${subj}/${f}`, expand(L[subj], spec));
+  }
+}
+
 /* ---- physics long answers ---- */
 const lctx = vm.createContext({ console, Math, Date, JSON });
 vm.runInContext(rd('interactive/physics-long-answer/questions-data.js') + '\n;globalThis.T = TOPICS;', lctx);

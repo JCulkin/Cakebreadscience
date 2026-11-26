@@ -4,6 +4,10 @@ description: Games and interactives (interactive/cell-game, elements-game, typin
 ---
 # Games, interactives and Eleven Students
 
+## Role in the site learning strategy
+- **Curriculum interactives** (`Elements 1–20`, `What The Cell`, `Type Fast or Perish v2`, `Physics Equations`, `Waves`, `Chemical Tests`, `Food Webs`, etc.) build **visual/symbolic automaticity & fluency** so core facts don't clog working memory during multi-step AO2/AO3 problems (indexed in `tools/spec/build_index.js`).
+- **`Elevenstudents/`** are student-made reward games — keep them clearly separate from core curriculum tools and gated behind `/js/game-gate.js`.
+
 ## Game access
 - Games need a signed-in, teacher-approved account: `<script src="/js/game-gate.js"></script>` **first in `<head>`**
   (`data-mode="log"` = log only, never blocks). Approval at `/play/`; the teacher approves in Admin → Games.

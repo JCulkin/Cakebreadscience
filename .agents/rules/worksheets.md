@@ -4,8 +4,12 @@ description: Printable worksheets and booklets (worksheets/, booklets/) — code
 ---
 # Worksheets and booklets
 
-## Role in the site learning strategy
-- Worksheets and booklets own **Layer 4 (written exam practice — assembling recalled facts into coherent 2–6 mark answers)**, complementing Flashcards (AO1 recall) and Questing/Practice (AO2/AO3 application & misconception checking).
+## Role in the site learning strategy & research principles
+- Own **Layer 4 (written exam practice — assembling recalled facts into coherent 2–6 mark answers)**, grounded in **Faded Worked-Example Scaffolding** (Sweller; Pearson & Gallagher: worked first rows, word banks on KS3/SA, progressive ramp `recall → single-step → multi-step → unfamiliar`) and **Attempt-First Self-Explanation** (students write answers first, then mark in another colour pen using the mark scheme).
+- **Three distinct Layer-4 formats (do not blur them):**
+  - **Worksheets (`worksheets/`, 2–4 sides):** Single-lesson / sub-topic scaffolded classwork & homework (KS3 + KS4 + Single Award twins), used *during* a topic right after a projector lesson.
+  - **Topic Booklets (`booklets/<subject>/<slug>.html` + `…_ms.html`, 10–14 pages):** Whole-topic printed workbooks (class packs, cover work, pre-exam paper revision) with compact `Key ideas` refreshers fading into unguided `★ Exam-style` synthesis. Cover must carry `.cv-title` + `.cv-sub` starting with `Spec X.Y–Z.W` so `node tools/spec/build_index.js` indexes them onto Spec Trackers and Study Guides automatically. Load `booklets/assets/booklet.js` + `/js/home-link.js`; list on `booklets/index.html`.
+  - **6-Marker Long-Answer Booklets (`interactive/physics-long-answer/`):** Extended 4–6 mark exam technique with online **black-then-purple** self-marking and a `learned.html` gap bank (also printable).
 
 ## Products
 - **Worksheet** (KS4 and KS3 sets) and **Booklet** (whole topic, 10–14 pages). Built in teaching order

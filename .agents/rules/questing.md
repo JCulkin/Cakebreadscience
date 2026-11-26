@@ -4,6 +4,12 @@ description: Cakebread Questing (interactive/spec-quiz/) — the revision game, 
 ---
 # Cakebread Questing (`interactive/spec-quiz/`)
 
+## Role in the site learning strategy & research principles
+- Owns **Layer 3 (application, misconception busting & spaced proof)** alongside plain Practice (`practice.html`):
+  - **Desirable Difficulties & Distributed Practice (Bjork):** Two-different-days securing + 21-day rust decay prove durable retention; immediate **Second Wind** retries are intentionally *excluded* from securing so short-term correction doesn't fake long-term mastery.
+  - **Interleaving & Scaffolding:** `buildMission` mixes ready-to-secure → rusty → missed → new and climbs L1 → L2 → L3.
+  - **Misconception Refutation & Transfer:** Plausible misconception distractors + elaborative feedback; Option A caps flashcards at half of securing so quiz questions prove AO2/AO3 transfer.
+
 ## Names (the user's)
 - The whole thing is **Cakebread Questing**; the map is always **Breadventure Land**. Game home = **the Cakelab** (`adventurer-home.html`).
   The mascot is the Professor; the dragon is Crumbmaw. One shared world, no classes, ≤ ~5 players at once.

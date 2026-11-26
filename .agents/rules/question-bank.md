@@ -4,6 +4,9 @@ description: The question bank (interactive/spec-quiz/questions.js, gens.js, dia
 ---
 # The question bank
 
+## Role in the site learning strategy
+- Feeds **Layer 3 (AO1 entry → AO2/AO3 application & misconception refutation)** across Questing, Practice, Quick/Team Quiz, Set Work, and Lesson `[data-comp="dq"]` checks: **L1** = low-friction recall entry, **L2–L3** = calculations, graphs, seeded diagrams (`gens.js` / `diagq.js`) and unfamiliar scenarios for near/far transfer, with plausible misconception distractors + elaborative feedback (Tippett / Butler).
+
 ## Files and ids
 - `interactive/spec-quiz/questions.js`: `M(id, question, [correct, wrong, wrong, wrong], why)` (**correct first**; pages shuffle),
   `T(id, statement, true|false, why)`, `MH` / `TH` = ★ harder. Ids `<point>-NN` (`P3.5-03`).

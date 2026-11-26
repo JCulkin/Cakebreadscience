@@ -47,15 +47,17 @@
     if (typeof CARD_COUNTS !== 'undefined') return pts.reduce((n, p) => n + (CARD_COUNTS[p.key] || 0), 0);
     return 1;
   }
-  function lessonsFor(pts) {
+  function resFor(pts, kind) {
     const idx = specIdx(); if (!idx || !idx.pts || !idx.res) return [];
     const seen = new Set(), out = [];
     pts.forEach(p => ((idx.pts[p.key] || {}).r || []).forEach(i => {
       const r = idx.res[i];
-      if (r && r[0] === 'lesson' && !seen.has(r[2])) { seen.add(r[2]); out.push(r); }
+      if (r && r[0] === kind && !seen.has(r[2])) { seen.add(r[2]); out.push(r); }
     }));
     return out;
   }
+  const lessonsFor = pts => resFor(pts, 'lesson');
+  const bookletsFor = pts => resFor(pts, 'booklet');
   const fmtDate = d => { if (!d) return ''; try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return d; } };
   function daysTo(d) { if (!d) return null; const a = new Date(d + 'T12:00:00'), b = new Date(); b.setHours(12, 0, 0, 0); return Math.round((a - b) / 864e5); }
 
@@ -108,13 +110,13 @@
         <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Cakebread Questing</a>${hasCardsAll ? `<a class="sg-btn f" href="${flashcardsUrl(keys, T)}">🃏 Flashcards</a>` : ''}</div>` : ''}`;
     let lastTopic = '';
     const body = list.map(x => {
-      const sb = x.sb, code = sb.topic + sb.l, subToks = tokens([x]), subCards = cardCount(x.pts) > 0, subLessons = mode === 'online' ? lessonsFor(x.pts) : [];
+      const sb = x.sb, code = sb.topic + sb.l, subToks = tokens([x]), subCards = cardCount(x.pts) > 0, subLessons = mode === 'online' ? lessonsFor(x.pts) : [], subBooklets = mode === 'online' && course !== 'SA' ? bookletsFor(x.pts) : [];
       const th = sb.L + sb.topic !== lastTopic ? `<h2 class="sg-topic" style="--c:${COL[sb.L]}">${SUBJ[sb.L]} ${sb.topic} · ${esc(sb.topicName)}</h2>` : '';
       lastTopic = sb.L + sb.topic;
       return th + `<section class="sg-sub" style="--c:${COL[sb.L]}">
         <h3><span>${code}</span> ${esc(sb.name)}</h3>
         <table class="sg-pts"><tbody>${x.pts.map(p => `<tr><td class="sg-code">${esc(p.id)}</td><td class="sg-txt">${window.SPECPT ? SPECPT.heading(p) : ''}${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</td></tr>`).join('')}</tbody></table>
-        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', subToks, `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', subToks, `${T} · ${code}`)}">⚔️ Questing</a>${subCards ? `<a class="sg-btn sm f" href="${flashcardsUrl(subToks, `${T} · ${code}`)}">🃏 Flashcards</a>` : ''}${subLessons.map(r => `<a class="sg-btn sm l" href="${esc(r[2])}">🎓 Lesson</a>`).join('')}</div>` : ''}
+        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', subToks, `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', subToks, `${T} · ${code}`)}">⚔️ Questing</a>${subCards ? `<a class="sg-btn sm f" href="${flashcardsUrl(subToks, `${T} · ${code}`)}">🃏 Flashcards</a>` : ''}${subLessons.map(r => `<a class="sg-btn sm l" href="${esc(r[2])}">🎓 Lesson</a>`).join('')}${subBooklets.map(r => `<a class="sg-btn sm f" href="${esc(r[2])}">📚 Booklet</a>`).join('')}</div>` : ''}
       </section>`;
     }).join('');
     const kwSec = kwGroups.length ? `<section class="sg-kws"><h2 class="sg-topic" style="--c:#111">Key words</h2>

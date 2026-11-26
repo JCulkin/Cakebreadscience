@@ -42,8 +42,7 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
   `<details>` inside it) → Last 14 days. Every database read has a time limit; it shows a saved copy if the network blocks Firebase.
 
 ## Spec trackers — `/specifications/`
-- Thin pages + `/js/tracker.js` + `/css/tracker.css` + `/js/spec-point.js` + `/js/course.js`. Status = evidence only (secured / rusty / learning);
-  students' confidence in `specProgress/{uid}.conf`. Anchors = point keys; `?f=check|learning|rusty|class`. Maths tracker is the old page.
+- Thin pages + `/js/tracker.js` + `/css/tracker.css` + `/js/spec-point.js` + `/js/course.js`. Grounded in **Metacognitive Calibration** (fighting the Illusion of Competence — Bjork): status colour = objective 2-day proof (secured / rusty / learning) compared against student self-rated confidence (`specProgress/{uid}.conf`), surfacing over-confident unproved points via `?f=check`. Resource drawer lists lessons, worksheets, **topic booklets**, 6-markers, equations, topic interactives (`js/spec-index.js`) and Examiner Key Words (`js/key-words.js`). Maths tracker is the old page.
 
 ## Homepage and shared scripts
 - `index.html`: Professor logo + "Cakebread Science", sign-in box (admins also ⚙️ Admin, 👥 Team quiz), "What's new" box

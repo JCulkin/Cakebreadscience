@@ -101,7 +101,7 @@
   }
 
   /* ---------- resources from the one spec index ---------- */
-  const KIND = { lesson: '🎓 Lesson', sheet: '📄 Worksheet', long: '✍️ 6-mark question', eq: '🧮 Equation', game: '🎮 Interactive' };
+  const KIND = { lesson: '🎓 Lesson', sheet: '📄 Worksheet', booklet: '📚 Topic booklet', long: '✍️ 6-mark question', eq: '🧮 Equation', game: '🎮 Interactive' };
   const resOf = k => ((IDX.pts[k] || {}).r || []).map(i => IDX.res[i]).filter(Boolean);
   const cardsOf = k => (IDX.pts[k] || {}).c || (QEx() && QEx().CARDS_ON[k]) || 0;
   const kwOf = k => {
