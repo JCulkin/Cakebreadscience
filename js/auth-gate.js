@@ -22,7 +22,8 @@
 
   var isPreviewHost = function () {
     var h = (location.hostname || '').toLowerCase();
-    return /--cakebreadscience\.netlify\.app$/.test(h);
+    if (/^(www\.)?cakebreadscience\.com$/.test(h)) return false;
+    return !/[?&]testgate=1(?:&|$)/.test(location.search || '');
   };
   var isFramed = function () {
     try { return window.self !== window.top; } catch (e) { return true; }
@@ -100,8 +101,7 @@
     try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
   }
   function hasPreviewBypass() {
-    if (!isPreviewHost()) return false;
-    try { return sessionStorage.getItem(PREVIEW_KEY) === '1'; } catch (e) { return false; }
+    return isPreviewHost();
   }
 
   var state = { status: 'checking', user: null, reason: '', mode: accessFor(location.pathname) };
