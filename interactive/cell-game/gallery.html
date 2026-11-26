@@ -82,20 +82,20 @@ button{font:inherit;cursor:pointer}
 const C=window.Cells,$=id=>document.getElementById(id);
 /* Keep in step with PHOTOS and MYSTERY in game.js */
 const PHOTOS=[
- ['saccharomyces_cerevisiae.jpg','fungus','Yeast cells (scanning electron microscope), some budding',['Who am I','Zoom','Odd one out','Mystery']],
- ['candida_albicans.jpg','fungus','Candida, a fungus, with hyphae and round spores',['Who am I','Zoom','Odd one out']],
- ['rhizopus_stolonifer.jpeg','fungus','Bread mould: hyphae with black spore cases',['Who am I','Zoom','Odd one out']],
- ['mucor_mucedo.jpg','fungus','Mucor mould growing as a fluffy mycelium',['Who am I','Zoom','Odd one out','Mystery']],
- ['escherichia_coli.jpg','bacteria','E. coli, rod-shaped (scanning electron microscope)',['Who am I','Zoom','Odd one out','Mystery']],
- ['lactobacillus_acidophilus.jpg','bacteria','Lactobacillus, rod-shaped bacteria',['Who am I','Zoom','Odd one out','Mystery']],
- ['streptococcus_pneumoniae.jpg','bacteria','Pneumococcus, spherical bacteria (stained)',['Who am I','Zoom','Odd one out','Mystery']],
- ['bacillus_subtilis.jpg','bacteria','Rod-shaped bacteria (stained)',['Who am I','Zoom','Odd one out']],
- ['staphylococcus_aureus.jpg','bacteria','Spherical bacteria in clusters (stained)',['Who am I','Zoom','Odd one out']],
- ['pisum_sativum.jpg','plant','Pea plant in flower (mystery answer reveal)',['Mystery']],
- ['zea_mays.jpeg','plant','Maize (mystery answer reveal)',['Mystery']],
- ['elodea_canadensis.jpg','plant','Pondweed, Elodea (mystery answer reveal)',['Mystery']],
- ['musca_domestica.jpeg','animal','Housefly (mystery answer reveal)',['Mystery']],
- ['agaricus_bisporus.jpg','fungus','Mushrooms (mystery answer reveal)',['Mystery']]
+ ['saccharomyces_cerevisiae.webp','fungus','Yeast cells (scanning electron microscope), some budding',['Who am I','Zoom','Odd one out','Mystery']],
+ ['candida_albicans.webp','fungus','Candida, a fungus, with hyphae and round spores',['Who am I','Zoom','Odd one out']],
+ ['rhizopus_stolonifer.webp','fungus','Bread mould: hyphae with black spore cases',['Who am I','Zoom','Odd one out']],
+ ['mucor_mucedo.webp','fungus','Mucor mould growing as a fluffy mycelium',['Who am I','Zoom','Odd one out','Mystery']],
+ ['escherichia_coli.webp','bacteria','E. coli, rod-shaped (scanning electron microscope)',['Who am I','Zoom','Odd one out','Mystery']],
+ ['lactobacillus_acidophilus.webp','bacteria','Lactobacillus, rod-shaped bacteria',['Who am I','Zoom','Odd one out','Mystery']],
+ ['streptococcus_pneumoniae.webp','bacteria','Pneumococcus, spherical bacteria (stained)',['Who am I','Zoom','Odd one out','Mystery']],
+ ['bacillus_subtilis.webp','bacteria','Rod-shaped bacteria (stained)',['Who am I','Zoom','Odd one out']],
+ ['staphylococcus_aureus.webp','bacteria','Spherical bacteria in clusters (stained)',['Who am I','Zoom','Odd one out']],
+ ['pisum_sativum.webp','plant','Pea plant in flower (mystery answer reveal)',['Mystery']],
+ ['zea_mays.webp','plant','Maize (mystery answer reveal)',['Mystery']],
+ ['elodea_canadensis.webp','plant','Pondweed, Elodea (mystery answer reveal)',['Mystery']],
+ ['musca_domestica.webp','animal','Housefly (mystery answer reveal)',['Mystery']],
+ ['agaricus_bisporus.webp','fungus','Mushrooms (mystery answer reveal)',['Mystery']]
 ];
 (window.WIKI_PHOTOS||[]).forEach(w=>PHOTOS.push([w.src.replace('img/',''),w.group,w.cap,['Who am I','Zoom','Odd one out'],w]));
 const FIELDS={animal:['cheek'],plant:['onion','elodea'],fungus:['yeast','hyphae'],bacteria:['rods','cocci']};
