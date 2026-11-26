@@ -126,7 +126,7 @@ function endGame(){if(!G)return;clearInterval(G.timer);cancelAnimationFrame(G.ra
   // like a typing test, count the correctly typed letters of the word you were halfway through when time ran out
   if(g.mode==='sprint'&&g.line&&g.line[g.pos]){const t=g.line[g.pos].w.toLowerCase(),v=(($('tb_in')||{}).value||'').toLowerCase();let k=0;while(k<v.length&&k<t.length&&v[k]===t[k])k++;g.chars+=k;}
   const el=g.mode==='sprint'?SPRINT_T/60:g.clock/60,wpm=el>0?Math.round(g.chars/5/el):0,acc=g.keys?Math.round((g.keys-g.errors)/g.keys*100):100;
-  const key='best:'+g.mode,best=store.get(key)||0,nb=g.score>best;if(nb)store.set(key,g.score);
+  const key='best:v2:'+g.mode,best=store.get(key)||0,nb=g.score>best;if(nb)store.set(key,g.score);
   const missed=Object.entries(g.missed);
   $('results').innerHTML=`<div class="card"><div class="in">
     <h2>${g.mode==='sprint'?'Sixty-Second Sprint':'Hard mode'}${g.mode==='storm'?' · game over':''}</h2>
@@ -149,12 +149,12 @@ function speedScale(w){const MAX=130,pc=v=>Math.min(100,v/MAX*100);
     <p>${band}</p><p class="small">Averages are for adults on a typing test (studies by Aalto University and the University of Cambridge). Expect a lower speed here than on a typing test such as Monkeytype: those use short everyday words (about 5 letters), while words here average 11 letters, with tricky spellings like oesophagus, and every mistake has to be fixed.</p></div>`;}
 
 /* ===================== HIGH SCORES ===================== */
-function resultsBoard(board,score,wpm){const el=$('hsArea');if(!el||!window.LB)return;LB.panel(el,'typing_'+board,{score,extra:wpm+' wpm',title:'Leaderboard · '+(board==='sprint'?'Sixty-Second Sprint':'Hard mode')});}
+function resultsBoard(board,score,wpm){const el=$('hsArea');if(!el||!window.LB)return;LB.panel(el,'typing_v2_'+board,{score,extra:wpm+' wpm',title:'Leaderboard v2 · '+(board==='sprint'?'Sixty-Second Sprint':'Hard mode'),archiveBoard:'typing_'+board,archiveLabel:'View v1 archive leaderboard'});}
 function hiscores(){location.href='/leaderboards/#typing';}
 
 /* ===================== MENU ===================== */
 function stop(){if(G){clearInterval(G.timer);clearTimeout(G.cd);cancelAnimationFrame(G.raf);G.over=true;}G=null;}
-function menu(){stop();const b1=store.get('best:sprint'),b2=store.get('best:storm');$('bestSprint').textContent=b1?'Your best: '+b1:'';$('bestStorm').textContent=b2?'Your best: '+b2:'';show('menu');}
+function menu(){stop();const b1=store.get('best:v2:sprint'),b2=store.get('best:v2:storm');$('bestSprint').textContent=b1?'Your v2 best: '+b1:'';$('bestStorm').textContent=b2?'Your v2 best: '+b2:'';show('menu');}
 $('sprintBtn').onclick=startSprint;$('stormBtn').onclick=startStorm;$('hsBtn').onclick=hiscores;
 $('quit').onclick=()=>{if(G&&G.mode==='storm')pause(true);if(confirm('Quit this game?'))menu();else if(G&&G.mode==='storm')pause(false);};
 window.TGame={startSprint,startStorm,menu,get G(){return G;}};

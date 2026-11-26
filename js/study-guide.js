@@ -39,6 +39,23 @@
   }
   const subsFor = course => subs().filter(sb => pointsFor(sb, course).length);
   const reviseUrl = (mode, keys, title) => `${Q}${mode === 'quest' ? 'adventurer-mission.html' : 'practice.html'}?subs=${keys.join(',')}&n=${N}&t=${encodeURIComponent(title || '')}`;
+  const flashcardsUrl = (keys, title) => `/Flashcards/?subs=${keys.join(',')}&t=${encodeURIComponent(title || '')}`;
+  const specIdx = () => (typeof SPEC_INDEX !== 'undefined' && SPEC_INDEX) || window.SPEC_INDEX || null;
+  function cardCount(pts) {
+    const idx = specIdx();
+    if (idx && idx.pts) return pts.reduce((n, p) => n + ((idx.pts[p.key] || {}).c || 0), 0);
+    if (typeof CARD_COUNTS !== 'undefined') return pts.reduce((n, p) => n + (CARD_COUNTS[p.key] || 0), 0);
+    return 1;
+  }
+  function lessonsFor(pts) {
+    const idx = specIdx(); if (!idx || !idx.pts || !idx.res) return [];
+    const seen = new Set(), out = [];
+    pts.forEach(p => ((idx.pts[p.key] || {}).r || []).forEach(i => {
+      const r = idx.res[i];
+      if (r && r[0] === 'lesson' && !seen.has(r[2])) { seen.add(r[2]); out.push(r); }
+    }));
+    return out;
+  }
   const fmtDate = d => { if (!d) return ''; try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return d; } };
   function daysTo(d) { if (!d) return null; const a = new Date(d + 'T12:00:00'), b = new Date(); b.setHours(12, 0, 0, 0); return Math.round((a - b) / 864e5); }
 
@@ -83,20 +100,21 @@
     const kwGroups = list.map(x => ({ x, kw: keyWords(x.pts, seen, allTxt, course) })).filter(k => k.kw.length);
     const label = course === 'SA' ? 'Single Award' : 'Double Award';
     const dd = daysTo(g.date), T = g.title || 'Study guide';
+    const allPts = list.flatMap(x => x.pts), hasCardsAll = cardCount(allPts) > 0;
     const head = `<header class="sg-head"><div class="sg-hl"><h1>${esc(T)}</h1>
       ${g.date ? `<p class="sg-date">📅 ${esc(fmtDate(g.date))}${mode === 'online' && dd !== null ? (dd > 1 ? ` · in ${dd} days` : dd === 1 ? ' · tomorrow' : dd === 0 ? ' · today' : '') : ''}</p>` : ''}</div>
       <div class="sg-course">${label}</div></header>
-      ${mode === 'online' && keys.length ? `<div class="sg-rev big"><span style="flex:1 1 100%"><b>Revise all of it:</b> ${N} questions at a time on exactly these points, new ones each go.</span>
-        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Cakebread Questing</a></div>` : ''}`;
+      ${mode === 'online' && keys.length ? `<div class="sg-rev big"><span style="flex:1 1 100%"><b>Revise all of it:</b> ${N} questions at a time on exactly these points, or drill their flashcards.</span>
+        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Cakebread Questing</a>${hasCardsAll ? `<a class="sg-btn f" href="${flashcardsUrl(keys, T)}">🃏 Flashcards</a>` : ''}</div>` : ''}`;
     let lastTopic = '';
     const body = list.map(x => {
-      const sb = x.sb, code = sb.topic + sb.l;
+      const sb = x.sb, code = sb.topic + sb.l, subToks = tokens([x]), subCards = cardCount(x.pts) > 0, subLessons = mode === 'online' ? lessonsFor(x.pts) : [];
       const th = sb.L + sb.topic !== lastTopic ? `<h2 class="sg-topic" style="--c:${COL[sb.L]}">${SUBJ[sb.L]} ${sb.topic} · ${esc(sb.topicName)}</h2>` : '';
       lastTopic = sb.L + sb.topic;
       return th + `<section class="sg-sub" style="--c:${COL[sb.L]}">
         <h3><span>${code}</span> ${esc(sb.name)}</h3>
         <table class="sg-pts"><tbody>${x.pts.map(p => `<tr><td class="sg-code">${esc(p.id)}</td><td class="sg-txt">${window.SPECPT ? SPECPT.heading(p) : ''}${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</td></tr>`).join('')}</tbody></table>
-        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', tokens([x]), `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', tokens([x]), `${T} · ${code}`)}">⚔️ Questing</a></div>` : ''}
+        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', subToks, `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', subToks, `${T} · ${code}`)}">⚔️ Questing</a>${subCards ? `<a class="sg-btn sm f" href="${flashcardsUrl(subToks, `${T} · ${code}`)}">🃏 Flashcards</a>` : ''}${subLessons.map(r => `<a class="sg-btn sm l" href="${esc(r[2])}">🎓 Lesson</a>`).join('')}</div>` : ''}
       </section>`;
     }).join('');
     const kwSec = kwGroups.length ? `<section class="sg-kws"><h2 class="sg-topic" style="--c:#111">Key words</h2>
@@ -129,6 +147,8 @@
 .sg-rev.big{background:#f6f4ee;border:2px solid #111;padding:8px 10px;margin:0 0 8px}
 .sg-btn{display:inline-block;font:800 14px 'Barlow',Arial;background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;text-decoration:none;border-radius:4px}
 .sg-btn.q{background:#111;color:#fff}
+.sg-btn.f{background:#fff;color:#111}
+.sg-btn.l{background:#e8f5e9;color:#005e22;border-color:#005e22}
 .sg-prog{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}.sg-bar{flex:0 1 220px;height:12px;border:1.5px solid #111;background:#ece7da;display:flex;overflow:hidden}.sg-bar i{display:block;height:100%}.sg-bar .s{background:#16a34a}.sg-bar .l{background:#facc15}.sg-btn.sm{font-size:13px;padding:2px 9px}
 @media print{.sg-rev{display:none}.sg{font-size:12px}.sg h1{font-size:28px}@page{size:A4;margin:12mm}}`;
   let styled = false;
@@ -166,13 +186,13 @@
     const y = window.CBSYear && CBSYear.year, sa = !!(window.CBSCourse && CBSCourse.sa);
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return all; }
-    el.innerHTML = `<div class="card"><h2>Upcoming tests</h2><p class="small muted" style="margin-bottom:6px">What's in each test, and ${N} revision questions at a time on exactly those spec points.</p>
-      ${mine.map(g => { const d = daysTo(g.date), k = tokens(chosen(g)), pr = progress(g);
+    el.innerHTML = `<div class="card"><h2>Upcoming tests</h2><p class="small muted" style="margin-bottom:6px">What's in each test, with flashcards and ${N} revision questions at a time on exactly those spec points.</p>
+      ${mine.map(g => { const d = daysTo(g.date), ch = chosen(g), k = tokens(ch), pr = progress(g), hasCards = cardCount(ch.flatMap(x => x.pts)) > 0;
         const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
           <span class="small"><b>${pr.sec} of ${pr.n}</b> spec points secured${pr.started ? ` · ${pr.started} started` : ''}${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
         return `<div class="sg-row" style="border-top:1px solid #e3ddcf;padding:8px 0"><b style="font-size:16px">📖 ${esc(g.title || 'Test')}</b>${g.date ? ` <span class="small muted">· ${esc(fmtDate(g.date))}${d > 1 ? ` · in ${d} days` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}</span>` : ''}
-          ${bar}<div class="sg-rev"><a class="sg-btn" style="background:#fff" href="/guide/?id=${encodeURIComponent(g.id)}">📄 Study guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}">⚔️ Revise in Questing</a></div></div>`; }).join('')}</div>`;
+          ${bar}<div class="sg-rev"><a class="sg-btn" style="background:#fff" href="/guide/?id=${encodeURIComponent(g.id)}">📄 Study guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}">⚔️ Revise in Questing</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}">🃏 Flashcards</a>` : ''}</div></div>`; }).join('')}</div>`;
     return all;
   }
-  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, progress, reviseUrl, fmtDate, daysTo, ADVICE };
+  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, progress, reviseUrl, flashcardsUrl, fmtDate, daysTo, ADVICE };
 })();

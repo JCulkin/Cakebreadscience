@@ -35,7 +35,7 @@ firebase-config → firebase app/auth/firestore/database compat 9.22.2 → `spec
 
 ## The engine — `questing-engine.js` (QE)
 - **Secured question** = right first time on two different days; a wrong answer drops it back; true/false counts half.
-- **Secured spec point** = secured questions + secured flashcards ≥ min(4, its question value), or every flashcard on it (≥ 2) secured.
+- **Secured spec point** = secured questions + capped secured flashcards ≥ min(4, its question value). Flashcards contribute at most **half** of `need` (`Math.floor(need / 2)`, normally 2 of 4), so flashcards alone cannot secure a spec point — students must prove the rest with quiz questions.
   **Rusty** after 21 days without a correct answer; one correct polishes it. These rules drive trackers, To do, study guides and admin.
 - XP 5 / 7 / 10 per right answer at question level 1 / 2 / 3; +20 per secured question; +100 first time a point is secured.
 - `buildMission(keys, fill, {n, avoid})`: ready-to-secure → rusty → got wrong → new (~40% L1 / 40% L2 / 20% L3), sorted by level,
@@ -71,11 +71,8 @@ firebase-config → firebase app/auth/firestore/database compat 9.22.2 → `spec
 - The night writes `world` field by field and players' states only in `NIGHT_FIELDS`, so it can't overwrite someone moving at that moment.
 
 ## Flashcards — `/Flashcards/`
-- Cards in `Flashcards/data/<deck>.json` `{id, front, back, spec, topic}` (biology, chemistry, physics, physics-eqns; 914 cards), ids from
-  Anki so SM-2 progress (`users/{uid}.progress`) carries over. Converter `Flashcards/tools/apkg_to_json.py` also writes `cards.js` CARD_COUNTS.
-- **The user checked every card himself.** A flashcards overhaul is planned (types, shorter backs, diagrams, stronger securing) but waits for
-  his decisions — don't start it unasked. Known gap: Flashcards shows nothing if Firebase is blocked.
-- Card secured = Good/Easy on two different days. Today's cards (≤ 15) done = the day's revision (+1 move, loot).
+- See `.agents/rules/flashcards.md` for full rules (data, permanent IDs, SM-2, Single Award, deep links, and `js/key-words.js`).
+- Card secured = Good/Easy on two different days (counts for up to half of a spec point's securing target). Today's cards (≤ 15) done = the day's revision (+1 move, loot).
 
 ## Admin pieces for the game
 - `/admin/showcase.html` = everything in the game drawn live from the files (open without sign-in; holds no student data).

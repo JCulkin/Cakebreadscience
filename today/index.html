@@ -93,6 +93,7 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 <script src="/js/admin-config.js"></script>
 <script src="/js/year.js"></script>
 <script src="/js/school.js"></script>
+<script src="/js/spec-index.js"></script>
 <script src="/js/study-guide.js"></script>
 <script>
 /* To do (10 Nov 2026): one page that answers "what should I do today?" across the site — the v4 "one revision journey".
@@ -158,14 +159,17 @@ async function draw() {
   }
 
   /* nearly secured, rusty, weak flashcards */
-  const near = Object.keys(QE.POINT_QS).map(k => [k, QE.pointState(k)]).filter(([, p]) => p.started && !p.secured && p.need - (p.sec + p.cSec) <= 1.5)
-    .sort((a, b) => (a[1].need - a[1].sec - a[1].cSec) - (b[1].need - b[1].sec - b[1].cSec)).slice(0, 6);
+  const gotOf = p => p.got != null ? p.got : Math.min(p.need, (p.sec || 0) + (p.cCredit != null ? p.cCredit : (p.cSec || 0)));
+  const near = Object.keys(QE.POINT_QS).map(k => [k, QE.pointState(k)]).filter(([, p]) => p.started && !p.secured && p.need - gotOf(p) <= 1.5)
+    .sort((a, b) => (a[1].need - gotOf(a[1])) - (b[1].need - gotOf(b[1]))).slice(0, 6);
   const rusty = Object.keys(QE.POINT_QS).filter(k => QE.pointState(k).rusty).slice(0, 6);
   const weak = QE.weakPoints().slice(0, 6);
   const P = k => QE.POINTS[k] || { id: k.slice(1), text: '' };
   const TRK = { B: 'biology', C: 'chemistry', P: 'physics' };
+  const IDX = (typeof SPEC_INDEX !== 'undefined' && SPEC_INDEX) || window.SPEC_INDEX || { pts: {}, res: [] };
+  const resLink = (k, kind, label) => { const idx = ((IDX.pts[k] || {}).r || []).find(i => IDX.res[i] && IDX.res[i][0] === kind); return idx != null ? `<a href="${esc(IDX.res[idx][2])}">${label}</a>` : ''; };
   const row = (k, why) => `<div class="pt"><a class="k ${k[0]}" href="/specifications/${TRK[k[0]]}.html#${k}" title="See it on the spec tracker">${k[0]} ${P(k).id}</a><span class="t">${esc(strip(P(k).text).slice(0, 90))}${strip(P(k).text).length > 90 ? '…' : ''}<small>${why}</small></span>
-    <span class="ac">${QE.POINT_QS[k] ? `<a class="pv" href="${Q}practice.html?point=${k}">📝 Prove it</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Cakebread Questing mission on this point">⚔️ Quiz me</a>` : ''}${QE.CARDS_ON[k] ? `<a href="/Flashcards/?spec=${k}">🃏 Cards</a>` : ''}</span></div>`;
+    <span class="ac">${QE.POINT_QS[k] ? `<a class="pv" href="${Q}practice.html?point=${k}">📝 Prove it</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Cakebread Questing mission on this point">⚔️ Quiz me</a>` : ''}${QE.CARDS_ON[k] ? `<a href="/Flashcards/?spec=${k}">🃏 Cards</a>` : ''}${resLink(k, 'lesson', '🎓 Lesson')}${resLink(k, 'sheet', '📄 Sheet')}</span></div>`;
   /* the student's own tracker ratings: "Confident" but not proved yet */
   const check = conf ? Object.keys(conf).filter(k => conf[k] === 3 && QE.POINT_QS[k] && !QE.pointState(k).secured) : [];
   const checkSub = check.length ? TRK[Object.entries(check.reduce((m, k) => (m[k[0]] = (m[k[0]] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1])[0][0]] : '';
@@ -200,7 +204,7 @@ async function draw() {
       </div>
       <div>
         <div class="card"><h2>The spec</h2><div class="sci">${sciRow('B', 'biology', 'var(--bio)')}${sciRow('C', 'chemistry', 'var(--chem)')}${sciRow('P', 'physics', 'var(--phys)')}</div>
-          <p class="small muted" style="margin-top:8px">Bars = spec points secured (Practice Questions, missions and flashcards).</p><div id="covered"></div></div>
+          <p class="small muted" style="margin-top:8px">Bars = spec points secured (Practice Questions &amp; Questing prove points; flashcards count for up to half).</p><div id="covered"></div></div>
         <div class="card"><h2>Last 14 days</h2><div class="strip">${days.map(d => `<i class="${did(d) ? 'y' : ''}" title="${d}"></i>`).join('')}</div><p class="small muted" style="margin-top:6px">Green = you revised that day.</p></div>
         <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice Questions</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
       </div>

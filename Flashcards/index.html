@@ -1001,7 +1001,7 @@
         <ul>
           <li>Every due card: <strong>+2 XP</strong> (up to 60 a day), <strong>+1 Health</strong> and <strong>+1 mana</strong> for Breadventure Land, and a coin every 5 cards.</li>
           <li>Review <strong>15 cards</strong> in a day (or all due cards if fewer) for <strong>+1 move</strong> and a loot drop.</li>
-          <li>Rate a card Good or Easy on <strong>two different days</strong> to secure it towards its spec point.</li>
+          <li>Rate a card Good or Easy on <strong>two different days</strong> to secure it (flashcards count for up to half of a spec point; prove the rest with Practice or Questing).</li>
           <li>Cards rated Again or Hard flag their spec point for your suggested missions tomorrow.</li>
         </ul>
       </div>
@@ -1596,7 +1596,7 @@
         <div class="q-title">${title}</div>
         <div class="q-bar ${d.done ? 'done' : ''}"><i style="width:${pct}%"></i></div>
         <div class="q-earned">Today: ${d.n} card${d.n === 1 ? '' : 's'} · +${d.xp} XP${d.xp >= QE.CARD.xpCap ? ' (daily max)' : ''} · ❤ +${d.n} Health · 🔮 +${d.n} mana · 🪙 +${d.coins}.
-        A card rated Good or Easy on two different days is secured and counts towards its spec point.</div></div>
+        A card rated Good or Easy on two different days is secured and counts for up to half of its spec point (prove the rest with Practice or Questing).</div></div>
         <a class="q-go" href="/interactive/spec-quiz/adventurer-home.html">Cakelab →</a>`;
     }
     function gain(html) {
@@ -1817,9 +1817,22 @@
       const q = new URLSearchParams(location.search);
       const spec = q.get('spec');
       const sub = q.get('sub');
+      const subs = q.get('subs');
       const topic = q.get('topic');
+      const title = q.get('t');
       const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
-      if (spec) {
+      if (subs) {
+        const toks = new Set(subs.split(',').map(s => s.trim()).filter(Boolean));
+        const cards = Object.values(deckCards).flat().filter(c => (c.spec && toks.has(c.spec)) || (c.sub && toks.has(c.sub)));
+        if (!cards.length) {
+          const dl = document.getElementById('deckList');
+          if (dl) dl.insertAdjacentHTML('beforebegin', `<div class="fc-note" style="background:#fff3c4;border:2px solid #b45309;padding:10px 14px;margin-bottom:12px;font-weight:600">No flashcards are linked to ${esc(title || 'those spec points')} yet — pick a deck below or try Practice Questions.</div>`);
+          return;
+        }
+        const firstL = cards[0].spec ? cards[0].spec[0] : (cards[0].sub ? cards[0].sub[0] : 'B');
+        const label = title ? `${title} · Flashcards (${cards.length})` : `Study guide · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
+        beginSession(shuffle(cards), label, colors[firstL] || '#111', 'topic', cards[0].deck);
+      } else if (spec) {
         const cards = Object.values(deckCards).flat().filter(c => c.spec === spec);
         if (!cards.length) return;
         const L = spec[0];

@@ -4,6 +4,9 @@ description: Printable worksheets and booklets (worksheets/, booklets/) — code
 ---
 # Worksheets and booklets
 
+## Role in the site learning strategy
+- Worksheets and booklets own **Layer 4 (written exam practice — assembling recalled facts into coherent 2–6 mark answers)**, complementing Flashcards (AO1 recall) and Questing/Practice (AO2/AO3 application & misconception checking).
+
 ## Products
 - **Worksheet** (KS4 and KS3 sets) and **Booklet** (whole topic, 10–14 pages). Built in teaching order
   (the user keeps a log of what each group has been taught in his Claude project; ask him if unsure).

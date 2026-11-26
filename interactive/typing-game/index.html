@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script src="/js/game-gate.js" data-mode="log"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Type Fast or Perish - Cakebread Science</title>
+<title>Type Fast or Perish v2 - Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -161,15 +161,15 @@ button{font:inherit;cursor:pointer;color:inherit}
 <main class="wrap">
   <section id="menu">
     <a class="back" href="/">← Home</a>
-    <h1>Type Fast or Perish</h1>
-    <p class="lede">Type GCSE science key words as fast as you can, spelt properly (yes, <i>haemoglobin</i> has an <i>a</i>). Watch out for the occasional wombat, existential teapot or slightly damp parrot.</p>
+    <h1>Type Fast or Perish <span style="color:var(--green2)">v2</span></h1>
+    <p class="lede">Type Edexcel IGCSE examiner key words as fast as you can, spelt properly (yes, <i>haemoglobin</i> has an <i>a</i>). Powered by the site’s reviewed key-words bank — plus the occasional wombat, existential teapot or slightly damp parrot.</p>
     <div class="bigmodes">
       <button class="bigmode" id="sprintBtn" style="--c:#005e22"><span class="diff">Normal</span><h3>Sixty-Second Sprint</h3><p>60 seconds. Type a line of 5 words in order; they stay put so you can see what’s coming, then a fresh line appears. Clean words build a combo up to ×4. Long words score more.</p><span class="best" id="bestSprint"></span></button>
       <button class="bigmode" id="stormBtn" style="--c:#c2185b"><span class="diff">Really hard</span><h3>Hard mode</h3><p>Words fall from the sky and speed up. Start typing any word to lock onto it. Three lives. Improbability events flip, shrink, hide and reverse the words. Type the golden <b>towel</b> to clear the sky.</p><span class="best" id="bestStorm"></span></button>
     </div>
     <div class="key"><span style="--k:var(--bio)">Biology</span><span style="--k:var(--chem)">Chemistry</span><span style="--k:var(--phys)">Physics</span><span style="--k:var(--silly)">Nonsense</span></div>
-    <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 Leaderboards</button></p>
-    <p class="small" style="margin-top:20px">Key words from Edexcel International GCSE Science (Double Award): biology, chemistry and physics, with UK spellings. Capital letters don’t matter. Works best on a real keyboard.</p>
+    <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 Leaderboards (v2 &amp; v1 archive)</button></p>
+    <p class="small" style="margin-top:20px">Version 2 uses the reviewed Edexcel International GCSE Science (Double Award) examiner key words from across the site, with UK spellings. Version 1 scores are kept in the v1 archive leaderboard. Capital letters don’t matter. Works best on a real keyboard.</p>
   </section>
 
   <section id="play" class="hidden">
@@ -188,6 +188,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="/js/firebase-config.js"></script>
 <script src="/js/leaderboards.js"></script>
+<script src="/js/key-words.js"></script>
 <script src="words.js"></script>
 <script src="game.js"></script>
 </body>

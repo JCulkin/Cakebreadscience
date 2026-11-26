@@ -25,7 +25,8 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
 - `/admin/study-guide.html` → printable A4 guide + the student's "Upcoming tests" card on To do + `/guide/?id=…`.
   Data `school/guides/{id} = {title, date, course 'DA'|'SA', years {Y10: true}, subs [...], pts [...], at, by}`. Renderer `/js/study-guide.js`
   (`CBSGuide`: `chosen`, `render`, `todo`, `progress`, `forMe`). User's design: title top left, course top right, no tick boxes, no common
-  mistakes, compact key-words section bound to the chosen points above 4 lines of exam advice; exact spec points selectable.
+  mistakes, compact key-words section bound to the chosen points (filtering `'DA'` terms on Single Award guides) above 4 lines of exam advice;
+  exact spec points selectable. Online view links to Practice (`?subs=`), Questing (`?subs=`), Flashcards (`?subs=`), and matching Lessons.
 - A guide is for one course only: Single Award students don't see a Double Award guide (a "Both" option was offered, not built).
 
 ## Set work, years, teaching

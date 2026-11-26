@@ -12,15 +12,15 @@ description: Games and interactives (interactive/cell-game, elements-game, typin
 
 ## Leaderboards — `/js/leaderboards.js` (LB), page `/leaderboards/`
 - RTDB `gameScores/<board>/<uid>` = {name, score, t, extra}, best kept (transaction). Name = approved Questing name, else first name + initial.
-- Boards `elements_{s1|s2|all}_{rounds|random}`, `cell_{normal|hard}_{full|all}`, `typing_{sprint|storm}`. Old name-only boards
-  (`elements20HighScores`, `typingHighScores`) are read-only history: never delete them. A new board path needs a Firebase rule from the user.
+- Boards `elements_{s1|s2|all}_{rounds|random}`, `cell_{normal|hard}_{full|all}`, `typing_v2_{sprint|storm}` (with `typing_{sprint|storm}` + `typingHighScores` kept read-only as the v1 archive). Old name-only boards
+  (`elements20HighScores`, `typingHighScores`) are read-only history: never delete them. A new board path needs a Firebase rule from the user if `gameScores` doesn't use a `$board` wildcard.
 
 ## The games
 - **What The Cell** `/interactive/cell-game/`: `cells.js` = seeded SVG cell engine (also used by lessons, worksheets and the question bank —
   change carefully), 9 rounds, team mode with steals, 108 Wikimedia micrographs with credits (`img/wiki/photos.js`, `credits.html`).
   Only spec 2.2 structures + plasmid / circular chromosome are named.
 - **Elements 1–20** `/interactive/elements-game/`: spec C1.14–1.24, 1.37–1.38; table design "D" (user's); solo and team modes.
-- **Type Fast or Perish** `/interactive/typing-game/`: science words (UK spelling) + silly phrases (no named creators, no swearing).
+- **Type Fast or Perish v2** `/interactive/typing-game/`: draws directly from `/js/key-words.js` (plus core Double-Award spec terms, UK spelling, zero Separate-Science-only words) + silly phrases (no named creators, no swearing). Uses `typing_v2_{sprint|storm}` boards with read-only access to the archived v1 leaderboards.
 - Older: Physics Equations Trainer, Waves (live); Stock Market Challenge (test page). `interactive/organisms/images/` licences unknown.
 - Images from the web: only CC0 / public domain / CC BY / CC BY-SA, record title, author, licence, URL, and publish credits.
 

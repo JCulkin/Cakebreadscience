@@ -323,10 +323,13 @@ const QE = (() => {
     const ci = cardIdx()[key] || { sec: 0, seen: 0, last: '' }, cTotal = CARDS_ON[key] || 0;
     if (ci.last > last) last = ci.last;
     const need = Math.min(4, total);
-    const secured = sec + ci.sec >= need - 1e-9 || (cTotal >= 2 && ci.sec >= cTotal);   // flashcards alone: every card on the point, if it has 2+
+    /* Flashcards count for up to half of need (normally 2 of 4); the rest must be proved via Practice / Questing questions */
+    const cCap = Math.floor(need / 2);
+    const cCredit = Math.min(ci.sec, cCap);
+    const secured = sec + cCredit >= need - 1e-9;
     const rusty = secured && last && dayNum(TODAY) - dayNum(last) > RUST_DAYS;
     const started = seen > 0 || ci.seen > 0;
-    return { has: true, total, sec, need, seen, cTotal, cSec: ci.sec, secured, rusty, started, state: rusty ? 'rusty' : secured ? 'secured' : started ? 'learning' : 'new' };
+    return { has: true, total, sec, need, seen, cTotal, cSec: ci.sec, cCap, cCredit, got: Math.min(need, sec + cCredit), secured, rusty, started, state: rusty ? 'rusty' : secured ? 'secured' : started ? 'learning' : 'new' };
   }
   function subState(sb) {
     const pts = sb.points.filter(p => POINT_QS[p.key]); if (!pts.length) return null;

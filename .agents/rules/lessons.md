@@ -4,6 +4,11 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 ---
 # Lessons (`interactive/lessons/`)
 
+## Role in the site learning strategy (projector vs. student view)
+Lessons own **Layer 1 (first-pass explanation & visual mental models)**, with a strict split between the two audiences:
+- **Teacher projector view (`#present` / `deck.html`, 1600×900):** Built strictly for whole-class, teacher-led teaching — visual explanations, stepped reveals, discussion prompts, and quick whole-class checks. **Do NOT put individual flashcard drills, self-study toolbars, or independent practice links into the projector slides** (they break classroom flow).
+- **Student-facing study view (webpage):** Built for independent revision and catch-up — chunked explanations, diagrams, worked examples, and **integrated links/handoffs to Examiner Key Words (`/js/key-words.js`), Flashcards (`/Flashcards/?sub=…` or `?subs=…`), and Practice / Questing (`practice.html?sub=…`)** so students move directly from understanding into cold recall and application without lessons reinventing a separate flashcard or quiz engine.
+
 ## Format
 - **Legacy single-file lessons:** one page (`draft/index.html`) holds both the reading page and `#deck-src` projector slides (`lesson.css` + `lesson.js`).
 - **Split lessons (`"split": true`, piloted on Chemistry 1g & Biology 2c, 26 Nov 2026; rollback tag `pre-student-unbind-2026-11-26`):**

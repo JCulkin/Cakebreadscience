@@ -78,7 +78,7 @@ function draw(){const G=TABS[game];const keys=Object.keys(G.boards);if(!keys.inc
   $('games').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{game=b.dataset.g;board=null;history.replaceState(null,'','#'+game);draw();});
   $('boards').innerHTML=`<div class="chips">${keys.map(k=>`<button class="chip ${k===board?'on':''}" data-b="${k}">${esc(G.boards[k])}</button>`).join('')}</div><a class="play" href="${G.url}">Play ${esc(G.name)} →</a>`;
   $('boards').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{board=b.dataset.b;draw();});
-  if(game==='quiz')quiz();else LB.panel($('list'),board,{title:G.boards[board]});}
+  if(game==='quiz')quiz();else{const isArch=Array.isArray(G.archived)&&G.archived.includes(board);LB.panel($('list'),board,{title:G.boards[board],archivedNote:isArch?'Archived v1 leaderboard (old word bank — read only).':''});}}
 // Cakebread Questing keeps its own board (specQuizBoard/{uid}); show it here read-only
 /* right answers over the last 7 days from the board's per-day counts (d7, since 16 Nov); older rows fall back to this week's total */
 const L7=(()=>{const n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),o=[];for(let i=0;i<7;i++)o.push(new Date((n-i)*864e5).toISOString().slice(0,10));return o;})();

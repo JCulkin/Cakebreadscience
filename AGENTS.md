@@ -14,6 +14,14 @@ something different now, the user wins** — and say so, so the rules can be upd
   He decides; you advise. When you find a mistake in his material (a deck, a worksheet), fix it and tell him.
 - Write for students in plain British English. Short sentences. No jargon on student pages.
 
+## Learning strategy (how the tools fit together)
+Edexcel International GCSE Science (4SD0 / 4SS0) tests **AO1 Knowledge (~40%)**, **AO2 Application & Calculations (~40%)**, and **AO3 Practical & Data (~20%)**. Each area of the site owns a distinct job — complementary, not interchangeable:
+1. **Lessons (`interactive/lessons/`):** First-pass explanation and visual mental models. **Separate the two views:** the **teacher projector deck** is strictly for whole-class, teacher-led teaching (no individual flashcard drills or self-study clutter); the **student-facing study page** integrates Examiner Key Words, Flashcards, and Practice/Questing links so independent learners move smoothly into recall and application without lessons reinventing a separate flashcard/quiz engine.
+2. **Flashcards (`/Flashcards/`):** Cold recall of AO1 facts, definitions, examiner key words (`/js/key-words.js`), equations/units, tests/colours, and core AO3 practical steps/variables, kept alive over months via spaced repetition (SM-2). Atomic prompts, crisp bulleted idea units, simple 1–4 self-rating.
+3. **Questing & Practice (`interactive/spec-quiz/`):** Low-friction entry (Level 1), misconception busting via plausible distractors, and AO2/AO3 application (calculations, graphs, diagrams, unfamiliar scenarios). Flashcards contribute at most half of a spec point's securing requirement; quiz questions prove application.
+4. **Worksheets, Booklets & Long-Answer (`worksheets/`, `booklets/`, `interactive/physics-long-answer/`):** Writing coherent 3–6 mark exam answers (assembling recalled idea units; black-then-purple self-marking online; greyscale-safe printable sheets).
+5. **Hubs & topic games (`today/`, `guide/`, `specifications/`, `interactive/*`):** Route students across the four layers per spec point/sub-topic; `/js/key-words.js` is the single source of truth for examiner vocabulary (used by Study Guides, Spec Trackers, Type Fast or Perish v2, and Flashcards).
+
 ## Hard rules (never break these)
 1. **Never push or merge to `main`.** Work on `staging`. `main` deploys live and costs Netlify credits (15 per deploy, 300 a month,
    renews on the 29th). **Only the dedicated Antigravity release chat** (`Cakebread Science - Release (staging -> main)`) may merge
@@ -73,9 +81,9 @@ something different now, the user wins** — and say so, so the rules can be upd
   A student's course is `users/{uid}.course = 'SA'`, set only by the admin. Load course.js right after `diagq.js` on every student page
   with spec points or questions. Static "Double Award" text can carry `data-course-sa="…"`.
 - The spec tracker is the one place a point lives: `/specifications/<subject>.html#B2.27`. Link spec chips there.
-- Key words per point: `/js/key-words.js` (`KEYWORDS['B2.11'] = [[word, meaning], …]`; never a word already in that point's wording).
+- Key words per point: `/js/key-words.js` (`KEYWORDS['B2.11'] = [[word, meaning], …]` or `[word, meaning, 'DA']` for terms excluded from Single Award on narrowed points; never a word already in that sub-topic's spec wording).
 - Deep links: `practice.html?point=KEY|?sub=C1a|?subs=C1a,C2.5&n=15`, `adventurer-mission.html?point=…` (same), flashcards
-  `/Flashcards/?spec=KEY`, set work `/work/?id=…`, study guide `/guide/?id=…`, review `/admin/review.html#questions|#worksheets|#lessons|#keywords`.
+  `/Flashcards/?spec=KEY|?sub=C1a|?subs=C1a,C2.5&t=…`, set work `/work/?id=…`, study guide `/guide/?id=…`, review `/admin/review.html#questions|#worksheets|#lessons|#keywords`.
 
 ## Firebase (project `elevenstudents-76f31`, compat SDK 9.22.2)
 - Config `/js/firebase-config.js`; admins in `/js/admin-config.js`. Google sign-in only.
@@ -114,8 +122,9 @@ something different now, the user wins** — and say so, so the rules can be upd
 ## Rule files (`.agents/rules/`, loaded when relevant)
 - `release.md` — the release checklist (only when the user says "release").
 - `questing.md` — Cakebread Questing: engine, securing rules, the map, script order, globals.
-- `question-bank.md` — questions, generators, diagram questions, levels, quality rules, flashcards.
-- `lessons.md` — lessons: slide style guide, draft → checked lifecycle, page template.
+- `question-bank.md` — questions, generators, diagram questions, levels, quality rules.
+- `flashcards.md` — flashcards & examiner key words: AO1 cold recall, permanent IDs, SM-2, `js/key-words.js`.
+- `lessons.md` — lessons: projector vs student view, slide style guide, draft → checked lifecycle, page template.
 - `worksheets.md` — worksheets and booklets: codes, KS3/KS4, Single Award twins, print rules.
 - `admin-and-students.md` — admin console, Review portal, study guides, set work, To do, year groups, homepage.
 - `games.md` — interactives, leaderboards, game access, the Eleven Students section.

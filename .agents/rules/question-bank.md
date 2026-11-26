@@ -45,5 +45,4 @@ the question text; pass options through `DQ.order`; save `q.seed` with stored an
 Lessons use **frozen copies** in `interactive/lessons/assets/` — tell the user if you change a maker the lessons use.
 
 ## Key words — `/js/key-words.js`
-`window.KEYWORDS = {'B2.11': [[word, mark-scheme meaning], …]}`: words examiners expect, bound to spec points, never words already in that
-point's spec wording (matched whole-word/plural). 542 words on 278 points, reviewed in Review → Key words; edits there re-queue the point.
+- See `.agents/rules/flashcards.md` for the single-source-of-truth rules (`window.KEYWORDS`, optional `'DA'` Single Award flag, Review → Key words).
