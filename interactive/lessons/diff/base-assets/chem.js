@@ -68,7 +68,8 @@ function molSVG(key,lw){
   A.forEach((a,i)=>{
     const r=radOf(key,a[0]);
     shells+=`<circle cx="${a[1]}" cy="${a[2]}" r="${r}" fill="none" stroke="#111" stroke-width="${1.6*lw}"/>`;
-    const nx = a[1], ny = a[2];
+    const out = angs[i].length===1 ? (a[0]==='H' ? -8 : -8 - 7*(maxOrd[i]-1)) : 0, t0 = angs[i][0]||0;
+    const nx = a[1] + Math.cos(t0)*out, ny = a[2] + Math.sin(t0)*out;
     cores+=`<circle cx="${nx}" cy="${ny}" r="${a[0]==='H'?12:17}" fill="${a[4]}"/><text x="${nx}" y="${ny+5.5}" text-anchor="middle" font-size="${a[0].length>1?14:17}" font-weight="700" fill="#fff" font-family="Barlow,Arial,sans-serif">${a[0]}</text>`;
   });
   const xs=A.map(a=>a[1]),ys=A.map(a=>a[2]),pad=74;

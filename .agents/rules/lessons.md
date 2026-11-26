@@ -39,7 +39,7 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 15. Tags only "Double Award only" / "Beyond IGCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
     no spec numbers on slides. Mixed slides stay untagged. Tag every new lesson.
 16. Before pushing: look at every slide fully revealed for word-only slides, text off the slide or under the title, tiny pictures, overlaps.
-17. **Revisit backlog (26 Nov 2026):** **Physics 8** and **Chemistry 1a** need a full revisit with these high-resolution image and box/indent presentation standards in mind.
+17. **Revisit backlog (26 Nov 2026):** **Chemistry 1a** still needs a broader revisit with these high-resolution image and box/indent presentation standards in mind (**Physics 8** completed 26 Nov 2026).
 
 ## Page template
 - `<body class="subj-biology|subj-chemistry|subj-physics" data-status="draft" data-updated="…" data-deck-ui="v2">`; header `.lhead`
