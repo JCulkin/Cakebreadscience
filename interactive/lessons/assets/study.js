@@ -276,6 +276,7 @@ function initEndTest(){
   let got = 0, tried = 0;
 
   out.insertAdjacentHTML('beforeend',
+    `<p class="check-note"><b>Immediate check:</b> this checks what you just read, so it doesn't count towards securing a spec point yet. Come back on another day in <b>Practice</b> or <b>Cakebread Questing</b> to lock it into long-term memory.</p>` +
     `<div class="score-bar"><span>Multiple choice score</span><span class="sc">0 / ${mcTotal}</span></div>`);
 
   qList.forEach((x, i) => {
@@ -333,6 +334,86 @@ function initEndTest(){
   });
 }
 
+/* ---------- Single Award auto-filter (/js/course.js) ---------- */
+function applyCourse(){
+  let sa = false;
+  if(window.CBSCourse) sa = !!CBSCourse.sa;
+  else {
+    try{
+      const c = JSON.parse(localStorage.getItem('cbs.course') || 'null');
+      const u = JSON.parse(localStorage.getItem('cbs.questing.uid') || 'null');
+      sa = !!(c && c.c === 'SA' && c.u && c.u === u);
+    }catch(e){}
+  }
+  body.classList.toggle('hide-da', sa);
+  $$('.kw-box').forEach(box => { box.hidden = sa && $$('.kw-row:not(.da-only)', box).length === 0; });
+  if(sa && window.CBSCourse && CBSCourse.SA){
+    const sub = (body.className.match(/subj-(\w+)/) || [])[1];
+    const letter = {biology:'B', chemistry:'C', physics:'P'}[sub];
+    if(letter){
+      $$('details.specbox ol li').forEach(li => {
+        const b = $('b', li), num = b && b.textContent.trim();
+        if(!num || !/^\d+\.\d+$/.test(num)) return;
+        const key = letter + num;
+        if(!CBSCourse.SA.has(key)) li.style.display = 'none';
+        else if(CBSCourse.SA_TEXT && CBSCourse.SA_TEXT[key]){
+          const sp = $('span', li);
+          if(sp) sp.textContent = CBSCourse.SA_TEXT[key].text;
+        }
+      });
+    }
+  }
+}
+function initCourse(){
+  applyCourse();
+  if(window.CBSCourse) return;
+  const s = document.createElement('script');
+  s.src = '/js/course.js';
+  s.onload = applyCourse;
+  (document.head || document.documentElement).appendChild(s);
+}
+
+/* ---------- auto Examiner Key Words per step (/js/key-words.js) ---------- */
+function renderKeyWords(){
+  if(!window.KEYWORDS) return;
+  const sub = (body.className.match(/subj-(\w+)/) || [])[1];
+  const letter = {biology:'B', chemistry:'C', physics:'P'}[sub];
+  if(!letter) return;
+  steps.forEach(sec => {
+    if(sec.id === 'check' || $('.kw-box', sec)) return;
+    const pts = [...new Set($$('.spec', sec).map(e => e.textContent.trim()).filter(t => /^\d+\.\d+$/.test(t)))];
+    if(!pts.length) return;
+    const seen = new Set(), rows = [];
+    pts.forEach(p => {
+      const list = window.KEYWORDS[letter + p];
+      if(!Array.isArray(list)) return;
+      list.forEach(item => {
+        const w = String(item[0] || '').trim(), m = String(item[1] || '').trim(), da = item[2] === 'DA';
+        if(!w || seen.has(w.toLowerCase())) return;
+        seen.add(w.toLowerCase());
+        rows.push({ w, m, da });
+      });
+    });
+    if(!rows.length) return;
+    const visibleCount = body.classList.contains('hide-da') ? rows.filter(r => !r.da).length : rows.length;
+    if(!visibleCount) return;
+    const box = document.createElement('details');
+    box.className = 'kw-box';
+    box.open = true;
+    box.innerHTML = `<summary><span class="callout-tag">Examiner key words</span><small>Exact wording that earns marks in exam answers</small></summary>` +
+      `<dl class="kw-list">${rows.map(r => `<div class="kw-row${r.da ? ' da-only' : ''}"><dt>${esc(r.w)}</dt><dd>${esc(r.m)}</dd></div>`).join('')}</dl>`;
+    const anchor = $('.micro-check', sec) || $('.step-foot', sec);
+    if(anchor) sec.insertBefore(box, anchor); else sec.appendChild(box);
+  });
+}
+function initKeyWords(){
+  if(window.KEYWORDS){ renderKeyWords(); return; }
+  const s = document.createElement('script');
+  s.src = '/js/key-words.js';
+  s.onload = renderKeyWords;
+  (document.head || document.documentElement).appendChild(s);
+}
+
 /* ---------- auto "Practise by spec point" chips ---------- */
 function initPractiseLinks(){
   const chk = $('#check');
@@ -347,10 +428,12 @@ function initPractiseLinks(){
 }
 
 /* ---------- boot ---------- */
+initCourse();
 buildNav();
 initMicroChecks();
 initEndTest();
 initPractiseLinks();
+initKeyWords();
 L.initComps(document);
 
 // Respect initial URL hash (e.g. #dot, #tests, #check)

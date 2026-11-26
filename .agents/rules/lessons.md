@@ -4,19 +4,30 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 ---
 # Lessons (`interactive/lessons/`)
 
-## Role in the site learning strategy (projector vs. student view)
-Lessons own **Layer 1 (first-pass explanation & visual mental models)**, with a strict split between the two audiences:
-- **Teacher projector view (`#present` / `deck.html`, 1600×900):** Built strictly for whole-class, teacher-led teaching — visual explanations, stepped reveals, discussion prompts, and quick whole-class checks. **Do NOT put individual flashcard drills, self-study toolbars, or independent practice links into the projector slides** (they break classroom flow).
-- **Student-facing study view (webpage):** Built for independent revision and catch-up — chunked explanations, diagrams, worked examples, and **integrated links/handoffs to Examiner Key Words (`/js/key-words.js`), Flashcards (`/Flashcards/?sub=…` or `?subs=…`), and Practice / Questing (`practice.html?sub=…`)** so students move directly from understanding into cold recall and application without lessons reinventing a separate flashcard or quiz engine.
+## Role in the site learning strategy & research principles
+Lessons own **Layer 1 (first-pass understanding & visual mental models)**, with a strict architectural and pedagogical split between the two audiences:
+- **Teacher projector deck (`draft/deck.html` / `#present`, 1600×900):** Grounded in **Cognitive Load Theory (Sweller)** and **Mayer's Multimedia Principles**:
+  - **Dual Coding & Modality:** Every slide pairs a clear picture or diagram with spoken teacher explanation — never word-only slides or paragraphs students try to read while listening.
+  - **Coherence:** Strip decorative clutter and **never** put individual flashcard drills, self-study toolbars, or independent practice widgets into projector slides (they break whole-class pacing).
+  - **Segmenting & Signalling:** Use stepped `data-s` reveals, bold key terms, and colour-coded boxes/indents (`.ilist`) rather than walls of text or giant undifferentiated lines.
+  - **Formative Assessment / Hinge Questions (Wiliam):** Include brief mid-lesson mini-whiteboard or whole-class hinge checks at natural breakpoints to catch misconceptions live before moving on.
+  - **Spatial Contiguity:** Label directly on diagrams; share one label across side-by-side comparisons.
+- **Student-facing study guide (`draft/index.html`, `study.js` + `study.css`):** Built for independent catch-up and revision, grounded in:
+  - **Segmenting (Mayer):** One focused `<section class="step">` at a time with sticky progress bar (plus `All on one page` toggle for scanning/printing).
+  - **Worked-Example Effect + Fading (Sweller / Renkl):** `.worked` step-by-step models paired with `<details class="your-turn">` immediate practice.
+  - **Refutation Texts (Tippett):** `.mistake-box` explicitly names and corrects high-frequency exam misconceptions (*never say "enzymes are killed"*).
+  - **Immediate Retrieval / Rosenshine's Check for Understanding:** `.micro-check` (1–3 quick questions at the end of every step) + `#check` end-of-topic self-check. **Important:** `#check` is an *immediate comprehension check* only — `study.js` tells students it does **not** secure a spec point; spaced securing happens on two different days in Practice or Cakebread Questing.
+  - **Single-Source Vocabulary & Course Filtering:** `study.js` automatically loads `/js/key-words.js` (injecting an **Examiner key words** box into each step from its `<span class="spec">` chips) and `/js/course.js` (auto-hiding `.da-only`/`.da-block` and `'DA'` key words and filtering `<details class="specbox">` for Single Award students).
+  - **Cross-Layer Handoff (`.next-hub`):** Every split student study guide ends with links into **Flashcards** (`?sub=…`), **Practice** (`practice.html?sub=…`), **Cakebread Questing** (`adventurer-mission.html?sub=…`), matching **Worksheets**, and any matching **Topic Booklet** (`/booklets/…`). Never reinvent a separate flashcard engine or spaced-repetition store inside a lesson.
 
 ## Format
-- **Legacy single-file lessons:** one page (`draft/index.html`) holds both the reading page and `#deck-src` projector slides (`lesson.css` + `lesson.js`).
-- **Split lessons (`"split": true`, piloted on Chemistry 1g & Biology 2c, 26 Nov 2026; rollback tag `pre-student-unbind-2026-11-26`):**
-  - `draft/index.html` = dedicated **Student Study Guide** (`assets/study.css` + `assets/study.js`): chunked Bitesize-style `<section class="step" id data-toc>` steps, sticky progress bar + `Step-by-step` / `All on one page` toggle, Single Award / Hide extension filters (`.da-only`/`.da-block`, `.beyond-only`/`.beyond-block`), Save-My-Exams callout boxes (`.key-box`, `.exam-tip`, `.mistake-box`, `.worked`), Seneca-style inline `.micro-check` retrieval questions at the end of every step, Action Strip links to Flashcards / Spec Quiz / Worksheets, discreet footer link to `deck.html#present`, and a 1-line `#present` → `deck.html#present` redirect in `<head>`.
+- **Split lessons (`"split": true`, preferred for all new lessons & migrations; piloted on Chemistry 1g & Biology 2c, 26 Nov 2026; rollback tag `pre-student-unbind-2026-11-26`):**
+  - `draft/index.html` = dedicated **Student Study Guide** (`assets/study.css` + `assets/study.js`), with `<script>if(location.hash==='#present')location.replace('deck.html'+location.search+'#present');</script>` in `<head>`.
   - `draft/deck.html` = dedicated **Teacher Projector Deck** (`assets/lesson.css` + `assets/lesson.js` + `tags.css`): clean Classroom Projector Deck launcher + `#qsrc` + `#deck-src` (1600×900 slides). `freeze.py` and `build_diff.py` automatically handle both single-file and split lessons.
+- **Legacy single-file lessons:** one page (`draft/index.html`) holds both the reading page and `#deck-src` projector slides (`lesson.css` + `lesson.js`). Migrate these to the split architecture when revisiting them.
 - `lessons.json`: `subjects[].sections[].topics[]` = `{code, title, spec, status 'checked'|'draft', split?, draftUpdated, versions[]}`.
-- Files: `<subject>/<code>/draft/index.html` (+ `draft/img/`) · `<subject>/<code>/v<date>/` frozen checked versions (**never edit**) ·
-  `<subject>/<code>/index.html` redirect (written by freeze.py) · `assets/lesson.css`, `lesson.js` (engine), `chem.js`, `bio.js`,
+- Files: `<subject>/<code>/draft/index.html` (+ `draft/deck.html` when split, + `draft/img/`) · `<subject>/<code>/v<date>/` frozen checked versions (**never edit**) ·
+  `<subject>/<code>/index.html` redirect (written by freeze.py) · `assets/lesson.css`, `lesson.js`, `study.css`, `study.js`, `chem.js`, `bio.js`,
   `cells.js` (copy of `/interactive/cell-game/cells.js`), `diagrams.js` + `diagq.js` (frozen copies from spec-quiz) · `tags.css`.
 - Landing page and lesson headers stay minimal (user): code, title, spec, Open / ▶ Present, a plain "Under review" chip on drafts. No badges,
   dates, progress bars, or links to older checked versions.
@@ -49,12 +60,21 @@ Lessons own **Layer 1 (first-pass explanation & visual mental models)**, with a 
 16. Before pushing: look at every slide fully revealed for word-only slides, text off the slide or under the title, tiny pictures, overlaps.
 17. **Revisit backlog (26 Nov 2026):** **Chemistry 1a** still needs a broader revisit with these high-resolution image and box/indent presentation standards in mind (**Physics 8** completed 26 Nov 2026).
 
-## Page template
+## Split Student Study Guide template (`draft/index.html` — preferred)
+- `<head>`: `<script>if(location.hash==='#present')location.replace('deck.html'+location.search+'#present');</script>` + `/interactive/lessons/assets/study.css`.
+- `<body class="subj-biology|subj-chemistry|subj-physics" data-status="draft" data-updated="…" data-topic="subject/code">`; header `.shead` (`.crumb` with Home + All lessons + optional status chip, `.kick`, `h1`). Do **not** load `home-link.js` (`study.js` auto-loads `/js/auth-gate.js`, `/js/course.js`, and `/js/key-words.js`).
+- `<main class="wrap">` starts with `<details class="specbox">` (full Edexcel spec text word-for-word — `study.js` auto-filters it for Single Award students).
+- Content chunks: `<section class="step" id data-toc="Short label">` with `<h2>Title <span class="spec">1.44</span></h2>` (spec chips feed `build_index.js`, auto-injected **Examiner key words** per step, and the bottom per-point Practice links).
+- Callouts: `.key-box` (core idea), `.exam-tip` (examiner mark-scheme phrasing), `.mistake-box` (refutation of common misconceptions), `.worked` + `<details class="your-turn">` (worked example → faded practice), `.da-only`/`.da-block` (auto-hidden for Single Award), `.beyond-only`/`.beyond-block` (optional extension).
+- Every content step ends with `.micro-check` (`.mq` MCQs with `data-a` & `data-why`, `.flip-q` recall prompts, and/or `[data-comp="dq"]` seeded diagram questions).
+- Final step `<section class="step" id="check" data-toc="End-of-topic test">`: `#qs` populated from hidden `#qsrc` (MCQs + self-marked long answers with checkboxes), optional `[data-comp="dq"]`, and `.next-hub` linking **Flashcards** (`?sub=…`), **Practice** (`practice.html?sub=…`), **Cakebread Questing** (`adventurer-mission.html?sub=…`), matching **Worksheets**, and any matching **Topic Booklet** (`/booklets/…`).
+- Scripts last: `cells.js` (if needed), `diagrams.js` + `diagq.js`, `bio.js` / `chem.js`, then `study.js`.
+
+## Teacher Projector Deck (`draft/deck.html`) & Legacy single-file template (`lesson.js`)
 - `<body class="subj-biology|subj-chemistry|subj-physics" data-status="draft" data-updated="…" data-deck-ui="v2">`; header `.lhead`
   (`.kick`, `h1`, `.navrow` with `<a href="/interactive/lessons/">← All lessons</a>`, `.toc`); `<details class="specbox">` with the spec points
-  word for word. lesson.js adds the home link — don't also load home-link.js.
-- `<main class="wrap">` → one `<section id data-toc>` per sub-topic with `h2` + `<span class="spec">1.37</span>` chips (feed the spec index).
-  Last section `#check` with `#qs`; questions in `#qsrc`.
+  word for word. `lesson.js` adds the home link and auto-loads `/js/auth-gate.js` — don't also load `home-link.js`.
+- `<main class="wrap">` → on legacy single-file lessons, one `<section id data-toc>` per sub-topic with `h2` + `<span class="spec">1.37</span>` chips (feed the spec index); last section `#check` with `#qs`; questions in `#qsrc`. On split `deck.html`, keep `<main class="wrap">` as a clean Classroom Projector Deck launcher + `#qsrc` + `#deck-src`.
 - Slides in `#deck-src`: `<section class="ps">…</section>`; reveal steps `data-s`, `data-hide-from`, `data-hide-until`; auto slides
   `data-auto="quiz"|"exam"`. Inline SVGs need unique ids per copy. **Check every section is closed.**
 - Scripts last: `cells.js`, then `diagrams.js` + `diagq.js` if there are diagram questions, then `bio.js` / `chem.js`, then `lesson.js`.
@@ -65,4 +85,7 @@ Lessons own **Layer 1 (first-pass explanation & visual mental models)**, with a 
 - Source decks are the user's PowerPoints in his Google Drive (`2. Science\<Subject>\…`). Follow the deck's order, wording, examples and
   images; fill spec gaps; fix factual slips and tell him. Never publish from `# Resources/`.
 - Images: no watermarked publisher images or past-paper scans; keep Creative Commons credits; GIFs → MP4.
-- Status (25 Nov): checked Biology 1, Biology 2a; under review Bio 2b, 2c, 2d, 2f, Chem 1a, 1f (checked version stays live), 1g, Physics 8.
+- Status (26 Nov 2026):
+  - **Checked (single-file, live `v2026-11-26` / `v2026-11-25`):** Biology `1`, `2a`, `2b`, `2f`; Chemistry `1f`.
+  - **Split pilot drafts (`"split": true`, frozen `v2026-11-26` stays live):** Biology `2c`, Chemistry `1g`.
+  - **Under review (single-file drafts, not yet split):** Biology `2d`, Chemistry `1a`, Physics `8`.
