@@ -22,9 +22,9 @@ Last release: **v5.1.0 "Worksheets, study guides and the Review portal"** (23 No
    home links on changed pages: `git diff --name-only --diff-filter=AM origin/main..HEAD | grep html$ > changed.txt`, then
    `python tools/test/homelinks.py . changed.txt` (admin pages and Flashcards are expected flags when Firebase is blocked).
 7. Sitemap/noindex: approved live pages in `sitemap.xml`; drafts and "Under review" worksheets stay noindex; archived worksheets out.
-8. Changelog: in `admin/VERSION_HISTORY.md` tidy `## [Unreleased]` (duplicates, missing commits) and rename it `## [x.y.z] - date`;
+8. Changelog & rule hygiene: in `admin/VERSION_HISTORY.md` tidy `## [Unreleased]` (duplicates, missing commits) and rename it `## [x.y.z] - date`;
    README "Recent updates"; homepage footer version (`index.html`); if students get news, update `/js/whats-new.js` ITEMS and bump
-   its storage key (e.g. `cbs.whatsnew.v51` → `v52`); remove released items' cards from `test.html`.
+   its storage key (e.g. `cbs.whatsnew.v51` → `v52`); remove released items' cards from `test.html`. Confirm `AGENTS.md` is under 15 KB and prune any retired/legacy rules in `.agents/rules/`.
 9. Check nothing was pushed since your checks (PR head = the SHA you checked). Rename the PR to the version and merge **pinned to that SHA**:
    `gh api repos/JCulkin/Cakebreadscience/pulls/<n>/merge -X PUT -f sha=<sha> -f merge_method=merge`
    (`gh pr list` may fail; use `gh api "repos/JCulkin/Cakebreadscience/pulls?state=open"`).

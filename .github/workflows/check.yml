@@ -101,6 +101,12 @@ jobs:
                   if paper_re.search(open(p, encoding='utf-8', errors='ignore').read()):
                       errs.append(f'Past-paper code found in {p}')
 
+          # 4. Keep AGENTS.md lean (<= 15 KB) to prevent instruction dilution
+          agents_sz = os.path.getsize('AGENTS.md')
+          print(f'AGENTS.md size: {agents_sz / 1024:.1f} KB (limit 15.0 KB)')
+          if agents_sz > 15 * 1024:
+              errs.append(f'AGENTS.md is {agents_sz / 1024:.1f} KB (>15.0 KB limit) — trim historical/duplicate rules')
+
           if errs:
               for e in errs:
                   print(f'::error::{e}')

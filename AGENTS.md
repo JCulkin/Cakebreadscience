@@ -1,136 +1,73 @@
 # Cakebread Science — how we work (for Antigravity and any other AI agent)
 
-This file is always loaded. Topic rules are in `.agents/rules/` and load when a task needs them (index at the end).
-It is the repo copy of the working rules the user has built up with Claude since Nov 2026. **If the user tells you
-something different now, the user wins** — and say so, so the rules can be updated.
+This file is always loaded. Topic rules in `.agents/rules/` load on demand (index at the end). **If the user tells you something different now, the user wins** — say so, so the rules stay current.
 
 ## The site and the user
-- **cakebreadscience.com**: one teacher's science site for his students (Years 8–11 at one school). Static HTML/CSS/JS,
-  **no build step**, hosted on Netlify, Firebase for sign-in and data. Repo github.com/JCulkin/Cakebreadscience is **public**.
-- Course: **Pearson Edexcel International GCSE Science (Double Award)**, three sciences B / C / P, **no tiers**. Some students take
-  **Science (Single Award)** = a subset of Double Award with the same point numbers (`/js/course.js`). KS3 (Years 8–9) use a
-  simpler version of the same spec. Never mention or teach Separate Science (Biology/Chemistry/Physics as separate GCSEs).
-- **"The user"** = the teacher. He wants blunt, direct answers, no flattery, no hedging. Lead with the answer. If he is wrong, say so and why.
-  He decides; you advise. When you find a mistake in his material (a deck, a worksheet), fix it and tell him.
-- Write for students in plain British English. Short sentences. No jargon on student pages.
+- **cakebreadscience.com**: one teacher's science site (Years 8–11 at one school). Static HTML/CSS/JS, **no build step**, Netlify hosting, Firebase sign-in/data. Repo `github.com/JCulkin/Cakebreadscience` is **public**.
+- Course: **Pearson Edexcel International GCSE Science (Double Award)**, B / C / P, **no tiers**. **Single Award** = subset of Double Award with the same point numbers (`/js/course.js`). KS3 (Years 8–9) = simpler version of the same spec. **Never mention or teach Separate Science.**
+- **"The user"** = the teacher. Blunt, direct answers — no flattery, no hedging; lead with the answer. If he is wrong, say so and why. Fix mistakes in his material and tell him.
+- Student copy: plain British English, short sentences, zero jargon.
 
-## Learning strategy & research principles (how the tools fit together)
-Edexcel International GCSE Science (4SD0 / 4SS0) tests **AO1 Knowledge (~40%)**, **AO2 Application & Calculations (~40%)**, and **AO3 Practical & Data (~20%)**. Each area owns one distinct job grounded in cognitive-science research — complementary, never duplicating another layer:
-1. **Lessons (`interactive/lessons/`) — Understand (Dual Coding, Cognitive Load Theory, Worked Examples & Segmenting):**
-   - **Teacher projector deck (`deck.html` / `#present`):** Built strictly for whole-class, teacher-led teaching following **Cognitive Load Theory (Sweller)** and **Mayer's Multimedia Principles** (dual coding with visual + spoken narration, zero word-only slides, coherence with no self-study clutter, signalling via boxes/indents/bold terms, segmenting via stepped reveals, spatial contiguity).
-   - **Student study guide (`index.html`, `study.js`):** Built for independent catch-up and revision — **chunked steps** (segmenting), **Worked Example → Now you try** (worked-example effect), **Common mistake** refutation boxes, **immediate micro-checks** (Rosenshine's Check for Understanding; explicitly *not* spaced securing), auto-injected **Examiner Key Words** (`/js/key-words.js`), auto-filtered **Single Award** (`/js/course.js`), and handoff links to **Flashcards, Practice, Cakebread Questing, Worksheets, and matching Topic Booklets**.
-2. **Flashcards & Key Words (`/Flashcards/`, `/js/key-words.js`, `Type Fast or Perish v2`) — Memorise (Testing Effect & Spaced Repetition):** Cold recall of AO1 facts, exact examiner key words, equations/units, tests/colours, and core AO3 practical steps via SM-2 spaced repetition (Roediger & Karpicke; Ebbinghaus/Cepeda). Atomic prompts, crisp bulleted idea units, fast 1–4 self-rating. Missed cards (`PROG.weak`) feed into next-day Questing/Practice.
-3. **Questing & Practice (`interactive/spec-quiz/`) — Apply & Prove (Desirable Difficulties, Interleaving, Transfer & Refutation):** Low-friction entry (L1), misconception busting via plausible distractors + elaborative feedback (Tippett / Butler), and AO2/AO3 transfer via randomised calculations and seeded diagrams. **Two-different-days securing + 21-day rust decay** (Bjork's desirable difficulties; immediate Second Wind is excluded from securing). **Option A securing cap:** flashcards count for at most half of a spec point's securing target — quiz questions must prove application.
-4. **Worksheets, Topic Booklets & 6-Markers (`worksheets/`, `booklets/`, `interactive/physics-long-answer/`) — Write Exam Answers (Faded Scaffolding & Attempt-First Self-Explanation):**
-   - **Worksheets (`worksheets/`, 2–4 sides):** Single-lesson / sub-topic scaffolded classwork & homework (`recall → single-step → multi-step → unfamiliar`; worked first rows & word banks on KS3/SA; greyscale-safe).
-   - **Topic Booklets (`booklets/`, 10–14 pages):** Whole-topic printed workbooks (class packs / cover / pre-exam paper revision) with compact `Key ideas` refreshers fading into unguided `★ Exam-style` synthesis.
-   - **6-Marker Long-Answer Booklets (`interactive/physics-long-answer/`):** Extended 4–6 mark exam technique using **attempt-first black-then-purple self-marking** and a personal `learned.html` gap bank.
-5. **Hubs & Topic Interactives (`today/`, `guide/`, `specifications/`, `interactive/*`) — Route & Calibrate (Metacognitive Calibration & Fluency):** Spec Trackers compare **self-rated confidence vs. objective 2-day proof** (`Check these` fights the Illusion of Competence); `To do` and Study Guides route students across all four layers; `/js/key-words.js` is the single source of truth for examiner vocabulary; subject interactives (`Elements 1–20`, `What The Cell`, `Waves`, etc.) build visual/symbolic fluency to free working memory.
+## Learning strategy & research principles
+Edexcel IGCSE Science (4SD0 / 4SS0) tests **AO1 Knowledge (~40%)**, **AO2 Application & Calculations (~40%)**, and **AO3 Practical & Data (~20%)**. Each area owns one job — never duplicate another layer:
+1. **Lessons (`interactive/lessons/`) — Understand:** **Projector deck (`deck.html`)** = whole-class teacher-led visuals, stepped reveals & mid-lesson hinge AfL (Cognitive Load / Mayer Dual Coding / Wiliam; zero self-study clutter). **Student study guide (`study.js`)** = chunked catch-up with Worked Example → *Now you try*, Common Mistakes refutation, immediate micro-checks (*not* spaced securing), auto-injected Examiner Key Words (`/js/key-words.js`), auto Single Award filter (`/js/course.js`), and handoffs to Flashcards/Practice/Questing/Worksheets/Booklets. (Details: `lessons.md`.)
+2. **Flashcards & Key Words (`/Flashcards/`, `/js/key-words.js`, `Type Fast or Perish v2`) — Memorise:** Cold AO1 recall + exact examiner wording via SM-2 spaced repetition (Testing Effect / Roediger & Karpicke; Cepeda). Atomic prompts, bulleted idea units, 1–4 rating. Missed cards (`PROG.weak`) feed next-day Questing/Practice. (`flashcards.md`.)
+3. **Questing & Practice (`interactive/spec-quiz/`) — Apply & Prove:** L1 recall entry → L2/L3 calculations, diagrams & misconception refutation (plausible distractors + elaborative feedback). **Two-different-days securing + 21-day rust decay** (Bjork's desirable difficulties; Second Wind excluded). **Option A cap:** flashcards count for ≤ half of securing; quiz proves transfer. (`questing.md`, `question-bank.md`.)
+4. **Worksheets, Topic Booklets & 6-Markers (`worksheets/`, `booklets/`, `interactive/physics-long-answer/`) — Write Exam Answers:** Faded scaffolding & attempt-first self-explanation. **Worksheets** (2–4 sides, single-lesson scaffolded practice) · **Topic Booklets** (10–14 pp whole-topic workbooks) · **6-Markers** (online black-then-purple self-marking + `learned.html` gap bank). (`worksheets.md`.)
+5. **Hubs & Topic Interactives (`today/`, `guide/`, `specifications/`, `interactive/*`) — Route & Calibrate:** Spec Trackers pair self-rated confidence vs. 2-day proof (`Check these` fights the Illusion of Competence); `To do` & Study Guides route across all 4 layers; `/js/key-words.js` is the single vocabulary source; curriculum interactives build visual/symbolic fluency to free working memory. (`admin-and-students.md`, `games.md`.)
 
 ## Hard rules (never break these)
-1. **Never push or merge to `main`.** Work on `staging`. `main` deploys live and costs Netlify credits (15 per deploy, 300 a month,
-   renews on the 29th). **Only the dedicated Antigravity release chat** (`Cakebread Science - Release (staging -> main)`) may merge
-   `staging` → `main` or trigger a production deploy, and only when the user says **"release"** / **"publish to main"** (checklist:
-   `.agents/rules/release.md`). All other chats (lessons, flashcards, worksheets, questing, etc.) work on `staging` only.
-2. **Past-paper material (Pearson copyright) never goes in this repo, on the website or in anything published**: real exam
-   questions, mark schemes, their diagrams or scans. The repo is public and Netlify serves every file. Questions *in the style of*
-   past papers that we wrote ourselves are fine. (The exam-building tool is local-only: `.agents/rules/exams-local.md`.)
-3. **Question ids are permanent** (`P3.5-03`, `C1.46-d1`, `P3.5-g1`): student progress is saved against them. Never renumber, reuse
-   or delete one. Fix wording in place; add new ones with the next free number.
-4. **The user reviews everything** (rules below). Never mark something as checked yourself unless he says it is.
-5. **Student pages:** never show an email address; no teacher/admin notes; no "class" (one shared world: "everyone"); every page
-   has a visible way back to the homepage on phone and desktop; every Firebase call has a time limit and the page still draws
-   with Firebase blocked (school web filter).
-6. **The spec can't be cut down.** Wherever a spec point is shown to students: its full text + bullets (`SPECPT` in `/js/spec-point.js`).
+1. **Never push or merge to `main`.** Work on `staging` only (`main` costs 15 Netlify credits/deploy, 300/month, renews 29th). **Only the dedicated Antigravity release chat** (`Cakebread Science - Release (staging -> main)`) may merge `staging` → `main` when the user says **"release"** / **"publish to main"** (`release.md`).
+2. **Never commit Pearson past-paper material** (real exam questions, mark schemes, diagrams or scans — repo is public). Original questions *in the style of* past papers are fine. (Local exam tool: `exams-local.md`.)
+3. **Question & flashcard IDs are permanent** (`P3.5-03`, `C1.46-d1`, Anki timestamps): progress saves against them. Fix wording in place; never renumber, reuse or delete.
+4. **The user reviews everything.** Never mark content checked yourself unless he asks.
+5. **Student pages:** never show email addresses; no teacher/admin notes; no "class" (one shared world: "everyone"); visible home link on phone & desktop; every Firebase call has a timeout and degrades cleanly when Firebase is blocked (school filter).
+6. **Never cut down the spec.** Always show full Edexcel point text + bullets (`SPECPT` in `/js/spec-point.js`).
 7. **Printed material must read in greyscale** (nothing told apart by colour alone).
-8. **Firebase rules are the user's.** A new database path needs a new rule he adds in the Firebase console: tell him the exact rule.
-   Don't sign in for him, don't enter credentials.
-9. Don't write extra notes, guides or READMEs into the repo. These rule files are the exception (user, 25 Nov 2026).
+8. **Firebase rules are the user's.** New DB paths need a rule he adds in Firebase console — give him the exact rule; never enter credentials.
+9. **No extra repo docs/READMEs** — only `AGENTS.md` and `.agents/rules/*.md`.
+10. **Keep rule files lean (prevent instruction dilution):** `AGENTS.md` must stay under **15 KB**; keep `.agents/rules/*.md` focused on *current* rules only — delete retired/legacy rules once superseded, and never duplicate a rule across two files (point to the owning file).
+11. **Don't read full `admin/VERSION_HISTORY.md`:** read only the top ~40 lines (`## [Unreleased]`) when adding a changelog entry — never pull the full history into context.
 
-## Git workflow (several AI agents share `staging`)
-- Claude chats also push to `staging`. **Before you start and before every push:** `git fetch origin` then `git rebase origin/staging`.
-  Small focused commits, push early, never force-push, never rewrite history, don't reformat files you aren't changing.
-- Don't commit as `Claude <noreply@anthropic.com>` (that identity marks Claude's commits). Use your own configured identity.
-- **Changelog:** add one plain-English line per change under `## [Unreleased]` in `admin/VERSION_HISTORY.md`, only under its
-  `#### Added` / `#### Changed` / `#### Fixed` headings. On a rebase conflict there, keep both sides' new lines.
-- Generated files: after adding/changing questions, flashcards, lessons, worksheets, long answers or equations run
-  `node tools/spec/build_index.js` and commit `/js/spec-index.js` (+ `/admin/worksheets.json`; if only its `built` date changed,
-  `git checkout admin/worksheets.json`). On a conflict in `js/spec-index.js`, rerun the builder.
-- There is an open PR "Next release (staging → main)" (currently #8). Its Netlify preview:
-  `https://deploy-preview-8--cakebreadscience.netlify.app` (sign-in there only works if that domain is in Firebase Auth's
-  authorised domains — the user adds it).
-- **Some files are generated by builders that live only in Claude's private workspaces** (worksheets, most lesson drafts, item
-  sprites). If you hand-edit one of those HTML files, say so in the commit message and changelog so the Claude chat that owns it
-  doesn't overwrite your edit on its next rebuild.
+## Git workflow (multiple AI chats share `staging`)
+- **Before starting and before pushing:** `git fetch origin && git rebase origin/staging`. Small focused commits, stage only your own files (`git add -- …`), never force-push or reformat untouched files.
+- Don't commit as `Claude <noreply@anthropic.com>` (reserved for Claude).
+- **Changelog:** add one plain-English bullet under `## [Unreleased]` (`#### Added` / `Changed` / `Fixed`) in `admin/VERSION_HISTORY.md` (read top ~40 lines only). On rebase conflict, keep both sides.
+- **Generated files:** after changing questions, flashcards, lessons, worksheets, booklets, long answers or equations, run `node tools/spec/build_index.js` and commit `js/spec-index.js` (+ `admin/worksheets.json` only if more than its `built` date changed). On conflict in `js/spec-index.js`, rerun the builder.
+- Open release PR #8 preview: `https://deploy-preview-8--cakebreadscience.netlify.app`.
+- **Hand-editing generated HTML** (worksheets, most lesson drafts, item sprites — built by private Claude workspaces): say *"hand-edited HTML"* in the commit message and changelog so builders don't silently overwrite it.
 
-## New things start as drafts
-- New page = `<meta name="robots" content="noindex">` + a card on `test.html`; not on the homepage or in `sitemap.xml` until the
-  user approves. When it goes live: remove noindex, add it to the sitemap.
-- Every new page: a real link to `/` in its own header, or `<script src="/js/home-link.js"></script>` before `</body>`
-  (`data-mode="float"` for full-screen games). Sign-in box = `/js/account.js` only.
+## New pages & review lifecycle
+- New page = `<meta name="robots" content="noindex">` + card on `test.html`; add to homepage/`sitemap.xml` and drop `noindex` only when approved.
+- Every page needs a `/` home link (header or `<script src="/js/home-link.js"></script>` before `</body>`; `data-mode="float"` for full-screen games). Sign-in box = `/js/account.js` only.
+- `/admin/review.html` fingerprints questions, worksheets, lessons and key words — **any edit re-queues the item automatically**.
+  - **User-requested edit on a checked item (or "mark X checked"):** keep checked with `node tools/review/keep.js q|w|k <ids/paths> --why "user asked: …"` and commit `admin/review-approved.json` (lessons: `python tools/lessons/freeze.py <subject>/<code>`).
+  - **Unrequested tidy/fix:** do nothing — let it re-queue for review.
 
-## Checked and under review (the user's rules)
-- The user reviews every question, worksheet, lesson and spec point's key words in `/admin/review.html`
-  (tabs Question bank / Worksheets / Lessons / Key words). Content is fingerprinted, so **any change to an item sends it back to review
-  automatically**. He checked every flashcard himself.
-- **But: an edit the user asked for on a checked item keeps it checked.** After making it: `node tools/review/keep.js q <ids…>` /
-  `w <path under worksheets/…>` / `k <spec point…>` with `--why "user asked: …"`, and commit `admin/review-approved.json`.
-  Lessons: freeze a new checked version (`python tools/lessons/freeze.py <subject>/<code>`).
-- **A change you make on your own initiative** (tidying, a fix nobody asked for) → do nothing: it goes back to review. That's intended.
-- When he says "mark X checked", do the same as for his edits. Don't reformat unchanged items.
+## The spec (one source)
+- `interactive/spec-quiz/spec.js` (verbatim spec; keys `B2.27`, `C1.46`, `P3.5`; sub-topics `B2e`, `C1a`, `P8b`; Topic 0 / physics `(a)` = units/skills; Maths not in `spec.js`).
+- Single Award: `/js/course.js` (`CBSCourse`: `SA`, `SA_TEXT`, `DA_ONLY`), set by admin in `users/{uid}.course = 'SA'`. Load right after `diagq.js` on student pages; static text supports `data-course-sa="…"`.
+- Spec chips link to `/specifications/<subject>.html#B2.27`. Key words: `/js/key-words.js` (`KEYWORDS['B2.11'] = [[word, meaning, 'DA'?], …]`).
+- Deep links: `practice.html` & `adventurer-mission.html` (`?point=|?sub=|?subs=…&n=15`), `/Flashcards/` (`?spec=|?sub=|?subs=…&t=…`), `/work/?id=…`, `/guide/?id=…`, `/admin/review.html#questions|#worksheets|#lessons|#keywords`.
 
-## The spec (one source for everything)
-- `interactive/spec-quiz/spec.js` (from the spec PDF, checked word for word). Point keys `B2.27`, `C1.46`, `P3.5`; sub-topic keys
-  `B2e`, `C1a`, `P8b`. Topic 0 / physics sub-topic (a) = units/skills. Maths isn't in spec.js.
-- Single Award: `/js/course.js` (`CBSCourse`: `RANGES`, `SA`, `SA_TEXT` for 15 narrowed points, `DA_ONLY` question ids).
-  A student's course is `users/{uid}.course = 'SA'`, set only by the admin. Load course.js right after `diagq.js` on every student page
-  with spec points or questions. Static "Double Award" text can carry `data-course-sa="…"`.
-- The spec tracker is the one place a point lives: `/specifications/<subject>.html#B2.27`. Link spec chips there.
-- Key words per point: `/js/key-words.js` (`KEYWORDS['B2.11'] = [[word, meaning], …]` or `[word, meaning, 'DA']` for terms excluded from Single Award on narrowed points; never a word already in that sub-topic's spec wording).
-- Deep links: `practice.html?point=KEY|?sub=C1a|?subs=C1a,C2.5&n=15`, `adventurer-mission.html?point=…` (same), flashcards
-  `/Flashcards/?spec=KEY|?sub=C1a|?subs=C1a,C2.5&t=…`, set work `/work/?id=…`, study guide `/guide/?id=…`, review `/admin/review.html#questions|#worksheets|#lessons|#keywords`.
+## Firebase (`elevenstudents-76f31`, compat SDK 9.22.2)
+- Config `/js/firebase-config.js`; admins `/js/admin-config.js`. Google sign-in only.
+- **Firestore:** `users/{uid}` (fields `specQuiz`, `specQuizSummary`, `questing`, `progress`, `settings`, `longAnswers`, `year`, `course`, `work`), `specProgress/{uid}`, `teams/{id}`. **Every student-side write to `users/{uid}` must merge** (`{merge: true}` / `update`).
+- **RTDB:** `school` (`taught`, `assign`, `review`, `guides`), `gameScores`, `specQuizBoard`, `specQuizReports`, `bland`, `gameAccess`, `gameLog`, legacy `*HighScores`. RTDB drops empty arrays/objects (`x.list || []`). On student pages use `CBSSchool.rtGet(rt, path, ms)` (SDK + REST fallback), never read whole `school`.
+- School filter allowlist: `gstatic.com`, `elevenstudents-76f31.firebaseapp.com`, `accounts.google.com`, `apis.google.com`, `identitytoolkit.googleapis.com`, `securetoken.googleapis.com`, `firestore.googleapis.com`, `*.firebasedatabase.app`, `*.firebaseio.com` (incl. `wss://`), `fonts.googleapis.com`, `fonts.gstatic.com`. Don't add external domains without telling the user.
 
-## Firebase (project `elevenstudents-76f31`, compat SDK 9.22.2)
-- Config `/js/firebase-config.js`; admins in `/js/admin-config.js`. Google sign-in only.
-- **Firestore:** `users/{uid}` (owner + admin; fields `specQuiz`, `specQuizSummary`, `questing`, `progress`, `settings`,
-  `longAnswers`, `year` (owner can't change it), `course`, `work`), `specProgress/{uid}`, `teams/{id}`.
-  **Every student-side write to `users/{uid}` must merge** (`set(…, {merge: true})` / `update`).
-- **Realtime Database:** `school` (read: signed in; write: admins) holds `taught`, `assign` (set work), `review` (q, w, k, l), `guides`;
-  game paths `gameScores`, `specQuizBoard`, `specQuizReports`, `bland` (the Questing map), `gameAccess`, `gameLog`, old `*HighScores`.
-- **RTDB drops empty arrays/objects**: read lists as `(x.list || [])`. Student pages never read the whole `school` node
-  (`CBSSchool.load`); use `CBSSchool.rtGet(rt, path, ms)` (SDK + REST fallback) for new RTDB reads on student pages.
-- School web filter needs: www.gstatic.com, elevenstudents-76f31.firebaseapp.com, accounts.google.com, apis.google.com,
-  identitytoolkit.googleapis.com, securetoken.googleapis.com, firestore.googleapis.com, *.firebasedatabase.app, *.firebaseio.com
-  (incl. wss://), fonts.googleapis.com, fonts.gstatic.com. Don't add other outside domains without telling the user.
+## Look & Testing
+- Cream `#eeeae0`, black `#111`, Barlow / Barlow Condensed. Subject colours (`css/{subject}.css`): Physics `#d08000` 🚀, Chemistry `#c8001e` 🧪, Biology `#005e22` 🌿, Maths 🧮. Mascot `/img/mascot/`. Check 390 px phone width; no hover-only UI.
+- Before pushing: `node --check` on edited JS/inline scripts · `node tools/spec-quiz/check_bank.js interactive/spec-quiz` (**problems 0**) · `python tools/test/links.py .` · `python tools/test/smoke.py` (with `python -m http.server 8765`, fake Firebase `tools/test/fakefb.js`, 0 page errors) · `python tools/test/homelinks.py . list.txt`. **Always state what was only tested against fake Firebase or not run locally.**
 
-## Look
-- Cream background, black, fonts Barlow / Barlow Condensed. Subject colours (`css/{subject}.css`): Physics `#d08000` 🚀,
-  Chemistry `#c8001e` 🧪, Biology `#005e22` 🌿, Maths 🧮. The Professor mascot in `/img/mascot/`. Trackers `/css/tracker.css`.
-- Phones matter: check 390 px wide, no sideways scrolling. No hover-only UI.
-
-## Map of the repo
-- `index.html` homepage · `today/` students' To do page · `specifications/` spec trackers · `interactive/spec-quiz/` Cakebread
-  Questing + question bank + Practice + Quick quiz · `Flashcards/` · `interactive/lessons/` lessons · `worksheets/` (home
-  `worksheets/science.html`) · `booklets/` · `work/` set work · `guide/` study guides · `admin/` teacher console (admins only) ·
-  `interactive/*` games · `Elevenstudents/` students' own games · `leaderboards/` · `play/` game access · `js/` shared scripts ·
-  `tools/` builders, checks and tests · `test.html` drafts page.
-
-## Testing (do it before every push)
-- Serve the repo root: `python -m http.server 8765`. Tests use Playwright (`pip install playwright`, `python -m playwright install chromium`).
-- `python tools/test/smoke.py` — ~40 pages signed in / admin / signed out with a fake Firebase (`tools/test/fakefb.js`, seeded through
-  localStorage `__fake_db` = `{fs: {users: {…}}, rt: {…}}` and `__fake_user`). Must show no page errors.
-- `python tools/test/links.py .` (internal links), `python tools/test/homelinks.py . list.txt` (home link + Firebase-blocked drawing).
-- `node tools/spec-quiz/check_bank.js interactive/spec-quiz` must say **problems 0** after any question change.
-- Syntax-check inline scripts you edit (`node --check` on the extracted script). Look at changed pages at phone width.
-- **Say clearly what you tested only against the fake Firebase and what you couldn't test.**
-
-## Rule files (`.agents/rules/`, loaded when relevant)
-- `release.md` — the release checklist (only when the user says "release").
-- `questing.md` — Cakebread Questing: engine, securing rules, the map, script order, globals.
-- `question-bank.md` — questions, generators, diagram questions, levels, quality rules.
-- `flashcards.md` — flashcards & examiner key words: AO1 cold recall, permanent IDs, SM-2, `js/key-words.js`.
-- `lessons.md` — lessons: projector vs student view, slide style guide, draft → checked lifecycle, page template.
-- `worksheets.md` — worksheets and booklets: codes, KS3/KS4, Single Award twins, print rules.
-- `admin-and-students.md` — admin console, Review portal, study guides, set work, To do, year groups, homepage.
-- `games.md` — interactives, leaderboards, game access, the Eleven Students section.
-- `exams-local.md` — the local-only exam question bank (not part of this repo).
+## Repo map & `.agents/rules/` index
+- `index.html` · `today/` · `specifications/` · `interactive/spec-quiz/` · `Flashcards/` · `interactive/lessons/` · `worksheets/` · `booklets/` · `work/` · `guide/` · `admin/` · `interactive/*` · `Elevenstudents/` · `leaderboards/` · `play/` · `js/` · `tools/` · `test.html`.
+- `release.md` — merging `staging` → `main` (release chat only).
+- `questing.md` — Cakebread Questing engine, securing rules, Breadventure Land, script order, globals.
+- `question-bank.md` — questions, generators, diagram makers, difficulty levels, quality rules.
+- `flashcards.md` — Flashcards & `/js/key-words.js` (AO1 recall, permanent IDs, SM-2, Single Award).
+- `lessons.md` — Projector decks vs. Student Study Guides (`study.js`), slide style guide, `freeze.py`.
+- `worksheets.md` — Worksheets, Topic Booklets & 6-Markers (codes, KS3/KS4, SA twins, print/greyscale).
+- `admin-and-students.md` — Admin console, Review portal, Study Guides, set work, `To do`, auth gate, shared scripts.
+- `games.md` — Topic interactives, leaderboards, game gate, `Elevenstudents/`.
+- `exams-local.md` — Local-only private past-paper tool (never in repo).
