@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-25",
+  "updated": "2026-11-26",
   "subjects": [
     {
       "id": "biology",
@@ -15,7 +15,7 @@
               "title": "Living organisms (1a characteristics, 1b variety)",
               "spec": "1.1–1.4",
               "status": "draft",
-              "draftUpdated": "2026-11-25",
+              "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-23"
               ]
@@ -41,8 +41,8 @@
               "code": "2b",
               "title": "Cell structure",
               "spec": "2.2–2.4",
-              "status": "checked",
-              "draftUpdated": "2026-11-25",
+              "status": "draft",
+              "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-25"
               ]
@@ -52,7 +52,7 @@
               "title": "Biological molecules",
               "spec": "2.7–2.13",
               "status": "draft",
-              "draftUpdated": "2026-11-25",
+              "draftUpdated": "2026-11-26",
               "versions": []
             },
             {
@@ -73,7 +73,7 @@
               "title": "Respiration",
               "spec": "2.34–2.39",
               "status": "draft",
-              "draftUpdated": "2026-11-25",
+              "draftUpdated": "2026-11-26",
               "versions": []
             },
             {
@@ -177,7 +177,7 @@
               "title": "States of matter",
               "spec": "1.1–1.4",
               "status": "draft",
-              "draftUpdated": "2026-11-25",
+              "draftUpdated": "2026-11-26",
               "versions": []
             },
             {
@@ -205,7 +205,7 @@
               "title": "Ionic bonding",
               "spec": "1.37–1.43",
               "status": "draft",
-              "draftUpdated": "2026-11-23",
+              "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-18",
                 "2026-11-22"
@@ -216,7 +216,7 @@
               "title": "Covalent bonding",
               "spec": "1.44–1.51",
               "status": "draft",
-              "draftUpdated": "2026-11-25",
+              "draftUpdated": "2026-11-26",
               "versions": []
             }
           ]

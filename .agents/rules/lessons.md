@@ -22,23 +22,24 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 4. `node tools/spec/build_index.js`, `python tools/lessons/build_diff.py` (refreshes the staging-only split-screen comparer at `/interactive/lessons/diff/`), changelog line, push to staging.
 - Review portal: his marks live in RTDB `school/review/l/{subject|code}`; he copies a "Mark checked / Needs a fix" message to whoever builds lessons.
 
-## Slide style guide (the user's rules, 23 Nov 2026 — check every slide)
+## Slide style guide (the user's rules, 23–26 Nov 2026 — check every slide)
 1. **A picture or diagram on every slide.** No word-only slides, no recap slide at the end (auto quiz/exam slides excepted).
-2. **Clear visual hierarchy (don't crowd the visual field):** big readable type, but don't make every line giant (`big`) or crowd the slide. Use font-size contrast, **bold** selectively, and **indented lists** rather than walls of text or inline middle dots (`·`). Prefer hyphens (`-`) or indented sub-bullets over middle-dot lists.
+2. **Clear visual hierarchy (don't crowd the visual field):** big readable type, but don't make every line giant (`big`) or crowd the slide. Present information using **indents (`.ilist`) or colour-coded boxes/cards** (as in Biology 2c Slides 5, 13, 17) rather than walls of text or inline middle dots (`·`). Prefer hyphens (`-`) or indented sub-bullets over middle-dot lists.
 3. Fewer, cleaner points; key terms kept, in **bold**.
 4. Activity slides say the task ("Your turn: …, then click to check"). Discussion slides are pictures only.
-5. Title and section slides: **genuinely high-resolution** picture (≥1600px wide) fills the screen, title in a cream box (`tslide`) that doesn't cover the main subject.
+5. **Always high-resolution images:** Title and section slides must use a **genuinely high-resolution** picture (≥1600px wide) that fills the screen, with the title in a cream box (`tslide`) that doesn't cover the main subject. Content photos should also be high-resolution (≥1000px on the long edge) — never blurry low-res thumbnails.
 6. Our own clear diagrams (circle photo nodes with coloured rings, coloured boxes, revealed per click) instead of screenshots of text or blurry rasters.
 7. Comparisons: same object drawn the same way in each panel; shared parts labelled once.
 8. Photos of individual organisms, not scenery; short captions; many examples → rolodex.
 9. **Question-bank diagrams first** (`dq` component, ids from `DQ.LIST` + a fixed seed) before drawing new ones.
 10. Mnemonics/cartoons big; acrostics vertical (Mrs C Gren).
-11. Ions = balls with a floating charge; dot-and-cross only where the spec asks (using the overlapping-lens model so shared electrons never overlap orbital rings). Equations = colour-coded boxes on one line where possible, with a **large, well-spaced arrow** separating reactants and products. Data tables colour-shaded, highest at top. Readable colours on dark slides.
+11. Ions = balls with a floating charge; dot-and-cross only where the spec asks (using the overlapping-lens model with **no light background fill** and **dead-centred nuclei** so shared electrons never overlap orbital rings). Equations = colour-coded boxes on one line where possible, centred with **reaction arrows vertically aligned** when stacked, and a **large, well-spaced arrow** separating reactants and products. Data tables colour-shaded, highest at top. Readable colours on dark slides.
 12. Keep the deck's images, links (one linkcard per slide), order and examples. 13. **Never mention Separate Science.**
 14. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
 15. Tags only "Double Award only" / "Beyond IGCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
     no spec numbers on slides. Mixed slides stay untagged. Tag every new lesson.
 16. Before pushing: look at every slide fully revealed for word-only slides, text off the slide or under the title, tiny pictures, overlaps.
+17. **Revisit backlog (26 Nov 2026):** **Physics 8** and **Chemistry 1a** need a full revisit with these high-resolution image and box/indent presentation standards in mind.
 
 ## Page template
 - `<body class="subj-biology|subj-chemistry|subj-physics" data-status="draft" data-updated="…" data-deck-ui="v2">`; header `.lhead`

@@ -13,16 +13,21 @@ L.initComps = function(root){ $$('[data-comp]', root).forEach(el => { if(el._ini
 
 /* ---------- rolodex: a stack of examples per column; click the card, ▲▼ or scroll to flip (22 Nov) ---------- */
 L.comps.rolodex = el => {
-  $$('.rcol', el).forEach(col => {
+  const cols = $$('.rcol', el), sync = el.dataset.sync === '1';
+  const ctl = cols.map(col => {
     const items = $$('.ritem', col), card = $('.rcard', col), cap = $('.rcap', col), cnt = $('.rc', col), crd = $('.rcr', col);
     let i = 0, busy = 0;
     const paint = () => { items.forEach((x,j) => x.classList.toggle('on', j===i)); cap.innerHTML = items[i].dataset.cap || ''; if(crd) crd.innerHTML = items[i].dataset.cr || ''; cnt.textContent = (i+1)+' / '+items.length; };
     const go = d => { if(busy) return; busy = 1; card.classList.remove('fu','fd'); void card.offsetWidth; card.classList.add(d>0?'fd':'fu');
       setTimeout(() => { i = (i + d + items.length) % items.length; paint(); }, 150); setTimeout(() => busy = 0, 320); };
     paint();
-    const stop = (e, d) => { e.preventDefault(); e.stopPropagation(); go(d); };
-    $('.rn', col).onclick = e => stop(e, 1); $('.rp', col).onclick = e => stop(e, -1); card.onclick = e => stop(e, 1);
-    card.addEventListener('wheel', e => { if(Math.abs(e.deltaY) < 3) return; stop(e, e.deltaY > 0 ? 1 : -1); }, {passive:false});
+    return {col, card, go};
+  });
+  const trigger = (c, d) => { if(sync) ctl.forEach(x => x.go(d)); else c.go(d); };
+  ctl.forEach(c => {
+    const stop = (e, d) => { e.preventDefault(); e.stopPropagation(); trigger(c, d); };
+    $('.rn', c.col).onclick = e => stop(e, 1); $('.rp', c.col).onclick = e => stop(e, -1); c.card.onclick = e => stop(e, 1);
+    c.card.addEventListener('wheel', e => { if(Math.abs(e.deltaY) < 3) return; stop(e, e.deltaY > 0 ? 1 : -1); }, {passive:false});
   });
 };
 
