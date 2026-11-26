@@ -8,3 +8,16 @@
 .ps .stag.beyond{color:#8e24aa}
 .ps .stag.beyond::before{content:"Beyond IGCSE"}
 .ps:has(> .stag)>h2{padding-right:470px}
+
+/* Activity corner symbols: Quick check (oral/recall hinge) vs Mini-whiteboard (drawing task) */
+.ps .sico{display:inline-flex;align-items:center;gap:12px;position:absolute;top:28px;right:90px;z-index:3;font:900 28px/1 'Barlow Condensed','Arial Narrow',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:11px 20px 11px 16px;border:4px solid #111;border-radius:12px;color:#fff;font-style:normal;box-shadow:0 4px 0 #111}
+.ps .sico::before{content:"";display:inline-block;width:32px;height:32px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain}
+.ps .sico.qc{background:#0f766e}
+.ps .sico.qc::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='15' fill='%23fff'/%3E%3Cpath d='M10.5 18.5l5 5 10.5-11' fill='none' stroke='%230f766e' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ps .sico.qc::after{content:"Quick check"}
+.ps .sico.wb{background:#1d4ed8}
+.ps .sico.wb::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='3' y='6' width='26' height='20' rx='3' fill='%23fff' stroke='%23111' stroke-width='2'/%3E%3Cpath d='M8 19l5-5 4 4 6-7' fill='none' stroke='%231d4ed8' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M25 27l7-7 3 3-7 7-4 1z' fill='%23facc15' stroke='%23111' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ps .sico.wb::after{content:"Whiteboards"}
+.ps:has(> .sico)>h2{padding-right:320px}
+.ps:has(> .stag)>.sico{right:490px}
+.ps:has(> .stag):has(> .sico)>h2{padding-right:760px}
