@@ -232,16 +232,16 @@ function build() {
   const faces = ['happy', 'laugh', 'think', 'surprised', 'worried', 'determined'];
   sec('mascot', 'The Professor and the dragon', '', `
     <div class="faces">
-      <figure><img src="/img/mascot/professor-pixel-hd.webp" alt=""><figcaption>Professor (map, HD)</figcaption></figure>
-      <figure><img class="px" src="/img/mascot/professor-pixel.png" alt=""><figcaption>Professor (pixel)</figcaption></figure>
-      <figure><img src="/img/mascot/professor.webp" alt=""><figcaption>Professor (smooth)</figcaption></figure>
-      ${['front', 'three-quarter', 'side', 'back'].map(t => `<figure><img src="/img/mascot/turn-${t}.webp" alt=""><figcaption>Turnaround: ${t}</figcaption></figure>`).join('')}
+      <figure><img loading="lazy" decoding="async" src="/img/mascot/professor-pixel-hd.webp" alt=""><figcaption>Professor (map, HD)</figcaption></figure>
+      <figure><img loading="lazy" decoding="async" class="px" src="/img/mascot/professor-pixel.png" alt=""><figcaption>Professor (pixel)</figcaption></figure>
+      <figure><img loading="lazy" decoding="async" src="/img/mascot/professor.webp" alt=""><figcaption>Professor (smooth)</figcaption></figure>
+      ${['front', 'three-quarter', 'side', 'back'].map(t => `<figure><img loading="lazy" decoding="async" src="/img/mascot/turn-${t}.webp" alt=""><figcaption>Turnaround: ${t}</figcaption></figure>`).join('')}
     </div>
     <h3>Reaction faces <small class="cnt">(missions and flashcards)</small></h3>
-    <div class="faces">${faces.map(f => `<figure><img src="${ADV.face(f)}" alt=""><figcaption>${f}</figcaption></figure>`).join('')}<figure><img src="/img/mascot/head-pixel-hd.webp" alt=""><figcaption>pixel head</figcaption></figure></div>
+    <div class="faces">${faces.map(f => `<figure><img loading="lazy" decoding="async" src="${ADV.face(f)}" alt=""><figcaption>${f}</figcaption></figure>`).join('')}<figure><img loading="lazy" decoding="async" src="/img/mascot/head-pixel-hd.webp" alt=""><figcaption>pixel head</figcaption></figure></div>
     <h3>${ADV.DRAGON} the dragon</h3>
-    <div class="faces"><figure><img class="px" src="${ic('dragon')}" style="height:192px;background:#b9d77f" alt=""><figcaption>Awake</figcaption></figure><figure><img class="px" src="${ic('dragonzz')}" style="height:192px;background:#b9d77f" alt=""><figcaption>Asleep on its hoard</figcaption></figure>
-      <figure><img class="px" src="${ic('prof')}" style="height:192px;background:#b9d77f" alt=""><figcaption>In the cage (map)</figcaption></figure></div>
+    <div class="faces"><figure><img loading="lazy" decoding="async" class="px" src="${ic('dragon')}" style="height:192px;background:#b9d77f" alt=""><figcaption>Awake</figcaption></figure><figure><img loading="lazy" decoding="async" class="px" src="${ic('dragonzz')}" style="height:192px;background:#b9d77f" alt=""><figcaption>Asleep on its hoard</figcaption></figure>
+      <figure><img loading="lazy" decoding="async" class="px" src="${ic('prof')}" style="height:192px;background:#b9d77f" alt=""><figcaption>In the cage (map)</figcaption></figure></div>
     <p class="small muted" style="margin-top:6px">${esc(P_['7,0'].text)}</p>`);
 
   /* ---------- maps ---------- */
@@ -317,7 +317,7 @@ function build() {
   /* ---------- items ---------- */
   /* 22 Nov: one tag = rarity + level; stats and what it does on their own lines */
   const one = it => { const fig = PIXEL.figure(ADV_PUT({}, it), PIXEL.DEFAULT), fx = ADV_FX_TXT(it.fx);
-    return `<div class="card item"><img class="px ic" src="${PIXEL.item(it.id)}" alt=""><img class="px fig" src="${fig}" alt="">
+    return `<div class="card item"><img loading="lazy" decoding="async" class="px ic" src="${PIXEL.item(it.id)}" alt=""><img loading="lazy" decoding="async" class="px fig" src="${fig}" alt="">
       <div><b>${esc(it.name)}</b> <span class="tag r-${it.r}">${ADV_TAG(it)}</span>
       <p class="small" style="margin-top:2px">${ADV_WHERE(it)}${it.s ? ` · <span style="font-weight:700;color:${SCOL[it.s]}">${SNAME[it.s]}</span>` : ''}${ADV_STATS_TXT(it) ? ' · <span style="font-weight:700">' + ADV_STATS_TXT(it) + '</span>' : ''}</p>
       ${fx.map(f => `<p class="small" style="color:#7c2d12;font-weight:700">★ ${esc(f)}</p>`).join('')}
@@ -343,7 +343,7 @@ function build() {
 
   /* ---------- character creator ---------- */
   const O = PIXEL.OPTIONS, D0 = PIXEL.DEFAULT, look = o => PIXEL.portrait(Object.assign({}, D0, o));
-  const row = (title, list, mk, lab = o => o.name) => `<h3>${title} <small class="cnt">${list.length}</small></h3><div class="tiles" style="--tw:96px;--iw:78px">${list.map(o => `<div class="tile"><img class="px" src="${look(mk(o))}" alt=""><span>${esc(lab(o))}</span></div>`).join('')}</div>`;
+  const row = (title, list, mk, lab = o => o.name) => `<h3>${title} <small class="cnt">${list.length}</small></h3><div class="tiles" style="--tw:96px;--iw:78px">${list.map(o => `<div class="tile"><img loading="lazy" decoding="async" class="px" src="${look(mk(o))}" alt=""><span>${esc(lab(o))}</span></div>`).join('')}</div>`;
   sec('looks', 'Character creator', 'every option on the My look page', `
     <p class="lede">One body for everyone, no gender field, no pronouns. Hijab and turban/patka use the cloth colours.</p>
     ${row('Skin tones', O.skin, o => ({ skin: o.id }))}${row('Hair', O.hair, o => ({ hair: o.id }))}${row('Hair colours', O.hc, o => ({ hair: 'long', hc: o.id }))}
@@ -381,7 +381,7 @@ function build() {
   /* ---------- every sprite ---------- */
   const bySize = {}; icons.forEach(n => { const g = ADV.ICONS[n], s = Math.max(g.length, ...g.map(r => r.length)); (bySize[s] = bySize[s] || []).push(n); });
   sec('icons', 'Every pixel sprite', `${icons.length} drawn in code, plus the Professor`, Object.keys(bySize).sort((a, b) => b - a).map(s => `<h3>${s} × ${s} <small class="cnt">${bySize[s].length}</small></h3>
-    <div class="tiles" style="--tw:${s >= 28 ? 132 : s >= 20 ? 110 : 92}px;--iw:${s >= 28 ? 112 : s >= 20 ? 90 : 60}px">${bySize[s].map(n => `<div class="tile"><img class="px" src="${ic(n)}" alt="" style="background:var(--soft)"><span>${n}</span></div>`).join('')}</div>`).join(''));
+    <div class="tiles" style="--tw:${s >= 28 ? 132 : s >= 20 ? 110 : 92}px;--iw:${s >= 28 ? 112 : s >= 20 ? 90 : 60}px">${bySize[s].map(n => `<div class="tile"><img loading="lazy" decoding="async" class="px" src="${ic(n)}" alt="" style="background:var(--soft)"><span>${n}</span></div>`).join('')}</div>`).join(''));
 }
 
 /* ===================== render ===================== */

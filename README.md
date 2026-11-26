@@ -54,7 +54,7 @@ The primary IGCSE Edexcel resources site with printable worksheets (83 total) an
   - `worksheet.css` - Base worksheet styles
   - `maths.css`, `biology.css`, `chemistry.css`, `physics.css` - Subject-specific color overrides
   - `index.css` - Homepage and navigation styles
-  - `specifications.css` - Specification tracker styles
+  - `tracker.css` - Specification tracker styles
 
 ### 2. **Elevenstudents** (Separate Site)
 A companion educational site with additional resources and games.
