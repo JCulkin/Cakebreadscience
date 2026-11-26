@@ -6,7 +6,7 @@
    - slot: head | top | bottom | shoes | hand. Hand items go in either hand (side = the hand they're drawn in, r = viewer's
      left; the other hand gets a mirror image); two: 1 = needs both hands. Worn gear lives in eq {head, top, bottom, shoes,
      rhand, lhand}; a two-handed item sits in both hand slots.
-   - r = rarity, lv = the level you need to wear it (hats 3+, things to hold 5+, Main Character items 8: same as the unlocks), s = science
+   - r = rarity, lv = the level you need to wear it (hats 3+, things to hold 5+; Main Character items have no level limit), s = science
      (b/c/p) for science sets, str/hp/mag = Strength/Health/Magic it adds, fx = what else it does (ADV_FX below; used by the
      map page and, through pub/{uid}.fx, by the midnight boss fights in bland.js), dark = can come from cursed chests.
    - Stat budget (Claude's numbers): common 1, uncommon 2, rare 3, lowkey iconic 4, mythic 5, main character 6
@@ -86,9 +86,9 @@ const ADV_ITEMS = [
   {"id": "flask", "slot": "hand", "side": "l", "name": "Conical Flask of Something Purple", "r": "uncommon", "s": "c", "lv": 5, "mag": 2, "from": "Missions, flashcards and wooden chests", "d": "It's probably fine. It's probably fine. It's probably fine."},
   {"id": "cupcake", "slot": "hand", "side": "l", "name": "Emergency Cupcake", "r": "common", "lv": 5, "fx": {"heal": 2}, "from": "Missions, flashcards and wooden chests", "d": "For emergencies. Every moment is an emergency."},
   {"id": "chicken", "slot": "hand", "side": "l", "name": "The Rubber Chicken of Doom", "r": "unhinged", "lv": 9, "str": 2, "hp": 1, "mag": 1, "fx": {"boss": 20}, "from": "Golden chests (very rarely)", "d": "Squeaks in a minor key. Bosses take it personally."},
-  {"id": "syringe", "slot": "hand", "side": "r", "name": "Syringe of Plot Armour", "r": "legend", "s": "b", "lv": 8, "hp": 4, "str": 1, "fx": {"heal": 5}, "from": "Most correct Biology answers in the last 7 days", "d": "You cannot be written out of this storyline.", "legend": "Biology"},
-  {"id": "pebble", "slot": "hand", "side": "l", "name": "The Philosopher's Pebble", "r": "legend", "s": "c", "lv": 8, "mag": 4, "hp": 1, "fx": {"spell": 1}, "from": "Most correct Chemistry answers in the last 7 days", "d": "Turns lead into slightly shinier lead.", "legend": "Chemistry"},
-  {"id": "dodgeball", "slot": "hand", "side": "l", "name": "Definitely-Not-Uranium Dodgeball", "r": "legend", "s": "p", "lv": 8, "str": 5, "fx": {"boss": 15}, "from": "Most correct Physics answers in the last 7 days", "d": "Half-life: one PE lesson.", "legend": "Physics"},
+  {"id": "syringe", "slot": "hand", "side": "r", "name": "Syringe of Plot Armour", "r": "legend", "s": "b", "hp": 4, "str": 1, "fx": {"heal": 5}, "from": "Most correct Biology answers in the last 7 days", "d": "You cannot be written out of this storyline.", "legend": "Biology"},
+  {"id": "pebble", "slot": "hand", "side": "l", "name": "The Philosopher's Pebble", "r": "legend", "s": "c", "mag": 4, "hp": 1, "fx": {"spell": 1}, "from": "Most correct Chemistry answers in the last 7 days", "d": "Turns lead into slightly shinier lead.", "legend": "Chemistry"},
+  {"id": "dodgeball", "slot": "hand", "side": "l", "name": "Definitely-Not-Uranium Dodgeball", "r": "legend", "s": "p", "str": 5, "fx": {"boss": 15}, "from": "Most correct Physics answers in the last 7 days", "d": "Half-life: one PE lesson.", "legend": "Physics"},
   {"id": "leafhat", "slot": "head", "name": "Leaf Hat of Photosynthesis", "r": "common", "s": "b", "lv": 3, "hp": 1, "from": "Missions, flashcards and wooden chests", "d": "Makes glucose in sunny weather. Turns brown and sad in the canteen."},
   {"id": "goggles", "slot": "head", "name": "Safety Goggles (Worn Correctly)", "r": "common", "s": "c", "lv": 3, "mag": 1, "from": "Missions, flashcards and wooden chests", "d": "On your eyes, not on your forehead. Legendary behaviour."},
   {"id": "apron", "slot": "top", "name": "Apron of Spilled Titrations", "r": "common", "s": "c", "lv": 1, "mag": 1, "from": "Missions, flashcards and wooden chests", "d": "Each stain is a slightly different shade of pink. One drop too many, every time."},

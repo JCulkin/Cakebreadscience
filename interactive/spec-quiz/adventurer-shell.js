@@ -82,7 +82,6 @@ const ADV = (() => {
     { lv: 6, id: 'help', ic: '🩹', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
     { lv: 7, id: 'fog', ic: '🌫', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
     { lv: 7, id: 'mine', ic: '⛏', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
-    { lv: 8, id: 'legend', ic: '🏆', name: 'Main Character items', what: 'Wear your science\'s Main Character item while you top it for the week.' },
   ];
   const unlockLv = id => (UNLOCKS.find(u => u.id === id) || { lv: 1 }).lv;
   const can = id => level() >= unlockLv(id);
