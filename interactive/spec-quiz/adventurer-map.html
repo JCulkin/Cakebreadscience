@@ -159,9 +159,9 @@ table.st th{background:var(--soft)}
           <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together, with a <b>rally bonus</b> of +10% damage for each ally. On the same square as another player you can tap them to patch them up (3 mana) or give them a brew. <b>Each week has an event</b> (shown under the quest).</li>
           <li><b>Bosses:</b>  Boss health carries over night to night and never goes back up.</li>
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
-          <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
+          <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards, missions and a small overnight refill (+1 a night, plus +1 per 10 Magic). Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
-          <li><b>New things open as you level up</b> (and you level up by securing spec points): mana and spells at level 2, hats at 3, the Tuck Shop and weekly events at 4, dungeons at 5, the Abandoned Mine at 7. Locked places show a padlock and the level.</li>
+          <li><b>New things open as you level up</b> (and you level up by securing spec points): mana, spells and hats at level 2, two-handed items at 3, the Tuck Shop and weekly events at 4, dungeons at 5, the Abandoned Mine at 7. Locked places show a padlock and the level.</li>
           <li><b>Dungeons</b> are played awake. Walk to a dungeon door and tap Enter: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
           <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
@@ -170,9 +170,9 @@ table.st th{background:var(--soft)}
         <h3 style="margin-top:0">Stats</h3>
         <ul>
           <li><b>Strength</b> (damage) = Physics spec points secured + 2 per level + gear.</li>
-          <li><b>Health</b> = Biology spec points secured + 3 per level + gear.</li>
-          <li><b>Magic</b> = Chemistry spec points secured + 1 per level + gear. More Magic, more mana.</li>
-          <li><b>Level</b> comes from XP, capped by spec points secured: 2 + 1 per 8.</li>
+          <li><b>Health</b> = Biology spec points secured + 3 per level + gear. Against Biology monsters and bosses, your Biology training hits just as hard as Strength.</li>
+          <li><b>Magic</b> = Chemistry spec points secured + 1 per level + gear. Raises max mana, boosts Patch Up (+1 Health per 5 Magic), speeds up overnight mana refill, and matches Strength against Chemistry monsters and bosses.</li>
+          <li><b>Level</b> comes from XP, capped by spec points secured: 2 + 1 per 5 (4 on Single Award).</li>
         </ul>
         <h3>The quest</h3>
         <ul>
@@ -504,7 +504,7 @@ function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${esc(ADV.nick())}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
+    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers, plus overnight refill (+1 + 1 per 10 Magic). Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span>${ADV.can('shop') ? `<span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span>` : ''}</div>
     <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' 🎁' : ''}</div>
     <div class="day">Day ${S.dayNo || 1} · boss fights happen at midnight</div>
@@ -526,8 +526,9 @@ function brewRows() {
     return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:26px">${b.ic}</span><div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
     : '<p class="small">None yet. Buy them at the Tuck Shop with coins from missions, flashcards and the map, or find them in dungeons.</p>');
 }
+const patchHeal = () => 5 + Math.floor(ADV.stats().mag / 5) + (FX().heal || 0);
 const SPELL_FN = {
-  heal: { ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.', cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5 + (FX().heal || 0)); return `💚 +${S.health - b} Health.`; } },
+  heal: { ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.', cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + patchHeal()); return `💚 +${S.health - b} Health.`; } },
   shield: { ok: () => !S.shield, why: 'Already up for tonight.', cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
   fog: { ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.', cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
 };
@@ -608,11 +609,12 @@ function showSpells() {
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
   const LK = { heal: 'spells', shield: 'shield', fog: 'fog' };
-  const row = sp => { if (!ADV.can(LK[sp.id])) return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0;opacity:.5"><span style="font-size:28px;filter:grayscale(1)">${sp.ic}</span><div style="flex:1"><b>${sp.name}</b><br><span class="small">${sp.what}</span></div><b>🔒 Level ${ADV.unlockLv(LK[sp.id])}</b></div>`;
+  const desc = sp => sp.id === 'heal' ? `+${patchHeal()} Health now (5 + ${Math.floor(s.mag / 5)} from Magic${FX().heal ? ` + ${FX().heal} from gear` : ''}).` : sp.what;
+  const row = sp => { if (!ADV.can(LK[sp.id])) return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0;opacity:.5"><span style="font-size:28px;filter:grayscale(1)">${sp.ic}</span><div style="flex:1"><b>${sp.name}</b><br><span class="small">${desc(sp)}</span></div><b>🔒 Level ${ADV.unlockLv(LK[sp.id])}</b></div>`;
     const can = S.mana >= costOf(sp.cost) && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
-    <div style="flex:1"><b>${sp.name}</b> · ${costOf(sp.cost)} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
+    <div style="flex:1"><b>${sp.name}</b> · ${costOf(sp.cost)} mana<br><span class="small">${desc(sp)}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
     <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
-  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
+  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision (<b>+1 per flashcard</b>, <b>+1 per 3 right mission answers</b>) and refills by <b>+${1 + Math.floor(s.mag / 10)}</b> each night. More Magic raises max mana, Patch Up healing and overnight refill.</p>
     ${SPELLS.map(row).join('')}${ADV.can('shop') ? brewRows() : `<h3 style="margin:14px 0 4px;opacity:.5">🧪 Brews · 🔒 Level ${ADV.unlockLv('shop')}</h3><p class="small">Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.${Object.values(S.brews).some(n => n > 0) ? ' The ones you have are kept for you.' : ''}</p>`}`;
   m.classList.add('on');
   $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
@@ -659,12 +661,12 @@ function renderPanel() {
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
     h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
   if (P && P.type === 'monster') {
-    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 1.5)));
+    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (fightStr(P.science) * 1.5)));
     h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits you for about ${P.power} if you get its question wrong</div><div class="loot">⚔ <b>Fight it now, on your own.</b> Each move here is one ${ADV.SCI[P.science] || ''} question: right and you hit it (about ${n} right answer${n > 1 ? 's' : ''} to beat it), wrong and it hits you. Beat it for ${monsterCoins()} coins.</div>`
       : `<div class="cap">Beaten — it'll be back in a day or two.</div>`;
   }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
-    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / str), team = Math.ceil(S.boss[sel] / ((str + 3 * 16) * 1.3));   // attacks: you alone / you + 3 others (rally +30%)
+    const str = fightStr(P.science), solo = Math.ceil(S.boss[sel] / str), team = Math.ceil(S.boss[sel] / ((str + 3 * 16) * 1.3));   // attacks: you alone / you + 3 others (rally +30%)
     const campers = Object.entries(BL.states || {}).filter(([u, st]) => u !== BL.uid && st && st.camp && st.camp.k === sel && st.at === sel && BL.world && st.camp.day === BL.world.day).map(([u]) => (BL.pubs[u] || {}).name || 'Someone');
     h += `<div class="loot">⛺ <b>Boss fights happen at midnight.</b> Step here to make camp: every move you spend here is one attack tonight, alongside everyone else camped here (📣 +10% damage for each of them). Alone about ${solo} attack${solo > 1 ? 's' : ''} to beat it · with 3 others about ${team} each. It hits each camper back for about ${P.power} a round.</div>`
       + (S.camp && S.camp.k === sel ? `<div class="loot" style="background:#fef9c3;padding:4px 8px;border:2px solid #111">⛺ <b>You're camped here with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight.</b> Walking away breaks camp and gives those moves back.</div>` : '')
@@ -723,16 +725,16 @@ function renderPerson(who) {
     ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">Camp here too and you'll fight alongside them at midnight (rally: +10% damage each).</p>` : ''}
     ${!me && shared && at === S.at && !ADV.can('help') ? `<p class="cap">🔒 Helping other players opens at level ${ADV.unlockLv('help')}.</p>` : ''}
     ${!me && shared && at === S.at && ADV.can('help') ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
-      <button class="btn ${S.mana >= costOf(3) ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= costOf(3) ? '' : 'disabled'}>🩹 Patch them up (${costOf(3)} mana, +${5 + (FX().heal || 0)} Health)</button>
+      <button class="btn ${S.mana >= costOf(3) ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= costOf(3) ? '' : 'disabled'}>🩹 Patch them up (${costOf(3)} mana, +${patchHeal()} Health)</button>
       ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${b.ic} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
       : !me && shared && at !== S.at && ADV.can('help') ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
   $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
     const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
     try {
       QE.tally('helped'); LOG('🩹', id === 'heal' ? `Patched up ${p.nick}` : `Gave ${p.nick} a ${BL.BREWS[id].name}`);
-      if (id === 'heal') { if (S.mana < costOf(3)) return; S.mana -= costOf(3); await BL.aid(p.uid, { heal: 5 + (FX().heal || 0) }, ADV.nick()); }
+      if (id === 'heal') { if (S.mana < costOf(3)) return; S.mana -= costOf(3); await BL.aid(p.uid, { heal: patchHeal() }, ADV.nick()); }
       else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
-      persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +${5 + (FX().heal || 0)} Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
+      persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +${patchHeal()} Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
     } catch (e) { $('aidMsg').textContent = 'That did not go through. Try again.'; }
   });
   $('panel').classList.add('on');
@@ -795,7 +797,11 @@ function knockOut(where) {
   toast(`💫 ${where} knocks you out. You wake up in the Cakelab on ${S.health} Health. Missions and flashcards heal you.`);
 }
 const hurtMe = h => { if (FX().armour) h = Math.max(1, Math.round(h * (1 - FX().armour / 100))); h = S.shield ? Math.ceil(h / 2) : h; S.health = Math.max(S.calm ? 1 : 0, S.health - h); return h; };
-const fightStr = () => (ADV.stats().str + (S.aura ? 5 : 0)) * (S.fizz ? 1.5 : 1);
+const fightStr = sci => {
+  const s = ADV.stats();
+  const eff = sci === 'b' ? Math.max(s.str, s.hp - 7 - s.l) : sci === 'c' ? Math.max(s.str, ADV.BASE.str + s.l + s.mag) : s.str;
+  return (eff + (S.aura ? 5 : 0)) * (S.fizz ? 1.5 : 1);
+};
 const pause = ms => new Promise(r => setTimeout(r, ms));
 async function walk(steps) {
   if (walking || !shared) return;
@@ -898,7 +904,7 @@ function fightMonster(k) {
       QE.recordAnswer(q, ok); QE.tally('monsterQs');
       let msg, done = false, out = false;
       if (ok) {
-        const d = Math.round(fightStr() * (1.2 + Math.random() * 0.6) * ({ 2: 1.1, 3: 1.25 }[q.lv] || 1) * (1 + (FX().monster || 0) / 100)), hp = Math.max(0, hp0 - d);
+        const d = Math.round(fightStr(P.science) * (1.2 + Math.random() * 0.6) * ({ 2: 1.1, 3: 1.25 }[q.lv] || 1) * (1 + (FX().monster || 0) / 100)), hp = Math.max(0, hp0 - d);
         S.dens[k] = hp ? { hp } : { back: S.day + 2 }; $('mHp').style.width = (hp / P.max * 100) + '%';
         if (!hp) { S.coins = S.coins + monsterCoins(); done = true; QE.tally('monsters'); QE.mark('m:' + k); }
         LOG('⚔️', `${P.name}: right answer, hit it for ${d}${hp ? ` (${hp} health left)` : `, beaten! +${monsterCoins()} coins`}`);

@@ -387,7 +387,7 @@ function finish() {
   QE.finishMission({ coins, loot: drop.id, right });
   QE.log('⚔️', `Mission ${MS.sub.key.slice(1)} vs “${MS.foe.name}”: ${right}/${MS.qs.length} right first time, ${won ? 'busted it' : 'it got away'} · +${coins} coins · loot: ${drop.name}`);
   QE.busy = false;
-  const after = ADV.stats(), capAfter = ADV.levelCap(), toCap = 8 - ADV.securedTotal() % 8, st = QE.stats();
+  const after = ADV.stats(), capAfter = ADV.levelCap(), step = ADV.CAP_STEP(), toCap = step - ADV.securedTotal() % step, st = QE.stats();
   const gainP = st.securedP - MS.st0.securedP, gainQ = st.securedQ - MS.st0.securedQ, xp = S.xp - MS.xp0;
   const statUps = [['p', 'Strength', 'str'], ['b', 'Health', 'hp'], ['c', 'Magic', 'mag']].filter(([k]) => S.secured[k] > MS.sec0[k]);
   const wrong = MS.res.filter(r => !r.ok);

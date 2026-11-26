@@ -183,7 +183,7 @@ const dstr = t => { const d = new Date(t); return d.getFullYear() + '-' + String
 const lastDays = n => { const t = new Date(TODAY + 'T12:00:00').getTime(); return [...Array(n)].map((_, i) => dstr(t - (n - 1 - i) * DAY)); };
 const ago = t => { if (!t) return 'never'; const d = (Date.now() - t) / DAY; return d < 1 / 24 ? 'just now' : d < 1 ? Math.round(d * 24) + 'h ago' : d < 2 ? 'yesterday' : d < 30 ? Math.floor(d) + ' days ago' : new Date(t).toLocaleDateString('en-GB'); };
 const xpFor = l => 100 * l * (l - 1) / 2;
-const levelOf = (xp, pts) => { let l = 1; while (xpFor(l + 1) <= xp) l++; return Math.min(l, 2 + Math.floor(pts / 8)); };
+const levelOf = (xp, pts, course) => { let l = 1; while (xpFor(l + 1) <= xp) l++; return Math.min(l, 2 + Math.floor(pts / (course === 'SA' ? 4 : 5))); };
 const QBYID = {}; QUESTIONS.forEach(q => QBYID[q.id] = q);
 const TOPICS = []; SPEC.forEach(s => s.topics.forEach(t => { const keys = []; t.subs.forEach(sb => { if (sb.name === 'Units') return; sb.points.forEach(p => { if (QE.POINT_QS[p.key]) keys.push(p.key); }); }); if (keys.length) TOPICS.push({ key: s.name[0] + t.n, sci: s.name, name: t.name, keys }); }));
 
@@ -240,7 +240,7 @@ async function load() {
       nick: game.nick && !QE.checkName(game.nick) ? game.nick : '', badNick: game.nick && game.nick !== '-' && QE.checkName(game.nick) ? game.nick : '',
       last: times.length ? Math.max(...times) : 0,
       xp: prog ? prog.xp || 0 : 0, pts: st.securedP, secQ: st.securedQ, per: st.per,
-      level: prog ? levelOf(prog.xp || 0, st.securedP) : 0,
+      level: prog ? levelOf(prog.xp || 0, st.securedP, u.course) : 0,
       answered: prog ? Object.values(prog.q || {}).reduce((n, x) => n + (x.n || 0), 0) : 0,
       att: prog ? Object.values(prog.q || {}).filter(x => x && x.n).length : 0,   // different questions attempted (18 Nov)
       right: prog ? prog.correct || 0 : 0, missions: prog ? prog.missions || 0 : 0,

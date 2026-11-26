@@ -63,7 +63,8 @@ const ADV = (() => {
   const gear = () => ADV_GEAR(eq());
   const BASE = { str: 8, hp: 15 };   // every adventurer starts with this, so a brand-new student can still win small fights
   const securedTotal = () => { const s = S.secured; return s.p + s.b + s.c; };
-  const levelCap = () => 2 + Math.floor(securedTotal() / 8);
+  const CAP_STEP = () => (typeof CBSCourse !== 'undefined' && CBSCourse.sa ? 4 : 5);
+  const levelCap = () => 2 + Math.floor(securedTotal() / CAP_STEP());
   const xpFor = l => 100 * l * (l - 1) / 2;
   const rawLevel = () => { let l = 1; while (xpFor(l + 1) <= S.xp) l++; return l; };
   const level = () => Math.min(rawLevel(), levelCap());
@@ -71,13 +72,13 @@ const ADV = (() => {
      Level is capped by spec points secured, so every unlock is earned by revision. Nothing a player already owns is
      taken away: worn items stay worn and held brews stay held, they just can't be changed or used until the level. ---------- */
   const UNLOCKS = [
-    { lv: 1, id: 'clothes', ic: '👕', name: 'Tops, bottoms and shoes', what: 'Change your outfit in the Wardrobe.' },
-    { lv: 2, id: 'spells', ic: '🔮', name: 'Mana and your first spell', what: 'Patch Up: +5 Health on Breadventure Land. Flashcards and missions fill your mana.' },
-    { lv: 3, id: 'hats', ic: '🎩', name: 'Hats', what: 'Wear anything you have found for your head.' },
+    { lv: 1, id: 'clothes', ic: '👕', name: 'Clothes and gear', what: 'Change your outfit and single-hand items in the Wardrobe.' },
+    { lv: 2, id: 'spells', ic: '🔮', name: 'Mana and your first spell', what: 'Patch Up: +5 Health (+1 per 5 Magic) on Breadventure Land. Flashcards, missions and overnight rest fill your mana.' },
+    { lv: 2, id: 'hats', ic: '🎩', name: 'Hats', what: 'Wear hats you have found for your head.' },
+    { lv: 3, id: 'hands', ic: '🧤', name: 'Two-handed items', what: 'Wield bigger items that take both hands.' },
     { lv: 4, id: 'shop', ic: '🥤', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
     { lv: 4, id: 'events', ic: '📅', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
     { lv: 5, id: 'dungeons', ic: '🕯', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
-    { lv: 5, id: 'hands', ic: '🧤', name: 'Things to hold', what: 'Wear items in both hands.' },
     { lv: 6, id: 'shield', ic: '🛡', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
     { lv: 6, id: 'help', ic: '🩹', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
     { lv: 7, id: 'fog', ic: '🌫', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
@@ -384,5 +385,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, get gained() { return gained; }, pending, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, pending, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, CAP_STEP, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

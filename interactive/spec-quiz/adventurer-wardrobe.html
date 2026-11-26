@@ -154,20 +154,20 @@ QE.onChange(() => {
     render();
   }).catch(() => render());
 });
-let slot = 'top', sel = eq.top || null;   // tops first: hats are level 3, things to hold level 5
+let slot = 'top', sel = eq.top || null;   // tops first: hats are level 2+, two-handed items level 3+
 const PIC = {}; const pic = id => PIC[id] || (PIC[id] = PIXEL.item(id));
 const SUBJ = {b: 'Biology', c: 'Chemistry', p: 'Physics'};
 const RANK = {common: 0, uncommon: 1, rare: 2, lowkey: 3, unhinged: 4, legend: 5};
-/* 22 Nov: every item has a level (one tag with its rarity), adds Strength/Health/Magic and maybe does something (fx);
-   hand items go in either hand, some need both; 4+ slots all from one science = a set bonus and a glow (adventurer-items.js) */
+/* 22 Nov: items add Strength/Health/Magic and maybe do something (fx); hand items go in either hand, some need both;
+   4+ slots from one science (remaining slots can hold anything) = a set bonus and a glow (adventurer-items.js) */
 const lvNow = () => ADV.stats().l;
 const canWear = i => i.from === 'Starter outfit' || !!i.legend || (i.lv || 1) <= lvNow();
 function setLine(g) {
-  if (g.set) { const S = ADV_SETS[g.set], st = ADV.stats(); return `<div class="setok" style="--g:${S.col}">✨ <b>Full ${S.name} set!</b> +${st.set} ${ADV_STAT[S.stat][0]} ${ADV_STAT[S.stat][1]} (15%), ${ADV_FX_TXT(S.fx)[0].replace(/^./, c => c.toLowerCase())}, and you glow.</div>`; }
+  if (g.set) { const S = ADV_SETS[g.set], st = ADV.stats(); return `<div class="setok" style="--g:${S.col}">✨ <b>${S.name} set!</b> +${st.set} ${ADV_STAT[S.stat][0]} ${ADV_STAT[S.stat][1]} (15%), ${ADV_FX_TXT(S.fx)[0].replace(/^./, c => c.toLowerCase())}, and you glow.</div>`; }
   const c = {}; Object.entries(eq).forEach(([k, id]) => { const i = byId[id]; if (i && ADV_FITS(i, k) && i.s) c[i.s] = (c[i.s] || 0) + 1; });
   const best = Object.entries(c).sort((a, b) => b[1] - a[1])[0];
-  return best ? `<div class="small">${SUBJ[best[0]]} set: ${best[1]} slot${best[1] > 1 ? 's' : ''}. Fill 4 or more slots with ${SUBJ[best[0]]} items only (nothing from another science, nothing without one) for +15% ${ADV_STAT[ADV_SETS[best[0]].stat][1]} and a glow.</div>`
-    : `<div class="small">Wear 4 or more items from one science, and nothing else, for a set bonus and a glow.</div>`;
+  return best ? `<div class="small">${SUBJ[best[0]]} set: ${best[1]}/4 slots. Wear 4 or more ${SUBJ[best[0]]} items (your other slots can hold anything) for +15% ${ADV_STAT[ADV_SETS[best[0]].stat][1]} and a glow.</div>`
+    : `<div class="small">Wear 4 or more items from one science (your other slots can hold anything) for a set bonus and a glow.</div>`;
 }
 function gearBox() {
   const g = ADV_GEAR(eq), st = ['str', 'hp', 'mag'].filter(k => g[k]).map(k => `${g[k] > 0 ? '+' : '−'}${Math.abs(g[k])} ${ADV_STAT[k][0]}`).join(' ');

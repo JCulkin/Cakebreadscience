@@ -146,7 +146,7 @@ const l = s.l, cap = ADV.levelCap(), cur = ADV.xpFor(l), next = ADV.xpFor(l + 1)
 $('lvl').textContent = `Level ${l}`;
 $('xpTxt').textContent = `${S.xp - cur} / ${next - cur} XP`;
 $('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
-const toNextCap = 8 - ADV.securedTotal() % 8;
+const step = ADV.CAP_STEP(), toNextCap = step - ADV.securedTotal() % step;
 /* what the next level brings (unlocks, 17 Nov) */
 { const nx = ADV.nextUnlock(); if (nx) $('cap').insertAdjacentHTML('afterend', `<p class="small" id="nextUnlock" style="margin-top:4px">🔓 <b>Next:</b> ${nx.ic} ${nx.name} at level ${nx.lv}.</p>`); }
 $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
@@ -154,7 +154,7 @@ $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is wait
 const gx = k => (s.gear[k] ? ` + gear ${s.gear[k]}` : '') + (s.gear.set && ADV_SETS[s.gear.set].stat === k ? ` + ${ADV_SETS[s.gear.set].name} set ${s.set}` : '');
 $('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l}${gx('str')}`, s.str / 70],
   ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}${gx('hp')}`, S.health / s.hp],
-  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l}${gx('mag')} · more Magic = more mana`, s.mag / 70],
+  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l}${gx('mag')} · boosts mana & Patch Up`, s.mag / 70],
   ADV.can('spells') ? ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]
     : ['🔮 Mana', `🔒 Lv ${ADV.unlockLv('spells')}`, 'mag', `mana and spells unlock at level ${ADV.unlockLv('spells')}`, 0]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');

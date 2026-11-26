@@ -49,12 +49,13 @@ firebase-config → firebase app/auth/firestore/database compat 9.22.2 → `spec
   no staff titles). Leaderboards otherwise use first name + initial.
 
 ## Shell, levels and items — `adventurer-shell.js` (ADV), `adventurer-items.js`
-- Features unlock by level (`ADV.UNLOCKS`, `ADV.can(id)`): L1 clothes · L2 spells/mana · L3 hats · L4 shop, brews, weekly events ·
-  L5 dungeons, hand items · L6 shield, helping · L7 fog, the Abandoned Mine → the Underworld. Main Character items (the 3 weekly legendaries) have no level limit. Nothing owned is ever taken away.
-- Level from XP, capped at 2 + 1 per 8 secured points. Stats: Strength (Physics), Health (Biology), Magic (Chemistry) + per level + gear.
-- Items (93): `slot` head/top/bottom/shoes/hand, `side`, `two` (two-handed), `r` rarity (**Common · Uncommon · Rare · Lowkey Iconic · Mythic**;
+- Features unlock by level (`ADV.UNLOCKS`, `ADV.can(id)`): L1 clothes & single-hand items · L2 spells/mana, hats · L3 two-handed items · L4 shop, brews, weekly events ·
+  L5 dungeons · L6 shield, helping · L7 fog, the Abandoned Mine → the Underworld. Common/Uncommon non-hat single-hand items, boss drops and Main Character items (the 3 weekly legendaries) have no level limit. Nothing owned is ever taken away.
+- Level from XP, capped at 2 + 1 per 5 secured points (4 on Single Award). Stats: Strength (Physics), Health (Biology), Magic (Chemistry) + per level + gear.
+  Science affinity: Biology/Chemistry specialists hit matching-science monsters and bosses as hard as Strength; Magic also boosts Patch Up (+1 per 5 Magic) and overnight mana regen (+1 + floor(mag/10) a night).
+- Items (94): `slot` head/top/bottom/shoes/hand, `side`, `two` (two-handed), `r` rarity (**Common · Uncommon · Rare · Lowkey Iconic · Mythic**;
   weekly science items are **Main Character** items), `lv`, `s` science, `str/hp/mag`, `fx` ability, `from`, `d` joke, `dark` (cursed chests).
-  A full science set (≥ 4 slots, same science) = +15% and a coloured glow.
+  A science set (≥ 4 slots from one science; remaining slots can hold anything) = +15% and a coloured glow.
 - `ADV.S` = this browser's copy of the map state, owned by one account (`S.owner`; shared school computers reset it).
 
 ## Breadventure Land — `bland.js` (BL) + `adventurer-map.html`

@@ -111,7 +111,7 @@ const PLACES = {
   /* ---------- the Underworld ---------- */
   '9,19': { type: 'lift', name: 'The Mine Lift', icon: 'lift', text: 'A rusty cage on a very long cable. It goes up to the Abandoned Mine and, more reluctantly, back down.' },
   '18,21': { type: 'boss', ch: 1, deep: true, coins: 100, science: 'p', name: 'Magmaw', icon: 'magmaw', max: 1500, power: 9, tier: 'Hardest',
-    text: 'A boulder with a furnace for a mouth, sitting by the Lava Lake at the hot end of the Ember Flats. It has been warming the Underworld for a very long time and has opinions about heat.', brew: 'fizz', loot: ['+100 coins each', 'a Fizzy Courage each'] },
+    text: 'A boulder with a furnace for a mouth, sitting by the Lava Lake at the hot end of the Ember Flats. It has been warming the Underworld for a very long time and has opinions about heat.', item: 'magmacrown', brew: 'fizz', loot: ['Crown of Convection (Mythic)', '+100 coins each', 'a Fizzy Courage each'] },
   '9,23': { type: 'dungeon', science: 'b', name: 'The Bone Library', icon: 'cave', subs: ['B3a', 'B3b', 'B4b', 'B5b'], rooms: ['the fossil stacks', 'the family-tree room', 'the extinct wing'], text: 'Every shelf is a rock layer. Three floors of questions on reproduction, inheritance and energy in ecosystems.' },
   '11,17': { type: 'dungeon', science: 'c', name: 'The Crystal Vault', icon: 'cave', subs: ['C1c', 'C1d', 'C1f', 'C1g'], rooms: ['the ionic hall', 'the covalent corridor', 'the giant lattice'], text: 'Everything in here has a very regular structure. Three floors of questions on atoms, the Periodic Table and bonding.' },
 };
@@ -149,7 +149,7 @@ const BREWS = {
 };
 /* spells (mana) and dungeon floor coins: the numbers live here so the map and the admin showcase read the same list (17 Nov) */
 const SPELL_INFO = [
-  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now.' },
+  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now (+1 per 5 Magic).' },
   { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.' },
   { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.' },
 ];
@@ -295,7 +295,12 @@ function resolve(w0, pubs, st0, today) {
      rally (+% for everyone else in the same round), guard (−% damage for everyone else in the same round), move (+1 a night) */
   const FX_ = u => P_(u).fx || {};
   const ouch = (u, h, guard = 0) => { h = Math.round(h * (1 - Math.min(50, FX_(u).armour || 0) / 100) * (1 - Math.min(50, guard) / 100)); h = Math.max(1, h); return S[u].shield ? Math.ceil(h / 2) : h; };
-  const strOf = u => ((P_(u).str || 10) + (S[u].aura ? 5 : 0)) * (S[u].fizz ? 1.5 : 1);
+  /* science affinity: Biology (Health) and Chemistry (Magic) specialists hit matching-science bosses just as hard as Strength */
+  const strOf = (u, sci) => {
+    const p = P_(u), l = p.lvl || 1, str = p.str || 10;
+    const eff = sci === 'b' ? Math.max(str, (p.hp || 15) - 7 - l) : sci === 'c' ? Math.max(str, 8 + l + (p.mag || 0)) : str;
+    return (eff + (S[u].aura ? 5 : 0)) * (S[u].fizz ? 1.5 : 1);
+  };
   const hurt = (u, h) => { S[u].health = Math.max(S[u].calm ? 1 : 0, S[u].health - h); };
   const give = (u, coins, item) => { const r = rewards[u] = rewards[u] || { coins: 0, items: [] }; r.coins += coins || 0; if (item) r.items.push(item); };
   ids.forEach(u => { lines[u] = []; S[u].dens = S[u].dens || {}; S[u].brews = S[u].brews || {}; });
@@ -311,7 +316,7 @@ function resolve(w0, pubs, st0, today) {
       const now = team.filter(([u, n]) => n > i && !out[u]).map(([u]) => u); if (!now.length) break;
       const bonus = Math.min(4, now.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
       const others = (u, f) => now.filter(x => x !== u).reduce((a, x) => a + (FX_(x)[f] || 0), 0);   // what the others in this round give you
-      now.forEach(u => { const d = Math.round(strOf(u) * (0.6 + rnd() * 0.8) * mult * (1 + (Math.min(60, FX_(u).boss || 0) + others(u, 'rally')) / 100)); dealt[u] += d; w.boss[k] = Math.max(0, w.boss[k] - d); });
+      now.forEach(u => { const d = Math.round(strOf(u, P.science) * (0.6 + rnd() * 0.8) * mult * (1 + (Math.min(60, FX_(u).boss || 0) + others(u, 'rally')) / 100)); dealt[u] += d; w.boss[k] = Math.max(0, w.boss[k] - d); });
       if (w.boss[k] > 0) now.forEach(u => { const h = ouch(u, Math.round(P.power * (0.5 + rnd()) * (EV === 'rage' ? 1.5 : 1)), others(u, 'guard')); hurt(u, h); dealt['hit_' + u] = (dealt['hit_' + u] || 0) + h;
         if (S[u].health === 0) { out[u] = true; S[u].at = HOME; S[u].health = Math.max(1, Math.round((P_(u).hp || 15) / 4)); } });
     }
@@ -345,17 +350,22 @@ function resolve(w0, pubs, st0, today) {
     ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">${BREWS[b].ic} Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
     st.shield = false; st.camp = null;
     Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
-    /* new moves: moves were already spent as they were made. Someone who joined today keeps their 6 first-day moves. */
-    const before = st.moves || 0;
+    /* new moves & passive overnight mana regen (+1 + floor(mag/10) a night). Someone who joined today keeps their 6 first-day moves. */
+    const before = st.moves || 0, curM = st.mana || 0;
     const xm = Math.min(1, FX_(u).move || 0);   // gear: +1 move a night (and room to bank it)
-    if (st.joined !== today) st.moves = Math.max(before, Math.min(MOVE_BANK + xm, before + (DAILY_MOVES + xm) * elapsed));
+    let manaUp = 0;
+    if (st.joined !== today) {
+      st.moves = Math.max(before, Math.min(MOVE_BANK + xm, before + (DAILY_MOVES + xm) * elapsed));
+      const mag = P_(u).mag || 0, maxM = 10 + mag;
+      if (curM < maxM) { st.mana = Math.min(maxM, curM + (1 + Math.floor(mag / 10)) * elapsed); manaUp = st.mana - curM; }
+    }
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
     const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
     if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
     if (finds.length) lines[u].push(`<p>✨ Treasure found yesterday: ${finds.map(f => `<b>${esc(f.n)}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${esc(f.it)})` : ''}`).join('; ')}.</p>`);
     if (newChests.length) lines[u].push(`<p class="new">✨ ${newChests.length === 1 ? 'A new treasure chest has' : newChests.length + ' new treasure chests have'} appeared in the night${newChests.some(isUnder) ? ' (one of them in the Underworld)' : ''}. You can see chests glinting even through the fog. First to reach one gets what's inside.</p>`);
     const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
-    lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}.</p>`);
+    lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}${manaUp > 0 && (P_(u).lvl || 1) >= 2 ? ` · 🔮 +${manaUp} mana` : ''}.</p>`);
     st.report = lines[u]; st.reportDay = today; st.big = !!(fought[u] || rescued || lines[u].some(l => /defeated!/.test(l)));   // big = worth a pop-up
   });
   w.day = today; delete w.lock;
@@ -446,7 +456,7 @@ async function runNightIfDue(force) {
   Object.keys(world).forEach(f => { if (!(f in res.world)) upd['world/' + f] = null; });   // e.g. the lock
   Object.keys(c0).forEach(k => { if (!c1[k]) upd['world/chests/' + k] = null; });
   Object.keys(c1).forEach(k => { if (!c0[k]) upd['world/chests/' + k] = c1[k]; });
-  const NIGHT_FIELDS = ['at', 'health', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews', 'bFought', 'bBeat'];
+  const NIGHT_FIELDS = ['at', 'health', 'mana', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews', 'bFought', 'bBeat'];
   Object.entries(res.states).forEach(([u, st]) => { if (!st || !st.at) return; NIGHT_FIELDS.forEach(f => { upd[`state/${u}/${f}`] = st[f] === undefined ? null : st[f]; }); });
   await within(ref().update(upd), 12000);
   world = res.world; states = res.states;
