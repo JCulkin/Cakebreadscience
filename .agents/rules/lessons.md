@@ -5,8 +5,11 @@ description: Interactive lessons (interactive/lessons/) made from the teacher's 
 # Lessons (`interactive/lessons/`)
 
 ## Format
-- Each lesson = one page (read on a phone/laptop) + a projector mode (`#present`, 1600×900 slides) from the same file.
-- `lessons.json`: `subjects[].sections[].topics[]` = `{code, title, spec, status 'checked'|'draft', draftUpdated, versions[]}`.
+- **Legacy single-file lessons:** one page (`draft/index.html`) holds both the reading page and `#deck-src` projector slides (`lesson.css` + `lesson.js`).
+- **Split lessons (`"split": true`, piloted on Chemistry 1g & Biology 2c, 26 Nov 2026; rollback tag `pre-student-unbind-2026-11-26`):**
+  - `draft/index.html` = dedicated **Student Study Guide** (`assets/study.css` + `assets/study.js`): chunked Bitesize-style `<section class="step" id data-toc>` steps, sticky progress bar + `Step-by-step` / `All on one page` toggle, Single Award / Hide extension filters (`.da-only`/`.da-block`, `.beyond-only`/`.beyond-block`), Save-My-Exams callout boxes (`.key-box`, `.exam-tip`, `.mistake-box`, `.worked`), Seneca-style inline `.micro-check` retrieval questions at the end of every step, Action Strip links to Flashcards / Spec Quiz / Worksheets, discreet footer link to `deck.html#present`, and a 1-line `#present` → `deck.html#present` redirect in `<head>`.
+  - `draft/deck.html` = dedicated **Teacher Projector Deck** (`assets/lesson.css` + `assets/lesson.js` + `tags.css`): clean Classroom Projector Deck launcher + `#qsrc` + `#deck-src` (1600×900 slides). `freeze.py` and `build_diff.py` automatically handle both single-file and split lessons.
+- `lessons.json`: `subjects[].sections[].topics[]` = `{code, title, spec, status 'checked'|'draft', split?, draftUpdated, versions[]}`.
 - Files: `<subject>/<code>/draft/index.html` (+ `draft/img/`) · `<subject>/<code>/v<date>/` frozen checked versions (**never edit**) ·
   `<subject>/<code>/index.html` redirect (written by freeze.py) · `assets/lesson.css`, `lesson.js` (engine), `chem.js`, `bio.js`,
   `cells.js` (copy of `/interactive/cell-game/cells.js`), `diagrams.js` + `diagq.js` (frozen copies from spec-quiz) · `tags.css`.

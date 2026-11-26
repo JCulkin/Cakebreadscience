@@ -377,12 +377,15 @@ def main() -> int:
         for sec in subj["sections"]:
             for t in sec["topics"]:
                 code = t["code"]
-                rel = f"interactive/lessons/{sid}/{code}/draft/index.html"
-                cur_path = ROOT / rel
+                rel_deck = f"interactive/lessons/{sid}/{code}/draft/deck.html"
+                rel_idx = f"interactive/lessons/{sid}/{code}/draft/index.html"
+                cur_path = ROOT / rel_deck if (ROOT / rel_deck).exists() else ROOT / rel_idx
                 if not cur_path.exists():
                     continue
                 new_html = cur_path.read_text(encoding="utf-8", errors="replace")
-                old_html = git_show(args.base, rel)
+                old_html = git_show(args.base, rel_deck)
+                if old_html is None:
+                    old_html = git_show(args.base, rel_idx)
 
                 new_slides = extract_slides(new_html)
                 old_slides = extract_slides(old_html) if old_html else []

@@ -104,17 +104,28 @@ def freeze(topic, date):
     if not os.path.isdir(src): sys.exit(f'no draft at {src}')
     if os.path.exists(dst): sys.exit(f'{dst} already exists: versions are permanent; use another --date')
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns('img'))
-    page = os.path.join(dst, 'index.html'); s = open(page, encoding='utf-8').read()
+    pages = [os.path.join(dst, 'index.html')]
+    deck_page = os.path.join(dst, 'deck.html')
+    if os.path.isfile(deck_page):
+        pages.append(deck_page)
     draft_img = os.path.join(src, 'img')
     added_img = reused_img = 0
-    if os.path.isdir(draft_img):
-        s, added_img, reused_img = sync_shared_images(topic_dir, draft_img, s)
-    used = sorted(set(re.findall(re.escape(ASSET_URL) + r'([\w.-]+)', s)))
+    used_set = set()
+    contents = []
+    for p in pages:
+        s = open(p, encoding='utf-8').read()
+        if os.path.isdir(draft_img):
+            s, a_i, r_i = sync_shared_images(topic_dir, draft_img, s)
+            added_img += a_i; reused_img += r_i
+        used_set.update(re.findall(re.escape(ASSET_URL) + r'([\w.-]+)', s))
+        contents.append((p, s))
+    used = sorted(used_set)
     os.makedirs(os.path.join(dst, '_assets'))
     for f in used: shutil.copy(os.path.join(ROOT, 'assets', f), os.path.join(dst, '_assets', f))
-    s = s.replace(ASSET_URL, '_assets/')
-    s = re.sub(r'data-status="draft"', f'data-status="checked" data-version="{date}" data-topic="{topic}"', s, count=1)
-    open(page, 'w', encoding='utf-8').write(s)
+    for p, s in contents:
+        s = s.replace(ASSET_URL, '_assets/')
+        s = re.sub(r'data-status="draft"', f'data-status="checked" data-version="{date}" data-topic="{topic}"', s, count=1)
+        open(p, 'w', encoding='utf-8').write(s)
     m = load(); t = find(m, topic)
     t['status'] = 'checked'; t.setdefault('versions', [])
     if date not in t['versions']: t['versions'].append(date)
