@@ -51,4 +51,5 @@ description: Printable worksheets and booklets (worksheets/, booklets/) — code
   He reviews in Admin → Review → Worksheets (fingerprint of visible text + images + mark scheme).
 - When he approves a sheet (or asks for an edit to a checked one): `node tools/review/keep.js w <path under worksheets/> --why "…"`,
   commit `admin/review-approved.json`, and remove that sheet's "Under review" chip. Your own changes are not kept.
+- **Staging Worksheet Comparer (`/worksheets/diff/`):** whenever you add or edit any worksheet or mark scheme, run `python tools/worksheets/build_diff.py --base <commit-before-prompt> --label "before last prompt"` (or `--base origin/main` for the full release diff) and commit `worksheets/diff/data.json` + `worksheets/diff/base-assets/`.
 - Changelog line under `## [Unreleased]` → Added / Changed.

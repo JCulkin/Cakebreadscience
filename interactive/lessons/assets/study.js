@@ -2,6 +2,7 @@
    Powers chunked Bitesize-style steps, Seneca-style inline micro-checks,
    course/extension filtering, self-marked end-of-topic tests, and Lesson.comps. */
 (function(){
+if (!window.__cbsAuthGate) { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
 const L = window.Lesson = window.Lesson || {};
 L.comps = L.comps || {};
 const $ = (s, r=document) => r.querySelector(s);

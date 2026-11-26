@@ -6,6 +6,7 @@
    Optional data-pos="bottom" puts the round button bottom-left instead of top-left.
    Never shown when printing. */
 (function () {
+  if (!window.__cbsAuthGate) { var ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
   if (window.__cbsHomeLink) return;
   window.__cbsHomeLink = true;
   var s = document.currentScript || {};

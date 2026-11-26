@@ -48,7 +48,7 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
 ## Homepage and shared scripts
 - `index.html`: Professor logo + "Cakebread Science", sign-in box (admins also ⚙️ Admin, 👥 Team quiz), "What's new" box
   (`/js/whats-new.js`, dismissed per browser, key `cbs.whatsnew.v51`), footer version.
-- `/js/account.js` the one sign-in box (never shows an email) · `/js/home-link.js` way home · `/js/game-gate.js` game access ·
+- `/js/account.js` the one sign-in box (never shows an email) · `/js/auth-gate.js` site-wide sign-in & admin approval gate (allows always-open menus, first presentation of each subject `biology/1`, `chemistry/1a`, `physics/8`, first worksheet + mark scheme of each subject, and 1 free sample mission/practice set; new Google accounts write `gameAccess/{uid}.status = 'pending'` and unlock live once approved in Admin → Overview or Games; existing Firestore students are grandfathered unless explicitly `'blocked'`) · `/js/home-link.js` way home · `/js/game-gate.js` game access ·
   `/js/year.js` · `/js/school.js` · `/js/course.js` · `/js/spec-point.js` · `/js/study-guide.js` · `/js/key-words.js` · `/js/spec-index.js`
   (generated) · `/js/openwork.js` · `/js/whats-new.js`.
 

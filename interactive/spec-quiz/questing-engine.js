@@ -517,6 +517,11 @@ const QE = (() => {
   }
   /* a finished mission: counts it, adds coins and loot, saves everything */
   function finishMission({ coins = 0, loot = null, right = 0 } = {}) {
+    if ((!FB.user || !window.__cbsAuthApproved) && window.CBSAuth && CBSAuth.recordFreeMission) {
+      CBSAuth.recordFreeMission();
+    } else if (!FB.user) {
+      try { localStorage.setItem('cbs.free.missions', String((parseInt(localStorage.getItem('cbs.free.missions') || '0', 10) || 0) + 1)); } catch (e) {}
+    }
     PROG.missions++; PROG.updatedAt = Date.now();
     if (right) earn({ mana: Math.floor(right / 3) });
     GAME.coins = (GAME.coins || 0) + coins;
@@ -573,7 +578,10 @@ const QE = (() => {
   }
 
   /* keep the look in the account when the creator/wardrobe pages change it (not on the admin console: window.QE_PASSIVE) */
-  if (!window.QE_PASSIVE) { if (syncLookIntoGame()) writeLocal(); initFirebase(); }
+  if (!window.QE_PASSIVE) {
+    if (!window.__cbsAuthGate && typeof document !== 'undefined') { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
+    if (syncLookIntoGame()) writeLocal(); initFirebase();
+  }
 
   return {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },

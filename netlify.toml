@@ -71,6 +71,19 @@
   status = 404
   force = true
 
+# Block the staging-only worksheet comparer on the live production domain
+[[redirects]]
+  from = "https://cakebreadscience.com/worksheets/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.cakebreadscience.com/worksheets/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Security headers site-wide
 [[headers]]
   for = "/*"
@@ -128,5 +141,10 @@
 
 [[headers]]
   for = "/interactive/lessons/diff/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/worksheets/diff/*"
   [headers.values]
     X-Robots-Tag = "noindex, nofollow"

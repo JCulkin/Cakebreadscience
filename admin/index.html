@@ -293,6 +293,7 @@ function drawOverview() {
     </div>
     <div class="card" style="margin-top:14px"><h2>Gone quiet <span class="small muted" style="text-transform:none;font-family:Barlow">7+ days</span></h2>${quiet.length ? `<table>${quiet.map(s => `<tr class="click" data-uid="${s.uid}"><td>${esc(s.name)}</td><td class="muted">${ago(s.last)}</td></tr>`).join('')}</table>` : '<p class="muted">Everyone has been on in the last week.</p>'}</div>`;
   drawBuild();
+  renderOverviewApprovals();
 }
 
 /* ---------- Students ---------- */
@@ -489,6 +490,7 @@ function openStudent(uid) {
   $('dBody').innerHTML = `<h2>${esc(s.name)}</h2><div class="small muted">${esc(s.email)} · last on ${ago(s.last)}</div>
     <div class="acts" style="align-items:center"><b>Year</b><select id="dYear" style="font:inherit;padding:4px 8px;border:2px solid var(--ink)"><option value="">not chosen</option>${[8, 9, 10, 11].map(y => `<option value="${y}"${s.year === y ? ' selected' : ''}>Year ${y}</option>`).join('')}</select><span class="small muted" id="dYearMsg">${s.raw.yearBy === 'admin' ? 'set by you' : s.year ? 'chosen by the student' : ''}</span></div>
     <div class="acts" style="align-items:center"><b>Course</b><select id="dCourse" style="font:inherit;padding:4px 8px;border:2px solid var(--ink)"><option value="">Science (Double Award)</option><option value="SA"${s.course === 'SA' ? ' selected' : ''}>Science (Single Award)</option></select><span class="small muted" id="dCourseMsg">${s.course === 'SA' ? 'they only see Single Award spec points, questions and flashcards' : ''}</span></div>
+    <div class="acts" style="align-items:center" id="dAccessRow"><b>Site &amp; game access</b>${(() => { const ga = GM.access[s.uid] && GM.access[s.uid].status; const lbl = ga === 'approved' ? '<span class="tag green">Approved</span>' : ga === 'blocked' ? '<span class="tag red">Blocked</span>' : ga === 'pending' ? '<span class="tag" style="background:#fef08a;color:#111">Waiting for approval</span>' : s.used ? '<span class="tag green">Existing student</span>' : '<span class="tag">Not approved yet</span>'; return `${lbl}${ga !== 'approved' ? ` <button class="btn sm" id="dAccOk">Approve</button>` : ''}${ga !== 'blocked' ? ` <button class="btn sm warn" id="dAccBlk">Block</button>` : ''}<span class="small muted" id="dAccMsg"></span>`; })()}</div>
     <div class="card" style="margin-top:12px"><h3 style="margin-top:0">Public name</h3>
       <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Cakebread Questing name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
       ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
@@ -522,6 +524,8 @@ function openStudent(uid) {
   $('dCourse').onchange = async e => { const c = e.target.value === 'SA' ? 'SA' : null;
     try { await DB.collection('users').doc(s.uid).set({ course: c, courseAt: Date.now() }, { merge: true }); s.course = c || ''; s.raw.course = c; $('dCourseMsg').textContent = 'Saved ✓ They switch next time they open a page.'; drawStudents(); }
     catch (err) { $('dCourseMsg').textContent = 'Could not save: ' + (err.code || err.message); } };
+  if ($('dAccOk')) $('dAccOk').onclick = async () => { try { await setAccess(s.uid, 'approved', { name: s.name, email: s.email }); drawGames(); openStudent(s.uid); } catch (err) { $('dAccMsg').textContent = 'Could not save: ' + (err.code || err.message); } };
+  if ($('dAccBlk')) $('dAccBlk').onclick = async () => { try { await setAccess(s.uid, 'blocked', { name: s.name, email: s.email }); drawGames(); openStudent(s.uid); } catch (err) { $('dAccMsg').textContent = 'Could not save: ' + (err.code || err.message); } };
   $('ren').onclick = () => { const n = QE.cleanName($('nn').value), bad = QE.checkName(n); if (bad) return msg(bad); setNick(n); };
   $('clr').onclick = () => setNick('-');
   if ($('hid')) $('hid').onclick = async () => {
@@ -771,15 +775,15 @@ $('imp').onchange = e => { const f = e.target.files[0]; if (!f) return; const rd
 /* ---------- Games: who may play, and every play (17 Nov 2026) ----------
    RTDB gameAccess/{uid} = {status: 'pending'|'approved'|'blocked', name, email, t, by, at}   (written by /play/ and here)
    RTDB gameLog/{id} = {uid, name, email, game, title, page, mode: 'gate'|'log', t, last}     (written by /play/check.html) */
-const GM = { access: {}, log: [], ok: true, err: '', filt: { who: '', game: '' } };
+const GM = { access: {}, log: [], ok: true, loaded: false, err: '', filt: { who: '', game: '' } };
 const gameName = r => r.title || r.game || '?';
 const mins = r => Math.max(0, Math.round(((r.last || r.t) - r.t) / 60000));
 async function loadGames() {
-  $('p-games').innerHTML = '<div class="empty">Loading games…</div>';
+  $('p-games').innerHTML = '<div class="empty">Loading accounts and games…</div>';
   try {
     const [a, l] = await Promise.all([RT.ref('gameAccess').once('value'), RT.ref('gameLog').orderByChild('t').limitToLast(3000).once('value')]);
-    GM.access = a.val() || {}; GM.log = []; l.forEach(c => { const v = c.val(); if (v && v.t) GM.log.push(v); }); GM.log.reverse(); GM.ok = true;
-  } catch (e) { GM.ok = false; GM.err = e.code || e.message; }
+    GM.access = a.val() || {}; GM.log = []; l.forEach(c => { const v = c.val(); if (v && v.t) GM.log.push(v); }); GM.log.reverse(); GM.ok = true; GM.loaded = true;
+  } catch (e) { GM.ok = false; GM.loaded = true; GM.err = e.code || e.message; }
   drawGames();
 }
 async function setAccess(uid, status, extra) {
@@ -787,13 +791,29 @@ async function setAccess(uid, status, extra) {
   const v = Object.assign({ name: cur.name || '', email: cur.email || '', t: cur.t || Date.now() }, extra || {}, { status, by: ME.email, at: Date.now() });
   await RT.ref('gameAccess/' + uid).set(v); GM.access[uid] = v;
 }
+function renderOverviewApprovals(ovMsg) {
+  const oldNote = $('gPendNote'); if (oldNote) oldNote.remove();
+  if (!GM.loaded || !GM.ok) return;
+  const pend = Object.entries(GM.access).filter(([, v]) => v && v.status === 'pending').sort((a, b) => (a[1].t || 0) - (b[1].t || 0));
+  if (!pend.length && !ovMsg) return;
+  const rows = pend.map(([u, v]) => `<tr><td><b>${esc(v.name || v.email || u)}</b>${v.email ? `<div class="small muted">${esc(v.email)}</div>` : ''}</td><td class="small muted">asked ${ago(v.t)}</td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-ov-ga="${esc(u)}" data-s="approved">Approve</button> <button class="btn sm warn" data-ov-ga="${esc(u)}" data-s="blocked">Block</button></td></tr>`).join('');
+  $('p-overview').insertAdjacentHTML('afterbegin', `<div class="card" id="gPendNote" style="border-color:#ca8a04;background:#fffbe6"><h2>🔐 Accounts waiting for approval (${pend.length})</h2>${ovMsg ? `<div class="msg ok" style="margin-bottom:8px">${esc(ovMsg)}</div>` : ''}${pend.length ? `<p class="small muted">New Google accounts need your approval before they can open lessons, worksheets, flashcards, Questing or games.</p>${pend.length > 1 ? '<div class="acts"><button class="btn sm" id="ovGAll">Approve all waiting</button></div>' : ''}<table>${rows}</table>` : ''}<div class="acts" style="margin-top:8px"><button class="btn alt sm" data-go="games">All accounts &amp; games →</button></div></div>`);
+  const card = $('gPendNote');
+  card.querySelectorAll('[data-ov-ga]').forEach(b => b.onclick = async () => {
+    try { await setAccess(b.dataset.ovGa, b.dataset.s); drawGames(); renderOverviewApprovals(b.dataset.s === 'approved' ? 'Account approved.' : 'Account blocked.'); }
+    catch (e) { renderOverviewApprovals('Could not save: ' + (e.code || e.message)); }
+  });
+  if ($('ovGAll')) $('ovGAll').onclick = async () => {
+    try { for (const [u] of pend) await setAccess(u, 'approved'); drawGames(); renderOverviewApprovals('Approved everyone who was waiting.'); }
+    catch (e) { renderOverviewApprovals('Could not save: ' + (e.code || e.message)); }
+  };
+}
 function drawGames(msg) {
   const el = $('p-games');
   const pend = Object.entries(GM.access).filter(([, v]) => v && v.status === 'pending').sort((a, b) => (a[1].t || 0) - (b[1].t || 0));
   $('gTab').textContent = pend.length ? `Games (${pend.length})` : 'Games';
-  const oldNote = $('gPendNote'); if (oldNote) oldNote.remove();
-  if (pend.length) $('p-overview').insertAdjacentHTML('afterbegin', `<div class="card" id="gPendNote" style="border-color:#ca8a04;background:#fffbe6"><h2>🎮 ${pend.length} waiting to play games</h2><p class="small">${pend.map(([u, v]) => esc(v.name || v.email || u)).join(', ')}</p><div class="acts"><button class="btn sm" data-go="games">Open Games →</button></div></div>`);
-  if (!GM.ok) { el.innerHTML = `<div class="card"><h2>Games aren't switched on yet</h2><p class="muted">Couldn't read <code>gameAccess</code> / <code>gameLog</code> (${esc(GM.err)}). Publish the new Realtime Database rules first.</p></div>`; return; }
+  renderOverviewApprovals();
+  if (!GM.ok) { el.innerHTML = `<div class="card"><h2>Account approvals aren't switched on yet</h2><p class="muted">Couldn't read <code>gameAccess</code> / <code>gameLog</code> (${esc(GM.err)}). Publish the Realtime Database rules first.</p></div>`; return; }
   const appr = Object.entries(GM.access).filter(([, v]) => v && v.status === 'approved');
   const blk = Object.entries(GM.access).filter(([, v]) => v && v.status === 'blocked');
   const since = Date.now() - 7 * DAY;
@@ -816,10 +836,10 @@ function drawGames(msg) {
   const tbl = (head, rows, empty) => rows ? `<div class="wrapx"><table><tr>${head}</tr>${rows}</table></div>` : `<p class="muted">${empty}</p>`;
   el.innerHTML = (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
     + `<div class="cols"><div>`
-    + `<div class="card"><h2>Waiting for you (${pend.length})</h2><p class="small muted">Students who signed in on a game and asked to play.</p>${pend.length > 1 ? '<div class="acts"><button class="btn sm" id="gAll">Approve all waiting</button></div>' : ''}${tbl('<th>Student</th><th>Asked</th><th></th>', rowsP, 'Nobody is waiting.')}</div>`
-    + `<div class="card"><h2>Approved (${appr.length})</h2>${tbl('<th>Student</th><th>Playing</th><th></th>', rowsA, 'Nobody approved yet.')}</div>`
+    + `<div class="card"><h2>Accounts waiting for approval (${pend.length})</h2><p class="small muted">New accounts that signed in with Google and are waiting for site &amp; game access.</p>${pend.length > 1 ? '<div class="acts"><button class="btn sm" id="gAll">Approve all waiting</button></div>' : ''}${tbl('<th>Student</th><th>Asked</th><th></th>', rowsP, 'Nobody is waiting.')}</div>`
+    + `<div class="card"><h2>Approved (${appr.length})</h2><p class="small muted">Full access to the whole site and games.</p>${tbl('<th>Student</th><th>Playing</th><th></th>', rowsA, 'Nobody approved yet.')}</div>`
     + `<div class="card"><h2>Blocked (${blk.length})</h2>${tbl('<th>Student</th><th></th><th></th>', rowsB, 'Nobody is blocked.')}</div>`
-    + `<div class="card"><h2>Approve before they ask</h2><p class="small muted">Students who use the rest of the site but haven't asked to play yet.</p>${tbl('<th>Student</th><th></th><th></th>', rowsO, 'Everyone on the site already has an answer.')}</div>`
+    + `<div class="card"><h2>Existing students (${others.length})</h2><p class="small muted">Students who already have site activity (auto-approved for lessons, worksheets &amp; Questing; approve here to include gated games too).</p>${tbl('<th>Student</th><th></th><th></th>', rowsO, 'Everyone on the site already has an explicit entry.')}</div>`
     + `</div><div>`
     + `<div class="card"><h2>Last 7 days by game</h2>${tbl('<th>Game</th><th class="n">Plays</th><th class="n">Students</th><th class="n">Minutes</th>', rowsG, 'No plays this week.')}</div>`
     + `<div class="card"><h2>Every play</h2><div class="toolbar"><select id="gWho"><option value="">Everyone</option>${people.map(([u, n]) => `<option value="${esc(u)}"${u === GM.filt.who ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select>`

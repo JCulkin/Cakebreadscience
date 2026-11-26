@@ -10,6 +10,7 @@
        (Cakebread Science home link on the left, the box on the right) and replaces /js/home-link.js's pill.
    Shows: Sign in · or · (admins: ⚙️ Admin, 👥 Team quiz) To do → · first name · Sign out. Never the email address. */
 (function () {
+  if (!window.__cbsAuthGate) { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
   let box = document.getElementById('cbs-account');
   const me = document.currentScript;
   if (!box && me && me.hasAttribute('data-bar') && document.body) {

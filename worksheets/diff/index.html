@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Worksheet Comparer (Staging) · Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111;--paper:#eeeae0;--card:#fff;--muted:#555;--line:#d4cfc2;
+  --bio:#1d6b2f;--chem:#8c0013;--phys:#a85d00;--maths:#7b1fa2;--mix:#c2185b;
+  --amber:#d97706;--amberBg:#fef3c7;--green:#15803d;--greenBg:#dcfce7;
+  --red:#b91c1c;--redBg:#fee2e2;--blue:#1d4ed8;--blueBg:#dbeafe;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+a{color:inherit}
+button{font-family:'Barlow',Arial,sans-serif;cursor:pointer}
+
+.stbar{background:#facc15;color:#111;font:800 13px/1.2 'Barlow',sans-serif;letter-spacing:1.2px;text-transform:uppercase;padding:7px 20px;border-bottom:2px solid #111;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.lhead{background:#111;color:var(--paper);padding:22px 28px 20px;border-bottom:4px solid #facc15}
+.lhead .kick{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#facc15;font-weight:700}
+.lhead h1{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,5vw,52px);line-height:1;margin-top:4px}
+.lhead h1 span{color:#facc15}
+.lhead .meta{margin-top:8px;font-size:14px;color:#ccc;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.lhead .meta a{color:#7fd39b;font-weight:700;text-decoration:none}
+.lhead .meta a:hover{text-decoration:underline}
+
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 64px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.fbtn{font:700 14px/1 'Barlow',sans-serif;padding:7px 13px;border:2px solid #111;background:#fff;color:#111}
+.fbtn.on{background:#111;color:#facc15}
+
+.grp{margin-bottom:30px}
+.grp h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;border-bottom:3px solid #111;padding-bottom:4px;margin-bottom:12px;display:flex;align-items:baseline;gap:10px}
+.grp h2 small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--muted);text-transform:none}
+
+.wcard{display:grid;grid-template-columns:1fr auto;gap:8px 16px;align-items:center;background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);padding:12px 16px;margin-bottom:10px;transition:transform .1s,box-shadow .1s}
+.wcard:hover{transform:translateY(-1px);box-shadow:0 4px 0 #111}
+.wcard .info h3{font-size:19px;font-weight:800;line-height:1.2}
+.wcard .spec{font-size:13px;color:var(--muted);margin-top:3px}
+.wcard .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}
+.pill{display:inline-block;font:700 12px/1 'Barlow',sans-serif;padding:4px 8px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+.pill.tier{background:#111;color:#fff;border-color:#111}
+.pill.changed{background:var(--amberBg);color:#92400e}
+.pill.added{background:var(--greenBg);color:#166534}
+.pill.removed{background:var(--redBg);color:#991b1b}
+.pill.ms{background:var(--blueBg);color:#1e40af}
+.pill.rev{background:#f5f5f4;color:#666;border-style:dashed}
+.wcard .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{font:700 14px/1 'Barlow',sans-serif;padding:9px 14px;border:2px solid #111;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#111;color:#facc15}
+.btn.primary:hover{background:#222}
+.btn:hover{background:#f6f3ea}
+@media(max-width:720px){.wcard{grid-template-columns:1fr}.wcard .acts{justify-content:flex-start}}
+
+/* Split-screen viewer */
+body.viewing{background:#141414;color:#eee;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+#listView{display:block}
+body.viewing #listView{display:none}
+#compareView{display:none}
+body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden}
+
+.topbar{background:#111;border-bottom:2px solid #333;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:none}
+.topbar .tbtn{font:700 14px/1 'Barlow',sans-serif;padding:7px 12px;border:1px solid #555;background:#222;color:#eee;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.topbar .tbtn:hover{background:#333;border-color:#888}
+.topbar .tbtn.acc{background:#facc15;color:#111;border-color:#facc15}
+.topbar .tbtn.on{background:#2563eb;color:#fff;border-color:#2563eb}
+.topbar .tbtn:disabled{opacity:.35;cursor:default}
+.topbar .wtitle{font:800 16px/1.1 'Barlow',sans-serif;color:#fff;margin-right:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.topbar .wtitle .subtag{font:900 13px/1 'Barlow Condensed',sans-serif;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border-radius:3px;color:#fff;background:var(--c,#555)}
+.topbar .counter{font:700 14px/1 'Barlow',sans-serif;color:#facc15;min-width:96px;text-align:center}
+.topbar label.opt{font:600 13px/1 'Barlow',sans-serif;color:#ccc;display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+.topbar select{background:#222;color:#eee;border:1px solid #555;border-radius:4px;padding:5px 8px;font:700 13px 'Barlow',sans-serif}
+
+.split{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#0d0d0d}
+@media(max-width:900px){.split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+.pane{display:flex;flex-direction:column;min-height:0;min-width:0;background:#1f1f1f;border:2px solid #333;border-radius:6px;overflow:hidden}
+.pane.after{border-color:#444}
+.phead{background:#222;padding:7px 12px;border-bottom:1px solid #333;display:flex;align-items:center;gap:8px;font:700 13px/1.2 'Barlow',sans-serif;flex:none}
+.phead .badge{font:900 12px/1 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:3px}
+.phead .badge.before{background:#3f3f46;color:#f4f4f5}
+.phead .badge.after{background:#15803d;color:#fff}
+.phead .badge.k-changed{background:#d97706;color:#fff}
+.phead .badge.k-added{background:#15803d;color:#fff}
+.phead .badge.k-removed{background:#b91c1c;color:#fff}
+.phead .pmeta{color:#bbb;font-weight:600}
+
+.framewrap{flex:1;min-height:0;position:relative;background:#2b2b2b;display:flex;align-items:center;justify-content:center}
+.framewrap iframe{width:100%;height:100%;border:0;display:block;background:#e5e5e5}
+.empty-pane{padding:32px;text-align:center;color:#aaa;max-width:380px}
+.empty-pane b{display:block;font:900 26px/1.1 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#eee;margin-bottom:8px;letter-spacing:.5px}
+
+.kbdbar{background:#111;border-top:1px solid #2b2b2b;padding:5px 14px;font:600 12px/1 'Barlow',sans-serif;color:#888;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;flex:none}
+.kbdbar kbd{background:#262626;border:1px solid #444;border-radius:3px;padding:1px 5px;color:#ddd;font-family:inherit}
+</style>
+</head>
+<body>
+<div id="listView">
+  <div class="stbar">
+    <span>STAGING ONLY · NOT PUBLISHED TO LIVE SITE</span>
+    <span id="baseInfo">Loading baseline…</span>
+  </div>
+  <header class="lhead">
+    <div class="kick">Staging Review Tool</div>
+    <h1>Worksheet <span>Comparer</span></h1>
+    <div class="meta">
+      <a href="/worksheets/science.html">← Science worksheets</a>
+      <a href="/interactive/lessons/diff/">Lesson comparer →</a>
+      <a href="/">← Home</a>
+      <span id="summaryText"></span>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="filters" id="filters"></div>
+    <div id="sheetList"><p>Loading worksheet diffs…</p></div>
+  </main>
+</div>
+
+<div id="compareView">
+  <div class="topbar">
+    <button class="tbtn" id="btnBack">← All changes</button>
+    <div class="wtitle" id="cmpTitle"></div>
+    <button class="tbtn" id="btnSheet">📄 Sheet</button>
+    <button class="tbtn" id="btnMs">✅ Mark scheme</button>
+    <label class="opt" title="Keep both panes scrolled together"><input type="checkbox" id="chkSync" checked> Sync scroll</label>
+    <select id="zoomSel" aria-label="Zoom">
+      <option value="fit" selected>Zoom: Fit width</option>
+      <option value="0.75">75%</option>
+      <option value="0.9">90%</option>
+      <option value="1">100%</option>
+    </select>
+    <button class="tbtn" id="btnPrev" title="Previous changed worksheet (←)">‹ Prev</button>
+    <span class="counter" id="cmpCounter"></span>
+    <button class="tbtn acc" id="btnNext" title="Next changed worksheet (→)">Next ›</button>
+    <a class="tbtn" id="btnOpen" href="#" target="_blank" rel="noopener">Open full ↗</a>
+  </div>
+  <div class="split">
+    <div class="pane before">
+      <div class="phead">
+        <span class="badge before">BEFORE</span>
+        <span class="pmeta" id="beforeMeta"></span>
+      </div>
+      <div class="framewrap" id="beforeWrap"></div>
+    </div>
+    <div class="pane after">
+      <div class="phead">
+        <span class="badge after">AFTER</span>
+        <span class="badge" id="kindBadge"></span>
+        <span class="pmeta" id="afterMeta"></span>
+      </div>
+      <div class="framewrap" id="afterWrap"></div>
+    </div>
+  </div>
+  <div class="kbdbar">
+    <span>Unchanged worksheets are hidden · only altered, added, or removed sheets are shown</span>
+    <span><kbd>←</kbd> <kbd>→</kbd> step worksheets · <kbd>M</kbd> toggle Sheet / Mark scheme · <kbd>Esc</kbd> back to list</span>
+  </div>
+</div>
+
+<script>
+(async function(){
+  if (/^(www\.)?cakebreadscience\.com$/i.test(location.hostname)) {
+    document.body.innerHTML = '<main style="max-width:560px;margin:80px auto;font-family:sans-serif;text-align:center"><h1>404</h1><p>This staging review tool is not available on the live site.</p><p><a href="/worksheets/science.html">Go to Worksheets</a></p></main>';
+    return;
+  }
+
+  const SUBJ_COLOR = { biology: '#1d6b2f', chemistry: '#8c0013', physics: '#a85d00', maths: '#7b1fa2', 'cross-curricular': '#c2185b' };
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let DATA;
+  try {
+    DATA = await (await fetch('/worksheets/diff/data.json', { cache: 'no-store' })).json();
+  } catch (e) {
+    document.getElementById('sheetList').innerHTML = '<p>Could not load diff data (<code>data.json</code>). Run <code>python tools/worksheets/build_diff.py</code>.</p>';
+    return;
+  }
+
+  const baseLbl = DATA.baseLabel || DATA.baseRef;
+  document.getElementById('baseInfo').textContent = `Comparing staging (${DATA.headCommit}) vs ${baseLbl} (${DATA.baseCommit})`;
+  const allSheets = DATA.sheets || [];
+  const cntAdded = allSheets.filter(s => s.kind === 'added').length;
+  const cntChanged = allSheets.filter(s => s.kind === 'changed').length;
+  const cntRemoved = allSheets.filter(s => s.kind === 'removed').length;
+  document.getElementById('summaryText').textContent = `${allSheets.length} worksheet${allSheets.length === 1 ? '' : 's'} changed (${cntChanged} edited · ${cntAdded} new${cntRemoved ? ` · ${cntRemoved} removed` : ''})`;
+
+  let filter = 'all';
+  const FILTS = [
+    ['all', `All (${allSheets.length})`],
+    ['changed', `Edited (${cntChanged})`],
+    ['added', `New (${cntAdded})`],
+    ['biology', 'Biology'],
+    ['chemistry', 'Chemistry'],
+    ['physics', 'Physics']
+  ];
+
+  function filteredList() {
+    return allSheets.filter(s => filter === 'all' || s.kind === filter || s.subject === filter);
+  }
+
+  function renderCard(s) {
+    const col = SUBJ_COLOR[s.subject] || '#111';
+    const pills = [`<span class="pill tier">${esc(s.tier)}</span>`];
+    if (s.kind === 'added') pills.push('<span class="pill added">+ NEW WORKSHEET</span>');
+    else if (s.kind === 'removed') pills.push('<span class="pill removed">− REMOVED</span>');
+    else {
+      if (s.sheetChanged) pills.push('<span class="pill changed">Sheet changed</span>');
+      if (s.msChanged) pills.push('<span class="pill ms">Mark scheme changed</span>');
+    }
+    if (s.underReview) pills.push('<span class="pill rev">Under review</span>');
+    return `<div class="wcard" style="--c:${col}">
+      <div class="info">
+        <h3>${esc(s.title)}</h3>
+        ${s.spec ? `<div class="spec">${esc(s.spec)}</div>` : ''}
+        <div class="pills">${pills.join('')}</div>
+      </div>
+      <div class="acts">
+        <a class="btn primary" href="#${esc(s.id)}">Compare →</a>
+        ${s.newHtml ? `<a class="btn" href="${esc(s.url)}" target="_blank" rel="noopener">Open ↗</a>` : ''}
+      </div>
+    </div>`;
+  }
+
+  function renderList() {
+    const fb = document.getElementById('filters');
+    fb.innerHTML = FILTS.map(([k, lbl]) => `<button type="button" class="fbtn${filter === k ? ' on' : ''}" data-f="${k}">${esc(lbl)}</button>`).join('');
+    fb.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filter = b.dataset.f; renderList(); });
+
+    const list = filteredList();
+    const bySubj = {};
+    list.forEach(s => (bySubj[s.subjectName] = bySubj[s.subjectName] || []).push(s));
+    const html = Object.entries(bySubj).map(([name, arr]) =>
+      `<section class="grp"><h2>${esc(name)} <small>${arr.length} worksheet${arr.length === 1 ? '' : 's'}</small></h2>${arr.map(renderCard).join('')}</section>`
+    ).join('');
+    document.getElementById('sheetList').innerHTML = html || `<p>No worksheet differences match this filter vs ${esc(baseLbl)}.</p>`;
+  }
+  renderList();
+
+  let activeIdx = -1;
+  let activeTab = 'sheet';
+  let syncing = false;
+
+  function patchHtml(rawHtml, sheet, isBefore, zoomVal) {
+    let h = rawHtml;
+    if (isBefore) {
+      h = h.replace(/href=["'](?:\.\.\/|\/)*css\/(print-sheet|biology|chemistry|physics|maths)\.css["']/gi, (m, name) =>
+        `href="/worksheets/diff/base-assets/${name}.css"`
+      );
+    }
+    const baseTag = `<base href="${esc(location.origin + sheet.baseUrl)}">`;
+    const helperStyle = `<style>.screen-links,.cbs-home-bar,.cbs-home-float{display:none!important}html{background:#d6d3cb}body{margin:0 auto!important;padding:12px 0 28px!important}</style>`;
+    const helperScript = `<script>
+      window.addEventListener('load', function(){
+        function fit(){
+          var z = ${JSON.stringify(zoomVal)};
+          if (z === 'fit') {
+            var page = document.querySelector('.page') || document.body;
+            var pw = Math.max(page.scrollWidth || 794, 794);
+            var w = Math.max(260, window.innerWidth - 24);
+            var scale = Math.min(1, w / pw);
+            document.body.style.zoom = scale;
+          } else {
+            document.body.style.zoom = parseFloat(z) || 1;
+          }
+        }
+        fit();
+        window.addEventListener('resize', fit);
+      });
+      var _lock = false;
+      window.addEventListener('scroll', function(){
+        if (_lock) return;
+        parent.postMessage({ type: 'ws-scroll', side: ${JSON.stringify(isBefore ? 'before' : 'after')}, top: window.scrollY }, '*');
+      }, { passive: true });
+      window.addEventListener('message', function(e){
+        if (e.data && e.data.type === 'ws-set-scroll') {
+          _lock = true;
+          window.scrollTo(0, e.data.top);
+          setTimeout(function(){ _lock = false; }, 40);
+        }
+      });
+      document.addEventListener('keydown', function(e){
+        if (['ArrowLeft','ArrowRight','Escape','m','M'].indexOf(e.key) !== -1) {
+          e.preventDefault();
+          parent.postMessage({ type: 'ws-key', key: e.key }, '*');
+        }
+      });
+    <\/script>`;
+    if (/<head\b[^>]*>/i.test(h)) h = h.replace(/<head\b[^>]*>/i, m => m + '\n' + baseTag + '\n' + helperStyle);
+    else h = baseTag + helperStyle + h;
+    if (/<\/body>/i.test(h)) h = h.replace(/<\/body>/i, helperScript + '\n</body>');
+    else h += helperScript;
+    return h;
+  }
+
+  function mountPane(wrap, rawHtml, sheet, isBefore, emptyTitle, emptySub) {
+    wrap.innerHTML = '';
+    if (!rawHtml) {
+      wrap.innerHTML = `<div class="empty-pane"><b>${esc(emptyTitle)}</b><p>${esc(emptySub)}</p></div>`;
+      return;
+    }
+    const ifr = document.createElement('iframe');
+    ifr.setAttribute('title', isBefore ? 'Before worksheet' : 'After worksheet');
+    ifr.srcdoc = patchHtml(rawHtml, sheet, isBefore, document.getElementById('zoomSel').value);
+    wrap.appendChild(ifr);
+  }
+
+  function renderCompare() {
+    if (activeIdx < 0 || activeIdx >= allSheets.length) return;
+    const s = allSheets[activeIdx];
+    const col = SUBJ_COLOR[s.subject] || '#555';
+    document.getElementById('cmpTitle').innerHTML = `<span class="subtag" style="--c:${col}">${esc(s.subjectName)} · ${esc(s.tier)}</span><span>${esc(s.title)}</span>`;
+    document.getElementById('cmpCounter').textContent = `${activeIdx + 1} / ${allSheets.length}`;
+    document.getElementById('btnPrev').disabled = activeIdx <= 0;
+    document.getElementById('btnNext').disabled = activeIdx >= allSheets.length - 1;
+
+    const btnSheet = document.getElementById('btnSheet');
+    const btnMs = document.getElementById('btnMs');
+    btnMs.disabled = !s.hasMs;
+    if (!s.hasMs) activeTab = 'sheet';
+    btnSheet.classList.toggle('on', activeTab === 'sheet');
+    btnMs.classList.toggle('on', activeTab === 'ms');
+    btnSheet.textContent = s.sheetChanged ? '📄 Sheet ●' : '📄 Sheet';
+    btnMs.textContent = s.msChanged ? '✅ Mark scheme ●' : '✅ Mark scheme';
+
+    document.getElementById('btnOpen').href = activeTab === 'ms' && s.msUrl ? s.msUrl : s.url;
+    const oldSrc = activeTab === 'ms' ? s.oldMsHtml : s.oldHtml;
+    const newSrc = activeTab === 'ms' ? s.newMsHtml : s.newHtml;
+
+    const kb = document.getElementById('kindBadge');
+    kb.className = 'badge k-' + s.kind;
+    kb.textContent = s.kind.toUpperCase();
+    document.getElementById('beforeMeta').textContent = oldSrc ? `${baseLbl} (${DATA.baseCommit})${activeTab === 'sheet' && s.oldPages ? ` · ${s.oldPages} sides` : ''}` : `Not in ${baseLbl}`;
+    document.getElementById('afterMeta').textContent = newSrc ? `staging (${DATA.headCommit})${activeTab === 'sheet' && s.newPages ? ` · ${s.newPages} sides` : ''}` : 'Removed in staging';
+
+    mountPane(document.getElementById('beforeWrap'), oldSrc, s, true,
+      activeTab === 'ms' ? 'No mark scheme before' : 'New worksheet added',
+      `Did not exist in ${baseLbl}.`
+    );
+    mountPane(document.getElementById('afterWrap'), newSrc, s, false,
+      activeTab === 'ms' ? 'Mark scheme removed' : 'Worksheet removed',
+      'Removed or archived in staging.'
+    );
+  }
+
+  function openSheet(id) {
+    const idx = allSheets.findIndex(x => x.id === id);
+    if (idx < 0) { closeCompare(); return; }
+    activeIdx = idx;
+    const s = allSheets[idx];
+    activeTab = (!s.sheetChanged && s.msChanged && s.hasMs) ? 'ms' : 'sheet';
+    document.body.classList.add('viewing');
+    renderCompare();
+  }
+
+  function closeCompare() {
+    activeIdx = -1;
+    document.body.classList.remove('viewing');
+    document.getElementById('beforeWrap').innerHTML = '';
+    document.getElementById('afterWrap').innerHTML = '';
+    if (location.hash) history.replaceState(null, '', location.pathname);
+  }
+
+  document.getElementById('btnBack').onclick = closeCompare;
+  document.getElementById('btnSheet').onclick = () => { activeTab = 'sheet'; renderCompare(); };
+  document.getElementById('btnMs').onclick = () => { activeTab = 'ms'; renderCompare(); };
+  document.getElementById('zoomSel').onchange = () => renderCompare();
+  document.getElementById('btnPrev').onclick = () => { if (activeIdx > 0) { location.hash = allSheets[activeIdx - 1].id; } };
+  document.getElementById('btnNext').onclick = () => { if (activeIdx < allSheets.length - 1) { location.hash = allSheets[activeIdx + 1].id; } };
+
+  function handleKey(key) {
+    if (activeIdx < 0) return;
+    if (key === 'ArrowRight' && activeIdx < allSheets.length - 1) location.hash = allSheets[activeIdx + 1].id;
+    else if (key === 'ArrowLeft' && activeIdx > 0) location.hash = allSheets[activeIdx - 1].id;
+    else if ((key === 'm' || key === 'M') && allSheets[activeIdx].hasMs) { activeTab = activeTab === 'sheet' ? 'ms' : 'sheet'; renderCompare(); }
+    else if (key === 'Escape') closeCompare();
+  }
+  document.addEventListener('keydown', e => {
+    if (activeIdx < 0 || e.target.closest('input,textarea,select')) return;
+    if (['ArrowLeft', 'ArrowRight', 'Escape', 'm', 'M'].includes(e.key)) { e.preventDefault(); handleKey(e.key); }
+  });
+  window.addEventListener('message', e => {
+    if (!e.data) return;
+    if (e.data.type === 'ws-key') handleKey(e.data.key);
+    else if (e.data.type === 'ws-scroll' && document.getElementById('chkSync').checked && !syncing) {
+      syncing = true;
+      const otherWrap = document.getElementById(e.data.side === 'before' ? 'afterWrap' : 'beforeWrap');
+      const ifr = otherWrap && otherWrap.querySelector('iframe');
+      if (ifr && ifr.contentWindow) ifr.contentWindow.postMessage({ type: 'ws-set-scroll', top: e.data.top }, '*');
+      setTimeout(() => { syncing = false; }, 30);
+    }
+  });
+
+  function syncRoute() {
+    const id = decodeURIComponent(location.hash.replace(/^#/, ''));
+    if (id) openSheet(id); else closeCompare();
+  }
+  window.addEventListener('hashchange', syncRoute);
+  syncRoute();
+})();
+</script>
+</body>
+</html>

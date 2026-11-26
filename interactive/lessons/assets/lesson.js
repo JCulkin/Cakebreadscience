@@ -3,6 +3,7 @@
    - components: elements with data-comp="name" are initialised by functions registered in Lesson.comps
 */
 (function(){
+if (!window.__cbsAuthGate) { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
 const L = window.Lesson = window.Lesson || {};
 L.comps = L.comps || {};
 const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];

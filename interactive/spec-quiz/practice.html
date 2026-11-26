@@ -293,8 +293,8 @@ function finish() {
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
     <div class="acts"><button class="btn gold big" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button><a class="btn alt" href="${G ? '/today/' : 'practice.html'}">${G ? 'Back to To do' : 'Choose something else'}</a>${G ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
-    <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe.'}</p>`;
-  $('again').onclick = () => G ? startGuide(G.keys, G.n, G.title) : start(PS.sub.key, PS.point);
+    <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'That was your free sample practice set! Sign in with Google (top right) to save your progress and unlock unlimited practice (new accounts are approved by your teacher).'}</p>`;
+  $('again').onclick = () => { if (window.CBSAuth && !CBSAuth.checkMissionGate()) return; G ? startGuide(G.keys, G.n, G.title) : start(PS.sub.key, PS.point); };
   scrollTo(0, 0);
 }
 

@@ -61,7 +61,7 @@ else {
     if (off) { off(); off = null; }
     if (!u) {
       try { localStorage.removeItem(KEY); } catch (e) {}
-      show(face('happy') + `<h1>Sign in to play</h1><p>The games are for Cakebread Science students. Sign in with your Google account; your teacher then approves it once.</p><button class="btn" id="si">Sign in with Google</button>` + links);
+      show(face('happy') + `<h1>Sign in to play</h1><p>Cakebread Science games are for approved student accounts. Sign in with your Google account; your teacher approves new accounts in Admin.</p><button class="btn" id="si">Sign in with Google</button>` + links);
       document.getElementById('si').onclick = signIn; return;
     }
     if ((window.ADMIN_EMAILS || []).includes(u.email)) { go(u); return; }
