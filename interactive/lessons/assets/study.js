@@ -84,26 +84,17 @@ function stepTitle(sec){
 
 function buildNav(){
   if(!steps.length) return;
-  const hasDA = !!$('.da-only, .da-block');
-  const hasBeyond = !!$('.beyond-only, .beyond-block');
 
   const nav = document.createElement('nav');
   nav.className = 'study-nav';
   nav.setAttribute('aria-label', 'Lesson steps');
   nav.innerHTML = `<div class="study-nav-in">
-    <div class="snav-top">
-      <div class="snav-status" id="snavStatus"></div>
-      <div class="snav-controls">
-        ${hasDA ? `<button type="button" class="ctrl-btn" id="btnDA" title="Hide Double Award only content (Single Award view)">Single Award view</button>` : ''}
-        ${hasBeyond ? `<button type="button" class="ctrl-btn" id="btnBeyond" title="Hide Beyond IGCSE extension boxes">Hide extension</button>` : ''}
-        <button type="button" class="ctrl-btn" id="btnMode" title="Switch between one step at a time and all on one page">All on one page</button>
-      </div>
-    </div>
-    <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
     <div class="step-pills" id="stepPills">
       ${steps.map((s,i) => `<button type="button" class="step-pill" data-i="${i}"><span class="sn">${i+1}</span><span>${esc(stepTitle(s))}</span></button>`).join('')}
     </div>
-  </div>`;
+    <button type="button" class="ctrl-btn" id="btnMode" title="Switch between one step at a time and all on one page">All on one page</button>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>`;
 
   const anchor = $('.stripes + .wrap') ? $('.wrap') : ($('.wrap') || document.body.firstChild);
   anchor.parentNode.insertBefore(nav, anchor);
@@ -137,62 +128,33 @@ function buildNav(){
     body.classList.toggle('mode-all', all);
     body.classList.toggle('mode-steps', !all);
     btnMode.classList.toggle('on', all);
-    btnMode.textContent = all ? 'Step-by-step view' : 'All on one page';
+    btnMode.textContent = all ? 'Step-by-step' : 'All on one page';
     state.mode = mode;
     saveState(state);
     refreshNav();
   };
   btnMode.onclick = () => setMode(body.classList.contains('mode-all') ? 'steps' : 'all');
   setMode(state.mode === 'all' ? 'all' : 'steps');
-
-  // DA filter toggle
-  const btnDA = $('#btnDA');
-  if(btnDA){
-    const applyDA = hide => {
-      body.classList.toggle('hide-da', hide);
-      btnDA.classList.toggle('filter-on', hide);
-      btnDA.textContent = hide ? 'Single Award view ✓' : 'Single Award view';
-      state.hideDA = hide;
-      saveState(state);
-    };
-    btnDA.onclick = () => applyDA(!body.classList.contains('hide-da'));
-    if(state.hideDA) applyDA(true);
-  }
-
-  // Beyond IGCSE filter toggle
-  const btnBeyond = $('#btnBeyond');
-  if(btnBeyond){
-    const applyBeyond = hide => {
-      body.classList.toggle('hide-beyond', hide);
-      btnBeyond.classList.toggle('filter-on', hide);
-      btnBeyond.textContent = hide ? 'Extension hidden' : 'Hide extension';
-      state.hideBeyond = hide;
-      saveState(state);
-    };
-    btnBeyond.onclick = () => applyBeyond(!body.classList.contains('hide-beyond'));
-    if(state.hideBeyond) applyBeyond(true);
-  }
 }
 
 function refreshNav(){
   if(!steps.length) return;
+  const all = body.classList.contains('mode-all');
   const doneCount = steps.filter(s => state.done[s.id]).length;
-  const pct = body.classList.contains('mode-all')
+  const pct = all
     ? Math.round((doneCount / steps.length) * 100)
     : Math.round(((curIdx + 1) / steps.length) * 100);
   const pf = $('#progFill'); if(pf) pf.style.width = pct + '%';
-  const st = $('#snavStatus');
-  if(st){
-    st.innerHTML = body.classList.contains('mode-all')
-      ? `<b>All ${steps.length} steps</b> · ${doneCount} / ${steps.length} checked`
-      : `<b>Step ${curIdx+1} of ${steps.length}</b> · ${esc(stepTitle(steps[curIdx]))}`;
-  }
+  const spec = $('details.specbox');
+  if(spec) spec.hidden = !all && curIdx > 0;
   $$('#stepPills .step-pill').forEach((p, i) => {
     const id = steps[i].id;
     const isDone = !!state.done[id];
-    p.classList.toggle('active', i === curIdx && !body.classList.contains('mode-all'));
+    const active = i === curIdx && !all;
+    p.classList.toggle('active', active);
     p.classList.toggle('done', isDone);
     $('.sn', p).textContent = isDone ? '✓' : (i + 1);
+    if(active) p.scrollIntoView({inline:'nearest', block:'nearest'});
   });
 }
 
@@ -207,8 +169,9 @@ function goTo(i, scroll){
       steps[curIdx].scrollIntoView({behavior:'smooth', block:'start'});
     } else {
       const nav = $('.study-nav');
-      const top = nav ? Math.max(0, nav.offsetTop - 2) : 0;
-      window.scrollTo({top, behavior:'smooth'});
+      const navH = nav ? nav.offsetHeight : 0;
+      const target = curIdx === 0 ? 0 : Math.max(0, steps[curIdx].getBoundingClientRect().top + window.scrollY - navH - 12);
+      window.scrollTo(0, target);
     }
   }
 }
