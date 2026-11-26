@@ -12,7 +12,7 @@
   /* [tab or page, label, other pages/tabs that light it up] */
   const GROUPS = [
     ['Students', [['overview', 'Overview'], ['students', 'Students'], ['map', 'Spec map'], ['teach', 'Teaching']]],
-    ['Content', [['questions', 'Questions'], ['/admin/review.html', 'Review'], ['/admin/study-guide.html', 'Study guides']]],
+    ['Content', [['questions', 'Questions', ['/interactive/spec-quiz/reports.html']], ['/admin/review.html', 'Review'], ['/admin/study-guide.html', 'Study guides']]],
     ['Games', [['games', 'Games', ['boards']], ['bland', 'Breadventure Land', ['/admin/showcase.html']]]],
     ['Site', [['backup', 'Backup']], true]   // true = pushed to the right
   ];

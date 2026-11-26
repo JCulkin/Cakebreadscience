@@ -21,10 +21,6 @@ header h1{font-size:28px}header h1 span{color:var(--green)}
 .hsite{color:#bbb;font-size:14px;font-weight:700;text-decoration:none;border:1px solid #444;padding:3px 10px}.hsite:hover{color:#fff;border-color:#888}
 header .who{margin-left:auto;font-size:13px;color:#aaa;display:flex;gap:10px;align-items:center}
 header .who button{background:none;border:1px solid #555;color:#ddd;padding:3px 10px;cursor:pointer;font:inherit}
-.tabs{display:flex;gap:4px;padding:0 22px;background:#111;overflow-x:auto}
-.tabs button{background:#222;color:#bbb;border:0;padding:9px 16px 7px;font-size:17px;cursor:pointer;white-space:nowrap;border-top:3px solid transparent}
-.tabs a.tablink{background:#facc15;color:#111;padding:9px 16px 7px;font:900 17px 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase;text-decoration:none;white-space:nowrap;border-top:3px solid transparent;margin-left:auto}
-.tabs button.on{background:var(--cream);color:var(--ink);border-top-color:var(--green)}
 main{max-width:1400px;margin:0 auto;padding:20px 22px 60px}
 .panel{display:none}.panel.on{display:block}
 .foldh{font-size:24px;margin:22px 0 10px;padding-top:14px;border-top:3px solid var(--ink)}
@@ -146,8 +142,8 @@ tr.click{cursor:pointer}tr.click:hover td{background:#fffbe6}
   <section class="panel" data-in="games" id="p-boards-h"><h2 class="foldh">🏆 Leaderboards</h2></section>
   <section class="panel" data-in="games" id="p-boards"></section>
   <section class="panel" id="p-backup">
-    <div class="card"><h2>Back up everything</h2><p class="muted">Downloads every student's saved data (Questing, flashcards, trackers, long answers) as one file.</p>
-      <div class="acts"><button class="btn" id="exp">💾 Download backup</button><button class="btn alt" id="impBtn">📂 Restore from a backup…</button><input type="file" id="imp" accept=".json" hidden></div><div class="msg" id="bMsg"></div></div>
+    <div class="card"><h2>Back up everything</h2><p class="muted">Downloads every student's saved data (Firestore: Questing, flashcards, trackers, long answers) plus your teacher &amp; game data (Realtime Database: review marks, study guides, set work, taught ticks, Breadventure Land, leaderboards, reports) as one file.</p>
+      <div class="acts"><button class="btn" id="exp">💾 Download full backup</button><button class="btn alt" id="impBtn">📂 Restore from a backup…</button><input type="file" id="imp" accept=".json" hidden></div><div class="msg" id="bMsg"></div></div>
   </section>
 </main>
 <div class="dim" id="dim"></div>
@@ -218,6 +214,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-reload]'))
 
 /* ---------- load everything ---------- */
 async function load() {
+  BUILD = null;
   $('p-overview').innerHTML = '<div class="empty">Loading everyone\'s data…</div>';
   const safe = p => p.catch(e => { console.warn(e); return null; });
   const [us, sp, board, reps, games] = await Promise.all([
@@ -312,8 +309,8 @@ async function loadBuild() {
   const get = (u, how) => fetch(u, { cache: 'no-store' }).then(r => r.ok ? r[how]() : null).catch(() => null);
   const [lj, sci, ma, mt] = await Promise.all([get('/interactive/lessons/lessons.json', 'json'), get('/worksheets/science.html', 'text'),
     get('/worksheets/maths.html', 'text'), get('/specifications/maths.html', 'text')]);
-  const [rev, ws] = await Promise.all([REVIEW.loadReview(RT).catch(() => ({ q: {}, w: {} })), REVIEW.sheets().catch(() => [])]);
-  return { lj, sci: sci || '', ma: ma || '', mt: mt || '', rev, ws };
+  const [rev, ws] = await Promise.all([REVIEW.loadReview(RT).catch(() => ({ q: {}, w: {} })), REVIEW.sheetsList().catch(() => [])]);
+  return { lj, sci: sci || '', ma: ma || '', mt: mt || '', rev, ws, wsHashed: false };
 }
 function drawBuild() {
   const box = $('buildCard'); if (!box) return;
@@ -329,7 +326,7 @@ function drawBuild() {
   const isSheet = i => IX.res[i] && IX.res[i][0] === 'sheet';
   const done = [], review = [];
   const RQ = REVIEW.counts(QUESTIONS, BUILD.rev.q, q => q.id, REVIEW.qHash);
-  const wst = s => REVIEW.statusW(BUILD.rev.w, s);
+  const wst = s => REVIEW.statusWFast(BUILD.rev.w, s);
   const wline = sub => { const all = BUILD.ws.filter(s => s.subj === sub && !s.archived), c = { todo: 0, changed: 0, fix: 0, ok: 0 }; all.forEach(s => c[wst(s)]++);
     return { all, c, html: `<br><b>${all.length}</b> made · <span style="color:var(--s)"><b>${c.ok}</b> checked</span> · <b>${c.todo + c.changed}</b> to review${c.changed ? ` (${c.changed} changed)` : ''}${c.fix ? ` · <span style="color:var(--bad)">${c.fix} need a fix</span>` : ''}${all.some(s => !s.live) ? ` · ${all.filter(s => !s.live).length} not on the worksheet pages yet` : ''}` }; };
   const rows = Object.keys(SUB).map(id => {
@@ -360,10 +357,15 @@ function drawBuild() {
       <span><b>${with_(p => (p.r || []).some(isSheet))}</b>/${all.length} have a worksheet</span><span><b>${sheets.length + msheets.length}</b> worksheets live</span>
       <span><b>${done.length}</b> lessons checked · <b>${review.length}</b> under review</span></div>
     <div class="bkpi" style="background:#f6f4ee;border:1.5px solid var(--ink);padding:8px 12px;align-items:center"><span><b style="color:var(--s)">${RQ.ok}</b>/${RQ.total} questions you've checked</span><span><b>${RQ.todo + RQ.changed}</b> to review${RQ.changed ? ` (${RQ.changed} changed since checked)` : ''}</span>${RQ.fix ? `<span><b style="color:var(--bad)">${RQ.fix}</b> need a fix</span>` : ''}
-      <span><b style="color:var(--s)">${BUILD.ws.filter(s => !s.archived && wst(s) === 'ok').length}</b>/${BUILD.ws.filter(s => !s.archived).length} worksheets checked</span><a class="btn" href="/admin/review.html" style="margin-left:auto">✅ Review questions and worksheets →</a></div>
+      <span><b style="color:var(--s)">${BUILD.ws.filter(s => !s.archived && wst(s) === 'ok').length}</b>/${BUILD.ws.filter(s => !s.archived).length} worksheets checked${BUILD.wsHashed ? '' : ' <button class="btn alt sm" id="wsHashBtn" style="margin-left:4px">Check for edits</button>'}</span><a class="btn" href="/admin/review.html" style="margin-left:auto">✅ Review questions and worksheets →</a></div>
     <div style="overflow-x:auto"><table class="build"><thead><tr><th></th><th>Lessons</th><th>Worksheets</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>
     ${done.length || review.length ? `<p class="small" style="margin-top:8px">${done.length ? `<b>Checked:</b> ${done.join(' · ')}` : ''}${done.length && review.length ? '<br>' : ''}${review.length ? `<b>Under review:</b> ${review.join(' · ')}` : ''}</p>` : ''}
     <p class="small muted" style="margin-top:6px">Green = done (checked lesson / sub-topic with a worksheet), amber = lesson under review. Checked = you pressed “It's good” in Review and it hasn't changed since. Counted from the live lesson list, the worksheet pages and the spec index (built ${esc(IX.built || '?')}). <a href="/interactive/lessons/">Lessons</a> · <a href="/worksheets/science.html">Science worksheets</a> · <a href="/worksheets/maths.html">Maths worksheets</a></p>`;
+  if ($('wsHashBtn')) $('wsHashBtn').onclick = async () => {
+    const b = $('wsHashBtn'); b.disabled = true; b.textContent = 'Checking…';
+    try { BUILD.ws = await REVIEW.sheets((d, n) => { if ($('wsHashBtn')) $('wsHashBtn').textContent = `Checking ${d}/${n}…`; }); BUILD.wsHashed = true; drawBuild(); }
+    catch (e) { b.disabled = false; b.textContent = 'Check for edits'; }
+  };
 }
 
 /* Students table columns (user, 18 Nov: "change which columns display, to switch them, and a column for questions attempted").
@@ -491,7 +493,7 @@ function openStudent(uid) {
       <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Cakebread Questing name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
       ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
       <div class="acts"><input id="nn" placeholder="New name" maxlength="16" style="font:inherit;padding:5px 8px;border:2px solid var(--ink)"><button class="btn sm" id="ren">Rename</button><button class="btn alt sm" id="clr">Use their Google name</button>
-      ${s.prog ? `<button class="btn alt sm" id="hid">${s.hide ? 'Hidden from boards ✓' : 'Hide from leaderboards'}</button>` : ''}</div><div class="msg" id="dMsg"></div></div>
+      ${s.prog ? `<button class="btn alt sm" id="hid">${s.hide ? 'Show on leaderboards' : 'Hide from leaderboards'}</button>` : ''}</div><div class="msg" id="dMsg"></div></div>
     <div class="card" id="dChar"><h3 style="margin-top:0">Their character</h3><p class="muted small">Loading…</p></div>
     ${P ? `<div class="kpis" style="margin-top:4px"><div class="kpi"><div class="big">${s.level}</div><small>level · ${s.xp} XP</small></div><div class="kpi"><div class="big">${s.pts}</div><small>spec points secured ${sciChips(s.per)}</small></div>
       <div class="kpi"><div class="big">${s.secQ}</div><small>questions secured</small></div><div class="kpi"><div class="big">${s.answered}</div><small>answers given · ${P.correct || 0} right</small></div>
@@ -501,7 +503,7 @@ function openStudent(uid) {
       ${s.weak.length ? `<div class="card"><h3 style="margin-top:0">Flashcards they found hard</h3><p>${s.weak.map(k => `<span class="tag">${k}</span>`).join(' ')}</p></div>` : ''}
       ${missed.length ? `<div class="card"><h3 style="margin-top:0">Questions they get wrong most</h3><table>${missed.map(([id, x]) => { const q = QBYID[id]; return `<tr><td class="small"><b>${id}</b> ${q ? esc(strip(q.q || '(calculation)')).slice(0, 140) : ''}</td><td class="n small">${(x.r || 0)}/${x.n} right</td></tr>`; }).join('')}</table></div>` : ''}`
     : '<p class="muted" style="margin:12px 0">Hasn\'t played Cakebread Questing yet.</p>'}
-    <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker, rated confident: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics ? esc(JSON.stringify(s.raw.longAnswersSummary.physics).slice(0, 120)) : 'none'}</p></div>`;
+    <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker, rated confident: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${(() => { const p = s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics; const lnk = `<a href="/interactive/physics-long-answer/learned.html?uid=${encodeURIComponent(s.uid)}" target="_blank">Learning bank →</a>`; return p ? `<b>${p.attempted || 0}</b> attempted · <b>${p.firstMarks || 0}/${p.possibleMarks || 0}</b> first-answer marks · <b>${p.learnedPoints || 0}</b> points learned · ${lnk}` : `none · ${lnk}`; })()}</p></div>`;
   $('dim').classList.add('on'); $('drawer').classList.add('on'); $('drawer').scrollTop = 0;
   drawChar(s);
   const msg = (t, ok) => { $('dMsg').className = 'msg ' + (ok ? 'ok' : 'err'); $('dMsg').textContent = t; };
@@ -523,10 +525,11 @@ function openStudent(uid) {
   $('ren').onclick = () => { const n = QE.cleanName($('nn').value), bad = QE.checkName(n); if (bad) return msg(bad); setNick(n); };
   $('clr').onclick = () => setNick('-');
   if ($('hid')) $('hid').onclick = async () => {
-    if (s.hide) return msg('Already hidden. Students can switch this themselves on Cakelab.', true);
-    try { await DB.collection('users').doc(uid).update({ 'specQuiz.hide': true, 'specQuiz.updatedAt': Date.now() }); s.hide = true; s.prog.hide = true;
-      try { if (D.board[uid]) { await RT.ref('specQuizBoard/' + uid + '/hide').set(true); D.board[uid].hide = true; } } catch (e) {}
-      msg('Hidden from the Cakebread Questing boards.', true); $('hid').textContent = 'Hidden from boards ✓'; drawStudents(); drawBoards();
+    const next = !s.hide;
+    try { await DB.collection('users').doc(uid).update({ 'specQuiz.hide': next, 'specQuiz.updatedAt': Date.now() }); s.hide = next; s.prog.hide = next;
+      try { if (D.board[uid]) { await RT.ref('specQuizBoard/' + uid + '/hide').set(next); D.board[uid].hide = next; } } catch (e) {}
+      msg(next ? 'Hidden from the Cakebread Questing boards.' : 'Shown on the Cakebread Questing boards again.', true);
+      $('hid').textContent = next ? 'Show on leaderboards' : 'Hide from leaderboards'; drawStudents(); drawBoards();
     } catch (e) { msg('Could not save: ' + (e.code || e.message)); }
   };
 }
@@ -550,7 +553,7 @@ $('dx').onclick = closeD; $('dim').onclick = closeD; document.addEventListener('
 
 /* ---------- Spec map ---------- */
 const COL = { s: 'var(--s)', r: 'var(--r)', l: 'var(--l)', n: 'var(--n)' };
-const open = new Set();
+const mapOpen = new Set();
 function drawMap() {
   const S = D.students.filter(s => s.a && s.answered + Object.keys(s.prog.cards || {}).length > 0);
   if (!S.length) { $('mTable').innerHTML = '<div class="empty">Nobody has started Cakebread Questing or Flashcards yet.</div>'; return; }
@@ -559,7 +562,7 @@ function drawMap() {
   const shade = p => p == null ? 'var(--n)' : `color-mix(in srgb, var(--s) ${Math.round(p * 100)}%, #f3f0e6)`;
   let h = `<table class="map"><thead><tr><th class="row">Topic / spec point</th><th>Everyone</th>${S.map(s => `<th title="${esc(s.name)}">${esc(short(s))}</th>`).join('')}</tr></thead><tbody>`;
   TOPICS.filter(t => !sci || t.sci === sci).forEach(t => {
-    const isOpen = all || open.has(t.key);
+    const isOpen = all || mapOpen.has(t.key);
     const pc = s => { const x = s.a.topics[t.key]; return x ? (x.s + x.r) / x.n : 0; };
     const avg = S.reduce((n, s) => n + pc(s), 0) / S.length;
     h += `<tr class="topic ${isOpen ? 'open' : ''}" data-t="${t.key}"><td class="row">${t.key} ${esc(t.name)}</td><td class="c" style="background:${shade(avg)}"><b>${Math.round(avg * 100)}</b></td>${S.map(s => `<td class="c" style="background:${shade(pc(s))}">${Math.round(pc(s) * 100) || ''}</td>`).join('')}</tr>`;
@@ -571,7 +574,7 @@ function drawMap() {
   $('mTable').innerHTML = h + '</tbody></table>';
 }
 $('mSci').onchange = drawMap; $('mOpen').onchange = drawMap;
-$('mTable').addEventListener('click', e => { const r = e.target.closest('tr.topic'); if (!r) return; const k = r.dataset.t; open.has(k) ? open.delete(k) : open.add(k); drawMap(); });
+$('mTable').addEventListener('click', e => { const r = e.target.closest('tr.topic'); if (!r) return; const k = r.dataset.t; mapOpen.has(k) ? mapOpen.delete(k) : mapOpen.add(k); drawMap(); });
 
 /* ---------- Questions ---------- */
 function qSample(q) {
@@ -724,22 +727,44 @@ function drawBland(msg) {
     try { await RT.ref('bland/state/' + u).remove(); await RT.ref('bland/pub/' + u).remove(); await BL.load(); drawBland('Player removed.'); } catch (e) { fail(e); } });
 }
 
-/* ---------- Backup ---------- */
+/* ---------- Backup (Firestore + Realtime Database, v3) ---------- */
+const RTDB_NODES = ['school', 'bland', 'gameAccess', 'gameScores', 'specQuizBoard', 'specQuizReports'];
 $('exp').onclick = async () => {
-  try { const snap = await DB.collection('users').get(), out = { exportedAt: new Date().toISOString(), version: 2, users: {}, specProgress: {} };
+  $('exp').disabled = true; $('bMsg').className = 'msg'; $('bMsg').textContent = 'Exporting Firestore and Realtime Database…';
+  try {
+    const [snap, spSnap, ...rtVals] = await Promise.all([
+      DB.collection('users').get(),
+      DB.collection('specProgress').get().catch(() => null),
+      ...RTDB_NODES.map(k => RT.ref(k).once('value').then(s => ({ ok: true, v: s.val() })).catch(e => ({ ok: false, err: e.code || e.message })))
+    ]);
+    const out = { exportedAt: new Date().toISOString(), version: 3, users: {}, specProgress: {}, rtdb: {} };
     snap.forEach(d => out.users[d.id] = d.data());
-    try { (await DB.collection('specProgress').get()).forEach(d => out.specProgress[d.id] = d.data()); } catch (e) {}
+    if (spSnap) spSnap.forEach(d => out.specProgress[d.id] = d.data());
+    const failed = [];
+    RTDB_NODES.forEach((k, i) => { if (rtVals[i].ok) { if (rtVals[i].v != null) out.rtdb[k] = rtVals[i].v; } else failed.push(k); });
     const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(out, null, 1)], { type: 'application/json' }));
-    a.download = `cakebread-backup-${TODAY}.json`; a.click(); $('bMsg').className = 'msg ok'; $('bMsg').textContent = `Downloaded ${Object.keys(out.users).length} students.`;
+    a.download = `cakebread-backup-${TODAY}.json`; a.click();
+    const rtList = Object.keys(out.rtdb);
+    $('bMsg').className = 'msg ok';
+    $('bMsg').textContent = `Downloaded ${Object.keys(out.users).length} students, ${Object.keys(out.specProgress).length} trackers, and ${rtList.length} Realtime Database nodes (${rtList.join(', ') || 'none'}).` + (failed.length ? ` Could not read: ${failed.join(', ')}.` : '');
   } catch (e) { $('bMsg').className = 'msg err'; $('bMsg').textContent = 'Backup failed: ' + e.message; }
+  $('exp').disabled = false;
 };
 $('impBtn').onclick = () => $('imp').click();
 $('imp').onchange = e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader();
-  rd.onload = async () => { try { const b = JSON.parse(rd.result); if (!b.users) throw new Error('no students in this file');
-    if (!confirm(`Restore the backup from ${b.exportedAt ? new Date(b.exportedAt).toLocaleString('en-GB') : 'an unknown date'}?\n\n${Object.keys(b.users).length} students. Their current data is replaced and this can't be undone.`)) return;
-    for (const [uid, d] of Object.entries(b.users)) await DB.collection('users').doc(uid).set(d);
+  rd.onload = async () => { try { const b = JSON.parse(rd.result); if (!b.users && !b.rtdb) throw new Error('nothing recognisable in this backup file');
+    const uCount = Object.keys(b.users || {}).length, spCount = Object.keys(b.specProgress || {}).length;
+    const rtKeys = Object.keys(b.rtdb || {}).filter(k => RTDB_NODES.includes(k));
+    const parts = []; if (uCount) parts.push(`${uCount} students`); if (spCount) parts.push(`${spCount} trackers`); if (rtKeys.length) parts.push(`Realtime Database (${rtKeys.join(', ')})`);
+    if (!confirm(`Restore the backup from ${b.exportedAt ? new Date(b.exportedAt).toLocaleString('en-GB') : 'an unknown date'}?\n\nWill overwrite: ${parts.join(' + ')}.\nThis cannot be undone.`)) return;
+    $('bMsg').className = 'msg'; $('bMsg').textContent = 'Restoring…';
+    for (const [uid, d] of Object.entries(b.users || {})) await DB.collection('users').doc(uid).set(d);
     for (const [uid, d] of Object.entries(b.specProgress || {})) await DB.collection('specProgress').doc(uid).set(d);
-    $('bMsg').className = 'msg ok'; $('bMsg').textContent = 'Restored.'; load();
+    const rtFail = [];
+    for (const k of rtKeys) { try { await RT.ref(k).set(b.rtdb[k]); } catch (err) { rtFail.push(k + ': ' + (err.code || err.message)); } }
+    $('bMsg').className = rtFail.length ? 'msg err' : 'msg ok';
+    $('bMsg').textContent = rtFail.length ? `Firestore restored, but some Realtime Database nodes failed: ${rtFail.join('; ')}` : `Restored ${parts.join(' + ')}.`;
+    load();
   } catch (err) { $('bMsg').className = 'msg err'; $('bMsg').textContent = 'Restore failed: ' + err.message; } e.target.value = ''; };
   rd.readAsText(f); };
 

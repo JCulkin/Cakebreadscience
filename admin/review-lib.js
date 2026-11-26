@@ -48,6 +48,13 @@
   const full = (rec, h, kept) => rec && rec.h === h ? (rec.st === 'fix' ? 'fix' : 'ok') : kept ? 'ok' : !rec ? 'todo' : 'changed';
   const statusQ = (recs, id, h) => full(recs[key(id)], h, (APPROVED.q[id] || {}).h === h);
   const statusW = (recs, s) => full(recs[key(s.p)], s.h, !!s.hr && (APPROVED.w[s.p] || {}).hr === s.hr);
+  /* Fast worksheet status when live HTML hasn't been fetched yet (used by /admin/ Overview): trusts saved marks / keptW */
+  const statusWFast = (recs, s) => {
+    if (s.h) return statusW(recs, s);
+    const rec = recs[key(s.p)];
+    if (rec) return rec.st === 'fix' ? 'fix' : 'ok';
+    return APPROVED.w[s.p] ? 'ok' : 'todo';
+  };
   const statusK = (recs, k) => full(recs[key(k)], kHash(k), (APPROVED.k[k] || {}).h === kHash(k));
   const keptQ = id => APPROVED.q[id] || null, keptW = p => APPROVED.w[p] || null, keptK = k => APPROVED.k[k] || null;
   const LABEL = { todo: 'To review', changed: 'Changed since checked', fix: 'Needs a fix', ok: 'Checked ✓' };
@@ -68,6 +75,10 @@
   async function save(rt, kind, id, rec) { await rt.ref(`school/review/${kind}/${key(id)}`).set(rec); }
   async function clear(rt, kind, id) { await rt.ref(`school/review/${kind}/${key(id)}`).remove(); }
 
+  /* Lightweight list without fetching every worksheet HTML (1 request, used by /admin/ Overview) */
+  async function sheetsList() {
+    return ((await (await fetch('/admin/worksheets.json', { cache: 'no-store' })).json()) || {}).sheets || [];
+  }
   /* worksheets: the list from /admin/worksheets.json, each fingerprinted from the live page (and its mark scheme) */
   /* archived sheets (worksheets/archive.html only) aren't shown to students, so they're listed but not read or reviewed */
   async function sheets(onProgress) {
@@ -88,5 +99,5 @@
     items.forEach(it => c[full(recs[key(idOf(it))], hOf(it), (APPROVED.q[idOf(it)] || {}).h === hOf(it))]++);
     return c;
   }
-  window.REVIEW = { key, hash, qHash, kHash, textOf, rawText, rawHash, status, statusQ, statusW, statusK, keptQ, keptW, keptK, LABEL, questions, loadReview, save, clear, sheets, counts };
+  window.REVIEW = { key, hash, qHash, kHash, textOf, rawText, rawHash, status, statusQ, statusW, statusWFast, statusK, keptQ, keptW, keptK, LABEL, questions, loadReview, save, clear, sheets, sheetsList, counts };
 })();

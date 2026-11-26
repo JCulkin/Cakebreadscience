@@ -11,9 +11,12 @@
 :root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--red:#c62828}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45}
-header{background:#111;padding:18px 16px;color:var(--cream)}
-header a{color:var(--cream);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:32px;text-transform:uppercase}
-header a span{color:var(--green2)}
+header{background:#111;padding:12px 22px;color:var(--cream);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:44px}
+header h1.htitle{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;line-height:1.05}
+header h1.htitle span{color:var(--green2)}
+.hhome{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none}
+.hsite{color:#bbb;font-size:14px;font-weight:700;text-decoration:none;border:1px solid #444;padding:3px 10px}.hsite:hover{color:#fff;border-color:#888}
 .wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:44px;line-height:1}
 .btn{font:inherit;font-weight:700;background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:8px 14px;cursor:pointer}
@@ -37,7 +40,9 @@ textarea{width:100%;min-height:200px;font:13px monospace;margin-top:8px;padding:
 </style>
 </head>
 <body>
-<header><a href="./">Cakebread <span>Science</span></a> · Cakebread Questing</header>
+<header><a class="hhome" href="/" title="The website"><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1 class="htitle">Question <span>Reports</span></h1></a><a class="hsite" href="/">← Website</a></header>
+<nav id="adminNav" hidden></nav>
+<script src="/admin/admin-nav.js"></script>
 <main class="wrap">
   <h1>Reported questions</h1>
   <p>Questions students have flagged with “⚑ Report this question”. Only admins can see this page’s data.</p>
@@ -68,7 +73,7 @@ function authBar() {
   if (!user) { bar.innerHTML = '<button class="btn green" id="si">Sign in with Google</button>'; $('si').onclick = () => firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()); return; }
   bar.innerHTML = `<span>Signed in as <b>${esc(user.email)}</b></span>
     <button class="btn alt" id="toggle">${showDone ? 'Hide fixed' : 'Show fixed too'}</button>
-    <button class="btn" id="copy">Copy open reports for Claude</button>
+    <button class="btn" id="copy">Copy open reports</button>
     <button class="btn alt" id="so">Sign out</button>`;
   $('so').onclick = () => firebase.auth().signOut();
   $('toggle').onclick = () => { showDone = !showDone; authBar(); draw(); };
@@ -119,7 +124,7 @@ function copyForClaude() {
       const cur = q && !q.gen ? `Current: ${strip(q.q)} | Options: ${('tf' in q ? ['True', 'False'] : q.o).map(strip).join(' / ')} | Marked answer: ${'tf' in q ? (q.tf ? 'True' : 'False') : strip(q.o[0])}` : q ? 'Randomised calculation' : 'Not in bank';
       return `${g.qid} (${g.open} report${g.open > 1 ? 's' : ''})\n  ${cur}\n` + g.reps.filter(r => !r.resolved).map(r => `  - ${r.reason}${r.comment ? ': "' + r.comment + '"' : ''}${q && q.gen ? ` [saw: ${r.shown} | ${(r.options || []).join(' / ')}${r.seed ? ` | ${q.dg ? 'diagram' : ''} seed ${r.seed}` : ''}]` : ''}`).join('\n');
     }).join('\n\n');
-  navigator.clipboard.writeText(text).then(() => alert('Copied ' + gs.length + ' questions. Paste them into a chat with Claude.'), () => {
+  navigator.clipboard.writeText(text).then(() => alert('Copied ' + gs.length + ' questions. Paste them into a chat.'), () => {
     $('out').insertAdjacentHTML('afterbegin', `<textarea>${esc(text)}</textarea>`);
   });
 }
@@ -128,13 +133,14 @@ try {
   firebase.initializeApp(window.firebaseConfig);
   firebase.auth().onAuthStateChanged(u => {
     user = u; authBar(); data = {};
+    const ok = !!(u && (window.ADMIN_EMAILS || []).includes(u.email));
+    if ($('adminNav')) $('adminNav').hidden = !ok;
     if (!u) return draw();
-    if (!(window.ADMIN_EMAILS || []).includes(u.email)) { $('out').innerHTML = '<p class="note">This page is for admins only.</p>'; return; }
+    if (!ok) { $('out').innerHTML = '<p class="note">This page is for admins only.</p>'; return; }
     firebase.database().ref('specQuizReports').on('value', s => { data = s.val() || {}; draw(); },
       e => { $('out').innerHTML = `<p class="note">Could not read reports (${esc(e.message)}). The Realtime Database rules need to allow admins to read <code>specQuizReports</code>.</p>`; });
   });
 } catch (e) { authBar(); }
 </script>
-<script src="/js/home-link.js" data-back="/admin/" data-back-label="Admin"></script>
 </body>
 </html>

@@ -15,10 +15,12 @@
 *{box-sizing:border-box;margin:0;padding:0}[hidden]{display:none!important}
 body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4;font-size:15px}
 a{color:var(--dk)}
-header.top{background:#111;color:var(--cream);padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-header.top img{width:40px}header.top h1{font:900 26px 'Barlow Condensed',Arial;text-transform:uppercase}header.top h1 span{color:var(--green)}
-header.top a.back{color:#111;background:#facc15;padding:4px 10px;font-weight:800;text-decoration:none}
-header.top .who{margin-left:auto;font-size:13px;color:#aaa}
+header.top{background:#111;color:var(--cream);padding:12px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header.top img{width:44px}header.top h1{font:900 28px 'Barlow Condensed',Arial;text-transform:uppercase}header.top h1 span{color:var(--green)}
+.hhome{display:flex;align-items:center;gap:12px;color:inherit;text-decoration:none}
+.hsite{color:#bbb;font-size:14px;font-weight:700;text-decoration:none;border:1px solid #444;padding:3px 10px}.hsite:hover{color:#fff;border-color:#888}
+header.top .who{margin-left:auto;font-size:13px;color:#aaa;display:flex;gap:10px;align-items:center}
+header.top .who button{background:none;border:1px solid #555;color:#ddd;padding:3px 10px;cursor:pointer;font:inherit}
 main{max-width:1250px;margin:0 auto;padding:16px 18px 60px}
 .gate{max-width:460px;margin:60px auto;background:var(--paper);border:2px solid var(--ink);padding:24px;text-align:center}
 .btn{display:inline-block;background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:7px 14px;font:800 14px 'Barlow',Arial;cursor:pointer;text-decoration:none}
@@ -46,7 +48,8 @@ input[type=text],input[type=date]{font:600 15px Barlow,Arial;padding:6px 8px;bor
 </style>
 </head>
 <body>
-<header class="top noprint"><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Study <span>guides</span></h1><a class="back" href="/admin/">← Admin</a><span class="who" id="who"></span></header>
+<header class="top noprint"><a class="hhome" href="/" title="The website"><img src="/img/mascot/head-pixel-hd.webp" alt=""><h1>Study <span>guides</span></h1></a><a class="hsite" href="/">← Website</a><span class="who" id="who"></span></header>
+<nav id="adminNav" hidden></nav>
 <script src="/admin/admin-nav.js"></script>
 <main>
   <div class="gate" id="gate"><h2>Study guides</h2><p id="gateMsg" class="muted" style="margin:10px 0 16px">Checking your account…</p><div id="gateBtn"></div></div>
@@ -66,6 +69,7 @@ input[type=text],input[type=date]{font:600 15px Barlow,Arial;padding:6px 8px;bor
         <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn gold" id="saveBtn">Save and show to students</button>
           <button class="btn" id="printBtn">🖨 Print / save as PDF</button>
+          <button class="btn ghost" id="dupBtn">📋 Duplicate as Single Award</button>
           <button class="btn red" id="delBtn" hidden>Delete</button>
         </div>
         <p class="msg" id="msg"></p>
@@ -98,12 +102,30 @@ $('gSci').innerHTML = [['B', 'Biology'], ['C', 'Chemistry'], ['P', 'Physics']].m
 auth.onAuthStateChanged(async u => {
   SGA.user = u;
   const ok = u && (window.ADMIN_EMAILS || []).includes(u.email);
-  $('who').textContent = u ? (u.displayName || '') : '';
+  $('who').innerHTML = u ? `${esc(u.displayName || u.email || '')} <button id="so">Sign out</button>` : '';
+  if ($('so')) $('so').onclick = () => auth.signOut();
+  if ($('adminNav')) $('adminNav').hidden = !ok;
   $('app').hidden = !ok; $('gate').hidden = !!ok;
   if (!u) { $('gateMsg').textContent = 'Sign in with your admin Google account.'; $('gateBtn').innerHTML = '<button class="btn" id="si">Sign in with Google</button>'; $('si').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); return; }
   if (!ok) { $('gateMsg').textContent = 'This page is for the site admin only.'; $('gateBtn').innerHTML = ''; return; }
   await loadSaved(); fresh(); const want = new URLSearchParams(location.search).get('id'); if (want && SGA.all[want]) edit(want);
 });
+/* SDK + HTTPS REST fallback with timeout so school Wi-Fi blocking WebSockets still loads saved guides */
+async function rtGet(path, ms = 15000) {
+  let done = false;
+  const sdk = RT.ref(path).once('value').then(x => { done = true; return x.val(); });
+  const rest = (async () => {
+    await new Promise(r => setTimeout(r, 1500));
+    if (done) throw new Error('not needed');
+    const u = auth.currentUser, base = (window.firebaseConfig || {}).databaseURL;
+    if (!u || !base) throw new Error('no rest');
+    const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
+    if (!r.ok) throw new Error('rest ' + r.status);
+    return r.json();
+  })();
+  const any = Promise.any ? Promise.any([sdk, rest]) : sdk;
+  return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); any.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
+}
 const course = () => (document.querySelector('#gCourse input:checked') || {}).value || 'DA';
 const ptsOf = s => CBSGuide.pointsFor(s, course()).map(p => p.key);
 const guide = () => { const subs = CBSGuide.subsFor(course()).filter(s => ptsOf(s).some(k => SGA.picked.has(k)));
@@ -112,7 +134,8 @@ const guide = () => { const subs = CBSGuide.subsFor(course()).filter(s => ptsOf(
     subs: subs.map(s => s.key), pts: subs.flatMap(s => ptsOf(s).filter(k => SGA.picked.has(k))) }; };
 
 async function loadSaved() {
-  try { SGA.all = (await RT.ref('school/guides').once('value')).val() || {}; } catch (e) { SGA.all = {}; }
+  try { SGA.all = (await rtGet('school/guides')) || {}; }
+  catch (e) { SGA.all = {}; $('saved').innerHTML = '<li class="muted" style="color:#b91c1c">Could not load saved study guides — check your connection and reload.</li>'; return; }
   const list = Object.entries(SGA.all).sort((a, b) => (b[1].at || 0) - (a[1].at || 0));
   $('saved').innerHTML = list.length ? list.map(([id, g]) => `<li><b>${esc(g.title)}</b><span class="small muted">${g.course === 'SA' ? 'Single' : 'Double'} · ${g.pts ? g.pts.length + ' points' : (g.subs || []).length + ' sub-topics'}${g.date ? ' · ' + esc(g.date) : ''} · ${Object.keys(g.years || {}).map(y => y.slice(1)).join(', ') ? 'Year ' + Object.keys(g.years || {}).map(y => y.slice(1)).join(', ') : 'print only'}</span>
     <button class="btn ghost" data-edit="${id}" style="padding:2px 10px">Open</button></li>`).join('') : '<li class="muted">None yet.</li>';
@@ -166,8 +189,32 @@ $('picker').addEventListener('click', e => {
 $('gSci').addEventListener('change', () => { SGA.sci = document.querySelector('#gSci input:checked').value; drawPicker(); });
 $('gCourse').addEventListener('change', () => { drawPicker(); draw(); });
 ['gTitle', 'gDate'].forEach(id => $(id).addEventListener('input', draw));
-function draw() { $('preview').innerHTML = CBSGuide.render(guide(), 'print'); }
+function draw() {
+  $('preview').innerHTML = CBSGuide.render(guide(), 'print');
+  $('dupBtn').textContent = course() === 'SA' ? '📋 Duplicate as Double Award' : '📋 Duplicate as Single Award';
+}
 $('newBtn').onclick = fresh;
+$('dupBtn').onclick = () => {
+  const from = course(), to = from === 'SA' ? 'DA' : 'SA';
+  const before = SGA.picked.size;
+  const allowed = new Set(CBSGuide.subsFor(to).flatMap(s => CBSGuide.pointsFor(s, to).map(p => p.key)));
+  SGA.picked = new Set([...SGA.picked].filter(k => allowed.has(k)));
+  const dropped = before - SGA.picked.size;
+  SGA.id = null;
+  document.querySelector(`#gCourse input[value=${to}]`).checked = true;
+  let title = $('gTitle').value.trim();
+  if (to === 'SA') {
+    title = /double\s*award/i.test(title) ? title.replace(/double\s*award/i, 'Single Award')
+      : title && !/single\s*award/i.test(title) ? `${title} (Single Award)` : title;
+  } else {
+    title = /single\s*award/i.test(title) ? title.replace(/\s*\(?\s*single\s*award\s*\)?/i, (m) => m.includes('(') ? '' : 'Double Award').trim() : title;
+  }
+  $('gTitle').value = title;
+  $('edH').textContent = `New ${to === 'SA' ? 'Single' : 'Double'} Award copy (not saved yet)`;
+  $('delBtn').hidden = true; $('viewOnline').hidden = true;
+  drawPicker(); draw();
+  $('msg').textContent = `Duplicated as ${to === 'SA' ? 'Single' : 'Double'} Award (${SGA.picked.size} points kept${dropped ? `, ${dropped} Double-Award-only dropped` : ''}). Press Save when ready.`;
+};
 $('printBtn').onclick = () => { draw(); const t = document.title; document.title = guide().title; window.print(); document.title = t; };
 $('saveBtn').onclick = async () => {
   const g = guide(); if (!g.subs.length) { $('msg').textContent = 'Tick at least one spec point first.'; return; }
