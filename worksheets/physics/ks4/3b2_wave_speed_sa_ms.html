@@ -9,6 +9,17 @@
 <title>3b2 · Wave Speed · Single Award · Mark Scheme</title>
 <link rel="stylesheet" href="../../../css/physics.css">
 <link rel="stylesheet" href="../../../css/print-sheet.css">
+<style>
+  /* Mark scheme: flowing pages, the browser breaks pages between items */
+  @page { size: A4; margin: 10mm 12mm; }
+  .ps.ps-ms .page { height: auto; min-height: 0; overflow: visible; }
+  @media print { .ps.ps-ms .page { padding: 0; break-after: auto; page-break-after: auto; } }
+  .ps.ps-ms .item, .ps.ps-ms table, .ps.ps-ms .fig { break-inside: avoid; page-break-inside: avoid; }
+  .ps.ps-ms h2 { break-after: avoid; page-break-after: avoid; }
+  .ps.ps-ms .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm 5mm; }
+  .ps.ps-ms .ms.one { grid-template-columns: 1fr; }
+  .ps.ps-ms .item .w { font-size: 10pt; }
+</style>
 </head>
 <body class="ps ps-ms">
 <div class="screen-links"><a href="3b2_wave_speed_sa.html">← Back to the worksheet</a><a href="../../ks4.html">KS4 worksheets</a></div>
@@ -39,7 +50,7 @@
     <div class="item "><div class="iq">1. f = 25 Hz, λ = 0.4 m</div><div class="w">v = f × λ = 25 × 0.4</div><div class="a">v = 10 m/s</div></div>
     <div class="item "><div class="iq">2. λ = 0.68 m, v = 340 m/s</div><div class="w">f = v ÷ λ = 340 ÷ 0.68</div><div class="a">f = 500 Hz</div></div>
     <div class="item "><div class="iq">3. Buoy: 12 waves in 60 s, 5 m apart</div><div class="w">(a) f = 12 ÷ 60 = 0.2 Hz<br>(b) v = f × λ = 0.2 × 5</div><div class="a">(a) f = 0.2 Hz &nbsp; (b) v = 1 m/s</div><div class="tip">Frequency = waves per second, so divide the number of waves by the time.</div></div>
-    <div class="item "><div class="iq">4. Frequency doubles</div><div class="a">The wavelength halves.</div><div class="w">λ = v ÷ f; v stays the same, so doubling f halves λ.</div></div>
+    <div class="item "><div class="iq">4. Frequency doubles</div><div class="a">halves &nbsp;·&nbsp; bigger</div><div class="w">λ = v ÷ f; v stays the same, so dividing by a bigger (doubled) frequency gives a smaller (halved) wavelength.</div></div>
   </div>
 
   <h2>C &nbsp;Waves in context</h2>
@@ -50,11 +61,7 @@
     <div class="item "><div class="iq">4. Rope: 20 waves in 4 s, λ = 0.8 m</div><div class="w">f = 20 ÷ 4 = 5 Hz<br>v = f × λ = 5 × 0.8</div><div class="a">f = 5 Hz, &nbsp; v = 4 m/s</div><div class="tip">Step 1's answer feeds into step 2. If f is wrong, v will be too.</div></div>
   </div>
 
-  <div class="foot">Side 1 of 2 · Turn over →</div>
-</div>
-
-<div class="page">
-  <h2 style="margin-top:0">D &nbsp;Conversion drill</h2>
+  <h2>D &nbsp;Conversion drill</h2>
   <table class="key">
     <tr><th>question</th><th>how</th><th>answer</th><th>question</th><th>how</th><th>answer</th></tr>
     <tr><td>1. 2.5 kHz</td><td>× 1000</td><td class="ka">2500 Hz</td><td>6. 20 ms</td><td>÷ 1000</td><td class="ka">0.02 s</td></tr>
@@ -79,7 +86,5 @@
     <div class="item "><div class="iq">2. v = 6 m/s, λ = 3 m</div><div class="w"><b>Mistake:</b> wrong rearrangement. To find f you divide, not multiply.<br>f = v ÷ λ = 6 ÷ 3</div><div class="a">f = 2 Hz</div></div>
     <div class="item "><div class="iq">3. f = 50 Hz, λ = 20 cm</div><div class="w"><b>Mistake:</b> cm was not converted to m.<br>20 cm = 0.2 m<br>v = 50 × 0.2</div><div class="a">v = 10 m/s</div></div>
   </div>
-
-  <div class="foot">Side 2 of 2</div>
 </div><script src="/js/home-link.js" data-back="/worksheets/science.html#ks4" data-back-label="Science worksheets"></script>
 </body></html>
