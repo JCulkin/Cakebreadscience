@@ -10,14 +10,14 @@
 .ps:has(> .stag)>h2{padding-right:470px}
 
 /* Activity corner symbols: Quick check (oral/recall hinge) vs Mini-whiteboard (drawing task) */
-.ps .sico{display:inline-flex;align-items:center;gap:12px;position:absolute;top:28px;right:90px;z-index:3;font:900 28px/1 'Barlow Condensed','Arial Narrow',Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:11px 20px 11px 16px;border:4px solid #111;border-radius:12px;color:#fff;font-style:normal;box-shadow:0 4px 0 #111}
-.ps .sico::before{content:"";display:inline-block;width:32px;height:32px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain}
-.ps .sico.qc{background:#0f766e}
-.ps .sico.qc::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='15' fill='%23fff'/%3E%3Cpath d='M10.5 18.5l5 5 10.5-11' fill='none' stroke='%230f766e' stroke-width='4.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ps .sico{display:inline-flex;align-items:center;gap:16px;position:absolute;top:24px;right:90px;z-index:3;font:900 40px/1 'Barlow Condensed','Arial Narrow',Arial,sans-serif;letter-spacing:.05em;text-transform:uppercase;padding:14px 28px 14px 20px;border:5px solid #111;border-radius:16px;font-style:normal;box-shadow:0 6px 0 #111;transform:rotate(-1.5deg)}
+.ps .sico::before{content:"";display:inline-block;width:46px;height:46px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain}
+.ps .sico.qc{background:#facc15;color:#111}
+.ps .sico.qc::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='17' fill='%23005e22' stroke='%23111' stroke-width='3'/%3E%3Cpath d='M11.5 20.5l5.8 5.8 11.5-12.5' fill='none' stroke='%23fff' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .ps .sico.qc::after{content:"Quick check"}
-.ps .sico.wb{background:#1d4ed8}
-.ps .sico.wb::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Crect x='3' y='6' width='26' height='20' rx='3' fill='%23fff' stroke='%23111' stroke-width='2'/%3E%3Cpath d='M8 19l5-5 4 4 6-7' fill='none' stroke='%231d4ed8' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M25 27l7-7 3 3-7 7-4 1z' fill='%23facc15' stroke='%23111' stroke-width='1.8' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ps .sico.wb{background:#1d4ed8;color:#fff}
+.ps .sico.wb::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='3' y='6' width='29' height='22' rx='3.5' fill='%23fff' stroke='%23111' stroke-width='2.5'/%3E%3Cpath d='M9 21l5.5-5.5 4.5 4.5 6.5-8' fill='none' stroke='%231d4ed8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M27 30l8-8 3.5 3.5-8 8-4.5 1z' fill='%23facc15' stroke='%23111' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E")}
 .ps .sico.wb::after{content:"Whiteboards"}
-.ps:has(> .sico)>h2{padding-right:320px}
-.ps:has(> .stag)>.sico{right:490px}
-.ps:has(> .stag):has(> .sico)>h2{padding-right:760px}
+.ps:has(> .sico)>h2{padding-right:430px}
+.ps:has(> .stag)>.sico{right:505px}
+.ps:has(> .stag):has(> .sico)>h2{padding-right:890px}

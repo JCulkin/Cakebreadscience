@@ -45,7 +45,6 @@ Strict split between the two audiences:
 13. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
 14. Slide tags: only `<i class="stag da|beyond"></i>` ("Double Award only" / "Beyond IGCSE") and activity badges `<i class="sico qc|wb"></i>` (Quick check / Whiteboards) as direct children of `section.ps`; no spec numbers on slides; mixed slides untagged.
 15. Before pushing: inspect every slide fully revealed for word-only slides, overflow, tiny pictures, or overlaps.
-16. **Revisit backlog:** **Chemistry 1a** needs a high-res image and box/indent overhaul.
 
 ## Split Student Study Guide template (`draft/index.html`)
 - `<head>`: `#present` → `deck.html#present` redirect + `/interactive/lessons/assets/study.css`.
@@ -64,4 +63,4 @@ Strict split between the two audiences:
 
 ## Sources & status
 - Source decks: teacher's Google Drive (`2. Science\<Subject>\…`). Never publish from `# Resources/`, no watermarked/past-paper images, keep CC credits, GIFs → MP4.
-- **Current status:** Checked split (`Bio 2c`, `Chem 1g`) · Checked single-file (`Bio 1, 2a, 2b, 2f`, `Chem 1f`) · Unsplit drafts (`Bio 2d`, `Chem 1a`, `Phys 8`).
+- **Current status:** Checked split (`Bio 2c`) · Split drafts under review (`Chem 1a, 1f, 1g`) · Checked single-file (`Bio 1, 2a, 2b, 2f`) · Unsplit drafts (`Bio 2d`, `Phys 8`).

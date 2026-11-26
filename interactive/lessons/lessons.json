@@ -185,6 +185,7 @@
               "title": "States of matter",
               "spec": "1.1–1.4",
               "status": "draft",
+              "split": true,
               "draftUpdated": "2026-11-26",
               "versions": []
             },
@@ -212,7 +213,8 @@
               "code": "1f",
               "title": "Ionic bonding",
               "spec": "1.37–1.43",
-              "status": "checked",
+              "status": "draft",
+              "split": true,
               "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-18",
@@ -224,7 +226,7 @@
               "code": "1g",
               "title": "Covalent bonding",
               "spec": "1.44–1.51",
-              "status": "checked",
+              "status": "draft",
               "split": true,
               "draftUpdated": "2026-11-26",
               "versions": [
