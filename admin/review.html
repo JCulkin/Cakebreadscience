@@ -307,13 +307,20 @@ function drawK(msg) {
   const nw = KPTS.reduce((a, k) => a + KEYWORDS[k].length, 0);
   const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', 'All']];
   const k = RV.kcur;
-  $('p-k').innerHTML = summary(c, 'spec points’ key words') + `<p class="small muted" style="margin:-4px 0 10px">${nw} key words on ${KPTS.length} spec points. They show on study guides only for the points you tick, and never repeat words already in the spec wording.</p>
+  $('p-k').innerHTML = summary(c, 'spec points’ key words') + `<p class="small muted" style="margin:-4px 0 10px">${nw} key words on ${KPTS.length} spec points. They show on study guides only for the points you tick, never repeat words already in the spec wording, and hide <b>DA only</b> entries on Single Award guides.</p>
     <div class="filters">${F.map(([f, t]) => `<button data-kf="${f}" class="${RV.kf === f ? 'on' : ''}">${t}</button>`).join('')}
-      <select id="kSubj"><option value="">All subjects</option>${Object.entries(SUBJ).map(([s, v]) => `<option value="${s}" ${RV.ksubj === s ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+      <select id="kSubj"><option value="">All subjects</option>${Object.entries(SUBJ).map(([s, v]) => `<option value="${s}" ${RV.ksubj === s ? 'selected' : ''}>${v}</option>`).join('')}</select>
+      <button class="lcopy" id="kCopy" ${c.fix ? '' : 'disabled'}>📋 Copy flagged for chat (${c.fix})</button></div>
     ${k ? kcard(k) : `<div class="done">🎉 Nothing ${RV.kf === 'all' ? 'here' : 'left in this list'}.${RV.khist.length ? '<div style="margin-top:14px"><button class="btn ghost" id="kback">← Back to previous point</button></div>' : ''}</div>`}
     ${msg ? `<p class="saved" style="margin-top:8px">${msg}</p>` : ''}`;
   document.querySelectorAll('#p-k [data-kf]').forEach(b => b.onclick = () => { RV.kf = b.dataset.kf; buildK(); drawK(); });
   $('kSubj').onchange = e => { RV.ksubj = e.target.value; buildK(); drawK(); };
+  $('kCopy').onclick = async () => {
+    const fx = KPTS.filter(pt => kst(pt) === 'fix');
+    const t = ['Review portal → Key words (' + new Date().toLocaleDateString('en-GB') + '):',
+      ...fx.map(pt => `Needs a fix — ${pt}: ${(RV.recs.k[REVIEW.key(pt)] || {}).note || '(no note)'}`)].join('\n');
+    try { await navigator.clipboard.writeText(t); drawK('Copied flagged key words.'); } catch (e) { prompt('Copy these flagged key words:', t); }
+  };
   if ($('kback')) $('kback').onclick = () => moveK(-1);
   if (!k) return;
   $('kgood').onclick = () => markK('ok');
@@ -338,7 +345,7 @@ function kcard(k) {
     ${st === 'changed' ? `<div class="prev">✏️ <b>Changed since you checked it</b> on ${new Date(rec.at).toLocaleDateString('en-GB')}${rec.st === 'fix' && rec.note ? ` (you'd asked: “${esc(rec.note)}”)` : ''}.</div>` : ''}
     ${st === 'ok' && (!rec || rec.h !== REVIEW.kHash(k)) && kept ? `<div class="prev" style="border-color:var(--ok);background:#ecfdf3">✓ Kept checked after the edit you asked for${kept.why ? `: ${esc(kept.why)}` : ''}.</div>` : ''}
     ${st === 'fix' && rec.note ? `<div class="prev">You marked these as needing a fix: “${esc(rec.note)}”.</div>` : ''}
-    <table class="kwt"><thead><tr><th>Key word</th><th>Meaning</th></tr></thead><tbody>${KEYWORDS[k].map(([w, m]) => `<tr><td><b>${esc(w)}</b></td><td>${esc(m)}</td></tr>`).join('')}</tbody></table>
+    <table class="kwt"><thead><tr><th>Key word</th><th>Meaning</th></tr></thead><tbody>${KEYWORDS[k].map(([w, m, tag]) => `<tr><td><b>${esc(w)}</b>${tag === 'DA' ? ' <span class="tag" style="margin-left:4px">DA only</span>' : ''}</td><td>${esc(m)}</td></tr>`).join('')}</tbody></table>
     <button class="good" id="kgood">✓ They're good</button>
     <div class="row2"><button class="btn ghost" id="kback">← Back</button><button class="btn ghost" id="kskip">Skip →</button><button class="btn fixb" id="kfixb">✏️ Needs a fix…</button>
       ${st === 'ok' || st === 'fix' ? '<button class="btn ghost" id="kunmark">Send back to review</button>' : ''}

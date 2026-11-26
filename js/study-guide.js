@@ -60,11 +60,12 @@
   /* Revise tokens: a whole sub-topic as its key (C1a), part of one as its point keys (C1.4) */
   const tokens = list => list.flatMap(x => x.whole ? [x.sb.key] : x.pts.map(p => p.key));
   const flat = p => JSON.stringify([p.text, p.bullets, p.eq, p.note, p.detail]).toLowerCase();
-  /* key words for these points that the spec wording doesn't already contain (each word once per guide) */
-  function keyWords(pts, seen, txt) {
+  /* key words for these points that the spec wording doesn't already contain (each word once per guide; skips 'DA' entries on SA guides) */
+  function keyWords(pts, seen, txt, course) {
     const KW = window.KEYWORDS || {}; txt = txt || pts.map(flat).join(' ');
     const out = [];
-    pts.forEach(p => (KW[p.key] || []).forEach(([w, m]) => {
+    pts.forEach(p => (KW[p.key] || []).forEach(([w, m, tag]) => {
+      if (course === 'SA' && tag === 'DA') return;
       const core = w.toLowerCase().replace(/\s*\(.*?\)\s*/g, ' ').trim(), id = core;
       if (seen.has(id)) return; seen.add(id);
       if (core.length > 3 && new RegExp('(^|[^a-z])' + core.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(e?s)?([^a-z]|$)').test(txt)) return;   // whole words (or their plural) only
@@ -79,7 +80,7 @@
     /* key words (user, 22 Nov): bound to the ticked points, all in one section above the exam advice, grouped by sub-topic;
        a word already in the wording of any point on this guide is left out */
     const allTxt = list.flatMap(x => x.pts).map(flat).join(' ');
-    const kwGroups = list.map(x => ({ x, kw: keyWords(x.pts, seen, allTxt) })).filter(k => k.kw.length);
+    const kwGroups = list.map(x => ({ x, kw: keyWords(x.pts, seen, allTxt, course) })).filter(k => k.kw.length);
     const label = course === 'SA' ? 'Single Award' : 'Double Award';
     const dd = daysTo(g.date), T = g.title || 'Study guide';
     const head = `<header class="sg-head"><div class="sg-hl"><h1>${esc(T)}</h1>
