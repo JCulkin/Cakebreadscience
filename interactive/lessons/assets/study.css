@@ -158,6 +158,8 @@ body.mode-steps .wrap > section.step.cur{display:block;animation:stepFade .18s e
   color:#fff;background:var(--acc);padding:2px 8px;border-radius:4px;
   text-transform:none;white-space:nowrap;
 }
+.spec a{color:#fff;text-decoration:none}
+.spec a:hover{text-decoration:underline}
 .chip{
   display:inline-block;font:700 12px 'Barlow',Arial,sans-serif;
   padding:2px 8px;border-radius:4px;background:#c62828;color:#fff;
@@ -219,6 +221,9 @@ ul.pts li,ol.pts li{margin:5px 0}
 .kw-row:first-child{border-top:0;padding-top:0}
 .kw-row dt{font-weight:800;color:var(--acc);min-width:120px}
 .kw-row dd{margin:0;flex:1;min-width:180px;color:#222}
+.kw-foot{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;padding-top:8px;border-top:1px dashed #d8d1be;font-size:13.5px}
+.kw-foot a{font-weight:700;text-decoration:none;color:var(--acc);background:#fff;border:1.5px solid var(--acc);border-radius:6px;padding:3px 9px}
+.kw-foot a:hover{background:var(--acc);color:#fff}
 
 .check-note{
   font-size:14.5px;color:#444;background:#faf8f3;border:1.5px solid #d5cfc0;
@@ -243,7 +248,7 @@ ul.pts li,ol.pts li{margin:5px 0}
   padding:12px 16px;margin:16px 0;background:var(--purpleL);
 }
 .beyond-block summary{cursor:pointer;font-weight:700;color:var(--purple)}
-body.hide-da .da-only,body.hide-da .da-block{display:none!important}
+body.hide-da .da-only,body.hide-da .da-block,body.hide-da .step-pill.da-only{display:none!important}
 body.hide-beyond .beyond-only,body.hide-beyond .beyond-block{display:none!important}
 
 /* ---------- layout grids, cards, figures, tables ---------- */

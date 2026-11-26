@@ -90,7 +90,7 @@ function buildNav(){
   nav.setAttribute('aria-label', 'Lesson steps');
   nav.innerHTML = `<div class="study-nav-in">
     <div class="step-pills" id="stepPills">
-      ${steps.map((s,i) => `<button type="button" class="step-pill" data-i="${i}"><span class="sn">${i+1}</span><span>${esc(stepTitle(s))}</span></button>`).join('')}
+      ${steps.map((s,i) => `<button type="button" class="step-pill${s.classList.contains('da-only')?' da-only':''}" data-i="${i}"><span class="sn">${i+1}</span><span>${esc(stepTitle(s))}</span></button>`).join('')}
     </div>
     <button type="button" class="ctrl-btn" id="btnMode" title="Switch between one step at a time and all on one page">All on one page</button>
   </div>
@@ -98,6 +98,13 @@ function buildNav(){
 
   const anchor = $('.stripes + .wrap') ? $('.wrap') : ($('.wrap') || document.body.firstChild);
   anchor.parentNode.insertBefore(nav, anchor);
+
+  const visibleStepIdx = (from, dir) => {
+    const hideDa = body.classList.contains('hide-da');
+    let j = from + dir;
+    while(j >= 0 && j < steps.length && hideDa && steps[j].classList.contains('da-only')) j += dir;
+    return (j >= 0 && j < steps.length) ? j : -1;
+  };
 
   // Add step kickers + prev/next footers inside each step
   steps.forEach((sec, i) => {
@@ -113,8 +120,8 @@ function buildNav(){
     foot.innerHTML = `
       <button type="button" class="nav-step prev" ${i===0?'disabled':''}>${i===0 ? '← Start' : '← ' + esc(prevTitle)}</button>
       <button type="button" class="nav-step next" ${i===steps.length-1?'disabled':''}>${i===steps.length-1 ? 'End of topic ✓' : 'Next: ' + esc(nextTitle) + ' →'}</button>`;
-    $('.prev', foot).onclick = () => goTo(i - 1, true);
-    $('.next', foot).onclick = () => goTo(i + 1, true);
+    $('.prev', foot).onclick = () => { const j = visibleStepIdx(i, -1); if(j >= 0) goTo(j, true); };
+    $('.next', foot).onclick = () => { const j = visibleStepIdx(i, 1); if(j >= 0) goTo(j, true); };
     sec.appendChild(foot);
   });
 
@@ -346,6 +353,16 @@ function applyCourse(){
     }catch(e){}
   }
   body.classList.toggle('hide-da', sa);
+  // Keep Prev/Next button labels in sync when DA-only steps are hidden for Single Award
+  const vis = steps.map((s, i) => ({ s, i })).filter(x => !(sa && x.s.classList.contains('da-only')));
+  vis.forEach((x, pos) => {
+    const k = $('.step-kicker', x.s), prev = $('.step-foot .prev', x.s), next = $('.step-foot .next', x.s);
+    if(k) k.textContent = `Step ${pos+1} of ${vis.length}`;
+    if(prev){ prev.disabled = pos === 0; prev.textContent = pos === 0 ? '← Start' : '← ' + stepTitle(vis[pos-1].s); }
+    if(next){ next.disabled = pos === vis.length - 1; next.textContent = pos === vis.length - 1 ? 'End of topic ✓' : 'Next: ' + stepTitle(vis[pos+1].s) + ' →'; }
+    const pillSn = $(`.step-pill[data-i="${x.i}"] .sn`);
+    if(pillSn) pillSn.textContent = String(pos + 1);
+  });
   $$('.kw-box').forEach(box => { box.hidden = sa && $$('.kw-row:not(.da-only)', box).length === 0; });
   if(sa && window.CBSCourse && CBSCourse.SA){
     const sub = (body.className.match(/subj-(\w+)/) || [])[1];
@@ -361,6 +378,15 @@ function applyCourse(){
           if(sp) sp.textContent = CBSCourse.SA_TEXT[key].text;
         }
       });
+      // Hide DA-only diagram questions and spec-point practise chips on Single Award
+      $$('[data-comp="dq"][data-id]').forEach(dq => {
+        const pt = dq.dataset.id.split('-')[0];
+        if(/^[BCP]\d+\.\d+$/.test(pt) && !CBSCourse.SA.has(pt)) dq.style.display = 'none';
+      });
+      $$('.practise a[href*="point="]').forEach(a => {
+        const m = (a.getAttribute('href') || '').match(/point=([BCP]\d+\.\d+)/);
+        if(m && !CBSCourse.SA.has(m[1])) a.style.display = 'none';
+      });
     }
   }
 }
@@ -369,8 +395,22 @@ function initCourse(){
   if(window.CBSCourse) return;
   const s = document.createElement('script');
   s.src = '/js/course.js';
-  s.onload = applyCourse;
+  s.onload = () => { applyCourse(); enrichSiteResources(); };
   (document.head || document.documentElement).appendChild(s);
+}
+
+/* ---------- clickable .spec chips → Spec Tracker (/specifications/<subject>.html#B2.15) ---------- */
+function initSpecLinks(){
+  const sub = (body.className.match(/subj-(\w+)/) || [])[1];
+  const letter = {biology:'B', chemistry:'C', physics:'P'}[sub];
+  if(!sub || !letter) return;
+  $$('.wrap .spec').forEach(sp => {
+    if($('a', sp)) return;
+    const num = sp.textContent.trim();
+    if(!/^\d+\.\d+$/.test(num)) return;
+    const code = letter + num;
+    sp.innerHTML = `<a href="/specifications/${sub}.html#${code}" title="Open ${code} in the ${sub[0].toUpperCase()+sub.slice(1)} Spec Tracker">${num}</a>`;
+  });
 }
 
 /* ---------- auto Examiner Key Words per step (/js/key-words.js) ---------- */
@@ -397,11 +437,13 @@ function renderKeyWords(){
     if(!rows.length) return;
     const visibleCount = body.classList.contains('hide-da') ? rows.filter(r => !r.da).length : rows.length;
     if(!visibleCount) return;
+    const firstKey = letter + pts[0];
     const box = document.createElement('details');
     box.className = 'kw-box';
     box.open = true;
     box.innerHTML = `<summary><span class="callout-tag">Examiner key words</span><small>Exact wording that earns marks in exam answers</small></summary>` +
-      `<dl class="kw-list">${rows.map(r => `<div class="kw-row${r.da ? ' da-only' : ''}"><dt>${esc(r.w)}</dt><dd>${esc(r.m)}</dd></div>`).join('')}</dl>`;
+      `<dl class="kw-list">${rows.map(r => `<div class="kw-row${r.da ? ' da-only' : ''}"><dt>${esc(r.w)}</dt><dd>${esc(r.m)}</dd></div>`).join('')}</dl>` +
+      `<div class="kw-foot"><a href="/Flashcards/?deck=keywords&spec=${encodeURIComponent(firstKey)}">🃏 Drill key words in Flashcards →</a><a href="/typing-game/">⌨️ Type Fast or Perish →</a></div>`;
     const anchor = $('.micro-check', sec) || $('.step-foot', sec);
     if(anchor) sec.insertBefore(box, anchor); else sec.appendChild(box);
   });
@@ -411,6 +453,74 @@ function initKeyWords(){
   const s = document.createElement('script');
   s.src = '/js/key-words.js';
   s.onload = renderKeyWords;
+  (document.head || document.documentElement).appendChild(s);
+}
+
+/* ---------- auto site-wide resource hub enrichment (/js/spec-index.js) ---------- */
+function enrichSiteResources(){
+  const hub = $('.next-hub .next-links');
+  const idx = typeof SPEC_INDEX !== 'undefined' ? SPEC_INDEX : window.SPEC_INDEX;
+  if(!hub || !idx || !idx.pts || !idx.res) return;
+  const sub = (body.className.match(/subj-(\w+)/) || [])[1];
+  const letter = {biology:'B', chemistry:'C', physics:'P'}[sub];
+  if(!sub || !letter) return;
+  const sa = body.classList.contains('hide-da') && window.CBSCourse && CBSCourse.SA;
+  const pts = [...new Set($$('.wrap .spec').map(e => e.textContent.trim()).filter(t => /^\d+\.\d+$/.test(t)))].map(p => letter + p).filter(k => !sa || CBSCourse.SA.has(k));
+  if(!pts.length) return;
+
+  $$('a[data-auto-res="1"]', hub).forEach(a => a.remove());
+  const existing = new Set($$('a', hub).map(a => a.getAttribute('href') || ''));
+  const addLink = (href, label, cls) => {
+    if(!href || existing.has(href)) return;
+    existing.add(href);
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = label;
+    a.dataset.autoRes = '1';
+    if(cls) a.className = cls;
+    hub.appendChild(a);
+  };
+
+  // Collect matching sub-topics & indexed resources (games, booklets, 6-markers, equations)
+  const subs = [...new Set(pts.map(k => (idx.pts[k] || {}).s).filter(Boolean))];
+  const seenRes = new Set();
+  const games = [], booklets = [], longs = [], eqs = [];
+  pts.forEach(k => {
+    const row = idx.pts[k];
+    if(!row || !row.r) return;
+    row.r.forEach(rid => {
+      if(seenRes.has(rid)) return;
+      seenRes.add(rid);
+      const r = idx.res[rid];
+      if(!r) return;
+      if(r[0] === 'game') games.push(r);
+      else if(r[0] === 'booklet') booklets.push(r);
+      else if(r[0] === 'long') longs.push(r);
+      else if(r[0] === 'eq') eqs.push(r);
+    });
+  });
+
+  // Add Examiner Key Words flashcards & Type Fast or Perish (Layer 2)
+  if(subs.length){
+    const q = subs.length === 1 ? `sub=${subs[0]}` : `subs=${subs.join(',')}`;
+    addLink(`/Flashcards/?deck=keywords&${q}`, `🗝️ Examiner Key Words (${subs.join(', ')}) →`);
+  }
+  addLink('/typing-game/', '⌨️ Type Fast or Perish →');
+
+  // Add matching Topic Games (Layer 5)
+  games.forEach(r => addLink(r[2], `🎮 ${r[1]} →`));
+  // Add matching Topic Booklets & 6-Markers & Equations (Layer 4)
+  booklets.forEach(r => addLink(r[2], `📚 ${r[1]}`));
+  longs.forEach(r => addLink(r[2], `✍️ ${r[1]}`));
+  if(eqs.length) addLink('/interactive/physics-equations/', '📐 Physics Equations →');
+  // Link straight to this topic on the Spec Tracker (Layer 5)
+  addLink(`/specifications/${sub}.html#${pts[0]}`, `📋 ${sub[0].toUpperCase()+sub.slice(1)} Spec Tracker →`);
+}
+function initSiteResources(){
+  if(typeof SPEC_INDEX !== 'undefined' || window.SPEC_INDEX){ enrichSiteResources(); return; }
+  const s = document.createElement('script');
+  s.src = '/js/spec-index.js';
+  s.onload = enrichSiteResources;
   (document.head || document.documentElement).appendChild(s);
 }
 
@@ -428,12 +538,14 @@ function initPractiseLinks(){
 }
 
 /* ---------- boot ---------- */
-initCourse();
+initSpecLinks();
 buildNav();
+initCourse();
 initMicroChecks();
 initEndTest();
 initPractiseLinks();
 initKeyWords();
+initSiteResources();
 L.initComps(document);
 
 // Respect initial URL hash (e.g. #dot, #tests, #check)
