@@ -57,8 +57,14 @@ Lessons own **Layer 1 (first-pass understanding & visual mental models)**, with 
 14. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
 15. Tags only "Double Award only" / "Beyond IGCSE" (`<i class="stag da|beyond"></i>` as a direct child of the slide; look in `tags.css`);
     no spec numbers on slides. Mixed slides stay untagged. Tag every new lesson.
-16. Before pushing: look at every slide fully revealed for word-only slides, text off the slide or under the title, tiny pictures, overlaps.
-17. **Revisit backlog (26 Nov 2026):** **Chemistry 1a** still needs a broader revisit with these high-resolution image and box/indent presentation standards in mind (**Physics 8** completed 26 Nov 2026).
+16. **No lazy abbreviations on slides:** write `melting and boiling points` in full — never `m.p.` / `b.p.`. Keep projector slides punchy without clipping words awkwardly.
+17. **Quick Checks vs Mini-Whiteboards (`tags.css` corner symbols):**
+    - Use `<i class="sico qc"></i>` (**Quick check** corner badge) for fast oral/hands-up/recall/MCQ hinge checks during the lesson.
+    - Use `<i class="sico wb"></i>` (**Whiteboards** corner badge) **only** when the task genuinely asks students to **draw/sketch something worthwhile** (a graph, force diagram, ray diagram, dot-and-cross diagram, etc.) that justifies getting whiteboards out. If whiteboards are already out from a drawing slide, a quick-fire follow-on check on the very next slide may use them too.
+18. Before pushing: look at every slide fully revealed for word-only slides, text off the slide or under the title, tiny pictures, overlaps.
+19. **Revisit backlog (26 Nov 2026):**
+    - **Chemistry 1a** still needs a broader revisit with high-resolution image and box/indent presentation standards (**Physics 8** completed 26 Nov 2026).
+    - **Mini-whiteboard sweep (reminder):** sweep all lesson decks later to incorporate genuine Mini-Whiteboard drawing tasks (graphs, force diagrams, dot-and-cross, etc.) with `<i class="sico wb"></i>` (and follow-on checks while whiteboards are already out).
 
 ## Split Student Study Guide template (`draft/index.html` — preferred)
 - `<head>`: `<script>if(location.hash==='#present')location.replace('deck.html'+location.search+'#present');</script>` + `/interactive/lessons/assets/study.css`.
