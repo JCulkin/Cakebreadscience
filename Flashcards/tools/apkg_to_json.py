@@ -90,9 +90,13 @@ def extract_media(apkg):
                 break
         names.append(name)
     media, added = ROOT / 'Flashcards' / 'media', 0
+    import hashlib
     for k, name in enumerate(names):
-        if name and not (media / name).exists() and str(k) in z.namelist():
-            (media / name).write_bytes(dec(z.read(str(k)))); added += 1
+        if name and str(k) in z.namelist():
+            data = dec(z.read(str(k)))
+            dest = media / name
+            if not dest.exists() or hashlib.sha1(dest.read_bytes()).digest() != hashlib.sha1(data).digest():
+                dest.write_bytes(data); added += 1
     return added
 
 

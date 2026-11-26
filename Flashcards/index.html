@@ -1,1845 +1,2312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flashcards - Cakebread Science</title>
-    <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Cakebread Questing adventurer. Study Biology, Chemistry, Physics, and Physics Equations.">
-    <meta name="keywords" content="IGCSE, Edexcel, flashcards, spaced repetition, biology, chemistry, physics">
-    <meta name="author" content="Cakebread Science">
-    <link rel="icon" type="image/png" href="/favicon.png">
-    <meta name="theme-color" content="#005e22">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
-    <link rel="canonical" href="https://cakebreadscience.com/Flashcards/">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Barlow', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #eeeae0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #111;
-        }
-
-        .container {
-            max-width: 800px;
-            width: 90%;
-            padding: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 0;
-            padding: 36px;
-            box-shadow: 4px 4px 0 #111;
-            color: #333;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            color: #005e22;
-            font-family: 'Barlow Condensed', 'Segoe UI', sans-serif;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
-        }
-
-        .login-screen, .deck-selector, .study-screen {
-            display: none;
-        }
-
-        .login-screen.active, .deck-selector.active, .study-screen.active {
-            display: block;
-        }
-
-        .btn {
-            background: #005e22;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 0;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            font-weight: bold;
-            font-family: 'Barlow Condensed', 'Segoe UI', sans-serif;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:hover {
-            background: #004d1a;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 94, 34, 0.4);
-        }
-
-        .btn-google {
-            background: #4285f4;
-            border-radius: 12px;
-            padding: 14px 30px;
-        }
-
-        .btn-google:hover {
-            background: #357ae8;
-        }
-
-        .deck-list {
-            margin: 20px 0;
-        }
-
-        .deck-item {
-            background: #f8f9fb;
-            padding: 18px 22px;
-            margin: 8px 0;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            border: 2px solid #eef0f4;
-            border-left: 5px solid #bdc3c7;
-        }
-
-        .deck-item:hover {
-            background: #f0f2f8;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .deck-item.deck-biology { border-left-color: #005e22; }
-        .deck-item.deck-biology:hover { border-color: #005e22; border-left-color: #005e22; }
-        .deck-item.deck-chemistry { border-left-color: #c8001e; }
-        .deck-item.deck-chemistry:hover { border-color: #c8001e; border-left-color: #c8001e; }
-        .deck-item.deck-physics { border-left-color: #d08000; }
-        .deck-item.deck-physics:hover { border-color: #d08000; border-left-color: #d08000; }
-        .deck-item.deck-physics-eqns { border-left-color: #d08000; }
-        .deck-item.deck-physics-eqns:hover { border-color: #d08000; border-left-color: #d08000; }
-
-        .deck-item h3 {
-            color: #444;
-            margin-bottom: 0;
-            font-size: 1.05em;
-        }
-
-        .deck-item p {
-            color: #666;
-            font-size: 0.9em;
-        }
-
-        .study-more-btn {
-            font-size: 0.75em;
-            color: #005e22;
-            background: rgba(0, 94, 34, 0.08);
-            border: 1px solid rgba(0, 94, 34, 0.2);
-            border-radius: 10px;
-            padding: 3px 10px;
-            cursor: pointer;
-            margin-top: 3px;
-            transition: all 0.2s ease;
-            font-weight: 600;
-        }
-
-        .study-more-btn:hover {
-            background: #005e22;
-            color: white;
-            border-color: #005e22;
-        }
-
-        .flashcard {
-            background: white;
-            border-radius: 16px;
-            padding: 50px 36px;
-            min-height: 280px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2em;
-            line-height: 1.6;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            border: 2px solid #eef0f4;
-            margin: 20px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-
-        .flashcard:hover {
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-        }
-
-        .flashcard.flipped {
-            background: #fafbfd;
-            border-color: #005e22;
-        }
-
-        .rating-buttons {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .rating-btn {
-            padding: 12px 8px;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .rating-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .rating-btn-1 {
-            background: #ff6b6b;
-            color: white;
-        }
-
-        .rating-btn-2 {
-            background: #ffd93d;
-            color: #333;
-        }
-
-        .rating-btn-3 {
-            background: #6bcf7f;
-            color: white;
-        }
-
-        .rating-btn-4 {
-            background: #4dabf7;
-            color: white;
-        }
-
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 15px 0;
-            padding: 12px;
-            background: #f8f9fb;
-            border-radius: 12px;
-            border: 1px solid #eef0f4;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 2em;
-            font-weight: bold;
-            color: #005e22;
-        }
-
-        .stat-label {
-            font-size: 0.9em;
-            color: #666;
-        }
-
-        .hint {
-            text-align: center;
-            color: #bbb;
-            font-size: 0.8em;
-            margin-top: 8px;
-        }
-
-        .card img {
-            max-width: 100%;
-            height: auto;
-            max-height: 500px;
-            margin: 15px 0;
-            border-radius: 8px;
-        }
-
-        .user-info {
-            text-align: center;
-            margin-bottom: 5px;
-            font-size: 0.8em;
-            color: #aaa;
-        }
-
-        .back-btn {
-            background: transparent;
-            color: #005e22;
-            border: none;
-            padding: 8px 0;
-            font-size: 0.95em;
-            width: auto;
-            margin-bottom: 10px;
-            box-shadow: none;
-        }
-
-        .back-btn:hover {
-            background: transparent;
-            color: #004d1a;
-            transform: none;
-            box-shadow: none;
-            text-decoration: underline;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 1.2em;
-        }
-
-        .progress-bar-container {
-            display: flex;
-            height: 10px;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-
-        .progress-segment {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.75em;
-            font-weight: bold;
-            transition: all 0.3s;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-
-        .progress-unseen {
-            background: #95a5a6;
-        }
-
-        .progress-learning {
-            background: #ffd93d;
-            color: #333;
-        }
-
-        .progress-mastered {
-            background: #6bcf7f;
-        }
-
-        .top-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .top-btn {
-            background: rgba(0, 94, 34, 0.1);
-            border: none;
-            color: #005e22;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .top-btn:hover {
-            background: #005e22;
-            color: white;
-        }
-
-        .settings-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .settings-panel {
-            background: white;
-            padding: 36px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.25);
-            position: relative;
-        }
-
-        .settings-panel h2 {
-            margin-top: 0;
-            color: #333;
-            margin-bottom: 30px;
-        }
-
-        .setting-item {
-            margin-bottom: 25px;
-        }
-
-        .setting-item label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #555;
-        }
-
-        .setting-item input[type="number"] {
-            width: 100%;
-            padding: 10px 14px;
-            border: 2px solid #eef0f4;
-            border-radius: 10px;
-            font-size: 1em;
-            box-sizing: border-box;
-            transition: border-color 0.2s;
-        }
-
-        .setting-item input[type="number"]:focus {
-            outline: none;
-            border-color: #005e22;
-        }
-
-        .reset-button {
-            width: 100%;
-            padding: 10px;
-            background: transparent;
-            color: #e74c3c;
-            border: 2px solid #e74c3c;
-            border-radius: 10px;
-            font-size: 0.9em;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.25s ease;
-        }
-
-        .reset-button:hover {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .settings-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 30px;
-        }
-
-        .settings-actions button {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.95em;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.25s ease;
-        }
-
-        .save-settings {
-            background: #005e22;
-            color: white;
-        }
-
-        .save-settings:hover {
-            background: #004d1a;
-        }
-
-        .cancel-settings {
-            background: #f0f1f3;
-            color: #666;
-        }
-
-        .cancel-settings:hover {
-            background: #e2e3e5;
-        }
-
-        .setting-description {
-            font-size: 0.85em;
-            color: #777;
-            margin-top: 5px;
-        }
-
-        .badges-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
-
-        .badge-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            border-radius: 16px;
-            font-size: 0.75em;
-            font-weight: 600;
-            border: 2px solid;
-            background: white;
-            cursor: default;
-            position: relative;
-        }
-
-        .badge-chip .badge-icon {
-            font-size: 1.1em;
-        }
-
-        .badge-chip.badge-bronze { border-color: #cd7f32; color: #cd7f32; }
-        .badge-chip.badge-silver { border-color: #a0a0a0; color: #808080; }
-        .badge-chip.badge-gold { border-color: #daa520; color: #b8860b; background: #fffdf0; }
-
-        .badge-chip:hover .badge-tooltip {
-            display: block;
-        }
-
-        .badge-tooltip {
-            display: none;
-            position: absolute;
-            bottom: calc(100% + 6px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.85em;
-            white-space: nowrap;
-            z-index: 10;
-            font-weight: 400;
-        }
-
-        .badge-tooltip::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: #333;
-        }
-
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-        }
-
-        .users-table th {
-            text-align: left;
-            padding: 10px 8px;
-            border-bottom: 2px solid #eef0f4;
-            color: #888;
-            font-weight: 600;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .users-table td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #f0f1f3;
-            color: #444;
-        }
-
-        .users-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .user-badges-cell {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        .mini-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 0.8em;
-            border: 1.5px solid;
-        }
-
-        .mini-badge.badge-bronze { border-color: #cd7f32; color: #cd7f32; }
-        .mini-badge.badge-silver { border-color: #a0a0a0; color: #808080; }
-        .mini-badge.badge-gold { border-color: #daa520; color: #b8860b; }
-
-        /* Cakebread Questing panel (replaces the Study Blob, 10 Nov 2026) */
-        .quest { margin: 0 0 20px; border: 2px solid #111; border-radius: 12px; padding: 14px 16px; background: #fffbea; display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-        .quest img.px { width: 64px; height: 64px; image-rendering: pixelated; flex: none; }
-        .quest .q-main { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
-        @media (max-width: 480px) { .quest { padding: 12px; gap: 10px; } .quest img.px { width: 48px; height: 48px; } }
-        .quest .q-kick { font-size: 0.72em; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #b45309; }
-        .quest .q-title { font-weight: 800; font-size: 1.05em; margin: 2px 0 6px; }
-        .quest .q-bar { height: 10px; background: #eee; border: 1.5px solid #111; border-radius: 6px; overflow: hidden; }
-        .quest .q-bar i { display: block; height: 100%; background: #f59e0b; }
-        .quest .q-bar.done i { background: #16a34a; }
-        .quest .q-earned { font-size: 0.85em; color: #555; margin-top: 6px; }
-        .quest a.q-go { background: #111; color: #fff; text-decoration: none; font-weight: 800; padding: 9px 14px; border-radius: 8px; white-space: nowrap; }
-        .gain { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: #111; color: #fff; padding: 8px 16px; border-radius: 999px; font-weight: 700; font-size: 0.9em; z-index: 50; animation: gainUp 1.6s ease forwards; pointer-events: none; max-width: 92vw; text-align: center; }
-        @keyframes gainUp { 0% { opacity: 0; transform: translate(-50%, 10px); } 12% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -8px); } }
-        .loot-pop { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: grid; place-items: center; z-index: 60; }
-        .loot-pop .box { background: #fff; border: 3px solid #111; border-radius: 14px; padding: 22px; max-width: 360px; text-align: center; }
-        .loot-pop img { width: 96px; height: 96px; image-rendering: pixelated; }
-        .loot-pop button { margin-top: 12px; }
-    
-/* ===== Site look (17 Nov 2026): cream, black borders, hard shadows, Barlow, subject colours. Overrides the older rules above. ===== */
-body{background:#eeeae0;color:#111;font-family:'Barlow',Arial,sans-serif;align-items:flex-start}
-.container{max-width:980px;width:100%;padding:22px 16px 60px}
-.container > div > .card{background:none;border:0;box-shadow:none;padding:0;border-radius:0}
-.login-screen .card{background:#fff!important;border:3px solid #111!important;box-shadow:0 5px 0 #111!important;padding:28px 24px!important;max-width:460px;margin:30px auto;text-align:center;border-radius:0!important}
-.fc-prof{width:84px;height:84px;object-fit:contain}
-h1{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;color:#111;letter-spacing:-.5px}
-.fc-head{margin:0 0 14px}
-.fc-kick{font:900 14px 'Barlow Condensed',Arial;letter-spacing:2px;text-transform:uppercase;color:#d08000}
-.fc-h1{font-size:54px;line-height:.95;margin:2px 0 6px;text-align:left}
-.fc-sub{color:#444;font-size:16px;max-width:640px}
-.btn,.btn-google{font:900 19px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;background:#facc15;color:#111;border:2px solid #111;border-radius:0;box-shadow:0 3px 0 #000;padding:9px 18px;cursor:pointer;text-decoration:none;display:inline-block}
-.btn:hover,.btn-google:hover{background:#fde047;transform:none;box-shadow:0 3px 0 #000}
-.btn.alt{background:#fff}.btn.alt:hover{background:#fff8e1}
-.top-buttons{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 16px}
-.top-buttons .sp{flex:1}
-.top-btn{font:700 15px Barlow,Arial,sans-serif;background:#fff;color:#111;border:2px solid #111;border-radius:0;padding:6px 12px;cursor:pointer;text-decoration:none;box-shadow:0 2px 0 #111}
-.top-btn:hover{background:#fef3c7;transform:none}
-.top-btn.link{background:#111;color:#fff}.top-btn.link:hover{background:#333}
-/* Questing panel = a small dark game banner */
-.quest{background:#151518;border:3px solid #111;box-shadow:0 4px 0 #111;border-radius:0;color:#eeeae0;padding:14px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center}
-.quest img.px{width:64px;height:64px;image-rendering:pixelated;background:#2a2a30;border:2px solid #444}
-.quest .q-kick{color:#facc15;font:900 13px 'Barlow Condensed',Arial;letter-spacing:2px;text-transform:uppercase}
-.quest .q-title{color:#fff;font-size:17px;font-weight:600;line-height:1.3}
-.quest .q-title b{color:#4ade80}
-.quest .q-bar{background:#2a2a30;border:1.5px solid #555;border-radius:0;height:10px;margin:6px 0}
-.quest .q-bar i{background:#facc15;border-radius:0}.quest .q-bar.done i{background:#4ade80}
-.quest .q-earned{color:#aaa;font-size:13px}
-.quest a.q-go{background:#4ade80;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;border-radius:0;font:900 18px 'Barlow Condensed',Arial;text-transform:uppercase;padding:8px 14px;text-decoration:none;white-space:nowrap}
-/* total due */
-.fc-total{display:flex!important;align-items:baseline;gap:10px;margin:0 0 12px;text-align:left}
-.fc-total[style*="none"]{display:none!important}
-.fc-total .tdc{font:900 46px/1 'Barlow Condensed',Arial;color:#111}
-.fc-total .tdl{font:900 20px 'Barlow Condensed',Arial;text-transform:uppercase}
-.fc-total .tdt{color:#666;font-size:14px}
-/* decks: a 2-column grid of bold tiles in the subject colour */
-.deck-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-@media(max-width:640px){.deck-list{grid-template-columns:1fr}.fc-h1{font-size:42px}.quest{flex-wrap:wrap}.quest a.q-go{width:100%;text-align:center}}
-.deck-item,.deck-item.deck-biology,.deck-item.deck-chemistry,.deck-item.deck-physics,.deck-item.deck-physics-eqns{background:#fff;border:2px solid #111;border-top:8px solid var(--dc,#111);border-left:2px solid #111;border-radius:0;box-shadow:0 4px 0 #111;padding:14px 16px;margin:0;cursor:pointer;transition:transform .08s}
-.deck-item:hover,.deck-item.deck-biology:hover,.deck-item.deck-chemistry:hover,.deck-item.deck-physics:hover,.deck-item.deck-physics-eqns:hover{background:#fffdf6;transform:translateY(-2px);box-shadow:0 6px 0 #111}
-.d-top{display:flex;align-items:center;gap:10px}
-.d-ic{font-size:28px}
-.deck-item h3{font:900 24px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:#111;margin:0;flex:1}
-.d-right{text-align:right}
-.d-due{font:900 40px/1 'Barlow Condensed',Arial;color:var(--dc)}
-.d-duel{font-size:12px;color:#555;text-transform:uppercase;letter-spacing:1px}
-.d-none{font-weight:700;color:#15803d}
-.d-go{margin-top:10px;font:900 17px 'Barlow Condensed',Arial;text-transform:uppercase;color:var(--dc)}
-.progress-bar-container{height:12px;border:1.5px solid #111;border-radius:0;background:#fff;margin-top:12px;overflow:hidden}
-.progress-segment{border-radius:0}
-.progress-unseen{background:#e7e2d6}.progress-learning{background:#facc15}.progress-mastered{background:var(--dc,#16a34a)}
-.progress-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#555;margin-top:5px}
-.study-more-btn{font:700 13px Barlow,Arial;background:#fff;border:1.5px solid #111;border-radius:0;color:#111;padding:3px 9px;margin-top:4px;box-shadow:0 2px 0 #111}
-.study-more-btn:hover{background:#fef3c7}
-/* study screen */
-.study-screen .card{max-width:720px;margin-left:auto!important;margin-right:auto!important;width:100%}
-.back-btn{all:unset;cursor:pointer;font:900 16px 'Barlow Condensed',Arial;text-transform:uppercase;color:#111;border:2px solid #111;background:#fff;padding:5px 12px;box-shadow:0 2px 0 #111;margin-bottom:12px;display:inline-block}
-.back-btn:hover{background:#fef3c7}
-.fc-decktitle{font:900 30px 'Barlow Condensed',Arial;text-transform:uppercase;color:var(--dc,#111)!important;text-align:left!important;margin:4px 0 10px!important}
-.stats{display:flex;gap:8px;background:none;border:0;padding:0;margin:0 0 14px;justify-content:flex-start}
-.stat-item{background:#fff;border:2px solid #111;padding:6px 14px;flex:0 0 auto;text-align:left;display:flex;align-items:baseline;gap:6px}
-.stat-value{font:900 26px/1 'Barlow Condensed',Arial;color:#111}
-.stat-label{font-size:13px;color:#555;text-transform:uppercase;letter-spacing:1px}
-.flashcard,.flashcard.flipped{position:relative;background:#fff;border:3px solid #111;border-top:10px solid var(--dc,#111);border-radius:0;box-shadow:0 6px 0 #111;min-height:260px;padding:40px 28px 30px;font-size:24px;line-height:1.35;color:#111;display:flex;align-items:center;justify-content:center;text-align:center;cursor:pointer;transform:none}
-.flashcard:hover{box-shadow:0 8px 0 #111;transform:translateY(-1px)}
-.flashcard.flipped{background:#fffdf3}
-.flashcard .face{position:absolute;top:10px;left:14px;font:900 13px 'Barlow Condensed',Arial;letter-spacing:2px;text-transform:uppercase;color:var(--dc,#111)}
-.flashcard.flipped .face{color:#15803d}
-.hint{color:#666;font-size:13px;text-align:center;margin-top:10px}
-.rating-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
-.rating-btn{font:900 18px 'Barlow Condensed',Arial;text-transform:uppercase;border:2px solid #111;border-radius:0;box-shadow:0 3px 0 #111;padding:8px 4px;color:#111;cursor:pointer}
-.rating-btn:hover{transform:translateY(-1px);box-shadow:0 4px 0 #111}
-.rating-btn div{font-size:13px!important;font-family:Barlow,Arial;opacity:.7}
-.rating-btn-1{background:#fecaca}.rating-btn-2{background:#fde68a}.rating-btn-3{background:#bbf7d0}.rating-btn-4{background:#bfdbfe}
-.fc-done{text-align:center;padding:24px;background:#fff;border:3px solid #111;box-shadow:0 5px 0 #111}
-.fc-done img{width:90px}.fc-done h2{font:900 34px 'Barlow Condensed',Arial;text-transform:uppercase;margin:6px 0}
-.fc-done p{color:#444;margin-bottom:14px}.fc-done-acts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-/* guide / settings / progress panels */
-.settings-panel{background:#fff;border:3px solid #111;border-radius:0;box-shadow:0 6px 0 #111}
-.settings-panel h2{font-family:'Barlow Condensed',Arial;font-weight:900;text-transform:uppercase;color:#111}
-.save-settings{background:#facc15;color:#111;border:2px solid #111;border-radius:0;font-weight:700}
-.cancel-settings{background:#fff;color:#111;border:2px solid #111;border-radius:0;font-weight:700}
-.reset-button{border-radius:0;border:2px solid #991b1b}
-.setting-item input[type="number"]{border:2px solid #111;border-radius:0}
-.badge-chip{border-radius:0;border:1.5px solid #111}
-.loot-pop .box{border:3px solid #111;border-radius:0;box-shadow:0 6px 0 #111}
-.loot-pop button{border:2px solid #111;border-radius:0;background:#facc15;color:#111;font-weight:700}
-.gain{border-radius:0;border:2px solid #111;box-shadow:0 3px 0 #111}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flashcards - Cakebread Science</title>
+  <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Cakebread Questing adventurer. Study Biology, Chemistry, Physics, and Physics Equations.">
+  <meta name="keywords" content="IGCSE, Edexcel, flashcards, spaced repetition, biology, chemistry, physics">
+  <meta name="author" content="Cakebread Science">
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <meta name="theme-color" content="#005e22">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://cakebreadscience.com/Flashcards/">
+  <style>
+    :root {
+      --cream: #eeeae0;
+      --paper: #fff;
+      --ink: #111;
+      --muted: #555;
+      --line: #d8d3c4;
+      --soft: #faf8f2;
+      --bio: #005e22;
+      --chem: #c8001e;
+      --phys: #d08000;
+      --yellow: #facc15;
+      --green: #15803d;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Barlow', Arial, sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+    .container {
+      max-width: 980px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px 16px 64px;
+    }
+    .deck-selector, .study-screen { display: none; }
+    .deck-selector.active, .study-screen.active { display: block; }
+
+    /* Header */
+    .fc-head { margin: 0 0 14px; }
+    .fc-kick {
+      font: 900 14px 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--phys);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .sa-pill {
+      background: #111;
+      color: #facc15;
+      padding: 2px 8px;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .fc-h1 {
+      font: 900 52px/.95 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--ink);
+      letter-spacing: -.5px;
+      margin: 2px 0 6px;
+    }
+    .fc-sub { color: #444; font-size: 16px; max-width: 660px; }
+
+    /* Buttons */
+    .btn {
+      font: 900 18px 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      background: var(--yellow);
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      box-shadow: 0 3px 0 #000;
+      padding: 9px 18px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      letter-spacing: .5px;
+    }
+    .btn:hover { background: #fde047; }
+    .btn:active { transform: translateY(1px); box-shadow: 0 2px 0 #000; }
+    .btn.alt { background: #fff; }
+    .btn.alt:hover { background: #fff8e1; }
+    .btn.sm { font-size: 15px; padding: 6px 12px; box-shadow: 0 2px 0 #000; }
+    .btn.danger { background: #fff; color: #b91c1c; border-color: #b91c1c; box-shadow: 0 2px 0 #b91c1c; }
+    .btn.danger:hover { background: #b91c1c; color: #fff; }
+
+    /* Top bar buttons */
+    .top-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 0 0 14px;
+    }
+    .top-buttons .sp { flex: 1; min-width: 8px; }
+    .top-btn {
+      font: 700 15px 'Barlow', Arial, sans-serif;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      padding: 6px 12px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 2px 0 var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .top-btn:hover { background: #fef3c7; }
+    .top-btn.link { background: var(--ink); color: #fff; }
+    .top-btn.link:hover { background: #333; }
+
+    /* Sign-in / offline notice banner */
+    .sync-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-left: 6px solid var(--phys);
+      padding: 10px 14px;
+      margin: 0 0 14px;
+      font-size: 15px;
+    }
+    .sync-banner.offline { border-left-color: #64748b; background: #f8fafc; }
+    .sync-banner[hidden] { display: none; }
+
+    /* Questing panel */
+    .quest {
+      background: #151518;
+      border: 3px solid var(--ink);
+      box-shadow: 0 4px 0 var(--ink);
+      color: var(--cream);
+      padding: 14px 16px;
+      margin: 0 0 14px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .quest[hidden] { display: none; }
+    .quest img.px {
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      background: #2a2a30;
+      border: 2px solid #444;
+      flex: none;
+    }
+    .quest .q-main { flex: 1 1 200px; min-width: 0; overflow-wrap: anywhere; }
+    .quest .q-kick {
+      color: var(--yellow);
+      font: 900 13px 'Barlow Condensed', Arial, sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .quest .q-title { color: #fff; font-size: 16px; font-weight: 600; line-height: 1.3; margin: 2px 0 6px; }
+    .quest .q-title b { color: #4ade80; }
+    .quest .q-bar { background: #2a2a30; border: 1.5px solid #555; height: 10px; margin: 6px 0; overflow: hidden; }
+    .quest .q-bar i { display: block; height: 100%; background: var(--yellow); }
+    .quest .q-bar.done i { background: #4ade80; }
+    .quest .q-earned { color: #bbb; font-size: 13px; }
+    .quest a.q-go {
+      background: #4ade80;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      box-shadow: 0 3px 0 #000;
+      font: 900 18px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .quest a.q-go:hover { background: #86efac; }
+
+    /* Badges (tap-friendly, no hover-only tooltip) */
+    .badges-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin: 0 0 12px;
+    }
+    .badges-row:empty { display: none; }
+    .badge-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      font: 700 13px 'Barlow', Arial, sans-serif;
+      border: 2px solid var(--ink);
+      background: #fff;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .badge-chip.badge-bronze { border-color: #9a5b13; background: #fffbf5; }
+    .badge-chip.badge-silver { border-color: #64748b; background: #f8fafc; }
+    .badge-chip.badge-gold { border-color: #b45309; background: #fef9c3; }
+    .badge-chip small { font-weight: 600; color: var(--muted); }
+    .badge-detail {
+      background: #fff;
+      border: 2px solid var(--ink);
+      padding: 8px 12px;
+      margin: -6px 0 12px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge-detail[hidden] { display: none; }
+
+    /* Summary & Taught filter bar */
+    .fc-summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+    .fc-total { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .fc-total[hidden] { display: none; }
+    .fc-total .tdc { font: 900 44px/1 'Barlow Condensed', Arial, sans-serif; color: var(--ink); }
+    .fc-total .tdl { font: 900 20px 'Barlow Condensed', Arial, sans-serif; text-transform: uppercase; }
+    .fc-total .tdt { color: var(--muted); font-size: 14px; }
+
+    .taught-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 2px solid var(--ink);
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 0 var(--ink);
+      user-select: none;
+    }
+    .taught-toggle[hidden] { display: none; }
+    .taught-toggle input { width: 16px; height: 16px; accent-color: var(--bio); cursor: pointer; }
+    .taught-toggle .t-note { font-weight: 400; color: var(--muted); font-size: 13px; }
+
+    /* Deck grid */
+    .deck-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .deck-item {
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-top: 8px solid var(--dc, #111);
+      box-shadow: 0 4px 0 var(--ink);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: transform .08s;
+      display: flex;
+      flex-direction: column;
+    }
+    .deck-item:hover { background: #fffdf6; transform: translateY(-2px); box-shadow: 0 6px 0 var(--ink); }
+    .d-top { display: flex; align-items: center; gap: 10px; }
+    .d-ic { font-size: 26px; flex: none; }
+    .d-name { flex: 1; min-width: 0; }
+    .deck-item h3 {
+      font: 900 24px/1 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .d-count { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .d-right { text-align: right; flex: none; }
+    .d-due { font: 900 38px/1 'Barlow Condensed', Arial, sans-serif; color: var(--dc); }
+    .d-duel { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+    .d-none { font-weight: 700; color: var(--green); font-size: 15px; }
+    .d-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .d-go {
+      font: 900 17px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--dc);
+    }
+    .study-more-btn {
+      font: 700 13px 'Barlow', Arial, sans-serif;
+      background: #fff;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      padding: 4px 10px;
+      box-shadow: 0 2px 0 var(--ink);
+      cursor: pointer;
+    }
+    .study-more-btn:hover { background: #fef3c7; }
+
+    .progress-bar-container {
+      display: flex;
+      height: 11px;
+      border: 1.5px solid var(--ink);
+      background: #fff;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .progress-segment { height: 100%; }
+    .progress-unseen { background: #e7e2d6; }
+    .progress-learning { background: var(--yellow); }
+    .progress-mastered { background: var(--dc, #16a34a); }
+    .progress-legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+    .lg-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border: 1px solid var(--ink);
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    /* Topic browser */
+    .topic-browser {
+      margin-top: 22px;
+      background: #fff;
+      border: 2px solid var(--ink);
+      box-shadow: 0 4px 0 var(--ink);
+    }
+    .topic-browser summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font: 900 21px 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      background: var(--soft);
+      border-bottom: 2px solid transparent;
+    }
+    .topic-browser summary::-webkit-details-marker { display: none; }
+    .topic-browser[open] summary { border-bottom-color: var(--ink); }
+    .topic-browser summary .tb-hint {
+      font: 600 14px 'Barlow', Arial, sans-serif;
+      text-transform: none;
+      color: var(--muted);
+    }
+    .tb-body { padding: 14px 16px 16px; }
+    .tb-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tb-tab {
+      font: 900 16px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border: 2px solid var(--ink);
+      background: #fff;
+      cursor: pointer;
+    }
+    .tb-tab.on { background: var(--dc, #111); color: #fff; }
+    .tb-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .tb-card {
+      border: 2px solid var(--ink);
+      border-left: 6px solid var(--dc, #111);
+      background: #fff;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tb-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .tb-card h4 { font: 700 15px/1.25 'Barlow', Arial, sans-serif; color: var(--ink); }
+    .tb-card .tb-meta { font-size: 12px; color: var(--muted); }
+    .tb-card .tb-acts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .tb-btn {
+      font: 700 13px 'Barlow', Arial, sans-serif;
+      background: var(--soft);
+      border: 1.5px solid var(--ink);
+      padding: 4px 10px;
+      cursor: pointer;
+      color: var(--ink);
+    }
+    .tb-btn:hover { background: #fef3c7; }
+    .tb-btn.primary { background: var(--yellow); }
+    .tb-btn.primary:hover { background: #fde047; }
+    .tb-sublist {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px dashed var(--line);
+    }
+    .tb-sub {
+      font: 600 12px 'Barlow', Arial, sans-serif;
+      background: #fff;
+      border: 1px solid #999;
+      padding: 2px 7px;
+      cursor: pointer;
+      color: #222;
+    }
+    .tb-sub:hover { border-color: var(--ink); background: #fef3c7; }
+    .tb-sub.untaught { opacity: .55; }
+
+    /* Study screen */
+    .study-wrap { max-width: 740px; margin: 0 auto; }
+    .study-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .back-btn {
+      font: 900 16px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      background: #fff;
+      padding: 5px 12px;
+      box-shadow: 0 2px 0 var(--ink);
+      cursor: pointer;
+    }
+    .back-btn:hover { background: #fef3c7; }
+    .undo-btn {
+      font: 700 14px 'Barlow', Arial, sans-serif;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      padding: 5px 11px;
+      box-shadow: 0 2px 0 var(--ink);
+      cursor: pointer;
+    }
+    .undo-btn:hover { background: #fef3c7; }
+    .undo-btn[hidden] { display: none; }
+
+    .fc-decktitle {
+      font: 900 30px/1.05 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--dc, #111);
+      margin: 2px 0 10px;
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 10px;
+    }
+    .stat-item {
+      background: #fff;
+      border: 2px solid var(--ink);
+      padding: 5px 12px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .stat-value { font: 900 24px/1 'Barlow Condensed', Arial, sans-serif; color: var(--ink); }
+    .stat-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+
+    .session-bar {
+      height: 7px;
+      background: #fff;
+      border: 1.5px solid var(--ink);
+      margin: 0 0 12px;
+      overflow: hidden;
+    }
+    .session-bar i { display: block; height: 100%; background: var(--dc, #005e22); transition: width .2s; }
+
+    /* Flashcard surface */
+    .flashcard {
+      position: relative;
+      background: #fff;
+      border: 3px solid var(--ink);
+      border-top: 10px solid var(--dc, #111);
+      box-shadow: 0 6px 0 var(--ink);
+      min-height: 250px;
+      padding: 42px 26px 28px;
+      font-size: 22px;
+      line-height: 1.4;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      overflow-wrap: anywhere;
+    }
+    .flashcard:hover { box-shadow: 0 7px 0 var(--ink); }
+    .flashcard.flipped { background: #fffdf5; cursor: default; justify-content: flex-start; }
+    .flashcard .face {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+      font: 900 13px 'Barlow Condensed', Arial, sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--dc, #111);
+    }
+    .flashcard.flipped .face { color: var(--green); }
+    .fc-q-prompt {
+      width: 100%;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 2px dashed var(--line);
+      font-size: 17px;
+      color: #444;
+      line-height: 1.35;
+    }
+    .fc-q-prompt img { max-height: 180px; }
+    .fc-answer { width: 100%; }
+    .flashcard ul, .flashcard ol { text-align: left; display: inline-block; margin: 6px 0 6px 20px; }
+    .flashcard img {
+      max-width: 100%;
+      height: auto;
+      max-height: 360px;
+      margin: 12px auto 4px;
+      display: block;
+      border: 1px solid #ddd;
+      background: #fff;
+    }
+    .flashcard.flipped img { cursor: zoom-in; }
+
+    /* Equation / fraction helper for card markup */
+    .fc-eq {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin: 10px 0;
+      padding: 6px 14px;
+      background: #faf8f2;
+      border: 2px solid var(--ink);
+      font-weight: 700;
+    }
+    .fc-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      font-size: .88em;
+      line-height: 1.15;
+    }
+    .fc-frac > span:first-child { border-bottom: 2px solid var(--ink); padding: 0 5px 1px; }
+    .fc-frac > span:last-child { padding: 1px 5px 0; }
+
+    /* Card meta footer (spec chip + report) */
+    .card-meta {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    .spec-drawer { flex: 1 1 240px; }
+    .spec-drawer summary {
+      list-style: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font: 700 13px 'Barlow', Arial, sans-serif;
+      background: #fff;
+      border: 1.5px solid var(--ink);
+      padding: 4px 10px;
+    }
+    .spec-drawer summary::-webkit-details-marker { display: none; }
+    .spec-drawer summary:hover { background: #fef3c7; }
+    .spec-drawer .sd-code {
+      font: 900 14px 'Barlow Condensed', Arial, sans-serif;
+      color: var(--dc, #111);
+      letter-spacing: .5px;
+    }
+    .spec-box {
+      margin-top: 6px;
+      background: #fff;
+      border: 2px solid var(--ink);
+      border-left: 5px solid var(--dc, #111);
+      padding: 10px 12px;
+      font-size: 14px;
+      text-align: left;
+    }
+    .spec-box ul { margin: 5px 0 4px 18px; }
+    .spec-box-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--line);
+    }
+    .spec-box-links a {
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--ink);
+      text-decoration: none;
+      background: var(--soft);
+      border: 1.5px solid var(--ink);
+      padding: 3px 9px;
+    }
+    .spec-box-links a:hover { background: #fef3c7; }
+    .report-link {
+      font: 700 13px 'Barlow', Arial, sans-serif;
+      background: #fff;
+      color: #555;
+      border: 1.5px solid #999;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    .report-link:hover { border-color: var(--ink); color: var(--ink); background: #fee2e2; }
+
+    /* Rating buttons */
+    .hint { color: var(--muted); font-size: 13px; text-align: center; margin-top: 10px; }
+    .rating-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .rating-btn {
+      font: 900 18px/1.1 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      border: 2px solid var(--ink);
+      box-shadow: 0 3px 0 var(--ink);
+      padding: 10px 6px;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .rating-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--ink); }
+    .rating-btn:active { transform: translateY(1px); box-shadow: 0 2px 0 var(--ink); }
+    .rating-btn .r-key { font: 700 12px 'Barlow', Arial, sans-serif; opacity: .65; }
+    .rating-btn .r-int { font: 600 12px 'Barlow', Arial, sans-serif; text-transform: none; opacity: .85; }
+    .rating-btn-1 { background: #fecaca; }
+    .rating-btn-2 { background: #fde68a; }
+    .rating-btn-3 { background: #bbf7d0; }
+    .rating-btn-4 { background: #bfdbfe; }
+
+    /* Done card */
+    .fc-done {
+      text-align: center;
+      padding: 26px 20px;
+      background: #fff;
+      border: 3px solid var(--ink);
+      box-shadow: 0 5px 0 var(--ink);
+    }
+    .fc-done img { width: 86px; }
+    .fc-done h2 { font: 900 34px 'Barlow Condensed', Arial, sans-serif; text-transform: uppercase; margin: 6px 0; }
+    .fc-done p { color: #444; margin-bottom: 16px; }
+    .fc-done-acts { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+    /* Modals */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      z-index: 1100;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-panel {
+      background: #fff;
+      border: 3px solid var(--ink);
+      box-shadow: 0 6px 0 var(--ink);
+      padding: 24px;
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .modal-panel.wide { max-width: 820px; }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .modal-head h2 {
+      font: 900 26px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .setting-item { margin-bottom: 20px; }
+    .setting-item label { display: block; font-weight: 700; margin-bottom: 6px; }
+    .setting-item input[type="number"],
+    .setting-item select,
+    .setting-item textarea {
+      width: 100%;
+      padding: 9px 12px;
+      border: 2px solid var(--ink);
+      font: inherit;
+      background: #fff;
+    }
+    .setting-desc { font-size: 13px; color: var(--muted); margin-top: 5px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+    .modal-actions .btn { flex: 1; }
+
+    /* Progress modal (zero external JS) */
+    .prog-grid {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+    .prog-donut-wrap { text-align: center; }
+    .prog-donut-wrap h3, .prog-bars-wrap h3 {
+      font: 900 18px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .prog-legend {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+    .prog-row {
+      padding: 8px 10px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      margin-bottom: 8px;
+      background: var(--soft);
+    }
+    .prog-row:hover { border-color: var(--ink); }
+    .prog-row.selected { border-color: var(--ink); background: #fef9c3; }
+    .prog-row-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .prog-bar {
+      display: flex;
+      height: 16px;
+      border: 1.5px solid var(--ink);
+      background: #e7e2d6;
+      overflow: hidden;
+    }
+
+    /* Guide prose */
+    .guide-body h3 {
+      font: 900 18px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      color: var(--bio);
+      margin: 16px 0 5px;
+    }
+    .guide-body h3:first-child { margin-top: 0; }
+    .guide-body p, .guide-body li { font-size: 15px; color: #333; }
+    .guide-body ul { margin: 4px 0 8px 20px; }
+
+    /* Toast & Loot pop & Image zoom */
+    .gain {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: #fff;
+      border: 2px solid var(--ink);
+      box-shadow: 0 3px 0 #000;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      z-index: 1200;
+      animation: gainUp 1.8s ease forwards;
+      pointer-events: none;
+      max-width: 92vw;
+      text-align: center;
+    }
+    @keyframes gainUp {
+      0% { opacity: 0; transform: translate(-50%, 10px); }
+      12% { opacity: 1; transform: translate(-50%, 0); }
+      82% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -8px); }
+    }
+    .loot-pop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .55);
+      display: grid;
+      place-items: center;
+      z-index: 1250;
+      padding: 16px;
+    }
+    .loot-pop .box {
+      background: #fff;
+      border: 3px solid var(--ink);
+      box-shadow: 0 6px 0 var(--ink);
+      padding: 22px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+    }
+    .loot-pop img { width: 96px; height: 96px; image-rendering: pixelated; }
+    .img-zoom {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .82);
+      display: grid;
+      place-items: center;
+      z-index: 1300;
+      padding: 16px;
+      cursor: zoom-out;
+    }
+    .img-zoom img {
+      max-width: 94vw;
+      max-height: 90vh;
+      background: #fff;
+      border: 3px solid #fff;
+    }
+
+    .loading { text-align: center; padding: 36px 16px; font-size: 17px; color: var(--muted); }
+    .err-box { background: #fff; border: 3px solid #b91c1c; padding: 18px; color: #7f1d1d; }
+
+    /* Mobile (390 px safe) */
+    @media (max-width: 680px) {
+      .deck-list, .tb-grid, .prog-grid { grid-template-columns: 1fr; }
+      .fc-h1 { font-size: 40px; }
+      .quest { flex-wrap: wrap; padding: 12px; gap: 10px; }
+      .quest img.px { width: 48px; height: 48px; }
+      .quest a.q-go { width: 100%; text-align: center; }
+      .flashcard { font-size: 19px; padding: 38px 16px 22px; min-height: 220px; }
+      .fc-q-prompt { font-size: 15px; }
+      .modal-panel { padding: 18px; }
+    }
+    @media (max-width: 460px) {
+      .rating-buttons { grid-template-columns: repeat(2, 1fr); }
+      .top-btn { font-size: 14px; padding: 6px 10px; }
+      .fc-total .tdc { font-size: 36px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Login Screen -->
-        <div class="login-screen active">
-            <div class="card">
-                <img class="fc-prof" src="/img/mascot/head-happy.webp" alt="">
-                <h1>Flashcards</h1>
-                <p class="fc-sub" style="text-align:center;margin-bottom:22px">Key facts and definitions with spaced repetition. Sign in so your cards, and your Cakebread Questing progress, are saved.</p>
-                <button class="btn btn-google" onclick="loginWithGoogle()">
-                    Sign in with Google
-                </button>
-            </div>
+  <div class="container">
+    <!-- Deck Selector -->
+    <div class="deck-selector active">
+      <div class="fc-head">
+        <div class="fc-kick">
+          <span>🃏 Cakebread Questing</span>
+          <span class="sa-pill" id="saPill" hidden>Single Award</span>
         </div>
+        <h1 class="fc-h1">Flashcards</h1>
+        <p class="fc-sub">Key facts and definitions, with spaced repetition: cards you find hard come back sooner. Every card counts in Cakebread Questing.</p>
+      </div>
 
-        <!-- Deck Selector -->
-        <div class="deck-selector">
-            <div class="card">
-                <div class="fc-head"><div class="fc-kick">🃏 Cakebread Questing</div><h1 class="fc-h1">Flashcards</h1>
-                  <p class="fc-sub">Key facts and definitions, with spaced repetition: the cards you find hard come back sooner. Every card counts in the game.</p></div>
-                <div class="top-buttons">
-                    <a href="/today/" class="top-btn link">✅ To do</a>
-                    <a href="/interactive/spec-quiz/practice.html" class="top-btn link">📝 Practice Questions</a>
-                    <span class="sp"></span>
-                    <button class="top-btn" onclick="openGuide()">📖 Guide</button>
-<button class="top-btn" onclick="openProgress()">📊 Progress</button>
-                    <button class="top-btn" onclick="openSettings()">⚙️ Settings</button>
-                </div>
-                <div class="user-info" id="userInfo" hidden></div>
-                <div class="quest" id="questPanel"></div>
-                <div class="badges-row" id="badgesRow"></div>
-                <div id="totalDueToday" class="fc-total" style="display: none;">
-                    <div class="tdc" id="totalDueCount">0</div>
-                    <div class="tdl">cards due today</div>
-                    <div class="tdt" id="totalDueTime"></div>
-                </div>
-                <div class="deck-list" id="deckList">
-                    <div class="loading">Loading decks...</div>
-                </div>
-            </div>
+      <div class="top-buttons">
+        <a href="/today/" class="top-btn link">✅ To do</a>
+        <a href="/interactive/spec-quiz/practice.html" class="top-btn link">📝 Practice Questions</a>
+        <span class="sp"></span>
+        <button type="button" class="top-btn" onclick="openGuide()">📖 Guide</button>
+        <button type="button" class="top-btn" onclick="openProgress()">📊 Progress</button>
+        <button type="button" class="top-btn" onclick="openSettings()">⚙️ Settings</button>
+      </div>
+
+      <div class="sync-banner" id="syncBanner" hidden>
+        <span id="syncText">Sign in with Google to save progress across devices and power your Cakebread Questing adventurer — or start studying now (saved in this browser).</span>
+        <button type="button" class="btn sm" id="bannerSignIn" onclick="loginWithGoogle()">Sign in with Google</button>
+      </div>
+
+      <div class="quest" id="questPanel" hidden></div>
+      <div class="badges-row" id="badgesRow"></div>
+      <div class="badge-detail" id="badgeDetail" hidden></div>
+
+      <div class="fc-summary-row">
+        <div id="totalDueToday" class="fc-total" hidden>
+          <div class="tdc" id="totalDueCount">0</div>
+          <div class="tdl">cards due today</div>
+          <div class="tdt" id="totalDueTime"></div>
         </div>
+        <label class="taught-toggle" id="taughtToggleWrap" hidden>
+          <input type="checkbox" id="taughtOnlyChk" onchange="toggleTaughtOnly(this.checked)">
+          <span>Only taught topics</span>
+          <span class="t-note" id="taughtNote"></span>
+        </label>
+      </div>
 
-        <!-- Study Screen -->
-        <div class="study-screen">
-            <div class="card">
-                <button class="btn back-btn" onclick="backToDecks()">← Back to Decks</button>
-                
-                <h2 id="deckTitle" class="fc-decktitle"></h2>
-                
-                <div class="stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="newCount">0</div>
-                        <div class="stat-label">New</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="reviewCount">0</div>
-                        <div class="stat-label">Review</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="studiedToday">0</div>
-                        <div class="stat-label">Studied</div>
-                    </div>
-                </div>
+      <div class="deck-list" id="deckList">
+        <div class="loading">Loading flashcards…</div>
+      </div>
 
-                <div id="flashcardContainer">
-                    <div class="loading">Loading cards...</div>
-                </div>
-            </div>
+      <details class="topic-browser" id="topicBrowser" hidden>
+        <summary>
+          <span>📂 Study by topic or sub-topic</span>
+          <span class="tb-hint">Pick one unit instead of the whole subject ▾</span>
+        </summary>
+        <div class="tb-body">
+          <div class="tb-tabs" id="tbTabs"></div>
+          <div class="tb-grid" id="tbGrid"></div>
         </div>
-
-        <!-- Guide Modal -->
-        <div id="guide-screen" class="settings-screen">
-            <div class="settings-panel" style="max-width: 560px; max-height: 90vh; overflow-y: auto;">
-                <h2>📖 How It Works</h2>
-                <button class="cancel-settings" onclick="closeGuide()" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 10px 20px;">Close</button>
-                <div style="margin-top: 20px; font-size: 0.92em; color: #444; line-height: 1.7;">
-                    <h3 style="color: #005e22; margin-bottom: 6px;">Spaced Repetition</h3>
-                    <p>Cards are shown at increasing intervals based on how well you know them. The better you rate a card, the longer before you see it again &mdash; so you spend more time on what you find hard and less on what you already know.</p>
-
-                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Studying a Card</h3>
-                    <p>Tap a card to reveal the answer, then rate how well you knew it from 1&ndash;4:</p>
-                    <ul style="margin: 6px 0 0 20px;">
-                        <li><strong>Again (1)</strong> &ndash; Got it wrong, card resets</li>
-                        <li><strong>Hard (2)</strong> &ndash; Struggled, shown again soon</li>
-                        <li><strong>Good (3)</strong> &ndash; Got it right with some effort</li>
-                        <li><strong>Easy (4)</strong> &ndash; Knew it instantly, longer interval</li>
-                    </ul>
-                    <p style="margin-top: 8px;">Your rating decides when you&rsquo;ll next see the card. Rating Good or Easy pushes the card further into the future; rating Again or Hard brings it back quickly.</p>
-
-                    <details style="margin-top: 10px; cursor: pointer;">
-                        <summary style="color: #005e22; font-weight: 600; font-size: 0.95em;">How the spacing algorithm works &rsaquo;</summary>
-                        <div style="margin-top: 8px; padding: 12px; background: #f8f9fb; border-radius: 8px; font-size: 0.93em;">
-                            <p>This app uses the <strong>SM-2 algorithm</strong>. Each card tracks an <em>interval</em> (days until next review) and an <em>easiness factor</em> that adapts to you.</p>
-                            <ul style="margin: 6px 0 0 18px;">
-                                <li><strong>Again</strong> or <strong>Hard</strong> &rarr; interval resets to 1 day</li>
-                                <li><strong>Good</strong> or <strong>Easy</strong> (first time) &rarr; 1 day</li>
-                                <li>Correct a second time &rarr; 6 days</li>
-                                <li>After that, interval &times; easiness factor each time (starts at 2.5&times;)</li>
-                            </ul>
-                            <p style="margin-top: 8px;">Example with consistent Good ratings: 1d &rarr; 6d &rarr; 15d &rarr; 38d &rarr; 95d. Easy makes intervals grow faster; Hard slows them down.</p>
-                        </div>
-                    </details>
-
-                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Card Stages</h3>
-                    <p style="margin: 6px 0 0;">
-                        <span style="color: #95a5a6;">&#9679;</span> <strong>Unseen</strong> &ndash; Not yet studied<br>
-                        <span style="color: #ffd93d;">&#9679;</span> <strong>Learning</strong> &ndash; Review interval under 21 days<br>
-                        <span style="color: #6bcf7f;">&#9679;</span> <strong>Mastered</strong> &ndash; Review interval 21+ days
-                    </p>
-
-                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Daily Study</h3>
-                    <p>Each day you&rsquo;ll see cards due for review plus a batch of new cards (default 5 per deck, adjustable in Settings). Once all due cards are done, you can optionally study 5 more.</p>
-
-                    <h3 style="color: #005e22; margin-top: 18px; margin-bottom: 6px;">Cakebread Questing</h3>
-                    <p>Your flashcards power your adventurer in <a href="/interactive/spec-quiz/">Cakebread Questing</a>, the same way quiz missions do:</p>
-                    <ul style="margin: 6px 0 0 20px;">
-                        <li>Every card: <strong>+2 XP</strong> (up to 60 a day), <strong>+1 Health</strong> and <strong>+1 mana</strong> for Breadventure Land, and a coin every 5 cards.</li>
-                        <li>Review <strong>15 cards</strong> in a day (or all of them, if fewer are due) for <strong>+1 move</strong> and a loot drop. A quiz mission earns the same +1 move, once a day.</li>
-                        <li>Rate a card Good or Easy on <strong>two different days</strong> and it&rsquo;s secured. Secured cards count towards securing their spec point, which makes your adventurer permanently stronger.</li>
-                        <li>Cards you rate Again or Hard flag their spec point, and it shows up in your suggested missions the next day.</li>
-                    </ul>
-                    <p style="margin-top: 8px;">Be honest with your ratings: Again and Hard still earn XP, Health and mana, so there&rsquo;s no reward for pretending.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Settings Modal -->
-        <div id="settings-screen" class="settings-screen">
-            <div class="settings-panel">
-                <h2>⚙️ Settings</h2>
-                
-                <div class="setting-item">
-                    <label for="newCardsPerDay">New Cards Per Day (per deck)</label>
-                    <input type="number" id="newCardsPerDay" min="1" max="100" value="5">
-                    <div class="setting-description">Maximum new cards introduced each day in each deck</div>
-                </div>
-
-                <div class="setting-item">
-                    <label>Reset All Progress</label>
-                    <button class="reset-button" onclick="resetProgress()">⚠️ Reset Everything</button>
-                    <div class="setting-description">Warning: This will delete all your study progress permanently</div>
-                </div>
-
-                <div class="settings-actions">
-                    <button class="save-settings" onclick="saveSettings()">Save Settings</button>
-                    <button class="cancel-settings" onclick="closeSettings()">Cancel</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Progress Screen -->
-        <div id="progress-screen" class="settings-screen">
-            <div class="settings-panel" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
-                <h2>📊 Your Progress</h2>
-                <button class="cancel-settings" onclick="closeProgress()" style="position: absolute; top: 20px; right: 20px; width: auto; padding: 10px 20px;">Close</button>
-                <div style="margin-top: 40px;">
-                    <div id="progressCharts" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                        <div>
-                            <h3 id="overallChartTitle" style="text-align: center; margin-bottom: 15px;">Overall Progress - All Decks</h3>
-                            <canvas id="overallChart" style="max-width: 100%;"></canvas>
-                        </div>
-                        <div>
-                            <h3 style="text-align: center; margin-bottom: 15px;">By Deck (click to filter)</h3>
-                            <canvas id="deckChart" style="max-width: 100%;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </details>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Same Firebase app, SDK and sign-in as the rest of the site (Cakebread Questing, Spec Tracker, homepage), so one sign-in
-         covers everything. Then the Questing engine: every card reviewed feeds the adventurer (see questing-engine.js). -->
-    <script src="/js/firebase-config.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <script src="/interactive/spec-quiz/spec.js"></script>
-    <script src="/interactive/spec-quiz/questions.js"></script>
-    <script src="/interactive/spec-quiz/gens.js"></script>
-    <script src="/interactive/spec-quiz/diagq.js"></script>
-<script src="/js/course.js"></script>
-    <script src="/interactive/spec-quiz/cards.js"></script>
-    <script src="/interactive/spec-quiz/questing-engine.js"></script>
-    <script src="/js/admin-config.js"></script>
-    <script src="/js/account.js" data-bar></script>
-    <script src="/interactive/spec-quiz/adventurer-items.js"></script>
-    <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
-    <script>
-        /* Cards come from data/<deck>.json (made from the Anki decks by tools/apkg_to_json.py). Card progress (SM-2) is
-           saved in users/{uid}.progress['<deck>_<cardId>'] as before, so nobody loses their reviews. */
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const userDocRef = () => db.collection('users').doc(currentUser.uid);
-
-        // Global state
-        let currentUser = null;
-        let currentDeck = null;
-        let currentCard = null;
-        let isFlipped = false;
-        let studyQueue = [];
-        let userProgress = {};
-        let settings = {
-            newCardsPerDay: 5,
-            lastStudyDate: null,
-            newCardsToday: {}  // Track per deck: { deckId: count }
-        };
-        let deckCards = {}; // Store all parsed cards by deck
-        let deckMetadata = {
-            biology: { name: 'IGCSE Biology', file: 'data/biology.json', cards: [] },
-            chemistry: { name: 'IGCSE Chemistry', file: 'data/chemistry.json', cards: [] },
-            physics: { name: 'IGCSE Physics', file: 'data/physics.json', cards: [] },
-            'physics-eqns': { name: 'IGCSE Physics Equations', file: 'data/physics-eqns.json', cards: [] }
-        };
-        // Badge definitions - each has 3 levels (bronze/silver/gold)
-        const BADGES = {
-            'first-steps': {
-                name: 'First Steps',
-                icon: '👣',
-                desc: 'cards studied',
-                metric: 'studied',
-                levels: [10, 50, 200]
-            },
-            'scholar': {
-                name: 'Scholar',
-                icon: '🎓',
-                desc: 'cards mastered',
-                metric: 'mastered',
-                levels: [10, 50, 200]
-            },
-            'biologist': {
-                name: 'Biologist',
-                icon: '🧬',
-                desc: 'Biology mastered',
-                metric: 'deck-mastered',
-                deck: 'biology',
-                levels: [10, 30, 75]
-            },
-            'chemist': {
-                name: 'Chemist',
-                icon: '🧪',
-                desc: 'Chemistry mastered',
-                metric: 'deck-mastered',
-                deck: 'chemistry',
-                levels: [10, 30, 75]
-            },
-            'physicist': {
-                name: 'Physicist',
-                icon: '⚡',
-                desc: 'Physics mastered',
-                metric: 'deck-mastered',
-                deck: 'physics',
-                levels: [10, 30, 75]
-            },
-            'well-rounded': {
-                name: 'Well Rounded',
-                icon: '🌟',
-                desc: 'decks with mastered cards',
-                metric: 'decks-touched',
-                levels: [2, 3, 4]
-            }
-        };
-
-        const LEVEL_NAMES = ['Bronze', 'Silver', 'Gold'];
-        const LEVEL_CLASSES = ['badge-bronze', 'badge-silver', 'badge-gold'];
-
-        // Compute badges from progress data (works with any progress object)
-        function computeBadges(progressData) {
-            const stats = { studied: 0, mastered: 0, deckMastered: {}, decksTouched: 0 };
-
-            Object.keys(deckMetadata).forEach(deckId => {
-                let mastered = 0;
-                const cards = deckCards[deckId] || [];
-                cards.forEach(card => {
-                    const cardKey = `${deckId}_${card.id}`;
-                    const p = progressData[cardKey];
-                    if (!p || p.repetitions === 0) return;
-                    stats.studied++;
-                    if (p.interval >= 21) {
-                        mastered++;
-                        stats.mastered++;
-                    }
-                });
-                stats.deckMastered[deckId] = mastered;
-                if (mastered > 0) stats.decksTouched++;
-            });
-
-            const earned = [];
-            Object.entries(BADGES).forEach(([id, badge]) => {
-                let value;
-                if (badge.metric === 'studied') value = stats.studied;
-                else if (badge.metric === 'mastered') value = stats.mastered;
-                else if (badge.metric === 'deck-mastered') value = stats.deckMastered[badge.deck] || 0;
-                else if (badge.metric === 'decks-touched') value = stats.decksTouched;
-                else return;
-
-                let level = 0;
-                badge.levels.forEach((threshold, i) => {
-                    if (value >= threshold) level = i + 1;
-                });
-
-                if (level > 0) {
-                    earned.push({ id, ...badge, level, threshold: badge.levels[level - 1], value });
-                }
-            });
-
-            return { badges: earned, stats };
-        }
-
-        // Render badges into an element
-        function renderBadges(badges, container, mini = false) {
-            if (!container) return;
-            if (badges.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-            container.innerHTML = badges.map(b => {
-                const cls = mini ? 'mini-badge' : 'badge-chip';
-                const levelCls = LEVEL_CLASSES[b.level - 1];
-                if (mini) {
-                    return `<span class="${cls} ${levelCls}">${b.icon}</span>`;
-                }
-                return `<span class="${cls} ${levelCls}">
-                    <span class="badge-icon">${b.icon}</span>
-                    ${b.name}
-                    <span class="badge-tooltip">${LEVEL_NAMES[b.level - 1]} — ${b.value}/${b.threshold} ${b.desc}</span>
-                </span>`;
-            }).join('');
-        }
-
-        // Update badge display on deck selector
-        function updateBadgeDisplay() {
-            const { badges } = computeBadges(userProgress);
-            renderBadges(badges, document.getElementById('badgesRow'));
-            renderQuest();
-        }
-
-        // SM-2 Algorithm implementation
-        class SM2 {
-            static calculate(quality, repetitions, easiness, interval) {
-                if (quality < 1 || quality > 4) quality = 1;
-                
-                let newEasiness = easiness + (0.1 - (4 - quality) * (0.08 + (4 - quality) * 0.02));
-                if (newEasiness < 1.3) newEasiness = 1.3;
-
-                let newRepetitions = repetitions;
-                let newInterval = interval;
-
-                if (quality < 3) {
-                    // Failed recall
-                    newRepetitions = 0;
-                    newInterval = 1;
-                } else {
-                    newRepetitions++;
-                    if (newRepetitions === 1) {
-                        newInterval = 1;
-                    } else if (newRepetitions === 2) {
-                        newInterval = 6;
-                    } else {
-                        newInterval = Math.round(interval * newEasiness);
-                    }
-                }
-
-                return {
-                    easiness: newEasiness,
-                    repetitions: newRepetitions,
-                    interval: newInterval,
-                    nextReview: Date.now() + (newInterval * 24 * 60 * 60 * 1000)
-                };
-            }
-        }
-
-        // Login with Google
-        window.loginWithGoogle = async function() {
-            try {
-                const result = await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-                currentUser = result.user;
-                await initializeUser();
-                showScreen('deck-selector');
-                loadDecks();
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('Login failed. Please try again.');
-            }
-        };
-
-        // Initialize user in Firestore
-        async function initializeUser() {
-            const userRef = userDocRef();
-            const userDoc = await userRef.get();
-            const userData = userDoc.exists ? userDoc.data() : null;
-            if (!userData || !userData.progress || !userData.settings) {
-                await userRef.set({
-                    email: currentUser.email,
-                    displayName: currentUser.displayName,
-                    createdAt: (userData && userData.createdAt) || Date.now(),
-                    progress: (userData && userData.progress) || {},
-                    settings: (userData && userData.settings) || { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} }
-                }, { merge: true });
-            }
-            userProgress = userData?.progress || {};
-            settings = userData?.settings || { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
-
-            // Ensure newCardsToday is an object
-            if (typeof settings.newCardsToday !== 'object' || settings.newCardsToday === null) {
-                settings.newCardsToday = {};
-            }
-
-            // Reset daily counters if new day
-            const today = new Date().toDateString();
-            if (settings.lastStudyDate !== today) {
-                settings.lastStudyDate = today;
-                settings.newCardsToday = {};
-            }
-        }
-
-        // Show specific screen
-        function showScreen(screenName) {
-            document.querySelectorAll('.login-screen, .deck-selector, .study-screen').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelector(`.${screenName}`).classList.add('active');
-
-            if (screenName === 'deck-selector' && currentUser) {
-                const first = (currentUser.displayName || '').trim().split(/\s+/)[0];
-                document.getElementById('userInfo').textContent = first ? `Signed in as ${first}` : 'Signed in';
-            }
-        }
-
-        // Calculate card categories
-        function categorizeCard(cardKey) {
-            const progress = userProgress[cardKey];
-            
-            if (!progress || progress.repetitions === 0) {
-                return 'unseen';
-            } else if (progress.interval < 21) {
-                return 'learning';
-            } else {
-                return 'mastered';
-            }
-        }
-
-        // Get deck statistics
-        function getDeckStats(deckId) {
-            const cards = deckCards[deckId] || [];
-            let unseen = 0, learning = 0, mastered = 0;
-
-            cards.forEach(card => {
-                const cardKey = `${deckId}_${card.id}`;
-                const category = categorizeCard(cardKey);
-                if (category === 'unseen') unseen++;
-                else if (category === 'learning') learning++;
-                else mastered++;
-            });
-
-            return { unseen, learning, mastered, total: cards.length };
-        }
-
-        // Get count of cards due for study today
-        function getDueCount(deckId) {
-            const cards = deckCards[deckId] || [];
-            const now = Date.now();
-            const deckNewCardsToday = (settings.newCardsToday && settings.newCardsToday[deckId]) || 0;
-            let newCardsCount = 0;
-            let dueCount = 0;
-
-            cards.forEach(card => {
-                const cardKey = `${deckId}_${card.id}`;
-                const progress = userProgress[cardKey];
-
-                if (progress && progress.nextReview > now) return;
-
-                const category = categorizeCard(cardKey);
-                if (category !== 'unseen') {
-                    dueCount++;
-                } else if (deckNewCardsToday + newCardsCount < settings.newCardsPerDay) {
-                    newCardsCount++;
-                    dueCount++;
-                }
-            });
-
-            return dueCount;
-        }
-
-        // Strip HTML tags from Anki cards
-        function stripHtml(html) {
-            const tmp = document.createElement('div');
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || '';
-        }
-
-        // Process HTML with images pointing to media folder
-        function processHtmlWithImages(html) {
-            const tmp = document.createElement('div');
-            tmp.innerHTML = html;
-            
-            // Find all img tags and update src to point to media folder
-            const images = tmp.querySelectorAll('img');
-            images.forEach(img => {
-                const src = img.getAttribute('src');
-                // If it's a local file reference (not http/https), prepend media/
-                if (src && !src.startsWith('http://') && !src.startsWith('https://')) {
-                    img.src = 'media/' + src;
-                }
-            });
-            
-            return tmp.innerHTML;
-        }
-
-        // Load a deck's cards (JSON made from the Anki deck; same card ids as before)
-        async function loadDeckJson(filePath) {
-            try {
-                const response = await fetch(filePath);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                const cards = await response.json();
-                /* Single Award students only get cards on their course's points (/js/course.js) */
-                return cards.filter(c => !window.CBSCourse || CBSCourse.has(c.spec)).map(c => ({ id: c.id, front: processHtmlWithImages(c.front), back: processHtmlWithImages(c.back), spec: c.spec, topic: c.topic }));
-            } catch (error) {
-                console.error(`[DECK] could not load ${filePath}:`, error);
-                return [];
-            }
-        }
-
-        async function parseAllDecks() {
-            await Promise.all(Object.keys(deckMetadata).map(async (deckId) => {
-                const deck = deckMetadata[deckId];
-                deckCards[deckId] = (await loadDeckJson(deck.file)).map(c => Object.assign(c, { deck: deckId }));
-                deck.cardCount = deckCards[deckId].length;
-            }));
-        }
-
-        /* ---------- One spec: ?spec=B2.27 (from the spec tracker) studies every card on that point, due or not ---------- */
-        let specDone = false;
-        function studySpecFromUrl() {
-            const spec = new URLSearchParams(location.search).get('spec');
-            if (!spec || specDone) return;
-            specDone = true;
-            const cards = Object.values(deckCards).flat().filter(c => c.spec === spec);
-            if (!cards.length) return;
-            const L = { B: 'Biology', C: 'Chemistry', P: 'Physics' }[spec[0]] || '';
-            currentDeck = cards[0].deck;
-            studyQueue = cards.slice();
-            showScreen('study-screen');
-            document.getElementById('deckTitle').textContent = `${L} ${spec.slice(1)} · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
-            updateStats();
-            showNextCard();
-        }
-
-        /* ---------- Cakebread Questing (replaces the Study Blob, 10 Nov 2026) ---------- */
-        const ymd = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
-        /* bring in reviews made before cards counted for Questing (the engine skips cards it already has) */
-        function importOldReviews() {
-            const list = [];
-            Object.keys(deckMetadata).forEach(deckId => (deckCards[deckId] || []).forEach(card => {
-                const key = `${deckId}_${card.id}`, p = userProgress[key];
-                if (p && p.repetitions > 0) list.push({ key, spec: card.spec, reps: p.repetitions, last: ymd(p.nextReview - p.interval * 864e5) });
-            }));
-            return QE.importCards(list);
-        }
-        const totalDue = () => Object.keys(deckMetadata).reduce((n, id) => n + getDueCount(id), 0);
-        function lootPick() {
-            if (typeof ADV_ITEMS === 'undefined') return null;
-            const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
-            return pool[Math.floor(Math.random() * pool.length)].id;
-        }
-        function renderQuest() {
-            const el = document.getElementById('questPanel'); if (!el) return;
-            const d = QE.cardsToday(), target = QE.cardsTarget(), pct = Math.min(100, d.n / target * 100);
-            let pic = '';
-            try { const look = JSON.parse(localStorage.getItem('cbs.adventurer.base')); const eq = JSON.parse(localStorage.getItem('cbs.adventurer.eq')); pic = PIXEL.portrait(look || PIXEL.DEFAULT, eq || {}); } catch (e) {}
-            const title = d.done ? '✅ Today\'s flashcards done: <b>+1 move</b> on Breadventure Land and a loot drop'
-                : QE.missionsToday() ? 'Today\'s +1 move is already won (you did a mission). Cards still give XP, ❤ Health and 🔮 mana.'
-                : `Review <b>${target}</b> card${target > 1 ? 's' : ''} today for <b>+1 move</b> on Breadventure Land and a loot drop`;
-            el.innerHTML = `${pic ? `<img class="px" src="${pic}" alt="">` : ''}
-                <div class="q-main"><div class="q-kick">Cakebread Questing · every card counts</div>
-                <div class="q-title">${title}</div>
-                <div class="q-bar ${d.done ? 'done' : ''}"><i style="width:${pct}%"></i></div>
-                <div class="q-earned">Today: ${d.n} card${d.n === 1 ? '' : 's'} · +${d.xp} XP${d.xp >= QE.CARD.xpCap ? ' (daily max)' : ''} · ❤ +${d.n} Health · 🔮 +${d.n} mana · 🪙 +${d.coins}.
-                A card rated Good on two different days is secured and counts towards its spec point, like a quiz question.</div></div>
-                <a class="q-go" href="/interactive/spec-quiz/adventurer-home.html">Cakelab →</a>`;
-        }
-        function gain(text) { const g = document.createElement('div'); g.className = 'gain'; g.innerHTML = text; document.body.appendChild(g); setTimeout(() => g.remove(), 1700); }
-        function showLoot(id) {
-            const it = (typeof ADV_ITEMS !== 'undefined') && ADV_ITEMS.find(i => i.id === id); if (!it) return;
-            const box = document.createElement('div'); box.className = 'loot-pop';
-            box.innerHTML = `<div class="box"><div style="color:#2563eb;font-weight:800;text-transform:uppercase;font-size:.75em;letter-spacing:.06em">Today's flashcards done · loot</div>
-                <img src="/img/mascot/head-laugh.webp" alt="" style="width:70px;image-rendering:auto;float:left;margin-right:-70px"><img src="${PIXEL.item(id)}" alt=""><h3>${it.name}</h3><p style="color:#555"><i>${it.d}</i></p>
-                <p><b>+1 move</b> on Breadventure Land tonight.</p>
-                <a href="/interactive/spec-quiz/adventurer-wardrobe.html">Wear it →</a><br><button class="btn" onclick="this.closest('.loot-pop').remove()">Keep going</button></div>`;
-            document.body.appendChild(box);
-        }
-
-        // Load available decks
-        async function loadDecks() {
-            const deckList = document.getElementById('deckList');
-            
-            // Parse all .apkg files
-            try {
-                await parseAllDecks();
-            } catch (e) {
-                console.error('[DECKS] Critical error during parsing:', e);
-                alert('Failed to load flashcard decks. Check browser console for details.');
-            }
-            
-            const decks = Object.keys(deckMetadata).map(id => ({
-                id,
-                name: deckMetadata[id].name,
-                cardCount: deckMetadata[id].cardCount || 0
-            }));
-
-            if (decks.every(d => d.cardCount === 0)) {
-                console.error('[DECKS] NO CARDS LOADED FROM ANY DECK!');
-                deckList.innerHTML = `
-                    <div style="padding: 20px; color: #e74c3c; background: #fee; border-radius: 8px; margin: 20px 0;">
-                        <h3 style="color: #e74c3c;">⚠️ No Cards Loaded</h3>
-                        <p>Unable to load cards from .apkg files. Check the browser console (F12) for error details.</p>
-                        <p style="margin-top: 10px; font-size: 0.9em;">Common issues:</p>
-                        <ul style="margin-left: 20px; margin-top: 5px;">
-                            <li>Files not found in 'ANKI files/' folder</li>
-                            <li>Browser blocking file access</li>
-                            <li>Corrupt .apkg files</li>
-                        </ul>
-                    </div>
-                `;
-                return;
-            }
-
-            const DECK_COLORS = { biology: '#005e22', chemistry: '#c8001e', physics: '#d08000', 'physics-eqns': '#d08000' };
-            const DECK_ICON = { biology: '🌿', chemistry: '🧪', physics: '🚀', 'physics-eqns': '🧮' };
-
-            deckList.innerHTML = decks.map(deck => {
-                const dueCount = getDueCount(deck.id);
-                const deckColor = DECK_COLORS[deck.id] || '#005e22';
-                const dueHTML = dueCount > 0
-                    ? `<div class="d-due">${dueCount}</div>
-                       <div class="d-duel">due today</div>`
-                    : `<div class="d-none">None due ✓</div>
-                       <button class="study-more-btn" onclick="event.stopPropagation(); studyFiveMore('${deck.id}');">Study +5 more</button>`;
-                return `
-                <div class="deck-item deck-${deck.id}" style="--dc:${deckColor}" onclick="selectDeck('${deck.id}')">
-                    <div class="d-top">
-                        <span class="d-ic">${DECK_ICON[deck.id] || '🃏'}</span>
-                        <h3>${deck.name.replace(/^IGCSE\s+/, '')}</h3>
-                        <div class="d-right">${dueHTML}</div>
-                    </div>
-                    <div class="progress-bar-container" id="progressBar_${deck.id}"></div>
-                    <div class="progress-legend" id="progressLegend_${deck.id}"></div>
-                    ${dueCount > 0 ? '<div class="d-go">Study →</div>' : ''}
-                </div>
-            `}).join('');
-
-            // Update stats for each deck
-            decks.forEach(deck => {
-                updateDeckProgress(deck.id);
-            });
-            updateTotalDueToday();
-            importOldReviews();
-            QE.cardsDue(totalDue());
-            updateBadgeDisplay();
-            studySpecFromUrl();
-        }
-
-        // Update progress display for a deck
-        function updateDeckProgress(deckId) {
-            const stats = getDeckStats(deckId);
-            const progressBar = document.getElementById(`progressBar_${deckId}`);
-            const legend = document.getElementById(`progressLegend_${deckId}`);
-
-            if (!progressBar) return;
-
-            const unseenPct = Math.round((stats.unseen / stats.total) * 100);
-            const learningPct = Math.round((stats.learning / stats.total) * 100);
-            const masteredPct = 100 - unseenPct - learningPct;
-
-            let barHTML = '';
-            if (masteredPct > 0) barHTML += `<div class="progress-segment progress-mastered" style="width: ${masteredPct}%"></div>`;
-            if (learningPct > 0) barHTML += `<div class="progress-segment progress-learning" style="width: ${learningPct}%"></div>`;
-            if (unseenPct > 0) barHTML += `<div class="progress-segment progress-unseen" style="width: ${unseenPct}%"></div>`;
-            progressBar.innerHTML = barHTML;
-
-            if (legend) {
-                let legendHTML = '';
-                if (masteredPct > 0) legendHTML += `<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#6bcf7f;margin-right:3px;"></span>${masteredPct}% mastered</span>`;
-                if (learningPct > 0) legendHTML += `<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#ffd93d;margin-right:3px;"></span>${learningPct}% learning</span>`;
-                if (unseenPct > 0) legendHTML += `<span><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#95a5a6;margin-right:3px;"></span>${unseenPct}% unseen</span>`;
-                legend.innerHTML = legendHTML;
-            }
-        }
-
-        // Update total due today display
-        function updateTotalDueToday() {
-            let total = 0;
-            Object.keys(deckMetadata).forEach(deckId => {
-                total += getDueCount(deckId);
-            });
-            const el = document.getElementById('totalDueToday');
-            const countEl = document.getElementById('totalDueCount');
-            const timeEl = document.getElementById('totalDueTime');
-            if (el && countEl) {
-                countEl.textContent = total;
-                el.style.display = 'block';
-            }
-            if (timeEl) {
-                const mins = Math.round(total * 0.5);
-                if (mins < 1) {
-                    timeEl.textContent = '';
-                } else if (mins < 60) {
-                    timeEl.textContent = `~${mins} min`;
-                } else {
-                    const hrs = Math.floor(mins / 60);
-                    const rem = mins % 60;
-                    timeEl.textContent = rem > 0 ? `~${hrs}h ${rem}m` : `~${hrs}h`;
-                }
-            }
-        }
-
-        // Guide functions
-        window.openGuide = function() {
-            document.getElementById('guide-screen').style.display = 'flex';
-        }
-        window.closeGuide = function() {
-            document.getElementById('guide-screen').style.display = 'none';
-        }
-
-        // Settings functions
-        window.openSettings = function() {
-            const settingsScreen = document.getElementById('settings-screen');
-            const newCardsInput = document.getElementById('newCardsPerDay');
-            
-            newCardsInput.value = settings.newCardsPerDay;
-            settingsScreen.style.display = 'flex';
-        }
-
-        window.closeSettings = function() {
-            document.getElementById('settings-screen').style.display = 'none';
-        }
-
-        let overallChart = null;
-        let deckChart = null;
-        let selectedDeckId = null;
-
-        function updateOverallChart(data) {
-            if (overallChart) {
-                overallChart.data.datasets[0].data = [data.unseen, data.learning, data.mastered];
-                overallChart.update();
-            }
-        }
-
-        window.openProgress = function() {
-            const progressScreen = document.getElementById('progress-screen');
-            progressScreen.style.display = 'flex';
-            selectedDeckId = null;
-            
-            // Destroy old charts if they exist
-            if (overallChart) overallChart.destroy();
-            if (deckChart) deckChart.destroy();
-            
-            // Calculate stats
-            let unseenTotal = 0, learningTotal = 0, masteredTotal = 0;
-            const deckStats = {};
-            
-            Object.keys(deckMetadata).forEach(deckId => {
-                const cards = deckCards[deckId] || [];
-                let unseen = 0, learning = 0, mastered = 0;
-                
-                cards.forEach(card => {
-                    const cardKey = `${deckId}_${card.id}`;
-                    const category = categorizeCard(cardKey);
-                    if (category === 'unseen') unseen++;
-                    else if (category === 'learning') learning++;
-                    else mastered++;
-                });
-                
-                deckStats[deckId] = { unseen, learning, mastered, total: cards.length };
-                unseenTotal += unseen;
-                learningTotal += learning;
-                masteredTotal += mastered;
-            });
-            
-            // Draw overall progress pie chart
-            const ctxOverall = document.getElementById('overallChart').getContext('2d');
-            overallChart = new Chart(ctxOverall, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Unseen', 'Learning', 'Mastered'],
-                    datasets: [{
-                        data: [unseenTotal, learningTotal, masteredTotal],
-                        backgroundColor: ['#95a5a6', '#f39c12', '#27ae60'],
-                        borderColor: '#fff',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-            
-            // Draw deck breakdown bar chart
-            const deckLabels = [];
-            const masteredData = [];
-            const learningData = [];
-            const unseenData = [];
-            
-            Object.entries(deckStats).forEach(([deckId, stats]) => {
-                const deckName = deckMetadata[deckId].name.split(' ').pop();
-                deckLabels.push(deckName);
-                masteredData.push(stats.mastered);
-                learningData.push(stats.learning);
-                unseenData.push(stats.unseen);
-            });
-            
-            const ctxDeck = document.getElementById('deckChart').getContext('2d');
-            deckChart = new Chart(ctxDeck, {
-                type: 'bar',
-                data: {
-                    labels: deckLabels,
-                    datasets: [
-                        {
-                            label: 'Mastered',
-                            data: masteredData,
-                            backgroundColor: '#27ae60'
-                        },
-                        {
-                            label: 'Learning',
-                            data: learningData,
-                            backgroundColor: '#f39c12'
-                        },
-                        {
-                            label: 'Unseen',
-                            data: unseenData,
-                            backgroundColor: '#95a5a6'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    indexAxis: 'y',
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    scales: {
-                        x: {
-                            stacked: true
-                        },
-                        y: {
-                            stacked: true
-                        }
-                    }
-                }
-            });
-            
-            // Update chart title
-            document.getElementById('overallChartTitle').textContent = 'Overall Progress - All Decks';
-        }
-
-        window.selectDeck = function(deckId) {
-            selectedDeckId = deckId;
-            
-            if (deckId === null) {
-                // Show all decks
-                let unseenTotal = 0, learningTotal = 0, masteredTotal = 0;
-                
-                Object.keys(deckMetadata).forEach(id => {
-                    const cards = deckCards[id] || [];
-                    cards.forEach(card => {
-                        const cardKey = `${id}_${card.id}`;
-                        const category = categorizeCard(cardKey);
-                        if (category === 'unseen') unseenTotal++;
-                        else if (category === 'learning') learningTotal++;
-                        else masteredTotal++;
-                    });
-                });
-                
-                updateOverallChart({ unseen: unseenTotal, learning: learningTotal, mastered: masteredTotal });
-                document.getElementById('overallChartTitle').textContent = 'Overall Progress - All Decks';
-            } else {
-                // Show only selected deck
-                const cards = deckCards[deckId] || [];
-                let unseen = 0, learning = 0, mastered = 0;
-                
-                cards.forEach(card => {
-                    const cardKey = `${deckId}_${card.id}`;
-                    const category = categorizeCard(cardKey);
-                    if (category === 'unseen') unseen++;
-                    else if (category === 'learning') learning++;
-                    else mastered++;
-                });
-                
-                updateOverallChart({ unseen, learning, mastered });
-                const deckName = deckMetadata[deckId].name;
-                document.getElementById('overallChartTitle').textContent = `Overall Progress - ${deckName}`;
-            }
-        }
-
-        window.closeProgress = function() {
-            document.getElementById('progress-screen').style.display = 'none';
-            if (overallChart) overallChart.destroy();
-            if (deckChart) deckChart.destroy();
-        }
-
-        window.saveSettings = async function() {
-            const newCardsInput = document.getElementById('newCardsPerDay');
-            settings.newCardsPerDay = parseInt(newCardsInput.value) || 5;
-
-            // Save to Firestore
-            if (currentUser) {
-                await userDocRef().update({ 'settings': settings });
-            }
-
-            closeSettings();
-            alert('Settings saved!');
-        }
-
-        window.resetProgress = async function() {
-            if (!confirm('⚠️ Are you sure you want to reset ALL your progress? This cannot be undone!')) {
-                return;
-            }
-
-            if (!confirm('Really delete everything? Last chance!')) {
-                return;
-            }
-
-            // Reset local state
-            userProgress = {};
-            settings.newCardsToday = {};
-            settings.lastStudyDate = new Date().toDateString();
-
-            // Reset in Firestore
-            if (currentUser) {
-                await userDocRef().update({ 'progress': {}, 'settings': settings });
-            }
-
-            // Refresh all deck stats
-            const decks = ['biology', 'chemistry', 'physics', 'physics-eqns'];
-            decks.forEach(deckId => updateDeckProgress(deckId));
-
-            closeSettings();
-            alert('✅ All progress has been reset!');
-        }
-
-        // Select and start studying a deck
-        window.selectDeck = async function(deckId, bypassLimit = false) {
-            currentDeck = deckId;
-            showScreen('study-screen');
-            await loadDeckCards(deckId, bypassLimit);
-            showNextCard();
-        };
-
-        // Study 5 more cards (bypass daily limit)
-        window.studyFiveMore = async function(deckId) {
-            await selectDeck(deckId, true);
-        };
-
-        // Load cards for a deck (placeholder - will parse .apkg next)
-        async function loadDeckCards(deckId, bypassLimit = false) {
-            const allCards = deckCards[deckId] || [];
-            const now = Date.now();
-            
-            // Get deck-specific counter
-            const deckNewCardsToday = settings.newCardsToday[deckId] || 0;
-            
-            // Filter cards based on new cards limit
-            let newCardsCount = 0;
-            studyQueue = allCards.filter(card => {
-                const cardKey = `${deckId}_${card.id}`;
-                const progress = userProgress[cardKey];
-                
-                // Check if card is due for review
-                if (progress && progress.nextReview > now) {
-                    return false; // Not due yet
-                }
-                
-                const category = categorizeCard(cardKey);
-                
-                // Always include learning/mastered cards
-                if (category !== 'unseen') {
-                    return true;
-                }
-                
-                // Limit new cards per day (unless bypassing)
-                const limit = bypassLimit ? (deckNewCardsToday + 5) : settings.newCardsPerDay;
-                if (deckNewCardsToday + newCardsCount < limit) {
-                    newCardsCount++;
-                    return true;
-                }
-                
-                return false;
-            });
-
-            updateStats();
-        }
-
-        // Show next card
-        function showNextCard() {
-            if (studyQueue.length === 0) {
-                document.getElementById('flashcardContainer').innerHTML = `
-                    <div class="fc-done">
-                        <img src="/img/mascot/head-laugh.webp" alt="">
-                        <h2>All done for today!</h2>
-                        <p>Great work. Come back tomorrow for more reviews, or keep going in Cakebread Questing.</p>
-                        <div class="fc-done-acts"><button class="btn" onclick="backToDecks()">Back to decks</button><a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a><a class="btn alt" href="/interactive/spec-quiz/practice.html">📝 Practice Questions</a></div>
-                    </div>
-                `;
-                return;
-            }
-updateDeckProgress(currentDeck);
-            
-            currentCard = studyQueue[0];
-            if (currentCard.deck) currentDeck = currentCard.deck;   // a spec-point session mixes decks
-            { const DC = { biology: '#005e22', chemistry: '#c8001e', physics: '#d08000', 'physics-eqns': '#d08000' }; const st = document.querySelector('.study-screen'); if (st) st.style.setProperty('--dc', DC[currentDeck] || '#111'); }
-            isFlipped = false;
-
-            document.getElementById('flashcardContainer').innerHTML = `
-                <div class="flashcard" onclick="flipCard()">
-                    <div class="face" id="cardFace">Question</div>
-                    <div id="cardContent">${currentCard.front}</div>
-                </div>
-                <div class="hint">Click card or press SPACE to flip</div>
-                <div id="ratingButtons" style="display: none;">
-                    <div class="rating-buttons">
-                        <button class="rating-btn rating-btn-1" onclick="rateCard(1)">
-                            <div style="font-size: 1.5em;">1</div>
-                            Again
-                        </button>
-                        <button class="rating-btn rating-btn-2" onclick="rateCard(2)">
-                            <div style="font-size: 1.5em;">2</div>
-                            Hard
-                        </button>
-                        <button class="rating-btn rating-btn-3" onclick="rateCard(3)">
-                            <div style="font-size: 1.5em;">3</div>
-                            Good
-                        </button>
-                        <button class="rating-btn rating-btn-4" onclick="rateCard(4)">
-                            <div style="font-size: 1.5em;">4</div>
-                            Easy
-                        </button>
-                    </div>
-                    <div class="hint">Press 1-4 to rate</div>
-                </div>
-            `;
-        }
-
-        // Flip card
-        window.flipCard = function() {
-            if (isFlipped) return;
-            isFlipped = true;
-            
-            document.getElementById('cardContent').innerHTML = currentCard.back;
-            { const f = document.getElementById('cardFace'); if (f) f.textContent = 'Answer'; }
-            document.querySelector('.flashcard').classList.add('flipped');
-            document.getElementById('ratingButtons').style.display = 'block';
-        };
-
-        // Rate card
-        window.rateCard = async function(quality) {
-            if (!isFlipped) return;
-
-            // If rating is 0, re-add card to end of queue
-            if (quality === 0) {
-                studyQueue.push(studyQueue.shift());
-                isFlipped = false;
-                showCard();
-                return;
-            }
-
-            // Get current card progress
-            const cardKey = `${currentDeck}_${currentCard.id}`;
-            const oldProgress = userProgress[cardKey];
-            const wasUnseen = !oldProgress || oldProgress.repetitions === 0;
-            
-            const progress = oldProgress || {
-                easiness: 2.5,
-                repetitions: 0,
-                interval: 0,
-                nextReview: Date.now()
-            };
-
-            // Calculate new values using SM-2
-            const newProgress = SM2.calculate(quality, progress.repetitions, progress.easiness, progress.interval);
-            userProgress[cardKey] = newProgress;
-
-            // Increment new cards counter if this was unseen
-            if (wasUnseen) {
-                if (!settings.newCardsToday[currentDeck]) {
-                    settings.newCardsToday[currentDeck] = 0;
-                }
-                settings.newCardsToday[currentDeck]++;
-            }
-
-            // Save to Firestore
-            await userDocRef().update({
-                [`progress.${cardKey}`]: newProgress,
-                'settings': settings
-            });
-
-            // Cakebread Questing: XP, Health, mana, coins, securing spec points, today's +1 move
-            const wasDue = !oldProgress || !oldProgress.repetitions || oldProgress.nextReview <= Date.now();   // early reviews (spec sessions) still secure cards but earn no game rewards
-            const res = QE.recordCard(cardKey, currentCard.spec || null, quality, lootPick, wasDue);
-            const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -6px">`;
-            gain(faceImg + (wasDue ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
-                : (res.notes.length ? res.notes.join(' · ') : 'Not due yet: practice only (no XP)')));
-            if (res.done) { showLoot(res.loot); try { const it = res.loot && ADV_ITEMS.find(i => i.id === res.loot); QE.log('🃏', `Finished today's flashcards${it ? ' · loot: ' + it.name : ''}`); } catch (e) {} }
-
-            // Remove from queue and show next
-            studyQueue.shift();
-            updateStats();
-            updateBadgeDisplay();
-            showNextCard();
-        };
-
-        // Update stats
-        function updateStats() {
-            document.getElementById('newCount').textContent = studyQueue.length;
-            document.getElementById('reviewCount').textContent = '0';
-            document.getElementById('studiedToday').textContent = '0';
-        }
-
-        // Back to decks
-        window.backToDecks = function() {
-            document.getElementById('deckTitle').textContent = '';
-            showScreen('deck-selector');
-        };
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === ' ' && !isFlipped) {
-                e.preventDefault();
-                flipCard();
-            } else if (['1', '2', '3', '4'].includes(e.key) && isFlipped) {
-                e.preventDefault();
-                rateCard(parseInt(e.key));
-            }
+    <!-- Study Screen -->
+    <div class="study-screen">
+      <div class="study-wrap">
+        <div class="study-top">
+          <button type="button" class="back-btn" onclick="backToDecks()">← Back to Decks</button>
+          <button type="button" class="undo-btn" id="undoBtn" onclick="undoLast()" hidden>↩ Undo last</button>
+        </div>
+
+        <h2 id="deckTitle" class="fc-decktitle"></h2>
+
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="newCount">0</div>
+            <div class="stat-label">New</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="reviewCount">0</div>
+            <div class="stat-label">Review</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="studiedToday">0</div>
+            <div class="stat-label">Done</div>
+          </div>
+        </div>
+        <div class="session-bar"><i id="sessionBarFill" style="width:0%"></i></div>
+
+        <div id="flashcardContainer">
+          <div class="loading">Loading cards…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guide Modal -->
+  <div id="guide-screen" class="modal-backdrop" onclick="if(event.target===this)closeGuide()">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2>📖 How It Works</h2>
+        <button type="button" class="btn alt sm" onclick="closeGuide()">Close</button>
+      </div>
+      <div class="guide-body">
+        <h3>Spaced Repetition</h3>
+        <p>Cards come back at longer intervals the better you know them, so you spend time on what you forget and less on what you already know.</p>
+
+        <h3>Studying a Card</h3>
+        <p>Tap a card (or press <strong>Space</strong>) to reveal the answer, then rate how well you knew it (<strong>1–4</strong>):</p>
+        <ul>
+          <li><strong>1 · Again</strong> — Got it wrong. The card comes back again later in this session, and resets to 1 day.</li>
+          <li><strong>2 · Hard</strong> — Struggled. Stays in learning with a short interval (doesn't wipe your card back to unseen).</li>
+          <li><strong>3 · Good</strong> — Got it right with some thought. Interval grows (1d → 6d → longer).</li>
+          <li><strong>4 · Easy</strong> — Knew it straight away. Jumps to a longer interval.</li>
+        </ul>
+        <p>Tapped the wrong button? Press <strong>↩ Undo last</strong> (or <strong>Z</strong>) to step back.</p>
+
+        <h3>Topics &amp; Taught Only</h3>
+        <p>Use <strong>Study by topic or sub-topic</strong> to focus on one unit (e.g. Electricity) instead of the whole subject. If your teacher has ticked your year group's taught topics, turn on <strong>Only taught topics</strong> so you don't get cards you haven't learned yet.</p>
+
+        <h3>Card Stages</h3>
+        <ul>
+          <li><strong>Unseen</strong> — Not studied yet.</li>
+          <li><strong>Learning</strong> — Studied, review interval under 21 days.</li>
+          <li><strong>Mastered</strong> — Review interval 21+ days.</li>
+        </ul>
+
+        <h3>Cakebread Questing</h3>
+        <p>When signed in, flashcards power your adventurer in <a href="/interactive/spec-quiz/">Cakebread Questing</a>:</p>
+        <ul>
+          <li>Every due card: <strong>+2 XP</strong> (up to 60 a day), <strong>+1 Health</strong> and <strong>+1 mana</strong> for Breadventure Land, and a coin every 5 cards.</li>
+          <li>Review <strong>15 cards</strong> in a day (or all due cards if fewer) for <strong>+1 move</strong> and a loot drop.</li>
+          <li>Rate a card Good or Easy on <strong>two different days</strong> to secure it towards its spec point.</li>
+          <li>Cards rated Again or Hard flag their spec point for your suggested missions tomorrow.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-screen" class="modal-backdrop" onclick="if(event.target===this)closeSettings()">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2>⚙️ Settings</h2>
+        <button type="button" class="btn alt sm" onclick="closeSettings()">Close</button>
+      </div>
+      <div class="setting-item">
+        <label for="newCardsPerDay">New cards per day (per deck)</label>
+        <input type="number" id="newCardsPerDay" min="1" max="100" value="5">
+        <div class="setting-desc">Maximum new cards introduced each day in each deck.</div>
+      </div>
+      <div class="setting-item">
+        <label>Reset all flashcard progress</label>
+        <button type="button" class="btn danger sm" onclick="resetProgress()">⚠️ Reset everything</button>
+        <div class="setting-desc">Deletes all spaced-repetition progress for your flashcards. Cannot be undone.</div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn" onclick="saveSettings()">Save settings</button>
+        <button type="button" class="btn alt" onclick="closeSettings()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Modal -->
+  <div id="progress-screen" class="modal-backdrop" onclick="if(event.target===this)closeProgress()">
+    <div class="modal-panel wide">
+      <div class="modal-head">
+        <h2>📊 Your Progress</h2>
+        <button type="button" class="btn alt sm" onclick="closeProgress()">Close</button>
+      </div>
+      <div class="prog-grid">
+        <div class="prog-donut-wrap">
+          <h3 id="overallChartTitle">All Decks</h3>
+          <div id="donutBox"></div>
+          <div class="prog-legend" id="donutLegend"></div>
+        </div>
+        <div class="prog-bars-wrap">
+          <h3>By Deck (tap to filter)</h3>
+          <div id="deckBars"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Card Modal -->
+  <div id="report-screen" class="modal-backdrop" onclick="if(event.target===this)closeReport()">
+    <div class="modal-panel">
+      <div class="modal-head">
+        <h2>⚑ Report this card</h2>
+        <button type="button" class="btn alt sm" onclick="closeReport()">Close</button>
+      </div>
+      <p id="reportCardPreview" style="font-size:14px;color:#444;background:#faf8f2;border:1.5px solid #d8d3c4;padding:8px 10px;margin-bottom:14px"></p>
+      <div class="setting-item">
+        <label for="reportReason">What's wrong with it?</label>
+        <select id="reportReason">
+          <option value="The answer is wrong">The answer is wrong</option>
+          <option value="Wrong image or diagram">Wrong image or diagram</option>
+          <option value="The wording is confusing">The wording is confusing</option>
+          <option value="Spelling or typing mistake">Spelling or typing mistake</option>
+          <option value="Not on my course">Not on my course</option>
+          <option value="Something else">Something else</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label for="reportComment">Extra details (optional)</label>
+        <textarea id="reportComment" rows="3" placeholder="Tell your teacher what should be fixed…"></textarea>
+      </div>
+      <div id="reportStatus" style="font-size:14px;margin-bottom:8px"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn" id="reportSendBtn" onclick="submitCardReport()">Send report</button>
+        <button type="button" class="btn alt" onclick="closeReport()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shared site scripts (same Firebase project, spec, course & Questing engine) -->
+  <script src="/js/firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="/interactive/spec-quiz/spec.js"></script>
+  <script src="/interactive/spec-quiz/questions.js"></script>
+  <script src="/interactive/spec-quiz/gens.js"></script>
+  <script src="/interactive/spec-quiz/diagq.js"></script>
+  <script src="/js/course.js"></script>
+  <script src="/interactive/spec-quiz/cards.js"></script>
+  <script src="/interactive/spec-quiz/questing-engine.js"></script>
+  <script src="/js/school.js"></script>
+  <script src="/js/spec-point.js"></script>
+  <script src="/js/admin-config.js"></script>
+  <script src="/js/account.js" data-bar></script>
+  <script src="/interactive/spec-quiz/adventurer-items.js"></script>
+  <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
+  <script>
+    /* Cakebread Science Flashcards — spaced repetition integrated with Cakebread Questing.
+       Card data: Flashcards/data/<deck>.json (permanent Anki card ids).
+       Progress: Firestore users/{uid}.progress['<deck>_<cardId>'] + localStorage fallback so the page works signed out or offline. */
+
+    const FB_READY = (typeof firebase !== 'undefined' && !!window.firebaseConfig);
+    let auth = null, db = null, rt = null;
+    if (FB_READY) {
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
+        auth = firebase.auth();
+        db = firebase.firestore();
+        rt = firebase.database();
+      } catch (e) { console.warn('[FC] Firebase init skipped:', e); }
+    }
+
+    const withTimeout = (p, ms = 8000) => new Promise((ok, no) => {
+      const t = setTimeout(() => no(new Error('timeout')), ms);
+      Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
+    });
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const ymd = t => {
+      const d = new Date(t);
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
+    const shuffle = a => {
+      const out = a.slice();
+      for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+      }
+      return out;
+    };
+
+    const DECK_META = {
+      biology: { name: 'Biology', file: 'data/biology.json', color: '#005e22', icon: '🌿', subj: 'B' },
+      chemistry: { name: 'Chemistry', file: 'data/chemistry.json', color: '#c8001e', icon: '🧪', subj: 'C' },
+      physics: { name: 'Physics', file: 'data/physics.json', color: '#d08000', icon: '🚀', subj: 'P' },
+      'physics-eqns': { name: 'Physics Equations', file: 'data/physics-eqns.json', color: '#d08000', icon: '🧮', subj: 'P' }
+    };
+    const SUBJ_URL = { B: '/specifications/biology.html', C: '/specifications/chemistry.html', P: '/specifications/physics.html' };
+    const SUBJ_NAME = { B: 'Biology', C: 'Chemistry', P: 'Physics' };
+
+    const BADGES = {
+      'first-steps': { name: 'First Steps', icon: '👣', desc: 'cards studied', metric: 'studied', levels: [10, 50, 200] },
+      'scholar': { name: 'Scholar', icon: '🎓', desc: 'cards mastered', metric: 'mastered', levels: [10, 50, 200] },
+      'biologist': { name: 'Biologist', icon: '🧬', desc: 'Biology mastered', metric: 'deck-mastered', deck: 'biology', levels: [10, 30, 75] },
+      'chemist': { name: 'Chemist', icon: '🧪', desc: 'Chemistry mastered', metric: 'deck-mastered', deck: 'chemistry', levels: [10, 30, 75] },
+      'physicist': { name: 'Physicist', icon: '⚡', desc: 'Physics mastered', metric: 'deck-mastered', deck: 'physics', levels: [10, 30, 75] },
+      'well-rounded': { name: 'Well Rounded', icon: '🌟', desc: 'decks with mastered cards', metric: 'decks-touched', levels: [2, 3, 4] }
+    };
+    const LEVEL_NAMES = ['Bronze', 'Silver', 'Gold'];
+    const LEVEL_CLASSES = ['badge-bronze', 'badge-silver', 'badge-gold'];
+
+    // State
+    let currentUser = null;
+    let userYear = null;
+    let taughtSubs = null;       // Set of sub-topic keys taught to student's year (null if unknown/none)
+    let taughtOnly = false;
+    let decksLoaded = false;
+    let deckCards = {};          // { deckId: [card, ...] }
+    let userProgress = {};       // { '<deck>_<id>': { easiness, repetitions, interval, nextReview, lapses? } }
+    let settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+
+    // Study session state
+    let currentDeck = null;
+    let currentCard = null;
+    let isFlipped = false;
+    let studyQueue = [];
+    let sessionDone = 0;
+    let sessionInitialTotal = 0;
+    let sessionSeen = new Set(); // cardKeys already rated in this session (prevents double Questing rewards on Again re-queue)
+    let sessionMode = 'deck';    // 'deck' | 'topic' | 'spec'
+    let sessionLabel = '';
+    let lastUndo = null;         // snapshot for Undo
+    let activeTopicSubj = 'B';
+    let progressFilterDeck = null;
+    let urlHandled = false;
+    let ratingBusy = false;
+
+    const userDocRef = () => (db && currentUser) ? db.collection('users').doc(currentUser.uid) : null;
+    const localKey = () => 'cbs.flashcards.' + (currentUser ? currentUser.uid : 'anon');
+
+    /* ---------- Spec hierarchy lookup (for topic browser + taught filter) ---------- */
+    const PT_TO_SUB = {};
+    const TOPIC_TREE = { B: [], C: [], P: [] };
+    if (typeof SPEC !== 'undefined') {
+      SPEC.forEach(s => {
+        const L = s.name[0];
+        s.topics.forEach(t => {
+          const subs = [];
+          t.subs.forEach(sb => {
+            if (sb.name === 'Units') return;
+            const subKey = L + t.n + sb.l;
+            const pts = sb.points.map(p => L + p.id);
+            pts.forEach(k => { PT_TO_SUB[k] = subKey; });
+            subs.push({ key: subKey, l: sb.l, name: sb.name, pts });
+          });
+          if (subs.length) TOPIC_TREE[L].push({ key: L + t.n, n: t.n, name: t.name, subs });
         });
+      });
+    }
 
-        // Check auth state
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
-initializeUser().then(() => {
-                    showScreen('deck-selector');
-                    loadDecks();
-                });
-            } else {
-                showScreen('login-screen');
-            }
+    /* ---------- SM-2 Algorithm (fixed: Hard stays in learning; Again re-queues in session) ---------- */
+    class SM2 {
+      static calculate(quality, repetitions, easiness, interval) {
+        const q = Math.min(4, Math.max(1, quality || 1));
+        const ef0 = typeof easiness === 'number' && easiness >= 1.3 ? easiness : 2.5;
+        const reps0 = repetitions || 0;
+        const int0 = interval || 0;
+        let ef = ef0, reps = reps0, days = int0;
+
+        if (q === 1) {
+          // Again: reset reps to 0, re-queue in session, next review in 1 day
+          reps = 0;
+          days = 1;
+          ef = Math.max(1.3, ef0 - 0.2);
+        } else if (q === 2) {
+          // Hard: keep in learning (reps >= 1), shorter interval than Good
+          reps = Math.max(1, reps0);
+          ef = Math.max(1.3, ef0 - 0.15);
+          days = reps0 <= 1 ? 1 : Math.max(1, Math.round(int0 * 1.2));
+        } else if (q === 3) {
+          // Good: standard SM-2 progression
+          reps = reps0 + 1;
+          if (reps === 1) days = 1;
+          else if (reps === 2) days = 6;
+          else days = Math.max(int0 + 1, Math.round(int0 * ef0));
+        } else {
+          // Easy: faster progression
+          reps = reps0 + 1;
+          ef = Math.min(3.0, ef0 + 0.15);
+          if (reps === 1) days = 4;
+          else if (reps === 2) days = 10;
+          else days = Math.max(int0 + 2, Math.round(int0 * ef * 1.3));
+        }
+
+        return {
+          easiness: Math.round(ef * 100) / 100,
+          repetitions: reps,
+          interval: days,
+          nextReview: Date.now() + days * 86400000
+        };
+      }
+      static formatInterval(days, quality) {
+        if (quality === 1) return 'This session';
+        if (days === 1) return '1 day';
+        if (days < 30) return `${days} days`;
+        const mo = Math.round(days / 30 * 10) / 10;
+        return mo === 1 ? '1 month' : `${mo} months`;
+      }
+    }
+
+    /* ---------- Storage (localStorage + Firestore merge with timeout) ---------- */
+    function saveLocal() {
+      try {
+        localStorage.setItem(localKey(), JSON.stringify({ progress: userProgress, settings, taughtOnly }));
+      } catch (e) {}
+    }
+    function loadLocal() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(localKey()) || 'null');
+        if (raw && typeof raw === 'object') {
+          userProgress = raw.progress || {};
+          settings = Object.assign({ newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} }, raw.settings || {});
+          if (typeof raw.taughtOnly === 'boolean') taughtOnly = raw.taughtOnly;
+        } else {
+          userProgress = {};
+          settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+        }
+      } catch (e) {
+        userProgress = {};
+        settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+      }
+      rollDayIfNeeded();
+    }
+    function rollDayIfNeeded() {
+      if (!settings || typeof settings !== 'object') settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+      if (!settings.newCardsToday || typeof settings.newCardsToday !== 'object') settings.newCardsToday = {};
+      if (!settings.newCardsPerDay || settings.newCardsPerDay < 1) settings.newCardsPerDay = 5;
+      const today = new Date().toDateString();
+      if (settings.lastStudyDate !== today) {
+        settings.lastStudyDate = today;
+        settings.newCardsToday = {};
+      }
+    }
+
+    async function syncUserFromFirestore() {
+      const ref = userDocRef();
+      if (!ref) return;
+      try {
+        const snap = await withTimeout(ref.get(), 8000);
+        const data = snap.exists ? snap.data() : null;
+        if (data) {
+          userYear = data.year || null;
+          // Merge any local anonymous progress if user just signed in and cloud has none for that key
+          const cloudProg = data.progress || {};
+          userProgress = Object.assign({}, userProgress, cloudProg);
+          if (data.settings) {
+            settings = Object.assign({ newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} }, data.settings);
+          }
+          rollDayIfNeeded();
+          if (window.CBSCourse && currentUser) CBSCourse.update(currentUser.uid, data.course || null);
+        } else {
+          rollDayIfNeeded();
+          await withTimeout(ref.set({
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            createdAt: Date.now(),
+            progress: userProgress,
+            settings
+          }, { merge: true }), 8000);
+        }
+        saveLocal();
+        loadTaughtTopics();
+      } catch (e) {
+        console.warn('[FC] Firestore load failed, using browser copy:', e.message || e);
+        showSyncBanner('offline');
+      }
+    }
+
+    async function saveCardToFirestore(cardKey, cardProg) {
+      saveLocal();
+      const ref = userDocRef();
+      if (!ref) return;
+      try {
+        await withTimeout(ref.set({
+          progress: { [cardKey]: cardProg },
+          settings
+        }, { merge: true }), 8000);
+      } catch (e) {
+        console.warn('[FC] Could not sync card to cloud (saved in browser):', e.message || e);
+      }
+    }
+
+    async function loadTaughtTopics() {
+      taughtSubs = null;
+      const wrap = document.getElementById('taughtToggleWrap');
+      if (!rt || !currentUser || !userYear || !window.CBSSchool) {
+        if (wrap) wrap.hidden = true;
+        return;
+      }
+      try {
+        const val = await CBSSchool.rtGet(rt, 'school/taught/Y' + userYear, 6000);
+        const keys = val ? Object.keys(val).filter(k => val[k]) : [];
+        if (keys.length) {
+          taughtSubs = new Set(keys);
+          if (wrap) {
+            wrap.hidden = false;
+            document.getElementById('taughtOnlyChk').checked = taughtOnly;
+            document.getElementById('taughtNote').textContent = `(Year ${userYear} · ${keys.length} sub-topics)`;
+          }
+          renderAllDeckUI();
+        } else if (wrap) {
+          wrap.hidden = true;
+        }
+      } catch (e) {
+        if (wrap) wrap.hidden = true;
+      }
+    }
+
+    function showSyncBanner(mode) {
+      const b = document.getElementById('syncBanner');
+      const txt = document.getElementById('syncText');
+      const btn = document.getElementById('bannerSignIn');
+      if (!b) return;
+      if (mode === 'signed-in') {
+        b.hidden = true;
+        return;
+      }
+      b.hidden = false;
+      if (mode === 'offline' || !FB_READY || !auth) {
+        b.classList.add('offline');
+        txt.textContent = !FB_READY ? 'Offline / school filter mode: flashcards work normally and your progress is saved in this browser.'
+          : 'Could not reach the cloud right now — your progress is saved in this browser.';
+        btn.hidden = true;
+      } else {
+        b.classList.remove('offline');
+        txt.textContent = 'Sign in with Google to save progress across devices and power your Cakebread Questing adventurer — or start studying now (saved in this browser).';
+        btn.hidden = false;
+      }
+    }
+
+    window.loginWithGoogle = async function () {
+      if (!auth) return;
+      try {
+        await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+        // onAuthStateChanged handles initialization once
+      } catch (e) {
+        if (e && e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+          alert('Sign-in did not work: ' + (e.message || e));
+        }
+      }
+    };
+
+    /* ---------- Card loading & course/taught filtering ---------- */
+    function processHtmlWithImages(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      tmp.querySelectorAll('img').forEach(img => {
+        const src = img.getAttribute('src');
+        if (src && !/^(https?:|data:|\/)/i.test(src)) {
+          const clean = src.startsWith('media/') ? src.slice(6) : src;
+          img.setAttribute('src', 'media/' + clean.split('/').map(encodeURIComponent).join('/'));
+        }
+      });
+      return tmp.innerHTML;
+    }
+
+    function cardAllowedByCourse(c) {
+      if (!window.CBSCourse) return true;
+      if (!CBSCourse.has(c.spec)) return false;
+      if (CBSCourse.sa && c.daOnly) return false;
+      return true;
+    }
+
+    function cardAllowedByTaught(c) {
+      if (!taughtOnly || !taughtSubs) return true;
+      if (c.spec) {
+        const sub = PT_TO_SUB[c.spec];
+        return !sub || taughtSubs.has(sub);
+      }
+      if (c.topic) {
+        for (const s of taughtSubs) if (s.startsWith(c.topic)) return true;
+        return false;
+      }
+      return false;
+    }
+
+    function activeCards(deckId) {
+      return (deckCards[deckId] || []).filter(cardAllowedByTaught);
+    }
+
+    async function parseAllDecks() {
+      if (decksLoaded) return;
+      await Promise.all(Object.keys(DECK_META).map(async deckId => {
+        try {
+          const res = await fetch(DECK_META[deckId].file);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const raw = await res.json();
+          deckCards[deckId] = raw
+            .filter(cardAllowedByCourse)
+            .map(c => ({
+              id: c.id,
+              deck: deckId,
+              front: processHtmlWithImages(c.front),
+              back: processHtmlWithImages(c.back),
+              spec: c.spec || null,
+              topic: c.topic || null,
+              sub: c.spec ? (PT_TO_SUB[c.spec] || null) : null
+            }));
+        } catch (e) {
+          console.error('[FC] Failed to load', DECK_META[deckId].file, e);
+          deckCards[deckId] = [];
+        }
+      }));
+      decksLoaded = true;
+    }
+
+    /* ---------- Stats & categorization (fixed: lapsed cards are 'learning', never 'unseen') ---------- */
+    function categorizeCard(cardKey) {
+      const p = userProgress[cardKey];
+      if (!p) return 'unseen';
+      if (p.interval >= 21 && p.repetitions > 0) return 'mastered';
+      return 'learning';
+    }
+
+    function getCardListStats(cards) {
+      let unseen = 0, learning = 0, mastered = 0;
+      cards.forEach(c => {
+        const cat = categorizeCard(`${c.deck}_${c.id}`);
+        if (cat === 'unseen') unseen++;
+        else if (cat === 'learning') learning++;
+        else mastered++;
+      });
+      return { unseen, learning, mastered, total: cards.length };
+    }
+
+    function getDueCardsForDeck(deckId, bypassLimit = false) {
+      const cards = activeCards(deckId);
+      const now = Date.now();
+      const deckNewToday = (settings.newCardsToday && settings.newCardsToday[deckId]) || 0;
+      const limit = bypassLimit ? (deckNewToday + 5) : settings.newCardsPerDay;
+      const reviews = [], fresh = [];
+      for (const card of cards) {
+        const key = `${deckId}_${card.id}`;
+        const p = userProgress[key];
+        if (!p) {
+          if (deckNewToday + fresh.length < limit) fresh.push(card);
+        } else if (p.nextReview <= now) {
+          reviews.push(card);
+        }
+      }
+      // Reviews oldest-due first, then new cards
+      reviews.sort((a, b) => (userProgress[`${deckId}_${a.id}`].nextReview || 0) - (userProgress[`${deckId}_${b.id}`].nextReview || 0));
+      return { reviews, fresh, all: reviews.concat(fresh) };
+    }
+
+    function getDueCount(deckId) {
+      return getDueCardsForDeck(deckId, false).all.length;
+    }
+
+    const totalDue = () => Object.keys(DECK_META).reduce((n, id) => n + getDueCount(id), 0);
+
+    /* ---------- Badges ---------- */
+    function computeBadges(progressData) {
+      const stats = { studied: 0, mastered: 0, deckMastered: {}, decksTouched: 0 };
+      Object.keys(DECK_META).forEach(deckId => {
+        let mastered = 0;
+        (deckCards[deckId] || []).forEach(card => {
+          const p = progressData[`${deckId}_${card.id}`];
+          if (!p) return;
+          stats.studied++;
+          if (p.interval >= 21 && p.repetitions > 0) {
+            mastered++;
+            stats.mastered++;
+          }
         });
-    </script>
-<script src="/js/home-link.js" data-mode="float"></script>
+        stats.deckMastered[deckId] = mastered;
+        if (mastered > 0) stats.decksTouched++;
+      });
+      const earned = [];
+      Object.entries(BADGES).forEach(([id, b]) => {
+        let value = 0;
+        if (b.metric === 'studied') value = stats.studied;
+        else if (b.metric === 'mastered') value = stats.mastered;
+        else if (b.metric === 'deck-mastered') value = stats.deckMastered[b.deck] || 0;
+        else if (b.metric === 'decks-touched') value = stats.decksTouched;
+        let level = 0;
+        b.levels.forEach((th, i) => { if (value >= th) level = i + 1; });
+        if (level > 0) earned.push({ id, ...b, level, threshold: b.levels[level - 1], next: b.levels[level] || null, value });
+      });
+      return { badges: earned, stats };
+    }
+
+    function renderBadges() {
+      const row = document.getElementById('badgesRow');
+      const det = document.getElementById('badgeDetail');
+      if (!row) return;
+      const { badges } = computeBadges(userProgress);
+      if (!badges.length) { row.innerHTML = ''; if (det) det.hidden = true; return; }
+      row.innerHTML = badges.map((b, i) =>
+        `<button type="button" class="badge-chip ${LEVEL_CLASSES[b.level - 1]}" data-bi="${i}">`
+        + `<span>${b.icon}</span><span>${esc(b.name)}</span><small>${LEVEL_NAMES[b.level - 1]}</small></button>`
+      ).join('');
+      row.querySelectorAll('.badge-chip').forEach(btn => {
+        btn.onclick = () => {
+          const b = badges[Number(btn.dataset.bi)];
+          if (!b || !det) return;
+          det.innerHTML = `<span><b>${b.icon} ${esc(b.name)} (${LEVEL_NAMES[b.level - 1]})</b> — ${b.value} ${esc(b.desc)}${b.next ? ` · next tier at ${b.next}` : ' · max tier!'}</span>`
+            + `<button type="button" class="tb-btn" onclick="document.getElementById('badgeDetail').hidden=true">✕</button>`;
+          det.hidden = false;
+        };
+      });
+    }
+
+    /* ---------- Cakebread Questing integration ---------- */
+    function importOldReviews() {
+      if (typeof QE === 'undefined' || !currentUser) return;
+      const list = [];
+      Object.keys(DECK_META).forEach(deckId => (deckCards[deckId] || []).forEach(card => {
+        const key = `${deckId}_${card.id}`, p = userProgress[key];
+        if (p && p.repetitions > 0) list.push({ key, spec: card.spec, reps: p.repetitions, last: ymd(p.nextReview - p.interval * 864e5) });
+      }));
+      QE.importCards(list);
+    }
+    function lootPick() {
+      if (typeof ADV_ITEMS === 'undefined') return null;
+      const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !i.dark);
+      return pool.length ? pool[Math.floor(Math.random() * pool.length)].id : null;
+    }
+    function renderQuest() {
+      const el = document.getElementById('questPanel');
+      if (!el || typeof QE === 'undefined' || !currentUser) { if (el) el.hidden = true; return; }
+      el.hidden = false;
+      const d = QE.cardsToday(), target = QE.cardsTarget(), pct = Math.min(100, d.n / target * 100);
+      let pic = '';
+      try {
+        if (typeof PIXEL !== 'undefined') {
+          const look = JSON.parse(localStorage.getItem('cbs.adventurer.base'));
+          const eq = JSON.parse(localStorage.getItem('cbs.adventurer.eq'));
+          pic = PIXEL.portrait(look || PIXEL.DEFAULT, eq || {});
+        }
+      } catch (e) {}
+      const title = d.done ? '✅ Today\'s flashcards done: <b>+1 move</b> on Breadventure Land and a loot drop'
+        : QE.missionsToday() ? 'Today\'s +1 move is already won (you did a mission). Cards still give XP, ❤ Health and 🔮 mana.'
+        : `Review <b>${target}</b> card${target > 1 ? 's' : ''} today for <b>+1 move</b> on Breadventure Land and a loot drop`;
+      el.innerHTML = `${pic ? `<img class="px" src="${pic}" alt="">` : ''}
+        <div class="q-main"><div class="q-kick">Cakebread Questing · every card counts</div>
+        <div class="q-title">${title}</div>
+        <div class="q-bar ${d.done ? 'done' : ''}"><i style="width:${pct}%"></i></div>
+        <div class="q-earned">Today: ${d.n} card${d.n === 1 ? '' : 's'} · +${d.xp} XP${d.xp >= QE.CARD.xpCap ? ' (daily max)' : ''} · ❤ +${d.n} Health · 🔮 +${d.n} mana · 🪙 +${d.coins}.
+        A card rated Good or Easy on two different days is secured and counts towards its spec point.</div></div>
+        <a class="q-go" href="/interactive/spec-quiz/adventurer-home.html">Cakelab →</a>`;
+    }
+    function gain(html) {
+      const g = document.createElement('div');
+      g.className = 'gain';
+      g.innerHTML = html;
+      document.body.appendChild(g);
+      setTimeout(() => g.remove(), 1900);
+    }
+    function showLoot(id) {
+      const it = (typeof ADV_ITEMS !== 'undefined') && ADV_ITEMS.find(i => i.id === id);
+      if (!it || typeof PIXEL === 'undefined') return;
+      const box = document.createElement('div');
+      box.className = 'loot-pop';
+      box.innerHTML = `<div class="box"><div style="color:#2563eb;font-weight:800;text-transform:uppercase;font-size:.75em;letter-spacing:.06em">Today's flashcards done · loot</div>
+        <img src="/img/mascot/head-laugh.webp" alt="" style="width:68px;height:68px;image-rendering:auto;vertical-align:middle;margin-right:8px"><img src="${PIXEL.item(id)}" alt="" style="vertical-align:middle">
+        <h3 style="margin:8px 0 4px">${esc(it.name)}</h3><p style="color:#555;margin-bottom:8px"><i>${esc(it.d)}</i></p>
+        <p style="margin-bottom:10px"><b>+1 move</b> on Breadventure Land tonight.</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <a class="btn alt sm" href="/interactive/spec-quiz/adventurer-wardrobe.html">Wear it →</a>
+          <button type="button" class="btn sm" onclick="this.closest('.loot-pop').remove()">Keep going</button>
+        </div></div>`;
+      document.body.appendChild(box);
+    }
+
+    /* ---------- Deck Selector & Topic Browser rendering ---------- */
+    function renderAllDeckUI() {
+      const deckList = document.getElementById('deckList');
+      const ids = Object.keys(DECK_META);
+      const totalCards = ids.reduce((n, id) => n + (deckCards[id] || []).length, 0);
+
+      if (totalCards === 0) {
+        deckList.innerHTML = `<div class="err-box"><h3>⚠️ Could not load flashcards</h3>
+          <p style="margin-top:6px">The flashcard data files in <code>Flashcards/data/</code> could not be loaded. Refresh the page or check your connection.</p></div>`;
+        return;
+      }
+
+      deckList.innerHTML = ids.map(id => {
+        const m = DECK_META[id];
+        const cards = activeCards(id);
+        const due = getDueCount(id);
+        const st = getCardListStats(cards);
+        const masteredPct = st.total ? Math.round((st.mastered / st.total) * 100) : 0;
+        const learningPct = st.total ? Math.round((st.learning / st.total) * 100) : 0;
+        const unseenPct = st.total ? Math.max(0, 100 - masteredPct - learningPct) : 100;
+        const hasMoreUnseen = st.unseen > 0;
+        const dueHTML = !st.total
+          ? `<div class="d-duel">0 taught</div>`
+          : due > 0
+            ? `<div class="d-due">${due}</div><div class="d-duel">due today</div>`
+            : `<div class="d-none">All done ✓</div>`;
+        return `<div class="deck-item" style="--dc:${m.color}" onclick="startDeck('${id}', false)">
+          <div class="d-top">
+            <span class="d-ic">${m.icon}</span>
+            <div class="d-name">
+              <h3>${esc(m.name)}</h3>
+              <div class="d-count">${st.total} card${st.total === 1 ? '' : 's'}${taughtOnly && taughtSubs ? ' (taught)' : ''}</div>
+            </div>
+            <div class="d-right">${dueHTML}</div>
+          </div>
+          <div class="progress-bar-container">
+            ${masteredPct ? `<div class="progress-segment progress-mastered" style="width:${masteredPct}%"></div>` : ''}
+            ${learningPct ? `<div class="progress-segment progress-learning" style="width:${learningPct}%"></div>` : ''}
+            ${unseenPct ? `<div class="progress-segment progress-unseen" style="width:${unseenPct}%"></div>` : ''}
+          </div>
+          <div class="progress-legend">
+            ${st.mastered ? `<span><i class="lg-dot" style="background:${m.color}"></i>${st.mastered} mastered</span>` : ''}
+            ${st.learning ? `<span><i class="lg-dot" style="background:#facc15"></i>${st.learning} learning</span>` : ''}
+            <span><i class="lg-dot" style="background:#e7e2d6"></i>${st.unseen} unseen</span>
+          </div>
+          <div class="d-actions">
+            ${due > 0 ? `<span class="d-go">Study ${due} due →</span>` : (st.total ? `<span class="d-go" style="color:var(--green)">Caught up</span>` : `<span class="d-count">Turn off "Only taught" to see all</span>`)}
+            ${due === 0 && hasMoreUnseen ? `<button type="button" class="study-more-btn" onclick="event.stopPropagation();startDeck('${id}',true)">+5 new cards</button>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+
+      updateTotalDueToday();
+      renderBadges();
+      renderQuest();
+      renderTopicBrowser();
+      if (typeof QE !== 'undefined' && currentUser) QE.cardsDue(totalDue());
+    }
+
+    function updateTotalDueToday() {
+      const total = totalDue();
+      const el = document.getElementById('totalDueToday');
+      const countEl = document.getElementById('totalDueCount');
+      const timeEl = document.getElementById('totalDueTime');
+      if (!el || !countEl) return;
+      el.hidden = false;
+      countEl.textContent = total;
+      const mins = Math.round(total * 0.45);
+      if (total === 0) timeEl.textContent = 'All caught up!';
+      else if (mins < 1) timeEl.textContent = '~1 min';
+      else if (mins < 60) timeEl.textContent = `~${mins} min`;
+      else {
+        const hrs = Math.floor(mins / 60), rem = mins % 60;
+        timeEl.textContent = rem ? `~${hrs}h ${rem}m` : `~${hrs}h`;
+      }
+    }
+
+    function renderTopicBrowser() {
+      const box = document.getElementById('topicBrowser');
+      if (!box || !TOPIC_TREE.B.length) return;
+      box.hidden = false;
+      const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
+      const icons = { B: '🌿', C: '🧪', P: '🚀' };
+      const tabsEl = document.getElementById('tbTabs');
+      const gridEl = document.getElementById('tbGrid');
+
+      tabsEl.innerHTML = ['B', 'C', 'P'].map(L =>
+        `<button type="button" class="tb-tab ${L === activeTopicSubj ? 'on' : ''}" style="--dc:${colors[L]}" onclick="setTopicTab('${L}')">${icons[L]} ${SUBJ_NAME[L]}</button>`
+      ).join('');
+
+      const allSubjCards = Object.values(deckCards).flat().filter(c => DECK_META[c.deck].subj === activeTopicSubj);
+      const now = Date.now();
+
+      gridEl.innerHTML = TOPIC_TREE[activeTopicSubj].map(t => {
+        const tCards = allSubjCards.filter(c => c.topic === t.key || (c.spec && c.spec.startsWith(t.key + '.')));
+        if (!tCards.length) return '';
+        const st = getCardListStats(tCards);
+        const dueN = tCards.filter(c => { const p = userProgress[`${c.deck}_${c.id}`]; return !p || p.nextReview <= now; }).length;
+        const subBtns = t.subs.map(sb => {
+          const sCards = allSubjCards.filter(c => c.sub === sb.key);
+          if (!sCards.length) return '';
+          const untaughtCls = (taughtSubs && !taughtSubs.has(sb.key)) ? 'untaught' : '';
+          return `<button type="button" class="tb-sub ${untaughtCls}" onclick="startSubTopic('${sb.key}')">${esc(t.n + sb.l)} ${esc(sb.name)} (${sCards.length})</button>`;
+        }).filter(Boolean).join('');
+
+        return `<div class="tb-card" style="--dc:${colors[activeTopicSubj]}">
+          <div class="tb-card-top">
+            <div>
+              <h4>${t.n}. ${esc(t.name)}</h4>
+              <div class="tb-meta">${st.total} cards · ${st.mastered} mastered · ${st.learning} learning · ${st.unseen} unseen</div>
+            </div>
+          </div>
+          <div class="tb-acts">
+            ${dueN ? `<button type="button" class="tb-btn primary" onclick="startTopic('${t.key}', true)">Study due (${dueN})</button>` : ''}
+            <button type="button" class="tb-btn" onclick="startTopic('${t.key}', false)">All ${st.total} cards</button>
+          </div>
+          ${subBtns ? `<div class="tb-sublist">${subBtns}</div>` : ''}
+        </div>`;
+      }).filter(Boolean).join('');
+    }
+
+    window.setTopicTab = function (L) {
+      activeTopicSubj = L;
+      renderTopicBrowser();
+    };
+
+    window.toggleTaughtOnly = function (checked) {
+      taughtOnly = !!checked;
+      saveLocal();
+      renderAllDeckUI();
+    };
+
+    /* ---------- Screens & Study Sessions ---------- */
+    function showScreen(name) {
+      document.querySelectorAll('.deck-selector, .study-screen').forEach(el => el.classList.remove('active'));
+      const target = document.querySelector('.' + name);
+      if (target) target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    }
+
+    function beginSession(cards, label, color, mode, deckIdForBack) {
+      currentDeck = deckIdForBack || (cards[0] ? cards[0].deck : null);
+      studyQueue = cards.slice();
+      sessionDone = 0;
+      sessionInitialTotal = studyQueue.length;
+      sessionSeen = new Set();
+      sessionMode = mode;
+      sessionLabel = label;
+      lastUndo = null;
+      document.getElementById('undoBtn').hidden = true;
+      const st = document.querySelector('.study-screen');
+      if (st) st.style.setProperty('--dc', color || '#111');
+      document.getElementById('deckTitle').textContent = label;
+      showScreen('study-screen');
+      updateStats();
+      showNextCard();
+    }
+
+    window.startDeck = function (deckId, bypassLimit = false) {
+      const m = DECK_META[deckId];
+      if (!m) return;
+      const { all } = getDueCardsForDeck(deckId, bypassLimit);
+      const label = `${m.icon} ${m.name}` + (bypassLimit ? ' (+5 new)' : '') + (taughtOnly && taughtSubs ? ' · Taught' : '');
+      beginSession(all, label, m.color, 'deck', deckId);
+    };
+
+    window.startTopic = function (topicKey, dueOnly) {
+      const L = topicKey[0];
+      const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
+      const tObj = (TOPIC_TREE[L] || []).find(t => t.key === topicKey);
+      const all = Object.values(deckCards).flat().filter(c => c.topic === topicKey || (c.spec && c.spec.startsWith(topicKey + '.')));
+      const now = Date.now();
+      const chosen = dueOnly ? all.filter(c => { const p = userProgress[`${c.deck}_${c.id}`]; return !p || p.nextReview <= now; }) : all;
+      const ordered = dueOnly
+        ? chosen.filter(c => userProgress[`${c.deck}_${c.id}`]).concat(chosen.filter(c => !userProgress[`${c.deck}_${c.id}`]))
+        : shuffle(chosen);
+      const label = `${SUBJ_NAME[L]} ${tObj ? tObj.n + ' · ' + tObj.name : topicKey}`;
+      beginSession(ordered, label, colors[L], 'topic', ordered[0]?.deck);
+    };
+
+    window.startSubTopic = function (subKey) {
+      const L = subKey[0];
+      const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
+      let subName = subKey;
+      (TOPIC_TREE[L] || []).forEach(t => t.subs.forEach(sb => { if (sb.key === subKey) subName = `${t.n}${sb.l} · ${sb.name}`; }));
+      const chosen = Object.values(deckCards).flat().filter(c => c.sub === subKey);
+      beginSession(shuffle(chosen), `${SUBJ_NAME[L]} ${subName}`, colors[L], 'topic', chosen[0]?.deck);
+    };
+
+    function handleUrlParams() {
+      if (urlHandled) return;
+      urlHandled = true;
+      const q = new URLSearchParams(location.search);
+      const spec = q.get('spec');
+      const sub = q.get('sub');
+      const topic = q.get('topic');
+      const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
+      if (spec) {
+        const cards = Object.values(deckCards).flat().filter(c => c.spec === spec);
+        if (!cards.length) return;
+        const L = spec[0];
+        beginSession(cards, `${SUBJ_NAME[L] || ''} ${spec.slice(1)} · ${cards.length} card${cards.length === 1 ? '' : 's'}`, colors[L], 'spec', cards[0].deck);
+      } else if (sub) {
+        startSubTopic(sub);
+      } else if (topic) {
+        startTopic(topic, false);
+      }
+    }
+
+    function updateStats() {
+      let remNew = 0, remRev = 0;
+      studyQueue.forEach(c => {
+        const cat = categorizeCard(`${c.deck}_${c.id}`);
+        if (cat === 'unseen') remNew++;
+        else remRev++;
+      });
+      document.getElementById('newCount').textContent = remNew;
+      document.getElementById('reviewCount').textContent = remRev;
+      document.getElementById('studiedToday').textContent = sessionDone;
+      const denom = Math.max(1, sessionDone + studyQueue.length);
+      document.getElementById('sessionBarFill').style.width = Math.min(100, Math.round(sessionDone / denom * 100)) + '%';
+    }
+
+    function renderSpecDrawer(card) {
+      const sp = card.spec;
+      const reportBtn = `<button type="button" class="report-link" onclick="openReport()">⚑ Report card</button>`;
+      if (!sp) return `<div class="card-meta"><span></span>${reportBtn}</div>`;
+      const L = sp[0];
+      const pt = window.SPECPT ? SPECPT.of(sp) : null;
+      const bullets = pt && pt.bullets ? `<ul>${pt.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : '';
+      const extras = pt && window.SPECPT ? SPECPT.extras(pt) : '';
+      const specUrl = (SUBJ_URL[L] || '/specifications/science.html') + '#' + encodeURIComponent(sp);
+      const pracUrl = '/interactive/spec-quiz/practice.html?point=' + encodeURIComponent(sp);
+      return `<div class="card-meta">
+        <details class="spec-drawer">
+          <summary><span class="sd-code">${esc(sp)}</span> <span>Spec point &amp; practice ▾</span></summary>
+          <div class="spec-box">
+            ${pt ? `<div><b>${esc(sp)}:</b> ${esc(pt.text)}</div>${bullets}${extras}` : `<div>Specification point ${esc(sp)}</div>`}
+            <div class="spec-box-links">
+              <a href="${specUrl}">📋 Spec tracker</a>
+              <a href="${pracUrl}">📝 Practice questions on ${esc(sp)}</a>
+            </div>
+          </div>
+        </details>
+        ${reportBtn}
+      </div>`;
+    }
+
+    function showNextCard() {
+      const box = document.getElementById('flashcardContainer');
+      if (studyQueue.length === 0) {
+        currentCard = null;
+        isFlipped = false;
+        const canAddMore = sessionMode === 'deck' && currentDeck && getCardListStats(activeCards(currentDeck)).unseen > 0;
+        box.innerHTML = `<div class="fc-done">
+          <img src="/img/mascot/head-laugh.webp" alt="">
+          <h2>${sessionDone > 0 ? 'Session complete!' : 'Nothing due right now!'}</h2>
+          <p>${sessionDone > 0
+            ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or keep going in Cakebread Questing.`
+            : 'All caught up on this deck for today.'}</p>
+          <div class="fc-done-acts">
+            <button type="button" class="btn" onclick="backToDecks()">Back to decks</button>
+            ${canAddMore ? `<button type="button" class="btn alt" onclick="startDeck('${currentDeck}',true)">+5 new cards</button>` : ''}
+            <a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a>
+            <a class="btn alt" href="/interactive/spec-quiz/practice.html">📝 Practice Questions</a>
+          </div>
+        </div>`;
+        updateStats();
+        return;
+      }
+
+      currentCard = studyQueue[0];
+      currentDeck = currentCard.deck;
+      const m = DECK_META[currentDeck];
+      const st = document.querySelector('.study-screen');
+      if (st && m) st.style.setProperty('--dc', m.color);
+      isFlipped = false;
+
+      const key = `${currentDeck}_${currentCard.id}`;
+      const p = userProgress[key] || { easiness: 2.5, repetitions: 0, interval: 0 };
+      const preview = q => SM2.formatInterval(SM2.calculate(q, p.repetitions, p.easiness, p.interval).interval, q);
+
+      box.innerHTML = `
+        <div class="flashcard" id="activeCard" onclick="flipCard()">
+          <div class="face" id="cardFace">Question</div>
+          <div id="cardContent">${currentCard.front}</div>
+        </div>
+        <div class="hint" id="flipHint">Tap card or press Space to reveal answer</div>
+        <div id="ratingButtons" style="display:none">
+          <div class="rating-buttons">
+            <button type="button" class="rating-btn rating-btn-1" onclick="rateCard(1)">
+              <span class="r-key">1</span><span>Again</span><span class="r-int">${preview(1)}</span>
+            </button>
+            <button type="button" class="rating-btn rating-btn-2" onclick="rateCard(2)">
+              <span class="r-key">2</span><span>Hard</span><span class="r-int">${preview(2)}</span>
+            </button>
+            <button type="button" class="rating-btn rating-btn-3" onclick="rateCard(3)">
+              <span class="r-key">3</span><span>Good</span><span class="r-int">${preview(3)}</span>
+            </button>
+            <button type="button" class="rating-btn rating-btn-4" onclick="rateCard(4)">
+              <span class="r-key">4</span><span>Easy</span><span class="r-int">${preview(4)}</span>
+            </button>
+          </div>
+          <div class="hint">Rate honestly: press 1–4 · Z to undo</div>
+        </div>
+        ${renderSpecDrawer(currentCard)}
+      `;
+      updateStats();
+    }
+
+    window.flipCard = function () {
+      if (isFlipped || !currentCard) return;
+      isFlipped = true;
+      const cardEl = document.getElementById('activeCard');
+      const faceEl = document.getElementById('cardFace');
+      const contentEl = document.getElementById('cardContent');
+      const hintEl = document.getElementById('flipHint');
+      const ratingEl = document.getElementById('ratingButtons');
+      if (!cardEl || !contentEl) return;
+
+      cardEl.classList.add('flipped');
+      if (faceEl) faceEl.textContent = 'Answer';
+      contentEl.innerHTML = `<div class="fc-q-prompt">${currentCard.front}</div><div class="fc-answer">${currentCard.back}</div>`;
+      if (hintEl) hintEl.style.display = 'none';
+      if (ratingEl) ratingEl.style.display = 'block';
+
+      // Tap any image on the flipped card to zoom it cleanly
+      contentEl.querySelectorAll('img').forEach(img => {
+        img.onclick = e => {
+          e.stopPropagation();
+          const z = document.createElement('div');
+          z.className = 'img-zoom';
+          z.innerHTML = `<img src="${img.src}" alt="">`;
+          z.onclick = () => z.remove();
+          document.body.appendChild(z);
+        };
+      });
+    };
+
+    window.rateCard = async function (quality) {
+      if (!isFlipped || !currentCard || ratingBusy) return;
+      ratingBusy = true;
+      try {
+        const card = currentCard;
+        const deckId = card.deck;
+        const cardKey = `${deckId}_${card.id}`;
+        const oldProgress = userProgress[cardKey] ? Object.assign({}, userProgress[cardKey]) : null;
+        const wasUnseen = !oldProgress;
+        const prevNewCount = (settings.newCardsToday && settings.newCardsToday[deckId]) || 0;
+        const alreadyRatedThisSession = sessionSeen.has(cardKey);
+
+        // Save undo snapshot before mutating
+        lastUndo = {
+          card,
+          cardKey,
+          oldProgress,
+          prevNewCount,
+          prevQueue: studyQueue.slice(),
+          prevDone: sessionDone,
+          wasAlreadySeen: alreadyRatedThisSession
+        };
+        document.getElementById('undoBtn').hidden = false;
+
+        const base = oldProgress || { easiness: 2.5, repetitions: 0, interval: 0, nextReview: Date.now() };
+        const newProgress = SM2.calculate(quality, base.repetitions, base.easiness, base.interval);
+        if (quality === 1) newProgress.lapses = (base.lapses || 0) + 1;
+        else if (base.lapses) newProgress.lapses = base.lapses;
+        userProgress[cardKey] = newProgress;
+
+        if (wasUnseen) {
+          settings.newCardsToday[deckId] = prevNewCount + 1;
+        }
+
+        // Advance queue immediately so UI never blocks on network
+        studyQueue.shift();
+        if (quality === 1) {
+          // Re-queue "Again" 3 cards later (or at end) so the student retries it this session
+          const pos = Math.min(3, studyQueue.length);
+          studyQueue.splice(pos, 0, card);
+        } else {
+          sessionDone++;
+        }
+        sessionSeen.add(cardKey);
+
+        // Questing rewards (only on first rating of this card in this session)
+        if (typeof QE !== 'undefined' && currentUser && !alreadyRatedThisSession) {
+          const wasDue = !oldProgress || oldProgress.nextReview <= Date.now();
+          const res = QE.recordCard(cardKey, card.spec || null, quality, lootPick, wasDue);
+          const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -4px">`;
+          if (quality === 1) {
+            gain(faceImg + 'Back soon in this session' + (wasDue ? ' · +2 XP · ❤ +1 · 🔮 +1' : ''));
+          } else {
+            gain(faceImg + (wasDue
+              ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
+              : (res.notes.length ? res.notes.join(' · ') : 'Practice only (not due yet)')));
+          }
+          if (res.done) {
+            showLoot(res.loot);
+            try {
+              const it = res.loot && typeof ADV_ITEMS !== 'undefined' && ADV_ITEMS.find(i => i.id === res.loot);
+              QE.log('🃏', `Finished today's flashcards${it ? ' · loot: ' + it.name : ''}`);
+            } catch (e) {}
+          }
+        } else if (quality === 1) {
+          gain('Re-queued — you\'ll see this card again soon');
+        }
+
+        showNextCard();
+        // Background cloud sync (non-blocking, with timeout)
+        saveCardToFirestore(cardKey, newProgress);
+      } finally {
+        ratingBusy = false;
+      }
+    };
+
+    window.undoLast = async function () {
+      if (!lastUndo) return;
+      const u = lastUndo;
+      lastUndo = null;
+      document.getElementById('undoBtn').hidden = true;
+
+      if (u.oldProgress) userProgress[u.cardKey] = u.oldProgress;
+      else delete userProgress[u.cardKey];
+
+      settings.newCardsToday[u.card.deck] = u.prevNewCount;
+      studyQueue = u.prevQueue;
+      sessionDone = u.prevDone;
+      if (!u.wasAlreadySeen) sessionSeen.delete(u.cardKey);
+
+      saveLocal();
+      const ref = userDocRef();
+      if (ref) {
+        try {
+          if (u.oldProgress) {
+            await withTimeout(ref.set({ progress: { [u.cardKey]: u.oldProgress }, settings }, { merge: true }), 8000);
+          } else {
+            await withTimeout(ref.update({
+              [`progress.${u.cardKey}`]: firebase.firestore.FieldValue.delete(),
+              settings
+            }), 8000);
+          }
+        } catch (e) {}
+      }
+      gain('↩ Undid last rating');
+      showNextCard();
+    };
+
+    window.backToDecks = function () {
+      document.getElementById('deckTitle').textContent = '';
+      currentCard = null;
+      isFlipped = false;
+      showScreen('deck-selector');
+      renderAllDeckUI();
+    };
+
+    /* ---------- Modals: Guide, Settings, Progress (inline SVG, zero CDN), Report ---------- */
+    function anyModalOpen() {
+      return !!document.querySelector('.modal-backdrop.open, .loot-pop, .img-zoom');
+    }
+
+    window.openGuide = () => document.getElementById('guide-screen').classList.add('open');
+    window.closeGuide = () => document.getElementById('guide-screen').classList.remove('open');
+
+    window.openSettings = function () {
+      document.getElementById('newCardsPerDay').value = settings.newCardsPerDay;
+      document.getElementById('settings-screen').classList.add('open');
+    };
+    window.closeSettings = () => document.getElementById('settings-screen').classList.remove('open');
+
+    window.saveSettings = async function () {
+      const val = parseInt(document.getElementById('newCardsPerDay').value, 10);
+      settings.newCardsPerDay = Math.min(100, Math.max(1, isNaN(val) ? 5 : val));
+      saveLocal();
+      const ref = userDocRef();
+      if (ref) {
+        try { await withTimeout(ref.set({ settings }, { merge: true }), 8000); } catch (e) {}
+      }
+      closeSettings();
+      renderAllDeckUI();
+      gain('⚙️ Settings saved');
+    };
+
+    window.resetProgress = async function () {
+      if (!confirm('⚠️ Reset ALL flashcard progress? This cannot be undone.')) return;
+      if (!confirm('Really delete all your flashcard progress? Last chance.')) return;
+      userProgress = {};
+      settings.newCardsToday = {};
+      settings.lastStudyDate = new Date().toDateString();
+      saveLocal();
+      const ref = userDocRef();
+      if (ref) {
+        try { await withTimeout(ref.update({ progress: {}, settings }), 8000); } catch (e) {}
+      }
+      closeSettings();
+      renderAllDeckUI();
+      gain('✅ Flashcard progress reset');
+    };
+
+    function drawDonut(st, accent) {
+      const total = st.total || 1;
+      const r = 64, cx = 85, cy = 85, circ = 2 * Math.PI * r;
+      const segs = [
+        { n: st.mastered, color: accent || '#15803d', label: 'Mastered' },
+        { n: st.learning, color: '#facc15', label: 'Learning' },
+        { n: st.unseen, color: '#e7e2d6', label: 'Unseen' }
+      ];
+      let offset = 0;
+      const arcs = segs.map(s => {
+        const len = (s.n / total) * circ;
+        const el = len > 0.1 ? `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.color}" stroke-width="26" stroke-dasharray="${len.toFixed(2)} ${circ.toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 ${cx} ${cy})"/>` : '';
+        offset += len;
+        return el;
+      }).join('');
+      const pct = Math.round((st.mastered / total) * 100);
+      document.getElementById('donutBox').innerHTML = `<svg viewBox="0 0 170 170" width="180" height="180" role="img" aria-label="${pct}% mastered">
+        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#e7e2d6" stroke-width="26"/>
+        ${arcs}
+        <circle cx="${cx}" cy="${cy}" r="${r - 13}" fill="none" stroke="#111" stroke-width="1.5"/>
+        <circle cx="${cx}" cy="${cy}" r="${r + 13}" fill="none" stroke="#111" stroke-width="1.5"/>
+        <text x="${cx}" y="${cy - 2}" text-anchor="middle" font-family="Barlow Condensed, Arial" font-weight="900" font-size="32" fill="#111">${pct}%</text>
+        <text x="${cx}" y="${cy + 16}" text-anchor="middle" font-family="Barlow, Arial" font-weight="700" font-size="11" fill="#555">MASTERED</text>
+      </svg>`;
+      document.getElementById('donutLegend').innerHTML = segs.map(s =>
+        `<span><i class="lg-dot" style="background:${s.color}"></i><b>${s.n}</b> ${s.label}</span>`
+      ).join('');
+    }
+
+    function renderProgressModal() {
+      const ids = Object.keys(DECK_META);
+      const byDeck = {};
+      let all = { unseen: 0, learning: 0, mastered: 0, total: 0 };
+      ids.forEach(id => {
+        const st = getCardListStats(deckCards[id] || []);
+        byDeck[id] = st;
+        all.unseen += st.unseen;
+        all.learning += st.learning;
+        all.mastered += st.mastered;
+        all.total += st.total;
+      });
+
+      if (progressFilterDeck && byDeck[progressFilterDeck]) {
+        const m = DECK_META[progressFilterDeck];
+        document.getElementById('overallChartTitle').textContent = `${m.icon} ${m.name}`;
+        drawDonut(byDeck[progressFilterDeck], m.color);
+      } else {
+        document.getElementById('overallChartTitle').textContent = `All Decks (${all.total} cards)`;
+        drawDonut(all, '#15803d');
+      }
+
+      document.getElementById('deckBars').innerHTML = ids.map(id => {
+        const m = DECK_META[id], st = byDeck[id], t = st.total || 1;
+        const mp = (st.mastered / t * 100).toFixed(1), lp = (st.learning / t * 100).toFixed(1);
+        const sel = progressFilterDeck === id ? 'selected' : '';
+        return `<div class="prog-row ${sel}" onclick="filterProgressDeck('${id}')">
+          <div class="prog-row-head">
+            <span>${m.icon} ${esc(m.name)}</span>
+            <span>${st.mastered}/${st.total} mastered · ${st.learning} learning</span>
+          </div>
+          <div class="prog-bar">
+            <div style="width:${mp}%;background:${m.color}"></div>
+            <div style="width:${lp}%;background:#facc15"></div>
+          </div>
+        </div>`;
+      }).join('') + (progressFilterDeck ? `<button type="button" class="btn alt sm" style="margin-top:4px" onclick="filterProgressDeck(null)">Show all decks</button>` : '');
+    }
+
+    window.filterProgressDeck = function (deckId) {
+      progressFilterDeck = (progressFilterDeck === deckId) ? null : deckId;
+      renderProgressModal();
+    };
+    window.openProgress = function () {
+      progressFilterDeck = null;
+      renderProgressModal();
+      document.getElementById('progress-screen').classList.add('open');
+    };
+    window.closeProgress = () => document.getElementById('progress-screen').classList.remove('open');
+
+    window.openReport = function () {
+      if (!currentCard) return;
+      const plain = currentCard.front.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+      document.getElementById('reportCardPreview').textContent = `${currentCard.deck}_${currentCard.id}` + (currentCard.spec ? ` (${currentCard.spec})` : '') + (plain ? ` — ${plain.slice(0, 120)}` : '');
+      document.getElementById('reportComment').value = '';
+      document.getElementById('reportStatus').textContent = '';
+      document.getElementById('reportSendBtn').disabled = false;
+      document.getElementById('report-screen').classList.add('open');
+    };
+    window.closeReport = () => document.getElementById('report-screen').classList.remove('open');
+
+    window.submitCardReport = async function () {
+      if (!currentCard) return;
+      const reason = document.getElementById('reportReason').value;
+      const comment = document.getElementById('reportComment').value.trim();
+      const status = document.getElementById('reportStatus');
+      const btn = document.getElementById('reportSendBtn');
+      const cardKey = `${currentCard.deck}_${currentCard.id}`;
+      btn.disabled = true;
+      try {
+        if (typeof QE !== 'undefined' && typeof QE.report === 'function') {
+          await withTimeout(QE.report(
+            { id: 'fc:' + cardKey + (currentCard.spec ? ' (' + currentCard.spec + ')' : ''), q: currentCard.front },
+            [currentCard.back],
+            0,
+            -1,
+            reason,
+            comment
+          ), 8000);
+          status.style.color = '#15803d';
+          status.textContent = '✓ Sent to your teacher. Thanks for spotting it!';
+          setTimeout(closeReport, 1100);
+        } else {
+          throw new Error('offline');
+        }
+      } catch (e) {
+        btn.disabled = false;
+        status.style.color = '#b91c1c';
+        status.textContent = 'Could not send while offline — please tell your teacher in class.';
+      }
+    };
+
+    /* ---------- Scoped keyboard shortcuts (only active in study screen with no modal/input focused) ---------- */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.img-zoom').forEach(z => z.remove());
+        return;
+      }
+      if (anyModalOpen()) return;
+      const studyActive = document.querySelector('.study-screen.active');
+      if (!studyActive || !currentCard) return;
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (/^(INPUT|TEXTAREA|SELECT)$/.test(tag)) return;
+
+      if ((e.key === ' ' || e.key === 'Enter') && !isFlipped) {
+        e.preventDefault();
+        flipCard();
+      } else if (['1', '2', '3', '4'].includes(e.key) && isFlipped) {
+        e.preventDefault();
+        rateCard(parseInt(e.key, 10));
+      } else if ((e.key === 'z' || e.key === 'Z') && lastUndo) {
+        e.preventDefault();
+        undoLast();
+      }
+    });
+
+    /* ---------- Boot: draw immediately from local data, then sync Firebase if available ---------- */
+    (async function boot() {
+      if (window.CBSCourse && CBSCourse.sa) {
+        const pill = document.getElementById('saPill');
+        if (pill) pill.hidden = false;
+      }
+      loadLocal();
+      await parseAllDecks();
+      renderAllDeckUI();
+      handleUrlParams();
+
+      if (!auth) {
+        showSyncBanner('offline');
+        return;
+      }
+
+      let authFired = false;
+      setTimeout(() => {
+        if (!authFired) showSyncBanner('offline');
+      }, 6000);
+
+      auth.onAuthStateChanged(async user => {
+        authFired = true;
+        currentUser = user || null;
+        if (user) {
+          showSyncBanner('signed-in');
+          loadLocal();
+          await syncUserFromFirestore();
+          importOldReviews();
+          renderAllDeckUI();
+        } else {
+          userYear = null;
+          taughtSubs = null;
+          document.getElementById('taughtToggleWrap').hidden = true;
+          showSyncBanner('signed-out');
+          loadLocal();
+          renderAllDeckUI();
+        }
+      });
+    })();
+  </script>
+  <script src="/js/home-link.js" data-mode="float"></script>
 </body>
 </html>
