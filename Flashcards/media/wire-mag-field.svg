@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 230" width="380" height="230">
+  <rect width="380" height="230" fill="#fff"/>
+  <!-- Back halves of concentric field circles (behind wire) -->
+  <path d="M 134 115 A 56 22 0 0 1 246 115" fill="none" stroke="#dc2626" stroke-width="2.8"/>
+  <path d="M 102 115 A 88 34 0 0 1 278 115" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+  <path d="M 70 115 A 120 46 0 0 1 310 115" fill="none" stroke="#dc2626" stroke-width="2"/>
+  <!-- Straight vertical wire (conventional current UP: + at bottom, - at top; RHG thumb UP -> fingers anti-clockwise viewed from top, i.e. left-to-right across the front!) -->
+  <rect x="182" y="24" width="16" height="182" rx="4" fill="#d97706" stroke="#78350f" stroke-width="2"/>
+  <!-- Current arrow pointing UP -->
+  <line x1="190" y1="184" x2="190" y2="44" stroke="#15803d" stroke-width="4"/>
+  <polygon points="190,32 181,49 199,49" fill="#15803d"/>
+  <!-- Front halves of concentric circles (in front of wire, arrows pointing RIGHT across front = anti-clockwise from above!) -->
+  <path d="M 134 115 A 56 22 0 0 0 246 115" fill="none" stroke="#dc2626" stroke-width="3"/>
+  <path d="M 102 115 A 88 34 0 0 0 278 115" fill="none" stroke="#dc2626" stroke-width="2.6"/>
+  <path d="M 70 115 A 120 46 0 0 0 310 115" fill="none" stroke="#dc2626" stroke-width="2.2"/>
+  <!-- Direction arrowheads on front (pointing right) and back (pointing left) -->
+  <polygon points="222,135 208,131 211,142" fill="#dc2626"/>
+  <polygon points="226,147 212,144 215,155" fill="#dc2626"/>
+  <polygon points="230,159 216,156 219,167" fill="#dc2626"/>
+  <polygon points="158,95 172,99 169,88" fill="#dc2626"/>
+  <!-- Labels -->
+  <text x="190" y="18" font-family="Barlow, Arial, sans-serif" font-size="15" font-weight="900" fill="#111" text-anchor="middle">−</text>
+  <text x="190" y="222" font-family="Barlow, Arial, sans-serif" font-size="15" font-weight="900" fill="#111" text-anchor="middle">+</text>
+  <text x="212" y="42" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#15803d">Conventional current</text>
+  <text x="212" y="57" font-family="Barlow, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#15803d">(+ → −)</text>
+  <text x="292" y="184" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#dc2626" text-anchor="middle">Concentric circular</text>
+  <text x="292" y="199" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#dc2626" text-anchor="middle">magnetic field lines</text>
+  <text x="86" y="184" font-family="Barlow, Arial, sans-serif" font-size="11.5" fill="#555" text-anchor="middle">Closer near wire</text>
+  <text x="86" y="198" font-family="Barlow, Arial, sans-serif" font-size="11.5" fill="#555" text-anchor="middle">(stronger field)</text>
+</svg>

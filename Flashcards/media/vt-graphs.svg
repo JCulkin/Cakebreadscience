@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 190" width="540" height="190">
+  <rect width="540" height="190" fill="#fff"/>
+  <!-- A -->
+  <g transform="translate(18,16)">
+    <line x1="30" y1="136" x2="152" y2="136" stroke="#111" stroke-width="2.2"/>
+    <line x1="30" y1="14" x2="30" y2="136" stroke="#111" stroke-width="2.2"/>
+    <rect x="30" y="64" width="112" height="72" fill="#dbeafe" opacity=".55"/>
+    <line x1="30" y1="64" x2="142" y2="64" stroke="#1d4ed8" stroke-width="3.2"/>
+    <text x="24" y="24" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="end">v</text>
+    <text x="150" y="154" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="end">t</text>
+    <text x="88" y="26" font-family="Barlow, Arial, sans-serif" font-size="18" font-weight="900" fill="#111" text-anchor="middle">A</text>
+  </g>
+  <!-- B -->
+  <g transform="translate(192,16)">
+    <line x1="30" y1="136" x2="152" y2="136" stroke="#111" stroke-width="2.2"/>
+    <line x1="30" y1="14" x2="30" y2="136" stroke="#111" stroke-width="2.2"/>
+    <polygon points="30,136 142,136 142,30" fill="#dbeafe" opacity=".55"/>
+    <line x1="30" y1="136" x2="142" y2="30" stroke="#1d4ed8" stroke-width="3.2"/>
+    <text x="24" y="24" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="end">v</text>
+    <text x="150" y="154" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="end">t</text>
+    <text x="88" y="26" font-family="Barlow, Arial, sans-serif" font-size="18" font-weight="900" fill="#111" text-anchor="middle">B</text>
+  </g>
+  <!-- C -->
+  <g transform="translate(366,16)">
+    <line x1="30" y1="136" x2="152" y2="136" stroke="#111" stroke-width="2.2"/>
+    <line x1="30" y1="14" x2="30" y2="136" stroke="#111" stroke-width="2.2"/>
+    <polygon points="30,136 30,34 142,136" fill="#dbeafe" opacity=".55"/>
+    <line x1="30" y1="34" x2="142" y2="136" stroke="#1d4ed8" stroke-width="3.2"/>
+    <text x="24" y="24" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="end">v</text>
+    <text x="150" y="154" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="end">t</text>
+    <text x="88" y="26" font-family="Barlow, Arial, sans-serif" font-size="18" font-weight="900" fill="#111" text-anchor="middle">C</text>
+  </g>
+</svg>

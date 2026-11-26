@@ -774,7 +774,7 @@
   {
     "id": 1675763043715,
     "front": "What are isomers? How many isomers of C<sub>5</sub>H<sub>12</sub> are there?",
-    "back": "Isomers are compounds of the same molecular formula having different structural formulae.<br><br>Three:<br><img src=\"1730836706558840789708458303347936836671245942596.jpg\">",
+    "back": "Compounds with the <b>same molecular formula</b> but <b>different structural formulae</b>.<br>C<sub>5</sub>H<sub>12</sub> has <b>3 isomers</b>:<img src=\"c5h12-isomers.svg\" alt=\"Three IUPAC isomers of C5H12: pentane, 2-methylbutane, 2,2-dimethylpropane\">",
     "spec": "C4.21",
     "topic": "C4"
   },
@@ -1113,7 +1113,7 @@
   {
     "id": 1675764406532,
     "front": "Define percentage yield",
-    "back": "The percentage ratio of the actual yield of product from a reaction\ncompared with the theoretical yield.<br><img src=\"paste-16f2220cdbbb27c6ef3dae5214fae09a822ec09a.jpg\">",
+    "back": "Ratio of actual product obtained to the theoretical maximum, as a percentage:<div class=\"fc-eq\">Percentage yield = <span class=\"fc-frac\"><span>actual yield</span><span>theoretical yield</span></span> × 100</div>",
     "spec": "C1.30",
     "topic": "C1"
   },
@@ -1484,28 +1484,28 @@
   {
     "id": 1681459340395,
     "front": "What is the formula for R<sub>f</sub>?",
-    "back": "<img src=\"paste-1ae84b12056967fb55290ea952176e2ef19a1f1c.jpg\">",
+    "back": "<div class=\"fc-eq\"><i>R</i><sub>f</sub> = <span class=\"fc-frac\"><span>distance moved by spot (solute)</span><span>distance moved by solvent front</span></span></div><div style=\"font-size:16px;color:#555;margin-top:4px\">(Always between 0 and 1 — no units)</div>",
     "spec": "C1.12",
     "topic": "C1"
   },
   {
     "id": 1681460012697,
     "front": "What is the general formula for the reaction between a metal and water?",
-    "back": "<img src=\"paste-79bd98442c99ed17f5ff6941aecde80c0c781edd.jpg\">",
+    "back": "<div class=\"fc-eq\">metal + water → metal hydroxide + hydrogen</div>",
     "spec": "C2.15",
     "topic": "C2"
   },
   {
     "id": 1681460212115,
     "front": "What are the colours for litmus paper?",
-    "back": "<img src=\"paste-dccb78a922eed47bc7be6d5c892f04ab6ca255c2.jpg\">",
+    "back": "<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fecaca;color:#991b1b\"><small>Acidic</small>Red</span><span class=\"fc-ind\" style=\"background:#e9d5ff;color:#581c87\"><small>Neutral</small>Purple</span><span class=\"fc-ind\" style=\"background:#bfdbfe;color:#1e3a8a\"><small>Alkaline</small>Blue</span></div>",
     "spec": "C2.28",
     "topic": "C2"
   },
   {
     "id": 1681460249907,
     "front": "What are the colours for phenolphthalein?",
-    "back": "<img src=\"paste-141c5632f28e35f7976f152525460070b8300573.jpg\">",
+    "back": "<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fff;color:#111\"><small>Acidic / Neutral</small>Colourless</span><span class=\"fc-ind\" style=\"background:#fbcfe8;color:#9d174d\"><small>Alkaline</small>Pink</span></div>",
     "spec": "C2.28",
     "topic": "C2",
     "daOnly": true
@@ -1513,7 +1513,7 @@
   {
     "id": 1681460281420,
     "front": "What are the colours of methyl orange?",
-    "back": "<img src=\"paste-82b7d561de471a8c3b1deec97913f66ffa527d4d.jpg\"><br>Orange in neutral",
+    "back": "<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fecaca;color:#991b1b\"><small>Acidic</small>Red</span><span class=\"fc-ind\" style=\"background:#fed7aa;color:#9a3412\"><small>Neutral</small>Orange</span><span class=\"fc-ind\" style=\"background:#fef08a;color:#854d0e\"><small>Alkaline</small>Yellow</span></div>",
     "spec": "C2.28",
     "topic": "C2",
     "daOnly": true
@@ -1521,7 +1521,7 @@
   {
     "id": 1681460541377,
     "front": "How do you test for halides?",
-    "back": "<img src=\"paste-bb617199078b5dd548b5c01f26bb87b1bc4b8fc8.jpg\">",
+    "back": "Add <b>dilute nitric acid (HNO<sub>3</sub>)</b>, then <b>silver nitrate solution (AgNO<sub>3</sub>)</b>:<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fff\"><small>Chloride (Cl⁻)</small>White ppt (AgCl)</span><span class=\"fc-ind\" style=\"background:#fef9c3\"><small>Bromide (Br⁻)</small>Cream ppt (AgBr)</span><span class=\"fc-ind\" style=\"background:#fde047\"><small>Iodide (I⁻)</small>Yellow ppt (AgI)</span></div><ul class=\"fc-points\"><li>Ag<sup>+</sup>(aq) + Cl<sup>−</sup>(aq) → AgCl(s)</li><li>Ag<sup>+</sup>(aq) + Br<sup>−</sup>(aq) → AgBr(s)</li><li>Ag<sup>+</sup>(aq) + I<sup>−</sup>(aq) → AgI(s)</li></ul>",
     "spec": "C2.48",
     "topic": "C2",
     "daOnly": true
@@ -1571,7 +1571,7 @@
   {
     "id": 1681460920680,
     "front": "What is the general formula for the combustion of a hydrocarbon?",
-    "back": "<img src=\"paste-b3da699c317236d4de1247139d0d0b2283c60eec.jpg\">",
+    "back": "<div class=\"fc-eq\">hydrocarbon + oxygen → carbon dioxide + water</div><div style=\"font-size:15px;color:#555;margin-top:4px\">(Complete combustion in plentiful oxygen)</div>",
     "spec": "C4.12",
     "topic": "C4"
   },
@@ -1599,7 +1599,7 @@
   {
     "id": 1724940002797,
     "front": "Draw the displayed formula for the reaction of ethene (C<sub>2</sub>H<sub>4</sub>) with <b>bromine</b> (<b>Br<sub>2</sub></b>).",
-    "back": "The reaction adds a bromine atom across the C=C double bond to each carbon atom, forming 1,2-dibromoethane.<br><br><img src=\"paste-5de0518de542729eb17d762ec789e575c0c230a7.jpg\">",
+    "back": "Addition reaction — a bromine atom adds across the C=C double bond to form <b>1,2-dibromoethane</b> (orange bromine water turns <b>colourless</b>):<img src=\"ethene-bromine.svg\" alt=\"Displayed formula equation for ethene plus bromine forming 1,2-dibromoethane\">",
     "spec": "C4.27",
     "topic": "C4"
   },

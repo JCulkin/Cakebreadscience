@@ -1389,7 +1389,7 @@
   {
     "id": 1675787390784,
     "front": "Draw a graph to show how the rates of photosynthesis and respiration are affected by light intensity over a day",
-    "back": "<img src=\"paste-3b8a21330148d67d8939611f79f244bb91e0bf48.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Respiration</b> stays roughly constant day &amp; night</li><li><b>Photosynthesis</b> is 0 in the dark, rises at dawn, peaks at midday (max light), and falls to 0 at dusk</li></ul><img src=\"photo-resp-day.svg\" alt=\"Graph of photosynthesis and respiration rates over 24 hours\">",
     "spec": "B2.20",
     "topic": "B2"
   },
@@ -1403,7 +1403,7 @@
   {
     "id": 1675787493788,
     "front": "Describe the structure of an alveolus",
-    "back": "- Small sacs with capillaries around them&nbsp;that serve as the gaseous exchange surface.<br><img src=\"paste-480d2ae46f47068a94068fa8472e041a62697f38.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Tiny air sacs surrounded by dense <b>capillaries</b> — site of <b>gas exchange</b> (O<sub>2</sub> into blood, CO<sub>2</sub> out)</li><li><b>1-cell-thick wall</b>, moist lining, huge surface area</li></ul><img src=\"alveolus.svg\" alt=\"Gas exchange at an alveolus\">",
     "spec": "B2.46",
     "topic": "B2"
   },
@@ -1536,7 +1536,7 @@
   {
     "id": 1675787830259,
     "front": "Label this diagram of a fermenter<br><img src=\"paste-c68c2ab7cf4372b050d511549aebfc50750d3ea6.jpg\">",
-    "back": "<img src=\"paste-f9fb276f1e3be40922ba84893d67e35de71e169c.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Nutrients in</b> (top right) · <b>Gases out</b> (top left)</li><li><b>Mixing blades / paddles</b> (stir contents evenly)</li><li><b>Water jacket</b> (keeps temperature at optimum) · <b>Products out</b> (bottom)</li></ul><img src=\"paste-f9fb276f1e3be40922ba84893d67e35de71e169c.jpg\">",
     "spec": "B5.8",
     "topic": "B5"
   },
@@ -1718,7 +1718,7 @@
   {
     "id": 1675789756718,
     "front": "Describe the effect of temperature on the\nrate of an enzyme-controlled reaction",
-    "back": "- As the temperature increases, so does the rate of reaction<br>- Once the temperature exceeds the optimum, the enzyme\ndenatures and the rate of reaction decreases<br><img src=\"paste-a0fee028261b46fcbc10d5b09ddcc98920c490b9.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Rate increases up to the <b>optimum temperature</b> (more kinetic energy → more frequent collisions)</li><li>Above optimum, rate drops steeply because the <b>active site denatures</b></li></ul><img src=\"enzyme-temp.svg\" alt=\"Enzyme reaction rate vs temperature graph\">",
     "spec": "B2.11",
     "topic": "B2"
   },
@@ -1739,7 +1739,7 @@
   {
     "id": 1675789796022,
     "front": "Describe the effect of pH on enzyme activity (2 points)",
-    "back": "<ul class=\"fc-points\"><li>Rate is fastest at the <b>optimum pH</b></li><li>At <b>extremes of pH</b> (too acidic or too alkaline), the <b>active site changes shape (denatures)</b> so the substrate no longer fits</li></ul><img src=\"paste-54fedba4ee2c9bf81ea2a1de99d7f094d3b1f283.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Rate is fastest at the <b>optimum pH</b></li><li>At <b>extremes of pH</b> (too acidic or too alkaline), the <b>active site changes shape (denatures)</b> so the substrate no longer fits</li></ul><img src=\"enzyme-ph.svg\" alt=\"Enzyme reaction rate vs pH graph\">",
     "spec": "B2.13",
     "topic": "B2"
   },
@@ -1998,21 +1998,21 @@
   {
     "id": 1675832012411,
     "front": "Describe the structure of arteries",
-    "back": "A blood vessel with thick, muscular, elastic walls and a narrow passageway that carries blood away from the heart under high pressure to the rest of the body.<br><img src=\"paste-ef8c6bea833a544ea1ce6aade44797f9fac53b32.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Thick muscular &amp; elastic walls</b> to withstand high pressure</li><li><b>Narrow lumen</b> · carries blood <b>away from the heart</b> (no valves)</li></ul><img src=\"vessel-artery.svg\" alt=\"Artery cross-section\">",
     "spec": "B2.68",
     "topic": "B2"
   },
   {
     "id": 1675832028610,
     "front": "Describe the structure of capillaries",
-    "back": "Thin, narrow blood vessels (about one cell thick) to\nallow for the easy exchange of substances between blood and <b>tissues</b>.<br><img src=\"paste-450c8dbf9be292cf852921b3b1f488a29c9437dd.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Walls <b>one cell thick</b> → very short diffusion distance</li><li>Tiny lumen allowing easy exchange of O<sub>2</sub>, glucose and CO<sub>2</sub> between blood and tissues</li></ul><img src=\"vessel-capillary.svg\" alt=\"Capillary cross-section\">",
     "spec": "B2.68",
     "topic": "B2"
   },
   {
     "id": 1675850352539,
     "front": "Describe the structure of veins (3 features)",
-    "back": "<ul class=\"fc-points\"><li><b>Thinner walls</b> (less muscle and elastic tissue than arteries)</li><li><b>Wide lumen</b> — carries blood at <b>low pressure</b></li><li>Contain <b>valves</b> to prevent backflow of blood</li></ul><img src=\"paste-e1e2ac34c5d54e6084a55ddead745a8d91225e38.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Thinner walls</b> (less muscle and elastic tissue than arteries)</li><li><b>Wide lumen</b> — carries blood at <b>low pressure</b></li><li>Contain <b>valves</b> to prevent backflow of blood</li></ul><img src=\"vessel-vein.svg\" alt=\"Vein cross-section\">",
     "spec": "B2.68",
     "topic": "B2"
   },
@@ -2152,7 +2152,7 @@
   {
     "id": 1675852162980,
     "front": "Describe the structure of leaf tissue. (Name the five layers and state where guard cells are found)",
-    "back": "<img src=\"paste-356ca87c01a23b3be3ccc030155662970129ed5d.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Top → bottom: <b>waxy cuticle</b>, <b>upper epidermis</b>, <b>palisade mesophyll</b>, <b>spongy mesophyll</b>, <b>lower epidermis</b></li><li><b>Guard cells</b> sit in the <b>lower epidermis</b>, opening and closing the <b>stomata</b></li></ul><img src=\"paste-356ca87c01a23b3be3ccc030155662970129ed5d.jpg\">",
     "spec": "B2.21",
     "topic": "B2"
   },
@@ -2285,7 +2285,7 @@
   {
     "id": 1675852563889,
     "front": "How is the ileum adapted for absorption?",
-    "back": "The ileum is lined with villi which provide\na large surface area for reabsorption<br><img src=\"paste-9ebbc4da64de4ade9a6d9f866a998310a6c60f29.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Lined with millions of finger-like <b>villi</b> (with <b>microvilli</b>) for a huge surface area</li><li><b>1-cell-thick wall</b> (short diffusion distance), dense <b>capillary network</b> (glucose/amino acids), and <b>lacteal</b> (fatty acids/glycerol)</li></ul><img src=\"villus.svg\" alt=\"Structure of a villus in the small intestine\">",
     "spec": "B2.27",
     "topic": "B2"
   },
@@ -2369,14 +2369,14 @@
   {
     "id": 1675852903153,
     "front": "Draw a Punnett square for a cross\nbetween a homozygous recessive blue\neyed female (bb) with a heterozygous\nbrown eyed male (Bb)",
-    "back": "<img src=\"paste-c2b8728b2b57e1ac84e8a15885f78ccfc1ebc918.jpg\">",
+    "back": "<table class=\"fc-punnett\"><tr><th></th><th>B</th><th>b</th></tr><tr><th>b</th><td style=\"background:#fde68a\">Bb</td><td style=\"background:#bfdbfe\">bb</td></tr><tr><th>b</th><td style=\"background:#fde68a\">Bb</td><td style=\"background:#bfdbfe\">bb</td></tr></table><ul class=\"fc-points\"><li><b>50% Bb</b> (brown eyes) · <b>50% bb</b> (blue eyes)</li><li>Ratio <b>1 : 1</b></li></ul>",
     "spec": "B3.25",
     "topic": "B3"
   },
   {
     "id": 1675852915987,
     "front": "Draw a Punnett square for a cross\nbetween a homozygous dominant red\nflower (RR) with a homozygous\nrecessive white flower (rr)",
-    "back": "<img src=\"paste-2ed78fc656d67ac7a722aaa03e07ce39a2b4095c.jpg\">",
+    "back": "<table class=\"fc-punnett\"><tr><th></th><th>R</th><th>R</th></tr><tr><th>r</th><td style=\"background:#fecaca\">Rr</td><td style=\"background:#fecaca\">Rr</td></tr><tr><th>r</th><td style=\"background:#fecaca\">Rr</td><td style=\"background:#fecaca\">Rr</td></tr></table><ul class=\"fc-points\"><li><b>100% Rr</b> (all heterozygous, all <b>red flowers</b>)</li></ul>",
     "spec": "B3.25",
     "topic": "B3"
   },
@@ -2460,7 +2460,7 @@
   {
     "id": 1681471223810,
     "front": "What are lipids made of? Give two examples of lipids.",
-    "back": "<img src=\"paste-0572a7975cdc0da5ef40c11d941ed0c16c8eabde.jpg\"><br>Lipids include fats and oils.",
+    "back": "<ul class=\"fc-points\"><li>Built from <b>1 glycerol molecule joined to 3 fatty acids</b></li><li>Contain the elements <b>carbon, hydrogen and oxygen</b></li><li>Examples: <b>fats</b> (solid at room temp, e.g. butter) and <b>oils</b> (liquid, e.g. olive oil)</li></ul>",
     "spec": "B2.8",
     "topic": "B2"
   },
@@ -2495,7 +2495,7 @@
   {
     "id": 1681471646778,
     "front": "Why do plants need <b>nitrates </b>and what happens when they are deficient?",
-    "back": "Plants need nitrates to make amino acids for proteins for <b>growth</b>. Without them, plants grow poorly and leaves turn yellow.<br><br><img src=\"paste-5f9512ef635a7f52bb440201c8fe391b57a7fa08.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Use:</b> nitrates provide nitrogen to make <b>amino acids and proteins</b> for growth</li><li><b>Deficiency:</b> <b>stunted growth</b> and yellowing of older leaves</li></ul><img src=\"nitrate-deficiency.svg\" alt=\"Healthy plant vs nitrate deficiency\">",
     "spec": "B2.22",
     "topic": "B2"
   },
@@ -2509,14 +2509,14 @@
   {
     "id": 1681471698012,
     "front": "Why do plants need <b>potassium</b> and what happens when they are deficient?",
-    "back": "<img src=\"paste-df2b9c09e98b7959bae2debe0fb0f076aa69c9ce.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Use:</b> needed to help <b>enzymes</b> involved in <b>photosynthesis and respiration</b></li><li><b>Deficiency:</b> <b>poor flower and fruit growth</b> and discoloured/yellow leaves with dead spots</li></ul><img src=\"potassium-deficiency.svg\" alt=\"Healthy plant vs potassium deficiency\">",
     "spec": "B2.22",
     "topic": "B2"
   },
   {
     "id": 1681471716408,
     "front": "Why do plants need <b>magnesium </b>and what happens when they are deficient?",
-    "back": "<img src=\"paste-20574ca601913cf9508a403dd1b8f87da411e3fa.jpg\"><br>Plants need magnesium for chlorophyll for photosynthesis. Without it, leaves turn yellow (but veins stay green)",
+    "back": "<ul class=\"fc-points\"><li><b>Use:</b> needed to make <b>chlorophyll</b> (for photosynthesis)</li><li><b>Deficiency:</b> <b>yellow leaves (chlorosis)</b> and slow growth</li></ul><img src=\"magnesium-deficiency.svg\" alt=\"Healthy plant vs magnesium deficiency\">",
     "spec": "B2.22",
     "topic": "B2"
   },
@@ -2529,8 +2529,8 @@
   },
   {
     "id": 1681472533081,
-    "front": "Label the image and explain how germination happens<br><img src=\"paste-07ed26697eafe876bb49570a0e61c0af7b54e045.jpg\">",
-    "back": "<img src=\"paste-849b2dcd71246f6760d93f40124b0295554fb0c0.jpg\" width=\"515\">",
+    "front": "Label parts 1–4 of the seed and explain how germination happens<br><img src=\"seed-blank.svg\" alt=\"Unlabelled seed diagram with parts 1 to 4\">",
+    "back": "<img src=\"seed-labelled.svg\" alt=\"Labelled seed diagram\"><ul class=\"fc-points\"><li><b>1:</b> Seed coat (testa) · <b>2:</b> Embryo shoot · <b>3:</b> Embryo root · <b>4:</b> Food store</li><li>Seed absorbs water → enzymes digest <b>food store (starch) into glucose</b> for <b>respiration</b>, releasing energy for the embryo to grow</li><li>Once green leaves emerge above soil, the plant makes its own food by <b>photosynthesis</b></li></ul>",
     "spec": "B3.6",
     "topic": "B3"
   },

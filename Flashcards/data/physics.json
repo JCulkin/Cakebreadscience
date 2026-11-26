@@ -1,100 +1,100 @@
 [
   {
     "id": 1478989549524,
-    "front": "<img src=\"Switch(open).png\" />",
-    "back": "Switch Open",
+    "front": "Name this circuit symbol<br><img src=\"sym-switch-open.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Open switch</b>",
     "spec": "P2.8",
     "topic": "P2"
   },
   {
     "id": 1478989562164,
-    "front": "<img src=\"Switch(closed).png\" />",
-    "back": "Switch (Closed)",
+    "front": "Name this circuit symbol<br><img src=\"sym-switch-closed.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Closed switch</b>",
     "spec": "P2.8",
     "topic": "P2"
   },
   {
     "id": 1478989578291,
-    "front": "<img src=\"Cell.png\" />",
-    "back": "Cell",
+    "front": "Name this circuit symbol<br><img src=\"sym-cell.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Cell</b>",
     "spec": "P2.8",
     "topic": "P2"
   },
   {
     "id": 1478989587928,
-    "front": "<img src=\"Battery.png\" />",
-    "back": "Battery",
+    "front": "Name this circuit symbol<br><img src=\"sym-battery.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Battery</b> (two or more cells connected in series)",
     "spec": "P2.8",
     "topic": "P2"
   },
   {
     "id": 1478989594574,
-    "front": "<img src=\"Diode.png\" />",
-    "back": "Diode",
+    "front": "Name this circuit symbol<br><img src=\"sym-diode.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Diode</b>",
     "spec": "P2.9",
     "topic": "P2",
     "daOnly": true
   },
   {
     "id": 1478989606674,
-    "front": "<img src=\"Resistor.png\" />",
-    "back": "Resistor",
+    "front": "Name this circuit symbol<br><img src=\"sym-resistor.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Fixed resistor</b>",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1478989617606,
-    "front": "<img src=\"Variable Resistor.png\" />",
-    "back": "Variable Resistor",
+    "front": "Name this circuit symbol<br><img src=\"sym-variable-resistor.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Variable resistor</b>",
     "spec": "P2.10",
     "topic": "P2"
   },
   {
     "id": 1478989629291,
-    "front": "<img src=\"Filament Lamp.png\" />",
-    "back": "Filament Lamp",
+    "front": "Name this circuit symbol<br><img src=\"sym-lamp.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Filament lamp</b>",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1478989639737,
-    "front": "<img src=\"Fuse.png\" />",
-    "back": "Fuse",
+    "front": "Name this circuit symbol<br><img src=\"sym-fuse.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Fuse</b>",
     "spec": "P2.2",
     "topic": "P2"
   },
   {
     "id": 1478989649474,
-    "front": "<img src=\"Voltmeter.png\" />",
-    "back": "Voltmeter",
+    "front": "Name this circuit symbol<br><img src=\"sym-voltmeter.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Voltmeter</b>",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1478989659927,
-    "front": "<img src=\"Ammeter.png\" />",
-    "back": "Ammeter",
+    "front": "Name this circuit symbol<br><img src=\"sym-ammeter.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Ammeter</b>",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1478989671024,
-    "front": "<img src=\"Thermistor.png\" />",
-    "back": "Thermistor",
+    "front": "Name this circuit symbol<br><img src=\"sym-thermistor.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Thermistor</b>",
     "spec": "P2.11",
     "topic": "P2"
   },
   {
     "id": 1478989702782,
-    "front": "<img src=\"Light Dependent Resistor (LDR).png\" />",
-    "back": "Light Dependent Resistor (LDR)",
+    "front": "Name this circuit symbol<br><img src=\"sym-ldr.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Light-dependent resistor (LDR)</b>",
     "spec": "P2.11",
     "topic": "P2"
   },
   {
     "id": 1478989714166,
-    "front": "<img src=\"Light Emitting Diode (LED).png\" />",
-    "back": "Light Emitting Diode (LED)",
+    "front": "Name this circuit symbol<br><img src=\"sym-led.svg\" alt=\"Circuit symbol\">",
+    "back": "<b>Light-emitting diode (LED)</b>",
     "spec": "P2.12",
     "topic": "P2"
   },
@@ -226,8 +226,8 @@
   },
   {
     "id": 1675790827912,
-    "front": "For the d-t graphs given below, decide which one is at rest, which one is moving with constant speed and which one is accelerating<br><img src=\"paste-4db018ed7390fe56294fbb1db59c739d868bb5be.jpg\">",
-    "back": "<img src=\"paste-718e364c70f3d42d85283eb2f7c6d8451d52975b.jpg\"><br>A = constant speed<br><br>B = at rest<br><br>C = accelerating",
+    "front": "For these distance–time (<i>d</i>–<i>t</i>) graphs, which is at rest, constant speed, and accelerating?<br><img src=\"dt-graphs.svg\" alt=\"Three distance-time graphs A, B, and C\">",
+    "back": "<ul class=\"fc-points\"><li><b>A:</b> constant speed (straight diagonal line)</li><li><b>B:</b> at rest / stationary (flat horizontal line)</li><li><b>C:</b> accelerating (curve getting steeper)</li></ul>",
     "spec": "P1.3",
     "topic": "P1"
   },
@@ -254,8 +254,8 @@
   },
   {
     "id": 1675790937562,
-    "front": "For the v-t graphs given below, decide which one is\naccelerating; moving with constant speed or\ndecelerating<br><img src=\"paste-de7f631cc99756a98469fab2473388f3926402a8.jpg\">",
-    "back": "<img src=\"paste-de7f631cc99756a98469fab2473388f3926402a8.jpg\"><br>A = constant speed<br>B = accelerating<br>C = decelerating",
+    "front": "For these velocity–time (<i>v</i>–<i>t</i>) graphs, which is constant speed, accelerating, and decelerating?<br><img src=\"vt-graphs.svg\" alt=\"Three velocity-time graphs A, B, and C\">",
+    "back": "<ul class=\"fc-points\"><li><b>A:</b> constant velocity (flat horizontal line)</li><li><b>B:</b> constant acceleration (sloping upward)</li><li><b>C:</b> constant deceleration (sloping downward)</li></ul>",
     "spec": "P1.7",
     "topic": "P1"
   },
@@ -514,8 +514,8 @@
   },
   {
     "id": 1675854483564,
-    "front": "This symbol represents a cell. Which\nside is the positive terminal?<br><img src=\"paste-704658459cae4a5507813e7d3278941de0618df4.jpg\">",
-    "back": "Left side (longer side)<br><img src=\"paste-704658459cae4a5507813e7d3278941de0618df4.jpg\">",
+    "front": "This symbol represents a cell. Which side is the positive (+) terminal?<br><img src=\"sym-cell.svg\" alt=\"Cell circuit symbol\">",
+    "back": "<b>Left side</b> (the <b>longer, thinner line</b> is always positive +; the shorter, thicker line is negative −)",
     "spec": "P2.8",
     "topic": "P2"
   },
@@ -591,8 +591,8 @@
   },
   {
     "id": 1675855347166,
-    "front": "What electrical component does this\ngraph represent?<br><img src=\"paste-c7385e454c0b5583091d8ea66e86eacd21c04eab.jpg\">",
-    "back": "Diode<br><img src=\"paste-c7385e454c0b5583091d8ea66e86eacd21c04eab.jpg\">",
+    "front": "Which electrical component does this <i>I</i>–<i>V</i> graph represent?<br><img src=\"iv-diode.svg\" alt=\"Current-voltage graph of a diode\">",
+    "back": "<b>Diode</b> (only conducts current in one direction once threshold voltage is reached)",
     "spec": "P2.9",
     "topic": "P2",
     "daOnly": true
@@ -620,8 +620,8 @@
   },
   {
     "id": 1675855498839,
-    "front": "Two voltage-time graphs are given below.\nDecide which one supplies D.C and which one\nsupplied A.C<br><img src=\"paste-8966f9439105afb68de74523f10e42613d2d3801.jpg\">",
-    "back": "<img src=\"paste-d80175575de5a3125a0dcc891cd32a9315a72cd6.jpg\"><br>A = Alternating Current<br>B = Direct Current",
+    "front": "Which voltage–time graph shows a.c. and which shows d.c.?<br><img src=\"ac-dc-graphs.svg\" alt=\"Voltage-time graphs A and B\">",
+    "back": "<ul class=\"fc-points\"><li><b>A:</b> alternating current (<b>a.c.</b>) — continuously reverses direction</li><li><b>B:</b> direct current (<b>d.c.</b>) — flows in one direction only</li></ul>",
     "spec": "P2.6",
     "topic": "P2"
   },
@@ -950,7 +950,7 @@
   {
     "id": 1675920958891,
     "front": "What is the critical angle?",
-    "back": "The angle of incidence which causes the angle of refraction to be 90° so that the light refracts along the boundary.<br><img src=\"paste-88ee07105f55589a9c6dee10797ba6542a70afd5.jpg\">",
+    "back": "The <b>angle of incidence</b> in the denser medium that produces an <b>angle of refraction of 90°</b> (light refracts along the boundary).<img src=\"critical-angle.svg\" alt=\"Critical angle ray diagram showing 90 degree refraction along boundary\">",
     "spec": "P3.21",
     "topic": "P3"
   },
@@ -977,15 +977,15 @@
   },
   {
     "id": 1675921131297,
-    "front": "Which letter represents wavelength<br><img src=\"paste-ace733ce854c3e43ecc963718d35d76ae289246e.jpg\">",
-    "back": "<img src=\"paste-ace733ce854c3e43ecc963718d35d76ae289246e.jpg\"><br>D",
+    "front": "Which letter represents the <b>wavelength</b>?<br><img src=\"wave-labels.svg\" alt=\"Transverse wave with labelled distances A, B, C, D\">",
+    "back": "<b>D</b> (distance from one crest to the next crest — one complete wave cycle)",
     "spec": "P3.3",
     "topic": "P3"
   },
   {
     "id": 1675921142246,
-    "front": "Which letter represents amplitude<br><img src=\"paste-ace733ce854c3e43ecc963718d35d76ae289246e.jpg\">",
-    "back": "<img src=\"paste-ace733ce854c3e43ecc963718d35d76ae289246e.jpg\"><br>A",
+    "front": "Which letter represents the <b>amplitude</b>?<br><img src=\"wave-labels.svg\" alt=\"Transverse wave with labelled distances A, B, C, D\">",
+    "back": "<b>A</b> (maximum displacement from the central equilibrium rest position to a crest or trough)",
     "spec": "P3.3",
     "topic": "P3"
   },
@@ -1188,7 +1188,7 @@
   {
     "id": 1675921776990,
     "front": "What is the relationship between work\ndone on an object and energy\ntransferred to the object?",
-    "back": "Work Done = Energy Transferred<br><img src=\"paste-7407f146791b7542dbc90dde58b71d19fdaab760.jpg\">",
+    "back": "<b>Work done = energy transferred</b><div class=\"fc-eq\"><i>W</i> = Δ<i>E</i></div>",
     "spec": "P4.12",
     "topic": "P4"
   },
@@ -1258,7 +1258,7 @@
   {
     "id": 1675924176862,
     "front": "How can Pascals be expressed in other units?",
-    "back": "<img src=\"paste-54b8d4bf1545d845d897a68c545813d64a34fe41.jpg\">",
+    "back": "<div class=\"fc-eq\">1 Pa = 1 <span class=\"fc-frac\"><span>N</span><span>m<sup>2</sup></span></span></div><div style=\"font-size:16px;color:#555;margin-top:4px\">(1 newton per square metre)</div>",
     "spec": "P5.5",
     "topic": "P5"
   },
@@ -1272,7 +1272,7 @@
   {
     "id": 1675924231559,
     "front": "How do you convert between degree\nCelsius and Kelvin?",
-    "back": "<img src=\"paste-000c3ca9241a432969d021fbc1213e99ff4ed5e3.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>°C → K:</b> add 273 &nbsp;(<b><i>T</i>(K) = <i>θ</i>(°C) + 273</b>)</li><li><b>K → °C:</b> subtract 273 &nbsp;(<b><i>θ</i>(°C) = <i>T</i>(K) − 273</b>)</li><li>Absolute zero: <b>0 K = −273 °C</b></li></ul>",
     "spec": "P5.17",
     "topic": "P5"
   },
@@ -1405,7 +1405,7 @@
   {
     "id": 1675935414806,
     "front": "How do you produce a uniform magnetic field?",
-    "back": "<ul class=\"fc-points\"><li>Place <b>opposite poles (N and S)</b> of two flat magnets facing each other</li><li>Field lines between them are <b>straight, parallel and equally spaced</b></li></ul><img src=\"paste-db7250b289e448d8c0bb6fbcb8f72d1e985d07be.jpg\">",
+    "back": "<ul class=\"fc-points\"><li>Place <b>opposite poles (N and S)</b> of two flat magnets facing each other</li><li>Field lines between them are <b>straight, parallel and equally spaced</b></li></ul><img src=\"uniform-mag-field.svg\" alt=\"Uniform magnetic field between North and South poles\">",
     "spec": "P6.7",
     "topic": "P6"
   },
@@ -1468,7 +1468,7 @@
   {
     "id": 1675935715959,
     "front": "What is the shape of the magnetic field\ncreated around a straight wire when a\ncurrent is running through?",
-    "back": "It is circular.<br><img src=\"paste-70f7fca726c43d4c1572e233ab0b6f9743e5f0e4.jpg\">",
+    "back": "<ul class=\"fc-points\"><li><b>Concentric circles</b> centred on the wire (closer together near the wire where field is stronger)</li><li>Direction found with the <b>Right-Hand Grip Rule</b> (thumb = conventional current + → −)</li></ul><img src=\"wire-mag-field.svg\" alt=\"Concentric circular magnetic field around a current-carrying wire\">",
     "spec": "P6.8",
     "topic": "P6"
   },
@@ -1978,29 +1978,29 @@
   },
   {
     "id": 1681565141219,
-    "front": "Which electrical component is this graph showing?<br><img src=\"paste-d61695856f8df772bda3b75b94629cd7f150827c.jpg\">",
-    "back": "Metal filament lamp",
+    "front": "Which electrical component does this <i>I</i>–<i>V</i> graph show?<br><img src=\"iv-filament.svg\" alt=\"Curved S-shaped I-V graph\">",
+    "back": "<b>Metal filament lamp</b> (non-ohmic — resistance increases as the filament heats up)",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1681565163086,
-    "front": "Which electrical component is this graph showing?<br><img src=\"paste-7f7ab905597797f2bd9a70ef2465d42887375004.jpg\">",
-    "back": "Wire",
+    "front": "Which electrical component does this <i>I</i>–<i>V</i> graph show?<br><img src=\"iv-wire.svg\" alt=\"Straight line through origin I-V graph\">",
+    "back": "<b>Wire / fixed resistor at constant temperature</b> (ohmic conductor — <i>I</i> is directly proportional to <i>V</i>)",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1681565185870,
-    "front": "Which electrical component does this graph show?<br><img src=\"paste-03c9aeb876337286f4c413604aae6efce869d354.jpg\">",
-    "back": "Resistor",
+    "front": "What do the different straight-line slopes on this <i>I</i>–<i>V</i> graph show?<br><img src=\"iv-resistor.svg\" alt=\"Three straight lines through origin on an I-V graph\">",
+    "back": "<ul class=\"fc-points\"><li><b>Fixed resistors</b> at constant temperature (each is ohmic: straight line through origin)</li><li><b>Steeper gradient = lower resistance</b>; <b>shallower gradient = higher resistance</b></li></ul>",
     "spec": "P2.9",
     "topic": "P2"
   },
   {
     "id": 1681565249806,
-    "front": "Which electrical component does this graph show?<br><img src=\"paste-841afad5b16985ec4507263cba44eb377dd3cfef.jpg\">",
-    "back": "Diode",
+    "front": "Which electrical component does this <i>I</i>–<i>V</i> graph show?<br><img src=\"iv-diode.svg\" alt=\"Diode I-V graph\">",
+    "back": "<b>Diode</b> (current only flows in the forward direction above threshold voltage)",
     "spec": "P2.9",
     "topic": "P2",
     "daOnly": true

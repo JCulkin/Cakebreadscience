@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 180" width="380" height="180">
+  <rect width="380" height="180" fill="#fff"/>
+  <!-- 1-cell-thick ring -->
+  <circle cx="105" cy="90" r="56" fill="#fecaca" stroke="#b91c1c" stroke-width="2.5"/>
+  <circle cx="105" cy="90" r="44" fill="#fff" stroke="#b91c1c" stroke-width="2"/>
+  <!-- cell nuclei in the 1-cell wall -->
+  <ellipse cx="105" cy="40" rx="8" ry="3.5" fill="#7f1d1d"/>
+  <ellipse cx="105" cy="140" rx="8" ry="3.5" fill="#7f1d1d"/>
+  <ellipse cx="55" cy="90" rx="3.5" ry="8" fill="#7f1d1d"/>
+  <ellipse cx="155" cy="90" rx="3.5" ry="8" fill="#7f1d1d"/>
+  <!-- Single red blood cell fitting inside -->
+  <ellipse cx="105" cy="90" rx="22" ry="15" fill="#dc2626" stroke="#7f1d1d" stroke-width="1.5"/>
+  <text x="196" y="54" font-family="Barlow, Arial, sans-serif" font-size="14" font-weight="700" fill="#991b1b">Wall 1 cell thick</text>
+  <text x="196" y="70" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444">(very short diffusion distance)</text>
+  <line x1="156" y1="68" x2="192" y2="54" stroke="#111" stroke-width="1.5"/>
+  <text x="196" y="108" font-family="Barlow, Arial, sans-serif" font-size="14" font-weight="700" fill="#111">Tiny lumen</text>
+  <text x="196" y="124" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444">(red blood cells pass single file)</text>
+  <line x1="128" y1="94" x2="192" y2="108" stroke="#111" stroke-width="1.5"/>
+</svg>

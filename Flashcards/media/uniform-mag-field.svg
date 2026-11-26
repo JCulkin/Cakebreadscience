@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 185" width="400" height="185">
+  <rect width="400" height="185" fill="#fff"/>
+  <rect x="26" y="28" width="56" height="130" fill="#dc2626" stroke="#111" stroke-width="2.5"/>
+  <text x="54" y="103" font-family="Barlow, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" text-anchor="middle">N</text>
+  <rect x="318" y="28" width="56" height="130" fill="#2563eb" stroke="#111" stroke-width="2.5"/>
+  <text x="346" y="103" font-family="Barlow, Arial, sans-serif" font-size="30" font-weight="900" fill="#fff" text-anchor="middle">S</text>
+  <!-- Equally spaced parallel field lines N -> S -->
+  <g stroke="#111" stroke-width="2.2">
+    <line x1="82" y1="46" x2="318" y2="46"/>
+    <line x1="82" y1="70" x2="318" y2="70"/>
+    <line x1="82" y1="94" x2="318" y2="94"/>
+    <line x1="82" y1="118" x2="318" y2="118"/>
+    <line x1="82" y1="142" x2="318" y2="142"/>
+  </g>
+  <g fill="#111">
+    <polygon points="208,46 196,40 196,52"/>
+    <polygon points="208,70 196,64 196,76"/>
+    <polygon points="208,94 196,88 196,100"/>
+    <polygon points="208,118 196,112 196,124"/>
+    <polygon points="208,142 196,136 196,148"/>
+  </g>
+  <text x="200" y="176" font-family="Barlow, Arial, sans-serif" font-size="12.5" font-weight="700" fill="#444" text-anchor="middle">Straight, parallel, equally spaced field lines (N → S)</text>
+</svg>
