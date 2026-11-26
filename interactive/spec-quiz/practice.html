@@ -94,7 +94,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 </style>
 </head>
 <body>
-<div class="bar0"><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Practice</span><div class="acct" id="acct" hidden style="display:none!important"></div><div id="cbs-account" style="margin-left:auto"></div></div>
+<div class="bar0"><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Practice</span><div id="cbs-account" style="margin-left:auto"></div></div>
 <main class="wrap">
 
   <section id="pick">
@@ -158,14 +158,6 @@ const PLAIN = 'cbs.plain';
 let SUBS = [], SCI = 'B', OPEN = new Set(), PS = null;
 const subBy = k => SUBS.find(s => s.key === k);
 const topicName = t => { const sc = SPEC.find(x => x.name[0] === t[0]); const tp = sc && sc.topics.find(x => x.n === +t.slice(1)); return tp ? tp.name : t; };
-
-/* account area */
-function drawAcct() {
-  const u = QE.user;
-  $('acct').innerHTML = !QE.known ? '' : u ? `<span>${esc((u.displayName || '').split(' ')[0])} · ${{ saved: 'Saved ✓', saving: 'Saving…', error: 'Not saved' }[QE.status] || ''}</span><button id="so">Sign out</button>`
-    : `<span>Progress is kept in this browser only</span><button id="si">Sign in</button>`;
-  if ($('si')) $('si').onclick = () => QE.signIn(); if ($('so')) $('so').onclick = () => QE.signOut();
-}
 
 /* choose screen */
 function drawPick() {
@@ -250,10 +242,12 @@ $('opts').addEventListener('click', e => {
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
 });
 document.addEventListener('keydown', e => {
-  if ($('quiz').classList.contains('hidden') || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
+  if ($('quiz').classList.contains('hidden') || e.ctrlKey || e.metaKey || e.altKey || /TEXTAREA|INPUT/.test(e.target.tagName)) return;
   const k = e.key.toLowerCase(), bs = [...$('opts').children];
   let i = PS.keys === '1234' ? bs.findIndex(o => o.textContent.slice(1).trim().toLowerCase() === k) : 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k);
-  if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click();
+  if (bs.length === 2 && (k === 't' || k === 'f')) i = k === 't' ? 0 : 1;
+  if (i >= 0 && bs[i] && !bs[i].disabled) { e.preventDefault(); bs[i].click(); }
+  else if ((k === 'arrowright' || (k === 'enter' && document.activeElement !== $('nextBtn') && !/BUTTON|A/.test(document.activeElement.tagName))) && !$('nextBtn').classList.contains('hidden')) { e.preventDefault(); $('nextBtn').click(); }
 });
 $('nextBtn').onclick = () => { PS.i++; if (PS.i < PS.qs.length) show(); else finish(); };
 
@@ -307,7 +301,6 @@ function finish() {
 /* boot: draw from the cached copy at once, redraw when the account arrives; ?point= / ?sub= start straight away */
 let started = false;
 function boot() {
-  drawAcct();
   const n = $('saveNote'); if (n && QE.user) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent;
   if (!$('pick').classList.contains('hidden')) drawPick();
   if (!started) { started = true; SUBS = QE.allSubs().filter(s => s.nq >= 4);

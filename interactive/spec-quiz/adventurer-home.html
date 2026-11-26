@@ -140,6 +140,7 @@
 ADV.nav('home');
 const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats();
 $('nm').textContent = ADV.nick();
+$('ttl').textContent = '“' + (s.gear.set ? ADV_SETS[s.gear.set].title : 'Side Quest Enjoyer') + '”';
 $('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
 const l = s.l, cap = ADV.levelCap(), cur = ADV.xpFor(l), next = ADV.xpFor(l + 1);
 $('lvl').textContent = `Level ${l}`;
@@ -169,11 +170,16 @@ function renderLand() {
   $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +
     foes.slice(0, 2).map(foe).join('') + prof + foes.slice(2).map(foe).join('');
   $('landKick').textContent = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 🔑` : 'Chapter 2 · the monsters wake';
-  const mv = S.moves || 0, camp = S.camp && BL.PLACES[S.camp.k];
+  const p = ADV.pending(), extra = s.gear.fx.revise ? 1 : 0;
+  const mv0 = S.moves || 0, cap = (S.joined === QE.TODAY ? BL.FIRST_MOVES : BL.MOVE_BANK) + 1 + extra;
+  const mv = p.move ? Math.max(mv0, Math.min(cap, mv0 + p.move)) : mv0;
+  const hpNow = Math.min(s.hp, (S.health ?? s.hp) + (p.hp || 0));
+  const manaNow = Math.min(s.mana, (S.mana || 0) + (p.mana || 0));
+  const camp = S.camp && BL.PLACES[S.camp.k];
   if (ADV.can('events')) { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ev.ic} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
   $('landSt').innerHTML = (camp ? `⛺ Camped at ${camp.name} with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} for midnight. ` : '') + (mv ? `<b>${mv} move${mv === 1 ? '' : 's'} to use</b> today. ` : 'No moves left today. ')
     + (S.chestsUp ? `✨ <b>${S.chestsUp} treasure chest${S.chestsUp > 1 ? 's' : ''}</b> on the map: first to reach one opens it. ` : '')
-    + `❤ ${S.health} Health · 🔮 ${S.mana} mana. Fight the guards together; every spec point you secure makes you stronger.`;
+    + `❤ ${hpNow} Health · 🔮 ${manaNow} mana. Fight the guards together; every spec point you secure makes you stronger.`;
   $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
 renderLand();
@@ -181,10 +187,11 @@ renderLand();
 async function landLive() {
   if (!QE.known || !QE.user || landLive.done) return; landLive.done = true;
   try {
-    const rt = firebase.database(), u = QE.user.uid;
-    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
-    if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
-    else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = BL.bossNow(w);
+    const u = QE.user.uid;
+    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => QE.rtGet(p, 12000)));
+    if (w && w.day) { S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1; $('dayTitle').textContent = `Today · day ${S.dayNo || 1}`; }
+    if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.joined = QE.TODAY; S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
+    else { S.moves = BL.movesOf(st); S.joined = st.joined || null; S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = BL.bossNow(w);
       S.plan = []; S.camp = st.camp && st.camp.day === w.day && st.at === st.camp.k ? st.camp : null; }
     S.chestsUp = w ? Object.keys(w.chests || {}).filter(k => !BL.isUnder(k) || st && st.under).length : 0;
     ADV.save(); document.querySelectorAll('#landKick ~ .small').forEach(x => x.remove()); renderLand();

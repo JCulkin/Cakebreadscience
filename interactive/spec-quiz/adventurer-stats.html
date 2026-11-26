@@ -86,8 +86,8 @@ const fmt = n => (n || 0).toLocaleString('en-GB');
 /* the shared world: read once the account is known (like the Cakelab) */
 async function readLand() {
   if (!QE.known || !QE.user || readLand.done) return; readLand.done = true;
-  try { const rt = firebase.database(), u = QE.user.uid;
-    const [w, st] = await Promise.all(['bland/world', 'bland/state/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
+  try { const u = QE.user.uid;
+    const [w, st] = await Promise.all(['bland/world', 'bland/state/' + u].map(p => QE.rtGet(p, 12000)));
     LAND_ = { w: w || {}, st: st || {} }; render();
   } catch (e) { console.warn('Stats: shared world not read', e); }
 }
@@ -145,18 +145,23 @@ function build() {
   /* ---- Breadventure Land ---- */
   if (LAND_ && LAND_.st && LAND_.st.at) {
     const w = LAND_.w, me = LAND_.st, uid = QE.user.uid;
-    const all = []; for (let r = 0; r < BL.ROWS; r++) for (let c = 0; c < BL.COLS; c++) if (!BL.isWater(c, r)) all.push(BL.key(c, r));
-    const surf = all.filter(k => !BL.isUnder(k)), under = all.filter(k => BL.isUnder(k));
-    const walked = new Set((me.visited || []).filter(k => all.includes(k))), seen = BL.visibleOf(me);
+    const all = [], walkAll = [];
+    for (let r = 0; r < BL.ROWS; r++) for (let c = 0; c < BL.COLS; c++) if (!BL.isWater(c, r)) {
+      const k = BL.key(c, r), P = BL.PLACES[k];
+      all.push(k);
+      if (!P || !['locked', 'worldboss'].includes(P.type)) walkAll.push(k);
+    }
+    const surf = all.filter(k => !BL.isUnder(k)), walkSurf = walkAll.filter(k => !BL.isUnder(k));
+    const walked = new Set((me.visited || []).filter(k => walkAll.includes(k))), seen = BL.visibleOf(me, 2 + (s.gear.fx.sight || 0));
     const landName = k => { const [c, r] = BL.unkey(k), L = BL.LAND[BL.T_AT(c, r)]; return L && L.name; };
-    const area = me.under ? all : surf, inArea = k => me.under || !BL.isUnder(k);   // the Underworld counts once you can get there
+    const area = me.under ? walkAll : walkSurf, inArea = k => me.under || !BL.isUnder(k);   // the Underworld counts once you can get there
     const regions = new Set(area.map(landName).filter(Boolean)), regSeen = new Set([...walked].map(landName).filter(Boolean));
     const places = Object.entries(BL.PLACES).filter(([k, p]) => p.type !== 'locked' && inArea(k));
     const bosses = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'boss'), dens = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'monster');
     const dungeons = Object.entries(BL.PLACES).filter(([, p]) => p.type === 'dungeon'), hit = w.hit || {}, boss = BL.bossNow(w);
-    const fought = bosses.filter(([k]) => (hit[k] || {})[uid]), beat = bosses.filter(([k]) => (hit[k] || {})[uid] && boss[k] === 0);
+    const fought = bosses.filter(([k]) => (hit[k] || {})[uid] || (me.bFought || {})[k]), beat = bosses.filter(([k]) => ((hit[k] || {})[uid] && boss[k] === 0) || (me.bBeat || {})[k]);
     H('land', 'Exploring');
-    R('land', 'Squares stepped on', walked.size, me.under ? all.length : surf.length, me.under ? '' : 'Something else opens up once you dig through the mine');
+    R('land', 'Squares stepped on', walked.size, me.under ? walkAll.length : walkSurf.length, me.under ? '' : 'Something else opens up once you dig through the mine');
     R('land', 'Squares uncovered from the fog', all.filter(k => seen.has(k)).length, me.under ? all.length : surf.length, '', true);
     R('land', 'Regions walked in', regSeen.size, regions.size);
     R('land', 'Places found', places.filter(([k]) => seen.has(k)).length, places.length);

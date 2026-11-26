@@ -85,7 +85,7 @@ const QE = (() => {
   };
   const UID_KEY = 'cbs.questing.uid';
   const blank = () => ({ v: 1, q: {}, cards: {}, weak: {}, xp: 0, correct: 0, hard: 0, subj: { Biology: 0, Chemistry: 0, Physics: 0 }, weeks: {}, ws: {}, dc: {}, missions: 0, unrusted: 0, earned: {}, hide: false, updatedAt: 0 });
-  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, tally: {}, seen: {}, look: null, eq: null, nick: null, updatedAt: 0 });
+  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, moveDay: null, tally: {}, seen: {}, look: null, eq: null, nick: null, updatedAt: 0 });
   const progKey = uid => 'specquiz.camp.' + (uid || 'anon');
   const gameKey = uid => 'cbs.questing.game.' + (uid || 'anon');
   const readProg = uid => Object.assign(blank(), ls.get(progKey(uid)) || {});
@@ -111,12 +111,14 @@ const QE = (() => {
     o.hide = !!(a.hide || b.hide);
     return o;
   }
-  function mergeGame(a, b) {
+  function mergeGame(a, b, addAnon) {
     const newer = (b.updatedAt || 0) > (a.updatedAt || 0) ? b : a;
     const o = Object.assign(gblank(), newer);
     o.bag = [...new Set([...(a.bag || []), ...(b.bag || [])])];
     o.days = {}; for (const src of [a.days || {}, b.days || {}]) for (const k in src) o.days[k] = Math.max(o.days[k] || 0, src[k]);
-    o.coins = Math.max(a.coins || 0, b.coins || 0);
+    /* coins: follow the newer copy so spending isn't undone across devices; only add anonymous pre-sign-in coins */
+    o.coins = addAnon ? (a.coins || 0) + (b.coins || 0) : (newer.coins || 0);
+    o.moveDay = (a.moveDay || '') >= (b.moveDay || '') ? (a.moveDay || null) : b.moveDay;
     o.cd = {}; for (const src of [a.cd || {}, b.cd || {}]) for (const k in src) if (!o.cd[k] || (src[k].n || 0) > (o.cd[k].n || 0)) o.cd[k] = src[k];
     o.best = {}; for (const src of [a.best || {}, b.best || {}]) for (const k in src) { const x = o.best[k] || { r: 0, w: 0 }; o.best[k] = { r: Math.max(x.r, src[k].r || 0), w: x.w || src[k].w ? 1 : 0 }; }   // best score and 'busted' per mission (17 Nov)
     o.tally = {}; for (const src of [a.tally || {}, b.tally || {}]) for (const k in src) o.tally[k] = Math.max(o.tally[k] || 0, src[k] || 0);   // stats counters (17 Nov)
@@ -124,7 +126,9 @@ const QE = (() => {
     /* activity log (22 Nov): both copies' entries, oldest first, the last LOG_MAX */
     const lg = new Map(); for (const src of [a.log || [], b.log || []]) for (const e of src) if (e && e.t) lg.set(e.t + '|' + e.m, e);
     o.log = [...lg.values()].sort((x, y) => x.t - y.t).slice(-LOG_MAX);
-    o.pool = Object.assign({ hp: 0, mana: 0 }, newer.pool);   // the newer copy: the map may already have taken what was waiting
+    o.pool = addAnon
+      ? { hp: Math.min(200, ((a.pool || {}).hp || 0) + ((b.pool || {}).hp || 0)), mana: Math.min(200, ((a.pool || {}).mana || 0) + ((b.pool || {}).mana || 0)) }
+      : Object.assign({ hp: 0, mana: 0 }, newer.pool);   // the newer copy: the map may already have taken what was waiting
     for (const k of ['look', 'eq', 'nick']) if (!o[k]) o[k] = a[k] || b[k] || null;
     return o;
   }
@@ -158,6 +162,26 @@ const QE = (() => {
   const listeners = [];
   const emit = () => listeners.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   let busy = false;
+  const within = (p, ms = 10000) => new Promise((ok, no) => {
+    const t = setTimeout(() => no(new Error('timeout')), ms);
+    Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
+  });
+  /* RTDB read with timeout + HTTPS REST fallback (for school filters that block RTDB websockets) */
+  async function rtGet(path, ms = 12000) {
+    if (!FB.rtdb) throw new Error('offline');
+    let done = false;
+    const sdk = FB.rtdb.ref(path).once('value').then(x => { done = true; return x.val(); });
+    const rest = (async () => {
+      await new Promise(r => setTimeout(r, 1500));
+      if (done) throw new Error('not needed');
+      const u = FB.auth && FB.auth.currentUser, base = (window.firebaseConfig || {}).databaseURL;
+      if (!u || !base || typeof u.getIdToken !== 'function') throw new Error('no rest');
+      const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error('rest ' + r.status);
+      return r.json();
+    })();
+    return within(Promise.any ? Promise.any([sdk, rest]) : sdk, ms);
+  }
 
   function writeLocal() { const u = FB.user ? FB.user.uid : (FB.known ? null : uid0); ls.set(progKey(u), PROG); ls.set(gameKey(u), GAME); }
 
@@ -206,21 +230,21 @@ const QE = (() => {
     FB.status = 'saving'; emit();
     const st = securedStats();
     try {
-      await FB.db.collection('users').doc(FB.user.uid).set({
+      await within(FB.db.collection('users').doc(FB.user.uid).set({
         email: FB.user.email || null, displayName: FB.user.displayName || null, lastAccess: new Date().toISOString(),
         specQuiz: PROG, questing: GAME,
         specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, points: pointSummary(), updatedAt: new Date().toISOString() }
-      }, { merge: true });
+      }, { merge: true }), 10000);
       FB.status = 'saved';
     } catch (e) { console.error('Questing save failed', e); FB.status = 'error'; }
     emit();
     if (FB.rtdb) {
       try {
-        await FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set({ name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
+        await within(FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set({ name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
           bio: PROG.subj.Biology || 0, chem: PROG.subj.Chemistry || 0, phys: PROG.subj.Physics || 0,
           wb: ((PROG.ws || {})[WEEK] || {}).B || 0, wc: ((PROG.ws || {})[WEEK] || {}).C || 0, wp: ((PROG.ws || {})[WEEK] || {}).P || 0,
           d7: (() => { const dc = dayCounts(PROG), o = {}; for (const d of LAST7) if (dc[d]) o[d] = { b: dc[d].B || 0, c: dc[d].C || 0, p: dc[d].P || 0 }; return o; })(),
-          look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() });
+          look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() }), 10000);
       } catch (e) { console.warn('Leaderboard save failed', e); }
     }
   }
@@ -232,23 +256,29 @@ const QE = (() => {
     const before = sig();
     if (!u) {
       ls.del(UID_KEY); uid0 = null; if (window.CBSCourse) CBSCourse.update(null, null);
-      PROG = readProg(null); GAME = readGame(null); syncLookIntoGame(); writeLocal(); FB.status = 'local';
+      PROG = readProg(null); cardsV++; GAME = readGame(null); syncLookIntoGame(); writeLocal(); FB.status = 'local';
     } else {
       FB.status = 'loading'; emit();
       try {
-        const snap = await FB.db.collection('users').doc(u.uid).get();
+        const snap = await within(FB.db.collection('users').doc(u.uid).get(), 10000);
         const data = (snap.exists && snap.data()) || {};
         const remote = Object.assign(blank(), data.specQuiz || {}), remoteG = Object.assign(gblank(), data.questing || {});
-        PROG = mergeProg(mergeProg(remote, readProg(u.uid)), readProg(null));
-        GAME = mergeGame(mergeGame(remoteG, readGame(u.uid)), readGame(null));
+        PROG = mergeProg(mergeProg(remote, readProg(u.uid)), readProg(null)); cardsV++;
+        GAME = mergeGame(mergeGame(remoteG, readGame(u.uid)), readGame(null), true);
         if ((remoteG.updatedAt || 0) >= (GAME.updatedAt || 0)) writeLookLocal(GAME); else syncLookIntoGame();
         ls.del(progKey(null)); ls.del(gameKey(null));
         ls.set(UID_KEY, u.uid); uid0 = u.uid;
-        writeLocal(); await saveRemote();
-        if (window.CBSCourse) CBSCourse.update(u.uid, data.course);
+        writeLocal();
+        /* update course before saving summary so a Single Award student on a new browser doesn't write Double Award totals */
+        if (window.CBSCourse) {
+          const switching = (data.course === 'SA') !== CBSCourse.sa;
+          CBSCourse.update(u.uid, data.course);
+          if (switching) return;
+        }
+        await saveRemote();
       } catch (e) {
         console.error('Questing load failed', e);
-        PROG = mergeProg(readProg(u.uid), readProg(null)); GAME = mergeGame(readGame(u.uid), readGame(null));
+        PROG = mergeProg(readProg(u.uid), readProg(null)); cardsV++; GAME = mergeGame(readGame(u.uid), readGame(null), true);
         ls.set(UID_KEY, u.uid); uid0 = u.uid; writeLocal(); FB.status = 'error';
       }
     }
@@ -506,8 +536,8 @@ const QE = (() => {
   /* ---------- the class board (Realtime Database, signed-in only) ---------- */
   function board() {
     if (!FB.rtdb || !FB.user) return Promise.reject(new Error(FB.user ? 'offline' : 'signin'));
-    return FB.rtdb.ref('specQuizBoard').once('value').then(s => {
-      const v = s.val() || {};
+    return rtGet('specQuizBoard', 12000).then(val => {
+      const v = val || {};
       return Object.entries(v).filter(([, x]) => x && !x.hide).map(([uid, x]) => Object.assign({ uid, me: uid === FB.user.uid }, x, { l7: uid === FB.user.uid ? last7(PROG) : boardLast7(x) }));
     });
   }
@@ -519,7 +549,7 @@ const QE = (() => {
     const rep = { qid: q.id, reason, comment: (comment || '').slice(0, 400), shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400),
       options: options.map(o => String(o).replace(/<[^>]+>/g, '').slice(0, 120)), correct: correctIdx, picked: pickedIdx, mode: 'questing', ...(q.seed ? { seed: q.seed } : {}),
       name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '', t: Date.now() };
-    try { if (!FB.ok || !FB.rtdb) throw new Error('offline'); return FB.rtdb.ref('specQuizReports').push(rep); }
+    try { if (!FB.ok || !FB.rtdb) throw new Error('offline'); return within(FB.rtdb.ref('specQuizReports').push(rep), 10000); }
     catch (e) { return Promise.reject(e); }
   }
 
@@ -546,7 +576,7 @@ const QE = (() => {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },
     get online() { return FB.ok; }, set busy(v) { busy = !!v; }, get busy() { return busy; },
     TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, tally, mark, log, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName, requestName,
-    signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
+    signIn, signOut, save, within, rtGet, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,
     inst, analyse, isoWeek, last7, boardLast7, dayCounts, LAST7, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,

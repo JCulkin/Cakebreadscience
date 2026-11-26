@@ -84,9 +84,9 @@ const PLACES = {
     text: 'Crumbmaw\'s lookout, guarding the crumb trail with a stolen cake fork. Small, greedy and beatable on your own: a good first boss. It comes back two days after it falls.', loot: ['+25 coins each', 'an Electrolyte Slushie each'] },
   /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
   '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 650, power: 5, tier: 'Tough',
-    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', item: 'mito', loot: ['🔑 Key piece 1 of 3', 'Mitochondria Gauntlet (Lowkey Legendary)', '+40 coins each'] },
+    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', item: 'mito', loot: ['🔑 Key piece 1 of 3', 'Mitochondria Gauntlet (Lowkey Iconic)', '+40 coins each'] },
   '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 800, power: 6, tier: 'Very tough',
-    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Legendary)', '+40 coins each'] },
+    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Iconic)', '+40 coins each'] },
   '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 450, power: 4, tier: 'Next step',
     text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', item: 'shield', loot: ['🔑 Key piece 3 of 3', 'Periodic Table Shield (Rare)', '+40 coins each'] },
   '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for anyone alone. When it wakes, everyone fights it together.' },
@@ -173,8 +173,8 @@ const HOME = '7,4', SIGHT = 2, MOVE_BANK = 4, FIRST_MOVES = 6, DAILY_MOVES = 2;
 const keysOf = w => CH1.filter(k => (w.boss || {})[k] === 0).length;
 const sealedIn = (w, P) => P && (['locked', 'worldboss'].includes(P.type) || (P.type === 'cage' && w.chapter < 2 && keysOf(w) < 3) || (P.ch || 1) > w.chapter);
 const walkableIn = (w, c, r) => inMap(c, r) && !isWater(c, r) && !sealedIn(w, PLACES[key(c, r)]);
-const visibleOf = st => { const v = new Set(), seen = (st.visited || [HOME]).map(unkey), lifted = (st.lifted || []).map(unkey);
-  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (seen.some(p => dist(p, [c, r]) <= SIGHT) || lifted.some(p => dist(p, [c, r]) <= 4)) v.add(key(c, r));
+const visibleOf = (st, sight = SIGHT) => { const v = new Set(), seen = (st.visited || [HOME]).map(unkey), lifted = (st.lifted || []).map(unkey);
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (seen.some(p => dist(p, [c, r]) <= sight) || lifted.some(p => dist(p, [c, r]) <= 4)) v.add(key(c, r));
   return v; };
 
 /* ===================== dates ===================== */
@@ -281,8 +281,9 @@ function resolve(w0, pubs, st0, today) {
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   const elapsed = Math.max(1, Math.min(7, dayNum(today) - dayNum(w.day || today)));
   const EV = eventOf(w0.day || today).id;   // the event of the day the camps were made
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const P_ = uid => pubs[uid] || {};
-  const nameOf = u => (P_(u).name || 'Someone').split(' ')[0];
+  const nameOf = u => esc((P_(u).name || 'Someone').split(' ')[0]);
   const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   w.boss = bossNow(w); w.bal = 1; w.hit = w.hit || {}; w.back = w.back || {};
   /* bosses that come back (the starter): full health again on the day they're due, with a fresh list of who hit them */
@@ -305,7 +306,7 @@ function resolve(w0, pubs, st0, today) {
   Object.entries(camps).forEach(([k, team]) => {
     const P = PLACES[k], ST = BOSS_STORY[k] || {}, hk = w.hit[k] = w.hit[k] || {}, start = w.boss[k];
     const rounds = Math.max(...team.map(([, n]) => n)), dealt = {};
-    team.forEach(([u]) => { if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`); hk[u] = true; dealt[u] = 0; fought[u] = P.name; });
+    team.forEach(([u]) => { if (!hk[u] && ST.meet) say(u, `<p class="new">${ST.meet}</p>`); hk[u] = true; S[u].bFought = Object.assign({}, S[u].bFought, { [k]: true }); dealt[u] = 0; fought[u] = P.name; });
     for (let i = 0; i < rounds && w.boss[k] > 0; i++) {
       const now = team.filter(([u, n]) => n > i && !out[u]).map(([u]) => u); if (!now.length) break;
       const bonus = Math.min(4, now.length - 1) * RALLY * (EV === 'rally' ? 2 : 1), mult = (1 + bonus) * (EV === 'rage' ? 1.25 : 1);
@@ -324,7 +325,7 @@ function resolve(w0, pubs, st0, today) {
     });
     if (w.boss[k] === 0) {
       const coins = P.coins || ((P.ch || 1) > 1 ? 50 : 40);
-      Object.keys(hk).forEach(u => { if (S[u]) { lines[u] = lines[u] || []; give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; }
+      Object.keys(hk).forEach(u => { if (S[u]) { S[u].bBeat = Object.assign({}, S[u].bBeat, { [k]: true }); lines[u] = lines[u] || []; give(u, coins, P.item); if (P.brew) { S[u].brews = S[u].brews || {}; S[u].brews[P.brew] = (S[u].brews[P.brew] || 0) + 1; }
         if (ST2.fall) lines[u].push(`<p class="new">${ST2.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
       if (P.respawn) w.back[k] = dayNum(today) + P.respawn;
       (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
@@ -351,7 +352,7 @@ function resolve(w0, pubs, st0, today) {
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
     const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
     if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
-    if (finds.length) lines[u].push(`<p>✨ Treasure found yesterday: ${finds.map(f => `<b>${f.n}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${f.it})` : ''}`).join('; ')}.</p>`);
+    if (finds.length) lines[u].push(`<p>✨ Treasure found yesterday: ${finds.map(f => `<b>${esc(f.n)}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${esc(f.it)})` : ''}`).join('; ')}.</p>`);
     if (newChests.length) lines[u].push(`<p class="new">✨ ${newChests.length === 1 ? 'A new treasure chest has' : newChests.length + ' new treasure chests have'} appeared in the night${newChests.some(isUnder) ? ' (one of them in the Underworld)' : ''}. You can see chests glinting even through the fog. First to reach one gets what's inside.</p>`);
     const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
     lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}.</p>`);
@@ -365,20 +366,39 @@ function resolve(w0, pubs, st0, today) {
 /* ===================== reading and writing the shared world ===================== */
 let db = null, uid = null, world = null, pubs = {}, states = {};
 const ref = p => db.ref('bland' + (p ? '/' + p : ''));
+const within = (p, ms = 12000) => new Promise((ok, no) => {
+  const t = setTimeout(() => no(new Error('timeout')), ms);
+  Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
+});
+async function rtGet(path, ms = 15000) {
+  if (typeof QE !== 'undefined' && QE.rtGet) return QE.rtGet(path, ms);
+  let done = false;
+  const sdk = db.ref(path).once('value').then(x => { done = true; return x.val(); });
+  const rest = (async () => {
+    await new Promise(r => setTimeout(r, 1500));
+    if (done) throw new Error('not needed');
+    const u = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
+    if (!u || !base || typeof u.getIdToken !== 'function') throw new Error('no rest');
+    const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
+    if (!r.ok) throw new Error('rest ' + r.status);
+    return r.json();
+  })();
+  return within(Promise.any ? Promise.any([sdk, rest]) : sdk, ms);
+}
 function init(rtdb, user) { db = rtdb; uid = user ? user.uid : null; }
 async function load() {
-  const v = (await ref().once('value')).val() || {};
+  const v = (await rtGet('bland', 15000)) || {};
   world = v.world ? Object.assign(newWorld(), v.world) : null; pubs = v.pub || {}; states = v.state || {};
   return { world, pubs, states };
 }
 /* first player ever creates the world; a new player gets a state in the Cakelab */
 async function join(profile) {
   if (!world) {
-    const r = await ref('world').transaction(cur => cur || newWorld());
+    const r = await within(ref('world').transaction(cur => cur || newWorld()), 12000);
     world = Object.assign(newWorld(), r.snapshot.val());
   }
-  if (!states[uid] || !states[uid].at) { states[uid] = Object.assign(newState(profile.hp), states[uid] || {}); await ref('state/' + uid).set(states[uid]); }   // (may already hold extra moves from the teacher)
-  await publish(profile);
+  if (!states[uid] || !states[uid].at) { states[uid] = Object.assign(newState(profile.hp), states[uid] || {}); await within(ref('state/' + uid).set(states[uid]), 12000); }   // (may already hold extra moves from the teacher)
+  await within(publish(profile), 12000);
 }
 function publish(profile, plan) {
   const cur = pubs[uid] || {};
@@ -390,15 +410,15 @@ function publish(profile, plan) {
 const savePlan = steps => publish({}, steps);
 /* teamwork (16 Nov): give a brew to, or patch up, another player (their state is writable by any signed-in player) */
 async function aid(to, what, from) {
-  if (what.brew) await ref(`state/${to}/brews/${what.brew}`).transaction(n => (n || 0) + 1);
-  if (what.heal) await ref(`state/${to}/health`).transaction(h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal));
-  await ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5));
+  if (what.brew) await within(ref(`state/${to}/brews/${what.brew}`).transaction(n => (n || 0) + 1), 10000);
+  if (what.heal) await within(ref(`state/${to}/health`).transaction(h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal)), 10000);
+  await within(ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5)), 10000);
   if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
 }
 /* treasure: the first to step on a chest gets it. Returns the chest if you got it, null if someone else already had. */
 async function claimChest(k) {
   let took = null;
-  const r = await ref('world/chests/' + k).transaction(cur => { took = cur; return cur ? null : cur; });
+  const r = await within(ref('world/chests/' + k).transaction(cur => { took = cur; return cur ? null : cur; }), 10000);
   if (world && world.chests) delete world.chests[k];
   return r.committed && took ? took : null;
 }
@@ -408,14 +428,14 @@ async function dropChests(n, kind) {
   await load(); if (!world) return [];
   const w = { chests: Object.assign({}, world.chests || {}), chapter: world.chapter, boss: world.boss };
   const made = spawnChests(w, states, TODAY, Math.random, n, kind), upd = {};
-  made.forEach(k => { upd['world/chests/' + k] = w.chests[k]; }); if (made.length) await ref().update(upd);
+  made.forEach(k => { upd['world/chests/' + k] = w.chests[k]; }); if (made.length) await within(ref().update(upd), 12000);
   world.chests = w.chests; return made;
 }
-function saveMine(fields) { Object.assign(states[uid], fields); return ref('state/' + uid).update(fields); }
+function saveMine(fields) { Object.assign(states[uid], fields); return within(ref('state/' + uid).update(fields), 12000); }
 /* the night: run if the world's day is before today. A transaction on the lock stops two visitors running it at once. */
 async function runNightIfDue(force) {
   if (!world || (!force && world.day >= TODAY)) return null;
-  const lock = await ref('world/lock').transaction(cur => (cur && cur.day === TODAY && Date.now() - cur.at < 120000) ? undefined : { day: TODAY, by: uid, at: Date.now() });
+  const lock = await within(ref('world/lock').transaction(cur => (cur && cur.day === TODAY && Date.now() - cur.at < 120000) ? undefined : { day: TODAY, by: uid, at: Date.now() }), 12000);
   if (!lock.committed) return null;
   await load();
   if (!force && world.day >= TODAY) return null;
@@ -426,9 +446,9 @@ async function runNightIfDue(force) {
   Object.keys(world).forEach(f => { if (!(f in res.world)) upd['world/' + f] = null; });   // e.g. the lock
   Object.keys(c0).forEach(k => { if (!c1[k]) upd['world/chests/' + k] = null; });
   Object.keys(c1).forEach(k => { if (!c0[k]) upd['world/chests/' + k] = c1[k]; });
-  const NIGHT_FIELDS = ['at', 'health', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews'];
+  const NIGHT_FIELDS = ['at', 'health', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews', 'bFought', 'bBeat'];
   Object.entries(res.states).forEach(([u, st]) => { if (!st || !st.at) return; NIGHT_FIELDS.forEach(f => { upd[`state/${u}/${f}`] = st[f] === undefined ? null : st[f]; }); });
-  await ref().update(upd);
+  await within(ref().update(upd), 12000);
   world = res.world; states = res.states;
   return res;
 }

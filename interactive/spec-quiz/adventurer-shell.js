@@ -6,8 +6,14 @@
    Needs, first: questing-engine.js (and its scripts) and adventurer-pixel.js. */
 const ADV = (() => {
   const KEY = 'cbs.adventurer.state';
-  /* Totals of non-Units spec points per science (Double Award): used for progress bars. */
-  const TOTAL = { b: 134, c: 130, p: 139 };
+  /* Totals of non-Units spec points per science (computed from QE.POINT_QS so Single Award students see their own totals). */
+  const TOTAL = (() => {
+    const o = { b: 0, c: 0, p: 0 };
+    if (typeof QE !== 'undefined' && QE.POINT_QS) {
+      for (const k in QE.POINT_QS) { const l = k[0].toLowerCase(); if (l in o) o[l]++; }
+    }
+    return o.b || o.c || o.p ? o : { b: 134, c: 130, p: 139 };
+  })();
   const SCI = { b: 'Biology', c: 'Chemistry', p: 'Physics' };
   const STARTER = { head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler' };
   const DEF = () => ({
@@ -93,21 +99,30 @@ const ADV = (() => {
     return s;
   };
 
-  /* ---------- revision → Breadventure Land: Health and mana earned by missions and flashcards wait in the engine's pool
-     until a Questing page opens; the day's first revision (mission or today's flashcards) gives +1 move once a day. ---------- */
+  /* ---------- revision → Breadventure Land: Health and mana stay in Firestore's GAME.pool until the map itself claims them
+     (so switching devices between a mission and the map never loses them); same for today's +1 revision move (GAME.moveDay). ---------- */
   const MOVE_CAP = 5;
-  function collect() {
-    const s = stats(), p = QE.takePool(), g = { hp: 0, mana: 0, move: false };
-    if (p.hp) { const b = S.health; S.health = Math.min(s.hp, S.health + p.hp); g.hp = S.health - b; }
-    if (p.mana) { const b = S.mana; S.mana = Math.min(s.mana, S.mana + p.mana); g.mana = S.mana - b; }
+  function pending() {
+    const s = stats(), p = Object.assign({ hp: 0, mana: 0 }, QE.game.pool), o = S.out || {};
     const extra = s.gear.fx.revise ? 1 : 0;   // e.g. Roller Skates: +1 more move for the day's first revision
-    if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP + extra, S.moves + 1 + extra); g.move = 1 + extra; }
-    /* the shared Breadventure Land picks these up next time the map opens (it holds the real Health, mana and moves) */
-    if (p.hp || p.mana || g.move) { const o = S.out = S.out || { hp: 0, mana: 0, move: 0 }; o.hp += p.hp || 0; o.mana += p.mana || 0; if (g.move) o.move += g.move; }
-    if (g.hp || g.mana || g.move || p.hp || p.mana) save();
-    return g;
+    const revMove = QE.revisedToday() && QE.game.moveDay !== QE.TODAY && S.bonusDay !== QE.TODAY ? (1 + extra) : 0;
+    return { hp: (p.hp || 0) + (o.hp || 0), mana: (p.mana || 0) + (o.mana || 0), move: revMove + (o.move || 0) };
   }
-  let gained = { hp: 0, mana: 0, move: false };
+  function collect(drain) {
+    if (!drain) return pending();
+    const s = stats(), p = QE.takePool(), o = S.out || {};
+    const extra = s.gear.fx.revise ? 1 : 0;
+    let revMove = 0;
+    if (QE.revisedToday() && QE.game.moveDay !== QE.TODAY && S.bonusDay !== QE.TODAY) {
+      revMove = 1 + extra;
+      QE.game.moveDay = QE.TODAY; QE.gameChanged();
+      S.bonusDay = QE.TODAY;
+    }
+    if (S.out) S.out = null;
+    if (revMove || o.hp || o.mana || o.move) save();
+    return { hp: (p.hp || 0) + (o.hp || 0), mana: (p.mana || 0) + (o.mana || 0), move: revMove + (o.move || 0) };
+  }
+  let gained = { hp: 0, mana: 0, move: 0 };
 
   /* ---------- nav bar (one bar: brand, Cakelab, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
@@ -193,8 +208,11 @@ const ADV = (() => {
       acct.querySelector('#advOut').onclick = () => QE.signOut();
     };
     draw(); QE.onChange(draw);
-    gained = collect();
-    if (gained.hp || gained.mana || gained.move) {
+    gained = pending();
+    const toastSig = [QE.TODAY, gained.hp, gained.mana, gained.move].join('|');
+    let lastToast = ''; try { lastToast = sessionStorage.getItem('cbs.questing.toast') || ''; } catch (e) {}
+    if ((gained.hp || gained.mana || gained.move) && toastSig !== lastToast) {
+      try { sessionStorage.setItem('cbs.questing.toast', toastSig); } catch (e) {}
       const t = document.createElement('div');
       t.setAttribute('role', 'status');
       t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center;transition:opacity .5s';
@@ -298,12 +316,7 @@ const ADV = (() => {
     dragonzz: ['................................', '................................', '................................', '................................', '................................', '................................', '................................', '................................', '.................KK....K........', '................KlrK..KK........', '..K........K....KrrrKKrr........', '...K......KK...KlrRRllrrK.......', '...KKK....KKKKKlRrRRRrRrK.......', '...KXKKKKKKKllKlrRRRrRRRrKK.....', '...KKllllrKKRKlRrRRrRRRRrrr.....', '..KllRRRRRlrKlRrRRrRRRRrrr......', '..KlRRRRRRRrKrRrRrRRRrrrKK......', '.KlKKKKRRKKKrKrrrRRrrrrrKrK...K.', '.KKKKKKKRRRRrKrrrrrrKKKKRrK..KK.', '.KlllllrKRRRrKKKrrKRRRRRRrK.KK..', 'KlRRRRRRrKRRrKRRRRRRRRRRRrKKrK..', 'KlKRRKRRrKRrrRRRRRRRRRRRrKKrKK..', 'KlRRRRRRrKrrKRRrRRRRRRRrrKKK....', 'KrKKKKKKrKKKRRRRRRRrRRrrK.......', '.KrrrrrrKKKKrrrrrrrrrrKK........', '..KKKKKKKKKKKKKKKKKKKKKKKKKKK...', '..KeeeeeeeeWeeeeeeeeeeeWeeeAK...', '..KeYYYYYYYYYYYYYYYYYYYYYYYYAK..', '.KeWYYYYYYYYYYWYYYYYYYYYYYWYAK..', '.KAAAAAAWAAAAAAAAAAAWAAAAAAAAK..', 'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK.', '................................'],
     gate: ['....KKKKKKKK....', '...KUUUUUUUUK...', '..KUZZZZZZZZUK..', '..KUZKKKKKKZUK..', '..KUZKCCCCKZUK..', '..KUZKCWWCKZUK..', '..KUZKCCCCKZUK..', '..KUZKCCCCKZUK..', '..KUZKKKKKKZUK..', '.KKUUUUUUUUUUKK.', '.KUUUUUUUUUUUUK.'],
 
-    /* the Professor (cake-slice scientist mascot, after the top-left pose on the user's sheet): frosting dome with sprinkles,
-       sponge rim, big eyes, blush, lab coat open over the jam layers, flask. prof = no goggles (current pick); B goggles pushed up; C goggles on; D happy. */
-    prof: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
-    profB: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKTHHHTTTTTTHHHTKXK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
-    profC: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJTTTTTJJJJJJTTTTTJK......', '.KJTHKHTTTTTTTTHKHTJK......', '.KJTTTTTJJJJJJTTTTTJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
-    profD: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKJJKJJJJJJKJJKJJK......', '.KJJJKKJJJJJJJJKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    /* the Professor's map/story sprite is an image file in IMG below */
     crumbs: ['............', '............', '............', '............', '...F........', '.......Q....', '..I.........', '.....F...Y..', '.Q......F...', '....Q.......', '............', '............'],
     superbug: ['..............K.............', '..............K.............', '..............K.............', '.............KK.............', '..........KKKLgKKK..........', '...g....KKLLLGGLLgKK....g...', '....K..KLhhGGGGGGGLgK..K....', '.....K.KhGGGGGGGGGGgK.K.....', '......KLGGGGGGGGGGGGgK......', '......KLKKGGGGGGGGKKgK......', '......KLGGKKGGGKKGGGgK......', '.....KLGGWWWGGGWWWGGGgK.....', '.....KLGGWKKGGGKKWGGGgK.....', '.gKK.KLGGWKKGGGKKWGGGgK.KKg.', '...KKKLGGGGGGGGGGGGGGgKKK...', '.....KLgGGGGGGGGGGGGGgK.....', '.....KgGGGGGGGGGGGGGggK.....', '......KLGGKKKKKKKKGGgK......', '......KLGGKWKWKWKKGGgK......', '......KggGGKKKKKKGGGgK......', '......KKLGGGGGGGGGGgKK......', '.....K.KggGGgGGGGGggK.K.....', '....K...KKgggGGgggKK...K....', '...g......KKKggKKK......g...', '.............KK.............', '..............K.............', '..............K.............', '..............K.............'],
     superbug_hurt: ['...Y..........K.........Y...', '..YWY.........K........YWY..', '...Y..........K.........Y...', '.............KK.............', '..........KKKLgKKK..........', '...g....KKLLLGGLLgKK....g...', '....K..KLhhGGGGGGGLgK..K....', '.....K.KhGGGGGGGGGGgK.K.....', '......KLGGGGGGGGGGGGgK......', '......KLGGGGGGGGGGGGgK......', '......KLGGGGGGGGGGGGgK......', '.....KLGGKGGGGGGGKGGGgK.....', '.....KLGGGKGGGGGKGGGGgK.....', '.gKK.KLGGKGGGGGGGKGGGgK.KKg.', '...KKKLGGGGGGGGGGGGGGgKKK...', '.....KLgGGGGGGGGGGGGGgK.....', '.....KgGGGGGGGGGGGGGggK.....', '......KLGGGKKKKKKGGGgK......', '......KLGGGKppppKGGGgK......', '......KggGGKKKKKKGGGgK......', '......KKLGGGGGGGGGGgKK......', '.....K.KggGGgGGGGGggK.K.....', '....K...KKgggGGgggKK...K....', '...g......KKKggKKK......g...', '.............KK.............', '..............K.............', '..............K.............', '..............K.............'],
@@ -372,5 +385,5 @@ const ADV = (() => {
     return cache[k] = c.toDataURL();
   }
 
-  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, pending, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

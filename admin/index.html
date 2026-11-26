@@ -463,7 +463,7 @@ async function drawChar(s) {
       ${st.pending ? `<tr><td>Waiting</td><td>🎁 ${st.pending.coins || 0} coins${(st.pending.items || []).length ? ' + ' + st.pending.items.map(i => esc((ADV_BY[i] || { name: i }).name)).join(', ') : ''} (collected next time they open the map)</td></tr>` : ''}
       ${(st.inbox || []).length ? `<tr><td>Unread</td><td class="small">${st.inbox.map(esc).join('<br>')}</td></tr>` : ''}
       ${pub ? `<tr><td>Last map visit</td><td>${ago(pub.t)} · stats then: 💪 ${pub.str} ❤ ${pub.hp} ✨ ${pub.mag}, level ${pub.lvl}</td></tr>` : ''}</table>
-      ${st.report ? `<details style="margin-top:8px"${st.reportDay === w.day ? ' open' : ''}><summary><b>Their last night's report</b> <span class="small muted">(${esc(st.reportDay || '')})</span></summary><div class="crep">${st.report}</div></details>` : ''}`;
+      ${st.report ? `<details style="margin-top:8px"${st.reportDay === w.day ? ' open' : ''}><summary><b>Their last night's report</b> <span class="small muted">(${esc(st.reportDay || '')})</span></summary><div class="crep">${Array.isArray(st.report) ? st.report.join('') : st.report}</div></details>` : ''}`;
   }
   const log = (g.log || []).slice().reverse();
   el.innerHTML = `<h3 style="margin-top:0">Their character</h3>

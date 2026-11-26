@@ -5,8 +5,8 @@ import asyncio
 from playwright.async_api import async_playwright
 B='http://localhost:8765'; import os; FAKE=open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'fakefb.js'),encoding='utf-8').read()
 PAGES=['/','/404.html','/today/','/interactive/spec-quiz/','/interactive/spec-quiz/adventurer-home.html','/interactive/spec-quiz/adventurer-mission.html',
-'/interactive/spec-quiz/adventurer-map.html','/interactive/spec-quiz/adventurer-wardrobe.html','/interactive/spec-quiz/adventurer-create.html','/interactive/spec-quiz/quiz.html',
-'/interactive/spec-quiz/practice.html','/interactive/spec-quiz/reports.html','/Flashcards/','/booklets/','/specifications/science.html','/specifications/biology.html',
+'/interactive/spec-quiz/adventurer-map.html','/interactive/spec-quiz/adventurer-wardrobe.html','/interactive/spec-quiz/adventurer-create.html','/interactive/spec-quiz/adventurer-stats.html','/interactive/spec-quiz/quiz.html',
+'/interactive/spec-quiz/practice.html','/interactive/spec-quiz/reports.html','/interactive/spec-quiz/diagram-lab.html','/Flashcards/','/booklets/','/specifications/science.html','/specifications/biology.html',
 '/specifications/chemistry.html','/specifications/physics.html','/specifications/maths.html','/leaderboards/','/admin/','/admin/review.html','/admin/study-guide.html','/admin/showcase.html','/guide/?id=x','/interactive/spec-quiz/practice.html?subs=C1a,C1.37&n=15','/interactive/elements-game/','/interactive/cell-game/',
 '/interactive/typing-game/','/interactive/lessons/','/interactive/lessons/chemistry/1f/draft/','/play/','/work/?id=x','/Elevenstudents/','/Elevenstudents/Games/snake.html',
 '/worksheets/science.html','/interactive/physics-long-answer/','/interactive/physics-equations/','/test.html','/mascot/']

@@ -120,8 +120,10 @@ let nick = QE.game.nickPending || approved();
 function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
 function newNick() {
   const A = ['Brave', 'Chaotic', 'Sleepy', 'Mighty', 'Curious', 'Sneaky', 'Cosmic', 'Turbo', 'Gentle', 'Unbothered', 'Sparkly', 'Lowkey', 'Valiant', 'Wobbly', 'Electric', 'Fizzy'];
-  const N = ['Neutron', 'Mitochondrion', 'Proton', 'Catalyst', 'Isotope', 'Photon', 'Enzyme', 'Electron', 'Nucleus', 'Quark', 'Alkane', 'Ribosome', 'Comet', 'Magnet', 'Pipette', 'Beaker'];
-  return A[Math.random() * A.length | 0] + ' ' + N[Math.random() * N.length | 0];
+  const N = ['Neutron', 'Proton', 'Catalyst', 'Isotope', 'Photon', 'Enzyme', 'Electron', 'Nucleus', 'Quark', 'Alkane', 'Ribosome', 'Comet', 'Magnet', 'Pipette', 'Beaker', 'Cell'];
+  const valid = [];
+  for (const a of A) for (const n of N) { const s = a + ' ' + n; if (!QE.checkName(s)) valid.push(s); }
+  return valid[Math.random() * valid.length | 0] || 'Brave Neutron';
 }
 const STARTER = {head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler'};
 const outfit = () => view === 'base' ? {} : view === 'hat' ? Object.assign({}, STARTER, {head: 'nocap'}) : Object.assign({}, STARTER, {head: null});
@@ -175,14 +177,16 @@ function nameStatus() {
   document.getElementById('namest').innerHTML = p ? `⏳ <b>${p.replace(/</g, '&lt;')}</b> is waiting for your teacher to approve it. Until then you're shown as <b>${shown}</b>${QE.user ? '' : ' Sign in so it can be sent.'}` : '';
 }
 QE.onChange(() => { if (document.activeElement !== document.getElementById('nick')) nick = QE.game.nickPending || approved(); nameStatus(); render(); });
-document.getElementById('save').onclick = () => {
+document.getElementById('save').onclick = async () => {
   if (!checkNick()) { document.getElementById('nick').focus(); return; }
+  const btn = document.getElementById('save'); btn.disabled = true; btn.textContent = 'Saving…';
   const want = QE.cleanName(nick), cur = approved();
   if (want !== (QE.game.nickPending || cur)) QE.requestName(want || '-');
   base.v = 1;
   try { localStorage.setItem(KEY_BASE, JSON.stringify(base)); } catch (e) {}
   QE.syncLook();
-  setTimeout(() => { location.href = 'adventurer-home.html'; }, QE.user ? 700 : 0);
+  if (QE.user) { try { await QE.within(QE.save(true), 4000); } catch (e) {} }
+  location.href = 'adventurer-home.html';
 };
 nameStatus(); render();
 </script>

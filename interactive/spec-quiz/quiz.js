@@ -145,11 +145,11 @@ $('colAll').onclick = () => { $('tree').querySelectorAll('.node').forEach(li => 
 /* ---------- screens ---------- */
 let SOLO = null, TEAM = null, KEYS = null;
 function show(id) {
-  ['menu', 'solosetup', 'teamsetup', 'play', 'results', 'campaign'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  ['menu', 'solosetup', 'teamsetup', 'play', 'results'].forEach(x => $(x).classList.toggle('hidden', x !== id));
   document.body.classList.toggle('proj', !!TEAM && (id === 'play' || id === 'results'));
   window.scrollTo(0, 0);
 }
-function menu() { if (TEAM && TEAM.stop) TEAM.stop(); SOLO = TEAM = KEYS = null; if (typeof CAMP !== 'undefined') CAMP.mission = null; show('menu'); }
+function menu() { if (TEAM && TEAM.stop) TEAM.stop(); SOLO = TEAM = KEYS = null; show('menu'); }
 $('quit').onclick = menu;
 
 function scopeText() {
@@ -174,14 +174,14 @@ function buildQuiz(n, lv = null, calc = true, diag = true) {
 const REPORT_REASONS = ['The marked answer is wrong', 'More than one answer is right', 'The wording is confusing', 'Spelling or typing mistake', 'Not on the spec / too hard', 'Something else'];
 const REPORTED = new Set();
 function reportPayload(q, opts, pickedIdx, reason, comment) {
-  const u = (typeof FB !== 'undefined' && FB.user) ? FB.user : null;
+  const u = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length && firebase.auth && firebase.auth().currentUser) || null;
   const n = u && u.displayName ? u.displayName.trim().split(/\s+/) : null;
   return {
     qid: q.id, reason, comment: (comment || '').slice(0, 400),
     shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400), ...(q.seed ? { seed: q.seed } : {}),
     options: opts.map(o => (o.t || '').replace(/<[^>]+>/g, '').slice(0, 120)),
     correct: opts.findIndex(o => o.ok), picked: pickedIdx === null ? -1 : pickedIdx,
-    mode: (typeof CAMP !== 'undefined' && CAMP.mission) ? 'campaign' : TEAM ? 'team' : 'solo',
+    mode: TEAM ? 'team' : 'solo',
     name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '',
     t: Date.now()
   };
@@ -255,7 +255,7 @@ function renderQ(q, box, onAnswer) {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey || e.metaKey || e.altKey || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === 'Enter') { const nx = $('nx'); if (nx && !$('play').classList.contains('hidden')) { e.preventDefault(); nx.click(); } return; }
   if (!KEYS) return;
   const i = KEYS.keys.indexOf(e.key.toUpperCase());

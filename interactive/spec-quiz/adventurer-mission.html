@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
-<script>/* plain mode (set on the Practice page): "Quiz me" deep links open Practice instead of a mission */
-try { if (localStorage.getItem('cbs.plain') === '1' && /[?&]point=/.test(location.search)) location.replace('practice.html' + location.search); } catch (e) {}</script>
+<script>/* plain mode (set on the Practice page): deep links open Practice instead of a mission */
+try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test(location.search)) location.replace('practice.html' + location.search); } catch (e) {}</script>
 <link rel="stylesheet" href="adventurer.css">
 <style>
 .wrap{max-width:900px}
@@ -272,14 +272,14 @@ function show() {
   const q = cur();
   $('prog').innerHTML = MS.qs.map((x, j) => `<i class="${MS.retry && x === q ? 'now' : j < MS.res.length ? (MS.res[j].ok ? 'ok' : MS.fixedIds.has(x.id) ? 'fix' : 'no') : j === MS.i ? 'now' : ''}"></i>`).join('');
   $('qnum').textContent = MS.retry ? `Second wind · ${MS.ri + 1} of ${MS.retry.length} · ${q.tf !== undefined ? 'quarter' : 'half'} a hit` : `Question ${MS.i + 1} of ${MS.qs.length} · ${lvLabel(q)}`;
-  $('qspec').textContent = `Spec ${q.s.slice(1)} · ${MS.sub.subj}`;
+  $('qspec').textContent = `Spec ${q.s.slice(1)} · ${QE.POINTS[q.s] ? QE.POINTS[q.s].subject : MS.sub.subj}`;
   $('qfig').innerHTML = typeof DQ !== 'undefined' ? DQ.fig(q) : '';   // diagram questions: the drawing above the question
-  $('qtext').innerHTML = q.tf !== undefined ? `True or false? ${q.q}` : q.q;
+  $('qtext').innerHTML = nuc(q.tf !== undefined ? `True or false? ${q.q}` : q.q);
   let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : shuffle(q.o.map((o, j) => [o, j === 0])), keys = 'ABCD';
   if (q.svg && typeof DQ !== 'undefined') ({ opts, keys } = DQ.order(opts, o => o[0]));   // letter answers in order, numbered keys
   MS.keys = keys;
   $('opts').className = 'opts' + (opts.length === 2 ? ' n2' : '');
-  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${t}</span></button>`).join('');
+  $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${nuc(t)}</span></button>`).join('');
   $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
   MS.opts = opts; MS.picked = -1;
   $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
@@ -381,7 +381,7 @@ function finish() {
     else if (right > b.r && b.r) record = `<li class="up">🏅 New best on this mission: ${right}/10 (was ${b.r}/10).</li>`;
     g.best[MS.sub.key] = { r: Math.max(b.r, right), w: b.w || won ? 1 : 0 }; }
   $('wind').classList.add('hidden');
-  const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit');
+  const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !i.dark);
   const drop = Math.random() < 1 / 67 && ADV_ITEMS.find(i => i.id === 'calc67') || pool[Math.floor(Math.random() * pool.length)];   // the 6-7 Calculator: 1 in 67, as its card always said
   const firstRev = !QE.revisedToday();
   QE.finishMission({ coins, loot: drop.id, right });
@@ -409,7 +409,7 @@ function finish() {
         <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) && ADV.can('spells') ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
-    ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${r.q.tf !== undefined ? 'True or false? ' : ''}${r.q.q}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : r.q.o[0]}. `}${r.q.x || ''}</span></li>`).join('')}</ul></div>` : ''}
+    ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : nuc(r.q.o[0])}. `}${nuc(r.q.x || '')}</span></li>`).join('')}</ul></div>` : ''}
     <div class="acts">${MS.guide ? `<button class="btn gold big" id="guideAgain">Another ${MS.guide.n} →</button><a class="btn alt" href="/today/">Back to To do</a>` : ''}${MS.guide ? '' : (() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
       return (won ? '' : `<a class="btn gold big" href="adventurer-mission.html?sub=${MS.sub.key}">⚔ Fight it again</a>`) + (nx ? `<a class="btn ${won ? 'gold big' : 'alt'}" href="adventurer-mission.html?sub=${nx.key}">Next: ${esc(foeOf(nx).name)} →</a>` : ''); })()}<a class="btn alt" href="adventurer-mission.html">All missions</a><a class="btn alt" href="adventurer-home.html">🧁 Cakelab</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
     <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'Saved in this browser only. Sign in (top right) to keep your progress safe and get on the leaderboards.'}</p>`;

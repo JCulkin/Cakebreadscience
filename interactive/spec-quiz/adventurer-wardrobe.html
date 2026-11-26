@@ -123,24 +123,36 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 <script src="adventurer-shell.js"></script>
 <script>
 ADV.nav('wardrobe');
-const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick', KEY_EQ = 'cbs.adventurer.eq';
+const KEY_BASE = 'cbs.adventurer.base', KEY_EQ = 'cbs.adventurer.eq';
 const load = k => { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } };
-const base = load(KEY_BASE) || PIXEL.DEFAULT;
-const nick = localStorage.getItem(KEY_NICK) || 'Brave Neutron';
+let base = load(KEY_BASE) || PIXEL.DEFAULT;
 const byId = Object.fromEntries(ADV_ITEMS.map(i => [i.id, i]));
-/* what you own: the starter outfit + everything missions have dropped (saved in your account) + any legendary you hold (most correct in its science over the last 7 days) */
+/* what you own: the starter outfit + everything missions have dropped (saved in your account) + any Main Character item you hold (most correct in its science over the last 7 days) */
 const STARTER = ADV_ITEMS.filter(i => i.from === 'Starter outfit').map(i => i.id);
 const OWNED = new Set([...STARTER, ...(ADV.S.bag || [])]);
 const HOLDERS = {};
 let eq = ADV.eq();
-for (const k in eq) if (eq[k] && !OWNED.has(eq[k])) { const st = ADV_ITEMS.find(i => ADV_FITS(i, k) && i.from === 'Starter outfit' && (i.slot !== 'hand' || i.side === k[0])); eq[k] = st ? st.id : null; }
-/* legendaries: whoever has the most correct answers in that science over the last 7 days holds it */
+/* keep Main Character items worn until the board confirms whether you still hold them */
+function pruneEq(includeLegend) {
+  for (const k in eq) {
+    const id = eq[k], it = id && byId[id];
+    if (!id || OWNED.has(id) || (!includeLegend && it && it.legend)) continue;
+    const st = ADV_ITEMS.find(i => ADV_FITS(i, k) && i.from === 'Starter outfit' && (i.slot !== 'hand' || i.side === k[0]));
+    eq[k] = st ? st.id : null;
+  }
+}
+pruneEq(false);
+/* Main Character items: whoever has the most correct answers in that science over the last 7 days holds it */
 QE.onChange(() => {
-  if (!QE.user || HOLDERS._done) return; HOLDERS._done = true;
+  base = ADV.look();
+  (ADV.S.bag || []).forEach(id => OWNED.add(id));
+  if (!QE.user || HOLDERS._done) { render(); return; }
+  HOLDERS._done = true;
   QE.board().then(rows => {
     [['syringe', 'B'], ['pebble', 'C'], ['dodgeball', 'P']].forEach(([id, f]) => { const b = rows.filter(r => r.l7[f] > 0).sort((a, c) => c.l7[f] - a.l7[f])[0]; if (b) { HOLDERS[id] = b.me ? 'you' : b.name; if (b.me) OWNED.add(id); } });
+    pruneEq(true);
     render();
-  }).catch(() => {});
+  }).catch(() => render());
 });
 let slot = 'top', sel = eq.top || null;   // tops first: hats are level 3, things to hold level 5
 const PIC = {}; const pic = id => PIC[id] || (PIC[id] = PIXEL.item(id));
@@ -149,7 +161,7 @@ const RANK = {common: 0, uncommon: 1, rare: 2, lowkey: 3, unhinged: 4, legend: 5
 /* 22 Nov: every item has a level (one tag with its rarity), adds Strength/Health/Magic and maybe does something (fx);
    hand items go in either hand, some need both; 4+ slots all from one science = a set bonus and a glow (adventurer-items.js) */
 const lvNow = () => ADV.stats().l;
-const canWear = i => (i.lv || 1) <= lvNow() && !(i.legend && !ADV.can('legend'));
+const canWear = i => i.from === 'Starter outfit' || ((i.lv || 1) <= lvNow() && !(i.legend && !ADV.can('legend')));
 function setLine(g) {
   if (g.set) { const S = ADV_SETS[g.set], st = ADV.stats(); return `<div class="setok" style="--g:${S.col}">✨ <b>Full ${S.name} set!</b> +${st.set} ${ADV_STAT[S.stat][0]} ${ADV_STAT[S.stat][1]} (15%), ${ADV_FX_TXT(S.fx)[0].replace(/^./, c => c.toLowerCase())}, and you glow.</div>`; }
   const c = {}; Object.entries(eq).forEach(([k, id]) => { const i = byId[id]; if (i && ADV_FITS(i, k) && i.s) c[i.s] = (c[i.s] || 0) + 1; });
@@ -164,7 +176,7 @@ function gearBox() {
 }
 function render() {
   document.getElementById('fig').src = PIXEL.figure(eq, base);
-  document.getElementById('nm').textContent = nick;
+  document.getElementById('nm').textContent = ADV.nick();
   const g = ADV_GEAR(eq);
   document.getElementById('ttl').textContent = '“' + (g.set ? ADV_SETS[g.set].title : 'Side Quest Enjoyer') + '”';
   document.getElementById('set').innerHTML = gearBox();
