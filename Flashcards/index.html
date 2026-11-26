@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flashcards - Cakebread Science</title>
-  <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Cakebread Questing adventurer. Study Biology, Chemistry, Physics, and Physics Equations.">
+  <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Cakebread Questing adventurer. Study Biology, Chemistry, Physics, Physics Equations, and Examiner Key Words.">
   <meta name="keywords" content="IGCSE, Edexcel, flashcards, spaced repetition, biology, chemistry, physics">
   <meta name="author" content="Cakebread Science">
   <link rel="icon" type="image/png" href="/favicon.png">
@@ -238,25 +238,66 @@
     .fc-total .tdl { font: 900 20px 'Barlow Condensed', Arial, sans-serif; text-transform: uppercase; }
     .fc-total .tdt { color: var(--muted); font-size: 14px; }
 
+    .taught-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .taught-bar[hidden] { display: none; }
+    .t-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #dcfce7;
+      border: 2px solid #15803d;
+      color: #14532d;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .t-status.ahead {
+      background: #fef3c7;
+      border-color: #b45309;
+      color: #78350f;
+    }
     .taught-toggle {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
       background: #fff;
       border: 2px solid var(--ink);
-      padding: 6px 12px;
-      font-size: 14px;
+      padding: 5px 11px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 2px 0 var(--ink);
       user-select: none;
     }
-    .taught-toggle[hidden] { display: none; }
-    .taught-toggle input { width: 16px; height: 16px; accent-color: var(--bio); cursor: pointer; }
-    .taught-toggle .t-note { font-weight: 400; color: var(--muted); font-size: 13px; }
+    .taught-toggle input { width: 15px; height: 15px; accent-color: var(--phys); cursor: pointer; }
 
     /* Deck grid */
-    .deck-list {
+    .deck-list { display: block; }
+    .deck-grid-core {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .deck-grid-core .deck-item h3 { font-size: 21px; }
+    .deck-grid-core .d-top { gap: 8px; }
+    .deck-opt-head {
+      font: 900 15px 'Barlow Condensed', 'Arial Narrow', Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin: 18px 0 8px;
+    }
+    .deck-opt-head span {
+      font: 600 13px 'Barlow', Arial, sans-serif;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .deck-grid-opt {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 14px;
@@ -268,11 +309,75 @@
       box-shadow: 0 4px 0 var(--ink);
       padding: 14px 16px;
       cursor: pointer;
-      transition: transform .08s;
+      transition: transform .08s, opacity .12s, background .12s;
       display: flex;
       flex-direction: column;
     }
     .deck-item:hover { background: #fffdf6; transform: translateY(-2px); box-shadow: 0 6px 0 var(--ink); }
+    .deck-item.deck-off {
+      background: #f2f0e8;
+      border-color: #9ca3af;
+      border-top-color: #9ca3af;
+      box-shadow: 0 3px 0 #9ca3af;
+      color: #6b7280;
+      opacity: .84;
+    }
+    .deck-item.deck-off:hover {
+      background: #faf8f2;
+      border-color: var(--ink);
+      border-top-color: var(--dc, #111);
+      box-shadow: 0 5px 0 var(--ink);
+      opacity: 1;
+    }
+    .deck-item.deck-off .d-ic { filter: grayscale(1); opacity: .7; }
+    .deck-item.deck-off:hover .d-ic { filter: none; opacity: 1; }
+    .deck-item.deck-off h3 { color: #4b5563; }
+    .deck-item.deck-off:hover h3 { color: var(--ink); }
+    .deck-opt-pill {
+      display: inline-block;
+      font: 700 11px 'Barlow', Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 1px 6px;
+      border: 1px solid #9ca3af;
+      background: #e5e7eb;
+      color: #4b5563;
+      vertical-align: middle;
+      margin-left: 5px;
+    }
+    .deck-opt-pill.on {
+      border-color: var(--dc, #111);
+      background: #fff;
+      color: var(--dc, #111);
+    }
+    .d-blurb {
+      font-size: 13px;
+      color: #6b7280;
+      margin-top: 8px;
+      line-height: 1.35;
+      flex: 1;
+    }
+    .turn-on-btn {
+      font: 900 15px 'Barlow Condensed', Arial, sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      background: #fff;
+      color: var(--ink);
+      border: 2px solid var(--ink);
+      padding: 5px 12px;
+      box-shadow: 0 2px 0 var(--ink);
+      cursor: pointer;
+    }
+    .deck-item.deck-off:hover .turn-on-btn { background: var(--yellow); }
+    .turn-off-btn {
+      font: 700 12px 'Barlow', Arial, sans-serif;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid #bbb;
+      padding: 3px 8px;
+      cursor: pointer;
+    }
+    .turn-off-btn:hover { color: var(--ink); border-color: var(--ink); background: #f3f4f6; }
     .d-top { display: flex; align-items: center; gap: 10px; }
     .d-ic { font-size: 26px; flex: none; }
     .d-name { flex: 1; min-width: 0; }
@@ -429,6 +534,55 @@
     }
     .tb-sub:hover { border-color: var(--ink); background: #fef3c7; }
     .tb-sub.untaught { opacity: .55; }
+    .tb-note {
+      font-size: 13px;
+      color: var(--muted);
+      margin: 0 0 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .tb-empty {
+      grid-column: 1 / -1;
+      background: var(--soft);
+      border: 1.5px dashed #aaa;
+      padding: 14px;
+      font-size: 14px;
+      color: #444;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .fc-kw-kicker {
+      font: 900 13px 'Barlow Condensed', Arial, sans-serif;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #6d28d9;
+      margin-bottom: 6px;
+    }
+    .fc-kw-term {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .fc-kw-ask {
+      font-size: 15px;
+      color: var(--muted);
+    }
+    .fc-q-prompt .fc-kw-term { font-size: 21px; margin-bottom: 0; }
+    .fc-q-prompt .fc-kw-ask { display: none; }
+    .fc-kw-def {
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: 21px;
+      line-height: 1.45;
+    }
+    .prog-row.prog-off { opacity: .6; }
 
     /* Study screen */
     .study-wrap { max-width: 740px; margin: 0 auto; }
@@ -913,14 +1067,19 @@
     .err-box { background: #fff; border: 3px solid #b91c1c; padding: 18px; color: #7f1d1d; }
 
     /* Mobile (390 px safe) */
+    @media (max-width: 820px) {
+      .deck-grid-core { grid-template-columns: repeat(2, 1fr); }
+    }
     @media (max-width: 680px) {
-      .deck-list, .tb-grid, .prog-grid { grid-template-columns: 1fr; }
+      .deck-grid-core, .deck-grid-opt, .tb-grid, .prog-grid { grid-template-columns: 1fr; }
       .fc-h1 { font-size: 40px; }
       .quest { flex-wrap: wrap; padding: 12px; gap: 10px; }
       .quest img.px { width: 48px; height: 48px; }
       .quest a.q-go { width: 100%; text-align: center; }
       .flashcard { font-size: 19px; padding: 38px 16px 22px; min-height: 220px; }
       .fc-q-prompt { font-size: 15px; }
+      .fc-kw-term { font-size: 25px; }
+      .fc-kw-def { font-size: 18px; }
       .modal-panel { padding: 18px; }
     }
     @media (max-width: 460px) {
@@ -967,11 +1126,13 @@
           <div class="tdl">cards due today</div>
           <div class="tdt" id="totalDueTime"></div>
         </div>
-        <label class="taught-toggle" id="taughtToggleWrap" hidden>
-          <input type="checkbox" id="taughtOnlyChk" onchange="toggleTaughtOnly(this.checked)">
-          <span>Only taught topics</span>
-          <span class="t-note" id="taughtNote"></span>
-        </label>
+        <div class="taught-bar" id="taughtToggleWrap" hidden>
+          <span class="t-status" id="taughtStatus">📚 Covered in class only</span>
+          <label class="taught-toggle">
+            <input type="checkbox" id="studyAheadChk" onchange="toggleStudyAhead(this.checked)">
+            <span>Study ahead (all topics)</span>
+          </label>
+        </div>
       </div>
 
       <div class="deck-list" id="deckList">
@@ -985,6 +1146,7 @@
         </summary>
         <div class="tb-body">
           <div class="tb-tabs" id="tbTabs"></div>
+          <div class="tb-note" id="tbNote" hidden></div>
           <div class="tb-grid" id="tbGrid"></div>
         </div>
       </details>
@@ -1044,8 +1206,11 @@
         </ul>
         <p>Tapped the wrong button? Press <strong>↩ Undo last</strong> (or <strong>Z</strong>) to step back.</p>
 
-        <h3>Topics &amp; Taught Only</h3>
-        <p>Use <strong>Study by topic or sub-topic</strong> to focus on one unit (e.g. Electricity) instead of the whole subject. If your teacher has ticked your year group's taught topics, turn on <strong>Only taught topics</strong> so you don't get cards you haven't learned yet.</p>
+        <h3>Covered in Class &amp; Study Ahead</h3>
+        <p>When your teacher has ticked your year group's covered topics, flashcards automatically show <strong>only what you have covered in class</strong> (including inside <strong>Study by topic or sub-topic</strong>). Tick <strong>Study ahead (all topics)</strong> whenever you want to unlock topics you haven't done in lessons yet.</p>
+
+        <h3>Optional Decks</h3>
+        <p><strong>Physics Equations</strong> and <strong>Examiner Key Words</strong> start turned off (greyed out) so your daily count stays focused on core Biology, Chemistry, and Physics. Click either deck to turn it on whenever you want to practise equations or mark-scheme vocabulary — and turn it off again anytime.</p>
 
         <h3>Card Stages</h3>
         <ul>
@@ -1157,6 +1322,7 @@
   <script src="/interactive/spec-quiz/questing-engine.js"></script>
   <script src="/js/school.js"></script>
   <script src="/js/spec-point.js"></script>
+  <script src="/js/key-words.js"></script>
   <script src="/js/admin-config.js"></script>
   <script src="/js/account.js" data-bar></script>
   <script src="/interactive/spec-quiz/adventurer-items.js"></script>
@@ -1200,7 +1366,8 @@
       biology: { name: 'Biology', file: 'data/biology.json', color: '#005e22', icon: '🌿', subj: 'B' },
       chemistry: { name: 'Chemistry', file: 'data/chemistry.json', color: '#c8001e', icon: '🧪', subj: 'C' },
       physics: { name: 'Physics', file: 'data/physics.json', color: '#d08000', icon: '🚀', subj: 'P' },
-      'physics-eqns': { name: 'Physics Equations', file: 'data/physics-eqns.json', color: '#d08000', icon: '🧮', subj: 'P' }
+      'physics-eqns': { name: 'Physics Equations', file: 'data/physics-eqns.json', color: '#d08000', icon: '🧮', subj: 'P', optional: true, blurb: 'All 26 IGCSE Physics equations — learn-for-exam and equation-sheet formulae.' },
+      keywords: { name: 'Examiner Key Words', color: '#6d28d9', icon: '🔑', subj: 'ALL', optional: true, fromKeywords: true, blurb: 'Mark-earning scientific & practical terms examiners look for across all three sciences.' }
     };
     const SUBJ_URL = { B: '/specifications/biology.html', C: '/specifications/chemistry.html', P: '/specifications/physics.html' };
     const SUBJ_NAME = { B: 'Biology', C: 'Chemistry', P: 'Physics' };
@@ -1219,12 +1386,11 @@
     // State
     let currentUser = null;
     let userYear = null;
-    let taughtSubs = null;       // Set of sub-topic keys taught to student's year (null if unknown/none)
-    let taughtOnly = false;
+    let taughtSubs = null;       // Set of sub-topic keys covered in class for student's year (null if unknown/none)
     let decksLoaded = false;
     let deckCards = {};          // { deckId: [card, ...] }
     let userProgress = {};       // { '<deck>_<id>': { easiness, repetitions, interval, nextReview, lapses? } }
-    let settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+    let settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {}, enabledDecks: {}, studyAhead: false };
 
     // Study session state
     let currentDeck = null;
@@ -1315,10 +1481,23 @@
       }
     }
 
+    /* ---------- Optional deck & covered-in-class helpers ---------- */
+    function isDeckEnabled(deckId) {
+      const m = DECK_META[deckId];
+      if (!m || !m.optional) return true;
+      if (settings.enabledDecks && typeof settings.enabledDecks[deckId] === 'boolean') {
+        return settings.enabledDecks[deckId];
+      }
+      // Keep an optional deck enabled automatically if the student already has saved progress on it
+      const prefix = deckId + '_';
+      return Object.keys(userProgress).some(k => k.startsWith(prefix));
+    }
+    const isCoveredOnly = () => !!taughtSubs && !settings.studyAhead;
+
     /* ---------- Storage (localStorage + Firestore merge with timeout) ---------- */
     function saveLocal() {
       try {
-        localStorage.setItem(localKey(), JSON.stringify({ progress: userProgress, settings, taughtOnly }));
+        localStorage.setItem(localKey(), JSON.stringify({ progress: userProgress, settings }));
       } catch (e) {}
     }
     function loadLocal() {
@@ -1326,27 +1505,37 @@
         const raw = JSON.parse(localStorage.getItem(localKey()) || 'null');
         if (raw && typeof raw === 'object') {
           userProgress = raw.progress || {};
-          settings = Object.assign({ newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} }, raw.settings || {});
-          if (typeof raw.taughtOnly === 'boolean') taughtOnly = raw.taughtOnly;
+          settings = Object.assign({ newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {}, enabledDecks: {}, studyAhead: false }, raw.settings || {});
         } else {
           userProgress = {};
-          settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+          settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {}, enabledDecks: {}, studyAhead: false };
         }
       } catch (e) {
         userProgress = {};
-        settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+        settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {}, enabledDecks: {}, studyAhead: false };
       }
       rollDayIfNeeded();
     }
     function rollDayIfNeeded() {
-      if (!settings || typeof settings !== 'object') settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} };
+      if (!settings || typeof settings !== 'object') settings = { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {}, enabledDecks: {}, studyAhead: false };
       if (!settings.newCardsToday || typeof settings.newCardsToday !== 'object') settings.newCardsToday = {};
+      if (!settings.enabledDecks || typeof settings.enabledDecks !== 'object') settings.enabledDecks = {};
+      if (typeof settings.studyAhead !== 'boolean') settings.studyAhead = false;
       if (!settings.newCardsPerDay || settings.newCardsPerDay < 1) settings.newCardsPerDay = 5;
       const today = new Date().toDateString();
       if (settings.lastStudyDate !== today) {
         settings.lastStudyDate = today;
         settings.newCardsToday = {};
       }
+    }
+
+    async function syncSettingsToFirestore() {
+      saveLocal();
+      const ref = userDocRef();
+      if (!ref) return;
+      try {
+        await withTimeout(ref.set({ settings }, { merge: true }), 8000);
+      } catch (e) {}
     }
 
     async function syncUserFromFirestore() {
@@ -1361,7 +1550,13 @@
           const cloudProg = data.progress || {};
           userProgress = Object.assign({}, userProgress, cloudProg);
           if (data.settings) {
-            settings = Object.assign({ newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {} }, data.settings);
+            const localEnabled = (settings && settings.enabledDecks) || {};
+            const cloudEnabled = (data.settings && data.settings.enabledDecks) || {};
+            settings = Object.assign(
+              { newCardsPerDay: 5, lastStudyDate: null, newCardsToday: {}, enabledDecks: {}, studyAhead: false },
+              data.settings,
+              { enabledDecks: Object.assign({}, localEnabled, cloudEnabled) }
+            );
           }
           rollDayIfNeeded();
           if (window.CBSCourse && currentUser) CBSCourse.update(currentUser.uid, data.course || null);
@@ -1376,7 +1571,7 @@
           }, { merge: true }), 8000);
         }
         saveLocal();
-        loadTaughtTopics();
+        await loadTaughtTopics();
       } catch (e) {
         console.warn('[FC] Firestore load failed, using browser copy:', e.message || e);
         showSyncBanner('offline');
@@ -1397,30 +1592,53 @@
       }
     }
 
-    async function loadTaughtTopics() {
-      taughtSubs = null;
+    function updateTaughtBar() {
       const wrap = document.getElementById('taughtToggleWrap');
-      if (!rt || !currentUser || !userYear || !window.CBSSchool) {
-        if (wrap) wrap.hidden = true;
+      const statusEl = document.getElementById('taughtStatus');
+      const chk = document.getElementById('studyAheadChk');
+      if (!wrap) return;
+      if (!taughtSubs || !taughtSubs.size) {
+        wrap.hidden = true;
         return;
       }
-      try {
-        const val = await CBSSchool.rtGet(rt, 'school/taught/Y' + userYear, 6000);
-        const keys = val ? Object.keys(val).filter(k => val[k]) : [];
-        if (keys.length) {
-          taughtSubs = new Set(keys);
-          if (wrap) {
-            wrap.hidden = false;
-            document.getElementById('taughtOnlyChk').checked = taughtOnly;
-            document.getElementById('taughtNote').textContent = `(Year ${userYear} · ${keys.length} sub-topics)`;
-          }
-          renderAllDeckUI();
-        } else if (wrap) {
-          wrap.hidden = true;
+      wrap.hidden = false;
+      if (chk) chk.checked = !!settings.studyAhead;
+      if (statusEl) {
+        const n = taughtSubs.size;
+        if (settings.studyAhead) {
+          statusEl.classList.add('ahead');
+          statusEl.textContent = `🚀 Studying ahead · All topics unlocked (Year ${userYear})`;
+        } else {
+          statusEl.classList.remove('ahead');
+          statusEl.textContent = `📚 Covered in class only · Year ${userYear} (${n} sub-topic${n === 1 ? '' : 's'})`;
         }
-      } catch (e) {
-        if (wrap) wrap.hidden = true;
       }
+    }
+
+    async function loadTaughtTopics() {
+      taughtSubs = null;
+      if (!currentUser || !userYear || !window.CBSSchool) {
+        updateTaughtBar();
+        return;
+      }
+      let val = null;
+      if (rt) {
+        try {
+          val = await CBSSchool.rtGet(rt, 'school/taught/Y' + userYear, 6000);
+        } catch (e) {}
+      }
+      if (!val) {
+        const cached = CBSSchool.cached && CBSSchool.cached();
+        if (cached && cached.taught && cached.taught['Y' + userYear]) {
+          val = cached.taught['Y' + userYear];
+        }
+      }
+      const keys = val ? Object.keys(val).filter(k => val[k]) : [];
+      if (keys.length) {
+        taughtSubs = new Set(keys);
+      }
+      updateTaughtBar();
+      renderAllDeckUI();
     }
 
     function showSyncBanner(mode) {
@@ -1479,13 +1697,14 @@
     }
 
     function cardAllowedByTaught(c) {
-      if (!taughtOnly || !taughtSubs) return true;
+      if (!isCoveredOnly()) return true;
       if (c.spec) {
         const sub = PT_TO_SUB[c.spec];
-        return !sub || taughtSubs.has(sub);
+        if (sub) return taughtSubs.has(sub);
       }
-      if (c.topic) {
-        for (const s of taughtSubs) if (s.startsWith(c.topic)) return true;
+      const topicKey = c.topic || (c.spec ? c.spec.split('.')[0] : null);
+      if (topicKey) {
+        for (const s of taughtSubs) if (s.startsWith(topicKey)) return true;
         return false;
       }
       return false;
@@ -1495,11 +1714,62 @@
       return (deckCards[deckId] || []).filter(cardAllowedByTaught);
     }
 
-    async function parseAllDecks() {
-      if (decksLoaded) return;
+    function enabledDeckCards(respectTaught = true) {
+      return Object.keys(DECK_META)
+        .filter(isDeckEnabled)
+        .flatMap(id => respectTaught ? activeCards(id) : (deckCards[id] || []));
+    }
+
+    function slugifyTerm(s) {
+      return String(s || '').toLowerCase()
+        .replace(/[\u2018\u2019']/g, '')
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_|_$/g, '') || 'term';
+    }
+
+    function buildKeywordDeck() {
+      const src = window.KEYWORDS || {};
+      const out = [];
+      const seen = new Set();
+      Object.entries(src).forEach(([pt, list]) => {
+        if (!Array.isArray(list)) return;
+        if (window.CBSCourse && !CBSCourse.has(pt)) return;
+        const subj = pt[0];
+        const topic = pt.split('.')[0];
+        const sub = PT_TO_SUB[pt] || null;
+        list.forEach(entry => {
+          if (!Array.isArray(entry) || entry.length < 2) return;
+          const [word, meaning, tag] = entry;
+          if (window.CBSCourse && CBSCourse.sa && tag === 'DA') return;
+          const baseId = pt + '_' + slugifyTerm(word);
+          let id = baseId, n = 2;
+          while (seen.has(id)) { id = baseId + '_' + n++; }
+          seen.add(id);
+          out.push({
+            id,
+            deck: 'keywords',
+            front: `<div class="fc-kw-kicker">Examiner Key Word · ${esc(SUBJ_NAME[subj] || '')}</div><div class="fc-kw-term">${esc(word)}</div><div class="fc-kw-ask">Define or explain this term as an examiner would mark it.</div>`,
+            back: `<div class="fc-kw-def">${esc(meaning)}</div>`,
+            spec: pt,
+            topic,
+            sub,
+            subj
+          });
+        });
+      });
+      return out;
+    }
+
+    async function parseAllDecks(force = false) {
+      if (decksLoaded && !force) return;
       await Promise.all(Object.keys(DECK_META).map(async deckId => {
+        const meta = DECK_META[deckId];
+        if (meta.fromKeywords) {
+          deckCards[deckId] = buildKeywordDeck();
+          return;
+        }
         try {
-          const res = await fetch(DECK_META[deckId].file);
+          const res = await fetch(meta.file);
           if (!res.ok) throw new Error('HTTP ' + res.status);
           const raw = await res.json();
           deckCards[deckId] = raw
@@ -1511,10 +1781,11 @@
               back: processHtmlWithImages(c.back),
               spec: c.spec || null,
               topic: c.topic || null,
-              sub: c.spec ? (PT_TO_SUB[c.spec] || null) : null
+              sub: c.spec ? (PT_TO_SUB[c.spec] || null) : null,
+              subj: meta.subj
             }));
         } catch (e) {
-          console.error('[FC] Failed to load', DECK_META[deckId].file, e);
+          console.error('[FC] Failed to load', meta.file, e);
           deckCards[deckId] = [];
         }
       }));
@@ -1561,6 +1832,7 @@
     }
 
     function getDueCount(deckId) {
+      if (!isDeckEnabled(deckId)) return 0;
       return getDueCardsForDeck(deckId, false).all.length;
     }
 
@@ -1681,6 +1953,80 @@
     }
 
     /* ---------- Deck Selector & Topic Browser rendering ---------- */
+    function renderDeckTile(id) {
+      const m = DECK_META[id];
+      const enabled = isDeckEnabled(id);
+      const cards = activeCards(id);
+      const coveredOnly = isCoveredOnly();
+      const st = getCardListStats(cards);
+
+      if (m.optional && !enabled) {
+        const countNote = coveredOnly
+          ? `${st.total} covered card${st.total === 1 ? '' : 's'} (${(deckCards[id] || []).length} total)`
+          : `${st.total} card${st.total === 1 ? '' : 's'}`;
+        return `<div class="deck-item deck-off" data-deck="${id}" style="--dc:${m.color}" onclick="toggleOptionalDeck('${id}', true)">
+          <div class="d-top">
+            <span class="d-ic">${m.icon}</span>
+            <div class="d-name">
+              <h3>${esc(m.name)}</h3>
+              <div class="d-count">${countNote}</div>
+            </div>
+            <div class="d-right"><span class="deck-opt-pill">Off</span><div class="d-duel" style="margin-top:3px">Optional</div></div>
+          </div>
+          <div class="d-blurb">${esc(m.blurb || '')}</div>
+          <div class="d-actions">
+            <button type="button" class="turn-on-btn" onclick="event.stopPropagation();toggleOptionalDeck('${id}', true)">+ Turn on deck</button>
+          </div>
+        </div>`;
+      }
+
+      const due = getDueCount(id);
+      const masteredPct = st.total ? Math.round((st.mastered / st.total) * 100) : 0;
+      const learningPct = st.total ? Math.round((st.learning / st.total) * 100) : 0;
+      const unseenPct = st.total ? Math.max(0, 100 - masteredPct - learningPct) : 100;
+      const hasMoreUnseen = st.unseen > 0;
+      const dueHTML = !st.total
+        ? `<div class="d-duel">0 covered</div>`
+        : due > 0
+          ? `<div class="d-due">${due}</div><div class="d-duel">due today</div>`
+          : `<div class="d-none">All done ✓</div>`;
+      const actionLeft = due > 0
+        ? `<span class="d-go">Study ${due} due →</span>`
+        : (st.total
+          ? `<span class="d-go" style="color:var(--green)">Caught up</span>`
+          : `<span class="d-count">Not covered in class yet</span>`);
+      const actionRight = [
+        (!st.total && coveredOnly) ? `<button type="button" class="study-more-btn" onclick="event.stopPropagation();toggleStudyAhead(true)">Study ahead</button>` : '',
+        (due === 0 && hasMoreUnseen) ? `<button type="button" class="study-more-btn" onclick="event.stopPropagation();startDeck('${id}',true)">+5 new cards</button>` : '',
+        m.optional ? `<button type="button" class="turn-off-btn" onclick="event.stopPropagation();toggleOptionalDeck('${id}', false)">Turn off</button>` : ''
+      ].filter(Boolean).join('');
+
+      return `<div class="deck-item" data-deck="${id}" style="--dc:${m.color}" onclick="startDeck('${id}', false)">
+        <div class="d-top">
+          <span class="d-ic">${m.icon}</span>
+          <div class="d-name">
+            <h3>${esc(m.name)}${m.optional ? ' <span class="deck-opt-pill on">Optional</span>' : ''}</h3>
+            <div class="d-count">${st.total} card${st.total === 1 ? '' : 's'}${coveredOnly ? ' covered' : ''}</div>
+          </div>
+          <div class="d-right">${dueHTML}</div>
+        </div>
+        <div class="progress-bar-container">
+          ${masteredPct ? `<div class="progress-segment progress-mastered" style="width:${masteredPct}%"></div>` : ''}
+          ${learningPct ? `<div class="progress-segment progress-learning" style="width:${learningPct}%"></div>` : ''}
+          ${unseenPct ? `<div class="progress-segment progress-unseen" style="width:${unseenPct}%"></div>` : ''}
+        </div>
+        <div class="progress-legend">
+          ${st.mastered ? `<span><i class="lg-dot" style="background:${m.color}"></i>${st.mastered} mastered</span>` : ''}
+          ${st.learning ? `<span><i class="lg-dot" style="background:#facc15"></i>${st.learning} learning</span>` : ''}
+          <span><i class="lg-dot" style="background:#e7e2d6"></i>${st.unseen} unseen</span>
+        </div>
+        <div class="d-actions">
+          ${actionLeft}
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${actionRight}</div>
+        </div>
+      </div>`;
+    }
+
     function renderAllDeckUI() {
       const deckList = document.getElementById('deckList');
       const ids = Object.keys(DECK_META);
@@ -1692,46 +2038,12 @@
         return;
       }
 
-      deckList.innerHTML = ids.map(id => {
-        const m = DECK_META[id];
-        const cards = activeCards(id);
-        const due = getDueCount(id);
-        const st = getCardListStats(cards);
-        const masteredPct = st.total ? Math.round((st.mastered / st.total) * 100) : 0;
-        const learningPct = st.total ? Math.round((st.learning / st.total) * 100) : 0;
-        const unseenPct = st.total ? Math.max(0, 100 - masteredPct - learningPct) : 100;
-        const hasMoreUnseen = st.unseen > 0;
-        const dueHTML = !st.total
-          ? `<div class="d-duel">0 taught</div>`
-          : due > 0
-            ? `<div class="d-due">${due}</div><div class="d-duel">due today</div>`
-            : `<div class="d-none">All done ✓</div>`;
-        return `<div class="deck-item" style="--dc:${m.color}" onclick="startDeck('${id}', false)">
-          <div class="d-top">
-            <span class="d-ic">${m.icon}</span>
-            <div class="d-name">
-              <h3>${esc(m.name)}</h3>
-              <div class="d-count">${st.total} card${st.total === 1 ? '' : 's'}${taughtOnly && taughtSubs ? ' (taught)' : ''}</div>
-            </div>
-            <div class="d-right">${dueHTML}</div>
-          </div>
-          <div class="progress-bar-container">
-            ${masteredPct ? `<div class="progress-segment progress-mastered" style="width:${masteredPct}%"></div>` : ''}
-            ${learningPct ? `<div class="progress-segment progress-learning" style="width:${learningPct}%"></div>` : ''}
-            ${unseenPct ? `<div class="progress-segment progress-unseen" style="width:${unseenPct}%"></div>` : ''}
-          </div>
-          <div class="progress-legend">
-            ${st.mastered ? `<span><i class="lg-dot" style="background:${m.color}"></i>${st.mastered} mastered</span>` : ''}
-            ${st.learning ? `<span><i class="lg-dot" style="background:#facc15"></i>${st.learning} learning</span>` : ''}
-            <span><i class="lg-dot" style="background:#e7e2d6"></i>${st.unseen} unseen</span>
-          </div>
-          <div class="d-actions">
-            ${due > 0 ? `<span class="d-go">Study ${due} due →</span>` : (st.total ? `<span class="d-go" style="color:var(--green)">Caught up</span>` : `<span class="d-count">Turn off "Only taught" to see all</span>`)}
-            ${due === 0 && hasMoreUnseen ? `<button type="button" class="study-more-btn" onclick="event.stopPropagation();startDeck('${id}',true)">+5 new cards</button>` : ''}
-          </div>
-        </div>`;
-      }).join('');
+      const coreIds = ids.filter(id => !DECK_META[id].optional);
+      const optIds = ids.filter(id => DECK_META[id].optional);
+      deckList.innerHTML = `<div class="deck-grid-core">${coreIds.map(renderDeckTile).join('')}</div>`
+        + (optIds.length ? `<div class="deck-opt-head">Optional decks <span>— click to turn on and add to your study routine</span></div><div class="deck-grid-opt">${optIds.map(renderDeckTile).join('')}</div>` : '');
 
+      updateTaughtBar();
       updateTotalDueToday();
       renderBadges();
       renderQuest();
@@ -1764,16 +2076,18 @@
       const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
       const icons = { B: '🌿', C: '🧪', P: '🚀' };
       const tabsEl = document.getElementById('tbTabs');
+      const noteEl = document.getElementById('tbNote');
       const gridEl = document.getElementById('tbGrid');
+      const coveredOnly = isCoveredOnly();
 
       tabsEl.innerHTML = ['B', 'C', 'P'].map(L =>
         `<button type="button" class="tb-tab ${L === activeTopicSubj ? 'on' : ''}" style="--dc:${colors[L]}" onclick="setTopicTab('${L}')">${icons[L]} ${SUBJ_NAME[L]}</button>`
       ).join('');
 
-      const allSubjCards = Object.values(deckCards).flat().filter(c => DECK_META[c.deck].subj === activeTopicSubj);
+      const allSubjCards = enabledDeckCards(true).filter(c => (c.subj || DECK_META[c.deck].subj) === activeTopicSubj);
       const now = Date.now();
 
-      gridEl.innerHTML = TOPIC_TREE[activeTopicSubj].map(t => {
+      const cardsHtml = TOPIC_TREE[activeTopicSubj].map(t => {
         const tCards = allSubjCards.filter(c => c.topic === t.key || (c.spec && c.spec.startsWith(t.key + '.')));
         if (!tCards.length) return '';
         const st = getCardListStats(tCards);
@@ -1799,6 +2113,21 @@
           ${subBtns ? `<div class="tb-sublist">${subBtns}</div>` : ''}
         </div>`;
       }).filter(Boolean).join('');
+
+      if (noteEl) {
+        if (coveredOnly && cardsHtml) {
+          noteEl.hidden = false;
+          noteEl.innerHTML = `<span>Showing topics covered in class (Year ${userYear}).</span><button type="button" class="tb-btn" onclick="toggleStudyAhead(true)">Study ahead (show all topics)</button>`;
+        } else {
+          noteEl.hidden = true;
+          noteEl.innerHTML = '';
+        }
+      }
+
+      gridEl.innerHTML = cardsHtml || `<div class="tb-empty">
+        <span>${coveredOnly ? `No ${SUBJ_NAME[activeTopicSubj]} topics have been marked as covered in class for Year ${userYear} yet.` : `No ${SUBJ_NAME[activeTopicSubj]} cards available.`}</span>
+        ${coveredOnly ? `<button type="button" class="tb-btn primary" onclick="toggleStudyAhead(true)">Study ahead (show all topics)</button>` : ''}
+      </div>`;
     }
 
     window.setTopicTab = function (L) {
@@ -1806,10 +2135,21 @@
       renderTopicBrowser();
     };
 
-    window.toggleTaughtOnly = function (checked) {
-      taughtOnly = !!checked;
-      saveLocal();
+    window.toggleStudyAhead = function (checked) {
+      settings.studyAhead = !!checked;
+      syncSettingsToFirestore();
       renderAllDeckUI();
+      gain(settings.studyAhead ? '🚀 Studying ahead — all topics unlocked' : '📚 Limited to topics covered in class');
+    };
+
+    window.toggleOptionalDeck = function (deckId, enable) {
+      const m = DECK_META[deckId];
+      if (!m || !m.optional) return;
+      if (!settings.enabledDecks || typeof settings.enabledDecks !== 'object') settings.enabledDecks = {};
+      settings.enabledDecks[deckId] = !!enable;
+      syncSettingsToFirestore();
+      renderAllDeckUI();
+      gain(enable ? `✓ ${m.name} turned on` : `${m.name} turned off`);
     };
 
     /* ---------- Screens & Study Sessions ---------- */
@@ -1841,8 +2181,12 @@
     window.startDeck = function (deckId, bypassLimit = false) {
       const m = DECK_META[deckId];
       if (!m) return;
+      if (!isDeckEnabled(deckId)) {
+        toggleOptionalDeck(deckId, true);
+        return;
+      }
       const { all } = getDueCardsForDeck(deckId, bypassLimit);
-      const label = `${m.icon} ${m.name}` + (bypassLimit ? ' (+5 new)' : '') + (taughtOnly && taughtSubs ? ' · Taught' : '');
+      const label = `${m.icon} ${m.name}` + (bypassLimit ? ' (+5 new)' : '') + (isCoveredOnly() ? ' · Covered in class' : '');
       beginSession(all, label, m.color, 'deck', deckId);
     };
 
@@ -1850,7 +2194,7 @@
       const L = topicKey[0];
       const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
       const tObj = (TOPIC_TREE[L] || []).find(t => t.key === topicKey);
-      const all = Object.values(deckCards).flat().filter(c => c.topic === topicKey || (c.spec && c.spec.startsWith(topicKey + '.')));
+      const all = enabledDeckCards(true).filter(c => c.topic === topicKey || (c.spec && c.spec.startsWith(topicKey + '.')));
       const now = Date.now();
       const chosen = dueOnly ? all.filter(c => { const p = userProgress[`${c.deck}_${c.id}`]; return !p || p.nextReview <= now; }) : all;
       const ordered = dueOnly
@@ -1865,7 +2209,7 @@
       const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
       let subName = subKey;
       (TOPIC_TREE[L] || []).forEach(t => t.subs.forEach(sb => { if (sb.key === subKey) subName = `${t.n}${sb.l} · ${sb.name}`; }));
-      const chosen = Object.values(deckCards).flat().filter(c => c.sub === subKey);
+      const chosen = enabledDeckCards(true).filter(c => c.sub === subKey);
       beginSession(shuffle(chosen), `${SUBJ_NAME[L]} ${subName}`, colors[L], 'topic', chosen[0]?.deck);
     };
 
@@ -1879,9 +2223,13 @@
       const topic = q.get('topic');
       const title = q.get('t');
       const colors = { B: '#005e22', C: '#c8001e', P: '#d08000' };
+      const pickPool = fn => {
+        const primary = enabledDeckCards(false).filter(fn);
+        return primary.length ? primary : Object.values(deckCards).flat().filter(fn);
+      };
       if (subs) {
         const toks = new Set(subs.split(',').map(s => s.trim()).filter(Boolean));
-        const cards = Object.values(deckCards).flat().filter(c => (c.spec && toks.has(c.spec)) || (c.sub && toks.has(c.sub)));
+        const cards = pickPool(c => (c.spec && toks.has(c.spec)) || (c.sub && toks.has(c.sub)));
         if (!cards.length) {
           const dl = document.getElementById('deckList');
           if (dl) dl.insertAdjacentHTML('beforebegin', `<div class="fc-note" style="background:#fff3c4;border:2px solid #b45309;padding:10px 14px;margin-bottom:12px;font-weight:600">No flashcards are linked to ${esc(title || 'those spec points')} yet — pick a deck below or try Practice Questions.</div>`);
@@ -1891,14 +2239,21 @@
         const label = title ? `${title} · Flashcards (${cards.length})` : `Study guide · ${cards.length} card${cards.length === 1 ? '' : 's'}`;
         beginSession(shuffle(cards), label, colors[firstL] || '#111', 'topic', cards[0].deck);
       } else if (spec) {
-        const cards = Object.values(deckCards).flat().filter(c => c.spec === spec);
+        const cards = pickPool(c => c.spec === spec);
         if (!cards.length) return;
         const L = spec[0];
         beginSession(cards, `${SUBJ_NAME[L] || ''} ${spec.slice(1)} · ${cards.length} card${cards.length === 1 ? '' : 's'}`, colors[L], 'spec', cards[0].deck);
       } else if (sub) {
-        startSubTopic(sub);
+        const L = sub[0];
+        let subName = sub;
+        (TOPIC_TREE[L] || []).forEach(t => t.subs.forEach(sb => { if (sb.key === sub) subName = `${t.n}${sb.l} · ${sb.name}`; }));
+        const chosen = pickPool(c => c.sub === sub);
+        if (chosen.length) beginSession(shuffle(chosen), `${SUBJ_NAME[L]} ${subName}`, colors[L], 'topic', chosen[0]?.deck);
       } else if (topic) {
-        startTopic(topic, false);
+        const L = topic[0];
+        const tObj = (TOPIC_TREE[L] || []).find(t => t.key === topic);
+        const chosen = pickPool(c => c.topic === topic || (c.spec && c.spec.startsWith(topic + '.')));
+        if (chosen.length) beginSession(shuffle(chosen), `${SUBJ_NAME[L]} ${tObj ? tObj.n + ' · ' + tObj.name : topic}`, colors[L], 'topic', chosen[0]?.deck);
       }
     }
 
@@ -2223,22 +2578,25 @@
     function renderProgressModal() {
       const ids = Object.keys(DECK_META);
       const byDeck = {};
+      const coveredOnly = isCoveredOnly();
       let all = { unseen: 0, learning: 0, mastered: 0, total: 0 };
       ids.forEach(id => {
-        const st = getCardListStats(deckCards[id] || []);
+        const st = getCardListStats(activeCards(id));
         byDeck[id] = st;
-        all.unseen += st.unseen;
-        all.learning += st.learning;
-        all.mastered += st.mastered;
-        all.total += st.total;
+        if (isDeckEnabled(id)) {
+          all.unseen += st.unseen;
+          all.learning += st.learning;
+          all.mastered += st.mastered;
+          all.total += st.total;
+        }
       });
 
       if (progressFilterDeck && byDeck[progressFilterDeck]) {
         const m = DECK_META[progressFilterDeck];
-        document.getElementById('overallChartTitle').textContent = `${m.icon} ${m.name}`;
+        document.getElementById('overallChartTitle').textContent = `${m.icon} ${m.name}` + (coveredOnly ? ' (covered)' : '');
         drawDonut(byDeck[progressFilterDeck], m.color);
       } else {
-        document.getElementById('overallChartTitle').textContent = `All Decks (${all.total} cards)`;
+        document.getElementById('overallChartTitle').textContent = `Active Decks (${all.total} ${coveredOnly ? 'covered ' : ''}cards)`;
         drawDonut(all, '#15803d');
       }
 
@@ -2246,9 +2604,10 @@
         const m = DECK_META[id], st = byDeck[id], t = st.total || 1;
         const mp = (st.mastered / t * 100).toFixed(1), lp = (st.learning / t * 100).toFixed(1);
         const sel = progressFilterDeck === id ? 'selected' : '';
-        return `<div class="prog-row ${sel}" onclick="filterProgressDeck('${id}')">
+        const off = !isDeckEnabled(id);
+        return `<div class="prog-row ${sel} ${off ? 'prog-off' : ''}" onclick="filterProgressDeck('${id}')">
           <div class="prog-row-head">
-            <span>${m.icon} ${esc(m.name)}</span>
+            <span>${m.icon} ${esc(m.name)}${off ? ' <small style="font-weight:600;color:#6b7280">(off)</small>' : ''}</span>
             <span>${st.mastered}/${st.total} mastered · ${st.learning} learning</span>
           </div>
           <div class="prog-bar">
@@ -2256,7 +2615,7 @@
             <div style="width:${lp}%;background:#facc15"></div>
           </div>
         </div>`;
-      }).join('') + (progressFilterDeck ? `<button type="button" class="btn alt sm" style="margin-top:4px" onclick="filterProgressDeck(null)">Show all decks</button>` : '');
+      }).join('') + (progressFilterDeck ? `<button type="button" class="btn alt sm" style="margin-top:4px" onclick="filterProgressDeck(null)">Show all active decks</button>` : '');
     }
 
     window.filterProgressDeck = function (deckId) {
@@ -2365,13 +2724,18 @@
         if (user) {
           showSyncBanner('signed-in');
           loadLocal();
+          const wasSA = !!(window.CBSCourse && CBSCourse.sa);
           await syncUserFromFirestore();
+          const isSA = !!(window.CBSCourse && CBSCourse.sa);
+          const pill = document.getElementById('saPill');
+          if (pill) pill.hidden = !isSA;
+          if (isSA !== wasSA) await parseAllDecks(true);
           importOldReviews();
           renderAllDeckUI();
         } else {
           userYear = null;
           taughtSubs = null;
-          document.getElementById('taughtToggleWrap').hidden = true;
+          updateTaughtBar();
           showSyncBanner('signed-out');
           loadLocal();
           renderAllDeckUI();
