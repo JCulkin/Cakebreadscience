@@ -10,7 +10,7 @@ const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.q
 const body = document.body;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmtDate = d => { if(!d) return ''; const [y,m,dd]=d.split('-'); return `${+dd} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${y}`; };
-L.initComps = function(root){ $$('[data-comp]', root).forEach(el => { if(el._inited) return; const f = L.comps[el.dataset.comp]; if(f){ el._inited = true; try{ f(el); }catch(e){ console.error(e); el.textContent = 'Component error: '+e.message; } } }); };
+L.initComps = function(root){ $$('[data-comp]', root).forEach(el => { if(el._inited) return; if(root === document && el.closest('#deck-src')) return; const f = L.comps[el.dataset.comp]; if(f){ el._inited = true; try{ f(el); }catch(e){ console.error(e); el.textContent = 'Component error: '+e.message; } } }); };
 
 /* ---------- rolodex: a stack of examples per column; click the card, ▲▼ or scroll to flip (22 Nov) ---------- */
 L.comps.rolodex = el => {
@@ -275,6 +275,6 @@ function matchBg(){
   });
 }
 
-function init(){ header(); newer(); L.initComps(document.querySelector('.wrap') || document); questions(); practise(); deck(); matchBg(); }
+function init(){ header(); newer(); const wrap = document.querySelector('.wrap'); if(wrap) L.initComps(wrap); questions(); practise(); deck(); matchBg(); }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
