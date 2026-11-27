@@ -57,8 +57,10 @@
   }
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   const isTest = a => a && a.type === 'test';
-  function testOf(userDoc, a) {   // {state: 'todo'|'started'|'done', answered, n, score}
-    const w = ((userDoc || {}).work || {})[a.id] || null, n = (a.qids || []).length;
+  function testOf(userDoc, a, course) {   // {state: 'todo'|'started'|'done', answered, n, score}
+    const w = ((userDoc || {}).work || {})[a.id] || null;
+    const sa = isSA(course);
+    const n = sa && a.nSA > 0 ? a.nSA : (a.qids || []).length;
     if (!w) return { state: 'todo', answered: 0, n, score: 0 };
     const answered = Object.keys(w.ans || {}).length, score = Object.values(w.ans || {}).filter(Boolean).length;
     return { state: w.done ? 'done' : 'started', answered, n: w.n || n, score: w.done ? w.score : score, at: w.at, ans: w.ans || {} };

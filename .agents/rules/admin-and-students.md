@@ -37,9 +37,7 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
 - `school/taught/Y10/C1a` = what each year has been taught (admin Teaching tab; shows as "Covered in class").
 
 ## To do — `/today/` (students' dashboard; was "My day")
-- Order (user, 23 Nov): greeting → **Upcoming tests** (per study guide: bar + "n of m spec points secured · k started", buttons 📄 Study guide /
-  📝 Revise / ⚔️ Revise in Questing) → Today line → Set by your teacher → What to revise | The spec (with **Covered in class** as a closed
-  `<details>` inside it) → Last 14 days. Every database read has a time limit; it shows a saved copy if the network blocks Firebase.
+- Order (updated 27 Nov): greeting → **Set by your teacher** (at the very top when open work exists, with crisp rows, symbol buttons `📝 Practise` / `⚔️` / `🃏`, collapsible multi-topic picker, and collapsed `✓ Completed (N)`) → **Upcoming tests** (compact rows with `📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards`) → Today line → What to revise (uniform symbol buttons `📝 ⚔️ 🃏 🎓 📄` with 1-line legend) | The spec (with **Covered in class** as a closed `<details>` inside it) → Last 14 days. Homepage (`index.html`) also shows a slim `#cbs-hw-banner` strip whenever `CBSWork` reports open work. Every database read has a time limit; it shows a saved copy if the network blocks Firebase.
 
 ## Spec trackers — `/specifications/`
 - Thin pages + `/js/tracker.js` + `/css/tracker.css` + `/js/spec-point.js` + `/js/course.js`. Grounded in **Metacognitive Calibration** (fighting the Illusion of Competence — Bjork): status colour = objective 2-day proof (secured / rusty / learning) compared against student self-rated confidence (`specProgress/{uid}.conf`), surfacing over-confident unproved points via `?f=check`. Resource drawer lists lessons, worksheets, **topic booklets**, 6-markers, equations, topic interactives (`js/spec-index.js`) and Examiner Key Words (`js/key-words.js`). Maths tracker is the old page.

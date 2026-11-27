@@ -152,7 +152,16 @@
 .sg-btn.q{background:#111;color:#fff}
 .sg-btn.f{background:#fff;color:#111}
 .sg-btn.l{background:#e8f5e9;color:#005e22;border-color:#005e22}
-.sg-prog{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}.sg-bar{flex:0 1 220px;height:12px;border:1.5px solid #111;background:#ece7da;display:flex;overflow:hidden}.sg-bar i{display:block;height:100%}.sg-bar .s{background:#16a34a}.sg-bar .l{background:#facc15}.sg-btn.sm{font-size:13px;padding:2px 9px}
+.sg-prog{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:5px 0 0}.sg-bar{flex:0 1 160px;min-width:90px;height:10px;border:1.5px solid #111;background:#ece7da;display:flex;overflow:hidden}.sg-bar i{display:block;height:100%}.sg-bar .s{background:#16a34a}.sg-bar .l{background:#facc15}.sg-btn.sm{font-size:13px;padding:2px 9px}
+.sg-todo-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;border-top:1px solid #e3ddcf;padding:9px 0}.sg-todo-row:first-of-type{border-top:0;padding-top:4px}
+.sg-todo-info{flex:1 1 240px;min-width:0}
+.sg-todo-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sg-todo-date{font:700 11.5px Barlow,Arial;padding:2px 7px;border-radius:4px;background:#f6f4ee;border:1px solid #d8d3c4;color:#555;white-space:nowrap}
+.sg-todo-date.soon{background:#fef08a;border-color:#eab308;color:#713f12}
+.sg-todo-acts{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.sg-todo-acts .sg-btn{padding:4px 9px;font-size:13.5px}
+.sg-todo-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.sg-todo-head h2{margin:0}
 @media print{.sg-rev{display:none}.sg{font-size:12px}.sg h1{font-size:28px}@page{size:A4;margin:12mm}}`;
   let styled = false;
   function style() { if (styled || typeof document === 'undefined') return; styled = true; const s = document.createElement('style'); s.textContent = CSS; document.head.appendChild(s); }
@@ -179,7 +188,8 @@
     keys.forEach(k => { const s = Q.pointState(k); if (s.secured) sec++; else if (s.started) started++; });
     return { n: keys.length, sec, started };
   }
-  /* To do: "Upcoming tests" (user, 23 Nov: rename; show how much is secured; the guide button says "Study guide").
+  const fmtShort = d => { if (!d) return ''; try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return d; } };
+  /* To do: "Upcoming tests" (user, 23 Nov + decluttered 27 Nov with compact symbol revision buttons).
      pre = the guides already loaded (To do keeps them for 30 s so progress can redraw without another read) */
   async function todo(el, pre) {
     if (!el || (!pre && (!window.firebase || !firebase.database))) return null;
@@ -189,12 +199,13 @@
     const y = window.CBSYear && CBSYear.year, sa = !!(window.CBSCourse && CBSCourse.sa);
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return all; }
-    el.innerHTML = `<div class="card"><h2>Upcoming tests</h2><p class="small muted" style="margin-bottom:6px">What's in each test, with flashcards and ${N} revision questions at a time on exactly those spec points.</p>
+    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards</span></div>
       ${mine.map(g => { const d = daysTo(g.date), ch = chosen(g), k = tokens(ch), pr = progress(g), hasCards = cardCount(ch.flatMap(x => x.pts)) > 0;
+        const when = g.date ? `${fmtShort(g.date)}${d > 1 ? ` · ${d}d` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}` : '';
         const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
-          <span class="small"><b>${pr.sec} of ${pr.n}</b> spec points secured${pr.started ? ` · ${pr.started} started` : ''}${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
-        return `<div class="sg-row" style="border-top:1px solid #e3ddcf;padding:8px 0"><b style="font-size:16px">📖 ${esc(g.title || 'Test')}</b>${g.date ? ` <span class="small muted">· ${esc(fmtDate(g.date))}${d > 1 ? ` · in ${d} days` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}</span>` : ''}
-          ${bar}<div class="sg-rev"><a class="sg-btn" style="background:#fff" href="/guide/?id=${encodeURIComponent(g.id)}">📄 Study guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}">⚔️ Revise in Questing</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}">🃏 Flashcards</a>` : ''}</div></div>`; }).join('')}</div>`;
+          <span class="small muted"><b>${pr.sec}/${pr.n}</b> secured${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
+        return `<div class="sg-todo-row"><div class="sg-todo-info"><div class="sg-todo-top"><b style="font-size:16px">${esc(g.title || 'Test')}</b>${when ? `<span class="sg-todo-date${d !== null && d <= 3 ? ' soon' : ''}">${esc(when)}</span>` : ''}</div>${bar}</div>
+          <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Quiz</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Cakebread Questing">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('')}</div>`;
     return all;
   }
   window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, progress, reviseUrl, flashcardsUrl, fmtDate, daysTo, ADVICE };

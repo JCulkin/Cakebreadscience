@@ -46,7 +46,7 @@
     bg.querySelectorAll('[data-y]').forEach(b => b.onclick = () => {
       const y = +b.dataset.y;
       fs.collection('users').doc(Y.uid).set({ year: y, yearAt: Date.now(), yearBy: 'self' }, { merge: true })
-        .then(() => { Y.year = y; close(); emit(); })
+        .then(() => { Y.year = y; close(); emit(); if (window.CBSWork) CBSWork.refresh(); })
         .catch(e => { const er = bg.querySelector('.err'); er.hidden = false; er.textContent = 'Could not save: ' + (e.code || e.message); });
     });
   }

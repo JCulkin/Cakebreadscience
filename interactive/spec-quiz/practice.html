@@ -209,9 +209,10 @@ $('plain').onchange = () => { try { $('plain').checked ? localStorage.setItem(PL
 /* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — n questions from those sub-topics; "another n" leaves out
    the ones shown in this browser's last runs of the same set (sessionStorage), so each go brings new questions */
 const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
+const anySub = k => subBy(k) || QE.allSubs().find(x => x.key === k || x.keys.has(k));
 function startGuide(keys, n, title) {
-  const subs = [...new Set(keys.map(k => subBy(k) || SUBS.find(x => x.keys.has(k))).filter(Boolean))]; if (!subs.length) return false;
-  const set = new Set(); keys.forEach(k => { const x = subBy(k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
+  const subs = [...new Set(keys.map(anySub).filter(Boolean))]; if (!subs.length) return false;
+  const set = new Set(); keys.forEach(k => { const x = QE.allSubs().find(s => s.key === k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
   let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
   const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
   try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
@@ -223,7 +224,7 @@ function startGuide(keys, n, title) {
 }
 /* ten questions: the engine picks ready-to-secure, then rusty, then ones you got wrong, then new */
 function start(k, point) {
-  const sub = subBy(k); if (!sub) return;
+  const sub = anySub(k); if (!sub) return;
   const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(y => topicKeys.add(y)));
   const qs = point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
   PS = { sub, point, qs, i: 0, res: [], st0: QE.stats(), xp0: QE.prog.xp };
@@ -299,6 +300,7 @@ function finish() {
   const right = PS.res.filter(r => r.ok).length;
   QE.finishMission({ coins: 10, right });
   QE.log('📝', `Practice ${PS.point ? 'spec point ' + PS.point.slice(1) : PS.sub.key.slice(1) + ' ' + PS.sub.name}: ${right}/${PS.qs.length} right`);
+  if (window.CBSWork) CBSWork.refresh();
   QE.busy = false;
   const st = QE.stats(), gainQ = st.securedQ - PS.st0.securedQ, gainP = st.securedP - PS.st0.securedP;
   const wrong = PS.res.filter(r => !r.ok), sub = QE.allSubs().find(s => s.key === PS.sub.key) || PS.sub;
@@ -326,7 +328,7 @@ function boot() {
   const n = $('saveNote'); if (n && QE.user) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent;
   if (!$('pick').classList.contains('hidden')) drawPick();
   if (!started) { started = true; SUBS = QE.allSubs().filter(s => s.nq >= 4);
-    const u = new URLSearchParams(location.search), pt = u.get('point'), sb = pt ? SUBS.find(x => x.keys.has(pt)) : subBy(u.get('sub'));
+    const u = new URLSearchParams(location.search), pt = u.get('point'), sb = pt ? anySub(pt) : anySub(u.get('sub'));
     const gs = (u.get('subs') || '').split(',').filter(Boolean), gn = Math.min(30, Math.max(5, +u.get('n') || 15));
     if (gs.length && startGuide(gs, gn, u.get('t') || '')) {}
     else if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
@@ -347,13 +349,15 @@ async function drawSet() {
   const open = S.forMe(SCH.assign, y, QE.user.uid).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
     .filter(x => x.t ? x.t.state !== 'done' : !x.p.done);
   if (!open.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="setw"><h2>Set by your teacher</h2>${open.map(({ a, t, p }) => {
+  box.innerHTML = `<div class="setw"><h2>📌 Set by your teacher</h2>${open.map(({ a, t, p }) => {
     const late = a.due && a.due < today ? '<span class="late">Overdue</span>' : '';
     if (t) return `<div class="a"><b>${esc(a.title || 'Test')}</b><small>Test · ${t.n} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
-      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encodeURIComponent(a.id)}">${t.state === 'started' ? 'Carry on →' : 'Start the test →'}</a></div></div>`;
-    return `<div class="a"><b>${esc(a.title || 'Work set')}</b><small>Get ${p.target} right${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
-      <div class="pbw" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%"></i></div><div class="small">${p.got} of ${p.target} so far. Practise any of these:</div>
-      <div class="chips">${(a.items || []).map(k => `<a href="${S.practise(k)}">${esc(S.shortLabel(k))} →</a>`).join('')}</div></div>`;
+      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encodeURIComponent(a.id)}">▶ ${t.state === 'started' ? 'Carry on' : 'Start test'}</a></div></div>`;
+    const items = (a.items || []).filter(k => S.pointsOf(k).length);
+    const mixUrl = items.length ? `practice.html?subs=${encodeURIComponent(items.join(','))}&n=${Math.max(5, Math.min(20, p.target - p.got))}&t=${encodeURIComponent(a.title || 'Set work')}` : '';
+    return `<div class="a"><b>${esc(a.title || 'Work set')}</b><small>${p.got}/${p.target} right${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
+      <div class="pbw" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%"></i></div>
+      <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">📝 Practise →</a>` : ''}${items.map(k => `<a href="${S.practise(k)}">${esc(S.shortLabel(k))}</a>`).join('')}</div></div>`;
   }).join('')}</div>`;
 }
 QE.onChange(drawSet); if (window.CBSYear) CBSYear.onChange(drawSet); drawSet();

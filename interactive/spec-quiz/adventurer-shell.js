@@ -196,7 +196,7 @@ const ADV = (() => {
     { const todo = n.querySelector('a[href="/today/"]'), go = () => CBSWork.onChange(w => {
         todo.classList.toggle('due', w.n > 0); todo.querySelectorAll('.dot').forEach(x => x.remove());
         const mis = n.querySelector('a.mission'); if (w.n > 0 && mis) mis.after(todo);   // next to Mission, so it shows on a phone too
-        if (w.n > 0) { todo.insertAdjacentHTML('beforeend', `<span class="dot">!</span>`); todo.title = `${w.n} piece${w.n > 1 ? 's' : ''} of set work to do${w.late ? ` (${w.late} overdue)` : ''}`; } else todo.title = ''; });
+        if (w.n > 0) { todo.insertAdjacentHTML('beforeend', `<span class="dot">${w.n}</span>`); todo.title = `${w.n} piece${w.n > 1 ? 's' : ''} of set work to do${w.late ? ` (${w.late} overdue)` : ''}`; } else todo.title = ''; });
       if (todo && window.firebase) { if (window.CBSWork) go(); else { const sc = document.createElement('script'); sc.src = '/js/openwork.js'; sc.onload = go; document.head.appendChild(sc); } } }
     const acct = n.querySelector('#advAcct');
     const draw = () => {

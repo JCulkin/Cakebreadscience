@@ -230,7 +230,7 @@ let MS = null;
 /* start(sub-topic key) — or start(sub-topic key, spec point) for a mission on one point (from the spec tracker's "Quiz me";
    its questions come first, topped up from the rest of the sub-topic) */
 function start(k, point, G) {
-  const sub = subBy(k), foe = foeOf(sub);
+  const sub = anySub(k), foe = foeOf(sub);
   const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(k => topicKeys.add(k)));
   const qs = G ? G.qs : point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
   MS = { sub, foe, qs, point, guide: G ? G.guide : null, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
@@ -247,10 +247,11 @@ function start(k, point, G) {
 /* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — a mission of n questions from those sub-topics against
    one of their misconceptions; "another n" leaves out the questions shown in this browser's last runs of the same set */
 const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
+const anySub = k => subBy(k) || QE.allSubs().find(x => x.key === k || x.keys.has(k));
 function startGuide(keys, n, title) {
-  const subs = [...new Set(keys.map(k => subBy(k) || SUBS.find(x => x.keys.has(k))).filter(Boolean))]; if (!subs.length) return false;
+  const subs = [...new Set(keys.map(anySub).filter(Boolean))]; if (!subs.length) return false;
   const sub = subs[Math.floor(Math.random() * subs.length)], foe = foeOf(sub);
-  const set = new Set(); keys.forEach(k => { const x = subBy(k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
+  const set = new Set(); keys.forEach(k => { const x = QE.allSubs().find(s => s.key === k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
   let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
   const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
   try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
@@ -260,9 +261,9 @@ function startGuide(keys, n, title) {
 /* ?point=B2.27 (from the spec tracker): go straight into a mission on that point */
 {
   const qs = new URLSearchParams(location.search), pt = qs.get('point');
-  const sb = pt && SUBS.find(x => x.keys.has(pt));
+  const sb = pt && anySub(pt);
   const gs = (qs.get('subs') || '').split(',').filter(Boolean), gn = Math.min(30, Math.max(5, +qs.get('n') || 15));
-  if (gs.length && gs.some(k => subBy(k) || SUBS.some(x => x.keys.has(k)))) setTimeout(() => startGuide(gs, gn, qs.get('t') || ''), 0);
+  if (gs.length && gs.some(k => anySub(k))) setTimeout(() => startGuide(gs, gn, qs.get('t') || ''), 0);
   else if (sb) setTimeout(() => start(sb.key, pt), 0);
   else if (subBy(qs.get('sub'))) setTimeout(() => start(qs.get('sub')), 0);   // ?sub=B2e: straight into that mission (the results page's buttons)
 }
@@ -386,6 +387,7 @@ function finish() {
   const firstRev = !QE.revisedToday();
   QE.finishMission({ coins, loot: drop.id, right });
   QE.log('⚔️', `Mission ${MS.sub.key.slice(1)} vs “${MS.foe.name}”: ${right}/${MS.qs.length} right first time, ${won ? 'busted it' : 'it got away'} · +${coins} coins · loot: ${drop.name}`);
+  if (window.CBSWork) CBSWork.refresh();
   QE.busy = false;
   const after = ADV.stats(), capAfter = ADV.levelCap(), step = ADV.CAP_STEP(), toCap = step - ADV.securedTotal() % step, st = QE.stats();
   const gainP = st.securedP - MS.st0.securedP, gainQ = st.securedQ - MS.st0.securedQ, xp = S.xp - MS.xp0;

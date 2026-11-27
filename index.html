@@ -43,6 +43,12 @@ a{color:inherit}
 .jump{display:flex;flex-wrap:wrap;gap:8px}
 .jump a{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.5px;text-decoration:none;padding:6px 14px;border:2px solid var(--ink);background:var(--paper)}
 .jump a:hover{background:var(--ink);color:var(--cream)}
+.hw-banner{display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap;background:#fef3c7;border:2px solid #111;border-left:7px solid #eab308;box-shadow:0 3px 0 #111;padding:10px 14px;margin-bottom:14px;text-decoration:none;color:#111}
+.hw-banner.late{background:#fee2e2;border-left-color:#dc2626}
+.hw-banner:hover{filter:brightness(.98)}
+.hw-banner b{font:900 19px/1.1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.2px}
+.hw-banner .go{background:#111;color:#fff;padding:5px 12px;font:900 15px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;border-radius:4px;white-space:nowrap}
+.hw-banner[hidden]{display:none}
 section{margin-top:34px}
 .shead{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 12px;border-bottom:3px solid var(--ink);padding-bottom:6px;margin-bottom:14px}
 .shead h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(28px,4.4vw,40px);line-height:1}
@@ -103,6 +109,7 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 <div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
 
 <main class="wrap">
+  <a class="hw-banner" id="cbs-hw-banner" href="/today/" hidden><span id="cbs-hw-txt"></span><span class="go">Open To do →</span></a>
   <nav class="jump" aria-label="Sections">
     <a href="#resources">Resources</a><a href="#interactives">Interactives</a><a href="#worksheets">Worksheets</a><a href="#more">More</a>
   </nav>
@@ -200,6 +207,24 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="js/account.js"></script>
 <script src="/js/year.js"></script>
+<script>
+(function () {
+  var b = document.getElementById('cbs-hw-banner'), t = document.getElementById('cbs-hw-txt');
+  if (!b || !t) return;
+  function wire() {
+    if (!window.CBSWork) return;
+    CBSWork.onChange(function (w) {
+      if (w.n > 0) {
+        b.hidden = false;
+        b.classList.toggle('late', w.late > 0);
+        t.innerHTML = '<b>📌 ' + w.n + ' piece' + (w.n === 1 ? '' : 's') + ' of homework to do</b>' + (w.late ? ' · <span style="color:#991b1b;font-weight:700">' + w.late + ' overdue</span>' : '');
+      } else { b.hidden = true; }
+    });
+  }
+  if (window.CBSWork) wire();
+  else { var iv = setInterval(function () { if (window.CBSWork) { clearInterval(iv); wire(); } }, 250); setTimeout(function () { clearInterval(iv); }, 10000); }
+})();
+</script>
 
 <script src="/js/whats-new.js" data-place="prepend" data-target="main.wrap"></script>
 </body>
