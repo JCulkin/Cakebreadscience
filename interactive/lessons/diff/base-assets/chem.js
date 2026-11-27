@@ -14,9 +14,8 @@ const isDeck = el => !!el.closest('#stage');
 
 /* ====================== covalent dot-and-cross ====================== */
 const VAL = {H:1,C:4,N:5,O:6,F:7,Cl:7,Br:7};
-const R = {H:40,C:56,N:56,O:56,F:54,Cl:58,Br:60};
-const radOf = (key, sym) => (key==='CO2' && sym==='C') ? 64 : R[sym];
-const ovOf = (a, b, n) => n===3 ? 52 : n===2 ? 40 : (a==='H'||b==='H') ? 28 : 24;
+const R = {H:42,C:52,N:52,O:52,F:52,Cl:56,Br:58};
+const OV = 28;
 const SPEC = {
  H2:{name:'Hydrogen',f:'H<sub>2</sub>',atoms:[['H','x','#4aa3ff'],['H','o','#4aa3ff']],tree:[[0,1,1,0]]},
  Cl2:{name:'Chlorine',f:'Cl<sub>2</sub>',atoms:[['Cl','x','#c03cc0'],['Cl','o','#c03cc0']],tree:[[0,1,1,0]]},
@@ -34,14 +33,14 @@ const SPEC = {
 const MOL = {};
 for(const [k,m] of Object.entries(SPEC)){
   const pos=[[0,0]];
-  m.tree.forEach(([p,c,n,ang])=>{const d=radOf(k,m.atoms[p][0])+radOf(k,m.atoms[c][0])-ovOf(m.atoms[p][0],m.atoms[c][0],n),t=ang*Math.PI/180;pos[c]=[pos[p][0]+d*Math.cos(t),pos[p][1]+d*Math.sin(t)];});
+  m.tree.forEach(([p,c,n,ang])=>{const d=R[m.atoms[p][0]]+R[m.atoms[c][0]]-OV,t=ang*Math.PI/180;pos[c]=[pos[p][0]+d*Math.cos(t),pos[p][1]+d*Math.sin(t)];});
   MOL[k]={name:m.name,f:m.f,atoms:m.atoms.map((a,i)=>[a[0],pos[i][0],pos[i][1],a[1],a[2]]),bonds:m.tree.map(([p,c,n])=>[p,c,n])};
 }
 L.MOL = MOL;
 function eMark(x,y,m,c,lw){
   lw=lw||1;
-  if(m==='x'){const s=4.4;return `<g class="el" stroke="${c}" stroke-width="${2.6*Math.min(lw,1.25)}" stroke-linecap="round"><line x1="${x-s}" y1="${y-s}" x2="${x+s}" y2="${y+s}"/><line x1="${x-s}" y1="${y+s}" x2="${x+s}" y2="${y-s}"/></g>`;}
-  return `<circle class="el" cx="${x}" cy="${y}" r="4.5" fill="${c}"/>`;
+  if(m==='x'){const s=4.2;return `<g class="el" stroke="${c}" stroke-width="${2.6*Math.min(lw,1.3)}" stroke-linecap="round"><line x1="${x-s}" y1="${y-s}" x2="${x+s}" y2="${y+s}"/><line x1="${x-s}" y1="${y+s}" x2="${x+s}" y2="${y-s}"/></g>`;}
+  return `<circle class="el" cx="${x}" cy="${y}" r="4.3" fill="${c}"/>`;
 }
 const sep=(p,q)=>Math.abs(Math.atan2(Math.sin(p-q),Math.cos(p-q)));
 function bestAngles(used,n){
@@ -52,27 +51,23 @@ function bestAngles(used,n){
 }
 function molSVG(key,lw){
   lw=lw||1; const M=MOL[key],A=M.atoms; let shells='',cores='',els='';
-  const angs=A.map(()=>[]), maxOrd=A.map(()=>1);
+  const angs=A.map(()=>[]);
   M.bonds.forEach(([i,j,n])=>{
     const a=A[i],b=A[j],dx=b[1]-a[1],dy=b[2]-a[2],d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d;
-    const ra=radOf(key,a[0]),rb=radOf(key,b[0]),t=(d-rb+ra)/2;
-    const mx=a[1]+ux*t,my=a[2]+uy*t,px=-uy,py=ux,gap=n===3?11.5:13,total=2*n;
+    const ra=R[a[0]],rb=R[b[0]],t=(d*d+ra*ra-rb*rb)/(2*d);
+    const mx=a[1]+ux*t,my=a[2]+uy*t,px=-uy,py=ux,gap=12,total=2*n;
     for(let k=0;k<total;k++){const off=(k-(total-1)/2)*gap,own=k%2===0?a:b;els+=eMark(mx+px*off,my+py*off,own[3],'#111',lw);}
     angs[i].push(Math.atan2(dy,dx)); angs[j].push(Math.atan2(-dy,-dx));
-    maxOrd[i]=Math.max(maxOrd[i],n); maxOrd[j]=Math.max(maxOrd[j],n);
   });
   const lpc=lonePairs(M);
   A.forEach((a,i)=>{ if(lpc[i]<=0) return; bestAngles(angs[i],lpc[i]).forEach(t=>{
-      const r=radOf(key,a[0]),cx=a[1]+Math.cos(t)*r,cy=a[2]+Math.sin(t)*r,px=-Math.sin(t),py=Math.cos(t);
-      els+=eMark(cx+px*6.5,cy+py*6.5,a[3],'#111',lw)+eMark(cx-px*6.5,cy-py*6.5,a[3],'#111',lw); }); });
-  A.forEach((a,i)=>{
-    const r=radOf(key,a[0]);
-    shells+=`<circle cx="${a[1]}" cy="${a[2]}" r="${r}" fill="none" stroke="#111" stroke-width="${1.6*lw}"/>`;
-    const out = angs[i].length===1 ? (a[0]==='H' ? -8 : -8 - 7*(maxOrd[i]-1)) : 0, t0 = angs[i][0]||0;
-    const nx = a[1] + Math.cos(t0)*out, ny = a[2] + Math.sin(t0)*out;
-    cores+=`<circle cx="${nx}" cy="${ny}" r="${a[0]==='H'?12:17}" fill="${a[4]}"/><text x="${nx}" y="${ny+5.5}" text-anchor="middle" font-size="${a[0].length>1?14:17}" font-weight="700" fill="#fff" font-family="Barlow,Arial,sans-serif">${a[0]}</text>`;
+      const r=R[a[0]],cx=a[1]+Math.cos(t)*r,cy=a[2]+Math.sin(t)*r,px=-Math.sin(t),py=Math.cos(t);
+      els+=eMark(cx+px*6,cy+py*6,a[3],'#111',lw)+eMark(cx-px*6,cy-py*6,a[3],'#111',lw); }); });
+  A.forEach(a=>{
+    shells+=`<circle cx="${a[1]}" cy="${a[2]}" r="${R[a[0]]}" fill="none" stroke="#111" stroke-width="${1.6*lw}"/>`;
+    cores+=`<circle cx="${a[1]}" cy="${a[2]}" r="${a[0]==='H'?11:16}" fill="${a[4]}"/><text x="${a[1]}" y="${a[2]+5.5}" text-anchor="middle" font-size="${a[0].length>1?14:16}" font-weight="700" fill="#fff" font-family="Barlow,Arial,sans-serif">${a[0]}</text>`;
   });
-  const xs=A.map(a=>a[1]),ys=A.map(a=>a[2]),pad=74;
+  const xs=A.map(a=>a[1]),ys=A.map(a=>a[2]),pad=66;
   const vb=[Math.min(...xs)-pad,Math.min(...ys)-pad,Math.max(...xs)-Math.min(...xs)+2*pad,Math.max(...ys)-Math.min(...ys)+2*pad];
   return `<svg viewBox="${vb.map(v=>v.toFixed(1)).join(' ')}" role="img" aria-label="Dot-and-cross diagram of ${M.name}">${shells}${cores}${els}</svg>`;
 }
@@ -329,14 +324,14 @@ C['diffusion-tube'] = el => {
 };
 
 C['dilution'] = el => {
-  const n=5, uid='d'+(uidN++); let s='';
+  const n=5; let s='';
   for(let i=0;i<n;i++){ const x=20+i*150, a=Math.pow(0.42,i);
     s+=`<path d="M${x} 40 v120 q0 14 14 14 h82 q14 0 14 -14 v-120" fill="none" stroke="#111" stroke-width="3"/>`;
     s+=`<path d="M${x+2} 70 v90 q0 12 12 12 h82 q12 0 12 -12 v-90 z" fill="rgba(128,0,128,${a.toFixed(3)})"/>`;
     s+=`<text x="${x+55}" y="200" text-anchor="middle" font-size="16" font-family="Barlow,Arial,sans-serif" font-weight="700">${i===0?'start':'×10 dilution'}</text>`;
-    if(i<n-1) s+=`<path d="M${x+118} 110 h24" stroke="#8c0013" stroke-width="3" marker-end="url(#dah-${uid})"/>`;
+    if(i<n-1) s+=`<path d="M${x+118} 110 h24" stroke="#8c0013" stroke-width="3" marker-end="url(#dah)"/>`;
   }
-  el.innerHTML=`<svg viewBox="0 0 760 215" role="img" aria-label="Five beakers of potassium manganate(VII) solution, each diluted ten times; the purple colour fades but is still visible"><defs><marker id="dah-${uid}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8c0013"/></marker></defs>${s}</svg>`;
+  el.innerHTML=`<svg viewBox="0 0 760 215" role="img" aria-label="Five beakers of potassium manganate(VII) solution, each diluted ten times; the purple colour fades but is still visible"><defs><marker id="dah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8c0013"/></marker></defs>${s}</svg>`;
 };
 
 C['heating-curve'] = el => {
@@ -399,143 +394,29 @@ C['ion-conduction'] = el => {
 
 /* ====================== charts ====================== */
 C['bp-chart'] = el => {
-  const uid='bp'+(uidN++);
-  const d=[
-    {n:1, name:'Methane', f:'CH₄', mr:16, bp:-162, st:'gas'},
-    {n:2, name:'Ethane', f:'C₂H₆', mr:30, bp:-89, st:'gas'},
-    {n:3, name:'Propane', f:'C₃H₈', mr:44, bp:-42, st:'gas'},
-    {n:4, name:'Butane', f:'C₄H₁₀', mr:58, bp:-1, st:'gas'},
-    {n:5, name:'Pentane', f:'C₅H₁₂', mr:72, bp:36, st:'liquid'},
-    {n:6, name:'Hexane', f:'C₆H₁₄', mr:86, bp:69, st:'liquid'},
-  ];
-  const mol = (n, cx, cy) => {
-    const sp = 21, w = (n-1)*sp, x0 = cx - w/2;
-    let g = '';
-    for(let i=0;i<n-1;i++) g += `<line x1="${x0+i*sp}" y1="${cy}" x2="${x0+(i+1)*sp}" y2="${cy}" stroke="#222" stroke-width="4"/>`;
-    for(let i=0;i<n;i++){
-      const x = x0 + i*sp;
-      g += `<line x1="${x}" y1="${cy-18}" x2="${x}" y2="${cy+18}" stroke="#666" stroke-width="2.5"/>`;
-      if(i===0) g += `<line x1="${x}" y1="${cy}" x2="${x-17}" y2="${cy}" stroke="#666" stroke-width="2.5"/><circle cx="${x-17}" cy="${cy}" r="5.5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.8"/>`;
-      if(i===n-1) g += `<line x1="${x}" y1="${cy}" x2="${x+17}" y2="${cy}" stroke="#666" stroke-width="2.5"/><circle cx="${x+17}" cy="${cy}" r="5.5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.8"/>`;
-      g += `<circle cx="${x}" cy="${cy-18}" r="5.5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.8"/><circle cx="${x}" cy="${cy+18}" r="5.5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.8"/>`;
-      g += `<circle cx="${x}" cy="${cy}" r="9" fill="#37474f" stroke="#111" stroke-width="2"/>`;
-    }
-    return g;
-  };
-  let s = `<defs><marker id="bpa-${uid}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c8001e"/></marker></defs>`;
-  s += `<rect x="6" y="6" width="988" height="488" rx="16" fill="#fff" stroke="#111" stroke-width="4"/>`;
-  s += `<path d="M68 398 L920 112" stroke="#c8001e" stroke-width="5" stroke-dasharray="12 8" opacity=".45" marker-end="url(#bpa-${uid})"/>`;
-  s += `<text x="500" y="50" text-anchor="middle" font-size="28" font-weight="900" fill="#c8001e">Bigger molecules → stronger intermolecular forces → higher boiling point</text>`;
-  s += `<g font-size="18" font-weight="700"><circle cx="48" cy="96" r="7" fill="#37474f" stroke="#111" stroke-width="1.5"/><text x="62" y="102" fill="#333">Carbon</text>`;
-  s += `<circle cx="152" cy="96" r="5.5" fill="#e3f2fd" stroke="#1565c0" stroke-width="1.8"/><text x="166" y="102" fill="#333">Hydrogen</text></g>`;
-  const xs = [102, 232, 376, 534, 704, 888];
-  const ys = [350, 308, 265, 222, 178, 134];
-  d.forEach((m, i) => {
-    const x = xs[i], y = ys[i], hot = m.bp > 20, col = hot ? '#c8001e' : '#1565c0', bg = hot ? '#fde8eb' : '#e3f2fd';
-    s += `<g>`;
-    s += mol(m.n, x, y);
-    s += `<rect x="${x-54}" y="${y+30}" width="108" height="34" rx="10" fill="${bg}" stroke="${col}" stroke-width="2.5"/>`;
-    s += `<text x="${x}" y="${y+54}" text-anchor="middle" font-size="22" font-weight="900" fill="${col}">${m.bp} °C</text>`;
-    s += `<text x="${x}" y="${y+86}" text-anchor="middle" font-size="20" font-weight="800" fill="#111">${m.name}</text>`;
-    s += `<text x="${x}" y="${y+108}" text-anchor="middle" font-size="16" font-weight="600" fill="#555">${m.f}, Mᵣ ${m.mr}</text>`;
-    s += `</g>`;
-  });
-  s += `<g font-size="18" font-weight="700"><rect x="590" y="452" width="18" height="18" rx="4" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/><text x="616" y="468" fill="#1565c0">Gas at 20 °C</text>`;
-  s += `<rect x="770" y="452" width="18" height="18" rx="4" fill="#fde8eb" stroke="#c8001e" stroke-width="2"/><text x="796" y="468" fill="#c8001e">Liquid at 20 °C</text></g>`;
-  el.innerHTML=`<svg viewBox="0 0 1000 500" style="width:100%;height:auto;display:block" role="img" aria-label="Alkane molecules getting visually longer from methane to hexane as boiling points rise from -162 °C to 69 °C" font-family="Barlow,Arial,sans-serif">${s}</svg>`;
+  const deck=isDeck(el), fs=deck?1.45:1;
+  const d=[['CH₄',16,-162],['C₂H₆',30,-89],['C₃H₈',44,-42],['C₄H₁₀',58,-1],['C₅H₁₂',72,36],['C₆H₁₄',86,69]];
+  const x0=40,w=290,y0=28,h=150,min=-180,max=90,Y=v=>y0+h-(v-min)/(max-min)*h,zero=Y(0);
+  let s=`<line x1="${x0}" x2="${x0+w}" y1="${zero}" y2="${zero}" stroke="#111"/><text x="${x0-4}" y="${zero+4}" text-anchor="end" font-size="${11*fs}">0 °C</text>`;
+  d.forEach(([f,mr,bp],i)=>{const bw=34,x=x0+10+i*47,y=Math.min(Y(bp),zero),hh=Math.abs(Y(bp)-zero);
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${hh}" fill="${bp<0?'#4aa3ff':'#c8001e'}"/><text x="${x+bw/2}" y="${bp<0?y+hh+13*fs:y-4}" text-anchor="middle" font-size="${11*fs}" font-weight="700">${bp}</text><text x="${x+bw/2}" y="${y0+h+22*fs}" text-anchor="middle" font-size="${12*fs}">${f}</text><text x="${x+bw/2}" y="${y0+h+36*fs}" text-anchor="middle" font-size="${10*fs}" fill="#555">Mr ${mr}</text>`;});
+  s+=`<text x="${x0+4}" y="${y0+4}" font-size="${11*fs}" fill="#555">boiling point / °C</text>`;
+  el.innerHTML=`<svg viewBox="0 -6 340 ${232+(fs-1)*60}" role="img" aria-label="Boiling points of alkanes rise with relative molecular mass" font-family="Barlow,Arial,sans-serif">${s}</svg>`;
 };
 C['state-triangle'] = el => {
-  const steps=el.dataset.steps==='1', ds=i=>steps?` data-s="${i}"`:'', uid='st'+(uidN++);
+  const steps=el.dataset.steps==='1', ds=i=>steps?` data-s="${i}"`:'';
   const N={S:[150,330],L:[490,330],G:[320,70]};
-  const node=(k,t)=>`<g><rect x="${N[k][0]-75}" y="${N[k][1]-34}" width="150" height="68" rx="8" fill="#fff" stroke="#111" stroke-width="4"/><text x="${N[k][0]}" y="${N[k][1]+10}" text-anchor="middle" font-size="28" font-weight="900" font-family="Barlow Condensed,Arial Narrow,sans-serif">${t}</text></g>`;
+  const node=(k,t)=>`<g><rect x="${N[k][0]-75}" y="${N[k][1]-34}" width="150" height="68" fill="#fff" stroke="#111" stroke-width="3"/><text x="${N[k][0]}" y="${N[k][1]+10}" text-anchor="middle" font-size="28" font-weight="900" font-family="Barlow Condensed,Arial Narrow,sans-serif">${t}</text></g>`;
   const arr=(a,b,off,txt,col,i,lx,ly,anc)=>{ const [x1,y1]=N[a],[x2,y2]=N[b],dx=x2-x1,dy=y2-y1,d=Math.hypot(dx,dy),ux=dx/d,uy=dy/d,px=-uy*off,py=ux*off;
-    const sx=x1+ux*92+px, sy=y1+uy*52+py, ex=x2-ux*96+px, ey=y2-uy*56+py;
-    return `<g${ds(i)}><line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${col}" stroke-width="6" marker-end="url(#${uid}-${col.slice(1)})"/><text x="${lx}" y="${ly}" text-anchor="${anc}" font-size="22" font-weight="800" fill="${col}" font-family="Barlow,Arial,sans-serif">${txt}</text></g>`; };
+    const sx=x1+ux*95+px, sy=y1+uy*55+py, ex=x2-ux*95+px, ey=y2-uy*55+py;
+    return `<g${ds(i)}><line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${col}" stroke-width="5" marker-end="url(#st-${col.slice(1)})"/><text x="${lx}" y="${ly}" text-anchor="${anc}" font-size="21" font-weight="700" fill="${col}" font-family="Barlow,Arial,sans-serif">${txt}</text></g>`; };
   const hot='#c8001e', cold='#0b4f8a';
-  el.innerHTML=`<svg viewBox="0 0 640 410" role="img" aria-label="Changes of state: melting, freezing, boiling or evaporating, condensing, sublimation and deposition"><defs>${[hot,cold].map(c=>`<marker id="${uid}-${c.slice(1)}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('')}</defs>
-   ${arr('S','L',-16,'melting',hot,1,320,296,'middle')}${arr('L','S',-16,'freezing',cold,1,320,396,'middle')}
-   ${arr('L','G',-16,'boiling / evaporating',hot,2,434,185,'start')}${arr('G','L',-16,'condensing',cold,2,434,214,'start')}
-   ${arr('S','G',16,'sublimation',hot,3,206,185,'end')}${arr('G','S',16,'deposition',cold,3,206,214,'end')}
+  el.innerHTML=`<svg viewBox="0 0 640 400" role="img" aria-label="Changes of state: melting, freezing, boiling or evaporating, condensing, sublimation and deposition"><defs>${[hot,cold].map(c=>`<marker id="st-${c.slice(1)}" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0 0L10 5L0 10z" fill="${c}"/></marker>`).join('')}</defs>
+   ${arr('S','L',-14,'melting',hot,1,320,300,'middle')}${arr('L','S',-14,'freezing',cold,1,320,390,'middle')}
+   ${arr('L','G',-14,'boiling / evaporating',hot,2,428,185,'start')}${arr('G','L',-14,'condensing',cold,2,428,212,'start')}
+   ${arr('S','G',14,'sublimation',hot,3,212,185,'end')}${arr('G','S',14,'deposition',cold,3,212,212,'end')}
    ${node('S','SOLID')}${node('L','LIQUID')}${node('G','GAS')}
-   <text x="12" y="24" font-size="18" font-weight="800" fill="${hot}" font-family="Barlow,Arial,sans-serif">red: heat energy in</text><text x="12" y="48" font-size="18" font-weight="800" fill="${cold}" font-family="Barlow,Arial,sans-serif">blue: heat energy out</text></svg>`;
-};
-/* ---- 1a: interactive live state-change simulations (melt/freeze, boil/condense, evap vs boil) ---- */
-C['state-change'] = el => {
-  const mode = el.dataset.mode || 'melt', deck = isDeck(el);
-  const W = 440, H = 340, r = 14, cols = 7, rows = 4, N = cols * rows;
-  const bs = deck ? 'font-size:26px;padding:6px 14px;border-width:4px' : 'font-size:14px;padding:4px 10px';
-  const cfg = {
-    melt: { btns:[['solid','❄ Solid (ice)'],['melting','🔥 Melting'],['liquid','💧 Liquid (water)']], init:'solid', note:{solid:'Vibrate in fixed rows',melting:'Breaking free at 0 °C (melting point)',liquid:'Touching, sliding past each other'} },
-    boil: { btns:[['liquid','💧 Liquid'],['boiling','🔥 Boiling (100 °C)'],['gas','☁ Gas (steam)']], init:'liquid', note:{liquid:'Close together, moving faster',boiling:'Overcoming all forces — bubbles form',gas:'Far apart, moving fast in all directions'} },
-    evap: { btns:[['evap','☀ Evaporation (25 °C)'],['boil','🔥 Boiling (100 °C)']], init:'evap', note:{evap:'Only fastest surface particles escape',boil:'Bubbles form throughout the liquid at 100 °C'} }
-  }[mode] || {};
-  el.insertAdjacentHTML('beforeend', `<div class="scb" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;justify-content:center">${cfg.btns.map(([k,t])=>`<button class="btn" data-m="${k}" style="${bs}">${t}</button>`).join('')}</div>`);
-  const cv = canvasFor(el, W, H), ctx = cv.getContext('2d');
-  cv.style.border = deck ? '5px solid #111' : '2px solid #111';
-  if(!deck){ cv.style.maxWidth='440px'; cv.style.margin='0 auto'; }
-  el.insertAdjacentHTML('beforeend', `<div class="scn" style="text-align:center;font-weight:700;color:var(--acc);margin-top:6px;${deck?'font-size:28px':'font-size:15px'}"></div>`);
-  let st = cfg.init, tick = 0;
-  const sites = [], ox = (W - cols*2*r)/2 + r, oy = H - rows*2*r + r - 6;
-  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++) sites.push([ox+i*2*r, oy+j*2*r]);
-  const P = sites.map(([x,y],i)=>({x,y,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,esc:false,hot:i<cols}));
-  const setSt = s => {
-    st = s;
-    $$('.scb .btn', el).forEach(b => b.classList.toggle('on', b.dataset.m===s));
-    $('.scn', el).textContent = cfg.note[s] || '';
-    P.forEach((p,i)=>{ p.esc = (s==='gas'); if(s==='gas'){ p.x=r+Math.random()*(W-2*r); p.y=r+Math.random()*(H-2*r); } });
-  };
-  $$('.scb .btn', el).forEach(b => b.onclick = () => setSt(b.dataset.m));
-  setSt(st);
-  function step(){
-    tick++;
-    P.forEach((p,i)=>{
-      if(st==='solid'){ p.vx+=(sites[i][0]-p.x)*0.14; p.vy+=(sites[i][1]-p.y)*0.14; p.vx*=0.78; p.vy*=0.78; p.vx+=(Math.random()-.5)*0.6; p.vy+=(Math.random()-.5)*0.6; }
-      else if(st==='melting'){
-        const free = i < cols*2;
-        if(!free){ p.vx+=(sites[i][0]-p.x)*0.09; p.vy+=(sites[i][1]-p.y)*0.09; p.vx*=0.82; p.vy*=0.82; p.vx+=(Math.random()-.5)*1.5; p.vy+=(Math.random()-.5)*1.5; }
-        else { p.vy+=0.11; p.vx+=(Math.random()-.5)*0.55; }
-      } else if(st==='liquid'){ p.vy+=0.14; p.vx+=(Math.random()-.5)*0.5; p.vy+=(Math.random()-.5)*0.3; }
-      else if(st==='evap'){
-        if(p.esc){ p.vy-=0.06; p.vx+=(Math.random()-.5)*0.5; if(p.y<r+2){ p.esc=false; p.y=H-r-2; p.vy=0; } }
-        else { p.vy+=0.14; p.vx+=(Math.random()-.5)*0.45; if(p.y < H - rows*2*r + 22 && Math.random()<0.008){ p.esc=true; p.vy=-3.2; } }
-      } else if(st==='boiling'||st==='boil'){
-        if(p.esc){ p.vy-=0.12; p.vx+=(Math.random()-.5)*1.1; if(p.y<r+2){ p.esc=false; p.y=H-r-2; p.vy=0; } }
-        else { p.vy+=0.12; p.vx+=(Math.random()-.5)*0.9; p.vy+=(Math.random()-.5)*0.6; if(Math.random()<0.025){ p.esc=true; p.vy=-4.2; } }
-      } else { p.vx+=(Math.random()-.5)*0.6; p.vy+=(Math.random()-.5)*0.6; }
-    });
-    for(let a=0;a<N;a++) for(let b=a+1;b<N;b++){
-      const p=P[a],q=P[b],dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy);
-      if(d<2*r&&d>0.01){ const o=(2*r-d)/2,nx=dx/d,ny=dy/d; p.x-=nx*o;p.y-=ny*o;q.x+=nx*o;q.y+=ny*o;
-        if(st!=='solid'){ const rv=(q.vx-p.vx)*nx+(q.vy-p.vy)*ny; if(rv<0){ p.vx+=rv*nx;p.vy+=rv*ny;q.vx-=rv*nx;q.vy-=rv*ny; } } }
-    }
-    const maxV = st==='gas' ? 5.2 : (st==='boiling'||st==='boil') ? 3.8 : st==='evap' ? 2.8 : 1.9;
-    P.forEach(p=>{ const v=Math.hypot(p.vx,p.vy); if(v>maxV&&!p.esc){ p.vx*=maxV/v; p.vy*=maxV/v; }
-      p.x+=p.vx; p.y+=p.vy; if(p.x<r){p.x=r;p.vx=Math.abs(p.vx);} if(p.x>W-r){p.x=W-r;p.vx=-Math.abs(p.vx);} if(p.y<r){p.y=r;p.vy=Math.abs(p.vy);} if(p.y>H-r){p.y=H-r;p.vy=-Math.abs(p.vy);} });
-  }
-  function draw(){
-    ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
-    const surfY = H - rows*2*r - 12;
-    if(st==='liquid'||st==='evap'||st==='boiling'||st==='boil'||st==='melting'){
-      ctx.fillStyle='rgba(74,163,255,.12)'; ctx.fillRect(0,surfY,W,H-surfY);
-      ctx.strokeStyle='#4aa3ff'; ctx.lineWidth=2; ctx.setLineDash([8,6]); ctx.beginPath(); ctx.moveTo(0,surfY); ctx.lineTo(W,surfY); ctx.stroke(); ctx.setLineDash([]);
-    }
-    if(st==='boiling'||st==='boil'){
-      for(let k=0;k<4;k++){ const bx=80+k*95+Math.sin(tick/12+k)*8, by=H-18-((tick*2+k*50)%(H-surfY));
-        ctx.beginPath(); ctx.arc(bx,by,8,0,7); ctx.fillStyle='rgba(255,255,255,.85)'; ctx.fill(); ctx.strokeStyle='#0b4f8a'; ctx.lineWidth=1.8; ctx.stroke(); }
-    }
-    if(st==='melting'||st==='boiling'||st==='boil'){
-      ctx.fillStyle='#c8001e'; ctx.font='bold 18px Barlow,Arial'; ctx.textAlign='right'; ctx.fillText('🔥 Heat energy in', W-12, 26);
-    } else if(st==='evap'){
-      ctx.fillStyle='#e65100'; ctx.font='bold 18px Barlow,Arial'; ctx.textAlign='right'; ctx.fillText('☀ Surface escape (below 100 °C)', W-12, 26);
-    }
-    P.forEach(p=>{
-      ctx.beginPath(); ctx.arc(p.x,p.y,r-1,0,7);
-      ctx.fillStyle = p.esc ? '#ff8a65' : '#4aa3ff'; ctx.fill();
-      ctx.lineWidth=2; ctx.strokeStyle = p.esc ? '#bf360c' : '#0b4f8a'; ctx.stroke();
-    });
-  }
-  let vis=true; const io=new IntersectionObserver(es=>{vis=es[0].isIntersecting;}); io.observe(cv);
-  (function loop(){ if(vis&&cv.offsetParent!==null){ step(); draw(); } requestAnimationFrame(loop); })();
+   <text x="12" y="24" font-size="17" font-weight="700" fill="${hot}" font-family="Barlow,Arial,sans-serif">red: heat energy in</text><text x="12" y="46" font-size="17" font-weight="700" fill="${cold}" font-family="Barlow,Arial,sans-serif">blue: heat energy out</text></svg>`;
 };
 /* ---- 1a: predict the state from melting and boiling points ---- */
 const SUBST = [['Hydrogen',-259,-253],['Mercury',-39,357],['Water',0,100],['Ethanol',-114,78],['Potassium',63,759],['Iron',1538,2862],['Oxygen',-218,-183],['Bromine',-7,59]];
@@ -591,154 +472,5 @@ C['solute-boxes'] = el => {
   const mixed = w => { const idx=[3,9,14,20,27,33,38,44]; return w.map((p,i)=>[p[0],p[1],idx.includes(i)?'#e04848':'w']); };
   const clump = w => { const out=w.map(p=>[p[0],p[1],'w']); [[95,150],[109,150],[123,150],[102,137],[116,137],[109,124],[88,163],[130,163]].forEach(([x,y],k)=>{ out[40+ (k%8)]=[x,y,'#d4a64a']; }); return out; };
   el.innerHTML=`<div class="grid3" style="margin:0">${box('Water only', w=>w.map(p=>[p[0],p[1],'w']))}${box('Salt dissolved (soluble)', mixed)}${box('Flour (insoluble)', clump)}</div>`;
-};
-
-/* ---- 1f & 1g: interactive conductivity circuit tester ---- */
-const COND_SUB = {
-  sugar:   {label:'Sugar solution', tag:'Covalent (aq)', on:false, amp:'0.0 A', liq:'#e3f2fd', mode:'sugar',
-            why:'Neutral covalent molecules (no charge) — cannot carry electric current'},
-  water:   {label:'Pure water', tag:'Covalent (l)', on:false, amp:'0.0 A', liq:'#e1f5fe', mode:'water',
-            why:'Neutral H₂O molecules (no ions, no free electrons) — does not conduct'},
-  ethanol: {label:'Ethanol', tag:'Covalent (l)', on:false, amp:'0.0 A', liq:'#fff8e1', mode:'ethanol',
-            why:'Neutral organic molecules — no charged particles free to move'},
-  nacl_s:  {label:'Solid salt', tag:'Ionic NaCl(s)', on:false, amp:'0.0 A', liq:null, mode:'solid_ionic',
-            why:'Ions are locked in fixed positions in the giant lattice — cannot move'},
-  nacl_aq: {label:'Salt water', tag:'Ionic NaCl(aq)', on:true, amp:'0.9 A', liq:'#e3f2fd', mode:'ions_nacl',
-            why:'Na⁺ and Cl⁻ ions are free to move and carry charge to the electrodes'},
-  nacl_l:  {label:'Molten salt', tag:'Ionic NaCl(l)', on:true, amp:'1.2 A', liq:'#ffecb3', mode:'ions_nacl',
-            why:'At >801 °C the lattice melts — Na⁺ and Cl⁻ ions move freely and conduct'},
-  cuso4:   {label:'Copper(II) sulfate', tag:'Ionic CuSO₄(aq)', on:true, amp:'0.8 A', liq:'#81d4fa', mode:'ions_cu',
-            why:'Mobile Cu²⁺ and SO₄²⁻ ions carry charge through the blue solution'},
-  graphite:{label:'Graphite rod', tag:'Giant covalent', on:true, amp:'1.4 A', liq:null, mode:'graphite',
-            why:'Exception! Delocalised electrons (e⁻) move freely along the carbon layers'}
-};
-C['conduct-test'] = el => {
-  const deck = isDeck(el);
-  const list = (el.dataset.items || 'sugar,water,ethanol,nacl_s,nacl_aq,nacl_l,cuso4,graphite').split(',');
-  let cur = el.dataset.default || list[0];
-  el.classList.add('nonav');
-  el.style.cssText += 'display:flex;flex-direction:column;gap:'+(deck?'12px':'8px')+';width:100%;height:100%';
-  const bStyle = deck ? 'font:700 22px/1.15 Barlow,Arial,sans-serif;padding:8px 14px;border:3px solid #111;border-radius:10px;cursor:pointer' : 'font:700 14px/1.2 Barlow,Arial,sans-serif;padding:5px 10px;border:2px solid #111;border-radius:8px;cursor:pointer';
-  el.innerHTML = `<div class="ct-bar" style="display:flex;flex-wrap:wrap;gap:${deck?8:6}px;justify-content:center">${list.map(k => `<button type="button" data-k="${k}" style="${bStyle}">${COND_SUB[k].label}</button>`).join('')}</div><div class="ct-svg" style="flex:1;min-height:0"></div>`;
-  const uid = 'ct' + Math.floor(Math.random()*1e6);
-  const draw = () => {
-    const s = COND_SUB[cur];
-    $$('.ct-bar button', el).forEach(b => {
-      const act = b.dataset.k === cur;
-      b.style.background = act ? (COND_SUB[b.dataset.k].on ? '#1b5e20' : '#c8001e') : '#fff';
-      b.style.color = act ? '#fff' : '#111';
-    });
-    const rays = s.on ? `<g stroke="#f9a825" stroke-width="5" stroke-linecap="round">
-      <line x1="600" y1="68" x2="600" y2="50"/><line x1="636" y1="78" x2="650" y2="66"/>
-      <line x1="646" y1="114" x2="664" y2="114"/><line x1="636" y1="150" x2="650" y2="162"/>
-      <line x1="564" y1="78" x2="550" y2="66"/><line x1="554" y1="114" x2="536" y2="114"/>
-      <line x1="564" y1="150" x2="550" y2="162"/></g>` : '';
-    const bulbFill = s.on ? '#fff176' : '#eceff1';
-    const filCol = s.on ? '#ef6c00' : '#78909c';
-    const wireCol = s.on ? '#1b5e20' : '#37474f';
-    const badge = s.on
-      ? `<rect x="674" y="88" width="112" height="46" rx="10" fill="#e8f5e9" stroke="#1b5e20" stroke-width="4"/><text x="730" y="120" text-anchor="middle" font-size="26" font-weight="900" fill="#1b5e20">ON ✓</text>`
-      : `<rect x="674" y="88" width="112" height="46" rx="10" fill="#fde8eb" stroke="#c8001e" stroke-width="4"/><text x="730" y="120" text-anchor="middle" font-size="26" font-weight="900" fill="#c8001e">OFF ✗</text>`;
-    const needleAng = s.on ? (s.amp==='1.4 A'?38:s.amp==='1.2 A'?30:18) : -42;
-
-    let body = '';
-    if(s.mode === 'graphite'){
-      // Solid graphite block clipped directly between the two electrodes
-      body = `
-        <rect x="172" y="218" width="456" height="92" rx="12" fill="#37474f" stroke="#111" stroke-width="5"/>
-        <g stroke="#78909c" stroke-width="3" fill="none" opacity=".7">
-          <line x1="196" y1="242" x2="604" y2="242" stroke-dasharray="16 10"/>
-          <line x1="196" y1="264" x2="604" y2="264" stroke-dasharray="16 10"/>
-          <line x1="196" y1="286" x2="604" y2="286" stroke-dasharray="16 10"/>
-        </g>
-        <g fill="#4caf50" stroke="#fff" stroke-width="2.5">
-          <circle cx="265" cy="253" r="18"/><circle cx="355" cy="275" r="18"/><circle cx="445" cy="253" r="18"/><circle cx="535" cy="275" r="18"/>
-        </g>
-        <g fill="#fff" font-size="18" font-weight="900" text-anchor="middle">
-          <text x="265" y="260">e⁻</text><text x="355" y="282">e⁻</text><text x="445" y="260">e⁻</text><text x="535" y="282">e⁻</text>
-        </g>
-        <g stroke="#a5d6a7" stroke-width="4.5" stroke-linecap="round">
-          <line x1="290" y1="253" x2="328" y2="253" marker-end="url(#${uid}g)"/>
-          <line x1="380" y1="275" x2="418" y2="275" marker-end="url(#${uid}g)"/>
-          <line x1="470" y1="253" x2="508" y2="253" marker-end="url(#${uid}g)"/>
-        </g>
-        <text x="400" y="346" text-anchor="middle" font-size="24" font-weight="900" fill="#1b5e20">Graphite rod — delocalised e⁻ flow between carbon layers</text>`;
-    } else {
-      // Beaker + electrodes (left x=180 centre, right x=600 centre)
-      const liq = s.liq ? `<path d="M138 188 H642 V334 Q642 352 624 352 H156 Q138 352 138 334 Z" fill="${s.liq}"/>` : '';
-      let inside = '';
-      if(s.mode === 'sugar'){
-        const pts = [[280,224],[395,254],[505,222],[320,308],[478,304]];
-        inside = pts.map(([x,y]) => `<polygon points="${x},${y-24} ${x+22},${y-12} ${x+22},${y+12} ${x},${y+24} ${x-22},${y+12} ${x-22},${y-12}" fill="#fff" stroke="#6a1b9a" stroke-width="4"/><text x="${x}" y="${y+7}" text-anchor="middle" font-size="18" font-weight="900" fill="#6a1b9a">0</text>`).join('');
-      } else if(s.mode === 'water'){
-        const pts = [[275,228],[395,218],[510,235],[318,306],[468,304]];
-        inside = pts.map(([x,y]) => `<g><circle cx="${x}" cy="${y}" r="14" fill="#e53935" stroke="#7f0000" stroke-width="2.5"/><circle cx="${x-14}" cy="${y+11}" r="9" fill="#fff" stroke="#111" stroke-width="2"/><circle cx="${x+14}" cy="${y+11}" r="9" fill="#fff" stroke="#111" stroke-width="2"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="12" font-weight="900" fill="#fff">O</text></g>`).join('');
-      } else if(s.mode === 'ethanol'){
-        const pts = [[285,226],[410,248],[512,226],[326,308],[476,306]];
-        inside = pts.map(([x,y]) => `<g><rect x="${x-32}" y="${y-16}" width="64" height="32" rx="16" fill="#fff" stroke="#ef6c00" stroke-width="3.5"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="16" font-weight="900" fill="#ef6c00">C₂H₅OH</text></g>`).join('');
-      } else if(s.mode === 'solid_ionic'){
-        let g = '';
-        for(let r=0;r<3;r++) for(let c=0;c<7;c++){
-          const x=268+c*44, y=242+r*42, pos=(r+c)%2===0;
-          g += `<circle cx="${x}" cy="${y}" r="19" fill="${pos?'#7e57c2':'#2e7d32'}" stroke="#111" stroke-width="2.5"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="15" font-weight="900" fill="#fff">${pos?'Na⁺':'Cl⁻'}</text>`;
-        }
-        inside = `<rect x="242" y="216" width="316" height="134" rx="10" fill="#f5f5f5" stroke="#616161" stroke-width="3" stroke-dasharray="8 6"/>${g}<text x="400" y="204" text-anchor="middle" font-size="20" font-weight="900" fill="#c8001e">Fixed ionic lattice — ions cannot move</text>`;
-      } else if(s.mode === 'ions_nacl' || s.mode === 'ions_cu'){
-        const isCu = s.mode === 'ions_cu';
-        const pSym = isCu ? 'Cu²⁺' : 'Na⁺', nSym = isCu ? 'SO₄²⁻' : 'Cl⁻';
-        const pCol = isCu ? '#0277bd' : '#7e57c2', nCol = isCu ? '#ef6c00' : '#2e7d32';
-        const posIons = [[310,224],[455,260],[330,312]], negIons = [[470,218],[345,266],[485,314]];
-        inside = posIons.map(([x,y]) => `<line x1="${x+22}" y1="${y}" x2="${x+58}" y2="${y}" stroke="${pCol}" stroke-width="4" marker-end="url(#${uid}p)"/><circle cx="${x}" cy="${y}" r="21" fill="${pCol}" stroke="#111" stroke-width="2.5"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="${isCu?14:16}" font-weight="900" fill="#fff">${pSym}</text>`).join('')
-               + negIons.map(([x,y]) => `<line x1="${x-22}" y1="${y}" x2="${x-58}" y2="${y}" stroke="${nCol}" stroke-width="4" marker-end="url(#${uid}n)"/><circle cx="${x}" cy="${y}" r="21" fill="${nCol}" stroke="#111" stroke-width="2.5"/><text x="${x}" y="${y+6}" text-anchor="middle" font-size="${isCu?13:16}" font-weight="900" fill="#fff">${nSym}</text>`).join('');
-      }
-      body = `
-        ${liq}
-        <path d="M134 156 V334 Q134 356 156 356 H624 Q646 356 646 334 V156" fill="none" stroke="#111" stroke-width="6"/>
-        <rect x="169" y="160" width="22" height="162" rx="4" fill="#546e7a" stroke="#111" stroke-width="3"/>
-        <rect x="589" y="160" width="22" height="162" rx="4" fill="#546e7a" stroke="#111" stroke-width="3"/>
-        <text x="150" y="158" text-anchor="middle" font-size="24" font-weight="900" fill="#c8001e">+</text>
-        <text x="630" y="158" text-anchor="middle" font-size="24" font-weight="900" fill="#1565c0">−</text>
-        ${inside}`;
-    }
-
-    const bannerBg = s.on ? '#e8f5e9' : '#fde8eb', bannerBd = s.on ? '#1b5e20' : '#c8001e';
-    $('.ct-svg', el).innerHTML = `<svg viewBox="0 0 800 455" style="width:100%;height:100%;display:block" role="img" aria-label="Conductivity test for ${s.label}: ${s.on?'conducts':'does not conduct'}" font-family="Barlow,Arial,sans-serif">
-      <defs>
-        <marker id="${uid}p" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${s.mode==='ions_cu'?'#0277bd':'#7e57c2'}"/></marker>
-        <marker id="${uid}n" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="${s.mode==='ions_cu'?'#ef6c00':'#2e7d32'}"/></marker>
-        <marker id="${uid}g" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#a5d6a7"/></marker>
-      </defs>
-      <rect x="8" y="8" width="784" height="366" rx="20" fill="#fff" stroke="#111" stroke-width="5"/>
-      <!-- Closed circuit wires: left electrode x=180, right electrode x=600 -->
-      <path d="M180 ${s.mode==='graphite'?218:160} V64 H322 M376 64 H458 M524 64 H600 V84 M600 144 V${s.mode==='graphite'?218:160}" fill="none" stroke="${wireCol}" stroke-width="6.5" stroke-linejoin="round"/>
-      <!-- DC Battery -->
-      <line x1="322" y1="34" x2="322" y2="94" stroke="#111" stroke-width="6"/>
-      <line x1="340" y1="48" x2="340" y2="80" stroke="#111" stroke-width="11"/>
-      <line x1="358" y1="34" x2="358" y2="94" stroke="#111" stroke-width="6"/>
-      <line x1="376" y1="48" x2="376" y2="80" stroke="#111" stroke-width="11"/>
-      <text x="304" y="46" font-size="22" font-weight="900" fill="#c8001e">+</text>
-      <text x="386" y="46" font-size="22" font-weight="900" fill="#1565c0">−</text>
-      <!-- Ammeter at (491, 64) -->
-      <circle cx="491" cy="64" r="32" fill="#fff" stroke="#111" stroke-width="4.5"/>
-      <path d="M469 68 A22 22 0 0 1 513 68" fill="none" stroke="#cfd8dc" stroke-width="4"/>
-      <g transform="translate(491 72) rotate(${needleAng})"><line x1="0" y1="0" x2="0" y2="-22" stroke="${s.on?'#1b5e20':'#c8001e'}" stroke-width="3.5" stroke-linecap="round"/></g>
-      <circle cx="491" cy="72" r="4" fill="#111"/>
-      <text x="491" y="114" text-anchor="middle" font-size="18" font-weight="900" fill="${s.on?'#1b5e20':'#555'}">${s.amp}</text>
-      <!-- Light bulb centred right on x=600 wire! -->
-      ${rays}
-      <circle cx="600" cy="114" r="30" fill="${bulbFill}" stroke="#111" stroke-width="5"/>
-      <path d="M584 98 L616 130 M616 98 L584 130" stroke="${filCol}" stroke-width="4.5" stroke-linecap="round"/>
-      ${badge}
-      <!-- Substance tag top-left -->
-      <rect x="26" y="24" width="196" height="36" rx="8" fill="#f5f5f5" stroke="#ccc" stroke-width="2"/>
-      <text x="124" y="49" text-anchor="middle" font-size="19" font-weight="800" fill="#333">${s.tag}</text>
-      ${body}
-      <!-- Explanation strip -->
-      <rect x="8" y="388" width="784" height="58" rx="14" fill="${bannerBg}" stroke="${bannerBd}" stroke-width="4"/>
-      <text x="400" y="424" text-anchor="middle" font-size="22" font-weight="800" fill="${bannerBd}">${s.why}</text>
-    </svg>`;
-  };
-  $$('.ct-bar button', el).forEach(b => b.onclick = e => { e.stopPropagation(); cur = b.dataset.k; draw(); });
-  draw();
 };
 })();

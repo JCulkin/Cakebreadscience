@@ -58,10 +58,15 @@ body.cbs-approved .lock-chip{display:none}
   const html = subj.sections.map(sec => `<div class="sec"><h2>${sec.code} · ${sec.name}</h2>` + sec.topics.map(t => {
     const v = (t.versions||[]).slice().sort().reverse(), latest = v[0], url = base + t.code + '/';
     if(!t.status) return `<div class="topic none"><div class="code">${t.code}</div><div class="t">${t.title}<small>Spec ${t.spec} · not started</small></div></div>`;
-    const draftNote = t.status === 'draft' ? `<span class="status draft">Under review</span>` : '';
+    const needsReview = t.status === 'draft' || (t.split && t.studentStatus === 'draft');
+    const draftNote = needsReview ? `<span class="status draft">Under review</span>` : '';
     const draftPresent = t.split ? `${url}draft/deck.html#present` : `${url}draft/#present`;
+    const draftLinks = latest && needsReview
+      ? (t.studentStatus === 'draft' || !t.split ? `<a class="dr" href="${url}draft/">Draft guide</a>` : '')
+        + (t.status === 'draft' ? `<a class="dr" href="${draftPresent}">▶ Present draft</a>` : '')
+      : '';
     const links = (latest ? `<a class="main" href="${url}v${latest}/">Open</a><a href="${url}v${latest}/#present">▶ Present</a>` : `<a class="main dr" href="${url}draft/" style="color:#111">Open</a><a href="${draftPresent}">▶ Present</a>`)
-      + (latest && t.status === 'draft' ? `<a class="dr" href="${url}draft/">Under review</a>` : '');
+      + draftLinks;
     const isFree = window.CBSAuth ? CBSAuth.isFreeHref(url + 'draft/') : false;
     const chip = isFree ? '' : `<span class="lock-chip locked">🔒 Sign in</span>`;
     return `<div class="topic" data-free="${isFree ? '1' : '0'}"><div class="code">${t.code}</div><div class="t">${t.title}${chip}<small>Spec ${t.spec} &nbsp;${draftNote}</small></div><div class="links">${links}</div></div>`;

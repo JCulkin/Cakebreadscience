@@ -49,10 +49,13 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 .topic>b{display:flex;justify-content:space-between;gap:10px;padding:8px 10px;border-bottom:1.5px solid #ddd;font-size:16px}
 .topic>b span{color:var(--muted);font-weight:400;font-size:13px;white-space:nowrap}
 .sub{border-bottom:1px solid #e5e5e5}.sub:last-child{border-bottom:0}
-.subrow{display:grid;grid-template-columns:1fr 110px auto auto auto;gap:10px;align-items:center;padding:7px 10px}
-.subrow .nm{font-weight:600}.subrow .nm small{color:var(--sc);font-weight:900;margin-right:5px}
+.subrow{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:7px 10px}
+.subrow .nm{font-weight:600;flex:1 1 200px}.subrow .nm small{color:var(--sc);font-weight:900;margin-right:5px}
+.subrow .pb{width:110px;flex:none}
 .subrow .n{font-size:13px;color:var(--muted);white-space:nowrap}
-.subrow button{font:700 14px Barlow,Arial;cursor:pointer;border:1.5px solid #111;background:#fff;padding:4px 10px}
+.subrow button,.subrow a.sglink{font:700 14px Barlow,Arial;cursor:pointer;border:1.5px solid #111;background:#fff;padding:4px 10px;text-decoration:none;color:#111;white-space:nowrap}
+.subrow a.sglink{background:#eef7f0;border-color:#15803d;color:#14532d}
+.subrow a.sglink:hover{background:#dcfce7}
 .subrow button.go{background:#111;color:#fff}
 .pts{padding:0 10px 8px 10px}
 .pt{display:grid;grid-template-columns:54px 1fr auto auto;gap:8px;align-items:start;font-size:14px;padding:5px 0;border-top:1px dashed #ddd}
@@ -147,6 +150,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 <script src="/js/account.js"></script>
 <script src="/js/school.js"></script>
 <script src="/js/spec-point.js"></script>
+<script src="/js/spec-index.js"></script>
 <script>
 /* Practice (16 Nov 2026): a plain front door to the Questing engine. Same question bank, same securing rules,
    same saved progress (users/{uid}.specQuiz); no adventurer, monsters or loot on screen. */
@@ -160,6 +164,19 @@ const PLAIN = 'cbs.plain';
 let SUBS = [], SCI = 'B', OPEN = new Set(), PS = null;
 const subBy = k => SUBS.find(s => s.key === k);
 const topicName = t => { const sc = SPEC.find(x => x.name[0] === t[0]); const tp = sc && sc.topics.find(x => x.n === +t.slice(1)); return tp ? tp.name : t; };
+function lessonsForKeys(keys) {
+  const idx = typeof SPEC_INDEX !== 'undefined' ? SPEC_INDEX : window.SPEC_INDEX;
+  if (!idx || !idx.pts || !idx.res) return [];
+  const seen = new Set(), out = [];
+  for (const k of keys) {
+    const row = idx.pts[k]; if (!row || !row.r) continue;
+    for (const rid of row.r) {
+      const r = idx.res[rid];
+      if (r && r[0] === 'lesson' && !seen.has(r[2])) { seen.add(r[2]); out.push(r); }
+    }
+  }
+  return out;
+}
 
 /* choose screen */
 function drawPick() {
@@ -172,8 +189,9 @@ function drawPick() {
   const topics = [...new Set(SUBS.filter(s => s.L === SCI).map(s => s.topic))];
   $('topics').innerHTML = topics.map(t => { const xs = SUBS.filter(s => s.topic === t), a = xs.reduce((n, s) => n + s.st.secured, 0), b = xs.reduce((n, s) => n + s.st.n, 0);
     return `<div class="topic" style="--sc:${COL[SCI]}"><b>${t.slice(1)} · ${esc(topicName(t))}<span>${a}/${b} secured</span></b>${xs.map(s => {
-      const open = OPEN.has(s.key);
+      const open = OPEN.has(s.key), sLessons = lessonsForKeys(s.keys);
       return `<div class="sub"><div class="subrow"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><div class="pb"><i style="width:${s.st.n ? s.st.secured / s.st.n * 100 : 0}%"></i></div><span class="n">${s.st.secured}/${s.st.n}${s.st.rusty ? ` · ${s.st.rusty} rusty` : ''}</span>
+        ${sLessons.map(r => `<a class="sglink" href="${esc(r[2])}" title="${esc(r[1])}">📖 Study guide</a>`).join('')}
         <button type="button" class="tgl" data-tgl="${s.key}" aria-expanded="${open}">Spec points ${open ? '▴' : '▾'}</button><button type="button" class="go" data-sub="${s.key}">Practise →</button></div>
         ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = (window.SPECPT && SPECPT.of(k)) || QE.POINTS[k]; if (!p.has) return '';
           const [c, w] = p.rusty ? ['r', 'Rusty'] : p.secured ? ['s', 'Secured'] : p.started ? ['l', 'Learning'] : ['n', 'New'];
@@ -287,6 +305,8 @@ function finish() {
   const ready = PS.res.filter(r => r.ok && QE.qState(r.q.id).c === 1).length;
   $('quiz').classList.add('hidden'); $('done').classList.remove('hidden');
   const G = PS.guide;
+  const reviseKeys = wrong.length ? [...new Set(wrong.map(r => r.q.s))] : (G ? G.subs.flatMap(x => [...x.keys]) : [...PS.sub.keys]);
+  const studyGuides = lessonsForKeys(reviseKeys);
   $('done').innerHTML = `<h1>${G ? esc(G.title || 'Study guide') : `${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}`}</h1>
     <div class="card" style="margin-top:12px"><div class="score">${right} / ${PS.qs.length}</div>
       <ul class="gain">
@@ -294,7 +314,7 @@ function finish() {
         <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}${G ? `These ${G.subs.length > 1 ? `${G.subs.length} sub-topics` : 'sub-topic'}: ${G.subs.map(x => QE.allSubs().find(s => s.key === x.key) || x).reduce((n, x) => n + x.st.secured, 0)} of ${G.subs.reduce((n, x) => n + x.st.n, 0)} spec points secured.` : `This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.`}</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><button class="btn gold big" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button><a class="btn alt" href="${G ? '/today/' : 'practice.html'}">${G ? 'Back to To do' : 'Choose something else'}</a>${G ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
+    <div class="acts"><button class="btn gold big" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button>${studyGuides.map(r => `<a class="btn alt" href="${esc(r[2])}">📖 Revise: ${esc(r[1].replace(/\s*\(draft\)$/i, ''))} →</a>`).join('')}<a class="btn alt" href="${G ? '/today/' : 'practice.html'}">${G ? 'Back to To do' : 'Choose something else'}</a>${G ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'That was your free sample practice set! Sign in with Google (top right) to save your progress and unlock unlimited practice (new accounts are approved by your teacher).'}</p>`;
   $('again').onclick = () => { if (window.CBSAuth && !CBSAuth.checkMissionGate()) return; G ? startGuide(G.keys, G.n, G.title) : start(PS.sub.key, PS.point); };
   scrollTo(0, 0);
