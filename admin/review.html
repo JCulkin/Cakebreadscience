@@ -568,7 +568,7 @@ async function drawW() {
   const sOf = s => REVIEW.statusW(RV.recs.w, s);
   const c = { todo: 0, changed: 0, fix: 0, ok: 0, total: S.length }; S.forEach(s => c[sOf(s)]++);
   const want = { todo: s => s === 'todo' || s === 'changed', fix: s => s === 'fix', ok: s => s === 'ok', all: () => true }[RV.wfilter] || (() => true);
-  const F = [['todo', `To review (${c.todo + c.changed})`], ['fix', `Needs a fix (${c.fix})`], ['ok', `Checked (${c.ok})`], ['all', `All (${S.length})`]];
+  const F = [['todo', `To review (${c.todo + c.changed})`], ...(c.fix ? [['fix', `Needs a fix (${c.fix})`]] : []), ['ok', `Checked (${c.ok})`], ['all', `All (${S.length})`]];
   /* within a subject: KS4 (Single Award twin straight after its sheet), KS3, then anything else (challenges, maths, older) */
   const band = s => /^[a-z-]+\/ks4\//.test(s.p) ? 0 : /^[a-z-]+\/ks3\//.test(s.p) ? 1 : 2;
   const BAND = ['KS4 · Years 10 and 11', 'KS3 · Years 8 and 9', 'Other sheets'];
@@ -585,21 +585,12 @@ async function drawW() {
         const head = band(s) !== lastBand ? `<div class="wband">${BAND[lastBand = band(s)]}</div>` : '';
         return head + `<div class="wrow" data-p="${esc(s.p)}"><span><span class="st ${st}">${REVIEW.LABEL[st]}</span></span>
           <span class="t"><a href="/worksheets/${esc(s.p)}" target="_blank">${esc(s.t)}</a><small>${KIND[s.kind]}${s.live ? '' : ' · <b>draft (not on the worksheet pages)</b>'}${s.ms ? ` · <a href="/worksheets/${esc(s.ms)}" target="_blank">mark scheme</a>` : ''}${s.missing ? ' · ⚠️ page not found' : ''}${st === 'changed' ? ` · changed since you checked it on ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' && rec && rec.h === s.h ? ` · checked ${new Date(rec.at).toLocaleDateString('en-GB')}` : st === 'ok' && REVIEW.keptW(s.p) ? ` · checked ${esc(REVIEW.keptW(s.p).at || '')}${REVIEW.keptW(s.p).why ? ` (${esc(REVIEW.keptW(s.p).why)})` : ''}` : ''}</small></span>
-          <span class="acts">${st !== 'ok' ? '<button class="wgood">✓ Good</button>' : '<button class="wun">Send back</button>'}<button class="wfix">✏️ Needs a fix</button></span>
           ${rec && rec.note && (st === 'fix' || st === 'changed') ? `<span class="note">Your note: “${esc(rec.note)}”</span>` : ''}</div>`; }).join('')
         : '<p class="muted small">Nothing in this list.</p>');
   }).join('');
   box.innerHTML = summary(c, 'worksheets') + `<div class="filters">${F.map(([k, t]) => `<button data-wf="${k}" class="${RV.wfilter === k ? 'on' : ''}">${t}</button>`).join('')}</div>
-    <p class="small muted" style="margin-bottom:6px">Open a sheet (and its mark scheme), then press ✓ Good. Any change to its wording, answers or pictures sends it back here.</p>${groups}`;
+    <p class="small muted" style="margin-bottom:6px">Read-only status list. Review sheets &amp; topic booklets side-by-side in <a href="/staging-review/#printables">Staging Review Hub → Printables</a>, then tell the worksheets chat which ones to mark checked.</p>${groups}`;
   box.querySelectorAll('[data-wf]').forEach(b => b.onclick = () => { RV.wfilter = b.dataset.wf; drawW(); });
-  box.querySelectorAll('.wrow[data-p]').forEach(r => {
-    const s = S.find(x => x.p === r.dataset.p);
-    const set = async (st, note) => { const rec = { h: s.h, at: Date.now(), st, by: (RV.user && RV.user.email) || '' }; if (note) rec.note = note.slice(0, 500);
-      try { await REVIEW.save(RT, 'w', s.p, rec); RV.recs.w[REVIEW.key(s.p)] = rec; drawW(); } catch (e) { alert('Not saved — check your connection.'); } };
-    const g = r.querySelector('.wgood'); if (g) g.onclick = () => set('ok');
-    const u = r.querySelector('.wun'); if (u) u.onclick = async () => { try { await REVIEW.clear(RT, 'w', s.p); delete RV.recs.w[REVIEW.key(s.p)]; drawW(); } catch (e) { alert('Not saved — check your connection.'); } };
-    r.querySelector('.wfix').onclick = () => { const n = prompt('What needs fixing on “' + s.t + '”?', (RV.recs.w[REVIEW.key(s.p)] || {}).note || ''); if (n !== null) set('fix', n); };
-  });
 }
 
 /* ---------- flashcards (27 Nov): review every card across Biology, Chemistry, Physics, and Physics Equations.
