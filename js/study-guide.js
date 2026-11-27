@@ -175,9 +175,13 @@
       .filter(g => { const d = daysTo(g.date); return d === null || d >= -1; })
       .sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
   }
+  const GUIDE_CACHE = 'cbs.guides';
+  const cachedGuides = () => { try { const c = JSON.parse(localStorage.getItem(GUIDE_CACHE) || 'null'); return c && c.v ? c.v : null; } catch (e) { return null; } };
   async function loadAll(rt) {
-    if (window.CBSSchool && CBSSchool.rtGet) return (await CBSSchool.rtGet(rt, 'school/guides', 15000)) || {};
-    return (await rt.ref('school/guides').once('value')).val() || {};
+    const v = window.CBSNet ? ((await CBSNet.rtGet('school/guides', 15000)) || {})
+      : (window.CBSSchool && CBSSchool.rtGet ? ((await CBSSchool.rtGet(rt, 'school/guides', 15000)) || {}) : ((await rt.ref('school/guides').once('value')).val() || {}));
+    try { localStorage.setItem(GUIDE_CACHE, JSON.stringify({ t: Date.now(), v })); } catch (e) {}
+    return v;
   }
   /* how much of a guide this student has secured on the site (needs the Questing engine QE, as on To do) */
   function progress(g) {
@@ -195,7 +199,7 @@
     if (!el || (!pre && (!window.firebase || !firebase.database))) return null;
     style();
     let all = pre || null;
-    if (!all) { try { all = await loadAll(firebase.database()); } catch (e) { el.innerHTML = ''; return null; } }
+    if (!all) { try { all = await loadAll(firebase.database()); } catch (e) { all = cachedGuides(); if (!all) { el.innerHTML = ''; return null; } } }
     const y = window.CBSYear && CBSYear.year, sa = !!(window.CBSCourse && CBSCourse.sa);
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return all; }

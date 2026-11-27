@@ -61,7 +61,7 @@
     if (!user || !window.firebase || !firebase.firestore) return;
     const anon = readLocal('cbs.tracker.conf.anon'), uns = readLocal(unKey());
     try {
-      const snap = await within(firebase.firestore().collection('specProgress').doc(user.uid).get(), 6000);
+      const snap = window.CBSNet ? await CBSNet.fsGet('specProgress', user.uid, 7000) : await within(firebase.firestore().collection('specProgress').doc(user.uid).get(), 6000);
       const d = (snap.exists && snap.data()) || {};
       let remote = d.conf || null, fresh = false;
       if (!remote) { remote = migrate(d.subjects); fresh = true; }
@@ -80,7 +80,8 @@
     const uns = Object.assign(readLocal(unKey()), sent);
     try { localStorage.setItem(unKey(), JSON.stringify(uns)); } catch (e) {}
     try {
-      await within(firebase.firestore().collection('specProgress').doc(uid).set(body, { merge: true }), 8000);
+      if (window.CBSNet) await CBSNet.fsSetMerge('specProgress', uid, body, { ms: 8000, mergeMaps: ['conf'] });
+      else await within(firebase.firestore().collection('specProgress').doc(uid).set(body, { merge: true }), 8000);
       const left = readLocal(unKey()); Object.keys(sent).forEach(k => { if (left[k] === sent[k]) delete left[k]; });
       try { Object.keys(left).length ? localStorage.setItem(unKey(), JSON.stringify(left)) : localStorage.removeItem(unKey()); } catch (e) {}
     } catch (e) { console.warn('tracker: confidence not saved yet (will retry)', e); }

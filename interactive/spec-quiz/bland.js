@@ -380,72 +380,89 @@ const within = (p, ms = 12000) => new Promise((ok, no) => {
   const t = setTimeout(() => no(new Error('timeout')), ms);
   Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
 });
+function stepErr(step, e) {
+  const err = new Error(`${step}: ${(e && e.message) || e || 'failed'}`);
+  err.step = step; err.cause = e;
+  return err;
+}
+/* All RTDB reads, writes and transactions route through CBSNet (js/firebase-config.js) so school Wi-Fi
+   that blocks WebSockets or *.firebasedatabase.app still works via the same-origin /_fb/rtdb HTTPS proxy. */
 async function rtGet(path, ms = 15000) {
+  if (window.CBSNet) return CBSNet.rtGet(path, ms);
   if (typeof QE !== 'undefined' && QE.rtGet) return QE.rtGet(path, ms);
-  let done = false;
-  const sdk = db.ref(path).once('value').then(x => { done = true; return x.val(); });
-  const rest = (async () => {
-    await new Promise(r => setTimeout(r, 1500));
-    if (done) throw new Error('not needed');
-    const u = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
-    if (!u || !base || typeof u.getIdToken !== 'function') throw new Error('no rest');
-    const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
-    if (!r.ok) throw new Error('rest ' + r.status);
-    return r.json();
-  })();
-  return within(Promise.any ? Promise.any([sdk, rest]) : sdk, ms);
+  return within(db.ref(path).once('value').then(x => x.val()), ms);
+}
+async function rtSet(path, val, ms = 12000) {
+  if (window.CBSNet) return CBSNet.rtSet(path, val, ms);
+  return within(db.ref(path).set(val), ms);
+}
+async function rtUpdate(path, fields, ms = 12000) {
+  if (window.CBSNet) return CBSNet.rtUpdate(path, fields, ms);
+  return within(db.ref(path).update(fields), ms);
+}
+async function rtTx(path, fn, ms = 12000) {
+  if (window.CBSNet) return CBSNet.rtTx(path, fn, ms);
+  const r = await within(db.ref(path).transaction(fn), ms);
+  return { committed: !!(r && r.committed), value: r && r.snapshot ? r.snapshot.val() : null };
 }
 function init(rtdb, user) { db = rtdb; uid = user ? user.uid : null; }
 async function load() {
-  const v = (await rtGet('bland', 15000)) || {};
+  const v = (await rtGet('bland', 15000).catch(e => { throw stepErr('Load shared world (bland)', e); })) || {};
   world = v.world ? Object.assign(newWorld(), v.world) : null; pubs = v.pub || {}; states = v.state || {};
   return { world, pubs, states };
 }
 /* first player ever creates the world; a new player gets a state in the Cakelab */
 async function join(profile) {
   if (!world) {
-    const r = await within(ref('world').transaction(cur => cur || newWorld()), 12000);
-    world = Object.assign(newWorld(), r.snapshot.val());
+    const r = await rtTx('bland/world', cur => cur || newWorld(), 12000).catch(e => { throw stepErr('Create shared world (bland/world)', e); });
+    world = Object.assign(newWorld(), r.value || {});
   }
-  if (!states[uid] || !states[uid].at) { states[uid] = Object.assign(newState(profile.hp), states[uid] || {}); await within(ref('state/' + uid).set(states[uid]), 12000); }   // (may already hold extra moves from the teacher)
-  await within(publish(profile), 12000);
+  if (!states[uid] || !states[uid].at) {
+    const st = Object.assign(newState(profile.hp), states[uid] || {});
+    await rtSet('bland/state/' + uid, st, 12000).catch(e => { throw stepErr('Create player state (bland/state)', e); });   // (may already hold extra moves from the teacher)
+    states[uid] = st;
+  }
+  await publish(profile).catch(e => { throw stepErr('Publish adventurer profile (bland/pub)', e); });
 }
-function publish(profile, plan) {
+async function publish(profile, plan) {
   const cur = pubs[uid] || {};
   const p = Object.assign({}, cur, profile, { t: Date.now() });
   if (plan !== undefined) p.plan = { day: world.day, steps: plan };
+  await rtSet('bland/pub/' + uid, p, 12000);
   pubs[uid] = p;
-  return ref('pub/' + uid).set(p);
 }
 const savePlan = steps => publish({}, steps);
 /* teamwork (16 Nov): give a brew to, or patch up, another player (their state is writable by any signed-in player) */
 async function aid(to, what, from) {
-  if (what.brew) await within(ref(`state/${to}/brews/${what.brew}`).transaction(n => (n || 0) + 1), 10000);
-  if (what.heal) await within(ref(`state/${to}/health`).transaction(h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal)), 10000);
-  await within(ref(`state/${to}/inbox`).transaction(a => (a || []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5)), 10000);
+  if (what.brew) await rtTx(`bland/state/${to}/brews/${what.brew}`, n => (n || 0) + 1, 10000).catch(e => { throw stepErr('Send brew (bland/state)', e); });
+  if (what.heal) await rtTx(`bland/state/${to}/health`, h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal), 10000).catch(e => { throw stepErr('Patch up player (bland/state)', e); });
+  await rtTx(`bland/state/${to}/inbox`, a => (Array.isArray(a) ? a : []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5), 10000).catch(() => {});
   if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
 }
 /* treasure: the first to step on a chest gets it. Returns the chest if you got it, null if someone else already had. */
 async function claimChest(k) {
   let took = null;
-  const r = await within(ref('world/chests/' + k).transaction(cur => { took = cur; return cur ? null : cur; }), 10000);
-  if (world && world.chests) delete world.chests[k];
+  const r = await rtTx('bland/world/chests/' + k, cur => { took = cur; return cur ? null : undefined; }, 10000).catch(e => { throw stepErr('Claim treasure chest (bland/world/chests)', e); });
+  if (r.committed && took && world && world.chests) delete world.chests[k];
   return r.committed && took ? took : null;
 }
-const logFind = f => ref('world/finds').transaction(a => (Array.isArray(a) ? a : []).concat(f).slice(-10));
+const logFind = f => rtTx('bland/world/finds', a => (Array.isArray(a) ? a : []).concat(f).slice(-10), 10000);
 /* admin: drop chests on the surface now (or one cursed chest in the Underworld) */
 async function dropChests(n, kind) {
   await load(); if (!world) return [];
   const w = { chests: Object.assign({}, world.chests || {}), chapter: world.chapter, boss: world.boss };
   const made = spawnChests(w, states, TODAY, Math.random, n, kind), upd = {};
-  made.forEach(k => { upd['world/chests/' + k] = w.chests[k]; }); if (made.length) await within(ref().update(upd), 12000);
+  made.forEach(k => { upd['world/chests/' + k] = w.chests[k]; }); if (made.length) await rtUpdate('bland', upd, 12000);
   world.chests = w.chests; return made;
 }
-function saveMine(fields) { Object.assign(states[uid], fields); return within(ref('state/' + uid).update(fields), 12000); }
+async function saveMine(fields) {
+  await rtUpdate('bland/state/' + uid, fields, 12000).catch(e => { throw stepErr('Save map state (bland/state)', e); });
+  if (states[uid]) Object.assign(states[uid], fields);
+}
 /* the night: run if the world's day is before today. A transaction on the lock stops two visitors running it at once. */
 async function runNightIfDue(force) {
   if (!world || (!force && world.day >= TODAY)) return null;
-  const lock = await within(ref('world/lock').transaction(cur => (cur && cur.day === TODAY && Date.now() - cur.at < 120000) ? undefined : { day: TODAY, by: uid, at: Date.now() }), 12000);
+  const lock = await rtTx('bland/world/lock', cur => (cur && cur.day === TODAY && Date.now() - cur.at < 120000) ? undefined : { day: TODAY, by: uid, at: Date.now() }, 12000).catch(e => { throw stepErr('Night lock (bland/world/lock)', e); });
   if (!lock.committed) return null;
   await load();
   if (!force && world.day >= TODAY) return null;
@@ -458,7 +475,7 @@ async function runNightIfDue(force) {
   Object.keys(c1).forEach(k => { if (!c0[k]) upd['world/chests/' + k] = c1[k]; });
   const NIGHT_FIELDS = ['at', 'health', 'mana', 'moves', 'bonus', 'camp', 'report', 'reportDay', 'big', 'pending', 'shield', 'aura', 'fizz', 'calm', 'brews', 'bFought', 'bBeat'];
   Object.entries(res.states).forEach(([u, st]) => { if (!st || !st.at) return; NIGHT_FIELDS.forEach(f => { upd[`state/${u}/${f}`] = st[f] === undefined ? null : st[f]; }); });
-  await within(ref().update(upd), 12000);
+  await rtUpdate('bland', upd, 15000).catch(e => { throw stepErr('Save overnight update (bland)', e); });
   world = res.world; states = res.states;
   return res;
 }

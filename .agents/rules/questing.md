@@ -75,6 +75,7 @@ firebase-config → firebase app/auth/firestore/database compat 9.22.2 → `spec
 - Treasure chests spawn each night, visible through the fog, first to reach one wins it (claimed by transaction), some are mimics.
 - Dungeons = floors of bank questions (once a day each); the mine (5 floors) opens the Underworld (rows 17–25 of the same grid).
 - The night writes `world` field by field and players' states only in `NIGHT_FIELDS`, so it can't overwrite someone moving at that moment.
+- **School Wi-Fi resilience (`js/firebase-config.js` `CBSNet` + `netlify.toml` `/_fb/rtdb/*`, `/_fb/fs/*`):** all `bland.js` reads/writes/transactions and Questing/To-do Firebase calls fall back to same-origin HTTPS REST through Netlify proxies (with Firestore `experimentalAutoDetectLongPolling: true`). When disconnected or a save fails, `adventurer-map.html` stays strictly view-only (locking all movement/actions) and exposes a bottom-of-screen diagnostic panel with `CBSNet.probe()`.
 
 ## Flashcards — `/Flashcards/`
 - See `.agents/rules/flashcards.md` for full rules (data, permanent IDs, SM-2, Single Award, deep links, and `js/key-words.js`).

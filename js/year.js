@@ -25,12 +25,15 @@
 .cbs-year .x{margin-top:12px;background:none;border:0;color:#666;text-decoration:underline;cursor:pointer;font:inherit}
 .cbs-year .err{color:#b91c1c;font-size:14px;margin-top:8px}`;
 
+  const CACHE_KEY = 'cbs.year.cache';
+  const readYearCache = uid => { try { const c = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); return c && c.u === uid && [8, 9, 10, 11].includes(c.y) ? c.y : null; } catch (e) { return null; } };
+  const writeYearCache = (uid, y) => { try { if (uid && [8, 9, 10, 11].includes(y)) localStorage.setItem(CACHE_KEY, JSON.stringify({ u: uid, y })); } catch (e) {} };
   let fs = null;
   function needFirestore(cb) {
     if (firebase.firestore) return cb();
     const s = document.createElement('script');
     s.src = 'https://www.gstatic.com/firebasejs/' + (firebase.SDK_VERSION || '9.22.2') + '/firebase-firestore-compat.js';
-    s.onload = cb; document.head.appendChild(s);
+    s.onload = cb; s.onerror = cb; document.head.appendChild(s);
   }
   function ask() {
     if (!Y.uid || Y.year || document.querySelector('.cbs-year-bg')) return;
@@ -45,8 +48,9 @@
     const close = () => bg.remove();
     bg.querySelectorAll('[data-y]').forEach(b => b.onclick = () => {
       const y = +b.dataset.y;
-      fs.collection('users').doc(Y.uid).set({ year: y, yearAt: Date.now(), yearBy: 'self' }, { merge: true })
-        .then(() => { Y.year = y; close(); emit(); if (window.CBSWork) CBSWork.refresh(); })
+      const body = { year: y, yearAt: Date.now(), yearBy: 'self' };
+      (window.CBSNet ? CBSNet.fsSetMerge('users', Y.uid, body, { ms: 8000 }) : fs.collection('users').doc(Y.uid).set(body, { merge: true }))
+        .then(() => { Y.year = y; writeYearCache(Y.uid, y); close(); emit(); if (window.CBSWork) CBSWork.refresh(); })
         .catch(e => { const er = bg.querySelector('.err'); er.hidden = false; er.textContent = 'Could not save: ' + (e.code || e.message); });
     });
   }
@@ -54,13 +58,19 @@
     if (!window.firebase || !window.firebaseConfig) return;
     try { if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig); } catch (e) { return; }
     needFirestore(() => {
-      fs = firebase.firestore();
+      fs = window.CBSNet ? CBSNet.fsDb() : (firebase.firestore ? firebase.firestore() : null);
       firebase.auth().onAuthStateChanged(u => {
         Y.uid = u ? u.uid : null; Y.year = null; Y.known = false;
         if (!u) { emit(); return; }
-        fs.collection('users').doc(u.uid).get().then(d => {
-          const y = d.exists ? (d.data() || {}).year : null;
-          Y.year = [8, 9, 10, 11].includes(y) ? y : null; emit();
+        /* Use cached year immediately so To do / Upcoming tests never vanish while school Wi-Fi is slow */
+        const cached = readYearCache(u.uid);
+        if (cached) { Y.year = cached; emit(); }
+        const p = window.CBSNet ? CBSNet.fsGet('users', u.uid, 6000) : (fs ? fs.collection('users').doc(u.uid).get() : Promise.reject(new Error('no firestore')));
+        p.then(d => {
+          const y = d && d.exists ? (d.data() || {}).year : null;
+          if ([8, 9, 10, 11].includes(y)) { Y.year = y; writeYearCache(u.uid, y); }
+          else if (!cached) Y.year = null;
+          emit();
           if (!Y.year && !isAdmin(u)) ask();
         }).catch(() => emit());
       });

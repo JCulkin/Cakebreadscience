@@ -78,8 +78,8 @@ const QBY = {}; QUESTIONS.forEach(q => QBY[q.id] = q);
 let A = null, W = null, RUN = null, booted = false;
 const within = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
 const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-const ref = () => firebase.firestore().collection('users').doc(QE.user.uid);
-const saveW = () => ref().set({ work: { [ID]: W } }, { merge: true }).catch(e => console.warn('work save', e));
+const ref = () => (window.CBSNet ? CBSNet.fsDb() : firebase.firestore()).collection('users').doc(QE.user.uid);
+const saveW = () => (window.CBSNet ? CBSNet.fsSetMerge('users', QE.user.uid, { work: { [ID]: W } }, { ms: 8000, mergeMaps: ['work'] }) : ref().set({ work: { [ID]: W } }, { merge: true })).catch(e => console.warn('work save', e));
 
 let waited = false; setTimeout(() => { waited = true; boot(); }, 5000);
 async function boot() {
@@ -90,7 +90,7 @@ async function boot() {
   try { A = await CBSSchool.rtGet(firebase.database(), 'school/assign/' + ID, 16000); } catch (e) { A = ((CBSSchool.cached() || {}).assign || {})[ID] || null; failed = !A; }
   if (failed) { booted = false; $('main').innerHTML = `<div class="card"><h2>Couldn't load the work</h2><p>The work your teacher set couldn't be reached just now (the school network may be blocking part of Firebase). Try reloading; if it keeps happening, tell your teacher.</p><p style="margin-top:12px"><button class="btn" onclick="location.reload()">Try again</button></p></div>`; return; }
   if (!A) { $('main').innerHTML = `<div class="card"><h2>Not found</h2><p>This piece of work doesn't exist any more. <a href="/today/">Back to your To do list</a></p></div>`; return; }
-  try { W = (((await within(ref().get(), 5000)).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
+  try { const snap = window.CBSNet ? await CBSNet.fsGet('users', QE.user.uid, 6000) : await within(ref().get(), 5000); W = (((snap && snap.exists && snap.data()) || {}).work || {})[ID] || null; } catch (e) { W = null; }
   if (A.type === 'test') { if (W && W.done) results(); else intro(); }
   else if (A.type === 'spaced') spaced();
   else practise();

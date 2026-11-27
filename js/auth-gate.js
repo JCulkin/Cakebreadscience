@@ -260,7 +260,7 @@
       previewLine()
     );
   }
-  function renderOffline(u) {
+  function renderOffline(u, detail) {
     showOverlay(
       faceImg('worried') +
       '<h1>Could not check your account</h1>' +
@@ -268,6 +268,7 @@
       '<div><button type="button" class="btn" id="cbsAuthRetry">Try again</button><a class="btn alt" href="/">← Home</a></div>' +
       TASTERS_HTML +
       whoLine(u) +
+      (detail ? '<div class="pvnote" style="font-family:ui-monospace,Consolas,monospace">Detail: ' + esc(detail) + '</div>' : '') +
       previewLine()
     );
   }
@@ -407,33 +408,35 @@
           return;
         }
 
-        // Check RTDB gameAccess/{uid} live so teacher approval unlocks immediately
-        if (!firebase.database) {
+        // Check RTDB gameAccess/{uid} via CBSNet (same-origin HTTPS proxy on school Wi-Fi) + live listener when WebSocket works
+        if (!firebase.database && !window.CBSNet) {
           state.status = 'offline'; state.reason = 'no-rtdb'; emit();
-          if (shouldEnforceNow()) renderOffline(u);
+          if (shouldEnforceNow()) renderOffline(u, 'Firebase Realtime Database unavailable');
           return;
         }
-        var ref = firebase.database().ref('gameAccess/' + u.uid);
-        var rtHeard = false;
+        var ref = firebase.database ? firebase.database().ref('gameAccess/' + u.uid) : null;
+        var rtHeard = false, pollId = null, lastErr = '';
+        var stopPoll = function () { if (pollId) { clearInterval(pollId); pollId = null; } };
         var rtTimer = enforce ? setTimeout(function () {
           if (!rtHeard && state.status !== 'approved') {
             state.status = 'offline'; state.reason = 'rtdb-timeout'; emit();
-            if (shouldEnforceNow()) renderOffline(u);
+            if (shouldEnforceNow()) renderOffline(u, lastErr || 'Timed out checking gameAccess (8s)');
           }
-        }, 6500) : null;
+        }, 8000) : null;
 
         var checkedGrandfather = false;
-        var onVal = function (snap) {
+        var handleAccess = function (v) {
           rtHeard = true;
           if (rtTimer) { clearTimeout(rtTimer); rtTimer = null; }
-          var v = snap.val();
           if (v && v.status === 'approved') {
+            stopPoll();
             writeCache(u.uid);
             state.status = 'approved'; state.reason = 'approved'; emit();
             hideOverlay();
             return;
           }
           if (v && v.status === 'blocked') {
+            stopPoll();
             clearCache();
             state.status = 'blocked'; state.reason = 'blocked'; emit();
             if (shouldEnforceNow()) renderBlocked(u);
@@ -445,41 +448,56 @@
             state.status = 'pending'; state.reason = 'pending'; emit();
             if (shouldEnforceNow()) renderPending(u);
             else hideOverlay();
+            if (!pollId && window.CBSNet) {
+              pollId = setInterval(function () {
+                if (state.status !== 'pending' || state.user !== u) { stopPoll(); return; }
+                CBSNet.rtGet('gameAccess/' + u.uid, 6000).then(handleAccess).catch(function () {});
+              }, 5000);
+            }
             return;
           }
           // No gameAccess record yet: check if existing student in Firestore before creating pending request
           if (checkedGrandfather) return;
           checkedGrandfather = true;
-          var fsCheck = (firebase.firestore)
-            ? firebase.firestore().collection('users').doc(u.uid).get().catch(function () { return null; })
-            : Promise.resolve(null);
+          var fsCheck = window.CBSNet
+            ? CBSNet.fsGet('users', u.uid, 6000).catch(function () { return null; })
+            : (firebase.firestore ? firebase.firestore().collection('users').doc(u.uid).get().catch(function () { return null; }) : Promise.resolve(null));
           fsCheck.then(function (doc) {
             if (hasExistingActivity(doc)) {
+              stopPoll();
               writeCache(u.uid);
               state.status = 'approved'; state.reason = 'existing-student'; emit();
               hideOverlay();
               return;
             }
-            // Brand-new account: create pending request if on a gated page (or always on sign-in so admin sees them)
+            // Brand-new account: create pending request so admin sees them
             clearCache();
             state.status = 'pending'; state.reason = 'pending'; emit();
             if (shouldEnforceNow()) renderPending(u);
-            ref.set({
-              status: 'pending',
-              name: u.displayName || '',
-              email: u.email || '',
-              t: firebase.database.ServerValue.TIMESTAMP
-            }).catch(function () {});
+            var req = { status: 'pending', name: u.displayName || '', email: u.email || '', t: Date.now() };
+            if (window.CBSNet) CBSNet.rtSet('gameAccess/' + u.uid, req, 8000).catch(function () {});
+            else if (ref) ref.set(req).catch(function () {});
+            if (!pollId && window.CBSNet) {
+              pollId = setInterval(function () {
+                if (state.status !== 'pending' || state.user !== u) { stopPoll(); return; }
+                CBSNet.rtGet('gameAccess/' + u.uid, 6000).then(handleAccess).catch(function () {});
+              }, 5000);
+            }
           });
         };
-        var onErr = function () {
-          rtHeard = true;
-          if (rtTimer) { clearTimeout(rtTimer); rtTimer = null; }
-          state.status = 'offline'; state.reason = 'rtdb-error'; emit();
-          if (shouldEnforceNow()) renderOffline(u);
-        };
-        ref.on('value', onVal, onErr);
-        rtUnsub = function () { ref.off('value', onVal); };
+        var onVal = function (snap) { handleAccess(snap.val()); };
+        var onErr = function (e) { lastErr = (e && e.message) || String(e || 'rtdb error'); };
+        if (window.CBSNet) {
+          CBSNet.rtGet('gameAccess/' + u.uid, 7500).then(handleAccess).catch(function (e) {
+            lastErr = (e && e.message) || String(e || 'rtGet failed');
+          });
+        }
+        if (ref) {
+          ref.on('value', onVal, onErr);
+          rtUnsub = function () { stopPoll(); ref.off('value', onVal); };
+        } else {
+          rtUnsub = stopPoll;
+        }
       });
     });
   }

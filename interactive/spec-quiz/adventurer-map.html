@@ -32,6 +32,22 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* HUD */
 .gate{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.gate[hidden]{display:none}
+.gate.err{background:#fee2e2;border-color:#991b1b;color:#7f1d1d}
+.gate.wait{background:#fef9c3;border-color:#a16207;color:#713f12}
+.conn{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;border:1.5px solid #111;white-space:nowrap}
+.conn.ok{background:#dcfce7;color:#14532d;border-color:#16a34a}
+.conn.wait{background:#fef9c3;color:#713f12;border-color:#ca8a04}
+.conn.off{background:#fee2e2;color:#991b1b;border-color:#dc2626}
+.netdiag{margin-top:14px;background:#fff;border:2px solid var(--ink);padding:10px 14px;font-size:13.5px}
+.netdiag.err{border-color:#dc2626;background:#fff5f5}
+.netdiag summary{font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.netdiag .dbody{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.netdiag ul{margin:4px 0 8px 18px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.netdiag li{margin:2px 0}
+.netdiag .dprobe{display:grid;gap:4px;margin-top:8px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.netdiag .prow{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:3px 6px;background:var(--soft);border-left:4px solid #16a34a}
+.netdiag .prow.no{border-left-color:#dc2626;background:#fee2e2}
+.netdiag .dacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .preview{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:15px}
 .preview b{font-size:17px}
 .hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:#fff;border:2px solid var(--ink);border-bottom:0;padding:7px 10px}
@@ -184,6 +200,7 @@ table.st th{background:var(--soft)}
       </div>
     </div>
   </details>
+  <details class="netdiag" id="netDiag" hidden></details>
 </div>
 
 <div class="modal" id="dunModal" role="dialog" aria-modal="true" aria-label="Dungeon"><div class="box" id="dunBody"></div></div>
@@ -280,12 +297,15 @@ function visibleSet() {
 let PEOPLE = [];
 S.people = [];
 function buildPeople() {
-  PEOPLE = Object.entries(BL.pubs).filter(([u]) => u !== BL.uid && BL.states[u]).map(([u, p], i) => {
+  /* Build from BL.states so a player whose pub profile lagged or failed to write is NEVER invisible on the map */
+  const pubs = BL.pubs || {}, sts = BL.states || {};
+  PEOPLE = Object.keys(sts).filter(u => u !== BL.uid && sts[u] && sts[u].at).map((u, i) => {
+    const p = pubs[u] || {};
     const base = p.look || PIXEL.DEFAULT;
     let face; try { face = PIXEL.portrait(base, p.eq || {}); } catch (e) { face = PIXEL.portrait(PIXEL.DEFAULT); }
-    const planned = p.plan && p.plan.day === BL.world.day ? (p.plan.steps || []).length : 0;
+    const planned = p.plan && BL.world && p.plan.day === BL.world.day ? (p.plan.steps || []).length : 0;
     let fig; try { fig = PIXEL.figure(p.eq || {}, base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
-    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: BL.states[u].at || BL.HOME };
+    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: sts[u].at || BL.HOME };
   });
   S.people = PEOPLE.map(p => p.at);
 }
@@ -320,7 +340,7 @@ function stayUseful(k) { const P = PLACES[k]; if (!P) return false;
   if (P.type === 'event') return S.puddleDay !== QE.TODAY;
   return false; }
 function reachable() {
-  if (S.moves <= 0 || walking) return new Set();
+  if (!shared || S.moves <= 0 || walking) return new Set();
   const [lc, lr] = unkey(S.at);
   return new Set([...neighbours(lc, lr).filter(([c, r]) => walkable(c, r)).map(([c, r]) => key(c, r)), ...(stayUseful(S.at) ? [S.at] : [])]);
 }
@@ -504,9 +524,10 @@ function renderHud() {
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
   $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${esc(ADV.nick())}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers, plus overnight refill (+1 + 1 per 10 Magic). Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
+    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers, plus overnight refill (+1 + 1 per 10 Magic). Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px" ${shared ? '' : 'disabled title="Connect to the shared world to cast spells or drink brews"'}>Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
     <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span>${ADV.can('shop') ? `<span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span>` : ''}</div>
     <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' 🎁' : ''}</div>
+    ${conn === 'live' ? `<span class="conn ok" title="Synced with the shared world">● Live · ${PEOPLE.length + 1} player${PEOPLE.length ? 's' : ''}</span>` : conn === 'connecting' ? `<span class="conn wait" title="Connecting to the shared world">◌ Connecting…</span>` : `<span class="conn off" title="Viewing map only — actions locked until reconnected">● Offline (view only)</span>`}
     <div class="day">Day ${S.dayNo || 1} · boss fights happen at midnight</div>
     <div class="tools"><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
@@ -538,6 +559,7 @@ const SPELLS = BL.SPELL_INFO.map(sp => Object.assign({}, sp, SPELL_FN[sp.id])); 
    Answers go through QE.recordAnswer, so they count towards securing spec points like a mission. */
 const FLOOR_COINS = BL.FLOOR_COINS;
 function delve(k) {
+  if (!shared) return;
   const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
   let all = QUESTIONS.filter(q => keys.has(q.s));
   /* a Single Award course (/js/course.js) can leave a dungeon's theme thin: top up from the same topics, then the same science */
@@ -606,6 +628,7 @@ function delve(k) {
   ask();
 }
 function showSpells() {
+  if (!shared) return;
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
   const LK = { heal: 'spells', shield: 'shield', fog: 'fog' };
@@ -686,12 +709,14 @@ function renderPanel() {
     if (P.keep) h += `<div class="loot">⛏ <b>You've dug down to floor ${dep + 1} of ${NF}.</b> ${S.under ? 'The lift at the bottom is open.' : 'You keep your place from day to day. Clear the bottom floor and you break through to whatever is making those noises.'}</div>`;
     h += mine && shared ? (done ? `<div class="loot">🕯 You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>${NF} floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">${dep ? `Carry on from floor ${dep + 1}` : `Enter ${P.name}`} →</button></div>`)
       : `<div class="loot"><b>${NF} floors of questions</b>, loot on every floor. Walk to the door to go in.</div>`;
-    if (sel === MINE && S.under) h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${LIFT}">🛗 Take the lift down to the Underworld ↓</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to take the lift down to the Underworld.</div>`;
+    if (sel === MINE && S.under) h += mine && shared ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${LIFT}">🛗 Take the lift down to the Underworld ↓</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to take the lift down to the Underworld.</div>`;
   }
-  if (P && P.type === 'lift') h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${MINE}">🛗 Ride the lift up to the surface ↑</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to ride back up to the Abandoned Mine.</div>`;
+  if (P && P.type === 'lift') h += mine && shared ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${MINE}">🛗 Ride the lift up to the surface ↑</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to ride back up to the Abandoned Mine.</div>`;
   if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${esc(p.nick)}" alt="${esc(p.nick)}">`).join('')}</div>`;
   const left = S.moves, stay = sel === last, path = stay ? (stayUseful(sel) ? [sel] : null) : left > 0 ? pathTo(sel) : null;
-  if (left > 0 && path && path.length && !walking) {
+  if (!shared) {
+    h += `<div class="no">${conn === 'connecting' ? '⏳ Connecting to Breadventure Land… moving and actions unlock once synced.' : conn === 'signed-out' ? '🔒 Sign in to move and play on the shared map.' : '⚠️ Connectivity issue — view-only mode. Moves and actions are locked so nothing gets lost.'}</div>`;
+  } else if (left > 0 && path && path.length && !walking) {
     const far = path.length > left, endK = path[Math.min(path.length, left) - 1], endP = PLACES[endK];
     const what = far ? 'Head that way' : stay ? (P.type === 'boss' ? '⛺ Add an attack for tonight' : P.type === 'monster' ? '⚔ Fight it' : P.type === 'home' ? '🛏 Rest' : '👀 Poke it')
       : endP && endP.type === 'boss' && (endP.ch || 1) <= S.chapter && S.boss[endK] > 0 ? '⛺ Go and make camp' : endP && endP.type === 'monster' && denHp(endK) ? '⚔ Go and fight' : P && P.type === 'dungeon' ? 'Go to the door' : 'Go';
@@ -704,11 +729,12 @@ function renderPanel() {
   else if (S.moves <= 0) h += `<div class="no">No moves left today. You get 2 more at midnight, and +1 for your first mission or flashcards of the day.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">No way there yet through the squares you've uncovered. Explore closer first.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
-  if ($('dunGo')) $('dunGo').onclick = () => delve(sel);
-  if ($('rideBtn')) $('rideBtn').onclick = () => ride($('rideBtn').dataset.to);
+  if ($('dunGo')) $('dunGo').onclick = () => { if (shared) delve(sel); };
+  if ($('rideBtn')) $('rideBtn').onclick = () => { if (shared) ride($('rideBtn').dataset.to); };
   $('pClose').onclick = () => { sel = null; renderAll(); };
-  if ($('goBtn')) $('goBtn').onclick = () => walk(path.slice(0, left));
+  if ($('goBtn')) $('goBtn').onclick = () => { if (shared) walk(path.slice(0, left)); };
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    if (!shared) return;
     const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
     S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); LOG('🥤', `Bought ${br.name} (${br.cost} coins)`); persist(); renderAll();
     toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
@@ -808,14 +834,14 @@ async function walk(steps) {
   walking = true; sel = null; let nWalk = 0;
   try {
     for (const k of steps) {
-      if (!spendMove()) break;
+      if (!shared || !spendMove()) break;
       QE.tally('steps'); nWalk++;
       const from = S.at, stop = await arrive(k, from);
-      persist(); renderAll(); if (k !== from) centreOnMe();
-      if (stop) break;
+      const saved = await persist(); renderAll(); if (k !== from) centreOnMe();
+      if (!saved || stop) break;
       await pause(160);
     }
-  } finally { walking = false; if (nWalk) LOG('👣', `Walked ${nWalk} square${nWalk > 1 ? 's' : ''} to ${sqName(S.at)} (${S.moves} move${S.moves === 1 ? '' : 's'} left)`); persist(); sel = S.at; renderAll(); }
+  } finally { walking = false; if (nWalk && shared) LOG('👣', `Walked ${nWalk} square${nWalk > 1 ? 's' : ''} to ${sqName(S.at)} (${S.moves} move${S.moves === 1 ? '' : 's'} left)`); if (shared) await persist(); sel = S.at; renderAll(); }
 }
 /* one step onto k: returns true if the walk should stop there */
 async function arrive(k, from) {
@@ -859,9 +885,12 @@ function chestLoot(ch) {
   return { coins: coins + (item ? 0 : 20), item, brew: Math.random() < C.brew ? pick(Object.keys(BL.BREWS)) : null };
 }
 async function openChest(k) {
+  if (!shared) return;
   const C = chestKind(k);
+  let ch = null;
+  try { ch = await BL.claimChest(k); }
+  catch (e) { console.warn('chest', e); lockOffline('Opening treasure chest', e); return; }
   delete S.chests[k];
-  let ch = null; try { ch = await BL.claimChest(k); } catch (e) { console.warn('chest', e); }
   if (!ch) { toast(`The ${C.name.toLowerCase()} is gone: someone got here first.`); return; }
   const L = chestLoot(ch), m = $('dunModal'), body = $('dunBody'), RC = { common: '#9ca3af', uncommon: '#4ade80', rare: '#60a5fa', lowkey: '#a78bfa', unhinged: '#f472b6' };
   L.coins = coinsX(L.coins); S.coins = S.coins + L.coins;
@@ -928,17 +957,43 @@ function fightMonster(k) {
   });
 }
 
-/* ===================== the shared world: sync, the night, rewards ===================== */
-let shared = false;
-function persist() {
+/* ===================== the shared world: sync, connectivity safeguards, diagnostics ===================== */
+let shared = false, conn = 'connecting', starting = false, pollTimer = null, lastSyncAt = 0;
+const connErrors = [];
+function noteConnError(step, e) {
+  const msg = (e && e.message) ? e.message : String(e || 'unknown error');
+  connErrors.push({ t: new Date().toLocaleTimeString('en-GB'), step, msg });
+  if (connErrors.length > 12) connErrors.shift();
+  renderDiag();
+}
+function lockOffline(step, e) {
+  shared = false; conn = 'offline';
+  noteConnError(step, e);
+  gate('<b>⚠️ Connectivity issue — view-only mode.</b> You can look around the map, but moves and actions are paused so nothing gets lost. <button class="btn" id="retryConn">Try again</button> <a href="#netDiag" style="color:inherit;font-weight:700;font-size:14px">See what failed ↓</a>', 'err');
+  if ($('retryConn')) $('retryConn').onclick = () => { starting = false; start(true); };
+  renderAll(); renderDiag(true);
+}
+async function persist() {
   ADV.save();
-  if (!shared) return;
-  BL.saveMine({ at: S.at, visited: S.visited.slice(), moves: Math.max(0, S.moves - (S.bonus || 0)), bonus: S.bonus || null, camp: S.camp || null, dens: S.dens || {}, restDay: S.restDay || null, puddleDay: S.puddleDay || null, health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
+  if (!shared) return false;
+  const fields = { at: S.at, visited: S.visited.slice(), moves: Math.max(0, S.moves - (S.bonus || 0)), bonus: S.bonus || null, camp: S.camp || null, dens: S.dens || {}, restDay: S.restDay || null, puddleDay: S.puddleDay || null, health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm };
+  for (let i = 0; i < 2; i++) {
+    try { await BL.saveMine(fields); return true; }
+    catch (e) {
+      if (i === 0) { await pause(600); continue; }
+      console.warn('state not saved', e);
+      lockOffline('Saving your move to Breadventure Land', e);
+      return false;
+    }
+  }
+  return false;
 }
 /* the lift between the mine and the Underworld: instant and free */
-function ride(to) {
+async function ride(to) {
+  if (!shared) return;
   S.at = to; if (!S.visited.includes(to)) S.visited.push(to); sel = null; peek = null; ADV.save();
-  if (shared) BL.saveMine({ at: to, visited: S.visited.slice() }).catch(e => console.warn('lift not saved', e));
+  try { await BL.saveMine({ at: to, visited: S.visited.slice() }); }
+  catch (e) { lockOffline('Saving lift travel', e); return; }
   renderAll(); renderLegend(); centreOnMe(); window.scrollTo({ top: 0 });
   LOG('🛗', layerOf(to) ? 'Took the lift down to the Underworld' : 'Took the lift back up');
   toast(layerOf(to) ? '🛗 The lift rattles down for a very long time. <b>Welcome to the Underworld.</b>' : '🛗 The lift hauls you back up into the daylight.');
@@ -953,6 +1008,25 @@ function fromShared() {
   S.plan = [];   // (no more planning: kept empty for older readers)
   buildPeople(); ADV.save(); noteBossHits();
 }
+/* lightweight live sync so classmates in the same room actually see each other move */
+async function syncWorld() {
+  if (!shared || walking || QE.busy || document.visibilityState !== 'visible' || Date.now() - lastSyncAt < 8000) return;
+  lastSyncAt = Date.now();
+  try {
+    await BL.load();
+    if (!BL.world) return;
+    S.chapter = BL.world.chapter; S.boss = BL.bossNow(BL.world); S.chests = Object.assign({}, BL.world.chests || {});
+    buildPeople();
+    const my = BL.me();
+    if (my && my.inbox && my.inbox.length) { await BL.saveMine({ inbox: null }); my.inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); }
+    renderAll();
+  } catch (e) { /* transient background poll glitch: keep current view; actual moves check saveMine */ }
+}
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(syncWorld, 25000);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncWorld(); });
 const profile = () => { const s = ADV.stats(); return { name: QE.boardName(), look: ADV.look(), eq: ADV.eq(), lvl: s.l, str: s.str, hp: s.hp, mag: s.mag, fx: s.gear.fx }; };
 function toast(msg) {
   document.querySelectorAll('.maptoast').forEach(x => x.remove());   // one at a time
@@ -999,23 +1073,67 @@ function showReport() {
 $('repClose').onclick = () => $('modal').classList.remove('on');
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); });
 
+let probeRows = null;
+function renderDiag(forceOpen) {
+  const el = $('netDiag'); if (!el) return;
+  const netLog = (window.CBSNet && CBSNet.log) || [];
+  const hasErr = conn === 'offline' || connErrors.length > 0;
+  el.hidden = false;
+  el.classList.toggle('err', hasErr);
+  if (forceOpen) el.open = true;
+  const tr = window.CBSNet ? CBSNet.transport : { rtdb: 'sdk', fs: 'sdk' };
+  const viaLabel = { proxy: 'site HTTPS proxy (/_fb)', 'direct-rest': 'direct HTTPS REST', sdk: 'live WebSocket SDK', auto: 'connecting' };
+  const errItems = [
+    ...connErrors.map(x => `<li><b>[${esc(x.t)}] ${esc(x.step)}:</b> ${esc(x.msg)}</li>`),
+    ...netLog.slice(-6).map(x => `<li>[${new Date(x.t).toLocaleTimeString('en-GB')}] ${esc(x.op)}${x.path ? ' (' + esc(x.path) + ')' : ''}: ${esc(x.msg)}</li>`)
+  ];
+  el.innerHTML = `<summary>${hasErr ? '⚠️ Connectivity diagnostics — what failed loading' : `📡 Connection status · ${conn === 'live' ? `Live (${viaLabel[tr.rtdb] || tr.rtdb})` : conn === 'connecting' ? 'Connecting…' : 'Signed out'}`}</summary>
+    <div class="dbody">
+      <p><b>Status:</b> ${conn === 'live' ? 'Connected to Breadventure Land' : conn === 'connecting' ? 'Connecting…' : conn === 'signed-out' ? 'Not signed in' : 'Offline — view-only mode (moves paused so nothing is lost)'} · <b>Realtime DB:</b> ${esc(viaLabel[tr.rtdb] || tr.rtdb)} · <b>Account DB:</b> ${esc(viaLabel[tr.fs] || tr.fs)} · <b>Host:</b> ${esc(location.hostname)}</p>
+      ${errItems.length ? `<p style="margin-top:6px"><b>What failed:</b></p><ul>${errItems.join('')}</ul>` : '<p style="margin-top:4px;color:var(--muted)">No connection errors recorded in this session.</p>'}
+      ${probeRows ? `<div class="dprobe">${probeRows.map(r => `<div class="prow${r.ok ? '' : ' no'}"><b>${r.ok ? '✓' : '✗'} ${esc(r.name)}</b><span>${esc(r.detail)} (${r.ms} ms)</span></div>`).join('')}</div>` : ''}
+      <div class="dacts"><button type="button" class="btn alt" id="diagProbe">Run network check</button><button type="button" class="btn alt" id="diagRetry">Reconnect</button>${(errItems.length || probeRows) ? '<button type="button" class="btn alt" id="diagCopy">Copy diagnostics</button>' : ''}</div>
+    </div>`;
+  if ($('diagProbe')) $('diagProbe').onclick = async () => {
+    $('diagProbe').disabled = true; $('diagProbe').textContent = 'Checking…';
+    if (window.CBSNet && CBSNet.probe) probeRows = await CBSNet.probe();
+    renderDiag(true);
+  };
+  if ($('diagRetry')) $('diagRetry').onclick = () => { starting = false; start(true); };
+  if ($('diagCopy')) $('diagCopy').onclick = () => {
+    const txt = [`Host: ${location.href}`, `Status: ${conn}`, `RTDB via: ${tr.rtdb} | FS via: ${tr.fs}`,
+      ...connErrors.map(x => `ERR [${x.t}] ${x.step}: ${x.msg}`),
+      ...netLog.slice(-6).map(x => `NET ${x.op} (${x.path}): ${x.msg}`),
+      ...(probeRows || []).map(r => `${r.ok ? 'OK' : 'FAIL'} ${r.name}: ${r.detail} (${r.ms}ms)`)].join('\n');
+    try { navigator.clipboard.writeText(txt); $('diagCopy').textContent = 'Copied ✓'; } catch (e) { prompt('Copy diagnostics:', txt); }
+  };
+}
+
 function renderAll() { renderHud(); renderMap(); renderPanel(); }
 function centreOnMe() { const sc = $('scroll'); if (sc.scrollWidth > sc.clientWidth) { const [x] = center(...unkey(S.at)); sc.scrollLeft = x / VB_W * sc.scrollWidth - sc.clientWidth / 2; } }
-function gate(html) { const g = $('gate'); g.hidden = !html; g.innerHTML = html || ''; }
-renderLegend(); buildPeople(); renderAll(); centreOnMe();
+function gate(html, cls = '') { const g = $('gate'); g.hidden = !html; g.className = 'gate' + (cls ? ' ' + cls : ''); g.innerHTML = html || ''; }
+gate('⏳ <b>Connecting to Breadventure Land…</b> You can look around the map; moves unlock as soon as you\'re synced.', 'wait');
+renderLegend(); buildPeople(); renderAll(); renderDiag(); centreOnMe();
 
 /* wait for the account, then join the shared world, run the night if it's due, and draw */
-async function start() {
-  if (!QE.online) { gate('<b>Breadventure Land needs the internet.</b> It\'s one world shared by every player, so it can\'t run offline.'); return; }
+async function start(manual) {
+  if (!QE.online) {
+    conn = 'offline'; shared = false;
+    noteConnError('Firebase SDK', 'Firebase scripts did not load (www.gstatic.com may be blocked on this network)');
+    gate('<b>⚠️ Connectivity issue — view-only mode.</b> Firebase could not load on this network, so moves and actions are paused. <a href="#netDiag" style="color:inherit;font-weight:700;font-size:14px">See what failed ↓</a>', 'err');
+    renderAll(); renderDiag(true); return;
+  }
   if (!QE.known || QE.status === 'loading') return;
   if (!QE.user) {
-    shared = false;
-    gate('<b>Sign in to join Breadventure Land.</b> It\'s one world shared by everyone who plays: your moves, Health and key pieces are saved with your account. <button class="btn gold" id="gateIn">Sign in</button>');
+    shared = false; conn = 'signed-out';
+    gate('<b>Sign in to play Breadventure Land.</b> You can look around, and signing in unlocks your moves, Health and the shared world. <button class="btn gold" id="gateIn">Sign in</button>');
     $('gateIn').onclick = () => QE.signIn().catch(() => {});
-    return;
+    renderAll(); renderDiag(); return;
   }
-  if (shared) return;
-  shared = true; gate('');
+  if ((shared && !manual) || starting) return;
+  starting = true; shared = false; conn = 'connecting';
+  gate('⏳ <b>Connecting to Breadventure Land…</b> Syncing with the shared world.', 'wait');
+  renderAll();
   try {
     BL.init(firebase.database(), QE.user);
     await BL.load();
@@ -1025,7 +1143,9 @@ async function start() {
     await applyOutbox();
     await claimPending();
     { const inbox = BL.me().inbox; if (inbox && inbox.length) { await BL.saveMine({ inbox: null }); inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); } }
-    fromShared(); renderAll(); centreOnMe();
+    shared = true; conn = 'live'; lastSyncAt = Date.now();
+    gate('');
+    fromShared(); renderAll(); renderDiag(); centreOnMe(); startPolling();
     const rescueNow = S.chapter >= 2 && !S.rescueSeen;
     const showRep = () => { if ((S.seenRep || {})[BL.uid] === (S.reportDay || 'first')) return;
       if (S.report && !S.big) { S.seenRep = S.seenRep || {}; S.seenRep[BL.uid] = S.reportDay; ADV.save(); toast((S.report[S.report.length - 1] || '').replace(/<\/?p[^>]*>/g, '') + (S.report.some(l => /chests? ha(s|ve) appeared/.test(l)) ? '<br>✨ New treasure on the map!' : '')); }   // a quiet night: just the new moves
@@ -1034,11 +1154,17 @@ async function start() {
     else if (rescueNow) ADV.storyRescue(showRep);
     else showRep();
   } catch (e) {
-    console.error('Breadventure Land', e); shared = false;
-    gate('<b>Breadventure Land couldn\'t load just now.</b> Your missions and flashcards still count. Try again in a minute.');
-  }
+    console.error('Breadventure Land', e);
+    lockOffline(e && e.step ? e.step : 'Connecting to Breadventure Land', e);
+  } finally { starting = false; }
 }
-QE.onChange(start); start();
+/* never stay stuck on "Connecting…" if auth/Firestore takes too long on school Wi-Fi */
+setTimeout(() => {
+  if (conn === 'connecting' && !starting) {
+    lockOffline('Account sign-in / Firestore load', 'Timed out waiting for Firebase Auth/Firestore (8s)');
+  }
+}, 8000);
+QE.onChange(() => start(false)); start(false);
 </script>
 </body>
 </html>

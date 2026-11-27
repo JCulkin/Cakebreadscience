@@ -36,15 +36,19 @@ function nameOf(u){let c='';try{c=(localStorage.getItem('cbs.adventurer.nick')||
 function signIn(){if(!auth)return Promise.reject(new Error('offline'));return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}
 function signOut(){return auth?auth.signOut():Promise.resolve();}
 // save a score: keeps the student's best only
-function submit(board,score,extra){if(!db||!user)return Promise.reject(new Error('not signed in'));const u=user;
-  return db.ref('gameScores/'+board+'/'+u.uid).transaction(cur=>{if(cur&&cur.score>=score){cur.name=nameOf(u);return cur;}return Object.assign({name:nameOf(u),score,t:Date.now()},extra?{extra}:{});})
+function submit(board,score,extra){if((!db&&!window.CBSNet)||!user)return Promise.reject(new Error('not signed in'));const u=user;
+  const upd=cur=>{if(cur&&cur.score>=score){cur.name=nameOf(u);return cur;}return Object.assign({name:nameOf(u),score,t:Date.now()},extra?{extra}:{});};
+  if(window.CBSNet)return CBSNet.rtTx('gameScores/'+board+'/'+u.uid,upd,10000).then(r=>{const v=r.value||{};return {best:v.score||score,improved:(v.score===score)};});
+  return db.ref('gameScores/'+board+'/'+u.uid).transaction(upd)
     .then(r=>{const v=r.snapshot.val()||{};return {best:v.score||score,improved:(v.score===score)};});}
 /* Scores from before sign-in (8–9 Nov 2026: a typed name, no account) stay on the boards, read from the old frozen lists. Same scoring rules as now. */
 const LEGACY=b=>{let m=b.match(/^elements_(.+)$/);if(m)return 'elements20HighScores/'+m[1];m=b.match(/^typing_(sprint|storm)$/);if(m)return 'typingHighScores/'+m[1];return null;};
-function legacy(board){const path=LEGACY(board);if(!path||!db)return Promise.resolve([]);
-  return db.ref(path).once('value').then(s=>{const v=s.val()||[];return (Array.isArray(v)?v:Object.values(v)).filter(x=>x&&typeof x.score==='number').map((x,i)=>({uid:'legacy:'+i,name:String(x.name||'?').slice(0,20),score:x.score,t:Date.parse(x.date)||0,legacy:true}));}).catch(()=>[]);}
-function top(board){if(!db)return Promise.reject(new Error('offline'));
-  return Promise.race([Promise.all([db.ref('gameScores/'+board).once('value'),legacy(board)]).then(([s,old])=>{const v=s.val()||{};return Object.entries(v).filter(([,x])=>x&&typeof x.score==='number').map(([uid,x])=>({uid,name:x.name,score:x.score,t:x.t,extra:x.extra})).concat(old).sort((a,b)=>b.score-a.score||a.t-b.t);}),
+function legacy(board){const path=LEGACY(board);if(!path||(!db&&!window.CBSNet))return Promise.resolve([]);
+  const get=window.CBSNet?CBSNet.rtGet(path,8000,{public:true}):db.ref(path).once('value').then(s=>s.val());
+  return get.then(v=>{v=v||[];return (Array.isArray(v)?v:Object.values(v)).filter(x=>x&&typeof x.score==='number').map((x,i)=>({uid:'legacy:'+i,name:String(x.name||'?').slice(0,20),score:x.score,t:Date.parse(x.date)||0,legacy:true}));}).catch(()=>[]);}
+function top(board){if(!db&&!window.CBSNet)return Promise.reject(new Error('offline'));
+  const cur=window.CBSNet?CBSNet.rtGet('gameScores/'+board,9000,{public:true}):db.ref('gameScores/'+board).once('value').then(s=>s.val());
+  return Promise.race([Promise.all([cur,legacy(board)]).then(([v,old])=>{v=v||{};return Object.entries(v).filter(([,x])=>x&&typeof x.score==='number').map(([uid,x])=>({uid,name:x.name,score:x.score,t:x.t,extra:x.extra})).concat(old).sort((a,b)=>b.score-a.score||a.t-b.t);}),
     new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);}
 function css(){if(document.getElementById('lbcss'))return;const s=document.createElement('style');s.id='lbcss';s.textContent=`
 .lbx{margin-top:14px;font-family:inherit}

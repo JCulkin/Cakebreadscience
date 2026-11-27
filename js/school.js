@@ -107,23 +107,11 @@
     return o; };
   /* how many of a test's questions a Single Award student gets (saved as nSA) */
   const testSA = a => CC() ? (a.qids || []).filter(CC().inSAid).length : null;
-  /* 18 Nov: one student's To do showed "Couldn't reach your teacher's work (Realtime Database)": the SDK's live connection
-     (a websocket) can be blocked or very slow on some networks, and once() then never answers. rtGet() also asks the plain
-     REST address (an ordinary HTTPS request with the student's sign-in token) after a moment, and takes whichever answers first. */
+  /* 18 Nov + 27 Nov: route RTDB reads through CBSNet (same-origin /_fb/rtdb HTTPS proxy on school Wi-Fi) */
   async function rtGet(rt, path, ms = 15000) {
-    let done = false;
-    const sdk = rt.ref(path).once('value').then(x => { done = true; return x.val(); });
-    const rest = (async () => {
-      await new Promise(r => setTimeout(r, 1500));
-      if (done) throw new Error('not needed');
-      const u = firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
-      if (!u || !base) throw new Error('no rest');
-      const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
-      if (!r.ok) throw new Error('rest ' + r.status);
-      return r.json();
-    })();
-    const all = Promise.any ? Promise.any([sdk, rest]) : sdk;
-    return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); all.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
+    if (window.CBSNet) return CBSNet.rtGet(path, ms);
+    const sdk = rt.ref(path).once('value').then(x => x.val());
+    return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); sdk.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
   }
   const CACHE = 'cbs.school';
   const shape = v => ({ taught: (v || {}).taught || {}, assign: (v || {}).assign || {} });

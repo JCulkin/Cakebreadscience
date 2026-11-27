@@ -3,6 +3,20 @@
 [build]
   publish = "."
 
+# First-party HTTPS proxies for Firebase RTDB & Firestore REST (school Wi-Fi compatibility)
+# Firebase still validates the student's Google/Firebase ID token and enforces all Security Rules.
+[[redirects]]
+  from = "/_fb/rtdb/*"
+  to = "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/_fb/fs/*"
+  to = "https://firestore.googleapis.com/v1/projects/elevenstudents-76f31/databases/(default)/documents/:splat"
+  status = 200
+  force = true
+
 # Block public access to internal repo docs, build tools, agent rules, and templates
 [[redirects]]
   from = "/tools/*"

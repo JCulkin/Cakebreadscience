@@ -166,21 +166,11 @@ const QE = (() => {
     const t = setTimeout(() => no(new Error('timeout')), ms);
     Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
   });
-  /* RTDB read with timeout + HTTPS REST fallback (for school filters that block RTDB websockets) */
+  /* RTDB read with timeout + same-origin proxy / HTTPS REST fallback (for school filters that block RTDB websockets or firebasedatabase.app) */
   async function rtGet(path, ms = 12000) {
+    if (window.CBSNet) return CBSNet.rtGet(path, ms);
     if (!FB.rtdb) throw new Error('offline');
-    let done = false;
-    const sdk = FB.rtdb.ref(path).once('value').then(x => { done = true; return x.val(); });
-    const rest = (async () => {
-      await new Promise(r => setTimeout(r, 1500));
-      if (done) throw new Error('not needed');
-      const u = FB.auth && FB.auth.currentUser, base = (window.firebaseConfig || {}).databaseURL;
-      if (!u || !base || typeof u.getIdToken !== 'function') throw new Error('no rest');
-      const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
-      if (!r.ok) throw new Error('rest ' + r.status);
-      return r.json();
-    })();
-    return within(Promise.any ? Promise.any([sdk, rest]) : sdk, ms);
+    return within(FB.rtdb.ref(path).once('value').then(x => x.val()), ms);
   }
 
   function writeLocal() { const u = FB.user ? FB.user.uid : (FB.known ? null : uid0); ls.set(progKey(u), PROG); ls.set(gameKey(u), GAME); }
@@ -229,22 +219,26 @@ const QE = (() => {
     if (!FB.ok || !FB.user) return;
     FB.status = 'saving'; emit();
     const st = securedStats();
+    const body = {
+      email: FB.user.email || null, displayName: FB.user.displayName || null, lastAccess: new Date().toISOString(),
+      specQuiz: PROG, questing: GAME,
+      specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, points: pointSummary(), updatedAt: new Date().toISOString() }
+    };
     try {
-      await within(FB.db.collection('users').doc(FB.user.uid).set({
-        email: FB.user.email || null, displayName: FB.user.displayName || null, lastAccess: new Date().toISOString(),
-        specQuiz: PROG, questing: GAME,
-        specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, points: pointSummary(), updatedAt: new Date().toISOString() }
-      }, { merge: true }), 10000);
+      if (window.CBSNet) await CBSNet.fsSetMerge('users', FB.user.uid, body, { ms: 10000 });
+      else await within(FB.db.collection('users').doc(FB.user.uid).set(body, { merge: true }), 10000);
       FB.status = 'saved';
     } catch (e) { console.error('Questing save failed', e); FB.status = 'error'; }
     emit();
-    if (FB.rtdb) {
+    if (FB.rtdb || window.CBSNet) {
+      const row = { name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
+        bio: PROG.subj.Biology || 0, chem: PROG.subj.Chemistry || 0, phys: PROG.subj.Physics || 0,
+        wb: ((PROG.ws || {})[WEEK] || {}).B || 0, wc: ((PROG.ws || {})[WEEK] || {}).C || 0, wp: ((PROG.ws || {})[WEEK] || {}).P || 0,
+        d7: (() => { const dc = dayCounts(PROG), o = {}; for (const d of LAST7) if (dc[d]) o[d] = { b: dc[d].B || 0, c: dc[d].C || 0, p: dc[d].P || 0 }; return o; })(),
+        look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() };
       try {
-        await within(FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set({ name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
-          bio: PROG.subj.Biology || 0, chem: PROG.subj.Chemistry || 0, phys: PROG.subj.Physics || 0,
-          wb: ((PROG.ws || {})[WEEK] || {}).B || 0, wc: ((PROG.ws || {})[WEEK] || {}).C || 0, wp: ((PROG.ws || {})[WEEK] || {}).P || 0,
-          d7: (() => { const dc = dayCounts(PROG), o = {}; for (const d of LAST7) if (dc[d]) o[d] = { b: dc[d].B || 0, c: dc[d].C || 0, p: dc[d].P || 0 }; return o; })(),
-          look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() }), 10000);
+        if (window.CBSNet) await CBSNet.rtSet('specQuizBoard/' + FB.user.uid, row, 10000);
+        else await within(FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set(row), 10000);
       } catch (e) { console.warn('Leaderboard save failed', e); }
     }
   }
@@ -260,7 +254,7 @@ const QE = (() => {
     } else {
       FB.status = 'loading'; emit();
       try {
-        const snap = await within(FB.db.collection('users').doc(u.uid).get(), 10000);
+        const snap = window.CBSNet ? await CBSNet.fsGet('users', u.uid, 10000) : await within(FB.db.collection('users').doc(u.uid).get(), 10000);
         const data = (snap.exists && snap.data()) || {};
         const remote = Object.assign(blank(), data.specQuiz || {}), remoteG = Object.assign(gblank(), data.questing || {});
         PROG = mergeProg(mergeProg(remote, readProg(u.uid)), readProg(null)); cardsV++;
@@ -293,7 +287,7 @@ const QE = (() => {
     try {
       if (typeof firebase === 'undefined' || !window.firebaseConfig) return;
       if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
-      FB.auth = firebase.auth(); FB.db = firebase.firestore(); FB.rtdb = firebase.database ? firebase.database() : null; FB.ok = true;
+      FB.auth = firebase.auth(); FB.db = window.CBSNet ? CBSNet.fsDb() : firebase.firestore(); FB.rtdb = window.CBSNet ? CBSNet.rtDb() : (firebase.database ? firebase.database() : null); FB.ok = true;
       FB.auth.onAuthStateChanged(onUser);
     } catch (e) { console.warn('Firebase unavailable', e); FB.ok = false; }
   }
@@ -557,8 +551,12 @@ const QE = (() => {
     const rep = { qid: q.id, reason, comment: (comment || '').slice(0, 400), shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400),
       options: options.map(o => String(o).replace(/<[^>]+>/g, '').slice(0, 120)), correct: correctIdx, picked: pickedIdx, mode: 'questing', ...(q.seed ? { seed: q.seed } : {}),
       name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '', t: Date.now() };
-    try { if (!FB.ok || !FB.rtdb) throw new Error('offline'); return within(FB.rtdb.ref('specQuizReports').push(rep), 10000); }
-    catch (e) { return Promise.reject(e); }
+    try {
+      if (!FB.ok) throw new Error('offline');
+      if (window.CBSNet) return CBSNet.rtPush('specQuizReports', rep, 10000);
+      if (!FB.rtdb) throw new Error('offline');
+      return within(FB.rtdb.ref('specQuizReports').push(rep), 10000);
+    } catch (e) { return Promise.reject(e); }
   }
 
   /* ---------- admin console (10 Nov): read another student's saved PROG with the same rules ----------
