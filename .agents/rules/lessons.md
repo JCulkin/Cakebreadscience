@@ -37,16 +37,17 @@ Strict split between the two audiences:
 3. Fewer, cleaner points; key terms in **bold**.
 4. Activity slides state the task ("Your turn: …, then click to check"). Discussion slides = pictures only.
 5. **High-resolution images only:** full-screen title/section photos ≥1600 px wide with a cream title box (`tslide`) clear of the main subject; content photos ≥1000 px on long edge (no blurry thumbnails).
-6. Own crisp diagrams (coloured circle photo nodes, revealed boxes) over screenshots of text or blurry rasters.
-7. Comparisons: same object drawn the same way in each panel; shared parts labelled once.
+6. Own crisp diagrams (coloured circle photo nodes, revealed boxes) over screenshots of text or blurry rasters. **Diagram labels must be classroom-readable** from the back of the room (target ≥26–32 px rendered at 1600×900, bold/high-contrast, wrapped onto 2 lines when long so wide labels never shrink the SVG).
+7. Comparisons: same object drawn the same way in each panel; shared parts labelled once. Avoid boxes-within-boxes clutter — let particle containers and clean flow/cycle diagrams sit naked on the slide when a frame adds no meaning.
 8. Individual organisms, not scenery; short captions; many examples → rolodex (`data-comp="rolodex"`, optional `data-sync="1"`).
 9. **Question-bank diagrams first** (`data-comp="dq"`, id from `DQ.LIST` + fixed `data-seed`).
 10. Mnemonics/cartoons big; acrostics vertical (Mrs C Gren).
 11. Ions = balls with floating charge; dot-and-cross only where spec asks (overlapping-lens model, **no light shell fill**, nuclei nudged clear of overlap rings). Equations = colour-coded boxes on one line where possible, centred with vertically aligned reaction arrows and a large spaced arrow. Data tables colour-shaded, highest at top. Readable colours on dark slides.
 12. Keep source deck's images, links (one `.linkcard` per slide), order and examples. **Never mention Separate Science.**
 13. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
-14. Slide tags: only `<i class="stag da|beyond"></i>` ("Double Award only" / "Beyond IGCSE") and activity badges `<i class="sico qc|wb"></i>` (Quick check / Whiteboards) as direct children of `section.ps`; no spec numbers on slides; mixed slides untagged.
-15. Before pushing: inspect every slide fully revealed for word-only slides, overflow, tiny pictures, or overlaps.
+14. Slide tags: only `<i class="stag da|beyond"></i>` ("Double Award only" / "Beyond IGCSE") and activity badges `<i class="sico qc|wb"></i>` (Quick check / Whiteboards) as direct children of `section.ps`; no spec numbers on slides; mixed slides untagged. **Keep `<h2>` titles short enough to sit on one single line** clear of corner tags (even when both `.stag` and `.sico` are present).
+15. **Exam Question Slide Standard:** dedicated exam-question slides pair a crisp question box + `[N]` mark badge + visual context with **individual mark-scheme rows** (green `✓` badge, bolded mark-earning key terms, `[1]` tag) offering **more valid mark points than the max marks** (e.g. 5 points for a `[3]` question) plus an `Any N of M points = full marks [N]` summary bar.
+16. Before pushing: inspect every slide fully revealed for word-only slides, overflow, tiny pictures/labels, or overlaps.
 
 ## Split Student Study Guide template (`draft/index.html`)
 - `<head>`: `#present` → `deck.html#present` redirect + `/interactive/lessons/assets/study.css`.

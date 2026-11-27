@@ -462,77 +462,276 @@ C['state-triangle'] = el => {
 /* ---- 1a: interactive live state-change simulations (melt/freeze, boil/condense, evap vs boil) ---- */
 C['state-change'] = el => {
   const mode = el.dataset.mode || 'melt', deck = isDeck(el);
-  const W = 440, H = 340, r = 14, cols = 7, rows = 4, N = cols * rows;
-  const bs = deck ? 'font-size:26px;padding:6px 14px;border-width:4px' : 'font-size:14px;padding:4px 10px';
+  const W = 540, H = 400, r = 14.5, cols = 8, rows = 4, N = cols * rows;
+  const bx0 = 112, bx1 = 492, by0 = 56, by1 = 328, bw = bx1 - bx0;
+  const bs = deck ? 'font-size:24px;padding:7px 16px;border-width:3.5px;border-radius:10px' : 'font-size:14px;padding:4px 10px;border-radius:6px';
   const cfg = {
-    melt: { btns:[['solid','❄ Solid (ice)'],['melting','🔥 Melting'],['liquid','💧 Liquid (water)']], init:'solid', note:{solid:'Vibrate in fixed rows',melting:'Breaking free at 0 °C (melting point)',liquid:'Touching, sliding past each other'} },
-    boil: { btns:[['liquid','💧 Liquid'],['boiling','🔥 Boiling (100 °C)'],['gas','☁ Gas (steam)']], init:'liquid', note:{liquid:'Close together, moving faster',boiling:'Overcoming all forces — bubbles form',gas:'Far apart, moving fast in all directions'} },
-    evap: { btns:[['evap','☀ Evaporation (25 °C)'],['boil','🔥 Boiling (100 °C)']], init:'evap', note:{evap:'Only fastest surface particles escape',boil:'Bubbles form throughout the liquid at 100 °C'} }
+    melt: {
+      btns:[['solid','❄ Solid (−10 °C)'],['melting','🔥 Melting (0 °C)'],['liquid','💧 Liquid (25 °C)']],
+      init:'solid',
+      temp:{solid:-10, melting:0, liquid:25},
+      tRange:[-20, 40],
+      note:{solid:'Particles vibrate in fixed rows (strong forces)', melting:'At 0 °C: particles break free from the edges of the lattice', liquid:'Touching, sliding randomly past each other'}
+    },
+    boil: {
+      btns:[['liquid','💧 Liquid (25 °C)'],['boiling','🔥 Boiling (100 °C)'],['gas','☁ Gas (120 °C)']],
+      init:'liquid',
+      temp:{liquid:25, boiling:100, gas:120},
+      tRange:[0, 140],
+      note:{liquid:'Touching and moving randomly around each other', boiling:'At 100 °C: bubbles form throughout as all forces are overcome', gas:'Far apart, moving fast in random straight lines'}
+    },
+    evap: {
+      btns:[['evap','☀ Evaporation (25 °C)'],['boil','🔥 Boiling (100 °C)']],
+      init:'evap',
+      temp:{evap:25, boil:100},
+      tRange:[0, 120],
+      note:{evap:'Only the fastest surface particles escape (below 100 °C)', boil:'Bubbles form throughout the whole liquid at 100 °C'}
+    }
   }[mode] || {};
-  el.insertAdjacentHTML('beforeend', `<div class="scb" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;justify-content:center">${cfg.btns.map(([k,t])=>`<button class="btn" data-m="${k}" style="${bs}">${t}</button>`).join('')}</div>`);
+  el.insertAdjacentHTML('beforeend', `<div class="scb" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;justify-content:center">${cfg.btns.map(([k,t])=>`<button class="btn" data-m="${k}" style="${bs}">${t}</button>`).join('')}</div>`);
   const cv = canvasFor(el, W, H), ctx = cv.getContext('2d');
-  cv.style.border = deck ? '5px solid #111' : '2px solid #111';
-  if(!deck){ cv.style.maxWidth='440px'; cv.style.margin='0 auto'; }
-  el.insertAdjacentHTML('beforeend', `<div class="scn" style="text-align:center;font-weight:700;color:var(--acc);margin-top:6px;${deck?'font-size:28px':'font-size:15px'}"></div>`);
-  let st = cfg.init, tick = 0;
-  const sites = [], ox = (W - cols*2*r)/2 + r, oy = H - rows*2*r + r - 6;
-  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++) sites.push([ox+i*2*r, oy+j*2*r]);
-  const P = sites.map(([x,y],i)=>({x,y,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,esc:false,hot:i<cols}));
+  cv.style.border = 'none';
+  cv.style.background = 'transparent';
+  if(!deck){ cv.style.maxWidth='500px'; cv.style.margin='0 auto'; }
+  el.insertAdjacentHTML('beforeend', `<div class="scn" style="text-align:center;font-weight:800;color:var(--acc);margin-top:6px;${deck?'font-size:25px;line-height:1.2':'font-size:15px'}"></div>`);
+  let st = cfg.init, tick = 0, curTemp = cfg.temp[st];
+  const sites = [], ox = (bx0 + bx1)/2 - (cols - 1)*r, oy = by1 - rows*2*r + r - 3;
+  for(let j=0;j<rows;j++) for(let i=0;i<cols;i++){
+    const isCore = (j >= 1 && i >= 1 && i <= cols - 2);
+    sites.push({x: ox + i*2*r, y: oy + j*2*r, core: isCore});
+  }
+  const P = sites.map((s, i) => ({x: s.x, y: s.y, vx:(Math.random()-.5)*1.5, vy:(Math.random()-.5)*1.5, esc:false, core:s.core}));
+  const bubbles = Array.from({length:7}, (_, k) => ({
+    x: bx0 + 36 + k * ((bw - 72)/6),
+    y: by1 - 12 - Math.random()*95,
+    rad: 4 + (k % 3) * 3.5,
+    spd: 1.4 + (k % 3) * 0.55
+  }));
   const setSt = s => {
     st = s;
     $$('.scb .btn', el).forEach(b => b.classList.toggle('on', b.dataset.m===s));
     $('.scn', el).textContent = cfg.note[s] || '';
-    P.forEach((p,i)=>{ p.esc = (s==='gas'); if(s==='gas'){ p.x=r+Math.random()*(W-2*r); p.y=r+Math.random()*(H-2*r); } });
+    P.forEach((p, i) => {
+      p.esc = (s === 'gas');
+      if(s === 'gas'){
+        p.x = bx0 + r + 4 + Math.random()*(bw - 2*r - 8);
+        p.y = by0 + r + 4 + Math.random()*(by1 - by0 - 2*r - 8);
+        const ang = Math.random()*Math.PI*2, spd = 3.2 + Math.random()*2.2;
+        p.vx = Math.cos(ang)*spd; p.vy = Math.sin(ang)*spd;
+      } else if(s === 'solid'){
+        p.x = sites[i].x; p.y = sites[i].y; p.vx = 0; p.vy = 0;
+      } else if(s === 'melting'){
+        if(p.core){ p.x = sites[i].x; p.y = sites[i].y; p.vx = 0; p.vy = 0; }
+      }
+    });
   };
   $$('.scb .btn', el).forEach(b => b.onclick = () => setSt(b.dataset.m));
   setSt(st);
+
+  function drawSphere(x, y, rad, hot){
+    const g = ctx.createRadialGradient(x - rad*0.32, y - rad*0.34, rad*0.1, x, y, rad);
+    if(hot){ g.addColorStop(0, '#ffe0b2'); g.addColorStop(0.45, '#ff7043'); g.addColorStop(1, '#c62828'); }
+    else if(st === 'solid' || (st === 'melting' && !hot)){
+      g.addColorStop(0, '#e3f2fd'); g.addColorStop(0.45, '#42a5f5'); g.addColorStop(1, '#1565c0');
+    } else {
+      g.addColorStop(0, '#b2ebf2'); g.addColorStop(0.5, '#26c6da'); g.addColorStop(1, '#00838f');
+    }
+    ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI*2);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = hot ? '#8e0000' : '#0b4f8a'; ctx.stroke();
+  }
+
   function step(){
     tick++;
-    P.forEach((p,i)=>{
-      if(st==='solid'){ p.vx+=(sites[i][0]-p.x)*0.14; p.vy+=(sites[i][1]-p.y)*0.14; p.vx*=0.78; p.vy*=0.78; p.vx+=(Math.random()-.5)*0.6; p.vy+=(Math.random()-.5)*0.6; }
-      else if(st==='melting'){
-        const free = i < cols*2;
-        if(!free){ p.vx+=(sites[i][0]-p.x)*0.09; p.vy+=(sites[i][1]-p.y)*0.09; p.vx*=0.82; p.vy*=0.82; p.vx+=(Math.random()-.5)*1.5; p.vy+=(Math.random()-.5)*1.5; }
-        else { p.vy+=0.11; p.vx+=(Math.random()-.5)*0.55; }
-      } else if(st==='liquid'){ p.vy+=0.14; p.vx+=(Math.random()-.5)*0.5; p.vy+=(Math.random()-.5)*0.3; }
-      else if(st==='evap'){
-        if(p.esc){ p.vy-=0.06; p.vx+=(Math.random()-.5)*0.5; if(p.y<r+2){ p.esc=false; p.y=H-r-2; p.vy=0; } }
-        else { p.vy+=0.14; p.vx+=(Math.random()-.5)*0.45; if(p.y < H - rows*2*r + 22 && Math.random()<0.008){ p.esc=true; p.vy=-3.2; } }
-      } else if(st==='boiling'||st==='boil'){
-        if(p.esc){ p.vy-=0.12; p.vx+=(Math.random()-.5)*1.1; if(p.y<r+2){ p.esc=false; p.y=H-r-2; p.vy=0; } }
-        else { p.vy+=0.12; p.vx+=(Math.random()-.5)*0.9; p.vy+=(Math.random()-.5)*0.6; if(Math.random()<0.025){ p.esc=true; p.vy=-4.2; } }
-      } else { p.vx+=(Math.random()-.5)*0.6; p.vy+=(Math.random()-.5)*0.6; }
+    const targetT = cfg.temp[st] ?? 20;
+    curTemp += (targetT - curTemp) * 0.08;
+    const surfY = by1 - rows*2*r - 12;
+    P.forEach((p, i) => {
+      if(st === 'solid'){
+        p.vx += (sites[i].x - p.x)*0.18 + (Math.random()-.5)*0.45;
+        p.vy += (sites[i].y - p.y)*0.18 + (Math.random()-.5)*0.45;
+        p.vx *= 0.72; p.vy *= 0.72;
+      } else if(st === 'melting'){
+        if(p.core){
+          p.vx += (sites[i].x - p.x)*0.12 + (Math.random()-.5)*1.2;
+          p.vy += (sites[i].y - p.y)*0.12 + (Math.random()-.5)*1.2;
+          p.vx *= 0.78; p.vy *= 0.78;
+        } else {
+          p.vy += 0.13; p.vx += (Math.random()-.5)*0.7; p.vx *= 0.96;
+        }
+      } else if(st === 'liquid'){
+        p.vy += 0.16; p.vx += (Math.random()-.5)*0.55; p.vy += (Math.random()-.5)*0.25; p.vx *= 0.96;
+      } else if(st === 'evap'){
+        if(p.esc){
+          p.vy -= 0.05; p.vx += (Math.random()-.5)*0.4;
+          if(p.y < by0 + r){ p.esc = false; p.y = by1 - r - 4; p.x = bx0 + r + Math.random()*(bw - 2*r); p.vy = 0; }
+        } else {
+          p.vy += 0.16; p.vx += (Math.random()-.5)*0.45; p.vx *= 0.96;
+          if(p.y < surfY + 26 && Math.random() < 0.008){ p.esc = true; p.vy = -3.4; }
+        }
+      } else if(st === 'boiling' || st === 'boil'){
+        if(p.esc){
+          p.vy -= 0.08; p.vx += (Math.random()-.5)*0.9;
+          if(p.y < by0 + r){ p.esc = false; p.y = by1 - r - 4; p.x = bx0 + r + Math.random()*(bw - 2*r); p.vy = 0; }
+        } else {
+          p.vy += 0.14; p.vx += (Math.random()-.5)*1.1; p.vy += (Math.random()-.5)*0.75; p.vx *= 0.95;
+          if(Math.random() < 0.022){ p.esc = true; p.vy = -4.2 - Math.random()*1.2; }
+        }
+      } else {
+        // gas: straight-line high-speed motion with elastic bounces
+        const v = Math.hypot(p.vx, p.vy);
+        if(v < 3.4){ const a = Math.random()*Math.PI*2; p.vx = Math.cos(a)*4.6; p.vy = Math.sin(a)*4.6; }
+      }
     });
-    for(let a=0;a<N;a++) for(let b=a+1;b<N;b++){
-      const p=P[a],q=P[b],dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy);
-      if(d<2*r&&d>0.01){ const o=(2*r-d)/2,nx=dx/d,ny=dy/d; p.x-=nx*o;p.y-=ny*o;q.x+=nx*o;q.y+=ny*o;
-        if(st!=='solid'){ const rv=(q.vx-p.vx)*nx+(q.vy-p.vy)*ny; if(rv<0){ p.vx+=rv*nx;p.vy+=rv*ny;q.vx-=rv*nx;q.vy-=rv*ny; } } }
+    for(let a=0; a<N; a++) for(let b=a+1; b<N; b++){
+      const p = P[a], q = P[b], dx = q.x - p.x, dy = q.y - p.y, d = Math.hypot(dx, dy);
+      if(d < 2*r && d > 0.01){
+        const o = (2*r - d)/2, nx = dx/d, ny = dy/d;
+        const pFix = st==='solid' || (st==='melting' && p.core), qFix = st==='solid' || (st==='melting' && q.core);
+        if(!pFix && !qFix){ p.x -= nx*o; p.y -= ny*o; q.x += nx*o; q.y += ny*o; }
+        else if(!pFix){ p.x -= nx*o*2; p.y -= ny*o*2; }
+        else if(!qFix){ q.x += nx*o*2; q.y += ny*o*2; }
+        if(!pFix && !qFix){
+          const rv = (q.vx - p.vx)*nx + (q.vy - p.vy)*ny;
+          if(rv < 0){ const rest = st==='gas' ? 1.0 : 0.72; p.vx += rv*nx*rest; p.vy += rv*ny*rest; q.vx -= rv*nx*rest; q.vy -= rv*ny*rest; }
+        }
+      }
     }
-    const maxV = st==='gas' ? 5.2 : (st==='boiling'||st==='boil') ? 3.8 : st==='evap' ? 2.8 : 1.9;
-    P.forEach(p=>{ const v=Math.hypot(p.vx,p.vy); if(v>maxV&&!p.esc){ p.vx*=maxV/v; p.vy*=maxV/v; }
-      p.x+=p.vx; p.y+=p.vy; if(p.x<r){p.x=r;p.vx=Math.abs(p.vx);} if(p.x>W-r){p.x=W-r;p.vx=-Math.abs(p.vx);} if(p.y<r){p.y=r;p.vy=Math.abs(p.vy);} if(p.y>H-r){p.y=H-r;p.vy=-Math.abs(p.vy);} });
-  }
-  function draw(){
-    ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
-    const surfY = H - rows*2*r - 12;
-    if(st==='liquid'||st==='evap'||st==='boiling'||st==='boil'||st==='melting'){
-      ctx.fillStyle='rgba(74,163,255,.12)'; ctx.fillRect(0,surfY,W,H-surfY);
-      ctx.strokeStyle='#4aa3ff'; ctx.lineWidth=2; ctx.setLineDash([8,6]); ctx.beginPath(); ctx.moveTo(0,surfY); ctx.lineTo(W,surfY); ctx.stroke(); ctx.setLineDash([]);
-    }
+    const maxV = st==='gas' ? 5.6 : (st==='boiling'||st==='boil') ? 3.8 : st==='evap' ? 2.8 : 2.1;
+    P.forEach(p => {
+      const v = Math.hypot(p.vx, p.vy);
+      if(v > maxV && !p.esc){ p.vx *= maxV/v; p.vy *= maxV/v; }
+      p.x += p.vx; p.y += p.vy;
+      if(p.x < bx0 + r + 3){ p.x = bx0 + r + 3; p.vx = Math.abs(p.vx); }
+      if(p.x > bx1 - r - 3){ p.x = bx1 - r - 3; p.vx = -Math.abs(p.vx); }
+      if(p.y < by0 + r + 3){ p.y = by0 + r + 3; p.vy = Math.abs(p.vy); }
+      if(p.y > by1 - r - 3){ p.y = by1 - r - 3; p.vy = -Math.abs(p.vy)*0.5; }
+    });
     if(st==='boiling'||st==='boil'){
-      for(let k=0;k<4;k++){ const bx=80+k*95+Math.sin(tick/12+k)*8, by=H-18-((tick*2+k*50)%(H-surfY));
-        ctx.beginPath(); ctx.arc(bx,by,8,0,7); ctx.fillStyle='rgba(255,255,255,.85)'; ctx.fill(); ctx.strokeStyle='#0b4f8a'; ctx.lineWidth=1.8; ctx.stroke(); }
+      bubbles.forEach(b => {
+        b.y -= b.spd;
+        b.rad = Math.min(13, b.rad + 0.045);
+        if(b.y < surfY + 8){ b.y = by1 - 10; b.x = bx0 + 30 + Math.random()*(bw - 60); b.rad = 3.5 + Math.random()*3.5; }
+      });
     }
-    if(st==='melting'||st==='boiling'||st==='boil'){
-      ctx.fillStyle='#c8001e'; ctx.font='bold 18px Barlow,Arial'; ctx.textAlign='right'; ctx.fillText('🔥 Heat energy in', W-12, 26);
-    } else if(st==='evap'){
-      ctx.fillStyle='#e65100'; ctx.font='bold 18px Barlow,Arial'; ctx.textAlign='right'; ctx.fillText('☀ Surface escape (below 100 °C)', W-12, 26);
+  }
+
+  function drawThermometer(){
+    const tx = 48, topY = 70, botY = 288, [lo, hi] = cfg.tRange;
+    const frac = Math.max(0, Math.min(1, (curTemp - lo)/(hi - lo)));
+    const mercY = botY - frac*(botY - topY - 12);
+    // Stem
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#111'; ctx.lineWidth = 3.5;
+    ctx.beginPath(); ctx.roundRect(tx - 11, topY, 22, botY - topY + 12, 11); ctx.fill(); ctx.stroke();
+    // Tick marks
+    ctx.strokeStyle = '#666'; ctx.lineWidth = 2;
+    for(let k=0; k<=4; k++){ const yy = topY + 14 + k*((botY - topY - 24)/4); ctx.beginPath(); ctx.moveTo(tx + 11, yy); ctx.lineTo(tx + 19, yy); ctx.stroke(); }
+    // Liquid column
+    const hot = curTemp >= (mode==='melt' ? 0 : 90);
+    ctx.fillStyle = hot ? '#e53935' : '#1e88e5';
+    ctx.fillRect(tx - 5, mercY, 10, botY - mercY + 12);
+    // Bulb
+    ctx.beginPath(); ctx.arc(tx, botY + 18, 20, 0, Math.PI*2); ctx.fill(); ctx.lineWidth = 3.5; ctx.strokeStyle = '#111'; ctx.stroke();
+    // Numeric readout pill
+    const lbl = Math.round(curTemp) + ' °C';
+    ctx.fillStyle = hot ? '#fde8eb' : '#e3f2fd'; ctx.strokeStyle = hot ? '#c8001e' : '#1565c0'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.roundRect(8, 12, 82, 40, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = hot ? '#c8001e' : '#1565c0'; ctx.font = '900 22px Barlow,Arial,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(lbl, 49, 40);
+  }
+
+  function drawBurner(){
+    const cx = (bx0 + bx1)/2, yBase = by1 + 60;
+    if(st === 'melting' || st === 'boiling' || st === 'boil'){
+      // Gauze / support bar
+      ctx.strokeStyle = '#455a64'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(bx0 - 6, by1 + 6); ctx.lineTo(bx1 + 6, by1 + 6); ctx.stroke();
+      // Animated flickering Bunsen flames (3 cones across base)
+      const count = (st === 'melting') ? 1 : 3;
+      for(let k=0; k<count; k++){
+        const fx = count===1 ? cx : cx + (k - 1)*72;
+        const wob = Math.sin(tick*0.28 + k*2)*3.5;
+        ctx.fillStyle = '#ff8f00';
+        ctx.beginPath(); ctx.moveTo(fx - 18, yBase); ctx.quadraticCurveTo(fx - 16, yBase - 26, fx + wob, yBase - 46); ctx.quadraticCurveTo(fx + 16, yBase - 26, fx + 18, yBase); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#2979ff';
+        ctx.beginPath(); ctx.moveTo(fx - 9, yBase); ctx.quadraticCurveTo(fx - 8, yBase - 14, fx + wob*0.5, yBase - 28); ctx.quadraticCurveTo(fx + 8, yBase - 14, fx + 9, yBase); ctx.closePath(); ctx.fill();
+      }
+      ctx.fillStyle = '#c8001e'; ctx.font = '900 21px Barlow,Arial,sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText('Heat energy IN ↑', bx1, yBase - 6);
+    } else if(st === 'solid'){
+      ctx.fillStyle = '#e3f2fd'; ctx.strokeStyle = '#1565c0'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect(bx0 + 30, by1 + 14, bw - 60, 38, 10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1565c0'; ctx.font = '900 21px Barlow,Arial,sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('❄ Below melting point (0 °C)', cx, by1 + 40);
+    } else if(st === 'gas'){
+      ctx.fillStyle = '#fde8eb'; ctx.strokeStyle = '#c8001e'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.roundRect(bx0 + 30, by1 + 14, bw - 60, 38, 10); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#c8001e'; ctx.font = '900 21px Barlow,Arial,sans-serif'; ctx.textAlign = 'center';
+      ctx.fillText('Sealed hot container (>100 °C)', cx, by1 + 40);
     }
-    P.forEach(p=>{
-      ctx.beginPath(); ctx.arc(p.x,p.y,r-1,0,7);
-      ctx.fillStyle = p.esc ? '#ff8a65' : '#4aa3ff'; ctx.fill();
-      ctx.lineWidth=2; ctx.strokeStyle = p.esc ? '#bf360c' : '#0b4f8a'; ctx.stroke();
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+    const surfY = by1 - rows*2*r - 12;
+    // Beaker glass interior
+    ctx.fillStyle = st==='gas' ? '#fff8f6' : '#f8fcff';
+    ctx.beginPath(); ctx.roundRect(bx0, by0, bw, by1 - by0, [6, 6, 22, 22]); ctx.fill();
+    // Liquid shading + wavy meniscus
+    if(st==='liquid'||st==='evap'||st==='boiling'||st==='boil'||st==='melting'){
+      ctx.save();
+      ctx.beginPath(); ctx.roundRect(bx0 + 2, by0 + 2, bw - 4, by1 - by0 - 4, [4, 4, 20, 20]); ctx.clip();
+      ctx.fillStyle = st==='melting' ? 'rgba(66,165,245,.15)' : 'rgba(38,198,218,.16)';
+      ctx.beginPath(); ctx.moveTo(bx0, by1); ctx.lineTo(bx0, surfY);
+      for(let x = bx0; x <= bx1; x += 20){
+        const amp = (st==='boiling'||st==='boil') ? 4.5 : 2;
+        ctx.lineTo(x, surfY + Math.sin(x*0.04 + tick*0.12)*amp);
+      }
+      ctx.lineTo(bx1, by1); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#0288d1'; ctx.lineWidth = 2.5; ctx.stroke();
+      ctx.restore();
+    }
+    // Rising steam bubbles during boiling
+    if(st==='boiling'||st==='boil'){
+      bubbles.forEach(b => {
+        ctx.beginPath(); ctx.arc(b.x + Math.sin(tick*0.14 + b.y*0.08)*4, b.y, b.rad, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,255,255,.82)'; ctx.fill();
+        ctx.strokeStyle = '#0277bd'; ctx.lineWidth = 2; ctx.stroke();
+      });
+    }
+    // Particles
+    P.forEach(p => {
+      const isHot = p.esc || st === 'gas';
+      drawSphere(p.x, p.y, r - 0.8, isHot);
     });
+    // Crisp glass beaker outline (open top unless gas)
+    ctx.strokeStyle = '#111'; ctx.lineWidth = 5.5; ctx.lineCap = 'round';
+    ctx.beginPath();
+    if(st === 'gas'){
+      ctx.roundRect(bx0, by0, bw, by1 - by0, [10, 10, 22, 22]);
+    } else {
+      ctx.moveTo(bx0 - 10, by0); ctx.lineTo(bx0, by0 + 8);
+      ctx.lineTo(bx0, by1 - 22); ctx.quadraticCurveTo(bx0, by1, bx0 + 22, by1);
+      ctx.lineTo(bx1 - 22, by1); ctx.quadraticCurveTo(bx1, by1, bx1, by1 - 22);
+      ctx.lineTo(bx1, by0 + 8); ctx.lineTo(bx1 + 10, by0);
+    }
+    ctx.stroke();
+    // Subtle beaker graduation lines on right glass wall
+    ctx.strokeStyle = 'rgba(17,17,17,.28)'; ctx.lineWidth = 2.5;
+    for(let g=1; g<=4; g++){
+      const gy = by1 - g*52;
+      ctx.beginPath(); ctx.moveTo(bx1 - (g%2?22:14), gy); ctx.lineTo(bx1 - 4, gy); ctx.stroke();
+    }
+    // Top status pill inside frame
+    const badge = st==='melting' ? 'Ice lattice + liquid water at 0 °C'
+      : (st==='boiling'||st==='boil') ? 'Bubbles throughout liquid at 100 °C'
+      : st==='evap' ? 'Surface escape only (<100 °C)'
+      : st==='gas' ? 'Fast random collisions'
+      : st==='solid' ? 'Fixed regular lattice'
+      : 'Touching, sliding freely';
+    ctx.fillStyle = '#111'; ctx.font = '800 20px Barlow,Arial,sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(badge, (bx0 + bx1)/2, 34);
+    drawThermometer();
+    drawBurner();
   }
   let vis=true; const io=new IntersectionObserver(es=>{vis=es[0].isIntersecting;}); io.observe(cv);
   (function loop(){ if(vis&&cv.offsetParent!==null){ step(); draw(); } requestAnimationFrame(loop); })();

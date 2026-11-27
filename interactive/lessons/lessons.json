@@ -15,7 +15,7 @@
               "title": "Living organisms (1a characteristics, 1b variety)",
               "spec": "1.1–1.4",
               "status": "draft",
-              "draftUpdated": "2026-11-26",
+              "draftUpdated": "2026-11-27",
               "versions": [
                 "2026-11-23",
                 "2026-11-26"
@@ -200,7 +200,7 @@
               "spec": "1.1–1.4",
               "status": "draft",
               "split": true,
-              "draftUpdated": "2026-11-26",
+              "draftUpdated": "2026-11-27",
               "versions": [],
               "studentStatus": "draft"
             },
@@ -230,7 +230,7 @@
               "spec": "1.37–1.43",
               "status": "draft",
               "split": true,
-              "draftUpdated": "2026-11-26",
+              "draftUpdated": "2026-11-27",
               "versions": [
                 "2026-11-18",
                 "2026-11-22",
@@ -242,12 +242,13 @@
               "code": "1g",
               "title": "Covalent bonding",
               "spec": "1.44–1.51",
-              "status": "draft",
+              "status": "checked",
               "split": true,
               "draftUpdated": "2026-11-26",
               "versions": [
                 "2026-11-26",
-                "2026-11-26-2"
+                "2026-11-26-2",
+                "2026-11-27"
               ],
               "studentStatus": "checked"
             }
