@@ -499,6 +499,16 @@ body.mode-all .step-foot{display:none}
 
 .credit{font-size:12px;color:#666;margin-top:12px}
 
+/* ---------- Example-Problem Pair (Craig Barton Variation Theory, 27 Nov 2026) ---------- */
+.ep-pair{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:680px){.ep-pair{grid-template-columns:1fr}}
+.ep-ex,.ep-try{background:#fff;border:2px solid #111;border-radius:8px;padding:14px 16px}
+.ep-ex{border-top:6px solid var(--green)}
+.ep-try{border-top:6px solid #d08000;background:#fffdf5}
+.ep-pair .ep-h{font:900 18px/1.1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin-bottom:8px}
+.ep-ex .ep-h{color:var(--green)}.ep-try .ep-h{color:#a85d00}
+.ep-pair .ep-chg{background:#fef08a;padding:0 5px;border-radius:4px;font-weight:700}
+
 /* ---------- print: always print all steps cleanly ---------- */
 @media print{
   .study-nav,.step-foot,.micro-check button,.dq-bar{display:none!important}

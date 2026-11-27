@@ -72,7 +72,8 @@ function header(){
   if(nav){
     if(!nav.querySelector('a[href="/"]')) nav.insertAdjacentHTML('afterbegin', `<a href="/" title="Cakebread Science home">🏠 Home</a>`);
     const badge = st === 'checked' ? '' : `<span class="status draft">Under review</span>`;
-    nav.insertAdjacentHTML('beforeend', badge + `<button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
+    const ex = body.dataset.topic ? '&exclude=' + encodeURIComponent(body.dataset.topic.replace(/^[a-z]/i, c => c.toUpperCase()).replace('/', '')) : '';
+    nav.insertAdjacentHTML('beforeend', badge + `<a class="pbtn2" style="background:#facc15;color:#111;text-decoration:none;border:2px solid #111" href="/interactive/spec-quiz/quiz.html?warmup=1${ex}" target="_blank" title="5 quick easy recall questions from topics covered before">🔥 Brain Warm-Up</a><button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
   }
   const toc = $('.lhead .toc');
   if(toc && !toc.children.length){
@@ -136,7 +137,7 @@ function deck(){
   });
   const root = document.createElement('div'); root.id = 'deck';
   root.innerHTML = `<div id="stageWrap"><div id="stage"></div></div>
-   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, fully revealed (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button id="dExit" title="Esc">✕ Exit</button></div>
+   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, fully revealed (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dWarmup" title="5 quick recall questions from topics covered before">🔥 Warm-Up</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button id="dExit" title="Esc">✕ Exit</button></div>
    <div id="black"></div><div id="overview"><div class="ovhead"><b>All slides</b><span>Click a slide to jump to it · Esc to close</span><button id="ovClose">✕ Close</button></div><div class="ovgrid"></div></div>`;
   document.body.appendChild(root);
   const stage = $('#stage');
@@ -192,6 +193,10 @@ function deck(){
   const hb = $('#hdrPresent'); if(hb) hb.onclick = enter;
   $('#dNext').onclick = next; $('#dPrev').onclick = prev;
   $('#dNextS').onclick = nextSlide; $('#dPrevS').onclick = prevSlide; $('#dAll').onclick = () => ovOpen() ? ovClose() : overview(); $('#ovClose').onclick = ovClose; $('#dExit').onclick = exit; $('#dFull').onclick = full;
+  $('#dWarmup').onclick = () => {
+    const ex = body.dataset.topic ? '&exclude=' + encodeURIComponent(body.dataset.topic.replace(/^[a-z]/i, c => c.toUpperCase()).replace('/', '')) : '';
+    window.open('/interactive/spec-quiz/quiz.html?warmup=1' + ex, '_blank');
+  };
   const blk = $('#black'); $('#dBlack').onclick = () => blk.classList.toggle('on'); blk.onclick = () => blk.classList.remove('on');
   stage.addEventListener('click', e => {
     if(e.target.closest('button,input,select,a,canvas,.nonav')) return;
@@ -216,7 +221,10 @@ function deck(){
   let mt; addEventListener('mousemove', () => { body.classList.add('mouse'); clearTimeout(mt); mt = setTimeout(()=>body.classList.remove('mouse'), 1500); });
   addEventListener('resize', () => { if(isP()) fit(); if(ovOpen()) ovScale(); });
   deckApi = L.deck = { show, next, prev, nextSlide, prevSlide, overview, enter, exit, count: ps.length, get cur(){ return cur; } };
-  if(location.hash === '#present') enter();
+  const hStr = location.hash || '', qSlide = new URLSearchParams(location.search).get('slide');
+  const hSlide = (hStr.match(/slide=(\d+)/i) || [])[1] || qSlide;
+  if (hSlide && +hSlide >= 1) cur = Math.min(ps.length - 1, +hSlide - 1);
+  if (/^#present\b/i.test(hStr) || hSlide) enter();
 }
 
 /* ---------- checked versions: point to a newer one if it exists ---------- */

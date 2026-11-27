@@ -173,6 +173,7 @@ tr.overdue td{background:#fef2f2}tr.overdue:hover td{background:#fee2e2}
 <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
 <script src="/js/school.js"></script>
 <script src="/js/spec-index.js"></script>
+<script src="/js/lesson-slides.js"></script>
 <script src="/admin/review-lib.js"></script>
 <script>
 /* Admin console (rebuilt 10 Nov 2026): the whole site + Breadventure Land. Reads Firestore users/*, specProgress/*,
@@ -213,7 +214,11 @@ $('tabs').onclick = e => { const b = e.target.closest('[data-t]'); if (!b) retur
 window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h && $('p-' + h)) show(h); });
 function show(t) { if (t === 'boards') t = 'games';   // Leaderboards live inside Games now (23 Nov)
   document.querySelectorAll('#tabs [data-t]').forEach(b => b.classList.toggle('on', b.dataset.t === t)); document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + t || p.dataset.in === t)); try { history.replaceState(null, '', '#' + t); } catch (e) {} }
-document.addEventListener('click', e => { if (e.target.closest('[data-reload]')) load(); const g = e.target.closest('[data-go]'); if (g) show(g.dataset.go); });
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-reload]')) load();
+  if (e.target.closest('#ovRadar')) { e.preventDefault(); TCH.y = 'radar'; show('teach'); drawTeach(); return; }
+  const g = e.target.closest('[data-go]'); if (g) show(g.dataset.go);
+});
 
 /* ---------- load everything ---------- */
 async function load() {
@@ -238,7 +243,7 @@ async function load() {
     const day = d => ({ m: (game.days || {})[d] || 0, c: ((game.cd || {})[d] || {}).n || 0 });
     const st = a ? a.stats : { securedP: 0, securedQ: 0, per: { Biology: 0, Chemistry: 0, Physics: 0 } };
     students.push({
-      uid: doc.id, raw: u, prog, game, a,
+      uid: doc.id, raw: u, prog, game, a, conf: cf || null,
       name: u.displayName || u.email || doc.id, email: u.email || '', year: [8, 9, 10, 11].includes(u.year) ? u.year : 0, course: u.course === 'SA' ? 'SA' : '',
       nick: game.nick && !QE.checkName(game.nick) ? game.nick : '', badNick: game.nick && game.nick !== '-' && QE.checkName(game.nick) ? game.nick : '',
       last: times.length ? Math.max(...times) : 0,
@@ -288,7 +293,7 @@ function drawOverview() {
     <div class="card" id="buildCard"><h2>Building the site</h2><p class="muted">Counting lessons and worksheets…</p></div>
     <div class="cols">
       <div class="card"><h2>Most correct · last 7 days</h2>${top.length ? `<table>${top.map((s, i) => `<tr class="click" data-uid="${s.uid}"><td>${i + 1}</td><td>${esc(s.name)}${s.nick ? `<span class="nick">${esc(s.nick)}</span>` : ''}</td><td class="n">${s.wk}</td></tr>`).join('')}</table>` : '<p class="muted">Nobody has answered anything in the last 7 days.</p>'}</div>
-      <div class="card"><h2>Hardest questions</h2>${hard.length ? `<table>${hard.map(q => qRow(q, true)).join('')}</table><p style="margin-top:8px"><a href="#questions" data-go="questions">All questions →</a></p>` : '<p class="muted">Not enough answers yet (needs 3+ on a question).</p>'}</div>
+      <div class="card"><h2>Hardest questions</h2>${hard.length ? `<table>${hard.map(q => qRow(q, true)).join('')}</table><p style="margin-top:8px;display:flex;gap:14px;flex-wrap:wrap"><a href="#questions" data-go="questions">All questions →</a><a href="#teach" id="ovRadar">🎯 Open Misconception Radar →</a></p>` : '<p class="muted">Not enough answers yet (needs 3+ on a question).</p>'}</div>
       <div class="card links"><h2>Quick links</h2>
         <a href="/test.html">Test page</a><a href="https://github.com/JCulkin/Cakebreadscience/pulls">Next release (open pull request → its preview)</a>
         <a href="/interactive/spec-quiz/reports.html">Question reports</a><a href="/leaderboards/">Leaderboards (student view)</a>
@@ -986,7 +991,7 @@ function drawGames(msg) {
 }
 
 /* ---------- Teaching (17 Nov 2026): what each year has been taught, and work set for a year (js/school.js) ---------- */
-const TCH = { y: 10, data: null, form: false, showArch: false, overdueOnly: false, err: '' };
+const TCH = { y: 10, data: null, form: false, prefill: null, showArch: false, overdueOnly: false, err: '', radar: { grp: '10', days: 14, subj: '', showConf: true } };
 async function loadTeach() {
   try { TCH.data = await CBSSchool.load(RT); TCH.err = ''; } catch (e) { TCH.data = { taught: {}, assign: {} }; TCH.err = e.code || e.message; }
   /* practise work set before 18 Nov has no pts/need, which the students' "To do !" check needs: add them once */
@@ -1005,7 +1010,105 @@ function teachBar(y) {
   return `<div class="toolbar">${CBSSchool.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
     <button class="btn ${y === 'all' ? '' : 'alt'} sm" data-ty="all">All years · taught</button>
     <button class="btn ${y === 'work' ? '' : 'alt'} sm" data-ty="work">All set work</button>
+    <button class="btn ${y === 'radar' ? '' : 'alt'} sm" data-ty="radar" style="${y === 'radar' ? '' : 'background:#fef3c7;color:#111'}">🎯 Misconception Radar</button>
     <span class="small muted">${D.students.filter(s => !s.year).length} student${D.students.filter(s => !s.year).length === 1 ? ' hasn\'t' : 's haven\'t'} chosen a year, so they don't see work set by year: add them by name on a piece of work (✏️ Edit), or set their year in the Students tab.</span></div>`;
+}
+/* Teaching-ready Misconception & Reteach Radar (27 Nov 2026): groups student misses + over-confident blind spots by year/KS and spec point,
+   linking directly to the exact Class Slide (js/lesson-slides.js), a 5-question board reteach quiz, or 2-day spaced homework. */
+function drawTeachRadar() {
+  const el = $('p-teach'), S = CBSSchool, R = TCH.radar;
+  const SL = window.LESSON_SLIDES || { byPt: {}, bySub: {} };
+  const inGrp = s => R.grp === 'all' ? true : R.grp === 'ks3' ? (s.year === 8 || s.year === 9) : R.grp === 'ks4' ? (s.year === 10 || s.year === 11) : s.year === +R.grp;
+  const kids = D.students.filter(s => s.used && inGrp(s));
+  const cut = R.days > 0 ? dstr(Date.now() - R.days * DAY) : '';
+  const byPt = {};
+  const ensure = k => byPt[k] || (byPt[k] = { k, n: 0, r: 0, miss: 0, whoMiss: new Set(), overConf: new Set(), qs: {} });
+  kids.forEach(s => {
+    const pq = (s.prog && s.prog.q) || {};
+    Object.entries(pq).forEach(([qid, x]) => {
+      const q = QBYID[qid]; if (!q || !q.s) return;
+      if (R.subj && q.s[0] !== R.subj) return;
+      if (cut && x.l && x.l < cut && !(s.prog.weak && s.prog.weak[q.s] && s.prog.weak[q.s] >= cut)) return;
+      const attempts = x.n || 0, right = x.r || 0, missed = Math.max(0, attempts - right);
+      if (!attempts) return;
+      const b = ensure(q.s);
+      b.n += attempts; b.r += right; b.miss += missed;
+      if (missed > 0) {
+        b.whoMiss.add(s.uid);
+        const qb = b.qs[qid] || (b.qs[qid] = { id: qid, miss: 0, n: 0, r: 0 });
+        qb.miss += missed; qb.n += attempts; qb.r += right;
+      }
+    });
+    if (R.showConf && s.conf) {
+      Object.entries(s.conf).forEach(([pk, v]) => {
+        if (v !== 3 || !QE.POINT_QS[pk]) return;
+        if (R.subj && pk[0] !== R.subj) return;
+        const ps = s.a && s.a.points && s.a.points[pk];
+        if (ps && ps.secured) return;
+        ensure(pk).overConf.add(s.uid);
+      });
+    }
+  });
+  const rows = Object.values(byPt)
+    .filter(b => b.miss > 0 || (R.showConf && b.overConf.size > 0))
+    .map(b => {
+      const pct = b.n ? Math.round(b.r / b.n * 100) : null;
+      const topQ = Object.values(b.qs).sort((a, c) => c.miss - a.miss)[0] || null;
+      const prio = b.whoMiss.size * 3.5 + (pct != null ? (100 - pct) / 14 : 0) + b.overConf.size * 2.5 + Math.min(b.miss, 20) * 0.25;
+      return Object.assign(b, { pct, topQ, prio });
+    })
+    .sort((a, c) => c.prio - a.prio)
+    .slice(0, 35);
+
+  const grpLabel = R.grp === 'all' ? 'All years' : R.grp === 'ks3' ? 'KS3 (Y8–9)' : R.grp === 'ks4' ? 'KS4 (Y10–11)' : 'Year ' + R.grp;
+  const hwYear = ['8', '9', '10', '11'].includes(R.grp) ? +R.grp : R.grp === 'ks3' ? 8 : 10;
+  const rowHtml = b => {
+    const pt = S.POINT[b.k] || { id: b.k.slice(1), text: '', sub: '' };
+    const sub = pt.sub && S.SUBS[pt.sub];
+    const sl = SL.byPt[b.k] || (pt.sub && SL.bySub[pt.sub] ? { url: SL.bySub[pt.sub].url, n: 1, title: SL.bySub[pt.sub].title } : null);
+    const qObj = b.topQ && QBYID[b.topQ.id];
+    const qSnip = qObj ? esc(strip(qObj.q || '(calculation / diagram)')).slice(0, 120) : '';
+    const slideBtn = sl
+      ? `<a class="btn sm" style="background:#005e22;border-color:#005e22;color:#fff" href="${esc(sl.url)}#present&amp;slide=${sl.n}" target="_blank" title="Open projector deck directly on Slide ${sl.n}: ${esc(sl.title)}">🎬 Slide ${sl.n}: ${esc((sl.title || 'Open deck').slice(0, 26))}</a>`
+      : `<span class="small muted">No slide deck yet</span>`;
+    return `<tr>
+      <td><span class="subj ${b.k[0]}"><b>${esc(b.k)}</b></span>${sub ? `<div class="small muted">${esc(sub.key.slice(1))} ${esc(sub.name)}</div>` : ''}</td>
+      <td><div>${esc(strip(pt.text)).slice(0, 130)}${strip(pt.text).length > 130 ? '…' : ''}</div>
+        ${qSnip ? `<div class="small muted" style="margin-top:3px"><b>Most missed:</b> ${qSnip} (${b.topQ.r}/${b.topQ.n} right)</div>` : ''}</td>
+      <td class="n">${b.pct != null ? `<span class="pct ${b.pct < 55 ? 'low' : ''}">${b.pct}%</span><div class="small muted">${b.r}/${b.n}</div>` : '<span class="muted">—</span>'}</td>
+      <td class="n">${b.whoMiss.size ? `<b>${b.whoMiss.size}</b> missed` : '<span class="muted">0</span>'}${b.overConf.size ? `<div style="margin-top:3px"><span class="tag amber" title="Rated Confident on Spec Tracker without 2-day proof">⚠️ ${b.overConf.size} over-confident</span></div>` : ''}</td>
+      <td><div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">${slideBtn}
+        <a class="btn alt sm" href="/interactive/spec-quiz/quiz.html?subs=${encodeURIComponent(b.k)}&amp;n=5&amp;auto=1" target="_blank" title="Launch a 5-question board reteach quiz on ${esc(b.k)}">⚡ Reteach 5-Q</a>
+        <button class="btn alt sm" data-rhw="${esc(pt.sub || b.k)}" data-rtitle="${esc((sub ? sub.name : b.k) + ' reteach')}">📌 Set 2-day HW</button>
+      </div></td>
+    </tr>`;
+  };
+
+  el.innerHTML = teachBar('radar')
+    + `<div class="card">
+        <h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">🎯 Misconception &amp; Reteach Radar <span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">Pick a year group to see where students are stumbling and jump straight to the exact Class Slide to reteach it.</span></h2>
+        <div class="toolbar" style="margin-top:10px">
+          <select id="rGrp"><option value="8"${R.grp === '8' ? ' selected' : ''}>Year 8</option><option value="9"${R.grp === '9' ? ' selected' : ''}>Year 9</option><option value="10"${R.grp === '10' ? ' selected' : ''}>Year 10</option><option value="11"${R.grp === '11' ? ' selected' : ''}>Year 11</option><option value="ks3"${R.grp === 'ks3' ? ' selected' : ''}>KS3 (Years 8–9)</option><option value="ks4"${R.grp === 'ks4' ? ' selected' : ''}>KS4 (Years 10–11)</option><option value="all"${R.grp === 'all' ? ' selected' : ''}>All years</option></select>
+          <select id="rDays"><option value="14"${R.days === 14 ? ' selected' : ''}>Active in last 14 days</option><option value="30"${R.days === 30 ? ' selected' : ''}>Active in last 30 days</option><option value="0"${R.days === 0 ? ' selected' : ''}>All time</option></select>
+          <select id="rSubj"><option value=""${!R.subj ? ' selected' : ''}>All sciences</option><option value="B"${R.subj === 'B' ? ' selected' : ''}>Biology</option><option value="C"${R.subj === 'C' ? ' selected' : ''}>Chemistry</option><option value="P"${R.subj === 'P' ? ' selected' : ''}>Physics</option></select>
+          <label class="small"><input type="checkbox" id="rConf"${R.showConf ? ' checked' : ''}> Include over-confident blind spots</label>
+          <a class="btn sm" style="margin-left:auto;background:#facc15;color:#111" href="/interactive/spec-quiz/quiz.html?warmup=1&amp;year=Y${hwYear}" target="_blank">🔥 Brain Warm-Up (Y${hwYear}) ↗</a>
+        </div>
+        <p class="small muted" style="margin-bottom:10px">Showing <b>${rows.length}</b> priority spec point${rows.length === 1 ? '' : 's'} across <b>${kids.length}</b> active student${kids.length === 1 ? '' : 's'} in <b>${esc(grpLabel)}</b>. Ranked by students struggling + low % right + over-confident tracker ratings.</p>
+        ${rows.length ? `<div class="wrapx"><table><thead><tr><th>Spec</th><th>Point &amp; top missed question</th><th class="n">% right</th><th class="n">Students</th><th>Teach from board</th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table></div>` : `<p class="muted">No recorded misses or over-confident blind spots for ${esc(grpLabel)} in this window yet.</p>`}
+      </div>`;
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  $('rGrp').onchange = e => { R.grp = e.target.value; drawTeachRadar(); };
+  $('rDays').onchange = e => { R.days = +e.target.value; drawTeachRadar(); };
+  $('rSubj').onchange = e => { R.subj = e.target.value; drawTeachRadar(); };
+  $('rConf').onchange = e => { R.showConf = e.target.checked; drawTeachRadar(); };
+  el.querySelectorAll('[data-rhw]').forEach(b => b.onclick = () => {
+    TCH.y = hwYear;
+    TCH.prefill = { title: b.dataset.rtitle || 'Reteach mission', items: [b.dataset.rhw] };
+    TCH.form = true;
+    drawTeach();
+    setTimeout(() => $('aForm') && $('aForm').scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  });
 }
 /* "All years" (user, 17 Nov): every sub-topic × Year 8–11 tick boxes in one table, to compare and fill in everyone at once */
 function drawTeachAll(msg) {
@@ -1030,7 +1133,7 @@ function drawTeachAll(msg) {
     + `<div class="card"><h2>Taught in class · all years</h2><p class="small muted">Tick what each year has done in lessons; students see these as "Covered in class" on To do. The last column ticks or unticks a sub-topic for every year.</p>
       <div class="wrapx"><table class="tall"><thead><tr><th>Sub-topic</th>${YS.map(y => `<th class="c">Year ${y}<div class="small">${cnt(y)}/${all.length}</div></th>`).join('')}<th class="c">All</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   el.querySelectorAll('[data-mixed]').forEach(c => c.indeterminate = true);
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
   const keepScroll = f => async () => { const y0 = scrollY; await f(); scrollTo(0, y0); };
   el.querySelectorAll('[data-ty2]').forEach(c => c.onchange = keepScroll(async () => { const Y = 'Y' + c.dataset.ty2, k = c.dataset.k;
     try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (T[Y] = T[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (T[Y]) delete T[Y][k]; } drawTeachAll(); }
@@ -1041,6 +1144,7 @@ function drawTeachAll(msg) {
     catch (e) { drawTeachAll('Could not save: ' + (e.code || e.message)); } }));
 }
 function drawTeach(msg) {
+  if (TCH.y === 'radar' && TCH.data) return drawTeachRadar();
   if (TCH.y === 'all' && TCH.data) return drawTeachAll(msg);
   const el = $('p-teach'), S = CBSSchool, ALLW = TCH.y === 'work', y = ALLW ? 0 : TCH.y, Y = 'Y' + y, d = TCH.data;
   if (!d) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
@@ -1134,7 +1238,7 @@ function drawTeach(msg) {
       <div class="acts"><a class="btn alt sm" href="/work/?id=${a.id}" target="_blank">Preview</a><button class="btn alt sm" data-aedit="${a.id}">✏️ Edit</button><button class="btn alt sm" data-arch="${a.id}">${a.archived ? 'Unarchive' : 'Archive'}</button><button class="btn warn sm" data-adel="${a.id}">Delete</button></div></div>`; };
   /* the set-work form: new (TCH.form === true) or editing (TCH.form = its id) — 18 Nov, user: "edit the assignments after they're set,
      like date due and content and which students" */
-  const ED = TCH.form && TCH.form !== true ? Object.assign({ id: TCH.form }, d.assign[TCH.form]) : null, F = ED || {};
+  const ED = TCH.form && TCH.form !== true ? Object.assign({ id: TCH.form }, d.assign[TCH.form]) : null, F = ED || TCH.prefill || {};
   const fType = ED ? (S.isTest(ED) ? 'test' : S.isSpaced(ED) ? 'spaced' : 'practise') : 'spaced';
   const isT = fType === 'test', isS = fType === 'spaced';
   const pickedSubs = (F.items || []).filter(k => !S.isPoint(k)), pickedPts = (F.items || []).filter(k => S.isPoint(k));
@@ -1171,20 +1275,20 @@ function drawTeach(msg) {
       <div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}${hwSummary}
         ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set for Year ${y}.</p></div>`}</div></div>`);
   const fail = e => drawTeach('Could not save: ' + (e.code || e.message));
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
   if ($('tOverOnly')) $('tOverOnly').onchange = e => { TCH.overdueOnly = e.target.checked; drawTeach(); };
   el.querySelectorAll('[data-taught]').forEach(c => c.onchange = async () => { const k = c.dataset.taught;
     try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (d.taught[Y] = d.taught[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (d.taught[Y]) delete d.taught[Y][k]; } drawTeach(); } catch (e) { fail(e); } });
   if ($('tCopy')) $('tCopy').onchange = async e => { const from = e.target.value; if (!from) return; const src = d.taught['Y' + from] || {}, upd = {};
     Object.keys(src).forEach(k => { if (!taught[k]) upd[k] = src[k]; });
     try { if (Object.keys(upd).length) await RT.ref('school/taught/' + Y).update(upd); d.taught[Y] = Object.assign({}, taught, upd); drawTeach(`Copied ${Object.keys(upd).length} ticks from Year ${from}.`); } catch (err) { fail(err); } };
-  $('aNew').onclick = () => { TCH.form = true; drawTeach(); };
-  el.querySelectorAll('[data-aedit]').forEach(b => b.onclick = () => { TCH.form = b.dataset.aedit; drawTeach(); setTimeout(() => $('aForm') && $('aForm').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); });
+  $('aNew').onclick = () => { TCH.prefill = null; TCH.form = true; drawTeach(); };
+  el.querySelectorAll('[data-aedit]').forEach(b => b.onclick = () => { TCH.prefill = null; TCH.form = b.dataset.aedit; drawTeach(); setTimeout(() => $('aForm') && $('aForm').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50); });
   $('aArch').onchange = e => { TCH.showArch = e.target.checked; drawTeach(); };
   el.querySelectorAll('[data-arch]').forEach(b => b.onclick = async () => { const a = d.assign[b.dataset.arch]; try { await RT.ref('school/assign/' + b.dataset.arch + '/archived').set(!a.archived); a.archived = !a.archived; computeHomework(); drawStudents(); drawTeach(); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-adel]').forEach(b => b.onclick = async () => { if (!confirm('Delete this work? Students\' answers are kept; only the task goes.')) return; try { await RT.ref('school/assign/' + b.dataset.adel).remove(); delete d.assign[b.dataset.adel]; computeHomework(); drawStudents(); drawTeach('Deleted.'); } catch (e) { fail(e); } });
   if (TCH.form) {
-    $('aCancel').onclick = () => { TCH.form = false; drawTeach(); };
+    $('aCancel').onclick = () => { TCH.prefill = null; TCH.form = false; drawTeach(); };
     el.querySelectorAll('[name="aType"]').forEach(r => r.onchange = () => {
       const v = (el.querySelector('[name="aType"]:checked') || {}).value || 'spaced';
       $('aTargetLbl').textContent = v === 'spaced' ? 'Questions per mission' : v === 'test' ? 'Number of questions' : 'Questions to get right';
@@ -1224,7 +1328,7 @@ function drawTeach(msg) {
       try {
         if (ED) { await RT.ref('school/assign/' + ED.id).set(a); d.assign[ED.id] = a; }
         else { const r = RT.ref('school/assign').push(); await r.set(a); d.assign[r.key] = a; }
-        TCH.form = false; computeHomework(); drawStudents(); drawTeach((ED ? 'Saved changes. ' : '') + 'For ' + forTxt(a) + '.');
+        TCH.prefill = null; TCH.form = false; computeHomework(); drawStudents(); drawTeach((ED ? 'Saved changes. ' : '') + 'For ' + forTxt(a) + '.');
       } catch (e) { m('Could not save: ' + (e.code || e.message)); }
     };
   }

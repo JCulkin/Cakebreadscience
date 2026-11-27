@@ -1152,6 +1152,7 @@
         <a href="/today/" class="top-btn link">✅ To do</a>
         <a href="/interactive/spec-quiz/practice.html" class="top-btn link">📝 Practice Questions</a>
         <span class="sp"></span>
+        <button type="button" class="top-btn" onclick="openFamilyQuiz()" title="10 big tap-to-reveal cards so someone at home can quiz you (zero science knowledge needed)">👨‍👩‍👧 Family Quiz</button>
         <button type="button" class="top-btn" onclick="openGuide()">📖 Guide</button>
         <button type="button" class="top-btn" onclick="openProgress()">📊 Progress</button>
         <button type="button" class="top-btn" onclick="openSettings()">⚙️ Settings</button>
@@ -1321,6 +1322,22 @@
           <div id="deckBars"></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Family Quiz Modal (EEF Working with Parents, 27 Nov 2026) -->
+  <div id="family-screen" class="modal-backdrop" onclick="if(event.target===this)closeFamilyQuiz()">
+    <div class="modal-panel wide">
+      <div class="modal-head">
+        <h2>👨‍👩‍👧 Family Quiz Mode</h2>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button type="button" class="btn sm" onclick="renderFamilyQuiz()">↻ New 10 cards</button>
+          <button type="button" class="btn alt sm" onclick="printFamilyQuiz()">🖨️ Print strip</button>
+          <button type="button" class="btn alt sm" onclick="closeFamilyQuiz()">Close</button>
+        </div>
+      </div>
+      <p style="font-size:14.5px;background:#f0fdf4;border:1.5px solid #15803d;border-left:5px solid #15803d;padding:9px 12px;margin-bottom:12px;color:#111;line-height:1.45"><b>How it works (no GCSE science knowledge needed):</b> Hand your phone or printed strip to someone at home. They read each question aloud; you answer out loud; they tap to reveal the answer and check whether you included the <b>bold key words</b>.</p>
+      <div id="familyCards" style="display:grid;gap:10px;max-height:64vh;overflow:auto"></div>
     </div>
   </div>
 
@@ -2895,6 +2912,52 @@
         }
       });
     })();
+
+    /* Family Quiz Mode (27 Nov 2026): 10 due/covered cards with tap-to-reveal + print strip */
+    let _familyList = [];
+    function openFamilyQuiz() {
+      const m = document.getElementById('family-screen');
+      if (!m) return;
+      m.classList.add('active');
+      renderFamilyQuiz();
+    }
+    function closeFamilyQuiz() {
+      const m = document.getElementById('family-screen');
+      if (m) m.classList.remove('active');
+    }
+    function renderFamilyQuiz() {
+      const box = document.getElementById('familyCards');
+      if (!box) return;
+      const core = ['biology', 'chemistry', 'physics'];
+      let pool = [];
+      core.forEach(d => { try { pool.push(...getDueCardsForDeck(d, true)); } catch (e) {} });
+      if (pool.length < 10) {
+        const seen = new Set(pool.map(c => c.deck + '_' + c.id));
+        core.forEach(d => {
+          (activeCards(d) || []).forEach(c => { const k = d + '_' + c.id; if (!seen.has(k)) { seen.add(k); pool.push(c); } });
+        });
+      }
+      _familyList = shuffle(pool).slice(0, 10);
+      if (!_familyList.length) { box.innerHTML = '<p style="color:#666">No flashcards loaded yet — wait a second and tap New 10 cards.</p>'; return; }
+      box.innerHTML = _familyList.map((c, idx) => {
+        const meta = DECK_META[c.deck] || { name: 'Science', color: '#111' };
+        return `<div style="background:#fff;border:2px solid #111;border-left:7px solid ${meta.color};padding:11px 13px;border-radius:4px">
+          <div style="font-size:12px;font-weight:800;text-transform:uppercase;color:${meta.color};margin-bottom:4px">Q${idx + 1} · ${esc(meta.name)}${c.spec ? ' ' + esc(c.spec) : ''}</div>
+          <div style="font-size:16px;font-weight:700;line-height:1.4">${c.front}</div>
+          <details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;font-size:14px;color:#005e22">Tap to show answer &amp; bold key words ▾</summary>
+            <div style="margin-top:6px;padding:8px 10px;background:#f6f4ee;border-radius:4px;font-size:15px;line-height:1.45">${c.back}</div>
+          </details>
+        </div>`;
+      }).join('');
+    }
+    function printFamilyQuiz() {
+      if (!_familyList.length) return;
+      const w = window.open('', '_blank', 'width=820,height=900');
+      if (!w) return;
+      const rows = _familyList.map((c, i) => `<tr><td style="width:28px;font-weight:700">${i + 1}</td><td style="width:46%"><b>${(DECK_META[c.deck] || {}).name || ''} ${c.spec || ''}</b><br>${c.front}</td><td>${c.back}</td></tr>`).join('');
+      w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Family Quiz Strip — Cakebread Science</title><style>body{font-family:Barlow,Arial,sans-serif;color:#111;margin:14mm;font-size:11pt}h1{font-size:18pt;margin:0 0 4px}p{font-size:10pt;color:#444;margin:0 0 10px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #888;padding:6px 8px;vertical-align:top;text-align:left}th{background:#eee}img{max-height:70px}@media print{body{margin:8mm}}</style></head><body><h1>Cakebread Science — 5-Minute Family Quiz</h1><p>Read the question aloud; fold or cover the Answer column and check whether they include the <b>bold key words</b>.</p><table><thead><tr><th>#</th><th>Question</th><th>Answer (check bold words)</th></tr></thead><tbody>${rows}</tbody></table><script>window.onload=function(){window.print();}<\/script></body></html>`);
+      w.document.close();
+    }
   </script>
   </body>
 </html>

@@ -195,6 +195,20 @@ const foeOf = sub => { const m = MISCON[sub.key] || { n: 'The Common Misconcepti
   return Object.assign({ name: m.n, shape: m.s, col: SCI_COL[sub.L], img: ADV.icon(ADV.ICONS[m.s] ? m.s : 'boss', SCI_COL[sub.L]) }, m); };
 const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
+function calcFbHtml(q, ok) {
+  const raw = nuc(q.x || '');
+  if (ok || (!q.gen && !/-g\d+$/.test(q.id || ''))) return raw;
+  const parts = raw.split(/\s*=\s*/);
+  if (parts.length < 3) return raw;
+  const formula = parts.slice(0, parts.length - 2).join(' = ');
+  const sub = parts[parts.length - 2];
+  const ans = parts[parts.length - 1];
+  return `<div style="margin-top:6px;background:#fff;border:1.5px solid #d8d3c4;border-left:5px solid #d08000;padding:8px 11px;border-radius:4px;font-size:14.5px;line-height:1.5">
+    <div><b style="color:#a85d00;text-transform:uppercase;font-size:12px;letter-spacing:.5px">1. Formula:</b> ${formula}</div>
+    <div><b style="color:#a85d00;text-transform:uppercase;font-size:12px;letter-spacing:.5px">2. Substitute:</b> = ${sub}</div>
+    <div><b style="color:#005e22;text-transform:uppercase;font-size:12px;letter-spacing:.5px">3. Answer:</b> = ${ans}</div>
+  </div>`;
+}
 const HW_ID = new URLSearchParams(location.search).get('hw') || '';
 const HW = { id: HW_ID, a: null, spaced: null, loaded: false };
 async function loadHw() {
@@ -339,7 +353,7 @@ $('opts').addEventListener('click', e => {
     ar.classList.add('ouch');
     { const ws = MS.foe.w.concat([`See? ${MS.foe.name}!`]); $('quote').textContent = `“${ws[MS.nw++ % ws.length]}”`; }
   }
-  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><img class="face" src="${ADV.face(ok ? (q.hard ? 'laugh' : 'happy') : 'worried')}" alt=""><span class="t">${ok ? (again ? `Corrected — ${q.tf !== undefined ? 'quarter of' : 'half'} a hit!` : 'Right — hit!') : again ? 'Still not quite.' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><img class="face" src="${ADV.face(ok ? (q.hard ? 'laugh' : 'happy') : 'worried')}" alt=""><span class="t">${ok ? (again ? `Corrected — ${q.tf !== undefined ? 'quarter of' : 'half'} a hit!` : 'Right — hit!') : again ? 'Still not quite.' : 'Not quite.'}</span>${calcFbHtml(q, ok)}<div class="campnote">${notes.join(' · ')}</div></div>`;
   renderHwBar();
   const more = again ? MS.ri + 1 < MS.retry.length && MS.hp > 0 : MS.i + 1 < MS.qs.length;
   $('nextBtn').textContent = more ? 'Next →' : !again && MS.hp > 0 && MS.res.some(r => !r.ok) ? 'Second wind →' : 'Finish the fight →';

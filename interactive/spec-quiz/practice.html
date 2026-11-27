@@ -160,6 +160,21 @@ const COL = { B: '#15803d', C: '#c8001e', P: '#b45309' }, NAME = { B: 'Biology',
 const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const strip = h => String(h || '').replace(/<[^>]+>/g, '');
 const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
+/* L2/L3 calculation misses: format generator explanations into a scannable 3-step worked card (Formula → Substitute → Answer) */
+function calcFbHtml(q, ok) {
+  const raw = nuc(q.x || '');
+  if (ok || (!q.gen && !/-g\d+$/.test(q.id || ''))) return raw;
+  const parts = raw.split(/\s*=\s*/);
+  if (parts.length < 3) return raw;
+  const formula = parts.slice(0, parts.length - 2).join(' = ');
+  const sub = parts[parts.length - 2];
+  const ans = parts[parts.length - 1];
+  return `<div style="margin-top:6px;background:#fff;border:1.5px solid #d8d3c4;border-left:5px solid #d08000;padding:8px 11px;border-radius:4px;font-size:14.5px;line-height:1.5">
+    <div><b style="color:#a85d00;text-transform:uppercase;font-size:12px;letter-spacing:.5px">1. Formula:</b> ${formula}</div>
+    <div><b style="color:#a85d00;text-transform:uppercase;font-size:12px;letter-spacing:.5px">2. Substitute:</b> = ${sub}</div>
+    <div><b style="color:#005e22;text-transform:uppercase;font-size:12px;letter-spacing:.5px">3. Answer:</b> = ${ans}</div>
+  </div>`;
+}
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const PLAIN = 'cbs.plain';
 let SUBS = [], SCI = 'B', OPEN = new Set(), PS = null;
@@ -283,7 +298,7 @@ $('opts').addEventListener('click', e => {
   PS.res.push({ q, ok });
   const notes = QE.recordAnswer(q, ok).filter(n => !/XP/.test(n) || /secured/i.test(n)).map(n => n.replace(/\s*\+\d+ XP/, ''));
   renderHwBar();
-  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Correct.' : 'Not quite.'}</span>${nuc(q.x)}${notes.length ? `<div class="note">${notes.join(' · ')}</div>` : ''}</div>`;
+  $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Correct.' : 'Not quite.'}</span>${calcFbHtml(q, ok)}${notes.length ? `<div class="note">${notes.join(' · ')}</div>` : ''}</div>`;
   $('nextBtn').textContent = PS.i + 1 < PS.qs.length ? 'Next →' : 'See your results →';
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
 });

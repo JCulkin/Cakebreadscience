@@ -3,6 +3,63 @@
   "note": "Every new page, UI redesign, tool, or site-wide feature waiting for teacher review on staging MUST be listed here so it appears on /staging-review/#site before going live.",
   "items": [
     {
+      "id": "misconception-radar",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Admin Misconception & Reteach Radar → Exact Class Slide Jump",
+      "summary": "New '🎯 Misconception Radar' view in Admin → Teaching (and linked from Overview) grouped by Year 8/9/10/11 or KS3/KS4 and time window (14d / 30d / All). Surfaces struggling spec points + over-confident tracker blind spots with one-click '🎬 Slide N' jumps straight to the exact projector slide, '⚡ Reteach 5-Q' board quizzes, and '📌 Set 2-day HW' prefill.",
+      "before": "Overview only showed a flat all-time 'Hardest questions' list with no year filter or lesson slide link.",
+      "after": "Year/KS-grouped reteach dashboard indexed to exact Class Slides (js/lesson-slides.js) for immediate classroom reteaching.",
+      "previewUrl": "/admin/#teach",
+      "extraLinks": [
+        { "label": "Board Reteach example (C1.40)", "url": "/interactive/spec-quiz/quiz.html?subs=C1.40&n=5&auto=1" }
+      ]
+    },
+    {
+      "id": "brain-warmup",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "🔥 Brain Warm-Up (5-Question Covered-Topics Recall Starter)",
+      "summary": "Added a '🔥 Brain Warm-Up' button to the Class Slides projector toolbar and header (zero edits to existing slide decks). Opens 5 random easy Level-1 recall questions pulled across ANY previously covered topic for Year 8/9/10/11 (excluding the current lesson), with Year switcher pills and '↻ New 5'.",
+      "before": "No one-click whole-class retrieval starter built into Class Slides.",
+      "after": "One click from any Class Slides deck launches a 5-question cross-topic Brain Warm-Up on the board.",
+      "previewUrl": "/interactive/spec-quiz/quiz.html?warmup=1&year=Y10",
+      "extraLinks": [
+        { "label": "Try from Chem 1f Class Slides", "url": "/interactive/lessons/chemistry/1f/draft/deck.html" }
+      ]
+    },
+    {
+      "id": "family-quiz-and-home-tips",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Flashcards Family Quiz Mode & Study Guide 'At Home' Tip",
+      "summary": "Added '👨‍👩‍👧 Family Quiz' on /Flashcards/ (10 large tap-to-reveal or printable cards with a 1-line parent instruction requiring zero GCSE science knowledge) plus a 2-line 'At home (for families)' key-words quizzing tip on /guide/ Study Guides.",
+      "before": "No low-friction way for parents/carers to quiz students without knowing GCSE science.",
+      "after": "One-tap 10-card Family Quiz + printable strip on Flashcards and a concise family cue on every Study Guide.",
+      "previewUrl": "/Flashcards/",
+      "extraLinks": [
+        { "label": "Families guide on /research/", "url": "/research/#families" }
+      ]
+    },
+    {
+      "id": "dirt-calc-tracker-print-polish",
+      "category": "design",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Post-Test DIRT Button, Worked Calc Steps, Tracker Touch/Blind-Spot Polish, Print Ergonomics & Streak Grace",
+      "summary": "Added '🛠️ Fix your N missed points →' on /work/ test results (DIRT); 3-step worked Formula → Substitute → Answer card on L2/L3 calculation misses in Practice & Questing; larger mobile touch targets & unmistakable amber '⚠️ check' warning on Spec Trackers; upright .ps-spec & 1.32 line-height in print-sheet.css; side-by-side .ep-pair CSS ready for future calculation slides; and a 1-day streak grace + weekly count on Student Home.",
+      "before": "Test results had no direct missed-points repair button; calculation misses showed one inline line; small tracker buttons and italic print spec lines.",
+      "after": "Closed DIRT feedback loop, structured calculation working, BDA/WCAG-cleaner mobile trackers & print sheets, and kinder streak tracking.",
+      "previewUrl": "/today/",
+      "extraLinks": [
+        { "label": "Spec Trackers", "url": "/specifications/biology.html" },
+        { "label": "Sample Worksheet (4.5 print)", "url": "/worksheets/biology/ks4/2f_respiration.html" }
+      ]
+    },
+    {
       "id": "subject-colours",
       "category": "design",
       "status": "review",

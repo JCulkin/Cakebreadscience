@@ -297,7 +297,15 @@ function startSolo(n, lv, calc, diag) {
 }
 function soloHud() {
   const pips = SOLO.qs.map((_, i) => `<i class="${i < SOLO.res.length ? (SOLO.res[i] ? 'done' : 'miss') : i === SOLO.qi ? 'now' : ''}"></i>`).join('');
-  $('hud').innerHTML = `<div><span class="meta">Question ${SOLO.qi + 1} of ${SOLO.qs.length}</span><div class="rname">Solo</div><div class="pips">${pips}</div></div><div class="score">${SOLO.score}<small>CORRECT</small></div>`;
+  const label = SOLO.title || 'Solo';
+  const yBar = SOLO.warmup
+    ? `<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px">${['Y8', 'Y9', 'Y10', 'Y11'].map(y => `<button type="button" class="chip ${SOLO.year === y ? 'on' : ''}" data-wy="${y}" style="padding:3px 9px;font-size:13px">${y.replace('Y', 'Year ')}</button>`).join('')}<button type="button" class="chip" id="wNew5" style="padding:3px 9px;font-size:13px;background:#facc15;color:#111;border-color:#111">↻ New 5</button></div>`
+    : '';
+  $('hud').innerHTML = `<div><span class="meta">Question ${SOLO.qi + 1} of ${SOLO.qs.length}${SOLO.sub ? ' · ' + esc(SOLO.sub) : ''}</span><div class="rname">${esc(label)}</div><div class="pips">${pips}</div>${yBar}</div><div class="score">${SOLO.score}<small>CORRECT</small></div>`;
+  if (SOLO.warmup) {
+    $('hud').querySelectorAll('[data-wy]').forEach(b => b.onclick = () => launchWarmup(b.dataset.wy, SOLO.exclude));
+    const nw = $('wNew5'); if (nw) nw.onclick = () => launchWarmup(SOLO.year, SOLO.exclude);
+  }
 }
 function nextSolo() {
   SOLO.qi++;
@@ -324,9 +332,9 @@ function soloResults() {
     <h2>Results</h2><div class="bigscore">${SOLO.score} / ${n}</div>
     <p style="font-size:18px;margin-top:4px">${pct}% · ${pct === 100 ? 'Perfect!' : pct >= 80 ? 'Great work.' : pct >= 50 ? 'Good start. Revise the points below.' : 'Go back over the points below, then try again.'}</p>
     ${pts.length ? `<h3>Revise these spec points</h3><ul class="revise">${pts.map(k => { const p = POINTS[k]; return `<li style="--sc:${SUBJ_COL[p.subject]}"><b>${p.subject} ${p.id}</b>${esc(p.text)}${missed.filter(q => q.s === k).map(q => `<span class="q">✗ ${nuc(q.q)}</span>`).join('')}</li>`; }).join('')}</ul>` : ''}
-    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="tomenu">Change content</button></div>
+    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">${SOLO.warmup ? '↻ Another 5 Warm-Up questions' : 'Play again'}</button><button class="btn big alt" id="tomenu">Change content</button></div>
   </div></div>`;
-  $('again').onclick = () => startSolo(SOLO.n, SOLO.lv, SOLO.calc, SOLO.diag);
+  $('again').onclick = () => SOLO.warmup ? launchWarmup(SOLO.year, SOLO.exclude) : startSolo(SOLO.n, SOLO.lv, SOLO.calc, SOLO.diag);
   $('tomenu').onclick = menu;
   show('results');
 }
@@ -445,3 +453,77 @@ function podium() {
 }
 
 drawTree();
+
+/* ---------- Brain Warm-Up (?warmup=1) & Admin Reteach Quiz (?subs=...&n=5&auto=1) ---------- */
+const SUB_KEYS_MAP = {};
+SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => {
+  const sk = s.name[0] + t.n + sb.l;
+  SUB_KEYS_MAP[sk.toUpperCase()] = keysOfSub(sb);
+})));
+
+async function fetchTaughtFor(yearKey) {
+  try {
+    if (window.CBSNet && CBSNet.rtGet) {
+      const v = await CBSNet.rtGet('school/taught/' + yearKey, 6000);
+      if (v && typeof v === 'object') return Object.keys(v);
+    }
+    if (window.firebase && firebase.apps && firebase.apps.length && firebase.database) {
+      const snap = await Promise.race([
+        firebase.database().ref('school/taught/' + yearKey).once('value'),
+        new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 6000))
+      ]);
+      const v = snap && snap.val();
+      if (v && typeof v === 'object') return Object.keys(v);
+    }
+  } catch (e) {}
+  return [];
+}
+
+async function launchWarmup(yearKey, excludeCode) {
+  const Y = /^Y(8|9|10|11)$/.test(yearKey || '') ? yearKey : (store.get('warmupYear') || 'Y10');
+  store.set('warmupYear', Y);
+  const ex = String(excludeCode || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  let taughtSubs = await fetchTaughtFor(Y);
+  let filtered = taughtSubs.filter(sk => !ex || !sk.toUpperCase().startsWith(ex));
+  let pts = [...new Set(filtered.flatMap(sk => SUB_KEYS_MAP[sk.toUpperCase()] || []))].filter(k => QBY[k]);
+  let subNote = `${Y.replace('Y', 'Year ')} · ${filtered.length} covered topic${filtered.length === 1 ? '' : 's'} (easy recall)`;
+  if (pts.length < 5) {
+    // Fallback if year has fewer than 5 covered topics or Firebase is offline
+    pts = withQs().filter(k => !ex || !k.toUpperCase().startsWith(ex));
+    subNote = `${Y.replace('Y', 'Year ')} · mixed easy recall across all topics`;
+  }
+  SEL = new Set(pts);
+  let qs = buildQuiz(5, [1], false, false);
+  if (qs.length < 5) qs = buildQuiz(5, [1, 2], true, true);
+  SOLO = { qs, qi: -1, score: 0, res: [], n: 5, lv: [1], calc: false, diag: false, warmup: true, year: Y, exclude: excludeCode || '', title: '🔥 Brain Warm-Up', sub: subNote };
+  TEAM = null; show('play'); nextSolo();
+}
+
+(function bootUrlModes() {
+  const sp = new URLSearchParams(location.search);
+  if (sp.get('warmup') === '1') {
+    launchWarmup(sp.get('year') || '', sp.get('exclude') || '');
+    return;
+  }
+  const subsParam = sp.get('subs') || sp.get('point') || '';
+  if (subsParam) {
+    const tokens = subsParam.split(',').map(s => s.trim()).filter(Boolean);
+    const pts = [];
+    tokens.forEach(tok => {
+      if (POINTS[tok]) pts.push(tok);
+      else if (SUB_KEYS_MAP[tok.toUpperCase()]) pts.push(...SUB_KEYS_MAP[tok.toUpperCase()]);
+    });
+    if (pts.length) {
+      SEL = new Set(pts);
+      refreshChecks();
+      if (sp.get('auto') === '1') {
+        const n = Math.max(1, Math.min(20, +(sp.get('n') || 5)));
+        const qs = buildQuiz(n, [1, 2, 3], true, true);
+        if (qs.length) {
+          SOLO = { qs, qi: -1, score: 0, res: [], n: qs.length, lv: [1, 2, 3], calc: true, diag: true, title: '⚡ Board Reteach', sub: tokens.join(', ') };
+          TEAM = null; show('play'); nextSolo();
+        }
+      }
+    }
+  }
+})();

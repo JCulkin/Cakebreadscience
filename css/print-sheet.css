@@ -23,10 +23,10 @@ body.ps {
     margin: 0;
     padding: 0;
     background: #e6e6e6;
-    font-family: "Segoe UI", Arial, sans-serif;
+    font-family: "Barlow", "Segoe UI", Arial, sans-serif;
     color: #111;
     font-size: 10pt;
-    line-height: 1.25;
+    line-height: 1.32;
 }
 body.ps.ps-ms { font-size: 11pt; line-height: 1.4; }
 body.ps.bio { --ps-answer: #1a4f8a; --ps-answer-bg: #dde9f7; }
@@ -70,7 +70,7 @@ body.ps.bio { --ps-answer: #1a4f8a; --ps-answer-bg: #dde9f7; }
 .ps .header .titles { flex: 1; }
 .ps h1 { font-size: 16pt; margin: 0; color: var(--primary-color); }
 .ps .ps-sub { font-size: 9.5pt; color: var(--primary-light); font-weight: bold; margin-top: .3mm; }
-.ps .ps-spec { font-size: 8.5pt; color: #333; font-style: italic; }
+.ps .ps-spec { font-size: 8.5pt; color: #222; font-style: normal; }
 .ps .name { font-size: 9.5pt; align-self: flex-end; }
 .ps .name span { display: inline-block; border-bottom: 1px solid #111; width: 45mm; }
 
