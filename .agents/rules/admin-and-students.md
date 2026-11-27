@@ -9,7 +9,7 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
   Review, Study guides) · Games (Games incl. leaderboards, Breadventure Land incl. the showcase) · Site (Backup, on the right).
   **A new admin tab or page goes into `GROUPS` in that file** (`[tab or page, label, also]`) — no new link rows or tab bars.
   The user: "Don't remove anything" from admin; tidy it instead.
-- `admin/index.html`: panels with `data-in="<tab>"` show inside that tab; `show(t)`. Students table has a ☰ Columns menu (`S_COLS`).
+- `admin/index.html`: panels with `data-in="<tab>"` show inside that tab; `show(t)`. Students table has a ☰ Columns menu (`S_COLS`, incl. sortable `Homework`), an **Outstanding homework only** filter, and a collapsible **Clean up inactive accounts** panel (plus **Remove account** in the student drawer; deletes Firestore `users`/`specProgress` + RTDB data for non-admins; Google Auth stays in Firebase Console). Teaching shows an **Outstanding homework** summary card per year and on **All set work**.
   Spec map shows students' real names (`googleName`: first name + initial), never their game names.
 - Admin → Students → a student: Course (Double / Single Award, sets `users/{uid}.course`), year, their character, activity.
 - Loads the question bank with `QE_PASSIVE`; globals `GM`, `TCH`, `BUILD` are taken.
