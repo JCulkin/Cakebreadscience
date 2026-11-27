@@ -98,12 +98,21 @@ def write_root(topic, t):
 '''
     open(os.path.join(ROOT, topic, 'index.html'), 'w', encoding='utf-8').write(html)
 
-def freeze(topic, date):
+def freeze(topic, date, deck_only=False):
     topic_dir = os.path.join(ROOT, topic)
     src = os.path.join(topic_dir, 'draft'); dst = os.path.join(topic_dir, 'v' + date)
     if not os.path.isdir(src): sys.exit(f'no draft at {src}')
     if os.path.exists(dst): sys.exit(f'{dst} already exists: versions are permanent; use another --date')
+    m = load(); t = find(m, topic)
+    prev_vers = sorted(t.get('versions', []))
+    prev_dir = os.path.join(topic_dir, 'v' + prev_vers[-1]) if (deck_only and prev_vers) else None
     shutil.copytree(src, dst, ignore=shutil.ignore_patterns('img'))
+    if deck_only and prev_dir and os.path.isfile(os.path.join(prev_dir, 'index.html')):
+        prev_idx = open(os.path.join(prev_dir, 'index.html'), encoding='utf-8').read()
+        if "location.hash==='#present'" not in prev_idx:
+            redir = "<script>if(location.hash==='#present')location.replace('deck.html'+location.search+'#present');</script>\n"
+            prev_idx = re.sub(r'(</title>\s*)', r'\1' + redir, prev_idx, count=1, flags=re.I)
+        open(os.path.join(dst, 'index.html'), 'w', encoding='utf-8').write(prev_idx)
     pages = [os.path.join(dst, 'index.html')]
     deck_page = os.path.join(dst, 'deck.html')
     if os.path.isfile(deck_page):
@@ -114,23 +123,31 @@ def freeze(topic, date):
     contents = []
     for p in pages:
         s = open(p, encoding='utf-8').read()
-        if os.path.isdir(draft_img):
+        is_prev_idx = (deck_only and prev_dir and os.path.basename(p) == 'index.html')
+        if not is_prev_idx and os.path.isdir(draft_img):
             s, a_i, r_i = sync_shared_images(topic_dir, draft_img, s)
             added_img += a_i; reused_img += r_i
         used_set.update(re.findall(re.escape(ASSET_URL) + r'([\w.-]+)', s))
-        contents.append((p, s))
+        contents.append((p, s, is_prev_idx))
     used = sorted(used_set)
-    os.makedirs(os.path.join(dst, '_assets'))
-    for f in used: shutil.copy(os.path.join(ROOT, 'assets', f), os.path.join(dst, '_assets', f))
-    for p, s in contents:
-        s = s.replace(ASSET_URL, '_assets/')
-        s = re.sub(r'data-status="draft"', f'data-status="checked" data-version="{date}" data-topic="{topic}"', s, count=1)
+    assets_dst = os.path.join(dst, '_assets')
+    os.makedirs(assets_dst, exist_ok=True)
+    if deck_only and prev_dir and os.path.isdir(os.path.join(prev_dir, '_assets')):
+        for f in os.listdir(os.path.join(prev_dir, '_assets')):
+            src_f = os.path.join(prev_dir, '_assets', f)
+            if os.path.isfile(src_f):
+                shutil.copy2(src_f, os.path.join(assets_dst, f))
+    for f in used: shutil.copy(os.path.join(ROOT, 'assets', f), os.path.join(assets_dst, f))
+    for p, s, is_prev_idx in contents:
+        if not is_prev_idx:
+            s = s.replace(ASSET_URL, '_assets/')
+            s = re.sub(r'data-status="draft"', f'data-status="checked" data-version="{date}" data-topic="{topic}"', s, count=1)
         open(p, 'w', encoding='utf-8').write(s)
-    m = load(); t = find(m, topic)
     t['status'] = 'checked'; t.setdefault('versions', [])
     if date not in t['versions']: t['versions'].append(date)
     t['versions'].sort(); save(m); write_root(topic, t)
-    print(f'frozen {topic} -> {dst}  (assets: {", ".join(used)}; shared img: +{added_img} new, {reused_img} reused)')
+    mode = ' (deck-only: preserved prior checked index.html)' if (deck_only and prev_dir) else ''
+    print(f'frozen {topic} -> {dst}{mode}  (assets: {", ".join(used)}; shared img: +{added_img} new, {reused_img} reused)')
 
 if __name__ == '__main__':
     a = sys.argv[1:]
@@ -142,5 +159,6 @@ if __name__ == '__main__':
                 for t in sec['topics']:
                     if t.get('status'): write_root(f"{s['id']}/{t['code']}", t)
         print('roots written'); sys.exit()
+    deck_only = '--deck-only' in a
     date = a[a.index('--date') + 1] if '--date' in a else datetime.date.today().isoformat()
-    freeze(a[0], date)
+    freeze(a[0], date, deck_only=deck_only)

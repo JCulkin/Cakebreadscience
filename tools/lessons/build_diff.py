@@ -112,8 +112,8 @@ def extract_slides(html: str) -> list[dict]:
         norm = re.sub(r'\s+', ' ', block).strip()
         # Ignore freeze.py relative path rewrite (../img/ -> img/), same-stem WebP compression,
         # and lazy-loading attributes so unchanged slides don't show up as false diffs.
-        norm = re.sub(r'((?:src|href)=["\'])\.\./img/', r'\1img/', norm, flags=re.I)
-        norm = re.sub(r'((?:src|href)=["\']img/[^"\'.]+)\.(?:jpe?g|png|webp)(["\'])', r'\1.IMG\2', norm, flags=re.I)
+        norm = re.sub(r'((?:src|href|poster)=["\'])\.\./img/', r'\1img/', norm, flags=re.I)
+        norm = re.sub(r'((?:src|href|poster)=["\']img/[^"\'.]+)\.(?:jpe?g|png|webp)(["\'])', r'\1.IMG\2', norm, flags=re.I)
         norm = re.sub(r'\s+(?:decoding|loading)=["\'][^"\']*["\']', '', norm, flags=re.I)
         imgs = sorted(set(re.findall(r'(?:src|href)=["\'](?:\.\./)?(img/[^"\']+)["\']', block, re.I)))
         comps = sorted(set(re.findall(r'data-comp=["\']([^"\']+)["\']', block, re.I)))
