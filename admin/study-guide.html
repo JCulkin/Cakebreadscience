@@ -96,7 +96,10 @@ firebase.initializeApp(window.firebaseConfig);
 const auth = firebase.auth(), RT = firebase.database();
 const SGA = { all: {}, id: null, sci: 'B', picked: new Set(), open: new Set(), user: null };   // picked = spec point keys; open = sub-topics showing their points
 CBSGuide.style();
-$('gYears').innerHTML = [8, 9, 10, 11].map(y => `<label><input type="checkbox" value="Y${y}">Year ${y}</label>`).join('');
+$('gYears').innerHTML = [8, 9, 10, 11].map(y => `<label><input type="checkbox" value="Y${y}">Year ${y}</label>`).join('')
+  + `<button type="button" class="btn alt sm" id="gKs3" style="margin-left:6px;padding:2px 8px">KS3</button><button type="button" class="btn alt sm" id="gKs4" style="padding:2px 8px">KS4</button>`;
+$('gKs3').onclick = () => document.querySelectorAll('#gYears input').forEach(i => { i.checked = i.value === 'Y8' || i.value === 'Y9'; });
+$('gKs4').onclick = () => document.querySelectorAll('#gYears input').forEach(i => { i.checked = i.value === 'Y10' || i.value === 'Y11'; });
 $('gSci').innerHTML = [['B', 'Biology'], ['C', 'Chemistry'], ['P', 'Physics']].map(([k, n]) => `<label><input type="radio" name="sci" value="${k}" ${k === 'B' ? 'checked' : ''}>${n}</label>`).join('');
 
 auth.onAuthStateChanged(async u => {

@@ -149,3 +149,6 @@ console.log(`${ORDER.length} points · quiz ${covered.quiz} · flashcards ${cove
 
 /* ---- the worksheet list for the admin review portal ---- */
 require('../review/list_worksheets.js');
+
+/* ---- exact Class Slide index for Admin Misconception Radar ---- */
+require('../lessons/build_slide_index.js');

@@ -495,7 +495,7 @@ async function launchWarmup(yearKey, excludeCode) {
   SEL = new Set(pts);
   let qs = buildQuiz(5, [1], false, false);
   if (qs.length < 5) qs = buildQuiz(5, [1, 2], true, true);
-  SOLO = { qs, qi: -1, score: 0, res: [], n: 5, lv: [1], calc: false, diag: false, warmup: true, year: Y, exclude: excludeCode || '', title: '🔥 Brain Warm-Up', sub: subNote };
+  SOLO = { qs, qi: -1, score: 0, res: [], n: 5, lv: [1], calc: false, diag: false, warmup: true, year: Y, exclude: excludeCode || '', title: '🔥 Warm-Up', sub: subNote };
   TEAM = null; show('play'); nextSolo();
 }
 

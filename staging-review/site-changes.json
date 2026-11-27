@@ -3,6 +3,22 @@
   "note": "Every new page, UI redesign, tool, or site-wide feature waiting for teacher review on staging MUST be listed here so it appears on /staging-review/#site before going live.",
   "items": [
     {
+      "id": "whats-new-removed-and-ks3-ks4",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-28",
+      "title": "Homepage 'What's New' Box Removed + KS3/KS4 Filters Everywhere in Admin",
+      "summary": "Removed the top-of-page 'What's new' banner from index.html (replaced /js/whats-new.js with a silent dismiss-once modal popup engine CBSAnnounce for future announcements). Added KS3 (Years 8–9) and KS4 (Years 10–11) filters alongside granular Year 8–11 across Admin Students, Spec Map, Teaching, All Set Work, Misconception Radar, and Study Guide builder. Auto-chained js/lesson-slides.js inside tools/spec/build_index.js so all future lessons wire into Misconception Radar automatically.",
+      "before": "Inline What's New strip sat at the top of the homepage; Admin filters only showed single years or all.",
+      "after": "Clean homepage with zero top strip; KS3, KS4 and Year 8–11 filters everywhere in Admin.",
+      "previewUrl": "/?dir=1",
+      "extraLinks": [
+        { "label": "Admin → Students", "url": "/admin/#students" },
+        { "label": "Admin → Spec map", "url": "/admin/#map" },
+        { "label": "Admin → Teaching", "url": "/admin/#teach" }
+      ]
+    },
+    {
       "id": "misconception-radar",
       "category": "features",
       "status": "review",
@@ -21,10 +37,10 @@
       "category": "features",
       "status": "review",
       "date": "2026-11-27",
-      "title": "🔥 Brain Warm-Up (5-Question Covered-Topics Recall Starter)",
-      "summary": "Added a '🔥 Brain Warm-Up' button to the Class Slides projector toolbar and header (zero edits to existing slide decks). Opens 5 random easy Level-1 recall questions pulled across ANY previously covered topic for Year 8/9/10/11 (excluding the current lesson), with Year switcher pills and '↻ New 5'.",
+      "title": "🔥 Warm-Up (5-Question Covered-Topics Recall Starter)",
+      "summary": "Added a '🔥 Warm-Up' button to the Class Slides projector toolbar and header (zero edits to existing slide decks). Opens 5 random easy Level-1 recall questions pulled across ANY previously covered topic for Year 8/9/10/11 (excluding the current lesson), with Year buttons and '↻ New 5'.",
       "before": "No one-click whole-class retrieval starter built into Class Slides.",
-      "after": "One click from any Class Slides deck launches a 5-question cross-topic Brain Warm-Up on the board.",
+      "after": "One click from any Class Slides deck launches a 5-question cross-topic Warm-Up on the board.",
       "previewUrl": "/interactive/spec-quiz/quiz.html?warmup=1&year=Y10",
       "extraLinks": [
         { "label": "Try from Chem 1f Class Slides", "url": "/interactive/lessons/chemistry/1f/draft/deck.html" }
@@ -105,11 +121,11 @@
       "id": "student-home-redesign",
       "category": "features",
       "status": "review",
-      "date": "2026-11-27",
-      "title": "3-Zone Student Home (/today/) & Smart Homepage Routing",
-      "summary": "Redesigned /today/ into 3 calm zones: greeting + 1-click ⚡ Start now + unified 'From your teacher' (Homework & Upcoming tests), 'Up next for you' beside 'Your GCSE progress' + compact full-topic 'Covered in class' drawer, and 6-tile Explore dock. Signed-in students route straight to /today/.",
-      "before": "Long ungrouped To do list; signed-in students landed on the full directory.",
-      "after": "Clear 3-zone Student Home; test live using the purple 'Simulate Y10 student' button in the top bar.",
+      "date": "2026-11-28",
+      "title": "Student Home v2 (/today/): Unified 2-Column To Do, Breadventure Banner & Full-Width IGCSE Progress",
+      "summary": "Merged 'From your teacher' and 'Suggested for you' into one crisp 2-column To Do hub (replacing tiny emoji rows with clean 'Practise →' cards), added the full-width Cakebread Questing / Breadventure Land pixel-art banner with live moves & level right beneath it, expanded 'Your IGCSE progress' + 'Covered in class' across the full page width, and upgraded the Explore dock to site monoline SVG icons.",
+      "before": "Half-width cramped progress/covered box, tiny unreadable icons on target rows, no Breadventure banner.",
+      "after": "Vibrant, balanced Student Home matching the homepage look, with full-width IGCSE progress & Covered in class.",
       "previewUrl": "/today/",
       "extraLinks": [
         { "label": "Full Directory (?dir=1)", "url": "/?dir=1" }

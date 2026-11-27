@@ -32,7 +32,7 @@ All content, UI, print sheets, games, and teacher/family features on **cakebread
   - Use **bold** for emphasis; avoid long blocks of ALL CAPS, heavy italics, or non-link underlining. Reserve `Barlow Condensed` uppercase strictly for short headings/buttons.
   - Warm cream `#eeeae0` + dark `#111` ink reduces harsh glare while maintaining AAA/AA contrast. Never convey status by colour alone — always pair with text labels, icons, or patterns.
   - Keep interactive touch targets comfortable (`≥36–44px` on mobile) and test at `390px` width with zero hover-only controls.
-- **Functional colour discipline:** Keep subject colours consistent everywhere (`Biology #005e22`, `Chemistry #c8001e`, `Physics #d08000`) — never swap them between pages.
+- **Functional colour & copy discipline:** Keep subject colours consistent everywhere (`Biology #005e22`, `Chemistry #c8001e`, `Physics #d08000`) — never swap them between pages. Always write **IGCSE** (never bare `GCSE`) on student/site copy. **Never put an inline "What's new" banner at the top of the homepage** — announce notable new features via obvious dismiss-once tutorial-style popups (`CBSAnnounce.show(...)` in `/js/whats-new.js`).
 
 ## 5. Cognitively Clear Printed Material (Worksheets, Booklets, Study Guides)
 - **Caviglioli Dual Coding & Mayer Coherence:** Every diagram must teach or structure information (comparison table, process flow, hierarchy, labelled apparatus) — zero decorative clipart, background watermarks, or seductive details.

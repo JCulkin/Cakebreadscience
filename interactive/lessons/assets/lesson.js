@@ -73,7 +73,7 @@ function header(){
     if(!nav.querySelector('a[href="/"]')) nav.insertAdjacentHTML('afterbegin', `<a href="/" title="Cakebread Science home">🏠 Home</a>`);
     const badge = st === 'checked' ? '' : `<span class="status draft">Under review</span>`;
     const ex = body.dataset.topic ? '&exclude=' + encodeURIComponent(body.dataset.topic.replace(/^[a-z]/i, c => c.toUpperCase()).replace('/', '')) : '';
-    nav.insertAdjacentHTML('beforeend', badge + `<a class="pbtn2" style="background:#facc15;color:#111;text-decoration:none;border:2px solid #111" href="/interactive/spec-quiz/quiz.html?warmup=1${ex}" target="_blank" title="5 quick easy recall questions from topics covered before">🔥 Brain Warm-Up</a><button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
+    nav.insertAdjacentHTML('beforeend', badge + `<a class="pbtn2" style="background:#facc15;color:#111;text-decoration:none;border:2px solid #111" href="/interactive/spec-quiz/quiz.html?warmup=1${ex}" target="_blank" title="5 quick easy recall questions from topics covered before">🔥 Warm-Up</a><button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
   }
   const toc = $('.lhead .toc');
   if(toc && !toc.children.length){

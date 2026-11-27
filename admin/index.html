@@ -116,14 +116,15 @@ tr.overdue td{background:#fef2f2}tr.overdue:hover td{background:#fee2e2}
 
   <section class="panel on" id="p-overview"></section>
   <section class="panel" id="p-students">
-    <div class="toolbar"><input id="sq" placeholder="Search name, email or Questing name" size="34"><select id="sYear"><option value="">Every year</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option><option value="11">Year 11</option><option value="0">No year yet</option></select><label class="small"><input type="checkbox" id="sHw"> Outstanding homework only</label><label class="small"><input type="checkbox" id="sAll"> Include people who never used Questing, Flashcards or the trackers</label><button class="btn alt sm" data-reload>↻ Reload data</button>
+    <div class="toolbar"><input id="sq" placeholder="Search name, email or Questing name" size="34"><select id="sYear"><option value="">Every year</option><option value="ks3">KS3 (Years 8–9)</option><option value="ks4">KS4 (Years 10–11)</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option><option value="11">Year 11</option><option value="0">No year yet</option></select><label class="small"><input type="checkbox" id="sHw"> Outstanding homework only</label><label class="small"><input type="checkbox" id="sAll"> Include people who never used Questing, Flashcards or the trackers</label><button class="btn alt sm" data-reload>↻ Reload data</button>
       <details class="colpick" id="sCols"><summary class="btn alt sm">☰ Columns</summary><div class="colbox" id="sColBox"></div></details></div>
     <div class="msg" id="sDelMsg" style="margin:0 0 8px"></div>
     <div class="wrapx" id="sTable"></div>
     <div id="sInactive" style="margin-top:16px"></div>
   </section>
   <section class="panel" id="p-map">
-    <div class="toolbar"><select id="mSci"><option value="">All sciences</option><option>Biology</option><option>Chemistry</option><option>Physics</option></select>
+    <div class="toolbar"><select id="mYear"><option value="">Every year</option><option value="ks3">KS3 (Years 8–9)</option><option value="ks4">KS4 (Years 10–11)</option><option value="8">Year 8</option><option value="9">Year 9</option><option value="10">Year 10</option><option value="11">Year 11</option></select>
+      <select id="mSci"><option value="">All sciences</option><option>Biology</option><option>Chemistry</option><option>Physics</option></select>
       <label class="small"><input type="checkbox" id="mOpen"> Open every topic</label></div>
     <div class="legend"><span style="--c:var(--s)">Secured</span><span style="--c:var(--r)">Rusty</span><span style="--c:var(--l)">Learning</span><span style="--c:var(--n)">Not started</span><span class="muted">Topic cells: % of points secured. Click a topic to see its points.</span></div>
     <div class="wrapx" id="mTable"></div>
@@ -525,11 +526,12 @@ async function deleteStudent(uid, msgEl) {
   if (TCH.data) drawTeach();
   showMsg(`Deleted account data for ${s.name}.` + (warns.length ? ` (Partial cleanup note: ${warns.join('; ')})` : ''), !warns.length);
 }
+const matchYr = (yr, yf) => yf === '' || (yf === 'ks3' ? (yr === 8 || yr === 9) : yf === 'ks4' ? (yr === 10 || yr === 11) : yr === +yf);
 function drawStudents() {
   const q = $('sq').value.trim().toLowerCase();
   const yf = $('sYear').value;
   const hwOnly = $('sHw') && $('sHw').checked;
-  let rows = D.students.filter(s => ($('sAll').checked || s.used || yf !== '' || (hwOnly && s.hwCount > 0)) && (!hwOnly || s.hwCount > 0) && (yf === '' || s.year === +yf) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
+  let rows = D.students.filter(s => ($('sAll').checked || s.used || yf !== '' || (hwOnly && s.hwCount > 0)) && (!hwOnly || s.hwCount > 0) && matchYr(s.year, yf) && (!q || (s.name + ' ' + s.email + ' ' + s.nick).toLowerCase().includes(q)));
   rows.sort((a, b) => { const x = a[sSort], y = b[sSort]; return (typeof x === 'string' ? x.localeCompare(y) : (x || 0) - (y || 0)) * sDir; });
   const P = colPrefs(), cols = P.order.filter(k => P.on.has(k)).map(k => S_COLS.find(c => c.k === k));
   const th = (k, t, n, tip) => `<th class="${n ? 'n' : ''}" data-k="${k}"${tip ? ` title="${esc(tip)}"` : ''}>${t}${sSort === k ? (sDir < 0 ? ' ▾' : ' ▴') : ''}</th>`;
@@ -693,8 +695,9 @@ $('dx').onclick = closeD; $('dim').onclick = closeD; document.addEventListener('
 const COL = { s: 'var(--s)', r: 'var(--r)', l: 'var(--l)', n: 'var(--n)' };
 const mapOpen = new Set();
 function drawMap() {
-  const S = D.students.filter(s => s.a && s.answered + Object.keys(s.prog.cards || {}).length > 0);
-  if (!S.length) { $('mTable').innerHTML = '<div class="empty">Nobody has started Breadventure Land or Flashcards yet.</div>'; return; }
+  const yf = $('mYear') ? $('mYear').value : '';
+  const S = D.students.filter(s => s.a && s.answered + Object.keys(s.prog.cards || {}).length > 0 && matchYr(s.year, yf));
+  if (!S.length) { $('mTable').innerHTML = `<div class="empty">${yf ? 'No active students in this year group yet.' : 'Nobody has started Breadventure Land or Flashcards yet.'}</div>`; return; }
   const sci = $('mSci').value, all = $('mOpen').checked;
   const short = s => googleName(s);   // students' real names (user, 23 Nov: "not their questing names"); full name on hover
   const shade = p => p == null ? 'var(--n)' : `color-mix(in srgb, var(--s) ${Math.round(p * 100)}%, #f3f0e6)`;
@@ -711,7 +714,7 @@ function drawMap() {
   });
   $('mTable').innerHTML = h + '</tbody></table>';
 }
-$('mSci').onchange = drawMap; $('mOpen').onchange = drawMap;
+$('mSci').onchange = drawMap; $('mOpen').onchange = drawMap; if ($('mYear')) $('mYear').onchange = drawMap;
 $('mTable').addEventListener('click', e => { const r = e.target.closest('tr.topic'); if (!r) return; const k = r.dataset.t; mapOpen.has(k) ? mapOpen.delete(k) : mapOpen.add(k); drawMap(); });
 
 /* ---------- Questions ---------- */
@@ -991,7 +994,7 @@ function drawGames(msg) {
 }
 
 /* ---------- Teaching (17 Nov 2026): what each year has been taught, and work set for a year (js/school.js) ---------- */
-const TCH = { y: 10, data: null, form: false, prefill: null, showArch: false, overdueOnly: false, err: '', radar: { grp: '10', days: 14, subj: '', showConf: true } };
+const TCH = { y: 10, workYr: '', data: null, form: false, prefill: null, showArch: false, overdueOnly: false, err: '', radar: { grp: '10', days: 14, subj: '', showConf: true } };
 async function loadTeach() {
   try { TCH.data = await CBSSchool.load(RT); TCH.err = ''; } catch (e) { TCH.data = { taught: {}, assign: {} }; TCH.err = e.code || e.message; }
   /* practise work set before 18 Nov has no pts/need, which the students' "To do !" check needs: add them once */
@@ -1007,7 +1010,9 @@ async function loadTeach() {
   if (openUid && $('drawer').classList.contains('on')) openStudent(openUid);
 }
 function teachBar(y) {
-  return `<div class="toolbar">${CBSSchool.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
+  const ks3n = D.students.filter(s => s.year === 8 || s.year === 9).length;
+  const ks4n = D.students.filter(s => s.year === 10 || s.year === 11).length;
+  return `<div class="toolbar"><button class="btn ${y === 'ks3' ? '' : 'alt'} sm" data-ty="ks3">KS3 <span class="small">(${ks3n})</span></button><button class="btn ${y === 'ks4' ? '' : 'alt'} sm" data-ty="ks4">KS4 <span class="small">(${ks4n})</span></button>${CBSSchool.YEARS.map(n => `<button class="btn ${n === y ? '' : 'alt'} sm" data-ty="${n}">Year ${n} <span class="small">(${D.students.filter(s => s.year === n).length})</span></button>`).join('')}
     <button class="btn ${y === 'all' ? '' : 'alt'} sm" data-ty="all">All years · taught</button>
     <button class="btn ${y === 'work' ? '' : 'alt'} sm" data-ty="work">All set work</button>
     <button class="btn ${y === 'radar' ? '' : 'alt'} sm" data-ty="radar" style="${y === 'radar' ? '' : 'background:#fef3c7;color:#111'}">🎯 Misconception Radar</button>
@@ -1092,12 +1097,12 @@ function drawTeachRadar() {
           <select id="rDays"><option value="14"${R.days === 14 ? ' selected' : ''}>Active in last 14 days</option><option value="30"${R.days === 30 ? ' selected' : ''}>Active in last 30 days</option><option value="0"${R.days === 0 ? ' selected' : ''}>All time</option></select>
           <select id="rSubj"><option value=""${!R.subj ? ' selected' : ''}>All sciences</option><option value="B"${R.subj === 'B' ? ' selected' : ''}>Biology</option><option value="C"${R.subj === 'C' ? ' selected' : ''}>Chemistry</option><option value="P"${R.subj === 'P' ? ' selected' : ''}>Physics</option></select>
           <label class="small"><input type="checkbox" id="rConf"${R.showConf ? ' checked' : ''}> Include over-confident blind spots</label>
-          <a class="btn sm" style="margin-left:auto;background:#facc15;color:#111" href="/interactive/spec-quiz/quiz.html?warmup=1&amp;year=Y${hwYear}" target="_blank">🔥 Brain Warm-Up (Y${hwYear}) ↗</a>
+          <a class="btn sm" style="margin-left:auto;background:#facc15;color:#111" href="/interactive/spec-quiz/quiz.html?warmup=1&amp;year=Y${hwYear}" target="_blank">🔥 Warm-Up (Y${hwYear}) ↗</a>
         </div>
         <p class="small muted" style="margin-bottom:10px">Showing <b>${rows.length}</b> priority spec point${rows.length === 1 ? '' : 's'} across <b>${kids.length}</b> active student${kids.length === 1 ? '' : 's'} in <b>${esc(grpLabel)}</b>. Ranked by students struggling + low % right + over-confident tracker ratings.</p>
         ${rows.length ? `<div class="wrapx"><table><thead><tr><th>Spec</th><th>Point &amp; top missed question</th><th class="n">% right</th><th class="n">Students</th><th>Teach from board</th></tr></thead><tbody>${rows.map(rowHtml).join('')}</tbody></table></div>` : `<p class="muted">No recorded misses or over-confident blind spots for ${esc(grpLabel)} in this window yet.</p>`}
       </div>`;
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar', 'ks3', 'ks4'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
   $('rGrp').onchange = e => { R.grp = e.target.value; drawTeachRadar(); };
   $('rDays').onchange = e => { R.days = +e.target.value; drawTeachRadar(); };
   $('rSubj').onchange = e => { R.subj = e.target.value; drawTeachRadar(); };
@@ -1133,7 +1138,7 @@ function drawTeachAll(msg) {
     + `<div class="card"><h2>Taught in class · all years</h2><p class="small muted">Tick what each year has done in lessons; students see these as "Covered in class" on To do. The last column ticks or unticks a sub-topic for every year.</p>
       <div class="wrapx"><table class="tall"><thead><tr><th>Sub-topic</th>${YS.map(y => `<th class="c">Year ${y}<div class="small">${cnt(y)}/${all.length}</div></th>`).join('')}<th class="c">All</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   el.querySelectorAll('[data-mixed]').forEach(c => c.indeterminate = true);
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar', 'ks3', 'ks4'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
   const keepScroll = f => async () => { const y0 = scrollY; await f(); scrollTo(0, y0); };
   el.querySelectorAll('[data-ty2]').forEach(c => c.onchange = keepScroll(async () => { const Y = 'Y' + c.dataset.ty2, k = c.dataset.k;
     try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (T[Y] = T[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (T[Y]) delete T[Y][k]; } drawTeachAll(); }
@@ -1146,7 +1151,7 @@ function drawTeachAll(msg) {
 function drawTeach(msg) {
   if (TCH.y === 'radar' && TCH.data) return drawTeachRadar();
   if (TCH.y === 'all' && TCH.data) return drawTeachAll(msg);
-  const el = $('p-teach'), S = CBSSchool, ALLW = TCH.y === 'work', y = ALLW ? 0 : TCH.y, Y = 'Y' + y, d = TCH.data;
+  const el = $('p-teach'), S = CBSSchool, KS = (TCH.y === 'ks3' || TCH.y === 'ks4') ? TCH.y : '', ALLW = TCH.y === 'work' || !!KS, y = ALLW ? 0 : TCH.y, Y = 'Y' + y, d = TCH.data;
   if (!d) { el.innerHTML = '<div class="empty">Loading…</div>'; return; }
   const taught = d.taught[Y] || {};
   const KIDS = D.students, whoOf = a => S.audience(a, KIDS);   // everyone with an account (a student who has only signed in once can be picked by name)
@@ -1155,8 +1160,15 @@ function drawTeach(msg) {
   const tree = (mode, picked) => ['B', 'C', 'P'].map(L => `<div class="tsci"><h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3>${Object.entries(subsBy[L]).map(([n, t]) => `<div class="ttop"><b>${n}. ${esc(t.name)}</b>${t.subs.map(sb => {
       const on = mode === 'taught' ? !!taught[sb.key] : !!(picked && picked.includes(sb.key));
       return `<label class="tsub"><input type="checkbox" ${mode === 'taught' ? `data-taught="${sb.key}"` : `data-pick="${sb.key}"`}${on ? ' checked' : ''}> ${n}${sb.l} ${esc(sb.name)}${on ? ` <span class="small muted">${esc(taught[sb.key])}</span>` : ''}</label>`; }).join('')}</div>`).join('')}</div>`).join('');
-  /* a year's list = work for that year + work set by name for someone in it; "All set work" = everything */
-  const list = Object.entries(d.assign).filter(([, a]) => a && (TCH.showArch || !a.archived) && (ALLW || (a.years && a.years[Y]) || whoOf(a).some(s => s.year === y)))
+  /* Filter assignments by Year, KS3 (Y8-9), KS4 (Y10-11), or All set work (+ optional workYr filter) */
+  const workScope = KS || (TCH.y === 'work' ? TCH.workYr : '');
+  const matchesAssign = a => {
+    if (!ALLW) return (a.years && a.years[Y]) || whoOf(a).some(s => s.year === y);
+    if (!workScope) return true;
+    const ys = workScope === 'ks3' ? [8, 9] : workScope === 'ks4' ? [10, 11] : [+workScope];
+    return ys.some(yr => (a.years && a.years['Y' + yr]) || whoOf(a).some(s => s.year === yr));
+  };
+  const list = Object.entries(d.assign).filter(([, a]) => a && (TCH.showArch || !a.archived) && matchesAssign(a))
     .map(([id, a]) => Object.assign({ id }, a)).sort((a, b) => (b.set || '').localeCompare(a.set || '') || (b.t || 0) - (a.t || 0));
   const forTxt = a => { const ys = Object.keys(a.years || {}).filter(k => a.years[k]).map(k => 'Year ' + k.slice(1)), named = Object.keys(a.students || {}).filter(u => a.students[u]);
     const nm = named.map(u => { const s = D.students.find(x => x.uid === u); return s ? s.name : 'a student'; });
@@ -1254,7 +1266,9 @@ function drawTeach(msg) {
               <label class="small"><input type="radio" name="aType" value="spaced" checked> <b>Spaced missions (default):</b> 1 single mission on 2 different days</label>
               <label class="small"><input type="radio" name="aType" value="test"> <b>Test:</b> one go, scored (same questions for everyone)</label>
               <label class="small"><input type="radio" name="aType" value="practise"> <b>Practise:</b> keep going until they get N different questions right</label></div>`}
-        <div><b>For these years</b> ${S.YEARS.map(n => `<label class="small" style="margin-right:10px"><input type="checkbox" data-ay="${n}"${ED ? (F.years && F.years['Y' + n] ? ' checked' : '') : n === y ? ' checked' : ''}> Year ${n}</label>`).join('')}</div>
+        <div><b>For these years</b> ${S.YEARS.map(n => { const defOn = ED ? (F.years && F.years['Y' + n]) : KS === 'ks3' ? (n === 8 || n === 9) : KS === 'ks4' ? (n === 10 || n === 11) : n === y; return `<label class="small" style="margin-right:10px"><input type="checkbox" data-ay="${n}"${defOn ? ' checked' : ''}> Year ${n}</label>`; }).join('')}
+          <button type="button" class="btn alt sm" id="aTickKs3" style="padding:1px 7px;font-size:12px">KS3</button>
+          <button type="button" class="btn alt sm" id="aTickKs4" style="padding:1px 7px;font-size:12px">KS4</button></div>
         <details${F.students && Object.keys(F.students).length ? ' open' : ''}><summary><b>…and these students by name</b> <span class="small muted">optional: anyone ticked sees it whatever their year${noYr ? ` · ${noYr} student${noYr > 1 ? 's haven\'t' : ' hasn\'t'} chosen a year, so only see work set for them by name` : ''}</span></summary><div class="tpick">${stuPick()}</div></details>
         <div><b>Sub-topics</b> <span class="small muted">tick any number</span><div class="tpick">${tree('pick', pickedSubs)}</div></div>
         <input id="aPts" placeholder="Extra spec points, e.g. C2.5, P3.12 (optional)" value="${esc(pickedPts.join(', '))}" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
@@ -1265,17 +1279,18 @@ function drawTeach(msg) {
         <input id="aNote" placeholder="Note for students (optional)" maxlength="200" value="${esc(F.note || '')}" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
         ${ED && isT ? '<p class="small muted">Changing the sub-topics or the number of questions picks new questions. Students who already finished keep their score.</p>' : ''}
       </div><div class="acts"><button class="btn" id="aSave">${ED ? 'Save changes' : 'Set it'}</button><button class="btn alt" id="aCancel">Cancel</button></div><div class="msg err" id="aMsg"></div></div>` : '';
+  const workYrBar = TCH.y === 'work' ? `<select id="wYrFilt"><option value=""${!TCH.workYr ? ' selected' : ''}>All years</option><option value="ks3"${TCH.workYr === 'ks3' ? ' selected' : ''}>KS3 (Years 8–9)</option><option value="ks4"${TCH.workYr === 'ks4' ? ' selected' : ''}>KS4 (Years 10–11)</option><option value="8"${TCH.workYr === '8' ? ' selected' : ''}>Year 8</option><option value="9"${TCH.workYr === '9' ? ' selected' : ''}>Year 9</option><option value="10"${TCH.workYr === '10' ? ' selected' : ''}>Year 10</option><option value="11"${TCH.workYr === '11' ? ' selected' : ''}>Year 11</option></select>` : '';
   el.innerHTML = (TCH.err ? `<div class="card"><h2>Teaching isn't switched on yet</h2><p class="muted">Couldn't read <code>school</code> (${esc(TCH.err)}). Publish the new Realtime Database rule first.</p></div>` : '')
-    + teachBar(ALLW ? 'work' : y)
+    + teachBar(KS || (ALLW ? 'work' : y))
     + (msg ? `<div class="msg ok" style="margin-bottom:10px">${esc(msg)}</div>` : '')
-    + (ALLW ? `<div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}${hwSummary}
-        ${list.length ? list.map(aCard).join('') : '<div class="card"><p class="muted">No work set.</p></div>'}</div>` : '')
+    + (ALLW ? `<div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button>${workYrBar}<label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}${hwSummary}
+        ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set${KS ? ' for ' + KS.toUpperCase() : ''}.</p></div>`}</div>` : '')
     + (ALLW ? '' : `<div class="cols"><div><div class="card"><h2>Taught in class · Year ${y}</h2><p class="small muted">Tick what Year ${y} has done in lessons. Students see these as “Covered in class” on To do. ${nT} of ${nAll} sub-topics ticked.</p>
         <div class="acts"><select id="tCopy"><option value="">Copy ticks from…</option>${S.YEARS.filter(n => n !== y).map(n => `<option value="${n}">Year ${n}</option>`).join('')}</select></div>${tree('taught')}</div></div>
       <div><div class="toolbar"><button class="btn" id="aNew">＋ Set new work</button><label class="small"><input type="checkbox" id="aArch"${TCH.showArch ? ' checked' : ''}> Show archived</label></div>${form}${hwSummary}
         ${list.length ? list.map(aCard).join('') : `<div class="card"><p class="muted">No work set for Year ${y}.</p></div>`}</div></div>`);
   const fail = e => drawTeach('Could not save: ' + (e.code || e.message));
-  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
+  el.querySelectorAll('[data-ty]').forEach(b => b.onclick = () => { TCH.y = ['all', 'work', 'radar', 'ks3', 'ks4'].includes(b.dataset.ty) ? b.dataset.ty : +b.dataset.ty; TCH.form = false; drawTeach(); });
   if ($('tOverOnly')) $('tOverOnly').onchange = e => { TCH.overdueOnly = e.target.checked; drawTeach(); };
   el.querySelectorAll('[data-taught]').forEach(c => c.onchange = async () => { const k = c.dataset.taught;
     try { if (c.checked) { await RT.ref(`school/taught/${Y}/${k}`).set(TODAY); (d.taught[Y] = d.taught[Y] || {})[k] = TODAY; } else { await RT.ref(`school/taught/${Y}/${k}`).remove(); if (d.taught[Y]) delete d.taught[Y][k]; } drawTeach(); } catch (e) { fail(e); } });
@@ -1287,7 +1302,10 @@ function drawTeach(msg) {
   $('aArch').onchange = e => { TCH.showArch = e.target.checked; drawTeach(); };
   el.querySelectorAll('[data-arch]').forEach(b => b.onclick = async () => { const a = d.assign[b.dataset.arch]; try { await RT.ref('school/assign/' + b.dataset.arch + '/archived').set(!a.archived); a.archived = !a.archived; computeHomework(); drawStudents(); drawTeach(); } catch (e) { fail(e); } });
   el.querySelectorAll('[data-adel]').forEach(b => b.onclick = async () => { if (!confirm('Delete this work? Students\' answers are kept; only the task goes.')) return; try { await RT.ref('school/assign/' + b.dataset.adel).remove(); delete d.assign[b.dataset.adel]; computeHomework(); drawStudents(); drawTeach('Deleted.'); } catch (e) { fail(e); } });
+  if ($('wYrFilt')) $('wYrFilt').onchange = e => { TCH.workYr = e.target.value; drawTeach(); };
   if (TCH.form) {
+    if ($('aTickKs3')) $('aTickKs3').onclick = () => el.querySelectorAll('[data-ay]').forEach(c => { c.checked = c.dataset.ay === '8' || c.dataset.ay === '9'; });
+    if ($('aTickKs4')) $('aTickKs4').onclick = () => el.querySelectorAll('[data-ay]').forEach(c => { c.checked = c.dataset.ay === '10' || c.dataset.ay === '11'; });
     $('aCancel').onclick = () => { TCH.prefill = null; TCH.form = false; drawTeach(); };
     el.querySelectorAll('[name="aType"]').forEach(r => r.onchange = () => {
       const v = (el.querySelector('[name="aType"]:checked') || {}).value || 'spaced';

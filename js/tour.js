@@ -31,8 +31,8 @@
       steps: [
         { sel: '#quickGo .qgo', title: '⚡ One-click revision', body: 'Not sure what to do? Tap this button anytime — it automatically launches your homework first, or the best topic your class has covered.' },
         { sel: '#teacherCard', title: '📌 From your teacher', body: 'Your homework and upcoming tests live together here. Homework missions track live as you answer and tell you clearly when you\'re finished.' },
-        { sel: '#upNextCard', title: '🎯 Up next for you', body: 'Your quick daily loop (Mission, Flashcards, Breadventure Land) plus your top 3 highest-value spec points to secure next.' },
-        { sel: '#progCard', title: '📊 Progress & Covered in class', body: 'Green bars show spec points you\'ve proved on two different days. Tap "Covered in class" at the bottom to expand topics your class has finished.' }
+        { sel: '#upNextCard', title: '🎯 Suggested for you', body: 'Your daily loop (Mission, Flashcards, Map) plus your top 3 closest IGCSE spec points to secure next.' },
+        { sel: '#progCard', title: '📊 IGCSE Progress & Covered in class', body: 'Your Biology, Chemistry and Physics progress across the IGCSE spec — expand "Covered in class" to see full topics your class has finished.' }
       ]
     },
     home: {
