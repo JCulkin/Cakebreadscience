@@ -216,10 +216,29 @@ ul.pts li,ol.pts li{margin:5px 0}
 
 /* acrostic grid (e.g. MRS C GREN) */
 .mrs{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0}
-@media(min-width:600px){.mrs{grid-template-columns:1fr 1fr}}
-.mrs > div{background:#faf8f3;border:2px solid var(--ink);border-radius:8px;padding:10px 13px;font-size:15.5px;line-height:1.42}
-.mrs > div > b:first-child{display:block;font:900 22px/1.05 'Barlow Condensed',Arial Narrow,sans-serif;color:var(--acc);text-transform:uppercase;margin-bottom:3px}
-.mrs > div > b:first-child span{font-size:30px;margin-right:1px}
+@media(min-width:620px){.mrs{grid-template-columns:1fr 1fr}}
+.mrs > div{background:#faf8f3;border:2px solid var(--ink);border-radius:8px;padding:10px 12px;font-size:15px;line-height:1.4;display:flex;gap:11px;align-items:center}
+.mrs > div .mrs-pic{width:76px;height:76px;flex:none;border:2px solid var(--ink);border-radius:6px;overflow:hidden;background:#fff;display:grid;place-items:center}
+.mrs > div .mrs-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.mrs > div .mrs-pic svg{width:100%;height:100%;display:block}
+.mrs > div .mrs-txt{flex:1;min-width:0}
+.mrs > div > b:first-child,.mrs > div .mrs-txt > b:first-child{display:block;font:900 22px/1.05 'Barlow Condensed',Arial Narrow,sans-serif;color:var(--acc);text-transform:uppercase;margin-bottom:3px}
+.mrs > div > b:first-child span,.mrs > div .mrs-txt > b:first-child span{font-size:30px;margin-right:1px}
+
+/* high-level topic summary box on #check */
+.summary-box{
+  border:2px solid var(--ink);border-left:8px solid var(--acc);border-radius:8px;
+  padding:14px 16px;margin:0 0 16px;background:#faf8f3;
+}
+.summary-box .callout-tag{background:var(--acc);color:#fff}
+.summary-box ul.pts{margin:6px 0 0 20px}
+.summary-box ul.pts li{margin:4px 0}
+
+/* mini spec-example thumbs inside feature cards */
+.mini-figs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.mini-figs figure{margin:0;background:#fff;border:1.5px solid var(--ink);border-radius:6px;overflow:hidden;text-align:center}
+.mini-figs figure img{width:100%;height:96px;object-fit:cover;display:block}
+.mini-figs figure figcaption{font-size:12.5px;font-weight:700;color:#222;padding:4px 6px;margin:0;line-height:1.25}
 
 /* ---------- auto-injected Examiner Key Words (/js/key-words.js) ---------- */
 .kw-box{
@@ -454,6 +473,12 @@ body.mode-all .step-foot{display:none}
   margin-bottom:14px;flex-wrap:wrap;gap:8px;
 }
 .score-bar .sc{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:24px;color:var(--accHi)}
+.score-bar .q-toggle{font:700 13px 'Barlow',Arial,sans-serif;background:transparent;color:#eeeae0;border:1.5px solid #666;border-radius:6px;padding:4px 10px;cursor:pointer}
+.score-bar .q-toggle:hover{border-color:#fff;color:#fff}
+.q.q-locked{display:none}
+.q-next-row{margin-top:10px;display:flex;justify-content:flex-end}
+.q-next-btn{font:700 14.5px 'Barlow',Arial,sans-serif;background:var(--acc);color:#fff;border:2px solid var(--acc);border-radius:7px;padding:6px 14px;cursor:pointer}
+.q-next-btn:hover{filter:brightness(1.08)}
 .q{background:#faf8f3;border:2px solid var(--ink);border-radius:8px;padding:14px 16px;margin-bottom:12px}
 .q .qh{display:flex;justify-content:space-between;gap:10px;font-weight:700}
 .q .mk{font-weight:700;color:var(--acc);white-space:nowrap}
@@ -511,7 +536,8 @@ body.mode-all .step-foot{display:none}
 
 /* ---------- print: always print all steps cleanly ---------- */
 @media print{
-  .study-nav,.step-foot,.micro-check button,.dq-bar{display:none!important}
+  .study-nav,.step-foot,.micro-check button,.dq-bar,.q-next-row,.score-bar .q-toggle{display:none!important}
+  .q.q-locked{display:block!important}
   body.mode-steps .wrap > section.step{display:block!important;box-shadow:none;page-break-inside:avoid}
   body{background:#fff}
 }

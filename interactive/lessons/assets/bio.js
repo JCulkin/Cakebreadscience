@@ -75,10 +75,10 @@ function labelled(type, opts){
   opts = opts || {}; const c = getCell(type, opts.style, opts.seed);
   const keys = (opts.labels || c.has).filter(k => c.parts[k]);
   const cw = c.w || 400, ch = c.h || 280;
-  const fs = opts.fs || (opts.big ? 40 : 16), z = opts.zoom || 1, W = cw*z, Hh = ch*z;
+  const fs = opts.fs || (opts.big ? 40 : 25), z = opts.zoom || 1, W = cw*z, Hh = ch*z;
   const items = keys.map(k => {
     const name = partName(k, type);
-    const lines = opts.big ? wrapLabel(name, 14) : [name];
+    const lines = wrapLabel(name, opts.big ? 14 : 15);
     return {k, p:[c.parts[k][0]*z, c.parts[k][1]*z], name, lines, h: lines.length * fs * 1.16};
   });
 
@@ -86,7 +86,7 @@ function labelled(type, opts){
   // balance sides
   while(sides.L.length > sides.R.length+1){ sides.L.sort((a,b)=>b.p[0]-a.p[0]); sides.R.push(sides.L.shift()); }
   while(sides.R.length > sides.L.length+1){ sides.R.sort((a,b)=>a.p[0]-b.p[0]); sides.L.push(sides.R.shift()); }
-  const padY = opts.big ? 18 : 8, lineGap = opts.big ? fs*0.42 : fs*0.45;
+  const padY = opts.big ? 18 : 14, lineGap = opts.big ? fs*0.42 : fs*0.36;
   let out = '', n = 0;
   for(const side of ['L','R']){
     const arr = sides[side].sort((a,b) => a.p[1]-b.p[1]);
@@ -105,11 +105,11 @@ function labelled(type, opts){
       const anchor = side==='L' ? 'end' : 'start';
       const firstY = it.y - ((it.lines.length - 1) * fs * 1.12)/2 + fs*0.35;
       const tspans = it.lines.map((ln, idx) => `<tspan x="${tx}" ${idx===0 ? `y="${f1(firstY)}"` : `dy="${f1(fs*1.12)}"`}>${ln}</tspan>`).join('');
-      out += `<g class="lab"${step}><line x1="${lx}" y1="${f1(it.y)}" x2="${f1(it.p[0])}" y2="${f1(it.p[1])}" stroke="#111" stroke-width="${opts.big?2.8:1.5}"/><circle cx="${f1(it.p[0])}" cy="${f1(it.p[1])}" r="${opts.big?5.5:3}" fill="#111"/>
+      out += `<g class="lab"${step}><line x1="${lx}" y1="${f1(it.y)}" x2="${f1(it.p[0])}" y2="${f1(it.p[1])}" stroke="#111" stroke-width="${opts.big?2.8:2}"/><circle cx="${f1(it.p[0])}" cy="${f1(it.p[1])}" r="${opts.big?5.5:4}" fill="#111"/>
         <text text-anchor="${anchor}" font-size="${fs}" font-weight="${opts.big?800:700}" font-family="Barlow,Arial,sans-serif" fill="#111">${tspans}</text></g>`;
     });
   }
-  const wid = arr => arr.length ? 28 + fs*0.56*Math.max(...arr.map(it => Math.max(...it.lines.map(s=>s.length)))) : 12;
+  const wid = arr => arr.length ? 30 + fs*0.60*Math.max(...arr.map(it => Math.max(...it.lines.map(s=>s.length)))) : 12;
   const ML = wid(sides.L), MR = wid(sides.R);
   return `<svg viewBox="${f1(-ML)} ${-padY} ${f1(W+ML+MR)} ${f1(Hh+padY*2)}" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><svg x="0" y="0" width="${W}" height="${Hh}" viewBox="0 0 ${cw} ${ch}" overflow="hidden">${c.svg}</svg>${out}</svg>`;
 }

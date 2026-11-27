@@ -284,12 +284,38 @@ function initEndTest(){
 
   out.insertAdjacentHTML('beforeend',
     `<p class="check-note"><b>Immediate check:</b> this checks what you just read, so it doesn't count towards securing a spec point yet. Come back on another day in <b>Practice</b> or <b>Breadventure Land</b> to lock it into long-term memory.</p>` +
-    `<div class="score-bar"><span>Multiple choice score</span><span class="sc">0 / ${mcTotal}</span></div>`);
+    `<div class="score-bar"><span class="q-prog">Question 1 of ${qList.length}</span><span class="sc">0 / ${mcTotal} MCQs</span><button type="button" class="q-toggle" id="qShowAll">Show all ${qList.length}</button></div>`);
+
+  const qCards = [];
+  let revealed = 1, showAll = false;
+  const syncReveal = () => {
+    qCards.forEach((el, idx) => {
+      el.classList.toggle('q-locked', !showAll && idx >= revealed);
+      const nr = $('.q-next-row', el);
+      if(nr) nr.style.display = (!showAll && idx === revealed - 1 && revealed < qCards.length) ? 'flex' : 'none';
+    });
+    const pg = $('.q-prog', out);
+    if(pg) pg.textContent = showAll ? `All ${qList.length} questions` : `Question ${Math.min(revealed, qList.length)} of ${qList.length}`;
+    const tb = $('#qShowAll', out);
+    if(tb) tb.textContent = showAll ? 'One at a time' : `Show all ${qList.length}`;
+  };
+  const revealNext = (fromIdx) => {
+    if(revealed <= fromIdx + 1 && revealed < qCards.length){
+      revealed = fromIdx + 2;
+      syncReveal();
+      qCards[revealed - 1].scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  };
+  const tb = $('#qShowAll', out);
+  if(tb) tb.onclick = () => { showAll = !showAll; syncReveal(); };
 
   qList.forEach((x, i) => {
     const d = document.createElement('div');
-    d.className = 'q';
+    d.className = 'q' + (i > 0 ? ' q-locked' : '');
     d.innerHTML = `<div class="qh"><span>${i+1}. ${x.q}</span><span class="mk">[${x.m} mark${x.m===1?'':'s'}]</span></div>`;
+    const nextRow = i < qList.length - 1
+      ? `<div class="q-next-row" style="display:none"><button type="button" class="q-next-btn">Next question (${i+2} / ${qList.length}) →</button></div>`
+      : '';
     if(x.type === 'mc'){
       const o = document.createElement('div');
       o.className = 'opts';
@@ -312,15 +338,20 @@ function initEndTest(){
           } else {
             fb.innerHTML = `<span style="color:var(--acc2)">✗ Not quite: the right answer is highlighted.</span> ${x.why}`;
           }
-          $('.sc', out).textContent = `${got} / ${mcTotal} (${tried} tried)`;
+          $('.sc', out).textContent = `${got} / ${mcTotal} MCQs (${tried} tried)`;
           if(tried === mcTotal){
             const sec = out.closest('section.step');
             if(sec) markStepDone(sec);
+          }
+          if(!showAll && i === revealed - 1 && i < qList.length - 1){
+            const nr = $('.q-next-row', d);
+            if(nr) nr.style.display = 'flex';
           }
         };
         o.appendChild(b);
       });
       d.append(o, fb);
+      if(nextRow) d.insertAdjacentHTML('beforeend', nextRow);
     } else {
       d.insertAdjacentHTML('beforeend',
         `<textarea placeholder="Write your answer first, then open the mark scheme and tick off each point you got..."></textarea>
@@ -330,15 +361,20 @@ function initEndTest(){
              <div class="ms-tally">Self-score: 0 / ${x.m}</div>
              ${x.tip ? `<p style="margin-top:6px">${x.tip}</p>` : ''}
            </div>
-         </details>`);
+         </details>` + nextRow);
       const cbs = $$('.ms-item input', d), tally = $('.ms-tally', d);
       cbs.forEach(cb => cb.onchange = () => {
         const n = cbs.filter(c => c.checked).length;
         tally.textContent = `Self-score: ${n} / ${x.m}`;
       });
     }
+    const nb = $('.q-next-btn', d);
+    if(nb) nb.onclick = () => revealNext(i);
+    qCards.push(d);
     out.appendChild(d);
   });
+  // For the first question if it's long-answer, show its Next button immediately
+  if(qList.length > 1 && qList[0].type !== 'mc') syncReveal();
 }
 
 /* ---------- Single Award auto-filter (/js/course.js) ---------- */
@@ -443,7 +479,7 @@ function renderKeyWords(){
   box.innerHTML = `<summary><span class="callout-tag">Key words for this topic</span><small>Exact wording that earns marks in exam answers</small></summary>` +
     `<dl class="kw-list">${rows.map(r => `<div class="kw-row${r.da ? ' da-only' : ''}"><dt>${esc(r.w)}</dt><dd>${esc(r.m)}</dd></div>`).join('')}</dl>` +
     `<div class="kw-foot"><a href="/Flashcards/?deck=keywords&spec=${encodeURIComponent(firstKey)}">🃏 Drill key words in Flashcards →</a><a href="/typing-game/">⌨️ Type Fast or Perish →</a></div>`;
-  const anchor = $('.next-hub', chk) || $('.practise', chk);
+  const anchor = $('.test-head', chk) || $('#qs', chk) || $('.next-hub', chk) || $('.practise', chk);
   if(anchor) chk.insertBefore(box, anchor); else chk.appendChild(box);
 }
 function initKeyWords(){
