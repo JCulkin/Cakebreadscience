@@ -52,6 +52,13 @@ All content, UI, print sheets, games, and teacher/family features on **cakebread
 - **Engagement over policing:** What matters most in secondary school is parents valuing learning, protecting a calm routine, and encouraging independence — *not* policing homework or acting as GCSE tutors (20–22% of secondary parents report lacking subject confidence).
 - **Zero-content-barrier design:** Any student/family-facing revision aid (Study Guides `/guide/`, Flashcards, Key Words, `/research/#families`) must work without parents needing to know IGCSE science: clear questions with bolded mark-scheme terms, short 5-minute routines, and transparent upcoming-test summaries.
 
-## 8. Public Reference Pages (Keep Aligned)
+## 8. Staging Review Hub Mandate (NEVER SKIP)
+- **Literally everything new or changed that needs teacher review MUST appear on `/staging-review/` before going live:**
+  - Class Slides / Revision Notes → `interactive/lessons/lessons.json` + `interactive/lessons/diff/data.json` (`#decks` / `#guides`).
+  - Worksheets & Topic Booklets → `worksheets/diff/data.json` (`#printables`).
+  - Flashcards → `staging-review/flashcards-diff.json` (`#flashcards`).
+  - **Every new page, UI change, colour fix, dashboard update, or site-wide feature** → add/update an entry in **`staging-review/site-changes.json`** (with `status: "review"`, `before`, `after`, and direct `previewUrl`) so it shows up automatically under **`🌐 Site & Features`** (`/staging-review/#site`) and in the yellow staging bar.
+
+## 9. Public Reference Pages (Keep Aligned)
 - **Teacher & family guide (with external links):** `/research/`
 - **Curious-student deep dive (subtle link from `/how-to-use/`):** `/how-to-use/science-of-learning.html`

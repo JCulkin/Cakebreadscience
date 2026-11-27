@@ -141,6 +141,7 @@ body.sg-viewing #sgModal{display:flex}
     <button type="button" class="tab" data-tab="guides">📖 Revision Notes <span class="cnt" id="cnt-guides">…</span></button>
     <button type="button" class="tab" data-tab="printables">📄 Printables <span class="cnt" id="cnt-printables">…</span></button>
     <button type="button" class="tab" data-tab="flashcards">🃏 Flashcards <span class="cnt" id="cnt-flashcards">…</span></button>
+    <button type="button" class="tab" data-tab="site">🌐 Site &amp; Features <span class="cnt" id="cnt-site">…</span></button>
   </div>
 </nav>
 
@@ -184,11 +185,12 @@ body.sg-viewing #sgModal{display:flex}
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
   const fetchJson = url => fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
-  const [LJ, LD, WD, FD] = await Promise.all([
+  const [LJ, LD, WD, FD, SD] = await Promise.all([
     fetchJson('/interactive/lessons/lessons.json'),
     fetchJson('/interactive/lessons/diff/data.json'),
     fetchJson('/worksheets/diff/data.json'),
-    fetchJson('/staging-review/flashcards-diff.json')
+    fetchJson('/staging-review/flashcards-diff.json'),
+    fetchJson('/staging-review/site-changes.json')
   ]);
 
   const ALL_LESSONS = [];
@@ -218,6 +220,7 @@ body.sg-viewing #sgModal{display:flex}
   const DECKS = (LD && LD.lessons) || [];
   const SHEETS = (WD && WD.sheets) || [];
   const FCARDS = (FD && FD.cards) || [];
+  const SITE_ITEMS = (SD && SD.items) || [];
 
   const decksToReview = ALL_LESSONS.filter(l => l.status !== 'checked');
   const decksChecked = ALL_LESSONS.filter(l => l.status === 'checked');
@@ -225,16 +228,19 @@ body.sg-viewing #sgModal{display:flex}
   const guidesChecked = ALL_LESSONS.filter(l => l.split && l.studentStatus === 'checked');
   const printablesToReview = SHEETS.filter(s => s.underReview || !s.checked);
   const printablesChecked = SHEETS.filter(s => !s.underReview && s.checked);
+  const siteToReview = SITE_ITEMS.filter(x => x.status !== 'checked');
+  const siteChecked = SITE_ITEMS.filter(x => x.status === 'checked');
 
   document.getElementById('cnt-decks').textContent = String(decksToReview.length);
   document.getElementById('cnt-guides').textContent = String(guidesToReview.length);
   document.getElementById('cnt-printables').textContent = String(printablesToReview.length);
   document.getElementById('cnt-flashcards').textContent = String(FCARDS.length);
+  document.getElementById('cnt-site').textContent = String(siteToReview.length);
   document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (WD && WD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
 
   const normTab = h => h === 'worksheets' ? 'printables' : h;
   let activeTab = normTab(location.hash.replace(/^#/, '') || 'decks');
-  if (!['decks', 'guides', 'printables', 'flashcards'].includes(activeTab)) activeTab = 'decks';
+  if (!['decks', 'guides', 'printables', 'flashcards', 'site'].includes(activeTab)) activeTab = 'decks';
   const defaultFilter = tab => tab === 'flashcards' ? 'image' : 'review';
   let activeFilter = defaultFilter(activeTab);
   let fcLimit = 24;
@@ -442,11 +448,62 @@ body.sg-viewing #sgModal{display:flex}
     if (more) more.onclick = () => { fcLimit += 24; renderFlashcards(); };
   }
 
+  function renderSite() {
+    const fEl = document.getElementById('filters');
+    const CAT_COL = { pages: '#1d6b2f', features: '#1d4ed8', design: '#8c0013' };
+    const CAT_LBL = { pages: 'New Page', features: 'Feature', design: 'Design' };
+    const fs = [
+      ['review', `Needs review (${siteToReview.length})`],
+      ['pages', `New pages (${siteToReview.filter(x => x.category === 'pages').length})`],
+      ['features', `Features (${siteToReview.filter(x => x.category === 'features').length})`],
+      ['design', `Design (${siteToReview.filter(x => x.category === 'design').length})`],
+      ...(siteChecked.length ? [['checked', `Checked (${siteChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const list = activeFilter === 'checked'
+      ? siteChecked
+      : siteToReview.filter(x => activeFilter === 'review' || x.category === activeFilter);
+
+    const cardHtml = x => {
+      const col = CAT_COL[x.category] || '#111';
+      const extras = (x.extraLinks || []).map(l => `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join('');
+      const ba = (x.before || x.after)
+        ? `<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13.5px;line-height:1.4">
+            <div style="background:#faf9f6;border:1px solid #ddd;border-radius:4px;padding:7px 10px"><b style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#555;display:block;margin-bottom:2px">Before</b>${esc(x.before || '—')}</div>
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:7px 10px"><b style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#15803d;display:block;margin-bottom:2px">After (Staging)</b>${esc(x.after || '—')}</div>
+          </div>` : '';
+      return `<div class="card" style="--c:${col}">
+        <div class="card-row nocode">
+          <div class="info">
+            <h3>${esc(x.title)}</h3>
+            <p style="margin-top:4px;font-size:14.5px;color:#333;line-height:1.45">${esc(x.summary)}</p>
+            <div class="pills">
+              <span class="pill ${x.status === 'checked' ? 'chk' : 'rev'}">${x.status === 'checked' ? '✓ Checked' : 'Needs review'}</span>
+              <span class="pill tier">${esc(CAT_LBL[x.category] || x.category || 'Site')}</span>
+              ${x.date ? `<span class="pill base">${esc(x.date)}</span>` : ''}
+            </div>
+            ${ba}
+          </div>
+          <div class="acts">
+            <a class="btn primary" href="${esc(x.previewUrl)}" target="_blank" rel="noopener">Open preview ↗</a>
+            ${extras}
+          </div>
+        </div>
+      </div>`;
+    };
+
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">Site Pages &amp; Features <small>${list.length} item${list.length === 1 ? '' : 's'} · everything non-lesson/worksheet waiting for review on staging</small></h2>`
+      + (list.map(cardHtml).join('') || '<p>Nothing waiting for review in this filter.</p>');
+  }
+
   function render() {
     document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === activeTab));
     if (activeTab === 'decks') renderDecks();
     else if (activeTab === 'guides') renderGuides();
     else if (activeTab === 'printables') renderPrintables();
+    else if (activeTab === 'site') renderSite();
     else renderFlashcards();
   }
 
@@ -513,7 +570,7 @@ body.sg-viewing #sgModal{display:flex}
 
   window.addEventListener('hashchange', () => {
     const h = normTab(location.hash.replace(/^#/, ''));
-    if (['decks', 'guides', 'printables', 'flashcards'].includes(h) && h !== activeTab) {
+    if (['decks', 'guides', 'printables', 'flashcards', 'site'].includes(h) && h !== activeTab) {
       activeTab = h; activeFilter = defaultFilter(h); render();
     }
   });

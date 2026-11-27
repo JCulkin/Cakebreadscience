@@ -1,0 +1,118 @@
+{
+  "updated": "2026-11-27",
+  "note": "Every new page, UI redesign, tool, or site-wide feature waiting for teacher review on staging MUST be listed here so it appears on /staging-review/#site before going live.",
+  "items": [
+    {
+      "id": "subject-colours",
+      "category": "design",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Subject colour alignment (Chemistry red / Physics amber)",
+      "summary": "Aligned Chemistry (#c8001e / #8c0013) and Physics (#d08000 / #8a5000) across the Homepage directory and Question Booklets so subject colours match Spec Trackers, Worksheets, and Revision Notes everywhere.",
+      "before": "Homepage used amber for Chemistry and blue for Physics; Booklets used blue for Physics 6-Markers.",
+      "after": "Biology = green, Chemistry = crimson red, Physics = amber gold consistently across all hubs.",
+      "previewUrl": "/?dir=1#interactives",
+      "extraLinks": [
+        { "label": "Question Booklets", "url": "/booklets/" }
+      ]
+    },
+    {
+      "id": "research-page",
+      "category": "pages",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Teacher & Family Research Page (/research/)",
+      "summary": "Explains the cognitive science, UK classroom pedagogy (EEF, Mr Barton, TeacherToolkit, CogSciSci), web/print clarity (Caviglioli, NN/g, GOV.UK, BDA), game motivation (SDT, Sailer & Homner), and family learning routines behind Cakebread Science, with verified external links.",
+      "before": "No teacher- or family-facing explanation page existed on the site.",
+      "after": "Public (no sign-in, noindex while in review) page linked from Admin → Site → Research, including a shareable #families guide.",
+      "previewUrl": "/research/",
+      "extraLinks": [
+        { "label": "Jump to Families section", "url": "/research/#families" }
+      ]
+    },
+    {
+      "id": "student-science-of-learning",
+      "category": "pages",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Curious-Student Science of Learning Page (/how-to-use/science-of-learning.html)",
+      "summary": "Plain-English deep dive for curious Years 8–11 students covering Illusion of Competence, Desirable Difficulties, 2-day spacing, interleaving, Questing psychology, and 5-minute family quizzing.",
+      "before": "No deeper student-facing memory science page existed.",
+      "after": "Subtly linked at the bottom of /how-to-use/ (not pushed in headers, tours, or Student Home).",
+      "previewUrl": "/how-to-use/science-of-learning.html",
+      "extraLinks": [
+        { "label": "How to Use This Site", "url": "/how-to-use/" }
+      ]
+    },
+    {
+      "id": "student-home-redesign",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "3-Zone Student Home (/today/) & Smart Homepage Routing",
+      "summary": "Redesigned /today/ into 3 calm zones: greeting + 1-click ⚡ Start now + unified 'From your teacher' (Homework & Upcoming tests), 'Up next for you' beside 'Your GCSE progress' + compact full-topic 'Covered in class' drawer, and 6-tile Explore dock. Signed-in students route straight to /today/.",
+      "before": "Long ungrouped To do list; signed-in students landed on the full directory.",
+      "after": "Clear 3-zone Student Home; test live using the purple 'Simulate Y10 student' button in the top bar.",
+      "previewUrl": "/today/",
+      "extraLinks": [
+        { "label": "Full Directory (?dir=1)", "url": "/?dir=1" }
+      ]
+    },
+    {
+      "id": "how-to-use-and-tours",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Student Guide (/how-to-use/) & Spotlight Guided Tours (/js/tour.js)",
+      "summary": "Brief student-facing tutorial page (linked via ❓ Guide in headers) plus first-visit dimmed spotlight + directional-arrow tours across key student pages (never shown on /admin/ or Class Slides).",
+      "before": "No guided onboarding or student tutorial page.",
+      "after": "One-time per-page Spotlight tours with a reminder pointing to ❓ Guide + replay links.",
+      "previewUrl": "/how-to-use/",
+      "extraLinks": [
+        { "label": "Preview Student Home tour", "url": "/today/?tour=1" }
+      ]
+    },
+    {
+      "id": "spaced-homework",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "2-Day Spaced Homework Default & Live Homework Progress Bar",
+      "summary": "Admin → Teaching now defaults to 2-day spaced missions (10 Qs × 2 different days). Practice & Questing track ?hw=<id> live with a progress bar and clear Continue / Day-1-done / Homework-complete end banners.",
+      "before": "Homework defaulted to 20 right in one sitting; Practice/Questing didn't know when a mission was part of homework.",
+      "after": "Research-backed 2-day spaced missions with unmistakable completion feedback and automatic next-day badge wakeup.",
+      "previewUrl": "/admin/#teach",
+      "extraLinks": [
+        { "label": "Student Home", "url": "/today/" }
+      ]
+    },
+    {
+      "id": "y10-simulator",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Staging-Only Year 10 Student Simulator (/js/staging-sim.js)",
+      "summary": "Top-bar '🧑‍🎓 Simulate Y10 student' button (strictly disabled on live cakebreadscience.com and /admin/) that previews Alex Ten (Year 10) with rich homework, tests, 30 covered sub-topics, 14 due flashcards, and tours in an isolated localStorage sandbox.",
+      "before": "Testing student flows on staging required signing in as a separate student account.",
+      "after": "One click launches a full sandboxed Y10 student with Replay tour, Reset demo, and Exit sim controls.",
+      "previewUrl": "/?dir=1",
+      "extraLinks": [
+        { "label": "Student Home", "url": "/today/" }
+      ]
+    },
+    {
+      "id": "admin-homework-cleanup",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Admin Outstanding Homework View & Inactive Account Cleanup",
+      "summary": "Added Outstanding Homework summary cards in Admin → Teaching, sortable Homework column + Outstanding filter + inactive account cleanup in Admin → Students, and per-student outstanding homework + Remove account in the Student drawer.",
+      "before": "Hard to see overdue homework across a year group or clean up unused student accounts.",
+      "after": "At-a-glance overdue badges, student filtering, and safe non-admin data deletion.",
+      "previewUrl": "/admin/#teach",
+      "extraLinks": [
+        { "label": "Admin → Students", "url": "/admin/#students" }
+      ]
+    }
+  ]
+}

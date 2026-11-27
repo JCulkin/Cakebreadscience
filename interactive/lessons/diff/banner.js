@@ -7,9 +7,10 @@
     fetch('/interactive/lessons/lessons.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
     fetch('/interactive/lessons/diff/data.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
     fetch('/worksheets/diff/data.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
-    fetch('/staging-review/flashcards-diff.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+    fetch('/staging-review/flashcards-diff.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; }),
+    fetch('/staging-review/site-changes.json', { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
   ]).then(function(res){
-    var lj = res[0], ld = res[1], wd = res[2], fd = res[3];
+    var lj = res[0], ld = res[1], wd = res[2], fd = res[3], sd = res[4];
     var deckRev = 0, guideRev = 0;
     if (lj && lj.subjects) {
       lj.subjects.forEach(function(s){
@@ -26,11 +27,13 @@
     }
     var pCount = (wd && wd.sheets) ? wd.sheets.filter(function(s){ return s.underReview || !s.checked; }).length : 0;
     var fCount = (fd && fd.total) ? fd.total : 0;
+    var sCount = (sd && sd.items) ? sd.items.filter(function(x){ return x.status !== 'checked'; }).length : 0;
     var parts = [];
     if (deckRev) parts.push(deckRev + ' class slide' + (deckRev === 1 ? '' : 's'));
     if (guideRev) parts.push(guideRev + ' revision notes');
     if (pCount) parts.push(pCount + ' printable' + (pCount === 1 ? '' : 's'));
     if (fCount) parts.push(fCount + ' flashcard' + (fCount === 1 ? '' : 's'));
+    if (sCount) parts.push(sCount + ' site change' + (sCount === 1 ? '' : 's'));
     if (!parts.length) parts.push('Everything up to date');
 
     var simOn = false; try { simOn = localStorage.getItem('cbs.sim.y10') === '1'; } catch (e) {}
@@ -47,6 +50,7 @@
       + '<a href="/staging-review/#guides" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Revision Notes</a>'
       + '<a href="/staging-review/#printables" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Printables</a>'
       + '<a href="/staging-review/#flashcards" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Flashcards</a>'
+      + '<a href="/staging-review/#site" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Site &amp; Features</a>'
       + '</span>';
     document.body.insertBefore(bar, document.body.firstChild);
     var sb = bar.querySelector('#staging-sim-btn');
