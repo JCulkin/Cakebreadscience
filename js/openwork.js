@@ -22,10 +22,19 @@
     return within(Promise.any ? Promise.any([sdk, rest]) : sdk, 12000);
   }
   const FRESH = /^\/(today|work)\b|practice\.html|adventurer-mission\.html/.test(location.pathname);   // pages where work gets done: never trust the cache
-  /* is this piece of work still open for this student? */
-  function open(a, id, u) {
+  /* is this piece of work still open for this student (and needing action today)? */
+  function open(a, id, u, d) {
     const sa = u.course === 'SA';   // Single Award students: work sized for their course (nSA / needSA, see /js/school.js)
     if (a.type === 'test') return !(sa && a.nSA === 0) && !(((u.work || {})[id] || {}).done);
+    if (a.type === 'spaced') {
+      if (sa && a.needSA === 0) return false;
+      const w = (u.work || {})[id] || {}, days = (w.days && typeof w.days === 'object') ? w.days : {};
+      const need = Math.max(1, +a.days || 2);
+      if (w.done || Object.keys(days).length >= need) return false;
+      // Already completed today's mission: stay quiet until tomorrow (unless already overdue)
+      if (days[d] && !(a.due && a.due < d)) return false;
+      return true;
+    }
     if (sa && a.needSA === 0) return false;
     const q = ((u.specQuiz || {}).q) || {}, set = a.set || '';
     if (a.pts && a.need) {
@@ -49,7 +58,7 @@
       if (me !== uid) return;
       const u = ud.exists ? ud.data() || {} : {}, y = u.year, all = as || {}, d = today();
       const mine = Object.entries(all).filter(([, a]) => a && !a.archived && ((y && a.years && a.years['Y' + y]) || (a.students && a.students[me])));
-      const left = mine.filter(([id, a]) => open(a, id, u));
+      const left = mine.filter(([id, a]) => open(a, id, u, d));
       W.n = left.length; W.late = left.filter(([, a]) => a.due && a.due < d).length;
       try { sessionStorage.setItem(KEY + me, JSON.stringify({ t: Date.now(), n: W.n, late: W.late })); } catch (e) {}
       emit();

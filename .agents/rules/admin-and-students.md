@@ -31,10 +31,8 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
 
 ## Set work, years, teaching
 - `users/{uid}.year` 8–11, chosen once by the student (`/js/year.js`), changeable by the admin.
-- `school/assign/{id}`: practise work (sub-topics/points + `need`, `needSA`) or a test (`qids`, `nSA`) for years and/or named students
-  (`students: {uid: true}`), due date, note, `edited`. Tests at `/work/?id=…` (answers + diagram seeds in `users/{uid}.work[id]`).
-  `/js/school.js` (`CBSSchool`: `forMe`, `progress`, `audience`, `load`, `rtGet`…). `/js/openwork.js` turns the To do button red "! To do · N".
-- `school/taught/Y10/C1a` = what each year has been taught (admin Teaching tab; shows as "Covered in class").
+- `school/assign/{id}`: **spaced missions** (`type: 'spaced'`, **default** in Admin → Teaching: `days` [default 2] × `qPerDay` [default 10], logged in `users/{uid}.work[id].days[YYYY-MM-DD]`), practise work (sub-topics/points + `need`, `needSA`) or a test (`qids`, `nSA`) for years and/or named students (`students: {uid: true}`), due date, note, `edited`. Tests at `/work/?id=…` (answers + diagram seeds in `users/{uid}.work[id]`). Practice & Questing accept `?hw=<id>` for live homework progress bars (`CBSSchool.hwBarHtml`) and clear Continue / Day-1-done / Homework-complete end banners (`CBSSchool.hwDoneHtml`). `/js/openwork.js` turns the To do button red "! To do · N" (quieting Day-1-done spaced work until tomorrow).
+- `school/taught/Y10/C1a` = what each year has been taught (admin Teaching tab; shows as "Covered in class" and powers the one-click `⚡ Start revising →` auto-launcher on `/today/?go=1` & `index.html`).
 
 ## To do — `/today/` (students' dashboard; was "My day")
 - Order (updated 27 Nov): greeting → **Set by your teacher** (at the very top when open work exists, with crisp rows, symbol buttons `📝 Practise` / `⚔️` / `🃏`, collapsible multi-topic picker, and collapsed `✓ Completed (N)`) → **Upcoming tests** (compact rows with `📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards`) → Today line → What to revise (uniform symbol buttons `📝 ⚔️ 🃏 🎓 📄` with 1-line legend) | The spec (with **Covered in class** as a closed `<details>` inside it) → Last 14 days. Homepage (`index.html`) also shows a slim `#cbs-hw-banner` strip whenever `CBSWork` reports open work. Every database read has a time limit; it shows a saved copy if the network blocks Firebase.

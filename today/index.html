@@ -71,6 +71,12 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 .pill.late{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
 .pill.open{background:#fef08a;color:#713f12;border-color:#eab308}
 .pill.done{background:#dcfce7;color:#15803d;border-color:#86efac}
+.pill.cool{background:#e0f2fe;color:#075985;border-color:#7dd3fc}
+.qgo{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 14px;background:#111;color:var(--cream);border:2px solid #111;border-left:7px solid var(--green);padding:12px 16px;margin-bottom:14px}
+.qgo-txt b{font:900 20px/1.1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;display:block;color:#fff}
+.qgo-txt span{font-size:13.5px;color:#d6d3cb}
+.qgo .btn{background:#facc15;color:#111;box-shadow:0 3px 0 #000;white-space:nowrap}
+.qgo .btn:hover{background:#fde047}
 .setw .a{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:10px 0}
 .setw .a:first-of-type{border-top:0;padding-top:6px}
 .setw .a-info{flex:1 1 260px;min-width:0}
@@ -219,6 +225,7 @@ async function draw() {
   const streak = (() => { let n = 0; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i < days.length - 1) break; } return n; })();
 
   $('main').innerHTML = `<div class="hello"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} spec points secured${streak > 1 ? ` · 🔥 ${streak} days in a row` : ''}</p></div></div>
+    <div id="quickGo"></div>
     <div id="school"></div>
     <div id="guides"></div>
     <div class="tline"><b>Today</b>
@@ -274,24 +281,53 @@ async function drawSchool() {
   if (window.CBSWork) CBSWork.refresh();   // keep the red "To do !" buttons in step with this page
   const secured = k => QE.pointState(k).secured;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const chip = k => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length}</i></a>`; };
+  const chip = (k, hwId) => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}${hwId ? '&hw=' + encodeURIComponent(hwId) : ''}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length}</i></a>`; };
   const openItems = [], doneItems = [];
-  let hasLate = false, hasPractiseOpen = false;
+  let hasLate = false, hasPractiseOpen = false, firstAction = null;
   set.forEach(a => {
+    const encHw = encodeURIComponent(a.id), encT = encodeURIComponent(a.title || 'Homework');
     if (S.isTest(a)) {
       const r = S.testOf(udoc, a), late = !!(a.due && a.due < today && r.state !== 'done');
       if (r.state === 'done') {
-        doneItems.push(`<div class="done-row"><span>✓ <b>${esc(a.title || 'Test')}</b> <span class="small muted">· scored ${r.score}/${r.n}</span></span><a class="small" href="/work/?id=${encodeURIComponent(a.id)}">Review →</a></div>`);
+        doneItems.push(`<div class="done-row"><span>✓ <b>${esc(a.title || 'Test')}</b> <span class="small muted">· scored ${r.score}/${r.n}</span></span><a class="small" href="/work/?id=${encHw}">Review →</a></div>`);
         return;
       }
       if (late) hasLate = true;
+      const url = `/work/?id=${encHw}`;
+      if (!firstAction) firstAction = { url, label: `Homework test: ${a.title || 'Test'}${late ? ' (overdue)' : ''}`, cta: r.state === 'started' ? '▶ Carry on test →' : '▶ Start homework test →' };
       const pct = r.n ? Math.round(r.answered / r.n * 100) : 0;
       openItems.push(`<div class="a"><div class="a-info">
         <div class="a-top"><span class="a-title">📋 ${esc(a.title || 'Test')}</span>${late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}<span class="pill">Test</span></div>
         ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
         <div class="a-meta">${r.state === 'started' ? `<div class="bar"><i style="width:${pct}%;background:var(--l)"></i></div><span>${r.answered}/${r.n} answered</span>` : `<span>${r.n} questions · one go</span>`}</div>
       </div><div class="a-acts">
-        <a class="ico go" href="/work/?id=${encodeURIComponent(a.id)}">▶ ${r.state === 'started' ? 'Carry on' : 'Start test'}</a>
+        <a class="ico go" href="${url}">▶ ${r.state === 'started' ? 'Carry on' : 'Start test'}</a>
+      </div></div>`);
+    } else if (S.isSpaced(a)) {
+      const r = S.spacedOf(udoc, a, today), late = !!(a.due && a.due < today && r.state !== 'done');
+      if (r.state === 'done') {
+        doneItems.push(`<div class="done-row"><span>✓ <b>${esc(a.title || 'Homework')}</b> <span class="small muted">· ${r.daysDone}/${r.daysNeed} days</span></span><span class="pill done">Done</span></div>`);
+        return;
+      }
+      if (late) hasLate = true;
+      hasPractiseOpen = true;
+      const validItems = (a.items || []).filter(k => S.pointsOf(k).length);
+      const pts = [...new Set(validItems.flatMap(S.pointsOf))];
+      const hasCards = pts.some(k => QE.CARDS_ON && QE.CARDS_ON[k]);
+      const encSubs = encodeURIComponent(validItems.join(','));
+      const questUrl = `${Q}adventurer-mission.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
+      const practUrl = `${Q}practice.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
+      const cardsUrl = `/Flashcards/?subs=${encSubs}&t=${encT}`;
+      if (!r.doneToday && validItems.length && !firstAction) {
+        firstAction = { url: questUrl, label: `Homework: ${a.title || 'Mission'} (Day ${r.daysDone + 1}/${r.daysNeed} · ${r.qPerDay} Qs)`, cta: `⚔️ Start Day ${r.daysDone + 1} mission →` };
+      }
+      openItems.push(`<div class="a"><div class="a-info">
+        <div class="a-top"><span class="a-title">🎯 ${esc(a.title || 'Homework')}</span>${r.doneToday ? `<span class="pill cool">Day ${r.daysDone}/${r.daysNeed} done today ✓</span>` : late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}</div>
+        ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
+        <div class="a-meta"><div class="bar" title="${r.daysDone} of ${r.daysNeed} days done"><i style="width:${r.daysDone / r.daysNeed * 100}%;background:${r.doneToday ? 'var(--s)' : 'var(--l)'}"></i></div><span>${r.doneToday ? `Come back another day for Day ${r.daysDone + 1}` : `<b>Day ${r.daysDone + 1} of ${r.daysNeed}</b> · 1 mission (${r.qPerDay} Qs)`}</span></div>
+      </div><div class="a-acts">
+        ${validItems.length ? (r.doneToday ? `<a class="ico" href="${practUrl}" title="Extra practice">📝 Extra</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards" aria-label="Flashcards">🃏</a>` : ''}`
+          : `<a class="ico go" href="${questUrl}" title="Do today's mission in Cakebread Questing">⚔️ Day ${r.daysDone + 1}</a><a class="ico" href="${practUrl}" title="Do today's mission in Practice (no game)" aria-label="Practice">📝</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}`) : ''}
       </div></div>`);
     } else {
       const p = S.progress(prog, a), late = !!(a.due && a.due < today && !p.done);
@@ -305,11 +341,14 @@ async function drawSchool() {
       const pts = [...new Set(validItems.flatMap(S.pointsOf))];
       const hasCards = pts.some(k => QE.CARDS_ON && QE.CARDS_ON[k]);
       const nRun = Math.max(5, Math.min(20, p.target - p.got));
-      const encSubs = encodeURIComponent(validItems.join(',')), encT = encodeURIComponent(a.title || 'Set work');
-      const practUrl = validItems.length === 1 ? S.practise(validItems[0]) : `${Q}practice.html?subs=${encSubs}&n=${nRun}&t=${encT}`;
-      const questUrl = `${Q}adventurer-mission.html?subs=${encSubs}&n=${nRun}&t=${encT}`;
+      const encSubs = encodeURIComponent(validItems.join(','));
+      const practUrl = validItems.length === 1 ? `${S.practise(validItems[0])}&hw=${encHw}` : `${Q}practice.html?subs=${encSubs}&n=${nRun}&t=${encT}&hw=${encHw}`;
+      const questUrl = `${Q}adventurer-mission.html?subs=${encSubs}&n=${nRun}&t=${encT}&hw=${encHw}`;
       const cardsUrl = `/Flashcards/?subs=${encSubs}&t=${encT}`;
-      const topicDrop = validItems.length > 1 ? `<details class="topics"><summary>Pick a topic (${validItems.length})</summary><div class="items">${validItems.map(chip).join('')}</div></details>` : '';
+      if (validItems.length && !firstAction) {
+        firstAction = { url: practUrl, label: `Homework: ${a.title || 'Work set'} (${p.got}/${p.target} right)`, cta: '📝 Continue homework →' };
+      }
+      const topicDrop = validItems.length > 1 ? `<details class="topics"><summary>Pick a topic (${validItems.length})</summary><div class="items">${validItems.map(k => chip(k, a.id)).join('')}</div></details>` : '';
       openItems.push(`<div class="a"><div class="a-info">
         <div class="a-top"><span class="a-title">🎯 ${esc(a.title || 'Work set')}</span>${late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}</div>
         ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
@@ -321,9 +360,31 @@ async function drawSchool() {
     }
   });
   const taught = y ? Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]) : [];
+  /* One-click "Revise what's next" for students who don't want to choose:
+     1) Open homework needing action today -> 2) Upcoming test unsecured points -> 3) Covered in class (weakest/unsecured) -> 4) QE.picks()[0] */
+  if (!firstAction && taught.length) {
+    const allSubs = QE.allSubs(), subMap = {}; allSubs.forEach(x => subMap[x.key] = x);
+    const covSubs = taught.map(k => subMap[k]).filter(x => x && x.st.n > 0);
+    const unsec = covSubs.filter(x => x.st.secured < x.st.n);
+    const pickCov = (unsec.length ? unsec : covSubs).sort((a, b) => (b.st.rusty - a.st.rusty) || (a.st.secured / a.st.n) - (b.st.secured / b.st.n))[0];
+    if (pickCov) firstAction = { url: `${Q}adventurer-mission.html?sub=${encodeURIComponent(pickCov.key)}`, label: `Covered in class: ${pickCov.subj} ${pickCov.key.slice(1)} · ${pickCov.name}`, cta: '⚡ Revise now →' };
+  }
+  if (!firstAction) {
+    const pk = QE.picks()[0];
+    if (pk) firstAction = { url: `${Q}adventurer-mission.html?sub=${encodeURIComponent(pk.sub.key)}`, label: `Recommended: ${pk.sub.subj} ${pk.sub.key.slice(1)} · ${pk.sub.name}`, cta: '⚡ Revise now →' };
+  }
+  const qg = $('quickGo');
+  if (qg && firstAction && y) {
+    qg.innerHTML = `<div class="qgo"><div class="qgo-txt"><b>⚡ Don't know what to revise?</b><span>${esc(firstAction.label)}</span></div><a class="btn" href="${firstAction.url}">${firstAction.cta}</a></div>`;
+    if (new URLSearchParams(location.search).get('go') === '1') {
+      try { history.replaceState(null, '', '/today/'); } catch (e) {}
+      location.href = firstAction.url;
+      return;
+    }
+  } else if (qg) { qg.innerHTML = ''; }
   const noYear = y ? '' : `<div class="card setw"><h2>Which year are you in?</h2><p class="small">Choose your year to see your homework and upcoming tests.</p><p style="margin-top:8px"><button class="btn" id="yrBtn2">Choose your year</button></p></div>`;
   const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
+  const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(k => chip(k)).join('')}</div>`).join('');
   const staleNote = SCHOOL.stale ? `<p class="small muted" style="margin-bottom:6px">⚠️ Showing the copy saved on ${new Date(SCHOOL.savedAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}: reload to try again.</p>` : '';
   const doneBlock = doneItems.length ? `<details class="done-list"><summary>✓ Completed (${doneItems.length})</summary>${doneItems.join('')}</details>` : '';
   const doneBox = $('schoolDone');
@@ -345,7 +406,7 @@ function safeDraw() {
     console.error('To do', e);
     if (!QE.user) return;
     $('main').innerHTML = `<div class="hello"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div>
-      <div id="school"></div><div id="guides"></div><div id="schoolDone"></div>
+      <div id="quickGo"></div><div id="school"></div><div id="guides"></div><div id="schoolDone"></div>
       <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ Breadventure Land</a><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice</a></div>
       <p class="small muted" style="margin-top:8px">Part of this page couldn't load, so here's the short version.</p></div>`;
     drawSchool();

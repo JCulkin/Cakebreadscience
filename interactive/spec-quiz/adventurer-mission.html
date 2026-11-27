@@ -140,6 +140,7 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
   </section>
 
   <section id="fight" class="hidden">
+    <div id="hwBar"></div>
     <div class="arena" id="arena">
       <div class="side"><img class="px" id="youFig" alt="You"><div class="n" id="youName"></div></div>
       <div class="vs">VS</div>
@@ -179,6 +180,7 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 <script src="adventurer-items.js"></script>
 <script src="adventurer-pixel.js"></script>
 <script src="adventurer-shell.js"></script>
+<script src="/js/school.js"></script>
 <script src="misconceptions.js"></script>
 <script>
 ADV.nav('mission');
@@ -193,6 +195,29 @@ const foeOf = sub => { const m = MISCON[sub.key] || { n: 'The Common Misconcepti
   return Object.assign({ name: m.n, shape: m.s, col: SCI_COL[sub.L], img: ADV.icon(ADV.ICONS[m.s] ? m.s : 'boss', SCI_COL[sub.L]) }, m); };
 const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
+const HW_ID = new URLSearchParams(location.search).get('hw') || '';
+const HW = { id: HW_ID, a: null, spaced: null, loaded: false };
+async function loadHw() {
+  if (!HW.id || HW.loaded || !window.CBSSchool || !window.firebase || !firebase.database) return;
+  HW.loaded = true;
+  HW.a = await CBSSchool.loadOne(firebase.database(), HW.id);
+  if (HW.a && CBSSchool.isSpaced(HW.a) && QE.user && firebase.firestore) {
+    try {
+      const doc = (await firebase.firestore().collection('users').doc(QE.user.uid).get()).data() || {};
+      HW.spaced = CBSSchool.spacedOf(doc, HW.a);
+    } catch (e) {}
+  }
+  renderHwBar();
+}
+function renderHwBar() {
+  const el = $('hwBar'); if (!el) return;
+  if (!HW.a || !MS || !window.CBSSchool) { el.innerHTML = ''; return; }
+  el.innerHTML = CBSSchool.hwBarHtml(HW.a, {
+    answered: MS.res.length, total: MS.qs.length,
+    daysDone: HW.spaced ? HW.spaced.daysDone : 0, daysNeed: HW.spaced ? HW.spaced.daysNeed : (HW.a.days || 2), doneToday: HW.spaced ? HW.spaced.doneToday : false
+  });
+}
+if (HW.id) { loadHw(); QE.onChange(() => { if (!HW.a) loadHw(); }); }
 
 /* the Professor's briefing (chapter 1: his notes, found in the Cakelab) */
 $('prof').innerHTML = S.chapter < 2 ? `<img src="${ADV.icon('prof')}" alt="" style="filter:grayscale(1);opacity:.6"><p><b>Found pinned up in the empty Cakelab:</b> <i>“Misconceptions are everywhere. Knock them out with real science and you'll be strong enough to come and get me. — The Professor. P.S. Bring snacks.”</i></p>`
@@ -242,6 +267,7 @@ function start(k, point, G) {
   $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
   $('quote').textContent = `“${foe.o}”` + (G ? ` · ${G.guide.title || 'Study guide'}` : '') + (point ? ` · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : '');
   MS.nh = 0; MS.nw = 0; MS.streak = 0; MS.top = 0; MS.retry = null; MS.ri = 0; MS.fixed = 0; MS.fixedIds = new Set();
+  renderHwBar();
   scrollTo(0, 0); show();
 }
 /* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — a mission of n questions from those sub-topics against
@@ -314,6 +340,7 @@ $('opts').addEventListener('click', e => {
     { const ws = MS.foe.w.concat([`See? ${MS.foe.name}!`]); $('quote').textContent = `“${ws[MS.nw++ % ws.length]}”`; }
   }
   $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><img class="face" src="${ADV.face(ok ? (q.hard ? 'laugh' : 'happy') : 'worried')}" alt=""><span class="t">${ok ? (again ? `Corrected — ${q.tf !== undefined ? 'quarter of' : 'half'} a hit!` : 'Right — hit!') : again ? 'Still not quite.' : 'Not quite.'}</span>${nuc(q.x)}<div class="campnote">${notes.join(' · ')}</div></div>`;
+  renderHwBar();
   const more = again ? MS.ri + 1 < MS.retry.length && MS.hp > 0 : MS.i + 1 < MS.qs.length;
   $('nextBtn').textContent = more ? 'Next →' : !again && MS.hp > 0 && MS.res.some(r => !r.ok) ? 'Second wind →' : 'Finish the fight →';
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
@@ -371,7 +398,7 @@ function verdict(right, won) {   // the Professor's reaction (mascot heads, 10 N
     : ['worried', 'Oof, it is still looking smug. Check the answers below: this is exactly how you get better.'];
   return `<div class="verdict"><img src="${ADV.face(f)}" alt=""><p><b>The Professor${S.chapter < 2 ? ' <span class="small">(shouting from his cage)</span>' : ''}:</b> <i>“${line}”</i></p></div>`;
 }
-function finish() {
+async function finish() {
   const right = MS.res.filter(r => r.ok).length, won = MS.hp === 0;
   const before = MS.before, capBefore = MS.cap0, [statName, sk, cssk] = STAT[MS.sub.L];
   const flawless = right === MS.qs.length, coins = 10 + (won ? 10 : 0) + (flawless ? 10 : 0);
@@ -387,15 +414,29 @@ function finish() {
   const firstRev = !QE.revisedToday();
   QE.finishMission({ coins, loot: drop.id, right });
   QE.log('⚔️', `Mission ${MS.sub.key.slice(1)} vs “${MS.foe.name}”: ${right}/${MS.qs.length} right first time, ${won ? 'busted it' : 'it got away'} · +${coins} coins · loot: ${drop.name}`);
+  if (HW.id && !HW.a) await loadHw();
+  let hwRes = null;
+  if (HW.a && window.CBSSchool) {
+    if (CBSSchool.isSpaced(HW.a)) {
+      if (QE.user && firebase.firestore) {
+        try { hwRes = await CBSSchool.recordSpaced(firebase.firestore(), QE.user.uid, HW.id, HW.a, { n: MS.qs.length, right, mode: 'quest' }); HW.spaced = hwRes; } catch (e) {}
+      }
+      if (!hwRes) { const prev = HW.spaced || { daysDone: 0, daysNeed: HW.a.days || 2, doneToday: false }; const dDone = prev.doneToday ? prev.daysDone : prev.daysDone + 1; hwRes = { state: dDone >= prev.daysNeed ? 'done' : 'started', daysDone: dDone, daysNeed: prev.daysNeed, doneToday: true }; }
+    } else {
+      hwRes = CBSSchool.progress(QE.prog, HW.a);
+    }
+  }
   if (window.CBSWork) CBSWork.refresh();
   QE.busy = false;
   const after = ADV.stats(), capAfter = ADV.levelCap(), step = ADV.CAP_STEP(), toCap = step - ADV.securedTotal() % step, st = QE.stats();
   const gainP = st.securedP - MS.st0.securedP, gainQ = st.securedQ - MS.st0.securedQ, xp = S.xp - MS.xp0;
   const statUps = [['p', 'Strength', 'str'], ['b', 'Health', 'hp'], ['c', 'Magic', 'mag']].filter(([k]) => S.secured[k] > MS.sec0[k]);
   const wrong = MS.res.filter(r => !r.ok);
+  const hwBanner = HW.a && hwRes && window.CBSSchool ? CBSSchool.hwDoneHtml(HW.a, hwRes, { mode: 'quest', continueId: 'hwCont' }) : '';
+  const hwContinue = HW.a && hwRes && window.CBSSchool && !CBSSchool.isSpaced(HW.a) && !hwRes.done;
   $('fight').classList.add('hidden');
   $('done').classList.remove('hidden');
-  $('done').innerHTML = `<div class="victory">
+  $('done').innerHTML = `${hwBanner}<div class="victory">
     <img class="px" src="${won ? PIXEL.figure(ADV.eq(), ADV.look()) : MS.foe.img}" style="width:${won ? 130 : 110}px" alt="">
     <h1>${won ? `${MS.foe.name}: defeated!` : `${MS.foe.name} got away`}</h1>
     <div class="score">${right} of ${MS.qs.length} right first time${MS.fixed ? ` · ${MS.fixed} more corrected in the second wind` : ''}${won ? '' : ' — it needed 7 hits. It will be back.'}</div></div>
@@ -412,10 +453,17 @@ function finish() {
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
     ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : nuc(r.q.o[0])}. `}${nuc(r.q.x || '')}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts">${MS.guide ? `<button class="btn gold big" id="guideAgain">Another ${MS.guide.n} →</button><a class="btn alt" href="/today/">Back to To do</a>` : ''}${MS.guide ? '' : (() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
+    <div class="acts">${MS.guide && !hwContinue ? `<button class="btn ${HW.a ? 'alt' : 'gold big'}" id="guideAgain">Another ${MS.guide.n} →</button><a class="btn alt" href="/today/">Back to To do</a>` : ''}${MS.guide ? '' : (() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
       return (won ? '' : `<a class="btn gold big" href="adventurer-mission.html?sub=${MS.sub.key}">⚔ Fight it again</a>`) + (nx ? `<a class="btn ${won ? 'gold big' : 'alt'}" href="adventurer-mission.html?sub=${nx.key}">Next: ${esc(foeOf(nx).name)} →</a>` : ''); })()}<a class="btn alt" href="adventurer-mission.html">All missions</a><a class="btn alt" href="adventurer-home.html">🧁 Cakelab</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
     <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'That was your free sample mission! Sign in with Google (top right) to save your progress and unlock unlimited missions (new accounts are approved by your teacher).'}</p>`;
-  if (MS.guide && $('guideAgain')) { const G = MS.guide; $('guideAgain').onclick = () => { if (window.CBSAuth && !CBSAuth.checkMissionGate()) return; startGuide(G.keys, G.n, G.title); }; }
+  const goAgain = () => {
+    if (window.CBSAuth && !CBSAuth.checkMissionGate()) return;
+    const G = MS.guide;
+    if (G) startGuide(G.keys, Math.min(G.n, hwRes && hwRes.target ? Math.max(5, hwRes.target - hwRes.got) : G.n), G.title);
+    else start(MS.sub.key, MS.point);
+  };
+  if ($('guideAgain')) $('guideAgain').onclick = goAgain;
+  if ($('hwCont')) $('hwCont').onclick = goAgain;
   if (QE.user) QE.onChange(() => { const n = $('saveNote'); if (n) n.textContent = { saved: 'Saved to your account ✓', error: 'Could not save to your account right now: it is kept in this browser and will save next time.', saving: 'Saving to your account…' }[QE.status] || n.textContent; });
   scrollTo(0, 0);
 }

@@ -384,8 +384,11 @@ function openWorkFor(s) {
   all.forEach(a => {
     const overdue = !!(a.due && a.due < TODAY);
     if (S.isTest(a)) {
-      const r = S.testOf(s.raw, a);
+      const r = S.testOf(s.raw, a, s.course || '');
       if (r.state !== 'done') open.push({ a, test: true, state: r.state, label: r.state === 'started' ? `${r.answered}/${r.n} answered` : 'not started', overdue });
+    } else if (S.isSpaced(a)) {
+      const r = S.spacedOf(s.raw, a, TODAY);
+      if (r.state !== 'done') open.push({ a, spaced: true, state: r.state, label: r.daysDone ? `Day ${r.daysDone}/${r.daysNeed}${r.doneToday ? ' (done today)' : ''}` : `0/${r.daysNeed} days`, overdue });
     } else {
       const p = S.progress(s.prog, a, s.course || '');
       if (!p.done) open.push({ a, test: false, state: p.got ? 'started' : 'todo', label: `${p.got}/${p.target}`, overdue });
@@ -1071,8 +1074,11 @@ function drawTeach(msg) {
       if (!ALLW && s.year !== y && (s.year || !(a.students && a.students[s.uid]))) return;
       let item = null;
       if (S.isTest(a)) {
-        const r = S.testOf(s.raw, a);
+        const r = S.testOf(s.raw, a, s.course || '');
         if (r.state !== 'done') item = { a, test: true, label: r.state === 'started' ? `${r.answered}/${r.n} answered` : 'not started', overdue };
+      } else if (S.isSpaced(a)) {
+        const r = S.spacedOf(s.raw, a, TODAY);
+        if (r.state !== 'done') item = { a, spaced: true, label: r.daysDone ? `Day ${r.daysDone}/${r.daysNeed}${r.doneToday ? ' (done today)' : ''}` : `0/${r.daysNeed} days`, overdue };
       } else {
         const p = S.progress(s.prog, a, s.course || '');
         if (!p.done) item = { a, test: false, label: `${p.got}/${p.target}`, overdue };
@@ -1097,7 +1103,19 @@ function drawTeach(msg) {
           const pieces = items.map(it => `<div class="small"><b>${esc(it.a.title || 'Work')}</b> <span class="muted">(${esc(it.label)}${it.a.due ? ` · <span${it.overdue ? ' style="color:var(--bad);font-weight:700"' : ''}>due ${fmt(it.a.due)}</span>` : ''})</span></div>`).join('');
           return `<tr class="click${overdue ? ' overdue' : ''}" data-uid="${s.uid}"><td class="sname"><b>${esc(s.name)}</b>${ALLW && s.year ? ` <span class="tag">Y${s.year}</span>` : ''}${s.course === 'SA' ? ' <span class="small muted">(Single)</span>' : ''}</td><td style="white-space:nowrap">${badge}</td><td>${pieces}</td><td class="small" style="white-space:nowrap">${ago(s.last)}</td></tr>`;
         }).join('')}</tbody></table></div></div>`;
-  const aCard = a => { if (S.isTest(a)) return tCard(a); const kids = whoOf(a); const rows = kids.map(s => ({ s, p: S.progress(s.prog, a, s.course || '') })).sort((x, z) => z.p.got - x.p.got);
+  const sCard = a => { const kids = whoOf(a), rows = kids.map(s => ({ s, r: S.spacedOf(s.raw, a, TODAY) }));
+    const order = { done: 0, started: 1, todo: 2 }; rows.sort((x, z) => order[x.r.state] - order[z.r.state] || z.r.daysDone - x.r.daysDone || x.s.name.localeCompare(z.s.name));
+    const done = rows.filter(x => x.r.state === 'done').length, isOver = !a.archived && !!(a.due && a.due < TODAY);
+    const dNeed = Math.max(1, +a.days || 2), qDay = Math.max(5, +a.qPerDay || 10);
+    return `<div class="card"><h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">${esc(a.title || 'Spaced homework')} <span class="tag" style="background:#dbeafe;border-color:#93c5fd;color:#1e40af">${dNeed}-day mission</span>${a.archived ? ' <span class="tag">archived</span>' : ''}${dueBadge(a, done, kids.length)}<span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">set ${fmt(a.set)}${a.due ? ' · due ' + fmt(a.due) : ''} · for ${esc(forTxt(a))}</span></h2>
+      <p class="small">${(a.items || []).map(k => esc(S.label(k))).join(' · ')}</p>${a.note ? `<p class="small muted">${esc(a.note)}</p>` : ''}
+      <p class="small" style="margin:6px 0"><b>${done} of ${kids.length}</b> students done (1 mission of ${qDay} questions on ${dNeed} different days).</p>
+      ${rows.length ? `<div class="wrapx"><table>${rows.map(({ s, r }) => {
+        const sc = r.scores.map((x, idx) => `D${idx + 1}: ${x.right}/${x.n}`).join(' · ');
+        return `<tr class="click${r.state !== 'done' && isOver ? ' overdue' : ''}" data-uid="${s.uid}">${nameCell(s, a)}<td style="width:40%"><div class="bar"><i class="${r.state === 'done' ? 's' : 'l'}" style="width:${Math.min(100, r.daysDone / r.daysNeed * 100)}%"></i></div></td><td class="n">${r.daysDone}/${r.daysNeed} days${r.state === 'done' ? ' ✓' : ''}${sc ? `<div class="small muted">${esc(sc)}</div>` : ''}</td><td class="small">${r.lastAt ? ago(r.lastAt) : ago(s.last)}</td></tr>`;
+      }).join('')}</table></div>` : `<p class="muted small">Nobody can see this yet: no student is in its years, and nobody is added by name.</p>`}
+      <div class="acts"><button class="btn alt sm" data-aedit="${a.id}">✏️ Edit</button><button class="btn alt sm" data-arch="${a.id}">${a.archived ? 'Unarchive' : 'Archive'}</button><button class="btn warn sm" data-adel="${a.id}">Delete</button></div></div>`; };
+  const aCard = a => { if (S.isTest(a)) return tCard(a); if (S.isSpaced(a)) return sCard(a); const kids = whoOf(a); const rows = kids.map(s => ({ s, p: S.progress(s.prog, a, s.course || '') })).sort((x, z) => z.p.got - x.p.got);
     const done = rows.filter(r => r.p.done).length, isOver = !a.archived && !!(a.due && a.due < TODAY);
     return `<div class="card"><h2 style="display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">${esc(a.title || 'Work set')}${a.archived ? ' <span class="tag">archived</span>' : ''}${dueBadge(a, done, kids.length)}<span class="small muted" style="text-transform:none;font-family:Barlow,Arial,sans-serif;font-weight:600">set ${fmt(a.set)}${a.due ? ' · due ' + fmt(a.due) : ''} · for ${esc(forTxt(a))}</span></h2>
       <p class="small">${(a.items || []).map(k => esc(S.label(k))).join(' · ')}</p>${a.note ? `<p class="small muted">${esc(a.note)}</p>` : ''}
@@ -1117,7 +1135,8 @@ function drawTeach(msg) {
   /* the set-work form: new (TCH.form === true) or editing (TCH.form = its id) — 18 Nov, user: "edit the assignments after they're set,
      like date due and content and which students" */
   const ED = TCH.form && TCH.form !== true ? Object.assign({ id: TCH.form }, d.assign[TCH.form]) : null, F = ED || {};
-  const isT = ED ? S.isTest(ED) : true;
+  const fType = ED ? (S.isTest(ED) ? 'test' : S.isSpaced(ED) ? 'spaced' : 'practise') : 'spaced';
+  const isT = fType === 'test', isS = fType === 'spaced';
   const pickedSubs = (F.items || []).filter(k => !S.isPoint(k)), pickedPts = (F.items || []).filter(k => S.isPoint(k));
   const stuPick = () => { const groups = [...S.YEARS.map(n => [n, 'Year ' + n]), [0, 'No year chosen yet']];
     return groups.map(([n, lab]) => { const list = KIDS.filter(s => (s.year || 0) === n).sort((a, b) => a.name.localeCompare(b.name)); if (!list.length) return '';
@@ -1126,14 +1145,19 @@ function drawTeach(msg) {
   const form = TCH.form ? `<div class="card" id="aForm"><h2>${ED ? 'Edit: ' + esc(ED.title || 'set work') : 'Set new work'}</h2>
       <div class="acts" style="flex-direction:column;align-items:stretch">
         <input id="aTitle" placeholder="Title, e.g. States of matter revision" maxlength="80" value="${esc(F.title || '')}" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
-        ${ED ? `<div><b>Type</b> <span class="small">${isT ? 'Test: one go, scored' : 'Practise until they get N right'} (can't be changed once set)</span></div>`
-          : `<div><b>Type</b> <label class="small" style="margin-right:12px"><input type="radio" name="aType" value="test" checked> Test: one go, scored (same questions for everyone)</label><label class="small"><input type="radio" name="aType" value="practise"> Practise until they get N right</label></div>`}
+        ${ED ? `<div><b>Type</b> <span class="small">${isS ? 'Spaced missions: 1 mission on different days' : isT ? 'Test: one go, scored' : 'Practise until they get N right'} (can't be changed once set)</span></div>`
+          : `<div style="display:flex;flex-direction:column;gap:4px"><b>Type</b>
+              <label class="small"><input type="radio" name="aType" value="spaced" checked> <b>Spaced missions (default):</b> 1 single mission on 2 different days</label>
+              <label class="small"><input type="radio" name="aType" value="test"> <b>Test:</b> one go, scored (same questions for everyone)</label>
+              <label class="small"><input type="radio" name="aType" value="practise"> <b>Practise:</b> keep going until they get N different questions right</label></div>`}
         <div><b>For these years</b> ${S.YEARS.map(n => `<label class="small" style="margin-right:10px"><input type="checkbox" data-ay="${n}"${ED ? (F.years && F.years['Y' + n] ? ' checked' : '') : n === y ? ' checked' : ''}> Year ${n}</label>`).join('')}</div>
         <details${F.students && Object.keys(F.students).length ? ' open' : ''}><summary><b>…and these students by name</b> <span class="small muted">optional: anyone ticked sees it whatever their year${noYr ? ` · ${noYr} student${noYr > 1 ? 's haven\'t' : ' hasn\'t'} chosen a year, so only see work set for them by name` : ''}</span></summary><div class="tpick">${stuPick()}</div></details>
         <div><b>Sub-topics</b> <span class="small muted">tick any number</span><div class="tpick">${tree('pick', pickedSubs)}</div></div>
         <input id="aPts" placeholder="Extra spec points, e.g. C2.5, P3.12 (optional)" value="${esc(pickedPts.join(', '))}" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
-        <div class="small"><label><span id="aTargetLbl">${isT ? 'Number of questions' : 'Questions to get right'}</span> <input id="aTarget" type="number" min="1" max="100" value="${ED ? (isT ? (F.qids || []).length : F.target || 10) : 10}" style="width:70px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label>
-          <label style="margin-left:12px">Due <input id="aDue" type="date" value="${esc(F.due || '')}" style="font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label></div>
+        <div class="small" style="display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center">
+          <label id="aDaysWrap"${isS ? '' : ' style="display:none"'}>Different days <input id="aDays" type="number" min="1" max="5" value="${ED && isS ? (F.days || 2) : 2}" style="width:58px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label>
+          <label><span id="aTargetLbl">${isS ? 'Questions per mission' : isT ? 'Number of questions' : 'Questions to get right'}</span> <input id="aTarget" type="number" min="1" max="100" value="${ED ? (isS ? (F.qPerDay || 10) : isT ? (F.qids || []).length : F.target || 10) : 10}" style="width:70px;font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label>
+          <label>Due <input id="aDue" type="date" value="${esc(F.due || '')}" style="font:inherit;padding:3px 6px;border:2px solid var(--ink)"></label></div>
         <input id="aNote" placeholder="Note for students (optional)" maxlength="200" value="${esc(F.note || '')}" style="font:inherit;padding:6px 9px;border:2px solid var(--ink)">
         ${ED && isT ? '<p class="small muted">Changing the sub-topics or the number of questions picks new questions. Students who already finished keep their score.</p>' : ''}
       </div><div class="acts"><button class="btn" id="aSave">${ED ? 'Save changes' : 'Set it'}</button><button class="btn alt" id="aCancel">Cancel</button></div><div class="msg err" id="aMsg"></div></div>` : '';
@@ -1161,7 +1185,11 @@ function drawTeach(msg) {
   el.querySelectorAll('[data-adel]').forEach(b => b.onclick = async () => { if (!confirm('Delete this work? Students\' answers are kept; only the task goes.')) return; try { await RT.ref('school/assign/' + b.dataset.adel).remove(); delete d.assign[b.dataset.adel]; computeHomework(); drawStudents(); drawTeach('Deleted.'); } catch (e) { fail(e); } });
   if (TCH.form) {
     $('aCancel').onclick = () => { TCH.form = false; drawTeach(); };
-    el.querySelectorAll('[name="aType"]').forEach(r => r.onchange = () => { $('aTargetLbl').textContent = r.value === 'test' && r.checked ? 'Number of questions' : 'Questions to get right'; });
+    el.querySelectorAll('[name="aType"]').forEach(r => r.onchange = () => {
+      const v = (el.querySelector('[name="aType"]:checked') || {}).value || 'spaced';
+      $('aTargetLbl').textContent = v === 'spaced' ? 'Questions per mission' : v === 'test' ? 'Number of questions' : 'Questions to get right';
+      if ($('aDaysWrap')) $('aDaysWrap').style.display = v === 'spaced' ? '' : 'none';
+    });
     $('aSave').onclick = async () => {
       const m = t => { $('aMsg').textContent = t; };
       const years = {}; el.querySelectorAll('[data-ay]:checked').forEach(c => years['Y' + c.dataset.ay] = true);
@@ -1174,7 +1202,7 @@ function drawTeach(msg) {
       if (!$('aTitle').value.trim()) return m('Give it a title.');
       if (!Object.keys(years).length && !Object.keys(students).length) return m('Choose at least one year or one student.');
       if (!items.length) return m('Tick at least one sub-topic or add a spec point.');
-      const type = ED ? (isT ? 'test' : 'practise') : (el.querySelector('[name="aType"]:checked') || {}).value || 'test', num = Math.max(1, Math.min(100, +$('aTarget').value || 10));
+      const type = ED ? fType : (el.querySelector('[name="aType"]:checked') || {}).value || 'spaced', num = Math.max(1, Math.min(100, +$('aTarget').value || 10));
       const a = Object.assign({}, ED || { set: TODAY, by: ME.email, t: Date.now() }, { title: $('aTitle').value.trim(), type, years, students, items, due: $('aDue').value || '', note: $('aNote').value.trim() });
       delete a.id;
       if (type === 'test') {
@@ -1184,8 +1212,14 @@ function drawTeach(msg) {
           if (started && !confirm(`${started} student${started > 1 ? 's have' : ' has'} already started or finished this test. New questions will be picked: finished scores stay, but anyone half-way through starts the new questions. Carry on?`)) return;
           a.qids = S.pickTest(items, Math.min(num, 40)); if (!a.qids.length) return m('No questions in what you ticked.');
         }
-        delete a.target; delete a.pts; delete a.need; delete a.needSA; const nSA = S.testSA(a); if (nSA != null) a.nSA = nSA;
-      } else { a.target = num; Object.assign(a, S.practiseNeed(a)); delete a.qids; delete a.nSA; }
+        delete a.target; delete a.pts; delete a.need; delete a.needSA; delete a.days; delete a.qPerDay; const nSA = S.testSA(a); if (nSA != null) a.nSA = nSA;
+      } else if (type === 'spaced') {
+        a.days = Math.max(1, Math.min(5, +($('aDays') && $('aDays').value) || 2));
+        a.qPerDay = Math.max(5, Math.min(30, num));
+        a.target = a.qPerDay;
+        Object.assign(a, S.practiseNeed(a));
+        delete a.qids; delete a.nSA;
+      } else { a.target = num; Object.assign(a, S.practiseNeed(a)); delete a.qids; delete a.nSA; delete a.days; delete a.qPerDay; }
       if (ED) a.edited = Date.now();
       try {
         if (ED) { await RT.ref('school/assign/' + ED.id).set(a); d.assign[ED.id] = a; }

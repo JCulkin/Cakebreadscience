@@ -117,6 +117,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
 
   <section id="quiz" class="hidden">
     <div class="qmeta"><b id="qtitle"></b><a href="practice.html" id="quit">← Stop and choose something else</a></div>
+    <div id="hwBar"></div>
     <div class="progress" id="prog"></div>
     <div class="card qcard">
       <div class="qmeta"><span id="qnum"></span><span id="qspec"></span></div>
@@ -162,6 +163,28 @@ const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><su
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const PLAIN = 'cbs.plain';
 let SUBS = [], SCI = 'B', OPEN = new Set(), PS = null;
+const HW_ID = new URLSearchParams(location.search).get('hw') || '';
+const HW = { id: HW_ID, a: null, spaced: null, loaded: false };
+async function loadHw() {
+  if (!HW.id || HW.loaded || !window.firebase || !firebase.database) return;
+  HW.loaded = true;
+  HW.a = await CBSSchool.loadOne(firebase.database(), HW.id);
+  if (HW.a && CBSSchool.isSpaced(HW.a) && QE.user && firebase.firestore) {
+    try {
+      const doc = (await firebase.firestore().collection('users').doc(QE.user.uid).get()).data() || {};
+      HW.spaced = CBSSchool.spacedOf(doc, HW.a);
+    } catch (e) {}
+  }
+  renderHwBar();
+}
+function renderHwBar() {
+  const el = $('hwBar'); if (!el) return;
+  if (!HW.a || !PS) { el.innerHTML = ''; return; }
+  el.innerHTML = CBSSchool.hwBarHtml(HW.a, {
+    answered: PS.res.length, total: PS.qs.length,
+    daysDone: HW.spaced ? HW.spaced.daysDone : 0, daysNeed: HW.spaced ? HW.spaced.daysNeed : (HW.a.days || 2), doneToday: HW.spaced ? HW.spaced.doneToday : false
+  });
+}
 const subBy = k => SUBS.find(s => s.key === k);
 const topicName = t => { const sc = SPEC.find(x => x.name[0] === t[0]); const tp = sc && sc.topics.find(x => x.n === +t.slice(1)); return tp ? tp.name : t; };
 function lessonsForKeys(keys) {
@@ -235,6 +258,7 @@ function start(k, point) {
 }
 function show() {
   const q = PS.qs[PS.i];
+  renderHwBar();
   $('prog').innerHTML = PS.qs.map((_, j) => `<i class="${j < PS.res.length ? (PS.res[j].ok ? 'ok' : 'no') : j === PS.i ? 'now' : ''}"></i>`).join('');
   $('qnum').textContent = `Question ${PS.i + 1} of ${PS.qs.length} · ${lvLabel(q)}`;
   $('qspec').textContent = `Spec ${q.s.slice(1)}`;
@@ -258,6 +282,7 @@ $('opts').addEventListener('click', e => {
   PS.picked = [...$('opts').children].indexOf(b);
   PS.res.push({ q, ok });
   const notes = QE.recordAnswer(q, ok).filter(n => !/XP/.test(n) || /secured/i.test(n)).map(n => n.replace(/\s*\+\d+ XP/, ''));
+  renderHwBar();
   $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><span class="t">${ok ? 'Correct.' : 'Not quite.'}</span>${nuc(q.x)}${notes.length ? `<div class="note">${notes.join(' · ')}</div>` : ''}</div>`;
   $('nextBtn').textContent = PS.i + 1 < PS.qs.length ? 'Next →' : 'See your results →';
   $('nextBtn').classList.remove('hidden'); $('nextBtn').focus();
@@ -296,10 +321,22 @@ $('repBtn').onclick = () => {
 };
 
 /* results: saved through the engine like a mission (coins, Health and the day's revision build up quietly for Questing) */
-function finish() {
+async function finish() {
   const right = PS.res.filter(r => r.ok).length;
   QE.finishMission({ coins: 10, right });
   QE.log('📝', `Practice ${PS.point ? 'spec point ' + PS.point.slice(1) : PS.sub.key.slice(1) + ' ' + PS.sub.name}: ${right}/${PS.qs.length} right`);
+  if (HW.id && !HW.a) await loadHw();
+  let hwRes = null;
+  if (HW.a) {
+    if (CBSSchool.isSpaced(HW.a)) {
+      if (QE.user && firebase.firestore) {
+        try { hwRes = await CBSSchool.recordSpaced(firebase.firestore(), QE.user.uid, HW.id, HW.a, { n: PS.qs.length, right, mode: 'practice' }); HW.spaced = hwRes; } catch (e) {}
+      }
+      if (!hwRes) { const prev = HW.spaced || { daysDone: 0, daysNeed: HW.a.days || 2, doneToday: false }; const dDone = prev.doneToday ? prev.daysDone : prev.daysDone + 1; hwRes = { state: dDone >= prev.daysNeed ? 'done' : 'started', daysDone: dDone, daysNeed: prev.daysNeed, doneToday: true }; }
+    } else {
+      hwRes = CBSSchool.progress(QE.prog, HW.a);
+    }
+  }
   if (window.CBSWork) CBSWork.refresh();
   QE.busy = false;
   const st = QE.stats(), gainQ = st.securedQ - PS.st0.securedQ, gainP = st.securedP - PS.st0.securedP;
@@ -309,16 +346,25 @@ function finish() {
   const G = PS.guide;
   const reviseKeys = wrong.length ? [...new Set(wrong.map(r => r.q.s))] : (G ? G.subs.flatMap(x => [...x.keys]) : [...PS.sub.keys]);
   const studyGuides = lessonsForKeys(reviseKeys);
+  const hwBanner = HW.a && hwRes ? CBSSchool.hwDoneHtml(HW.a, hwRes, { mode: 'practice', continueId: 'hwCont' }) : '';
+  const hwContinue = HW.a && hwRes && !CBSSchool.isSpaced(HW.a) && !hwRes.done;
   $('done').innerHTML = `<h1>${G ? esc(G.title || 'Study guide') : `${esc(PS.sub.subj)} ${PS.sub.key.slice(1)} · ${esc(PS.sub.name)}`}</h1>
+    ${hwBanner}
     <div class="card" style="margin-top:12px"><div class="score">${right} / ${PS.qs.length}</div>
       <ul class="gain">
         <li>${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b> today.` : 'No questions secured today.'}${ready ? ` ${ready} more will be secured if you get ${ready === 1 ? 'it' : 'them'} right again on another day.` : ''}</li>
         <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}${G ? `These ${G.subs.length > 1 ? `${G.subs.length} sub-topics` : 'sub-topic'}: ${G.subs.map(x => QE.allSubs().find(s => s.key === x.key) || x).reduce((n, x) => n + x.st.secured, 0)} of ${G.subs.reduce((n, x) => n + x.st.n, 0)} spec points secured.` : `This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.`}</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts"><button class="btn gold big" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button>${studyGuides.map(r => `<a class="btn alt" href="${esc(r[2])}">📖 Revise: ${esc(r[1].replace(/\s*\(draft\)$/i, ''))} →</a>`).join('')}<a class="btn alt" href="${G ? '/today/' : 'practice.html'}">${G ? 'Back to To do' : 'Choose something else'}</a>${G ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
+    <div class="acts">${hwContinue ? '' : `<button class="btn ${HW.a ? 'alt' : 'gold big'}" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button>`}${studyGuides.map(r => `<a class="btn alt" href="${esc(r[2])}">📖 Revise: ${esc(r[1].replace(/\s*\(draft\)$/i, ''))} →</a>`).join('')}<a class="btn alt" href="${G || HW.a ? '/today/' : 'practice.html'}">${G || HW.a ? 'Back to To do' : 'Choose something else'}</a>${G || HW.a ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'That was your free sample practice set! Sign in with Google (top right) to save your progress and unlock unlimited practice (new accounts are approved by your teacher).'}</p>`;
-  $('again').onclick = () => { if (window.CBSAuth && !CBSAuth.checkMissionGate()) return; G ? startGuide(G.keys, G.n, G.title) : start(PS.sub.key, PS.point); };
+  const goAgain = () => {
+    if (window.CBSAuth && !CBSAuth.checkMissionGate()) return;
+    if (G) startGuide(G.keys, Math.min(G.n, hwRes && hwRes.target ? Math.max(5, hwRes.target - hwRes.got) : G.n), G.title);
+    else start(PS.sub.key, PS.point);
+  };
+  if ($('again')) $('again').onclick = goAgain;
+  if ($('hwCont')) $('hwCont').onclick = goAgain;
   scrollTo(0, 0);
 }
 
@@ -334,7 +380,8 @@ function boot() {
     else if (sb) start(sb.key, pt && sb.keys.has(pt) ? pt : undefined);
     else { const p = QE.picks()[0]; if (p) SCI = p.sub.key[0]; drawPick(); } }
 }
-boot(); QE.onChange(boot);
+boot(); QE.onChange(() => { boot(); if (HW.id && !HW.a) loadHw(); });
+if (HW.id) loadHw();
 /* Set by your teacher (17 Nov 2026): the student's unfinished set work for their year, at the top of the picker (js/school.js) */
 let SCH = null;
 const withinP = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
@@ -346,18 +393,25 @@ async function drawSet() {
   let udoc = {}; try { udoc = (await withinP(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000)).data() || {}; } catch (e) {}
   const S = CBSSchool, today = QE.TODAY;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const open = S.forMe(SCH.assign, y, QE.user.uid).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, p: S.isTest(a) ? null : S.progress(QE.prog, a) }))
-    .filter(x => x.t ? x.t.state !== 'done' : !x.p.done);
+  const open = S.forMe(SCH.assign, y, QE.user.uid).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, sp: S.isSpaced(a) ? S.spacedOf(udoc, a, today) : null, p: !S.isTest(a) && !S.isSpaced(a) ? S.progress(QE.prog, a) : null }))
+    .filter(x => x.t ? x.t.state !== 'done' : x.sp ? (x.sp.state !== 'done' && !x.sp.doneToday) : !x.p.done);
   if (!open.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="setw"><h2>📌 Set by your teacher</h2>${open.map(({ a, t, p }) => {
+  box.innerHTML = `<div class="setw"><h2>📌 Set by your teacher</h2>${open.map(({ a, t, sp, p }) => {
     const late = a.due && a.due < today ? '<span class="late">Overdue</span>' : '';
+    const encHw = encodeURIComponent(a.id);
     if (t) return `<div class="a"><b>${esc(a.title || 'Test')}</b><small>Test · ${t.n} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
-      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encodeURIComponent(a.id)}">▶ ${t.state === 'started' ? 'Carry on' : 'Start test'}</a></div></div>`;
+      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encHw}">▶ ${t.state === 'started' ? 'Carry on' : 'Start test'}</a></div></div>`;
     const items = (a.items || []).filter(k => S.pointsOf(k).length);
-    const mixUrl = items.length ? `practice.html?subs=${encodeURIComponent(items.join(','))}&n=${Math.max(5, Math.min(20, p.target - p.got))}&t=${encodeURIComponent(a.title || 'Set work')}` : '';
+    if (sp) {
+      const mixUrl = items.length ? `practice.html?subs=${encodeURIComponent(items.join(','))}&n=${sp.qPerDay}&t=${encodeURIComponent(a.title || 'Homework')}&hw=${encHw}` : '';
+      return `<div class="a"><b>${esc(a.title || 'Homework')}</b><small>Day ${sp.daysDone + 1} of ${sp.daysNeed} · ${sp.qPerDay} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
+        <div class="pbw" title="${sp.daysDone} of ${sp.daysNeed} days"><i style="width:${sp.daysDone / sp.daysNeed * 100}%"></i></div>
+        <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">📝 Start Day ${sp.daysDone + 1} →</a>` : ''}<a href="adventurer-mission.html?subs=${encodeURIComponent(items.join(','))}&n=${sp.qPerDay}&t=${encodeURIComponent(a.title || 'Homework')}&hw=${encHw}">⚔️ Questing</a></div></div>`;
+    }
+    const mixUrl = items.length ? `practice.html?subs=${encodeURIComponent(items.join(','))}&n=${Math.max(5, Math.min(20, p.target - p.got))}&t=${encodeURIComponent(a.title || 'Set work')}&hw=${encHw}` : '';
     return `<div class="a"><b>${esc(a.title || 'Work set')}</b><small>${p.got}/${p.target} right${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
       <div class="pbw" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%"></i></div>
-      <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">📝 Practise →</a>` : ''}${items.map(k => `<a href="${S.practise(k)}">${esc(S.shortLabel(k))}</a>`).join('')}</div></div>`;
+      <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">📝 Practise →</a>` : ''}${items.map(k => `<a href="${S.practise(k)}&hw=${encHw}">${esc(S.shortLabel(k))}</a>`).join('')}</div></div>`;
   }).join('')}</div>`;
 }
 QE.onChange(drawSet); if (window.CBSYear) CBSYear.onChange(drawSet); drawSet();
