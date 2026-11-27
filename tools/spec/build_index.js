@@ -110,7 +110,7 @@ for (const subj of Object.keys(L)) {
     const spec = (h.match(/class="cv-sub"[^>]*>[^<]*?Spec\s+([\d.,\s–\-—]+)/i) || h.match(/class="ps-spec"[^>]*>\s*([\d.,\s–\-—]+)/) || [])[1];
     if (!spec) continue;
     const title = ((h.match(/class="cv-title"[^>]*>([\s\S]*?)<\/div>/) || h.match(/<title>([^<·]*)/) || [])[1] || f).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
-    addRes('booklet', `Topic booklet: ${title}`, `/booklets/${subj}/${f}`, expand(L[subj], spec));
+    addRes('booklet', `Exam booklet: ${title}`, `/booklets/${subj}/${f}`, expand(L[subj], spec));
   }
 }
 

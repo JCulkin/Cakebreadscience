@@ -319,7 +319,7 @@ async function draw() {
         <a class="dtile" href="/Flashcards/"><span class="ic">🃏</span><span><b>Flashcards</b><small>Spaced recall &amp; examiner key words</small></span></a>
         <a class="dtile" href="${Q}practice.html"><span class="ic">📝</span><span><b>Practice Questions</b><small>Clean topic quizzes, no game</small></span></a>
         <a class="dtile" href="/specifications/science.html"><span class="ic">📋</span><span><b>Spec Trackers</b><small>Check every IGCSE point</small></span></a>
-        <a class="dtile" href="/booklets/"><span class="ic">📚</span><span><b>Booklets &amp; 6-Markers</b><small>Written exam practice &amp; mark schemes</small></span></a>
+        <a class="dtile" href="/booklets/"><span class="ic">📚</span><span><b>Exam Booklets</b><small>Written exam answers, 6-markers &amp; mark schemes</small></span></a>
         <a class="dtile" href="/?dir=1#interactives"><span class="ic">🎮</span><span><b>Science Games</b><small>Cells, Elements, Typing &amp; more</small></span></a>
       </div>
       <div class="dock-foot">
@@ -534,7 +534,7 @@ async function drawSchool() {
       <div class="setw-head"><h2>📌 From your teacher</h2>${pills}</div>
       ${staleNote}
       ${openItems.length ? `<div class="subsec"><span>Homework to do</span>${hasPractiseOpen ? '<span class="sym">📝 Practice · ⚔️ Questing · 🃏 Cards</span>' : ''}</div>${openItems.join('')}` : ''}
-      ${testsHtml ? `<div class="subsec"><span>📅 Upcoming tests</span><span class="sym">📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards</span></div>${testsHtml}` : ''}
+      ${testsHtml ? `<div class="subsec"><span>📅 Upcoming tests</span><span class="sym">📄 Guide · 📝 Practice · ⚔️ Quest · 🃏 Cards</span></div>${testsHtml}` : ''}
       ${doneBlock}
     </div>`;
   } else if (doneItems.length) {

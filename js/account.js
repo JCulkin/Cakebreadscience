@@ -87,7 +87,7 @@
   } catch (e) { box.innerHTML = ''; return; }
   const first = u => ((u.displayName || u.email || 'Student').trim().split(/\s+/)[0]);
   function draw(u) {
-    const hlp = location.pathname.startsWith('/how-to-use') ? '' : '<a class="hlp" href="/how-to-use/" title="How to use Cakebread Science &amp; replay page tours">❓ Guide</a>';
+    const hlp = location.pathname.startsWith('/how-to-use') ? '' : '<a class="hlp" href="/how-to-use/" title="How to use Cakebread Science &amp; replay page tours">❓ Help</a>';
     const isStaging = !/^(www\.)?cakebreadscience\.com$/i.test(location.hostname) && !/^\/admin(\/|$)/.test(location.pathname || '');
     const simActive = isStaging && (() => { try { return localStorage.getItem('cbs.sim.y10') === '1'; } catch (e) { return false; } })();
     const simBtn = isStaging && !simActive ? '<button type="button" class="sim" title="Staging only: simulate signing in as a Year 10 student with homework, tests and progress">🧑‍🎓 Sim Y10</button>' : '';

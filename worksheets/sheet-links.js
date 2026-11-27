@@ -78,7 +78,7 @@
   } else if (info.lesson) {
     items.push({ href: info.lesson, text: 'Revision notes' });
   }
-  if (info.booklet) items.push({ href: info.booklet, text: 'Topic booklet' });
+  if (info.booklet) items.push({ href: info.booklet, text: 'Exam booklet' });
   if (info.extra && info.extra.length) {
     for (var k = 0; k < info.extra.length; k++) items.push(info.extra[k]);
   }

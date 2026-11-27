@@ -199,7 +199,7 @@
       const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
         <span class="small muted"><b>${pr.sec}/${pr.n}</b> secured${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
       return `<div class="sg-todo-row"><div class="sg-todo-info"><div class="sg-todo-top"><b style="font-size:16px">${esc(g.title || 'Test')}</b>${when ? `<span class="sg-todo-date${d !== null && d <= 3 ? ' soon' : ''}">${esc(when)}</span>` : ''}</div>${bar}</div>
-        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Quiz</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Cakebread Questing">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
+        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Practice</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Cakebread Questing">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
   }
   /* To do: "Upcoming tests" (user, 23 Nov + decluttered 27 Nov; supports inline mode inside unified From your teacher box).
      pre = the guides already loaded (To do keeps them for 30 s so progress can redraw without another read) */
@@ -212,7 +212,7 @@
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return all; }
     if (opts && opts.inline) { el.innerHTML = todoRowsHtml(mine); return all; }
-    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards</span></div>${todoRowsHtml(mine)}</div>`;
+    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Practice · ⚔️ Quest · 🃏 Cards</span></div>${todoRowsHtml(mine)}</div>`;
     return all;
   }
   window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, todoRowsHtml, progress, reviseUrl, flashcardsUrl, fmtDate, daysTo, ADVICE };

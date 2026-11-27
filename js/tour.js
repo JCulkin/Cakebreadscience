@@ -81,7 +81,7 @@
       steps: [
         { sel: '#trSum', title: '📋 Proved vs Confident', body: 'Green means you\'ve proved a spec point on two different days in Practice or Questing — not just ticked a box.' },
         { sel: '#trFilters', title: '🔍 Catch blind spots', body: 'Rate how confident you feel on each point, then use the filters to spot points you rated "Confident" but haven\'t proved yet.' },
-        { sel: '#tracker .topic, #tracker', title: '🎓 Tap any spec point', body: 'Click a point to open its matching Revision Notes, Worksheet, Flashcards, Practice quiz and Examiner Key Words.' }
+        { sel: '#tracker .topic, #tracker', title: '🎓 Tap any spec point', body: 'Click a point to open its matching Revision Notes, Worksheet, Flashcards, Practice Questions and Examiner Key Words.' }
       ]
     },
     study: {
@@ -160,7 +160,7 @@
     var box = document.createElement('div');
     box.id = 'cbs-tour-remind';
     box.setAttribute('role', 'status');
-    box.innerHTML = '<b>❓ Need a reminder later?</b>You can read the full student guide or replay any page tour anytime via <b>❓ Guide</b> at the top.<div class="ra"><a href="/how-to-use/">Open Guide →</a><button type="button" id="cbsTourRmX">Got it</button></div>';
+    box.innerHTML = '<b>❓ Need a reminder later?</b>You can read the help page or replay any page tour anytime via <b>❓ Help</b> at the top.<div class="ra"><a href="/how-to-use/">Open Help →</a><button type="button" id="cbsTourRmX">Got it</button></div>';
     document.body.appendChild(box);
     var kill = function () { if (box.parentNode) box.remove(); };
     var xb = box.querySelector('#cbsTourRmX'); if (xb) xb.onclick = kill;
