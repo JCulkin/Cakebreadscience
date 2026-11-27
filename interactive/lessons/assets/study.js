@@ -413,40 +413,38 @@ function initSpecLinks(){
   });
 }
 
-/* ---------- auto Examiner Key Words per step (/js/key-words.js) ---------- */
+/* ---------- auto Examiner Key Words consolidated on end page (#check) (/js/key-words.js) ---------- */
 function renderKeyWords(){
   if(!window.KEYWORDS) return;
+  const chk = $('#check');
+  if(!chk || $('.kw-box', chk)) return;
   const sub = (body.className.match(/subj-(\w+)/) || [])[1];
   const letter = {biology:'B', chemistry:'C', physics:'P'}[sub];
   if(!letter) return;
-  steps.forEach(sec => {
-    if(sec.id === 'check' || $('.kw-box', sec)) return;
-    const pts = [...new Set($$('.spec', sec).map(e => e.textContent.trim()).filter(t => /^\d+\.\d+$/.test(t)))];
-    if(!pts.length) return;
-    const seen = new Set(), rows = [];
-    pts.forEach(p => {
-      const list = window.KEYWORDS[letter + p];
-      if(!Array.isArray(list)) return;
-      list.forEach(item => {
-        const w = String(item[0] || '').trim(), m = String(item[1] || '').trim(), da = item[2] === 'DA';
-        if(!w || seen.has(w.toLowerCase())) return;
-        seen.add(w.toLowerCase());
-        rows.push({ w, m, da });
-      });
+  const pts = [...new Set($$('.wrap .spec').map(e => e.textContent.trim()).filter(t => /^\d+\.\d+$/.test(t)))];
+  if(!pts.length) return;
+  const seen = new Set(), rows = [];
+  pts.forEach(p => {
+    const list = window.KEYWORDS[letter + p];
+    if(!Array.isArray(list)) return;
+    list.forEach(item => {
+      const w = String(item[0] || '').trim(), m = String(item[1] || '').trim(), da = item[2] === 'DA';
+      if(!w || seen.has(w.toLowerCase())) return;
+      seen.add(w.toLowerCase());
+      rows.push({ w, m, da });
     });
-    if(!rows.length) return;
-    const visibleCount = body.classList.contains('hide-da') ? rows.filter(r => !r.da).length : rows.length;
-    if(!visibleCount) return;
-    const firstKey = letter + pts[0];
-    const box = document.createElement('details');
-    box.className = 'kw-box';
-    box.open = true;
-    box.innerHTML = `<summary><span class="callout-tag">Examiner key words</span><small>Exact wording that earns marks in exam answers</small></summary>` +
-      `<dl class="kw-list">${rows.map(r => `<div class="kw-row${r.da ? ' da-only' : ''}"><dt>${esc(r.w)}</dt><dd>${esc(r.m)}</dd></div>`).join('')}</dl>` +
-      `<div class="kw-foot"><a href="/Flashcards/?deck=keywords&spec=${encodeURIComponent(firstKey)}">🃏 Drill key words in Flashcards →</a><a href="/typing-game/">⌨️ Type Fast or Perish →</a></div>`;
-    const anchor = $('.micro-check', sec) || $('.step-foot', sec);
-    if(anchor) sec.insertBefore(box, anchor); else sec.appendChild(box);
   });
+  if(!rows.length) return;
+  const firstKey = letter + pts[0];
+  const box = document.createElement('details');
+  box.className = 'kw-box';
+  box.open = true;
+  box.hidden = body.classList.contains('hide-da') && rows.every(r => r.da);
+  box.innerHTML = `<summary><span class="callout-tag">Key words for this topic</span><small>Exact wording that earns marks in exam answers</small></summary>` +
+    `<dl class="kw-list">${rows.map(r => `<div class="kw-row${r.da ? ' da-only' : ''}"><dt>${esc(r.w)}</dt><dd>${esc(r.m)}</dd></div>`).join('')}</dl>` +
+    `<div class="kw-foot"><a href="/Flashcards/?deck=keywords&spec=${encodeURIComponent(firstKey)}">🃏 Drill key words in Flashcards →</a><a href="/typing-game/">⌨️ Type Fast or Perish →</a></div>`;
+  const anchor = $('.next-hub', chk) || $('.practise', chk);
+  if(anchor) chk.insertBefore(box, anchor); else chk.appendChild(box);
 }
 function initKeyWords(){
   if(window.KEYWORDS){ renderKeyWords(); return; }
