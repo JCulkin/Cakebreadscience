@@ -72,17 +72,17 @@ const ADV = (() => {
      Level is capped by spec points secured, so every unlock is earned by revision. Nothing a player already owns is
      taken away: worn items stay worn and held brews stay held, they just can't be changed or used until the level. ---------- */
   const UNLOCKS = [
-    { lv: 1, id: 'clothes', ic: '👕', name: 'Clothes and gear', what: 'Change your outfit and single-hand items in the Wardrobe.' },
-    { lv: 2, id: 'spells', ic: '🔮', name: 'Mana and your first spell', what: 'Patch Up: +5 Health (+1 per 5 Magic) on Breadventure Land. Flashcards, missions and overnight rest fill your mana.' },
-    { lv: 2, id: 'hats', ic: '🎩', name: 'Hats', what: 'Wear hats you have found for your head.' },
-    { lv: 3, id: 'hands', ic: '🧤', name: 'Two-handed items', what: 'Wield bigger items that take both hands.' },
-    { lv: 4, id: 'shop', ic: '🥤', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
-    { lv: 4, id: 'events', ic: '📅', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
-    { lv: 5, id: 'dungeons', ic: '🕯', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
-    { lv: 6, id: 'shield', ic: '🛡', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
-    { lv: 6, id: 'help', ic: '🩹', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
-    { lv: 7, id: 'fog', ic: '🌫', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
-    { lv: 7, id: 'mine', ic: '⛏', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
+    { lv: 1, id: 'clothes', px: 'shirt', ic: '', name: 'Clothes and gear', what: 'Change your outfit and single-hand items in the Wardrobe.' },
+    { lv: 2, id: 'spells', px: 'mana', ic: '', name: 'Mana and your first spell', what: 'Patch Up: +5 Health (+1 per 5 Magic) on Breadventure Land. Flashcards, missions and overnight rest fill your mana.' },
+    { lv: 2, id: 'hats', px: 'hat', ic: '', name: 'Hats', what: 'Wear hats you have found for your head.' },
+    { lv: 3, id: 'hands', px: 'gauntlet', ic: '', name: 'Two-handed items', what: 'Wield bigger items that take both hands.' },
+    { lv: 4, id: 'shop', px: 'slushie', ic: '', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
+    { lv: 4, id: 'events', px: 'calendar', ic: '', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
+    { lv: 5, id: 'dungeons', px: 'torch', ic: '', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
+    { lv: 6, id: 'shield', px: 'shield', ic: '', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
+    { lv: 6, id: 'help', px: 'patch', ic: '', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
+    { lv: 7, id: 'fog', px: 'fog', ic: '', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
+    { lv: 7, id: 'mine', px: 'mine', ic: '', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
   ];
   const unlockLv = id => (UNLOCKS.find(u => u.id === id) || { lv: 1 }).lv;
   const can = id => level() >= unlockLv(id);
@@ -134,10 +134,10 @@ const ADV = (() => {
     if (S.lvSeen == null || S.lvSeen > l) { S.lvSeen = l; save(); return; }   // first time on this account: no flood of pop-ups
     if (l === S.lvSeen) return;
     const news = UNLOCKS.filter(u => u.lv > S.lvSeen && u.lv <= l), nx = UNLOCKS.find(u => u.lv > l);
-    S.lvSeen = l; save(); try { QE.log('⭐', `Reached level ${l}`); } catch (e) {}
+    S.lvSeen = l; save(); try { QE.log('★', `Reached level ${l}`); } catch (e) {}
     storyModal(`<div class="ch">Level up</div><h2>Level ${l}!</h2><div class="pics"><img src="${PIXEL.figure(eq(), look())}" width="100" alt=""></div>
-      ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${u.ic} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
-      ${nx ? `<p style="color:#666;font-size:15px">Next: ${nx.ic} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
+      ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${ui(u.px, 20)} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
+      ${nx ? `<p style="color:#666;font-size:15px">Next: ${ui(nx.px, 16)} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
   }
   QE.onChange(levelCheck);
   function nav(active) {
@@ -154,6 +154,9 @@ const ADV = (() => {
 .advnav .site img{width:26px;height:26px;object-fit:contain;display:block}
 @media(max-width:740px){.advnav .site{padding:0;width:34px}.advnav .site span{display:none}}
 .advnav .tab{color:#ccc;font-weight:700;font-size:15px;padding:7px 11px;border-radius:7px;border:2px solid transparent;display:inline-flex;align-items:center;gap:6px}
+img.ui-ic{display:inline-block;width:1.15em;height:1.15em;vertical-align:-0.2em;image-rendering:pixelated;image-rendering:crisp-edges;flex:none}
+img.ui-svg{display:inline-block;width:1.1em;height:1.1em;vertical-align:-0.18em;flex:none}
+.advnav .tab:not(.on):not(.cta) img.ui-svg,.advmenu a:not(.on) img.ui-svg,.advnav a.tab.due img.ui-svg{filter:brightness(0) invert(1)}
 .advnav .tab:hover{color:#fff;background:#ffffff14}
 .advnav .tab.on{background:#eeeae0;color:#111}
 .advnav .cta{font-size:17px;padding:8px 15px;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000}
@@ -188,11 +191,11 @@ const ADV = (() => {
     const moreActive = ['cards', 'stats', 'look', 'guide'].includes(active);
     n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
       + `<a class="brand" href="index.html" title="Breadventure Land menu">Breadventure <b>Land</b></a>`
-      + tab('home', 'adventurer-home.html', '🧭', 'My Adventurer')
-      + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'World Map', 'cta map')
-      + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe')
-      + tab('today', '/today/', '✅', 'To do')
+      + tab('home', 'adventurer-home.html', ui('compass', 18), 'My Adventurer')
+      + tab('mission', 'adventurer-mission.html', ui('sword', 18), 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
+      + tab('map', 'adventurer-map.html', ui('map', 18), 'World Map', 'cta map')
+      + tab('wardrobe', 'adventurer-wardrobe.html', ui('shirt', 18), 'Wardrobe')
+      + tab('today', '/today/', mono('ui-check', 16), 'To do')
       + `<span class="gap"></span>`
       + `<button type="button" class="tab sm morebtn${moreActive ? ' on' : ''}" id="advMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="advMoreMenu" title="More pages">⋯<span class="lbl"> More</span> ▾</button>`
       + `<span class="acct" id="advAcct"></span>`;
@@ -200,10 +203,10 @@ const ADV = (() => {
     const menu = document.createElement('div');
     menu.className = 'advmenu'; menu.id = 'advMoreMenu'; menu.setAttribute('role', 'menu'); menu.hidden = true;
     const mlink = (k, href, icon, label) => `<a href="${href}" role="menuitem" class="${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon} <span>${label}</span></a>`;
-    menu.innerHTML = mlink('cards', '/Flashcards/', '🃏', 'Flashcards')
-      + mlink('stats', 'adventurer-stats.html', '📊', 'Stats')
-      + mlink('look', 'adventurer-create.html', '✏️', 'My look')
-      + mlink('guide', '/how-to-use/', '❓', 'Help');
+    menu.innerHTML = mlink('cards', '/Flashcards/', mono('res-flashcards', 16), 'Flashcards')
+      + mlink('stats', 'adventurer-stats.html', ui('stats', 18), 'Stats')
+      + mlink('look', 'adventurer-create.html', ui('pencil', 18), 'My look')
+      + mlink('guide', '/how-to-use/', mono('ui-guide', 16), 'Help');
     document.body.appendChild(menu);
     const mBtn = n.querySelector('#advMoreBtn');
     const closeMenu = () => { if (!menu.hidden) { menu.hidden = true; mBtn.setAttribute('aria-expanded', 'false'); } };
@@ -243,7 +246,7 @@ const ADV = (() => {
       const t = document.createElement('div');
       t.setAttribute('role', 'status');
       t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center;transition:opacity .5s';
-      t.textContent = 'From your revision: ' + [gained.hp && `❤ +${gained.hp} Health`, gained.mana && `🔮 +${gained.mana} mana`, gained.move && `+${gained.move} move${gained.move > 1 ? 's' : ''} on Breadventure Land`].filter(Boolean).join(' · ');
+      t.innerHTML = 'From your revision: ' + [gained.hp && `${ui('heart')} +${gained.hp} Health`, gained.mana && `${ui('mana')} +${gained.mana} mana`, gained.move && `+${gained.move} move${gained.move > 1 ? 's' : ''} on Breadventure Land`].filter(Boolean).join(' · ');
       document.body.appendChild(t); setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 600); }, 4200);
     }
   }
@@ -395,7 +398,43 @@ const ADV = (() => {
     flask: ['....KKKK....', '....KWWK....', '....KWWK....', '...KWWWWK...', '..KWWWWWWK..', '.KWGGGGGGWK.', '.KGGGLGGGGK.', '.KGGGGGLGGK.', '..KKKKKKKK..', '............', '............', '............'],
     coin: ['............', '....KKKK....', '...KYYYYK...', '..KYYWYYYK..', '..KYWYYYYK..', '..KYYYYYYK..', '..KYYYYYYK..', '...KYYYYK...', '....KKKK....', '............', '............', '............'],
     heart: ['............', '.KK....KK...', 'KRRK..KRRK..', 'KRWRKKRRRK..', 'KRRRRRRRRK..', '.KRRRRRRK...', '..KRRRRK....', '...KRRK.....', '....KK......', '............', '............', '............'],
+    /* 12x12 pixel-art UI icons (replacing OS emojis across Breadventure Land) */
+    sword: ['........KKK.', '.......KWWK.', '......KWSWK.', '.....KWSWK..', '....KWSWK...', '..KKWSWK....', '.KYYWWK.....', '..KYYK......', '..KBYK......', '.KBNK.......', '.KKK........', '............'],
+    spark: ['.....KK.....', '....KWWK....', '....KRRK....', '.KK.KRYK.KK.', 'KWWKKYYKKWWK', 'KRRYYWWYYRRK', 'KWWKKYYKKWWK', '.KK.KRYK.KK.', '....KRRK....', '....KWWK....', '.....KK.....', '............'],
+    mana: ['....KKKK....', '..KKVVPPKK..', '.KVWWVVPPPK.', '.KVVWVVPPqK.', '.KVVVVPPqqK.', '.KPPPPPPqqK.', '..KPPPPqqK..', '...KKKKKK...', '..KYYYYYYK..', '.KKKKKKKKKK.', '............', '............'],
+    key: ['............', '..KKKK......', '.KYYYYK.....', '.KYKKYK.....', '.KYKKYKKKKK.', '.KYYYYYYYYYK', '..KKKKKKYKYK', '........K.KK', '............', '............', '............', '............'],
+    camp: ['.....KK.....', '....KYYK....', '...KYQQYK...', '..KYQFFQYK..', '.KYQQKKQQYK.', '.KYQKrrKQYK.', 'KYQQKrrKQQYK', 'KYQFKrrKFQYK', 'KKKKKKKKKKKK', '.gg..OO..gg.', '............', '............'],
+    shield: ['..KKKKKKKK..', '.KwwSSSSssK.', '.KwKPPPPKsK.', '.KwKPWWPKsK.', '.KwKPPPPKsK.', '.KwKPPqqKsK.', '..KwKqqKsK..', '..KwKKKKsK..', '...KwSSsK...', '....KssK....', '.....KK.....', '............'],
+    compass: ['...KKKKKK...', '..KYYYYYYK..', '.KYWeeeeWYK.', '.KYeKRRKeYK.', '.KYeeRRWeYK.', '.KYeWbbKeYK.', '.KYeeKKeeYK.', '.KYWeeeeWYK.', '..KYYYYYYK..', '...KKKKKK...', '............', '............'],
+    map: ['............', '.KKKK..KKKK.', 'KeeeKKKeeeKK', 'KeGGKeebGeKK', 'KeGGKeebGGKK', 'KeeGKeebeeKK', 'KeRRKeebGeKK', 'KeeeKeebeeKK', 'KKKKKKKeeeeK', '.......KKKK.', '............', '............'],
+    shirt: ['............', '..KKK..KKK..', '.KbbKKKKbbK.', 'KbbbbbbbbbbK', 'KbbKbbbbKbbK', '.KKKbbbbKKK.', '...KbbbbK...', '...KbWWbK...', '...KbbbbK...', '...KbbbbK...', '...KKKKKK...', '............'],
+    pencil: ['........KK..', '.......KppK.', '......KpWK..', '.....KSSK...', '....KYYK....', '...KYYFK....', '..KYYFK.....', '.KeYFK......', '.KeKK.......', '.KK.........', '............', '............'],
+    stats: ['............', '........KKK.', '........KRK.', '....KKK.KRK.', '....KYK.KRK.', '....KYK.KRK.', 'KKK.KYK.KRK.', 'KGK.KYK.KRK.', 'KGK.KYK.KRK.', 'KGK.KYK.KRK.', 'KKKKKKKKKKKK', '............'],
+    dice: ['............', '.KKKKKKKKKK.', '.KWWWWWWWWK.', '.KWKKWWKKWK.', '.KWKKWWKKWK.', '.KWWWWWWWWK.', '.KWWWKKWWWK.', '.KWKKWWKKWK.', '.KWKKWWKKWK.', '.KwwwwwwwwK.', '.KKKKKKKKKK.', '............'],
+    scroll: ['..KKKKKKKK..', '.KeeeeeeeeK.', '.KeKKKKKKeK.', '.KeeeeeeeeK.', '.KeDDDDDDeK.', '.KeeeeeeeeK.', '.KeDDDDDDeK.', '.KeeeRRReeK.', '.KeeeeReeeK.', 'KeeeeeeeeKK.', 'KKKKKKKKKK..', '............'],
+    pin: ['...KKKKKK...', '..KRRRRRRK..', '.KRRWWRRRRK.', '.KRRWWRRRRK.', '.KRRRRRRRRK.', '..KRRRRRRK..', '...KRRRRK...', '....KRRK....', '.....KK.....', '.....KK.....', '............', '............'],
+    torch: ['.....KK.....', '....KOYK....', '...KOYYOK...', '...KOYWOK...', '....KOOOK...', '....KKKK....', '....KBBK....', '....KBNK....', '....KBNK....', '....KBNK....', '.....KK.....', '............'],
+    hat: ['.....KK.....', '....KPPK....', '...KPPPK....', '...KPPqK....', '..KPPPqqK...', '..KYYYYYK...', '.KPPPPPPqK..', 'KKKKKKKKKKKK', '............', '............', '............', '............'],
+    gauntlet: ['..KKKKKKKK..', '.KwSKwSKwSK.', '.KwSKwSKwSK.', '.KwwSSSSssK.', '.KwwSSSSssK.', '..KwSSSSsK..', '..KYYYYYYK..', '..KwSSSSsK..', '..KssssssK..', '...KKKKKK...', '............', '............'],
+    slushie: ['.......KK...', '......KRRK..', '..KKKKKKKK..', '.KCCWWWWCCK.', '.KCCCCCCCCK.', '..KCCbbCCK..', '..KCbbbbCK..', '..KbbbbbbK..', '...KbbbbK...', '...KKKKKK...', '............', '............'],
+    aura: ['....KKKK....', '....KBBK....', '...KWWWWK...', '..KWWYYWWK..', '.KWWYYYYWWK.', '.KWPYYYYPWK.', '.KWPPYYPPWK.', '..KPPPPPPK..', '...KKKKKK...', '............', '............', '............'],
+    fizz: ['....L..L....', '...KKKKKK...', '....KWWK....', '...KWWWWK...', '..KWLLLLWK..', '.KWLWLLWLLK.', '.KLLLLLLLLK.', '.KGGGGGGGGK.', '..KKKKKKKK..', '............', '............', '............'],
+    calm: ['....w..w....', '...w..w.....', '.KKKKKKKK...', '.KeeeeeeeKK.', '.KeBBBBBeK.K', '.KeBBBBBeK.K', '.KeeeeeeeKK.', '.KeeeeeeeK..', '..KKKKKKK...', '............', '............', '............'],
+    patch: ['...KKKKKK...', '..KWWWWWWK..', '.KWWKGGKWWK.', '.KWKKGGKKWK.', '.KWGGGGGGWK.', '.KWGGGGGGWK.', '.KWKKGGKKWK.', '.KWWKGGKWWK.', '..KWWWWWWK..', '...KKKKKK...', '............', '............'],
+    fog: ['............', '....KKKK....', '..KKwwwwKK..', '.KwwWWWWwwK.', 'KwwWWccWWwwK', 'KwSSccccSSwK', '.KKKKKKKKKK.', '..SS....SS..', '....SSSS....', '............', '............', '............'],
+    calendar: ['..K......K..', '.KKKKKKKKKK.', '.KRRRRRRRRK.', '.KKKKKKKKKK.', '.KWWKWWKWWK.', '.KWWWWWWWWK.', '.KWWKYYKWWK.', '.KWWWWWWWWK.', '.KKKKKKKKKK.', '............', '............', '............'],
+    eye: ['............', '............', '...KKKKKK...', '.KKWWWWWWKK.', 'KWWKbbbbKWWK', 'KWKbWKKbKWKK', 'KWWKbbbbKWWK', '.KKWWWWWWKK.', '...KKKKKK...', '............', '............', '............'],
+    unlock: ['......KKKK..', '.....K....K.', '.....K....K.', '.....K......', '..KKKKKKKK..', '..KYYYYYYK..', '..KYYKKYYK..', '..KYYKKYYK..', '..KYYYYYYK..', '..KKKKKKKK..', '............', '............'],
+    flame_ui: ['.....KK.....', '....KOOK....', '...KOOYOK...', '..KOOYYOOK..', '..KOYWWYOK..', '..KOYWWYOK..', '...KOYYOK...', '....KOOOK...', '.....KK.....', '............', '............', '............'],
+    trophy_ui: ['..KKKKKKKK..', '.KKYYYYYYKK.', 'K.KYWYYYYK.K', 'K.KYYYYYYK.K', '.KKYYYYYYKK.', '...KYYYYK...', '....KYYK....', '....KYYK....', '..KKKKKKKK..', '..KXXXXXXK..', '..KKKKKKKK..', '............'],
+    horn: ['............', '........KK..', '......KKYYK.', '....KKYYYYK.', '..KKYYWYYYK.', '.KYYYYYYYYK.', '.KYYYYYYYYK.', '..KKYYKKYYK.', '....KK..KK..', '............', '............', '............'],
+    leaf: ['.......KKK..', '.....KKGGGK.', '....KGGLLGK.', '...KGGLLGGK.', '..KGGgGGGGK.', '..KGgGGGGK..', '..KgGGGGK...', '.KgKKKKK....', '.KK.........', '............', '............', '............'],
+    bed: ['............', '............', '.KK.........', '.KBK.KKKK...', '.KBKKWWWWKK.', '.KBKRRRRRRK.', '.KBBBBBBBBK.', '.KBBBBBBBBK.', '.KBK....KBK.', '.KK......KK.', '............', '............'],
+    gift: ['...KK..KK...', '..KYYKKYYK..', '.KKKKKKKKKK.', '.KRRKYYKRRK.', '.KKKKKKKKKK.', '..KRKYYKRK..', '..KRKYYKRK..', '..KRKYYKRK..', '..KKKKKKKK..', '............', '............', '............'],
+    flag: ['..KK........', '..KRRRRRKK..', '..KRRRRRRRK.', '..KRRRRRRK..', '..KRRRRKK...', '..KKKK......', '..KK........', '..KK........', '..KK........', '.KKKK.......', '............', '............'],
+    rage: ['..K......K..', '.KRK....KRK.', '.KRRKKKKRRK.', '.KRRRRRRRRK.', '.KRWWRRWWRK.', '.KRRKRRKRRK.', '.KRRRRRRRRK.', '..KRKKKKRK..', '..KRRRRRRK..', '...KKKKKK...', '............', '............'],
   };
+  const UI_ICONS = ['sword', 'heart', 'spark', 'mana', 'coin', 'key', 'camp', 'shield', 'lock', 'unlock', 'flask', 'slushie', 'aura', 'fizz', 'calm', 'patch', 'fog', 'compass', 'map', 'shirt', 'pencil', 'stats', 'dice', 'scroll', 'pin', 'torch', 'hat', 'gauntlet', 'calendar', 'eye', 'flame_ui', 'trophy_ui', 'horn', 'leaf', 'bed', 'gift', 'flag', 'rage', 'mine', 'lift', 'chest'];
   const cache = {};
   // Sprites drawn from the mascot art (10 Nov 2026) are image files, not grids. icon() returns their URL.
   const IMG = { prof: '/img/mascot/professor-pixel.png', profHead: '/img/mascot/head-pixel.png' };
@@ -411,6 +450,8 @@ const ADV = (() => {
     g.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = swap && ch === 'R' ? swap : swap && ch === 'r' ? shade(swap, -.32) : swap && ch === 'l' ? shade(swap, .38) : PAL[ch]; x.fillRect(i + ox, j + oy, 1, 1); }));
     return cache[k] = c.toDataURL();
   }
+  const ui = (name, sz, swap) => `<img class="px ui-ic" src="${icon(name, swap)}"${sz ? ` style="width:${sz}px;height:${sz}px"` : ''} alt="" aria-hidden="true">`;
+  const mono = (name, sz) => `<img class="ui-svg" src="/img/icons/${name}.svg"${sz ? ` style="width:${sz}px;height:${sz}px"` : ''} alt="" aria-hidden="true">`;
 
-  return { get S() { return S; }, get gained() { return gained; }, pending, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, CAP_STEP, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, pending, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, CAP_STEP, levelCap, xpFor, rawLevel, level, stats, nav, icon, ui, mono, face, IMG, ICONS, UI_ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

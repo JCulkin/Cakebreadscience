@@ -67,8 +67,8 @@ details.why li{margin:6px 0 0 20px}
 
   <div class="layout">
     <div class="card preview">
-      <div class="nick"><input id="nick" maxlength="16" placeholder="Your first name + initial" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me">🎲</button></div>
-      <div class="small">Your name in Breadventure Land and on the leaderboards. Type your own (2–16 letters) or press 🎲. Your teacher approves new names.</div>
+      <div class="nick"><input id="nick" maxlength="16" placeholder="Your first name + initial" autocomplete="off" spellcheck="false" aria-label="Your name"><button id="reroll" title="Make up a name for me" aria-label="Make up a name for me"></button></div>
+      <div class="small">Your name in Breadventure Land and on the leaderboards. Type your own (2–16 letters) or press the dice button. Your teacher approves new names.</div>
       <div class="small" id="namest" style="margin-top:4px"></div>
       <div class="namerr" id="namerr" role="alert"></div>
       <img id="fig" class="px" alt="Your adventurer">
@@ -76,7 +76,7 @@ details.why li{margin:6px 0 0 20px}
         <button data-view="starter" class="on">Starter outfit</button><button data-view="hat">With a hat</button><button data-view="base">No outfit</button>
       </div>
       <div class="acts">
-        <button class="btn alt" id="rand">🎲 Surprise me</button>
+        <button class="btn alt" id="rand">Surprise me</button>
         <button class="btn green" id="save">Save →</button>
       </div>
       <div class="saved" id="saved"></div>
@@ -111,6 +111,8 @@ details.why li{margin:6px 0 0 20px}
 <script src="adventurer-shell.js"></script>
 <script>
 ADV.nav('look');
+document.getElementById('reroll').innerHTML = ADV.ui('dice', 18);
+document.getElementById('rand').innerHTML = `${ADV.ui('dice', 16)} Surprise me`;
 const KEY_BASE = 'cbs.adventurer.base', KEY_NICK = 'cbs.adventurer.nick';
 const O = PIXEL.OPTIONS;
 let base = load(KEY_BASE) || Object.assign({}, PIXEL.DEFAULT), view = 'starter';
@@ -174,7 +176,7 @@ document.getElementById('rand').onclick = () => {
 };
 function nameStatus() {
   const p = QE.game.nickPending, shown = approved() || (QE.user ? QE.googleName() : 'your first name + initial');
-  document.getElementById('namest').innerHTML = p ? `⏳ <b>${p.replace(/</g, '&lt;')}</b> is waiting for your teacher to approve it. Until then you're shown as <b>${shown}</b>${QE.user ? '' : ' Sign in so it can be sent.'}` : '';
+  document.getElementById('namest').innerHTML = p ? `<b>${p.replace(/</g, '&lt;')}</b> is waiting for your teacher to approve it. Until then you're shown as <b>${shown}</b>${QE.user ? '' : ' Sign in so it can be sent.'}` : '';
 }
 QE.onChange(() => { if (document.activeElement !== document.getElementById('nick')) nick = QE.game.nickPending || approved(); nameStatus(); render(); });
 document.getElementById('save').onclick = async () => {

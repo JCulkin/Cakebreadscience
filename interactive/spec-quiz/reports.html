@@ -45,7 +45,7 @@ textarea{width:100%;min-height:200px;font:13px monospace;margin-top:8px;padding:
 <script src="/admin/admin-nav.js"></script>
 <main class="wrap">
   <h1>Reported questions</h1>
-  <p>Questions students have flagged with “⚑ Report this question”. Only admins can see this page’s data.</p>
+  <p>Questions students have flagged with “Report this question”. Only admins can see this page’s data.</p>
   <div class="bar" id="authbar"></div>
   <div id="out"></div>
 </main>
@@ -100,7 +100,7 @@ function draw() {
   const out = $('out');
   if (!user) { out.innerHTML = ''; return; }
   const gs = groups().filter(g => showDone || g.open);
-  if (!gs.length) { out.innerHTML = '<p class="note">No open reports. 🎉</p>'; return; }
+  if (!gs.length) { out.innerHTML = '<p class="note">No open reports.</p>'; return; }
   out.innerHTML = gs.map(g => `<div class="q ${g.open ? '' : 'done'}">
     <div class="qh"><b>${esc(g.qid)}</b><span><span class="count">${g.open} open</span> · ${g.reps.length} total
       ${g.open ? `<button class="btn alt" data-fix="${esc(g.qid)}">Mark fixed</button>` : ''}</span></div>

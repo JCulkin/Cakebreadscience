@@ -393,10 +393,10 @@ const QE = (() => {
       const xp = LV_XP[q.lv] || 5; PROG.xp += xp; if (q.hard) PROG.hard++;
       notes.push(`+${xp} XP`);
       if (s.c === 0) { s.c = 1; s.d = TODAY; notes.push('Get it right again <b>on another day</b> to secure it.'); }
-      else if (s.c === 1 && s.d < TODAY) { s.c = 2; s.d = TODAY; PROG.xp += 20; notes.push('🔒 <b>Question secured!</b> +20 XP'); }
+      else if (s.c === 1 && s.d < TODAY) { s.c = 2; s.d = TODAY; PROG.xp += 20; notes.push('<b>Question secured!</b> +20 XP'); }
       else if (s.c === 1) notes.push('Already counted today: come back another day to secure it.');
-      else notes.push('Still secured ✔');
-      if (before.rusty) { PROG.unrusted++; notes.push('🧽 Rust polished off this spec point!'); }
+      else notes.push('Still secured ✓');
+      if (before.rusty) { PROG.unrusted++; notes.push('Rust polished off this spec point!'); }
       if (PROG.weak && PROG.weak[q.s]) delete PROG.weak[q.s];
       earn({ hp: HEAL_MISSION });
     } else {
@@ -412,7 +412,7 @@ const QE = (() => {
   function pointNotes(key, before, notes) {
     const after = pointState(key);
     if (after.secured && !before.secured && POINTS[key]) {
-      notes.push(`📌 <b>Spec point ${POINTS[key].subject} ${POINTS[key].id} secured!</b>`);
+      notes.push(`<b>Spec point ${POINTS[key].subject} ${POINTS[key].id} secured!</b>`);
       if (!PROG.earned['p:' + key]) { PROG.earned['p:' + key] = TODAY; PROG.xp += 100; notes.push('+100 XP'); }
     }
   }
@@ -443,8 +443,8 @@ const QE = (() => {
     if (ok) {
       c.l = TODAY;
       if (c.c === 0) { c.c = 1; c.d = TODAY; }
-      else if (c.c === 1 && c.d < TODAY) { c.c = 2; c.d = TODAY; if (spec) notes.push('🔒 Card secured'); }
-      if (before && before.rusty) { PROG.unrusted++; notes.push('🧽 Rust polished off a spec point'); }
+      else if (c.c === 1 && c.d < TODAY) { c.c = 2; c.d = TODAY; if (spec) notes.push('Card secured'); }
+      if (before && before.rusty) { PROG.unrusted++; notes.push('Rust polished off a spec point'); }
     } else {
       if (c.c === 2) { c.c = 1; c.d = TODAY; } else if (c.c === 1) c.c = 0;
       if (spec) { PROG.weak = PROG.weak || {}; PROG.weak[spec] = TODAY; }

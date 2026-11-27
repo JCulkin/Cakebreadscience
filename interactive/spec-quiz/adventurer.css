@@ -24,6 +24,8 @@ button{font:inherit;cursor:pointer;color:inherit}
 .btn.big{font-size:20px;padding:12px 22px}
 .btn:disabled{opacity:.4;cursor:default}
 img.px{image-rendering:pixelated;image-rendering:crisp-edges}
+img.ui-ic{display:inline-block;width:1.15em;height:1.15em;vertical-align:-0.2em;image-rendering:pixelated;image-rendering:crisp-edges;flex:none}
+img.ui-svg{display:inline-block;width:1.1em;height:1.1em;vertical-align:-0.18em;flex:none}
 .card{background:var(--paper);border:2px solid var(--ink);padding:14px 16px}
 .kick{font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;color:#b45309}
 .bar{height:12px;border:2px solid var(--ink);background:var(--soft);position:relative}

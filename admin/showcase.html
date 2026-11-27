@@ -352,10 +352,10 @@ function build() {
   /* ---------- brews, spells, events ---------- */
   sec('brews', 'Brews, spells and weekly events', '', `
     <div class="grid" style="--w:420px">
-      <div class="card"><h3 style="margin-top:0">Brews <small class="cnt">Tuck Shop, real coins</small></h3><table>${Object.values(BL.BREWS).map(b => `<tr><td style="font-size:26px">${b.ic}</td><td><b>${esc(b.name)}</b><div class="small">${esc(b.what)}</div></td><td class="n">🪙 ${b.cost}</td><td class="small muted">${b.when === 'now' ? 'straight away' : 'tonight'}</td></tr>`).join('')}</table></div>
-      <div class="card"><h3 style="margin-top:0">Spells <small class="cnt">mana: +1 per flashcard, +1 per 3 right answers</small></h3><table>${BL.SPELL_INFO.map(s => `<tr><td style="font-size:26px">${s.ic}</td><td><b>${esc(s.name)}</b><div class="small">${esc(s.what)}</div></td><td class="n">🔮 ${s.cost}</td></tr>`).join('')}</table>
+      <div class="card"><h3 style="margin-top:0">Brews <small class="cnt">Tuck Shop, real coins</small></h3><table>${Object.values(BL.BREWS).map(b => `<tr><td>${ADV.ui(b.px, 28)}</td><td><b>${esc(b.name)}</b><div class="small">${esc(b.what)}</div></td><td class="n">${ADV.ui('coin', 16)} ${b.cost}</td><td class="small muted">${b.when === 'now' ? 'straight away' : 'tonight'}</td></tr>`).join('')}</table></div>
+      <div class="card"><h3 style="margin-top:0">Spells <small class="cnt">mana: +1 per flashcard, +1 per 3 right answers</small></h3><table>${BL.SPELL_INFO.map(s => `<tr><td>${ADV.ui(s.px, 28)}</td><td><b>${esc(s.name)}</b><div class="small">${esc(s.what)}</div></td><td class="n">${ADV.ui('mana', 16)} ${s.cost}</td></tr>`).join('')}</table>
         <p class="small" style="margin-top:8px"><b>Helping:</b> on the same square as another player you can patch them up (3 mana, +5 Health + 1 per 5 Magic) or give them a brew.</p></div>
-      <div class="card"><h3 style="margin-top:0">Weekly events <small class="cnt">one a week, Monday to Sunday</small></h3><table>${BL.EVENTS.map(e => `<tr><td style="font-size:26px">${e.ic}</td><td><b>${esc(e.name)}</b>${BL.eventOf(BL.TODAY).id === e.id ? ' <span class="tag" style="color:#16a34a">this week</span>' : ''}<div class="small">${esc(e.text)}</div></td></tr>`).join('')}</table></div></div>`);
+      <div class="card"><h3 style="margin-top:0">Weekly events <small class="cnt">one a week, Monday to Sunday</small></h3><table>${BL.EVENTS.map(e => `<tr><td>${ADV.ui(e.px, 28)}</td><td><b>${esc(e.name)}</b>${BL.eventOf(BL.TODAY).id === e.id ? ' <span class="tag" style="color:#16a34a">this week</span>' : ''}<div class="small">${esc(e.text)}</div></td></tr>`).join('')}</table></div></div>`);
 
   /* ---------- rules & numbers ---------- */
   const lv = [...Array(16)].map((_, i) => i + 1);
@@ -376,7 +376,7 @@ function build() {
   sec('unlocks', 'Level unlocks', 'the game starts simple; these open as students level up', `
     <p class="lede">Level comes from XP but is capped at 2 + 1 per 5 spec points secured (4 on Single Award), so every unlock is earned by revision. Nothing a student already owns is taken away: worn items stay on and brews stay in the bag; they just can't be changed or used until the level. A pop-up shows what's new at each level.</p>
     <div class="wrapx"><table><thead><tr><th class="n">Level</th><th class="n">XP</th><th class="n">Spec points</th><th>Unlocks</th></tr></thead><tbody>
-      ${[...new Set(ADV.UNLOCKS.map(u => u.lv))].map(lv => `<tr><td class="n"><b>${lv}</b></td><td class="n">${ADV.xpFor(lv)}</td><td class="n">${Math.max(0, (lv - 2) * 5)}${lv > 2 ? ` <span class="small muted">(${(lv - 2) * 4} SA)</span>` : ''}</td><td>${ADV.UNLOCKS.filter(u => u.lv === lv).map(u => `${u.ic} <b>${esc(u.name)}</b> <span class="small muted">${esc(u.what)}</span>`).join('<br>')}</td></tr>`).join('')}</tbody></table></div>`);
+      ${[...new Set(ADV.UNLOCKS.map(u => u.lv))].map(lv => `<tr><td class="n"><b>${lv}</b></td><td class="n">${ADV.xpFor(lv)}</td><td class="n">${Math.max(0, (lv - 2) * 5)}${lv > 2 ? ` <span class="small muted">(${(lv - 2) * 4} SA)</span>` : ''}</td><td>${ADV.UNLOCKS.filter(u => u.lv === lv).map(u => `${ADV.ui(u.px, 16)} <b>${esc(u.name)}</b> <span class="small muted">${esc(u.what)}</span>`).join('<br>')}</td></tr>`).join('')}</tbody></table></div>`);
 
   /* ---------- every sprite ---------- */
   const bySize = {}; icons.forEach(n => { const g = ADV.ICONS[n], s = Math.max(g.length, ...g.map(r => r.length)); (bySize[s] = bySize[s] || []).push(n); });

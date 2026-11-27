@@ -84,11 +84,11 @@ const PLACES = {
     text: 'Crumbmaw\'s lookout, guarding the crumb trail with a stolen cake fork. Small, greedy and beatable on your own: a good first boss. It comes back two days after it falls.', loot: ['+25 coins each', 'an Electrolyte Slushie each'] },
   /* chapter 1: the dragon's three guards, each holding a piece of the cage key */
   '2,2': { type: 'boss', ch: 1, science: 'b', name: 'The Spore Lord', icon: 'spore', max: 650, power: 5, tier: 'Tough',
-    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', item: 'mito', loot: ['🔑 Key piece 1 of 3', 'Mitochondria Gauntlet (Lowkey Iconic)', '+40 coins each'] },
+    text: 'A mushroom the size of a house, deep in Greenhouse Woods. Breathes clouds of spores and regrows faster than you can chop. Holds one piece of the cage key.', item: 'mito', loot: ['Key piece 1 of 3', 'Mitochondria Gauntlet (Lowkey Iconic)', '+40 coins each'] },
   '11,2': { type: 'boss', ch: 1, science: 'p', name: 'Granitus the Stone Golem', icon: 'golem', max: 800, power: 6, tier: 'Very tough',
-    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['🔑 Key piece 2 of 3', 'Frictionless Slippers (Lowkey Iconic)', '+40 coins each'] },
+    text: 'A walking cliff in Gravity Peaks. It will not move unless an unbalanced force acts on it. You are the unbalanced force. Holds one piece of the cage key.', item: 'frictionless', loot: ['Key piece 2 of 3', 'Frictionless Slippers (Lowkey Iconic)', '+40 coins each'] },
   '4,7': { type: 'boss', ch: 1, science: 'c', name: 'The Acid Hydra', icon: 'hydra', max: 450, power: 4, tier: 'Next step',
-    text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', item: 'shield', loot: ['🔑 Key piece 3 of 3', 'Periodic Table Shield (Rare)', '+40 coins each'] },
+    text: 'Three heads, all of them sour. It lurks in the Acid Marsh and spits things that fizz. Holds one piece of the cage key.', item: 'shield', loot: ['Key piece 3 of 3', 'Periodic Table Shield (Rare)', '+40 coins each'] },
   '7,0': { type: 'worldboss', name: 'Crumbmaw the Dragon', icon: 'dragonzz', text: 'Asleep in its lair on a hoard of stolen lab equipment (and one stolen Professor). Far too strong for anyone alone. When it wakes, everyone fights it together.' },
   '7,1': { type: 'cage', name: 'The Professor\'s Cage', icon: 'prof', text: 'The Professor is locked in here, looking cross and slightly crumbly. The lock needs all three key pieces — win them from the Spore Lord, the Stone Golem and the Acid Hydra.' },
   /* chapter 2: wake up once the Professor is free */
@@ -142,16 +142,16 @@ const CRUMBS = ['7,3', '7,2'];
 /* ===================== brews (the Tuck Shop's stock; coins come from missions, flashcards and the map) =====================
    now: used straight away (client); night: a flag on your state that tonight's fights read, then it wears off */
 const BREWS = {
-  slushie: { name: 'Electrolyte Slushie', ic: '🥤', cost: 20, when: 'now', what: 'Refills your Health straight away.' },
-  aura: { name: 'Bottled Aura', ic: '✨', cost: 30, when: 'night', what: '+5 Strength in tonight\'s fights.' },
-  fizz: { name: 'Fizzy Courage', ic: '🫧', cost: 40, when: 'night', what: 'Your hits do half as much again tonight.' },
-  calm: { name: 'Decaf Panic', ic: '☕', cost: 25, when: 'night', what: 'You can\'t be knocked out tonight (you stop at 1 Health).' },
+  slushie: { name: 'Electrolyte Slushie', px: 'slushie', ic: '', cost: 20, when: 'now', what: 'Refills your Health straight away.' },
+  aura: { name: 'Bottled Aura', px: 'aura', ic: '', cost: 30, when: 'night', what: '+5 Strength in tonight\'s fights.' },
+  fizz: { name: 'Fizzy Courage', px: 'fizz', ic: '', cost: 40, when: 'night', what: 'Your hits do half as much again tonight.' },
+  calm: { name: 'Decaf Panic', px: 'calm', ic: '', cost: 25, when: 'night', what: 'You can\'t be knocked out tonight (you stop at 1 Health).' },
 };
 /* spells (mana) and dungeon floor coins: the numbers live here so the map and the admin showcase read the same list (17 Nov) */
 const SPELL_INFO = [
-  { id: 'heal', ic: '💚', name: 'Patch Up', cost: 3, what: '+5 Health now (+1 per 5 Magic).' },
-  { id: 'shield', ic: '🛡', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.' },
-  { id: 'fog', ic: '🌫', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.' },
+  { id: 'heal', px: 'patch', ic: '', name: 'Patch Up', cost: 3, what: '+5 Health now (+1 per 5 Magic).' },
+  { id: 'shield', px: 'shield', ic: '', name: 'Jam Shield', cost: 4, what: 'Take half damage tonight.' },
+  { id: 'fog', px: 'fog', ic: '', name: 'Lift the Fog', cost: 5, what: 'Clears the fog 4 steps around where you are now, for good.' },
 ];
 const FLOOR_COINS = [8, 12, 15, 18, 22];
 const BREW_OLD = { 'Fizzy Courage': 'fizz', 'Bottled Aura': 'aura', 'Electrolyte Slushie': 'slushie', 'Decaf Panic': 'calm' };   // dungeon finds before 10 Nov used names
@@ -227,11 +227,11 @@ const BOSS_STORY = {
 };
 /* ---------- weekly events (16 Nov): one a week, the same for everyone, picked from the date ---------- */
 const EVENTS = [
-  { id: 'coins', ic: '🪙', name: 'Market week', text: 'Small monsters and the puddle pay double coins.' },
-  { id: 'rage', ic: '😡', name: 'Boss rage week', text: 'Bosses hit half as hard again, but they get careless: your attacks do 25% more damage.' },
-  { id: 'quiet', ic: '🌿', name: 'Quiet week', text: 'The wild critters are staying home. Nothing jumps you on open land.' },
-  { id: 'rest', ic: '🛏', name: 'Cosy week', text: 'A night’s rest in the Cakelab heals twice as much.' },
-  { id: 'rally', ic: '📣', name: 'Rally week', text: 'Fighting a boss side by side gives double the rally bonus.' },
+  { id: 'coins', px: 'coin', ic: '', name: 'Market week', text: 'Small monsters and the puddle pay double coins.' },
+  { id: 'rage', px: 'rage', ic: '', name: 'Boss rage week', text: 'Bosses hit half as hard again, but they get careless: your attacks do 25% more damage.' },
+  { id: 'quiet', px: 'leaf', ic: '', name: 'Quiet week', text: 'The wild critters are staying home. Nothing jumps you on open land.' },
+  { id: 'rest', px: 'bed', ic: '', name: 'Cosy week', text: 'A night’s rest in the Cakelab heals twice as much.' },
+  { id: 'rally', px: 'horn', ic: '', name: 'Rally week', text: 'Fighting a boss side by side gives double the rally bonus.' },
 ];
 const eventOf = day => EVENTS[Math.floor((dayNum(day) + 3) / 7) % EVENTS.length];   // weeks run Monday to Sunday
 const RALLY = 0.1;   // +10% boss damage for each ally on the square at the same step (max +40%)
@@ -323,9 +323,9 @@ function resolve(w0, pubs, st0, today) {
     const total = start - w.boss[k], ST2 = BOSS_STORY[k] || {};
     team.forEach(([u, n]) => {
       const mates = team.filter(([x]) => x !== u).map(([x]) => nameOf(x));
-      say(u, `<p class="good">⚔ At midnight ${mates.length ? `you and ${list(mates)} attack ${P.name} together` : `you attack ${P.name}`}: ${total} damage in all${mates.length ? ` (you did ${dealt[u]})` : ''}.${mates.length ? ` 📣 Rally bonus for fighting side by side.` : ''}</p>`);
+      say(u, `<p class="good">At midnight ${mates.length ? `you and ${list(mates)} attack ${P.name} together` : `you attack ${P.name}`}: ${total} damage in all${mates.length ? ` (you did ${dealt[u]})` : ''}.${mates.length ? ` Rally bonus for fighting side by side.` : ''}</p>`);
       if (dealt['hit_' + u]) say(u, `<p class="bad">${P.name} hits back: −${dealt['hit_' + u]} Health.</p>`);
-      if (out[u]) say(u, `<p class="bad">💫 You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Missions (+${HEAL.mission} per right answer) and flashcards (+${HEAL.card} per card) heal you.</p>`);
+      if (out[u]) say(u, `<p class="bad">You are knocked out and wake up in the Cakelab on ${S[u].health} Health. Missions (+${HEAL.mission} per right answer) and flashcards (+${HEAL.card} per card) heal you.</p>`);
       else if (w.boss[k] > 0) say(u, w.boss[k] <= P.max / 3 && start > P.max / 3 && ST2.low ? `<p class="new">${ST2.low}</p>` : ST2.taunt ? `<p>${P.name}: <i>${ST2.taunt[Math.floor(rnd() * ST2.taunt.length)]}</i></p>` : '');
     });
     if (w.boss[k] === 0) {
@@ -334,7 +334,7 @@ function resolve(w0, pubs, st0, today) {
         if (ST2.fall) lines[u].push(`<p class="new">${ST2.fall}</p>`); lines[u].push(`<p class="lt">★ ${P.name} is defeated! Everyone who fought it gets: ${P.loot.join(', ')}.</p>`); } });
       if (P.respawn) w.back[k] = dayNum(today) + P.respawn;
       (w.log = w.log || []).push(`${P.name} was defeated by ${Object.keys(hk).length} player${Object.keys(hk).length > 1 ? 's' : ''}.`);
-      if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">🔑 Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
+      if (CH1.includes(k)) ids.forEach(u => say(u, `<p class="new">Everyone now has <b>${keysOf(w)}/3</b> key pieces.</p>`));
     }
   });
   /* treasure chests: who found what yesterday, then tonight's new ones */
@@ -345,9 +345,9 @@ function resolve(w0, pubs, st0, today) {
   if (w.chapter < 2 && keysOf(w) === 3) { w.chapter = 2; rescued = true; (w.log = w.log || []).push('All three key pieces won: the Professor is free! Chapter 2 begins.'); }
   ids.forEach(u => {
     const st = S[u];
-    if (rescued) lines[u].unshift('<p class="lt">🔓 With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>');
-    if (st.shield) lines[u].push('<p class="lt">🛡 Your Jam Shield has worn off.</p>');
-    ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">${BREWS[b].ic} Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
+    if (rescued) lines[u].unshift('<p class="lt">With all three key pieces, the cage opens. <b>The Professor is free!</b> Chapter 2 begins.</p>');
+    if (st.shield) lines[u].push('<p class="lt">Your Jam Shield has worn off.</p>');
+    ['aura', 'fizz', 'calm'].forEach(b => { if (st[b]) lines[u].push(`<p class="lt">Your ${BREWS[b].name} has worn off.</p>`); st[b] = false; });
     st.shield = false; st.camp = null;
     Object.keys(st.brews).forEach(n => { if (BREW_OLD[n]) { st.brews[BREW_OLD[n]] = (st.brews[BREW_OLD[n]] || 0) + st.brews[n]; delete st.brews[n]; } });
     /* new moves & passive overnight mana regen (+1 + floor(mag/10) a night). Someone who joined today keeps their 6 first-day moves. */
@@ -361,11 +361,11 @@ function resolve(w0, pubs, st0, today) {
     }
     if (rewards[u]) { const p = st.pending || { coins: 0, items: [] }; p.coins = (p.coins || 0) + rewards[u].coins; p.items = [...(p.items || []), ...rewards[u].items]; st.pending = p; }
     const others = ids.filter(x => x !== u && fought[x] && fought[x] !== fought[u]).map(x => `<b>${nameOf(x)}</b> fought ${fought[x]}${out[x] ? ' and was knocked out' : ''}`);
-    if (others.length) lines[u].push(`<p>👣 Elsewhere last night: ${others.join('; ')}.</p>`);
-    if (finds.length) lines[u].push(`<p>✨ Treasure found yesterday: ${finds.map(f => `<b>${esc(f.n)}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${esc(f.it)})` : ''}`).join('; ')}.</p>`);
-    if (newChests.length) lines[u].push(`<p class="new">✨ ${newChests.length === 1 ? 'A new treasure chest has' : newChests.length + ' new treasure chests have'} appeared in the night${newChests.some(isUnder) ? ' (one of them in the Underworld)' : ''}. You can see chests glinting even through the fog. First to reach one gets what's inside.</p>`);
-    const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">${ev1.ic} This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
-    lines[u].push(`<p>🌙 A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}${manaUp > 0 && (P_(u).lvl || 1) >= 2 ? ` · 🔮 +${manaUp} mana` : ''}.</p>`);
+    if (others.length) lines[u].push(`<p>Elsewhere last night: ${others.join('; ')}.</p>`);
+    if (finds.length) lines[u].push(`<p>Treasure found yesterday: ${finds.map(f => `<b>${esc(f.n)}</b> opened ${f.t === 'gold' ? 'a golden' : f.t === 'silver' ? 'a silver' : f.t === 'cursed' ? 'a cursed' : 'a wooden'} chest${f.it ? ` (${esc(f.it)})` : ''}`).join('; ')}.</p>`);
+    if (newChests.length) lines[u].push(`<p class="new">${newChests.length === 1 ? 'A new treasure chest has' : newChests.length + ' new treasure chests have'} appeared in the night${newChests.some(isUnder) ? ' (one of them in the Underworld)' : ''}. You can see chests glinting even through the fog. First to reach one gets what's inside.</p>`);
+    const ev1 = eventOf(today); if (ev1.id !== EV || dayNum(today) % 7 === 4) lines[u].push(`<p class="lt">This week is <b>${ev1.name}</b>: ${ev1.text}</p>`);
+    lines[u].push(`<p>A new day: you have <b>${movesOf(st)}</b> move${movesOf(st) === 1 ? '' : 's'}${manaUp > 0 && (P_(u).lvl || 1) >= 2 ? ` · +${manaUp} mana` : ''}.</p>`);
     st.report = lines[u]; st.reportDay = today; st.big = !!(fought[u] || rescued || lines[u].some(l => /defeated!/.test(l)));   // big = worth a pop-up
   });
   w.day = today; delete w.lock;
@@ -436,7 +436,7 @@ const savePlan = steps => publish({}, steps);
 async function aid(to, what, from) {
   if (what.brew) await rtTx(`bland/state/${to}/brews/${what.brew}`, n => (n || 0) + 1, 10000).catch(e => { throw stepErr('Send brew (bland/state)', e); });
   if (what.heal) await rtTx(`bland/state/${to}/health`, h => Math.min((pubs[to] || {}).hp || 15, (h || 0) + what.heal), 10000).catch(e => { throw stepErr('Patch up player (bland/state)', e); });
-  await rtTx(`bland/state/${to}/inbox`, a => (Array.isArray(a) ? a : []).concat(what.brew ? `🎁 ${from} gave you ${BREWS[what.brew].ic} ${BREWS[what.brew].name}.` : `🩹 ${from} patched you up: +${what.heal} Health.`).slice(-5), 10000).catch(() => {});
+  await rtTx(`bland/state/${to}/inbox`, a => (Array.isArray(a) ? a : []).concat(what.brew ? `${from} gave you ${BREWS[what.brew].name}.` : `${from} patched you up: +${what.heal} Health.`).slice(-5), 10000).catch(() => {});
   if (states[to]) { if (what.brew) { states[to].brews = states[to].brews || {}; states[to].brews[what.brew] = (states[to].brews[what.brew] || 0) + 1; } }
 }
 /* treasure: the first to step on a chest gets it. Returns the chest if you got it, null if someone else already had. */

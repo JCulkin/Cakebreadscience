@@ -113,12 +113,12 @@ $('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
 $('fig0').src = PIXEL.figure({ head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler' }, PIXEL.DEFAULT);
 $('nick').textContent = ADV.nick();
 const sec = ADV.securedTotal();
-$('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">💪 ${s.str}</span><span class="chip" style="color:var(--hp)">❤ ${s.hp}</span><span class="chip" style="color:var(--mag)">✨ ${s.mag}</span>`
-  + `<span class="chip">🔒 ${sec} spec point${sec === 1 ? '' : 's'} secured</span>`
-  + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`);
+$('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">${ADV.ui('sword')} ${s.str}</span><span class="chip" style="color:var(--hp)">${ADV.ui('heart')} ${s.hp}</span><span class="chip" style="color:var(--mag)">${ADV.ui('spark')} ${s.mag}</span>`
+  + `<span class="chip">${ADV.ui('lock')} ${sec} spec point${sec === 1 ? '' : 's'} secured</span>`
+  + (S.missionsToday ? '' : `<span class="chip hot">${ADV.ui('sword')} Today's mission</span>`);
 $('storyNow').innerHTML = S.chapter >= 2
-  ? `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated" alt="">🎉 <b>Chapter 2:</b> The Professor is free and back in the Cakelab! Now three tougher monsters are waking across <b>Breadventure Land</b>: the <b>Superbug</b>, the <b>Rust Wyrm</b> and the <b>Half-Life Horror</b>. Every spec point you secure makes you stronger.`
-  : `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. Win them together in <b>Breadventure Land</b>. Every spec point you secure makes you stronger.`;
+  ? `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated" alt=""><b>Chapter 2:</b> The Professor is free and back in the Cakelab! Now three tougher monsters are waking across <b>Breadventure Land</b>: the <b>Superbug</b>, the <b>Rust Wyrm</b> and the <b>Half-Life Horror</b>. Every spec point you secure makes you stronger.`
+  : `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt=""><b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. Win them together in <b>Breadventure Land</b>. Every spec point you secure makes you stronger.`;
 
 /* sign-in prompt */
 const signDraw = () => { $('signin').hidden = !(QE.known && QE.online && !QE.user); };

@@ -141,7 +141,7 @@ const ADV_SETS = {
   c: { name: 'Chemistry', col: '#ef4444', stat: 'mag', fx: { spell: 1 }, title: 'Certified Lab Gremlin' },
   p: { name: 'Physics', col: '#f59e0b', stat: 'str', fx: { boss: 10 }, title: 'Certified Gravity Enjoyer' },
 };
-const ADV_STAT = { str: ['💪', 'Strength'], hp: ['❤', 'Health'], mag: ['✨', 'Magic'] };
+const ADV_STAT = { str: ['STR', 'Strength', 'sword'], hp: ['HP', 'Health', 'heart'], mag: ['MAG', 'Magic', 'spark'] };
 const ADV_HANDS = ['rhand', 'lhand'];
 /* can item i go in slot k? */
 const ADV_FITS = (i, k) => !!i && (i.slot === k || (i.slot === 'hand' && ADV_HANDS.includes(k)));
@@ -172,6 +172,9 @@ function ADV_GEAR(eq) {
 /* one tag: rarity (plus level when > 1), e.g. "Rare · level 3" or "Common" */
 const ADV_TAG = i => i.legend ? `Main Character · ${i.legend}` : ADV_RARITY[i.r] + (i.lv > 1 ? ` · level ${i.lv}` : '');
 const ADV_WHERE = i => i.slot === 'hand' ? (i.two ? 'Two hands' : 'Either hand') : (ADV_SLOTS.find(s => s.k === i.slot) || { name: i.slot }).name;
-/* "+2 💪 Strength · +1 ✨ Magic" and the fx lines */
-const ADV_STATS_TXT = i => ['str', 'hp', 'mag'].filter(s => i[s]).map(s => `${i[s] > 0 ? '+' : '−'}${Math.abs(i[s])} ${ADV_STAT[s][0]} ${ADV_STAT[s][1]}`).join(' · ');
+/* "+2 [sword] Strength · +1 [spark] Magic" and the fx lines */
+const ADV_STATS_TXT = i => ['str', 'hp', 'mag'].filter(s => i[s]).map(s => {
+  const ic = typeof ADV !== 'undefined' && ADV.ui ? ADV.ui(ADV_STAT[s][2]) + ' ' : '';
+  return `${i[s] > 0 ? '+' : '−'}${Math.abs(i[s])} ${ic}${ADV_STAT[s][1]}`;
+}).join(' · ');
 const ADV_FX_TXT = fx => Object.entries(fx || {}).filter(([f]) => ADV_FX[f]).map(([f, n]) => ADV_FX[f](n));

@@ -139,8 +139,8 @@ function build() {
   R('you', 'Level', s.l, null, s.l >= ADV.levelCap() ? `Capped at ${ADV.levelCap()} until you secure more spec points` : '');
   R('you', 'Level unlocks', ADV.UNLOCKS.filter(u => ADV.can(u.id)).length, ADV.UNLOCKS.length, (ADV.nextUnlock() ? `Next: ${ADV.nextUnlock().name} at level ${ADV.nextUnlock().lv}` : 'Everything unlocked'));
   R('you', 'XP', s.xp != null ? s.xp : ADV.S.xp);
-  R('you', '💪 Strength', s.str, null, '', true); R('you', '❤ Health', s.hp, null, '', true); R('you', '✨ Magic', s.mag, null, '', true);
-  R('you', '🪙 Coins in your pocket', ADV.S.coins);
+  R('you', `${ADV.ui('sword')} Strength`, s.str, null, '', true); R('you', `${ADV.ui('heart')} Health`, s.hp, null, '', true); R('you', `${ADV.ui('spark')} Magic`, s.mag, null, '', true);
+  R('you', `${ADV.ui('coin')} Coins in your pocket`, ADV.S.coins);
 
   /* ---- Breadventure Land ---- */
   if (LAND_ && LAND_.st && LAND_.st.at) {

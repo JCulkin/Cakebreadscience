@@ -3,6 +3,23 @@
   "note": "Every new page, UI redesign, tool, or site-wide feature waiting for teacher review on staging MUST be listed here so it appears on /staging-review/#site before going live.",
   "items": [
     {
+      "id": "breadventure-pixel-icons",
+      "category": "design",
+      "status": "review",
+      "date": "2026-11-28",
+      "title": "Breadventure Land Pixel-Art Icon Kit (272 → 0 OS Emojis)",
+      "summary": "Replaced all OS emojis across Breadventure Land and Practice with 34 new 12×12 pixel-art UI icons (stats, coins, mana, brews, spells, camp, keys, nav tabs, locks, weekly events) plus reused site monoline SVGs for study links (Revision Notes, Worksheets, Flashcards, To Do, Help). Open the live showcase to inspect all 41 icons on light/dark swatches and Before vs After UI comparisons.",
+      "before": "272 Windows/OS emojis across the game nav, World Map HUD, boss panels, Mission rewards, Wardrobe, Stats, and Practice.",
+      "after": "Cohesive 12×12 pixel-art RPG icon kit (ADV.ui) + site monoline SVGs for study links + clean typography in morning reports.",
+      "previewUrl": "/staging-review/game-icons.html",
+      "extraLinks": [
+        { "label": "My Adventurer", "url": "/interactive/spec-quiz/adventurer-home.html" },
+        { "label": "World Map", "url": "/interactive/spec-quiz/adventurer-map.html" },
+        { "label": "Mission", "url": "/interactive/spec-quiz/adventurer-mission.html" },
+        { "label": "Full Game Showcase", "url": "/admin/showcase.html" }
+      ]
+    },
+    {
       "id": "lessons-rename-and-plain-mode",
       "category": "features",
       "status": "review",
