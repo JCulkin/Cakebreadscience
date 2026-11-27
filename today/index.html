@@ -30,6 +30,13 @@ main{max-width:1100px;margin:0 auto;padding:20px 18px 60px}
 .hello img{width:68px;height:68px;image-rendering:pixelated;background:var(--paper);border:2px solid var(--ink);flex:none}
 .hello h1{font-size:clamp(28px,5vw,38px)}.hello p{color:var(--muted);font-size:14px}
 .yr{background:#111;color:#fff;border:0;font:700 12px Barlow,Arial;padding:2px 8px;margin-left:6px;cursor:pointer;vertical-align:1px;border-radius:3px}
+.mode-sw{display:inline-flex;align-items:center;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin-left:8px;vertical-align:1px;background:var(--paper)}
+.mode-sw button{border:0;background:transparent;color:var(--muted);font:700 12px Barlow,Arial,sans-serif;padding:2px 8px;cursor:pointer;line-height:1.25;white-space:nowrap}
+.mode-sw button:hover{background:#fef3c7;color:var(--ink)}
+.mode-sw button.on{background:#111;color:#facc15}
+.plain-foot{margin:16px 0 4px;padding:10px 14px;background:var(--soft);border:1.5px dashed var(--line);border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.plain-foot button{background:var(--paper);border:1.5px solid var(--ink);border-radius:4px;padding:4px 10px;font:700 13px Barlow,Arial,sans-serif;cursor:pointer;color:var(--ink)}
+.plain-foot button:hover{background:#facc15}
 .qgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#111;color:var(--cream);border:2px solid #111;border-left:6px solid var(--green);padding:8px 12px 8px 14px}
 .qgo-txt b{font:900 16px/1.1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;display:block;color:#facc15;letter-spacing:.3px}
 .qgo-txt span{font-size:13px;color:#d6d3cb}
@@ -260,7 +267,8 @@ async function draw() {
     within(fs.collection('users').doc(u.uid).get(), 6000, 'your account (Firestore)'),
     within(fs.collection('specProgress').doc(u.uid).get(), 6000, 'the spec trackers (Firestore)'),
     within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => CBSSchool.rtGet(rt0, p, 15000))), 15000, 'Breadventure Land (Realtime Database)')]);
-  if (dR.status === 'fulfilled') doc = dR.value.data() || {};
+  if (dR.status === 'fulfilled') { doc = dR.value.data() || {}; if (window.CBSMode) CBSMode.syncFromDoc(doc); }
+  const plain = !!(window.CBSMode && CBSMode.isPlain());
   let conf = null;
   if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; conf = (s.exists && s.data().conf) || null; } else spec = doc.specSubjects || {};
   const now = Date.now(), prog = doc.progress || {};
@@ -268,7 +276,9 @@ async function draw() {
   let land = null;
   if (lR.status === 'fulfilled') { const [w, st, pb] = lR.value; land = { w, st, pb }; }
 
-  const st = QE.stats(), s = ADV.stats(), name = QE.boardName().split(' ')[0];
+  const st = QE.stats(), s = ADV.stats();
+  const realFirst = ((u && u.displayName) || '').trim().split(/\s+/)[0];
+  const name = plain ? (realFirst || QE.boardName().split(' ')[0]) : QE.boardName().split(' ')[0];
   const missionDone = QE.missionsToday() > 0, cd = QE.cardsToday(), cardsDone = !!(cd && cd.done);
   const pick = QE.picks()[0];
   let face; try { face = PIXEL.portrait(ADV.look(), ADV.eq()); } catch (e) { face = '/img/mascot/head-pixel.png'; }
@@ -303,7 +313,7 @@ async function draw() {
   const ptCard = ({ k, tag, cls }) => `<div class="sitem" style="--c:${SCOL[k[0]] || '#111'}">
     <div class="sitem-top"><a class="k ${k[0]}" href="/specifications/${TRK[k[0]]}.html#${k}" title="Open on spec tracker">${k[0]} ${P(k).id}</a><span class="why ${cls}">${tag}</span></div>
     <div class="txt">${esc(strip(P(k).text).slice(0, 96))}${strip(P(k).text).length > 96 ? '…' : ''}</div>
-    <div class="sitem-acts">${QE.POINT_QS[k] ? `<a class="go-btn" href="${Q}practice.html?point=${k}">Practise →</a><a class="sub-lnk" href="${Q}adventurer-mission.html?point=${k}">Quest</a>` : ''}${QE.CARDS_ON[k] ? `<a class="sub-lnk" href="/Flashcards/?spec=${k}">Cards</a>` : ''}<a class="sub-lnk" href="/specifications/${TRK[k[0]]}.html#${k}">Spec</a></div>
+    <div class="sitem-acts">${QE.POINT_QS[k] ? `<a class="go-btn" href="${Q}practice.html?point=${k}">Practise →</a>${plain ? '' : `<a class="sub-lnk" href="${Q}adventurer-mission.html?point=${k}">Quest</a>`}` : ''}${QE.CARDS_ON[k] ? `<a class="sub-lnk" href="/Flashcards/?spec=${k}">Cards</a>` : ''}<a class="sub-lnk" href="/specifications/${TRK[k[0]]}.html#${k}">Spec</a></div>
   </div>`;
 
   const sec = QE.securedBySci();
@@ -319,7 +329,7 @@ async function draw() {
 
   $('main').innerHTML = `
     <div class="hello">
-      <div class="hello-l"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} IGCSE spec points secured${streakTxt}</p></div></div>
+      <div class="hello-l">${plain ? '' : `<img src="${face}" alt="">`}<div><h1>${hi}, ${esc(name)}</h1><p>${plain ? '' : `Level ${s.l} · `}${st.securedP} of ${QE.stats().withQ} IGCSE spec points secured${streakTxt}</p></div></div>
       <div id="quickGo"></div>
     </div>
 
@@ -328,16 +338,17 @@ async function draw() {
       <div class="todo-pane sugg" id="upNextCard">
         <div class="pane-head"><h2>🎯 Suggested for you</h2></div>
         <div class="dloop" id="dailyLoop"><b>Today</b>
-          <a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission'}</a>
+          ${plain ? `<a class="${missionDone ? 'ok' : ''}" href="${Q}practice.html">📝 ${missionDone ? 'Practice ✓' : 'Practice'}</a>`
+            : `<a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission'}</a>`}
           <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} due` : 'Cards'}</a>
-          <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
+          ${plain ? '' : `<a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>`}
         </div>
         ${top3.length ? `<div class="sugg-list">${top3.map(ptCard).join('')}</div><p class="small" style="margin-top:10px"><a href="/specifications/science.html">See all spec points →</a>${check.length ? ` · <a href="/specifications/${TRK[check[0].k[0]]}.html?f=check">${check.length} “confident” points to prove →</a>` : ''}</p>`
-          : `<p class="small muted">${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Finish a quick mission, Practice set, or Flashcards session and your best next targets will show up here.</p><p style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a><a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p>`}
+          : `<p class="small muted">${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Finish a quick ${plain ? 'Practice set' : 'mission, Practice set,'} or Flashcards session and your best next targets will show up here.</p><p style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="${Q}${plain ? 'practice.html' : 'adventurer-mission.html'}">${plain ? '📝 Start practising →' : '⚔️ Start a mission →'}</a><a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p>`}
       </div>
     </div>
 
-    <section class="quest-hero" id="questHero" aria-label="Breadventure Land">
+    ${plain ? '' : `<section class="quest-hero" id="questHero" aria-label="Breadventure Land">
       <div class="in">
         <div class="kick"><img src="/img/mascot/head-pixel-hd.webp" alt="">Live Revision Adventure</div>
         <h2>Breadventure <span>Land</span></h2>
@@ -352,7 +363,7 @@ async function draw() {
           <a class="play sec" href="${Q}adventurer-home.html">🧭 My Adventurer</a>
         </div>
       </div>
-    </section>
+    </section>`}
 
     <section class="prog-card" id="progCard">
       <div class="prog-top">
@@ -372,7 +383,7 @@ async function draw() {
     <div id="exploreDock">
       <div class="dock-head"><h2>Explore the site</h2><a class="small" href="/how-to-use/" style="font-weight:700">❓ How to use this site →</a></div>
       <div class="dock">
-        <a class="dtile" href="/interactive/lessons/"><img class="ic" src="/img/icons/res-lessons.svg" alt=""><span><b>Revision Notes</b><small>Step-by-step topic notes &amp; checks</small></span></a>
+        <a class="dtile" href="/interactive/lessons/"><img class="ic" src="/img/icons/res-lessons.svg" alt=""><span><b>Lessons</b><small>Revision Notes &amp; Class Slides</small></span></a>
         <a class="dtile" href="/Flashcards/"><img class="ic" src="/img/icons/res-flashcards.svg" alt=""><span><b>Flashcards</b><small>Spaced recall &amp; examiner key words</small></span></a>
         <a class="dtile" href="${Q}practice.html"><img class="ic" src="/img/icons/res-practice.svg" alt=""><span><b>Practice Questions</b><small>Multiple-choice &amp; diagram drills, instant marking</small></span></a>
         <a class="dtile" href="/specifications/science.html"><img class="ic" src="/img/icons/res-tracker.svg" alt=""><span><b>Spec Trackers</b><small>Check every IGCSE spec point</small></span></a>
@@ -386,7 +397,9 @@ async function draw() {
         <a href="/leaderboards/">Leaderboards</a>
         <a href="/?dir=1">Full site directory →</a>
       </div>
+      ${plain ? `<div class="plain-foot"><span><b>Plain mode is on</b> — Breadventure Land is hidden while your IGCSE progress saves the exact same way.</span><button type="button" id="switchGameBtn">⚔️ Switch back to Game mode</button></div>` : ''}
     </div>`;
+  if ($('switchGameBtn')) $('switchGameBtn').onclick = () => window.CBSMode && CBSMode.set(false);
   drawSchool(); slowNote();
 }
 
@@ -444,8 +457,17 @@ async function drawSchool() {
   const box = $('school'); if (!box || !QE.user) return;
   if (window.CBSYear && !CBSYear.known && !waited) return;
   const y = window.CBSYear && CBSYear.year;
-  const hp = document.querySelector('.hello p'), old = $('yrBtn'); if (old) old.remove();
-  if (hp) hp.insertAdjacentHTML('beforeend', y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>');
+  const plain = !!(window.CBSMode && CBSMode.isPlain());
+  const hp = document.querySelector('.hello p'), old = $('yrBtn'), oldSw = $('modeSw');
+  if (old) old.remove();
+  if (oldSw) oldSw.remove();
+  if (hp) {
+    hp.insertAdjacentHTML('beforeend',
+      (y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>') +
+      `<span class="mode-sw" id="modeSw" role="group" aria-label="Revision style"><button type="button" data-plain="0" class="${plain ? '' : 'on'}" title="Show Breadventure Land game">⚔️ Game</button><button type="button" data-plain="1" class="${plain ? 'on' : ''}" title="Hide the game and use Plain Practice">📝 Plain</button></span>`);
+    const sw = $('modeSw');
+    if (sw) sw.querySelectorAll('button').forEach(b => b.onclick = () => { if (window.CBSMode) CBSMode.set(b.dataset.plain === '1'); });
+  }
   if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
 
   const [, guidesAll] = await Promise.all([
@@ -506,15 +528,19 @@ async function drawSchool() {
       const practUrl = `${Q}practice.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
       const cardsUrl = `/Flashcards/?subs=${encSubs}&t=${encT}`;
       if (!r.doneToday && validItems.length && !firstAction) {
-        firstAction = { url: questUrl, label: `Homework: ${a.title || 'Mission'} (Day ${r.daysDone + 1}/${r.daysNeed} · ${r.qPerDay} Qs)`, cta: `⚔️ Start Day ${r.daysDone + 1} →` };
+        firstAction = plain
+          ? { url: practUrl, label: `Homework: ${a.title || 'Practice'} (Day ${r.daysDone + 1}/${r.daysNeed} · ${r.qPerDay} Qs)`, cta: `📝 Start Day ${r.daysDone + 1} →` }
+          : { url: questUrl, label: `Homework: ${a.title || 'Mission'} (Day ${r.daysDone + 1}/${r.daysNeed} · ${r.qPerDay} Qs)`, cta: `⚔️ Start Day ${r.daysDone + 1} →` };
       }
       openItems.push(`<div class="a"><div class="a-info">
         <div class="a-top"><span class="a-title">🎯 ${esc(a.title || 'Homework')}</span>${r.doneToday ? `<span class="pill cool">Day ${r.daysDone}/${r.daysNeed} done today ✓</span>` : late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}</div>
         ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
-        <div class="a-meta"><div class="bar" title="${r.daysDone} of ${r.daysNeed} days done"><i style="width:${r.daysDone / r.daysNeed * 100}%;background:${r.doneToday ? 'var(--s)' : 'var(--l)'}"></i></div><span>${r.doneToday ? `Come back another day for Day ${r.daysDone + 1}` : `<b>Day ${r.daysDone + 1} of ${r.daysNeed}</b> · 1 mission (${r.qPerDay} Qs)`}</span></div>
+        <div class="a-meta"><div class="bar" title="${r.daysDone} of ${r.daysNeed} days done"><i style="width:${r.daysDone / r.daysNeed * 100}%;background:${r.doneToday ? 'var(--s)' : 'var(--l)'}"></i></div><span>${r.doneToday ? `Come back another day for Day ${r.daysDone + 1}` : `<b>Day ${r.daysDone + 1} of ${r.daysNeed}</b> · 1 set (${r.qPerDay} Qs)`}</span></div>
       </div><div class="a-acts">
         ${validItems.length ? (r.doneToday ? `<a class="ico" href="${practUrl}" title="Extra practice">📝 Extra</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards" aria-label="Flashcards">🃏</a>` : ''}`
-          : `<a class="ico go" href="${questUrl}" title="Do today's mission in Breadventure Land">⚔️ Day ${r.daysDone + 1}</a><a class="ico" href="${practUrl}" title="Do today's mission in Practice (no game)" aria-label="Practice">📝</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}`) : ''}
+          : (plain
+            ? `<a class="ico go" href="${practUrl}" title="Do today's questions in Practice">📝 Day ${r.daysDone + 1}</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}`
+            : `<a class="ico go" href="${questUrl}" title="Do today's mission in Breadventure Land">⚔️ Day ${r.daysDone + 1}</a><a class="ico" href="${practUrl}" title="Do today's mission in Practice (no game)" aria-label="Practice">📝</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}`)) : ''}
       </div></div>`);
     } else {
       const p = S.progress(prog, a), late = !!(a.due && a.due < today && !p.done);
@@ -542,7 +568,7 @@ async function drawSchool() {
         <div class="a-meta"><div class="bar" title="${p.got} of ${p.target} right"><i style="width:${p.got / p.target * 100}%;background:var(--l)"></i></div><span><b>${p.got}/${p.target}</b> right</span></div>
         ${topicDrop}
       </div><div class="a-acts">
-        ${validItems.length ? `<a class="ico go" href="${practUrl}" title="Practise questions for this homework">📝 Practise</a><a class="ico q" href="${questUrl}" title="Revise in Breadventure Land (counts towards homework)" aria-label="Breadventure Land">⚔️</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}` : ''}
+        ${validItems.length ? `<a class="ico go" href="${practUrl}" title="Practise questions for this homework">📝 Practise</a>${plain ? '' : `<a class="ico q" href="${questUrl}" title="Revise in Breadventure Land (counts towards homework)" aria-label="Breadventure Land">⚔️</a>`}${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}` : ''}
       </div></div>`);
     }
   });
@@ -551,7 +577,7 @@ async function drawSchool() {
   if (!firstAction && mineGuides.length && window.CBSGuide) {
     const g0 = mineGuides.find(g => { const pr = CBSGuide.progress(g); return !pr || pr.sec < pr.n; }) || mineGuides[0];
     const ch = CBSGuide.chosen(g0), toks = CBSGuide.tokens(ch);
-    if (toks.length) firstAction = { url: CBSGuide.reviseUrl('quest', toks, g0.title), label: `Upcoming test: ${g0.title || 'Test'}`, cta: '⚔️ Revise test →' };
+    if (toks.length) firstAction = { url: CBSGuide.reviseUrl(plain ? 'plain' : 'quest', toks, g0.title), label: `Upcoming test: ${g0.title || 'Test'}`, cta: plain ? '📝 Revise test →' : '⚔️ Revise test →' };
   }
   const taught = y ? Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]) : [];
   /* Priority 3: Covered in class (weakest/rustiest covered sub-topic) */
@@ -560,11 +586,11 @@ async function drawSchool() {
     const covSubs = taught.map(k => subMap[k]).filter(x => x && x.st.n > 0);
     const unsec = covSubs.filter(x => x.st.secured < x.st.n);
     const pickCov = (unsec.length ? unsec : covSubs).sort((a, b) => (b.st.rusty - a.st.rusty) || (a.st.secured / a.st.n) - (b.st.secured / b.st.n))[0];
-    if (pickCov) firstAction = { url: `${Q}adventurer-mission.html?sub=${encodeURIComponent(pickCov.key)}`, label: `Covered in class: ${pickCov.subj} ${pickCov.key.slice(1)} · ${pickCov.name}`, cta: '⚡ Revise now →' };
+    if (pickCov) firstAction = { url: `${Q}${plain ? 'practice.html' : 'adventurer-mission.html'}?sub=${encodeURIComponent(pickCov.key)}`, label: `Covered in class: ${pickCov.subj} ${pickCov.key.slice(1)} · ${pickCov.name}`, cta: '⚡ Revise now →' };
   }
   if (!firstAction) {
     const pk = QE.picks()[0];
-    if (pk) firstAction = { url: `${Q}adventurer-mission.html?sub=${encodeURIComponent(pk.sub.key)}`, label: `Recommended: ${pk.sub.subj} ${pk.sub.key.slice(1)} · ${pk.sub.name}`, cta: '⚡ Revise now →' };
+    if (pk) firstAction = { url: `${Q}${plain ? 'practice.html' : 'adventurer-mission.html'}?sub=${encodeURIComponent(pk.sub.key)}`, label: `Recommended: ${pk.sub.subj} ${pk.sub.key.slice(1)} · ${pk.sub.name}`, cta: '⚡ Revise now →' };
   }
   const qg = $('quickGo');
   if (qg && firstAction && y) {
@@ -595,8 +621,8 @@ async function drawSchool() {
   box.innerHTML = `<div id="teacherCard">
     <div class="pane-head"><h2>📌 From your teacher</h2>${pills}</div>
     ${noYear}${staleNote}
-    ${openItems.length ? `<div class="subsec"><span>Homework to do</span>${hasPractiseOpen ? '<span class="sym">📝 Practice · ⚔️ Quest · 🃏 Cards</span>' : ''}</div>${openItems.join('')}` : (!testsHtml && y ? '<p class="small muted" style="margin:6px 0">No open homework right now — pick something from <b>Suggested for you</b> or jump into Breadventure Land below.</p>' : '')}
-    ${testsHtml ? `<div class="subsec"><span>📅 Upcoming tests</span><span class="sym">📄 Guide · 📝 Practice · ⚔️ Quest · 🃏 Cards</span></div>${testsHtml}` : ''}
+    ${openItems.length ? `<div class="subsec"><span>Homework to do</span>${hasPractiseOpen ? `<span class="sym">📝 Practice${plain ? '' : ' · ⚔️ Quest'} · 🃏 Cards</span>` : ''}</div>${openItems.join('')}` : (!testsHtml && y ? `<p class="small muted" style="margin:6px 0">No open homework right now — pick something from <b>Suggested for you</b>${plain ? ' or open Practice Questions below.' : ' or jump into Breadventure Land below.'}</p>` : '')}
+    ${testsHtml ? `<div class="subsec"><span>📅 Upcoming tests</span><span class="sym">📄 Guide · 📝 Practice${plain ? '' : ' · ⚔️ Quest'} · 🃏 Cards</span></div>${testsHtml}` : ''}
     ${doneBlock}
   </div>`;
 
@@ -625,6 +651,7 @@ function safeDraw() {
 }
 QE.onChange(() => { safeDraw(); drawSchool(); }); safeDraw(); drawSchool();
 if (window.CBSYear) CBSYear.onChange(() => drawSchool());
+if (window.CBSMode) CBSMode.onChange(() => { drawn = false; safeDraw(); drawSchool(); });
 </script>
 </body>
 </html>

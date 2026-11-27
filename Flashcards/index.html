@@ -1141,11 +1141,11 @@
     <div class="deck-selector active">
       <div class="fc-head">
         <div class="fc-kick">
-          <span>🃏 Breadventure Land</span>
+          <span id="fcKickLabel">🃏 Breadventure Land</span>
           <span class="sa-pill" id="saPill" hidden>Single Award</span>
         </div>
         <h1 class="fc-h1">Flashcards</h1>
-        <p class="fc-sub">Key facts and definitions, with spaced repetition: cards you find hard come back sooner. Every card counts in Breadventure Land.</p>
+        <p class="fc-sub" id="fcSubText">Key facts and definitions, with spaced repetition: cards you find hard come back sooner. Every card counts in Breadventure Land.</p>
       </div>
 
       <div class="top-buttons">
@@ -1291,6 +1291,13 @@
         <label for="newCardsPerDay">New cards per day (per deck)</label>
         <input type="number" id="newCardsPerDay" min="1" max="100" value="5">
         <div class="setting-desc">Maximum new cards introduced each day in each deck.</div>
+      </div>
+      <div class="setting-item">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+          <input type="checkbox" id="plainModeChk" style="width:auto;margin-top:3px">
+          <span><b>Plain mode (hide Breadventure Land)</b></span>
+        </label>
+        <div class="setting-desc">Hides Breadventure Land bars, XP and loot across the site and defaults homework &amp; revision to plain Practice. Your IGCSE progress saves the exact same way.</div>
       </div>
       <div class="setting-item">
         <label>Reset all flashcard progress</label>
@@ -1625,6 +1632,7 @@
               data.settings,
               { enabledDecks: Object.assign({}, localEnabled, cloudEnabled) }
             );
+            if (window.CBSMode) CBSMode.syncFromDoc(data);
           }
           rollDayIfNeeded();
           if (window.CBSCourse && currentUser) CBSCourse.update(currentUser.uid, data.course || null);
@@ -1725,7 +1733,9 @@
         btn.hidden = true;
       } else {
         b.classList.remove('offline');
-        txt.textContent = 'Sign in with Google to save progress across devices and power your Breadventure Land adventurer — or start studying now (saved in this browser).';
+        txt.textContent = isPlainMode()
+          ? 'Sign in with Google to save your flashcard progress across devices — or start studying now (saved in this browser).'
+          : 'Sign in with Google to save progress across devices and power your Breadventure Land adventurer — or start studying now (saved in this browser).';
         btn.hidden = false;
       }
     }
@@ -1972,9 +1982,20 @@
       const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !i.dark);
       return pool.length ? pool[Math.floor(Math.random() * pool.length)].id : null;
     }
+    const isPlainMode = () => !!(window.CBSMode && CBSMode.isPlain());
+    function applyPlainModeUI() {
+      const plain = isPlainMode();
+      const k = document.getElementById('fcKickLabel');
+      const s = document.getElementById('fcSubText');
+      if (k) k.textContent = plain ? '🃏 Spaced Repetition' : '🃏 Breadventure Land';
+      if (s) s.textContent = plain
+        ? 'Key facts and definitions, with spaced repetition: cards you find hard come back sooner.'
+        : 'Key facts and definitions, with spaced repetition: cards you find hard come back sooner. Every card counts in Breadventure Land.';
+    }
     function renderQuest() {
+      applyPlainModeUI();
       const el = document.getElementById('questPanel');
-      if (!el || typeof QE === 'undefined' || !currentUser) { if (el) el.hidden = true; return; }
+      if (!el || typeof QE === 'undefined' || !currentUser || isPlainMode()) { if (el) el.hidden = true; return; }
       el.hidden = false;
       const d = QE.cardsToday(), target = QE.cardsTarget(), pct = Math.min(100, d.n / target * 100);
       let pic = '';
@@ -2603,20 +2624,25 @@
         if (typeof QE !== 'undefined' && currentUser && !alreadyRatedThisSession) {
           const wasDue = !oldProgress || oldProgress.nextReview <= Date.now();
           const res = QE.recordCard(cardKey, card.spec || null, quality, lootPick, wasDue);
-          const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -4px">`;
-          if (quality === 1) {
-            gain(faceImg + 'Back soon in this session' + (wasDue ? ' · +2 XP · ❤ +1 · 🔮 +1' : ''));
+          if (isPlainMode()) {
+            if (quality === 1) gain('Back soon in this session');
+            else if (res.notes && res.notes.length) gain(res.notes.join(' · '));
           } else {
-            gain(faceImg + (wasDue
-              ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
-              : (res.notes.length ? res.notes.join(' · ') : 'Practice only (not due yet)')));
-          }
-          if (res.done) {
-            showLoot(res.loot);
-            try {
-              const it = res.loot && typeof ADV_ITEMS !== 'undefined' && ADV_ITEMS.find(i => i.id === res.loot);
-              QE.log('🃏', `Finished today's flashcards${it ? ' · loot: ' + it.name : ''}`);
-            } catch (e) {}
+            const faceImg = `<img src="/img/mascot/head-${['worried', 'worried', 'think', 'happy', 'laugh'][quality] || 'happy'}.webp" alt="" style="width:26px;vertical-align:middle;margin:-6px 6px -6px -4px">`;
+            if (quality === 1) {
+              gain(faceImg + 'Back soon in this session' + (wasDue ? ' · +2 XP · ❤ +1 · 🔮 +1' : ''));
+            } else {
+              gain(faceImg + (wasDue
+                ? [res.day.xp < QE.CARD.xpCap || res.day.n * QE.CARD.xp <= QE.CARD.xpCap ? '+2 XP' : '', '❤ +1', '🔮 +1'].filter(Boolean).join(' · ') + (res.notes.length ? ' · ' + res.notes.join(' · ') : '')
+                : (res.notes.length ? res.notes.join(' · ') : 'Practice only (not due yet)')));
+            }
+            if (res.done) {
+              showLoot(res.loot);
+              try {
+                const it = res.loot && typeof ADV_ITEMS !== 'undefined' && ADV_ITEMS.find(i => i.id === res.loot);
+                QE.log('🃏', `Finished today's flashcards${it ? ' · loot: ' + it.name : ''}`);
+              } catch (e) {}
+            }
           }
         } else if (quality === 1) {
           gain('Re-queued — you\'ll see this card again soon');
@@ -2682,6 +2708,8 @@
 
     window.openSettings = function () {
       document.getElementById('newCardsPerDay').value = settings.newCardsPerDay;
+      const pm = document.getElementById('plainModeChk');
+      if (pm) pm.checked = isPlainMode();
       document.getElementById('settings-screen').classList.add('open');
     };
     window.closeSettings = () => document.getElementById('settings-screen').classList.remove('open');
@@ -2689,6 +2717,11 @@
     window.saveSettings = async function () {
       const val = parseInt(document.getElementById('newCardsPerDay').value, 10);
       settings.newCardsPerDay = Math.min(100, Math.max(1, isNaN(val) ? 5 : val));
+      const pm = document.getElementById('plainModeChk');
+      if (pm) {
+        settings.plainMode = !!pm.checked;
+        if (window.CBSMode) CBSMode.set(!!pm.checked, { localOnly: true });
+      }
       saveLocal();
       const ref = userDocRef();
       if (ref) {
@@ -2698,6 +2731,7 @@
       renderAllDeckUI();
       gain('⚙️ Settings saved');
     };
+    if (window.CBSMode) CBSMode.onChange(() => { applyPlainModeUI(); renderQuest(); });
 
     window.resetProgress = async function () {
       if (!confirm('⚠️ Reset ALL flashcard progress? This cannot be undone.')) return;

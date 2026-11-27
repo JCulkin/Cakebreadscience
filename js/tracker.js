@@ -148,7 +148,7 @@
       <div class="tr-side">
         <span class="pill" data-pill></span>
         <div class="conf" role="group" aria-label="How sure do you feel?"><button type="button" data-conf="1" title="Not yet">Not yet</button><button type="button" data-conf="2" title="Unsure">Unsure</button><button type="button" data-conf="3" title="Confident">Confident</button></div>
-        <div class="acts">${hasQ ? `<a class="go" href="${Q}practice.html?point=${k}" title="Questions on this point, no game">Prove it →</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Breadventure Land mission on this point">⚔️</a>` : ''}${nc ? `<a href="/Flashcards/?spec=${k}" title="Flashcards on this point">🃏 ${nc}</a>` : ''}${hasDrawer ? `<button type="button" data-res aria-expanded="false" title="Resources and key words">📚 ${res.length}${kws.length ? ` · 🔑${kws.length}` : ''}</button>` : ''}</div>
+        <div class="acts">${hasQ ? `<a class="go" href="${Q}practice.html?point=${k}" title="Questions on this point, no game">Prove it →</a>${window.CBSMode && CBSMode.isPlain() ? '' : `<a href="${Q}adventurer-mission.html?point=${k}" title="A Breadventure Land mission on this point">⚔️</a>`}` : ''}${nc ? `<a href="/Flashcards/?spec=${k}" title="Flashcards on this point">🃏 ${nc}</a>` : ''}${hasDrawer ? `<button type="button" data-res aria-expanded="false" title="Resources and key words">📚 ${res.length}${kws.length ? ` · 🔑${kws.length}` : ''}</button>` : ''}</div>
       </div>
       ${hasDrawer ? `<div class="tr-res" hidden>${kwHtml}${Object.entries(groups).map(([kind, links]) => `<div><b>${KIND[kind] || kind}</b> ${links.join(' · ')}</div>`).join('')}</div>` : ''}
     </div>`;

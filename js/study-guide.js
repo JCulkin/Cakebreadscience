@@ -95,6 +95,7 @@
 
   /* the guide document. mode 'print' (A4 handout) or 'online' (with Revise buttons) */
   function render(g, mode = 'online') {
+    const plain = !!(window.CBSMode && CBSMode.isPlain());
     const course = g.course === 'SA' ? 'SA' : 'DA', list = chosen(g), keys = tokens(list), seen = new Set();
     /* key words (user, 22 Nov): bound to the ticked points, all in one section above the exam advice, grouped by sub-topic;
        a word already in the wording of any point on this guide is left out */
@@ -107,7 +108,7 @@
       ${g.date ? `<p class="sg-date">📅 ${esc(fmtDate(g.date))}${mode === 'online' && dd !== null ? (dd > 1 ? ` · in ${dd} days` : dd === 1 ? ' · tomorrow' : dd === 0 ? ' · today' : '') : ''}</p>` : ''}</div>
       <div class="sg-course">${label}</div></header>
       ${mode === 'online' && keys.length ? `<div class="sg-rev big"><span style="flex:1 1 100%"><b>Revise all of it:</b> ${N} questions at a time on exactly these points, or drill their flashcards.</span>
-        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Breadventure Land</a>${hasCardsAll ? `<a class="sg-btn f" href="${flashcardsUrl(keys, T)}">🃏 Flashcards</a>` : ''}</div>` : ''}`;
+        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a>${plain ? '' : `<a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Breadventure Land</a>`}${hasCardsAll ? `<a class="sg-btn f" href="${flashcardsUrl(keys, T)}">🃏 Flashcards</a>` : ''}</div>` : ''}`;
     let lastTopic = '';
     const body = list.map(x => {
       const sb = x.sb, code = sb.topic + sb.l, subToks = tokens([x]), subCards = cardCount(x.pts) > 0, subLessons = mode === 'online' ? lessonsFor(x.pts) : [], subBooklets = mode === 'online' && course !== 'SA' ? bookletsFor(x.pts) : [];
@@ -116,7 +117,7 @@
       return th + `<section class="sg-sub" style="--c:${COL[sb.L]}">
         <h3><span>${code}</span> ${esc(sb.name)}</h3>
         <table class="sg-pts"><tbody>${x.pts.map(p => `<tr><td class="sg-code">${esc(p.id)}</td><td class="sg-txt">${window.SPECPT ? SPECPT.heading(p) : ''}${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</td></tr>`).join('')}</tbody></table>
-        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', subToks, `${T} · ${code}`)}">📝 ${N} questions</a><a class="sg-btn sm q" href="${reviseUrl('quest', subToks, `${T} · ${code}`)}">⚔️ Questing</a>${subCards ? `<a class="sg-btn sm f" href="${flashcardsUrl(subToks, `${T} · ${code}`)}">🃏 Flashcards</a>` : ''}${subLessons.map(r => `<a class="sg-btn sm l" href="${esc(r[2])}">🎓 Lesson</a>`).join('')}${subBooklets.map(r => `<a class="sg-btn sm f" href="${esc(r[2])}">📚 Booklet</a>`).join('')}</div>` : ''}
+        ${mode === 'online' ? `<div class="sg-rev">Revise ${code}: <a class="sg-btn sm" href="${reviseUrl('plain', subToks, `${T} · ${code}`)}">📝 ${N} questions</a>${plain ? '' : `<a class="sg-btn sm q" href="${reviseUrl('quest', subToks, `${T} · ${code}`)}">⚔️ Questing</a>`}${subCards ? `<a class="sg-btn sm f" href="${flashcardsUrl(subToks, `${T} · ${code}`)}">🃏 Flashcards</a>` : ''}${subLessons.map(r => `<a class="sg-btn sm l" href="${esc(r[2])}">🎓 Lesson</a>`).join('')}${subBooklets.map(r => `<a class="sg-btn sm f" href="${esc(r[2])}">📚 Booklet</a>`).join('')}</div>` : ''}
       </section>`;
     }).join('');
     const kwSec = kwGroups.length ? `<section class="sg-kws"><h2 class="sg-topic" style="--c:#111">Key words</h2>
@@ -195,12 +196,13 @@
   }
   const fmtShort = d => { if (!d) return ''; try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return d; } };
   function todoRowsHtml(mine) {
+    const plain = !!(window.CBSMode && CBSMode.isPlain());
     return mine.map(g => { const d = daysTo(g.date), ch = chosen(g), k = tokens(ch), pr = progress(g), hasCards = cardCount(ch.flatMap(x => x.pts)) > 0;
       const when = g.date ? `${fmtShort(g.date)}${d > 1 ? ` · ${d}d` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}` : '';
       const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
         <span class="small muted"><b>${pr.sec}/${pr.n}</b> secured${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
       return `<div class="sg-todo-row"><div class="sg-todo-info"><div class="sg-todo-top"><b style="font-size:16px">${esc(g.title || 'Test')}</b>${when ? `<span class="sg-todo-date${d !== null && d <= 3 ? ' soon' : ''}">${esc(when)}</span>` : ''}</div>${bar}</div>
-        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Practice</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Breadventure Land">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
+        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Practice</a>${plain ? '' : `<a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Breadventure Land">⚔️ Quest</a>`}${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
   }
   /* To do: "Upcoming tests" (user, 23 Nov + decluttered 27 Nov; supports inline mode inside unified From your teacher box).
      pre = the guides already loaded (To do keeps them for 30 s so progress can redraw without another read) */
@@ -213,7 +215,8 @@
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return all; }
     if (opts && opts.inline) { el.innerHTML = todoRowsHtml(mine); return all; }
-    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Practice · ⚔️ Quest · 🃏 Cards</span></div>${todoRowsHtml(mine)}</div>`;
+    const plain = !!(window.CBSMode && CBSMode.isPlain());
+    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Practice${plain ? '' : ' · ⚔️ Quest'} · 🃏 Cards</span></div>${todoRowsHtml(mine)}</div>`;
     return all;
   }
   window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, todoRowsHtml, progress, reviseUrl, flashcardsUrl, fmtDate, daysTo, ADVICE };

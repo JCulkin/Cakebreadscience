@@ -9,8 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
-<script>/* plain mode (set on the Practice page): deep links open Practice instead of a mission */
-try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test(location.search)) location.replace('practice.html' + location.search); } catch (e) {}</script>
+<script>/* plain mode (set on Student Home, Practice, Flashcards or Help): deep links open Practice instead of a mission */
+try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub|subs)=/.test(location.search)) location.replace('practice.html' + location.search); } catch (e) {}</script>
 <link rel="stylesheet" href="adventurer.css">
 <style>
 .wrap{max-width:900px}
@@ -137,12 +137,16 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 .dirt{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
 .dirt a{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;padding:2px 8px;border:1.5px solid var(--ink);background:var(--soft);color:var(--ink);text-decoration:none}
 .dirt a:hover{background:#fff8d6}
+.plain-bar{display:flex;justify-content:flex-end;margin:-4px 0 8px}
+.plain-bar button{background:none;border:0;color:var(--muted);font:600 13px Barlow,Arial,sans-serif;cursor:pointer;padding:2px 0;text-decoration:underline}
+.plain-bar button:hover{color:#111}
 @media(prefers-reduced-motion:reduce){#foeFig,.hit #foeFig,.hit::after,.dead #foeFig,.puff,.ouch #youFig,.dmg,.weak #foeFig,.streak,.drop img{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Breadventure Land · Mission</span></header>
 <main class="wrap">
+  <div class="plain-bar"><button type="button" id="toPlainBtn" title="Hide Breadventure Land across the site and open these questions in Plain Practice">Prefer no game? Switch to Plain mode →</button></div>
 
   <section id="choose">
     <h1>Choose a mission</h1>
@@ -202,6 +206,11 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 <script>
 ADV.nav('mission');
 const S = ADV.S, $ = id => document.getElementById(id);
+if ($('toPlainBtn')) $('toPlainBtn').onclick = () => {
+  if (window.CBSMode) CBSMode.set(true);
+  else try { localStorage.setItem('cbs.plain', '1'); } catch (e) {}
+  location.href = 'practice.html' + location.search;
+};
 const SCI_COL = { B: '#005e22', C: '#c8001e', P: '#b45309' }, STAT = { B: ['Health', 'b', 'hp'], C: ['Magic', 'c', 'mag'], P: ['Strength', 'p', 'str'] };
 /* misconceptions to fight: one per sub-topic, with its own lines and sprite (misconceptions.js) */
 

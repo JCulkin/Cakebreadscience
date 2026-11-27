@@ -112,7 +112,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
     <h2>The whole spec</h2>
     <div class="scitabs" id="tabs"></div>
     <div id="topics"></div>
-    <label class="setting"><input type="checkbox" id="plain"> <span>Always use plain practice: “Quiz me” links on the spec trackers and To do open here instead of a Questing mission.</span></label>
+    <label class="setting"><input type="checkbox" id="plain"> <span><b>Plain mode (hide Breadventure Land):</b> hide the game across Student Home, Study Guides &amp; Flashcards and open all homework and tracker quiz links here instead — exact same IGCSE progress.</span></label>
   </section>
 
   <section id="quiz" class="hidden">
@@ -125,7 +125,7 @@ h2{font:900 22px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;
       <div class="qtext" id="qtext"></div>
       <div class="opts" id="opts"></div>
       <div id="fb"></div>
-      <div class="next"><button class="report" id="repBtn" type="button">⚑ Report this question</button><button class="btn gold big hidden" id="nextBtn">Next →</button></div>
+      <div class="next"><button class="report" id="repBtn" type="button">Report this question</button><button class="btn gold big hidden" id="nextBtn">Next →</button></div>
       <div class="repbox hidden" id="repBox"></div>
     </div>
   </section>
@@ -229,7 +229,7 @@ function drawPick() {
     return `<div class="topic" style="--sc:${COL[SCI]}"><b>${t.slice(1)} · ${esc(topicName(t))}<span>${a}/${b} secured</span></b>${xs.map(s => {
       const open = OPEN.has(s.key), sLessons = lessonsForKeys(s.keys);
       return `<div class="sub"><div class="subrow"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><div class="pb"><i style="width:${s.st.n ? s.st.secured / s.st.n * 100 : 0}%"></i></div><span class="n">${s.st.secured}/${s.st.n}${s.st.rusty ? ` · ${s.st.rusty} rusty` : ''}</span>
-        ${sLessons.map(r => `<a class="sglink" href="${esc(r[2])}" title="${esc(r[1])}">📖 Revision notes</a>`).join('')}
+        ${sLessons.map(r => `<a class="sglink" href="${esc(r[2])}" title="${esc(r[1])}"><img src="/img/icons/res-lessons.svg" width="14" height="14" style="vertical-align:-2px;margin-right:3px" alt="">Revision notes</a>`).join('')}
         <button type="button" class="tgl" data-tgl="${s.key}" aria-expanded="${open}">Spec points ${open ? '▴' : '▾'}</button><button type="button" class="go" data-sub="${s.key}">Practise →</button></div>
         ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = (window.SPECPT && SPECPT.of(k)) || QE.POINTS[k]; if (!p.has) return '';
           const [c, w] = p.rusty ? ['r', 'Rusty'] : p.secured ? ['s', 'Secured'] : p.started ? ['l', 'Learning'] : ['n', 'New'];
@@ -241,8 +241,12 @@ $('pick').addEventListener('click', e => {
   const p = e.target.closest('[data-point]'); if (p) { const sb = SUBS.find(x => x.keys.has(p.dataset.point)); start(sb.key, p.dataset.point); return; }
   const b = e.target.closest('[data-sub]'); if (b) start(b.dataset.sub);
 });
-try { $('plain').checked = localStorage.getItem(PLAIN) === '1'; } catch (e) {}
-$('plain').onchange = () => { try { $('plain').checked ? localStorage.setItem(PLAIN, '1') : localStorage.removeItem(PLAIN); } catch (e) {} };
+try { $('plain').checked = window.CBSMode ? CBSMode.isPlain() : (localStorage.getItem(PLAIN) === '1'); } catch (e) {}
+$('plain').onchange = () => {
+  if (window.CBSMode) CBSMode.set($('plain').checked);
+  else try { $('plain').checked ? localStorage.setItem(PLAIN, '1') : localStorage.removeItem(PLAIN); } catch (e) {}
+};
+if (window.CBSMode) CBSMode.onChange(on => { if ($('plain')) $('plain').checked = !!on; });
 
 /* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — n questions from those sub-topics; "another n" leaves out
    the ones shown in this browser's last runs of the same set (sessionStorage), so each go brings new questions */
@@ -286,7 +290,7 @@ function show() {
   $('opts').innerHTML = opts.map(([t, ok], j) => `<button class="opt" data-ok="${ok ? 1 : 0}"><span class="key">${keys[j]}</span><span>${nuc(t)}</span></button>`).join('');
   $('fb').innerHTML = ''; $('nextBtn').classList.add('hidden');
   PS.opts = opts; PS.picked = -1;
-  $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? '⚑ Reported, thank you' : '⚑ Report this question';
+  $('repBtn').disabled = REPORTED.has(q.id); $('repBtn').textContent = REPORTED.has(q.id) ? 'Reported, thank you' : 'Report this question';
   $('repBox').classList.add('hidden'); $('repBox').innerHTML = '';
 }
 $('opts').addEventListener('click', e => {
@@ -331,7 +335,7 @@ $('repBtn').onclick = () => {
     QE.report(q, opts.map(o => o[0]), opts.findIndex(o => o[1]), PS.picked, reason, box.querySelector('textarea').value)
       .then(() => { box.innerHTML = '<b>Thank you!</b> Your teacher will check this question.'; })
       .catch(() => { box.innerHTML = 'It could not be sent right now. Please tell your teacher instead.'; });
-    $('repBtn').disabled = true; $('repBtn').textContent = '⚑ Reported, thank you';
+    $('repBtn').disabled = true; $('repBtn').textContent = 'Reported, thank you';
   };
 };
 
@@ -339,7 +343,7 @@ $('repBtn').onclick = () => {
 async function finish() {
   const right = PS.res.filter(r => r.ok).length;
   QE.finishMission({ coins: 10, right });
-  QE.log('📝', `Practice ${PS.point ? 'spec point ' + PS.point.slice(1) : PS.sub.key.slice(1) + ' ' + PS.sub.name}: ${right}/${PS.qs.length} right`);
+  QE.log('•', `Practice ${PS.point ? 'spec point ' + PS.point.slice(1) : PS.sub.key.slice(1) + ' ' + PS.sub.name}: ${right}/${PS.qs.length} right`);
   if (HW.id && !HW.a) await loadHw();
   let hwRes = null;
   if (HW.a) {
@@ -371,7 +375,7 @@ async function finish() {
         <li>${gainP > 0 ? `<b>${gainP} spec point${gainP === 1 ? '' : 's'} secured.</b> ` : ''}${G ? `These ${G.subs.length > 1 ? `${G.subs.length} sub-topics` : 'sub-topic'}: ${G.subs.map(x => QE.allSubs().find(s => s.key === x.key) || x).reduce((n, x) => n + x.st.secured, 0)} of ${G.subs.reduce((n, x) => n + x.st.n, 0)} spec points secured.` : `This sub-topic: ${sub.st.secured} of ${sub.st.n} spec points secured.`}</li>
       </ul></div>
     ${wrong.length ? `<div class="card review" style="margin-top:12px"><h2 style="margin-top:0">Worth another look</h2><ul style="margin-left:18px">${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined ? `<b>${r.q.tf ? 'True' : 'False'}.</b> ` : `<b>${nuc(r.q.o[0])}.</b> `}${nuc(r.q.x)}</span></li>`).join('')}</ul></div>` : ''}
-    <div class="acts">${hwContinue ? '' : `<button class="btn ${HW.a ? 'alt' : 'gold big'}" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button>`}${studyGuides.map(r => `<a class="btn alt" href="${esc(r[2])}">📖 Revise: ${esc(r[1].replace(/\s*\(draft\)$/i, ''))} →</a>`).join('')}<a class="btn alt" href="${G || HW.a ? '/today/' : 'practice.html'}">${G || HW.a ? 'Back to To do' : 'Choose something else'}</a>${G || HW.a ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
+    <div class="acts">${hwContinue ? '' : `<button class="btn ${HW.a ? 'alt' : 'gold big'}" id="again">${G ? `Another ${G.n} →` : '10 more on this →'}</button>`}${studyGuides.map(r => `<a class="btn alt" href="${esc(r[2])}"><img src="/img/icons/res-lessons.svg" width="15" height="15" style="vertical-align:-2px;margin-right:4px" alt="">Revise: ${esc(r[1].replace(/\s*\(draft\)$/i, ''))} →</a>`).join('')}<a class="btn alt" href="${G || HW.a ? '/today/' : 'practice.html'}">${G || HW.a ? 'Back to To do' : 'Choose something else'}</a>${G || HW.a ? '' : '<a class="btn alt" href="/today/">To do</a>'}</div>
     <p class="small" style="margin-top:10px" id="saveNote">${QE.user ? 'Saving to your account…' : 'That was your free sample practice set! Sign in with Google (top right) to save your progress and unlock unlimited practice (new accounts are approved by your teacher).'}</p>`;
   const goAgain = () => {
     if (window.CBSAuth && !CBSAuth.checkMissionGate()) return;
@@ -411,25 +415,25 @@ async function drawSet() {
   const open = S.forMe(SCH.assign, y, QE.user.uid).map(a => ({ a, t: S.isTest(a) ? S.testOf(udoc, a) : null, sp: S.isSpaced(a) ? S.spacedOf(udoc, a, today) : null, p: !S.isTest(a) && !S.isSpaced(a) ? S.progress(QE.prog, a) : null }))
     .filter(x => x.t ? x.t.state !== 'done' : x.sp ? (x.sp.state !== 'done' && !x.sp.doneToday) : !x.p.done);
   if (!open.length) { box.innerHTML = ''; return; }
-  box.innerHTML = `<div class="setw"><h2>📌 Set by your teacher</h2>${open.map(({ a, t, sp, p }) => {
+  box.innerHTML = `<div class="setw"><h2>Set by your teacher</h2>${open.map(({ a, t, sp, p }) => {
     const late = a.due && a.due < today ? '<span class="late">Overdue</span>' : '';
     const encHw = encodeURIComponent(a.id);
     if (t) return `<div class="a"><b>${esc(a.title || 'Test')}</b><small>Test · ${t.n} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
-      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encHw}">▶ ${t.state === 'started' ? 'Carry on' : 'Start test'}</a></div></div>`;
+      ${t.state === 'started' ? `<div class="small">${t.answered} of ${t.n} answered</div>` : ''}<div class="chips"><a class="go" href="/work/?id=${encHw}">${t.state === 'started' ? 'Carry on →' : 'Start test →'}</a></div></div>`;
     const items = (a.items || []).filter(k => S.pointsOf(k).length);
     if (sp) {
       const mixUrl = items.length ? `practice.html?subs=${encodeURIComponent(items.join(','))}&n=${sp.qPerDay}&t=${encodeURIComponent(a.title || 'Homework')}&hw=${encHw}` : '';
       return `<div class="a"><b>${esc(a.title || 'Homework')}</b><small>Day ${sp.daysDone + 1} of ${sp.daysNeed} · ${sp.qPerDay} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
         <div class="pbw" title="${sp.daysDone} of ${sp.daysNeed} days"><i style="width:${sp.daysDone / sp.daysNeed * 100}%"></i></div>
-        <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">📝 Start Day ${sp.daysDone + 1} →</a>` : ''}<a href="adventurer-mission.html?subs=${encodeURIComponent(items.join(','))}&n=${sp.qPerDay}&t=${encodeURIComponent(a.title || 'Homework')}&hw=${encHw}">⚔️ Questing</a></div></div>`;
+        <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">Start Day ${sp.daysDone + 1} →</a>` : ''}${window.CBSMode && CBSMode.isPlain() ? '' : `<a href="adventurer-mission.html?subs=${encodeURIComponent(items.join(','))}&n=${sp.qPerDay}&t=${encodeURIComponent(a.title || 'Homework')}&hw=${encHw}">Breadventure Land</a>`}</div></div>`;
     }
     const mixUrl = items.length ? `practice.html?subs=${encodeURIComponent(items.join(','))}&n=${Math.max(5, Math.min(20, p.target - p.got))}&t=${encodeURIComponent(a.title || 'Set work')}&hw=${encHw}` : '';
     return `<div class="a"><b>${esc(a.title || 'Work set')}</b><small>${p.got}/${p.target} right${a.due ? ' · due ' + fmt(a.due) : ''}</small>${late}
       <div class="pbw" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%"></i></div>
-      <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">📝 Practise →</a>` : ''}${items.map(k => `<a href="${S.practise(k)}&hw=${encHw}">${esc(S.shortLabel(k))}</a>`).join('')}</div></div>`;
+      <div class="chips">${mixUrl ? `<a class="go" href="${mixUrl}">Practise →</a>` : ''}${items.map(k => `<a href="${S.practise(k)}&hw=${encHw}">${esc(S.shortLabel(k))}</a>`).join('')}</div></div>`;
   }).join('')}</div>`;
 }
-QE.onChange(drawSet); if (window.CBSYear) CBSYear.onChange(drawSet); drawSet();
+QE.onChange(drawSet); if (window.CBSYear) CBSYear.onChange(drawSet); if (window.CBSMode) CBSMode.onChange(drawSet); drawSet();
 </script>
 </body>
 </html>

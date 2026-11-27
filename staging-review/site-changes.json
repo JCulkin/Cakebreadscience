@@ -1,7 +1,24 @@
 {
-  "updated": "2026-11-27",
+  "updated": "2026-11-28",
   "note": "Every new page, UI redesign, tool, or site-wide feature waiting for teacher review on staging MUST be listed here so it appears on /staging-review/#site before going live.",
   "items": [
+    {
+      "id": "lessons-rename-and-plain-mode",
+      "category": "features",
+      "status": "review",
+      "date": "2026-11-28",
+      "title": "Renamed 'Lessons' + Synced Game Mode / Plain Mode Switch (Hide Breadventure Land)",
+      "summary": "Renamed 'Cakebread Lessons' → 'Lessons' on the homepage with updated blurb ('Revision Notes for catch-up at home and Class Slides for the board'). Built a cross-device synced revision style preference (window.CBSMode, saved in localStorage['cbs.plain'] and Firestore users/{uid}.settings.plainMode) so students can hide Breadventure Land and default to plain Practice Questions anywhere: first-sign-in Year picker, a compact [⚔️ Game | 📝 Plain] switch beside Year 10 on Student Home, Upcoming Test Study Guides, an escape link on Missions (plus auto-redirect of ?subs= homework/guide links), Practice Questions, Flashcards Settings (hiding the XP/mana/loot bar and toasts while keeping IGCSE securing identical), and /how-to-use/#mode.",
+      "before": "Only a local-only checkbox hidden at the bottom of Practice Questions redirected ?point=/?sub= links; Breadventure Land still appeared on Student Home, Study Guides, and Flashcards.",
+      "after": "One account-synced Game / Plain mode toggle across onboarding, Student Home, Study Guides, Missions, Practice, Flashcards, and Help — hiding the game cleanly while keeping all IGCSE progress identical.",
+      "previewUrl": "/today/",
+      "extraLinks": [
+        { "label": "Homepage ('Lessons' card)", "url": "/?dir=1#resources" },
+        { "label": "Flashcards Settings", "url": "/Flashcards/" },
+        { "label": "Help → Revision style", "url": "/how-to-use/#mode" },
+        { "label": "Practice Questions", "url": "/interactive/spec-quiz/practice.html" }
+      ]
+    },
     {
       "id": "whats-new-removed-and-ks3-ks4",
       "category": "features",

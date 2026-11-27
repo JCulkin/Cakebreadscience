@@ -492,3 +492,85 @@ window.firebaseConfig = {
     get rtConnected() { return rtConnected; }
   };
 })();
+
+/* Revision style preference (28 Nov 2026): Breadventure Land (Game mode, default) vs Plain mode (hide the game).
+   Saved synchronously in localStorage['cbs.plain'] ('1' = plain) so pages render with zero flicker,
+   and synced to Firestore users/{uid}.settings.plainMode (using mergeMaps:['settings']) across devices.
+   API: CBSMode.isPlain(), CBSMode.set(bool, opts), CBSMode.syncFromDoc(doc), CBSMode.onChange(fn),
+        CBSMode.missionUrl(qs). Window event: 'cbs-mode' ({ detail: { plain } }). */
+(function () {
+  if (window.CBSMode) return;
+  const KEY = 'cbs.plain';
+  const subs = [];
+  const readLocal = () => { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } };
+  const applyClass = on => {
+    try { if (document.documentElement) document.documentElement.classList.toggle('cbs-plain', !!on); } catch (e) {}
+  };
+  applyClass(readLocal());
+
+  function emit(val) {
+    subs.forEach(fn => { try { fn(val); } catch (e) {} });
+    try { window.dispatchEvent(new CustomEvent('cbs-mode', { detail: { plain: val } })); } catch (e) {}
+  }
+
+  function isPlain() { return readLocal(); }
+
+  function set(val, opts) {
+    const on = !!val;
+    const prev = readLocal();
+    try { on ? localStorage.setItem(KEY, '1') : localStorage.removeItem(KEY); } catch (e) {}
+    applyClass(on);
+    if (!opts || !opts.localOnly) {
+      const u = window.firebase && firebase.auth && firebase.auth().currentUser;
+      if (u && u.uid) {
+        const body = { settings: { plainMode: on } };
+        if (window.CBSNet && CBSNet.fsSetMerge) CBSNet.fsSetMerge('users', u.uid, body, { ms: 6000, mergeMaps: ['settings'] }).catch(() => {});
+        else if (window.firebase && firebase.firestore) firebase.firestore().collection('users').doc(u.uid).set(body, { merge: true }).catch(() => {});
+      }
+    }
+    if (on !== prev || (opts && opts.force)) emit(on);
+    return on;
+  }
+
+  function syncFromDoc(doc) {
+    if (!doc || !doc.settings || typeof doc.settings.plainMode !== 'boolean') return false;
+    const on = !!doc.settings.plainMode;
+    const prev = readLocal();
+    try { on ? localStorage.setItem(KEY, '1') : localStorage.removeItem(KEY); } catch (e) {}
+    applyClass(on);
+    if (on !== prev) emit(on);
+    return true;
+  }
+
+  function onChange(fn) {
+    if (typeof fn === 'function') subs.push(fn);
+  }
+
+  function missionUrl(qs) {
+    const s = qs ? (String(qs)[0] === '?' ? String(qs) : '?' + qs) : '';
+    return '/interactive/spec-quiz/' + (isPlain() ? 'practice.html' : 'adventurer-mission.html') + s;
+  }
+
+  let syncedUid = null;
+  function autoSync() {
+    if (!window.firebase || !firebase.auth || !window.firebaseConfig) return;
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
+      firebase.auth().onAuthStateChanged(u => {
+        if (!u || !u.uid || u.uid === syncedUid) return;
+        syncedUid = u.uid;
+        if (!window.CBSNet && !firebase.firestore) return;
+        const p = window.CBSNet && CBSNet.fsGet
+          ? CBSNet.fsGet('users', u.uid, 6000)
+          : (firebase.firestore ? firebase.firestore().collection('users').doc(u.uid).get() : Promise.resolve(null));
+        p.then(d => { if (d && d.exists) syncFromDoc(d.data()); }).catch(() => {});
+      });
+    } catch (e) {}
+  }
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoSync);
+    else setTimeout(autoSync, 0);
+  }
+
+  window.CBSMode = { isPlain, set, syncFromDoc, onChange, missionUrl, KEY };
+})();
