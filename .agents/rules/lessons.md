@@ -46,8 +46,8 @@ Strict split between the two audiences:
 12. Keep source deck's images, links (one `.linkcard` per slide), order and examples. **Never mention Separate Science.**
 13. Kingdom order: animals, plants, fungi, bacteria, protoctists (then pathogens, viruses).
 14. Slide tags: only `<i class="stag da|beyond"></i>` ("Double Award only" / "Beyond IGCSE") and activity badges `<i class="sico qc|wb"></i>` (Quick check / Whiteboards) as direct children of `section.ps`; no spec numbers on slides; mixed slides untagged. **Keep `<h2>` titles short enough to sit on one single line** clear of corner tags (even when both `.stag` and `.sico` are present).
-15. **Exam Question Slide Standard:** dedicated exam-question slides pair a crisp question box + `[N]` mark badge + visual context with **individual mark-scheme rows** (green `✓` badge, bolded mark-earning key terms, `[1]` tag) offering **more valid mark points than the max marks** (e.g. 5 points for a `[3]` question) plus an `Any N of M points = full marks [N]` summary bar.
-16. Before pushing: inspect every slide fully revealed for word-only slides, overflow, tiny pictures/labels, or overlaps.
+15. **Exam Question Slide Standard:** dedicated exam-question slides pair a crisp question box + `[N]` mark badge + visual context with **individual mark-scheme rows** offering **more valid mark points than the max marks** (e.g. 5 points for `[3]`, `Any 3 linked points (max 3)`). For **Explain** questions, show explicit **causal links** (`↓ so… / therefore… / which causes…`) between numbered steps rather than disconnected bullets; never copy verbatim from the private Pearson Exam Bank (write original Edexcel-style questions).
+16. **Vertical flex safety:** never stack `.ps .fig` (which has `height: 100%` in `lesson.css`) above another block inside a column slide — give top diagrams an explicit pixel height (`flex:none;height:…px`) and verify visually in headless Chrome at 1600×900 before pushing so nothing overflows or clips.
 
 ## Split Student Study Guide template (`draft/index.html`)
 - `<head>`: `#present` → `deck.html#present` redirect + `/interactive/lessons/assets/study.css`.

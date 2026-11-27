@@ -398,9 +398,9 @@ def main() -> int:
                     continue
                 new_html = cur_path.read_text(encoding="utf-8", errors="replace")
 
-                # Prefer the latest frozen checked version v<latest>/ as baseline when present,
-                # so the comparer shows only what changed since the teacher last signed it off
-                # and all Before images/assets load directly from that frozen snapshot.
+                # Prefer a staging review checkpoint (when the teacher approved all other slides
+                # and only asked for targeted fixes), otherwise prefer the latest frozen checked
+                # version v<latest>/ as baseline so only genuinely unreviewed changes appear.
                 vers = sorted(t.get("versions") or [])
                 latest_v = vers[-1] if vers else None
                 before_base_url = f"/interactive/lessons/{sid}/{code}/draft/"
@@ -410,7 +410,15 @@ def main() -> int:
                 old_html = None
                 lesson_chem_changed = chem_comps_changed
 
-                if latest_v and args.base in ("origin/main", "main"):
+                ckpt_file = DIFF_DIR / "checkpoints" / f"{sid}-{code}.snap"
+                if ckpt_file.exists() and args.base in ("origin/main", "main") and t.get("status") != "checked":
+                    old_html = ckpt_file.read_text(encoding="utf-8", errors="replace")
+                    before_base_url = f"/interactive/lessons/{sid}/{code}/draft/"
+                    before_assets_url = "/interactive/lessons/assets/"
+                    before_tags_url = "/interactive/lessons/tags.css"
+                    before_label = "previous review"
+                    lesson_chem_changed = set()
+                elif latest_v and args.base in ("origin/main", "main"):
                     v_dir = ROOT / "interactive" / "lessons" / sid / code / f"v{latest_v}"
                     v_file = v_dir / "deck.html" if (v_dir / "deck.html").exists() else v_dir / "index.html"
                     if v_file.exists():

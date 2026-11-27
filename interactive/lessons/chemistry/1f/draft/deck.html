@@ -192,7 +192,7 @@
   <text x="723" y="318" text-anchor="middle" font-size="19" font-weight="700" fill="#1b5e20">17 protons, 18 electrons → overall 1−</text>
 </svg></div><div class="small grey" data-s="3" style="text-align:center">Outer shell is now full (8 electrons) → square brackets &amp; 1− charge</div></section>
 
-  <section class="ps" data-nomatch><h2>Losing or gaining electrons</h2><div class="fig" style="flex:1;min-height:0"><svg viewBox="0 0 1160 500" style="width:100%;height:100%;max-height:560px;display:block" role="img" aria-label="A neutral atom with equal protons and electrons either loses electrons to become a positive cation or gains electrons to become a negative anion" font-family="Barlow,Arial,sans-serif">
+  <section class="ps" data-nomatch><h2>Losing or gaining electrons</h2><div class="fig" style="flex:1;min-height:0"><svg viewBox="0 0 1160 500" style="width:100%;height:100%;max-height:580px;display:block" role="img" aria-label="A neutral atom loses electrons to become a positive cation or gains electrons to become a negative anion, with proton and electron balance revealed on click" font-family="Barlow,Arial,sans-serif">
   <defs>
     <marker id="dkcag" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#1b5e20"/></marker>
     <marker id="dkcar" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c8001e"/></marker>
@@ -201,40 +201,50 @@
     <radialGradient id="dkcaan" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#ffcdd2"/><stop offset="55%" stop-color="#d32f2f"/><stop offset="100%" stop-color="#8e0000"/></radialGradient>
   </defs>
 
-  <!-- TOP CENTRE: NEUTRAL ATOM -->
-  <rect x="370" y="14" width="420" height="144" rx="20" fill="#fff" stroke="#111" stroke-width="5"/>
-  <circle cx="446" cy="86" r="46" fill="url(#dkcant)" stroke="#111" stroke-width="4"/>
-  <text x="446" y="102" text-anchor="middle" font-size="44" font-weight="900" fill="#fff">0</text>
-  <text x="634" y="68" text-anchor="middle" font-size="34" font-weight="900" fill="#111">NEUTRAL ATOM</text>
-  <text x="634" y="106" text-anchor="middle" font-size="24" font-weight="700" fill="#475569">Protons (+) = Electrons (−)</text>
-  <text x="634" y="138" text-anchor="middle" font-size="22" font-weight="700" fill="#64748b">Overall charge = 0</text>
+  <!-- TOP CENTRE: NEUTRAL ATOM (clean & uncluttered) -->
+  <rect x="330" y="14" width="500" height="122" rx="20" fill="#fff" stroke="#111" stroke-width="5"/>
+  <circle cx="404" cy="75" r="40" fill="url(#dkcant)" stroke="#111" stroke-width="4"/>
+  <text x="404" y="89" text-anchor="middle" font-size="40" font-weight="900" fill="#fff">0</text>
+  <text x="632" y="68" text-anchor="middle" font-size="34" font-weight="900" fill="#111">NEUTRAL ATOM</text>
+  <text x="632" y="104" text-anchor="middle" font-size="24" font-weight="700" fill="#64748b">Overall charge = 0</text>
+  <!-- Step-1 reveal pill: protons = electrons -->
+  <g data-s="1">
+    <rect x="415" y="128" width="330" height="38" rx="19" fill="#f1f5f9" stroke="#475569" stroke-width="2.5"/>
+    <text x="580" y="154" text-anchor="middle" font-size="21" font-weight="800" fill="#334155">protons (+) = electrons (−)</text>
+  </g>
 
   <!-- Branch arrows -->
-  <path d="M460 162 Q330 198 290 250" fill="none" stroke="#1b5e20" stroke-width="8" stroke-linecap="round" marker-end="url(#dkcag)"/>
-  <rect x="190" y="178" width="212" height="44" rx="10" fill="#e8f5e9" stroke="#1b5e20" stroke-width="3"/>
-  <text x="296" y="208" text-anchor="middle" font-size="24" font-weight="900" fill="#1b5e20">LOSES electrons</text>
+  <path d="M404 140 Q290 182 268 250" fill="none" stroke="#1b5e20" stroke-width="8" stroke-linecap="round" marker-end="url(#dkcag)"/>
+  <rect x="130" y="176" width="260" height="44" rx="10" fill="#e8f5e9" stroke="#1b5e20" stroke-width="3"/>
+  <text x="260" y="206" text-anchor="middle" font-size="24" font-weight="900" fill="#1b5e20">LOSES electrons</text>
 
-  <path d="M700 162 Q830 198 870 250" fill="none" stroke="#c8001e" stroke-width="8" stroke-linecap="round" marker-end="url(#dkcar)"/>
-  <rect x="758" y="178" width="212" height="44" rx="10" fill="#fde8eb" stroke="#c8001e" stroke-width="3"/>
-  <text x="864" y="208" text-anchor="middle" font-size="24" font-weight="900" fill="#c8001e">GAINS electrons</text>
+  <path d="M756 140 Q870 182 892 250" fill="none" stroke="#c8001e" stroke-width="8" stroke-linecap="round" marker-end="url(#dkcar)"/>
+  <rect x="770" y="176" width="260" height="44" rx="10" fill="#fde8eb" stroke="#c8001e" stroke-width="3"/>
+  <text x="900" y="206" text-anchor="middle" font-size="24" font-weight="900" fill="#c8001e">GAINS electrons</text>
 
   <!-- BOTTOM LEFT: POSITIVE CATION -->
-  <rect x="28" y="266" width="516" height="218" rx="22" fill="#f0fdf4" stroke="#1b5e20" stroke-width="6"/>
-  <circle cx="122" cy="375" r="64" fill="url(#dkcact)" stroke="#111" stroke-width="4.5"/>
-  <text x="122" y="400" text-anchor="middle" font-size="74" font-weight="900" fill="#fff">+</text>
+  <rect x="18" y="266" width="536" height="218" rx="22" fill="#f0fdf4" stroke="#1b5e20" stroke-width="6"/>
+  <circle cx="106" cy="375" r="60" fill="url(#dkcact)" stroke="#111" stroke-width="4.5"/>
+  <text x="106" y="399" text-anchor="middle" font-size="72" font-weight="900" fill="#fff">+</text>
   <text x="358" y="328" text-anchor="middle" font-size="44" font-weight="900" fill="#1b5e20">CATION</text>
   <text x="358" y="370" text-anchor="middle" font-size="27" font-weight="800" fill="#111">Positive ion (+)</text>
-  <text x="358" y="410" text-anchor="middle" font-size="23" font-weight="700" fill="#334155">More protons than electrons</text>
-  <text x="358" y="448" text-anchor="middle" font-size="23" font-weight="800" fill="#1b5e20">Usually METALS (e.g. Na⁺, Mg²⁺)</text>
+  <text x="358" y="408" text-anchor="middle" font-size="23" font-weight="800" fill="#1b5e20">Metals (e.g. Na⁺, Mg²⁺)</text>
+  <g data-s="1">
+    <rect x="188" y="428" width="340" height="38" rx="19" fill="#fff" stroke="#1b5e20" stroke-width="2.5"/>
+    <text x="358" y="454" text-anchor="middle" font-size="20" font-weight="800" fill="#1b5e20">more protons than electrons</text>
+  </g>
 
   <!-- BOTTOM RIGHT: NEGATIVE ANION -->
-  <rect x="616" y="266" width="516" height="218" rx="22" fill="#fff5f5" stroke="#c8001e" stroke-width="6"/>
-  <circle cx="710" cy="375" r="64" fill="url(#dkcaan)" stroke="#111" stroke-width="4.5"/>
-  <text x="710" y="398" text-anchor="middle" font-size="78" font-weight="900" fill="#fff">−</text>
+  <rect x="606" y="266" width="536" height="218" rx="22" fill="#fff5f5" stroke="#c8001e" stroke-width="6"/>
+  <circle cx="694" cy="375" r="60" fill="url(#dkcaan)" stroke="#111" stroke-width="4.5"/>
+  <text x="694" y="397" text-anchor="middle" font-size="76" font-weight="900" fill="#fff">−</text>
   <text x="946" y="328" text-anchor="middle" font-size="44" font-weight="900" fill="#c8001e">ANION</text>
   <text x="946" y="370" text-anchor="middle" font-size="27" font-weight="800" fill="#111">Negative ion (−)</text>
-  <text x="946" y="410" text-anchor="middle" font-size="23" font-weight="700" fill="#334155">More electrons than protons</text>
-  <text x="946" y="448" text-anchor="middle" font-size="23" font-weight="800" fill="#c8001e">Usually NON-METALS (e.g. Cl⁻, O²⁻)</text>
+  <text x="946" y="408" text-anchor="middle" font-size="23" font-weight="800" fill="#c8001e">Non-metals (e.g. Cl⁻, O²⁻)</text>
+  <g data-s="1">
+    <rect x="776" y="428" width="340" height="38" rx="19" fill="#fff" stroke="#c8001e" stroke-width="2.5"/>
+    <text x="946" y="454" text-anchor="middle" font-size="20" font-weight="800" fill="#c8001e">more electrons than protons</text>
+  </g>
 </svg></div></section>
   <section class="ps"><div class="two" style="flex:1"><div class="box" style="height:100%;display:flex;flex-direction:column;justify-content:center"><div class="big" style="color:var(--green);font-size:110px;font-family:'Barlow Condensed'">Cations</div><div style="height:300px"><svg viewBox="0 0 254 220" style="width:100%;height:100%" role="img" aria-label="Ions as charged balls" font-family="Barlow,Arial,sans-serif"><defs><radialGradient id="kc1g0" cx=".35" cy=".3"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".45" stop-color="#8e24aa"/><stop offset="1" stop-color="#8e24aa" stop-opacity=".9"/></radialGradient></defs><circle cx="102" cy="110.0" r="72" fill="url(#kc1g0)" stroke="#111" stroke-width="3"/><text x="102" y="125.84" text-anchor="middle" font-size="50" font-weight="900" fill="#fff">Na</text><text x="163.2" y="48.800000000000004" text-anchor="middle" font-size="40" font-weight="900" fill="#111">+</text></svg></div><div class="mid mt2" data-s="1">lost electrons<br>more protons than electrons<br>usually <b>metals</b></div></div><div class="box" style="height:100%;display:flex;flex-direction:column;justify-content:center"><div class="big em" style="font-size:110px;font-family:'Barlow Condensed'">Anions</div><div style="height:300px"><svg viewBox="0 0 254 220" style="width:100%;height:100%" role="img" aria-label="Ions as charged balls" font-family="Barlow,Arial,sans-serif"><defs><radialGradient id="ka1g0" cx=".35" cy=".3"><stop offset="0" stop-color="#fff" stop-opacity=".85"/><stop offset=".45" stop-color="#2e9a46"/><stop offset="1" stop-color="#2e9a46" stop-opacity=".9"/></radialGradient></defs><circle cx="102" cy="110.0" r="72" fill="url(#ka1g0)" stroke="#111" stroke-width="3"/><text x="102" y="125.84" text-anchor="middle" font-size="50" font-weight="900" fill="#fff">Cl</text><text x="163.2" y="48.800000000000004" text-anchor="middle" font-size="40" font-weight="900" fill="#111">−</text></svg></div><div class="mid mt2" data-s="2">gained electrons<br>more electrons than protons<br>usually <b>non-metals</b></div></div></div></section>
 
