@@ -62,4 +62,5 @@ Strict split between the two audiences:
 
 ## Sources & status
 - Source decks: teacher's Google Drive (`2. Science\<Subject>\…`). Never publish from `# Resources/`, no watermarked/past-paper images, keep CC credits, GIFs → MP4.
-- **Current status (all 10 lessons split):** Deck & Student checked (`Bio 2c`) · Student checked / Deck draft (`Chem 1g`) · Both halves under review (`Bio 1, 2a, 2b, 2d, 2f`, `Chem 1a, 1f`, `Phys 8`).
+- **Current status (all 10 lessons split):** Student checked (`Bio 2c`, `Chem 1g`) · All 10 Decks + 8 Student guides under review (`Bio 1, 2a, 2b, 2c deck, 2d, 2f`, `Chem 1a, 1f, 1g deck`, `Phys 8`).
+- **Staging comparer rule:** `tools/lessons/build_diff.py` MUST always compare each lesson's `draft/` against its **most recently approved frozen snapshot (`v<latest>/`)** when one exists (falling back to `origin/main` only for lessons never frozen yet), ignoring `../img/` vs `img/` and lossless same-stem WebP conversions so only real visual/content changes appear. Rebuild `diff/data.json` + `/staging-review/` before handing staging over for review.

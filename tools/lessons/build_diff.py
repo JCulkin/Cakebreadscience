@@ -109,12 +109,18 @@ def extract_slides(html: str) -> list[dict]:
         plain = re.sub(r'<style\b.*?</style>', ' ', block, flags=re.I | re.S)
         plain = re.sub(r'<[^>]+>', ' ', plain)
         plain = re.sub(r'\s+', ' ', plain).strip()
-        imgs = sorted(set(re.findall(r'(?:src|href)=["\'](img/[^"\']+)["\']', block, re.I)))
+        norm = re.sub(r'\s+', ' ', block).strip()
+        # Ignore freeze.py relative path rewrite (../img/ -> img/), same-stem WebP compression,
+        # and lazy-loading attributes so unchanged slides don't show up as false diffs.
+        norm = re.sub(r'((?:src|href)=["\'])\.\./img/', r'\1img/', norm, flags=re.I)
+        norm = re.sub(r'((?:src|href)=["\']img/[^"\'.]+)\.(?:jpe?g|png|webp)(["\'])', r'\1.IMG\2', norm, flags=re.I)
+        norm = re.sub(r'\s+(?:decoding|loading)=["\'][^"\']*["\']', '', norm, flags=re.I)
+        imgs = sorted(set(re.findall(r'(?:src|href)=["\'](?:\.\./)?(img/[^"\']+)["\']', block, re.I)))
         comps = sorted(set(re.findall(r'data-comp=["\']([^"\']+)["\']', block, re.I)))
         slides.append({
             "num": num,
             "html": block.strip(),
-            "norm": re.sub(r'\s+', ' ', block).strip(),
+            "norm": norm,
             "title": title,
             "titleKey": re.sub(r'[^a-z0-9]+', ' ', title.lower()).strip(),
             "plain": plain,
@@ -445,22 +451,23 @@ def main() -> int:
                 if not entries:
                     continue
 
-                # Ensure every Before image resolves: if an old image from git was deleted/replaced
-                # in draft/img/, extract it into diff/base-imgs/<sid>/<code>/ and rewrite its path.
+                # Ensure every Before image resolves: handle both img/... and ../img/... (frozen snapshots)
                 img_dir = (ROOT / before_base_url.lstrip("/")) if before_base_url else cur_path.parent
                 for e in entries:
                     if e.get("oldHtml"):
-                        for im in set(re.findall(r'(?:src|href)=["\'](img/[^"\']+)["\']', e["oldHtml"], re.I)):
-                            if not (img_dir / im).exists():
-                                blob = git_show_bytes(args.base, f"interactive/lessons/{sid}/{code}/draft/{im}")
+                        for raw_im in set(re.findall(r'(?:src|href)=["\']((?:\.\./)?img/[^"\']+)["\']', e["oldHtml"], re.I)):
+                            resolved = (img_dir / raw_im).resolve()
+                            if not resolved.exists():
+                                clean_im = raw_im[3:] if raw_im.startswith("../") else raw_im
+                                blob = git_show_bytes(args.base, f"interactive/lessons/{sid}/{code}/draft/{clean_im}")
                                 if blob is not None:
-                                    dest = DIFF_DIR / "base-imgs" / sid / code / im
+                                    dest = DIFF_DIR / "base-imgs" / sid / code / clean_im
                                     dest.parent.mkdir(parents=True, exist_ok=True)
                                     dest.write_bytes(blob)
-                                    new_url = f"/interactive/lessons/diff/base-imgs/{sid}/{code}/{im}"
-                                    e["oldHtml"] = e["oldHtml"].replace(f'"{im}"', f'"{new_url}"').replace(f"'{im}'", f"'{new_url}'")
+                                    new_url = f"/interactive/lessons/diff/base-imgs/{sid}/{code}/{clean_im}"
+                                    e["oldHtml"] = e["oldHtml"].replace(f'"{raw_im}"', f'"{new_url}"').replace(f"'{raw_im}'", f"'{new_url}'")
                                 else:
-                                    missing_imgs.append(f"{sid}/{code}: {im}")
+                                    missing_imgs.append(f"{sid}/{code}: {raw_im}")
 
                 counts = {k: sum(1 for e in entries if e["kind"] == k) for k in ("changed", "added", "removed", "moved")}
                 lessons_out.append({
