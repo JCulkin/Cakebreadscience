@@ -181,7 +181,7 @@ const ADV = (() => {
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
     n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
       + `<a class="brand" href="index.html" title="Breadventure Land menu">Breadventure <b>Land</b></a>`
-      + tab('home', 'adventurer-home.html', '🧁', 'Cakelab')
+      + tab('home', 'adventurer-home.html', '🧭', 'My Adventurer')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'World Map', 'cta map')
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')

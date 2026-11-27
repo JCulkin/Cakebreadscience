@@ -11,7 +11,7 @@ description: Breadventure Land (interactive/spec-quiz/) — the revision game, i
   - **Misconception Refutation & Transfer:** Plausible misconception distractors + elaborative feedback; Option A caps flashcards at half of securing so quiz questions prove AO2/AO3 transfer.
 
 ## Names (the user's)
-- The whole revision game is **Breadventure Land** (the map page is **World Map**, `adventurer-map.html`). Starting safe-spot in the story/map = **the Cakelab** (`7,4`).
+- The whole revision game is **Breadventure Land** (character hub = **My Adventurer**, `adventurer-home.html`; map page = **World Map**, `adventurer-map.html`). Starting safe-spot in the story/map = **the Cakelab** (`7,4`).
   The mascot is the Professor; the dragon is Crumbmaw. One shared world, no classes, ≤ ~5 players at once.
 - Pixel art is drawn in code (sprite grids in `adventurer-shell.js` `ADV.ICONS`, items as layers in `adventurer-pixel.js`). No downloaded assets.
 - **Everything must also work without the game**: wherever a point offers "⚔️ Quiz me", also offer "📝 Prove it" (`practice.html?point=KEY`).
@@ -20,7 +20,7 @@ description: Breadventure Land (interactive/spec-quiz/) — the revision game, i
   (teen-meme words, nothing about bodies or dating, nothing gory). The science in them must stay inside the Double Award spec.
 
 ## Pages
-- `index.html` Questing menu · `adventurer-home.html` Cakelab · `adventurer-mission.html` missions (10 questions vs a sub-topic's
+- `index.html` Breadventure Land menu · `adventurer-home.html` My Adventurer · `adventurer-mission.html` missions (10 questions vs a sub-topic's
   misconception; 7 hits defeat it; second wind on missed questions — not recorded) · `practice.html` **Practice** = plain mode, same engine
   and progress, no game · `adventurer-map.html` Breadventure Land · `adventurer-wardrobe.html` · `adventurer-create.html` (look) ·
   `adventurer-stats.html` (percentages only, never totals — the user wants what's to come hidden) · `quiz.html` Quick quiz / team quiz

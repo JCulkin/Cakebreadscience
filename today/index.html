@@ -278,11 +278,14 @@ async function draw() {
 
   const days = [...Array(14)].map((_, i) => { const d = new Date(Date.parse(QE.TODAY + 'T12:00:00') - (13 - i) * 864e5); return BL.dstr(d); });
   const did = d => (QE.game.days || {})[d] || ((QE.game.cd || {})[d] || {}).n;
-  const streak = (() => { let n = 0; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i < days.length - 1) break; } return n; })();
+  const active7 = days.slice(-7).filter(did).length;
+  /* Friendly consistency streak: allows 1 rest/grace day so one busy evening doesn't wipe motivation to zero */
+  const streak = (() => { let n = 0, grace = 1; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i === days.length - 1) continue; else if (grace > 0 && n > 0) grace--; else break; } return n; })();
+  const streakTxt = streak > 1 ? ` · 🔥 ${streak} days (${active7}/7 this week)` : active7 >= 2 ? ` · 📅 ${active7} of last 7 days` : '';
 
   $('main').innerHTML = `
     <div class="hello">
-      <div class="hello-l"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} spec points secured${streak > 1 ? ` · 🔥 ${streak} days` : ''}</p></div></div>
+      <div class="hello-l"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} spec points secured${streakTxt}</p></div></div>
       <div id="quickGo"></div>
     </div>
 
@@ -295,7 +298,7 @@ async function draw() {
           <a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission'}</a>
           <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} due` : 'Cards'}</a>
           <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
-          <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a>
+          <a class="go" href="${Q}adventurer-home.html">⚔️ Breadventure Land →</a>
         </div>
         ${top3.length ? `<div class="up-head"><h3>Top 3 targets</h3><span>📝 Practice · ⚔️ Quest · 🃏 Cards · 🎓 Notes</span></div>${top3.map(ptRow).join('')}<p class="small" style="margin-top:10px"><a href="/specifications/science.html">See all spec points on your trackers →</a>${check.length ? ` · <a href="/specifications/${TRK[check[0].k[0]]}.html?f=check">${check.length} unproved “confident” points →</a>` : ''}</p>`
           : `<p class="small muted">${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Finish a quick mission, Practice set, or Flashcards session and your closest targets will appear here automatically.</p><p style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a><a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p>`}
@@ -561,7 +564,7 @@ function safeDraw() {
     if (!QE.user) return;
     $('main').innerHTML = `<div class="hello"><div class="hello-l"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div><div id="quickGo"></div></div>
       <div id="school"></div>
-      <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ World Map</a><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice</a></div>
+      <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ World Map</a><a href="${Q}adventurer-home.html">🧭 My Adventurer</a><a href="${Q}practice.html">📝 Practice</a></div>
       <p class="small muted" style="margin-top:8px">Part of this page couldn't load, so here's the short version.</p></div>`;
     drawSchool();
   });

@@ -1977,7 +1977,7 @@
         <div class="q-bar ${d.done ? 'done' : ''}"><i style="width:${pct}%"></i></div>
         <div class="q-earned">Today: ${d.n} card${d.n === 1 ? '' : 's'} · +${d.xp} XP${d.xp >= QE.CARD.xpCap ? ' (daily max)' : ''} · ❤ +${d.n} Health · 🔮 +${d.n} mana · 🪙 +${d.coins}.
         A card rated Good or Easy on two different days is secured and counts for up to half of its spec point (prove the rest with Practice or Questing).</div></div>
-        <a class="q-go" href="/interactive/spec-quiz/adventurer-home.html">Cakelab →</a>`;
+        <a class="q-go" href="/interactive/spec-quiz/adventurer-home.html">My Adventurer →</a>`;
     }
     function gain(html) {
       const g = document.createElement('div');
@@ -2445,7 +2445,7 @@
           : '/interactive/spec-quiz/adventurer-home.html';
         const questLabel = weakPts.length
           ? `⚔️ Quest on the ${weakPts.length} you found hard`
-          : (revPts.length ? `⚔️ Quest on these points` : '🧁 Cakelab →');
+          : (revPts.length ? `⚔️ Quest on these points` : '🧭 My Adventurer →');
         box.innerHTML = `<div class="fc-done">
           <img src="/img/mascot/head-laugh.webp" alt="">
           <h2>${doneHead}</h2>
@@ -2456,7 +2456,7 @@
             ${canAddMore ? `<button type="button" class="btn alt" onclick="startDeck('${currentDeck}',true)">+5 new cards</button>` : ''}
             ${sessionDone > 0 ? `<a class="btn" style="background:#bbf7d0" href="${pracHref}">${pracLabel}</a>` : `<a class="btn alt" href="${pracHref}">${pracLabel}</a>`}
             <a class="btn alt" href="${questHref}">${questLabel}</a>
-            ${sessionDone > 0 && questPts.length ? `<a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a>` : ''}
+            ${sessionDone > 0 && questPts.length ? `<a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧭 My Adventurer →</a>` : ''}
           </div>
         </div>`;
         updateStats();
