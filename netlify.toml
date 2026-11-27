@@ -58,6 +58,19 @@
   status = 404
   force = true
 
+# Block the staging-only review hub on the live production domain
+[[redirects]]
+  from = "https://cakebreadscience.com/staging-review/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.cakebreadscience.com/staging-review/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # Block the staging-only lesson comparer on the live production domain
 [[redirects]]
   from = "https://cakebreadscience.com/interactive/lessons/diff/*"

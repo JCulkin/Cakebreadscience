@@ -117,8 +117,9 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
     <div class="kick">Staging Review Tool</div>
     <h1>Lesson <span>Comparer</span></h1>
     <div class="meta">
-      <a href="/interactive/lessons/">← All lessons</a>
-      <a href="/">← Home</a>
+      <a href="/staging-review/" style="background:#facc15;color:#111;padding:4px 10px;border-radius:4px;font-weight:800">← Staging Review Hub</a>
+      <a href="/interactive/lessons/">All lessons</a>
+      <a href="/">Home</a>
       <span id="summaryText"></span>
     </div>
   </header>
@@ -127,7 +128,8 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
 
 <div id="compareView">
   <div class="topbar">
-    <button class="tbtn" id="btnBack">← All changes</button>
+    <a class="tbtn" href="/staging-review/#decks">← Review Hub</a>
+    <button class="tbtn" id="btnBack">All decks</button>
     <div class="ltitle" id="cmpTitle"></div>
     <label class="chkopt" id="movedWrap" style="display:none"><input type="checkbox" id="chkMoved"> Show moved-only (<span id="movedCnt">0</span>)</label>
     <button class="tbtn" id="btnPrev" title="Previous changed slide (←)">‹ Prev</button>
@@ -190,6 +192,7 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
     const c = l.counts;
     const unchanged = Math.max(0, l.newTotal - c.changed - c.added - c.moved);
     const pills = [];
+    if (l.beforeLabel) pills.push(`<span class="pill" style="background:#eef2ff;color:#3730a3;border-color:#c7d2fe">vs ${esc(l.beforeLabel)}</span>`);
     if (l.isNew) pills.push(`<span class="pill newl">NEW LESSON · ${l.newTotal} slides</span>`);
     else {
       if (l.status === 'checked') pills.push('<span class="pill chk">Checked on staging</span>');
@@ -229,9 +232,12 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
   let visibleSlides = [];
   let slideIdx = 0;
 
-  function mapAssetPath(src, useBase) {
+  function mapAssetPath(src, useBase, lesson) {
     if (!useBase) return src;
     const base = src.split('/').pop();
+    if (lesson && lesson.beforeAssetsUrl && base !== 'tags.css') {
+      return lesson.beforeAssetsUrl + base;
+    }
     if (DATA.assetChanged && (base in DATA.assetChanged)) {
       return '/interactive/lessons/diff/base-assets/' + base;
     }
@@ -239,12 +245,12 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
   }
 
   function buildSlideDoc(lesson, slideHtml, slideNumText, isBefore) {
-    const cssUrl = isBefore ? '/interactive/lessons/diff/base-assets/lesson.css' : '/interactive/lessons/assets/lesson.css';
-    const tagsUrl = isBefore ? '/interactive/lessons/diff/base-assets/tags.css' : '/interactive/lessons/tags.css';
+    const cssUrl = isBefore ? (lesson.beforeAssetsUrl ? lesson.beforeAssetsUrl + 'lesson.css' : '/interactive/lessons/diff/base-assets/lesson.css') : '/interactive/lessons/assets/lesson.css';
+    const tagsUrl = isBefore ? (lesson.beforeTagsUrl || '/interactive/lessons/diff/base-assets/tags.css') : '/interactive/lessons/tags.css';
     const scripts = (isBefore ? lesson.oldScripts : lesson.newScripts) || [];
-    const scriptTags = scripts.map(s => `<script src="${esc(mapAssetPath(s, isBefore))}"><\/script>`).join('\n');
+    const scriptTags = scripts.map(s => `<script src="${esc(mapAssetPath(s, isBefore, lesson))}"><\/script>`).join('\n');
     const extraCss = (isBefore ? lesson.oldStyles : lesson.newStyles) || '';
-    const baseHref = location.origin + lesson.baseUrl;
+    const baseHref = location.origin + (isBefore ? (lesson.beforeBaseUrl || lesson.baseUrl) : lesson.baseUrl);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -345,7 +351,8 @@ window.addEventListener('load', function(){
       if (i === slideIdx) c.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     });
 
-    const beforeLabel = s.oldNum ? `Slide ${s.oldNum} / ${activeLesson.oldTotal}` : `Not in ${baseLbl}`;
+    const lbl = activeLesson.beforeLabel || baseLbl;
+    const beforeLabel = s.oldNum ? `${lbl} · Slide ${s.oldNum} / ${activeLesson.oldTotal}` : `Not in ${lbl}`;
     const afterLabel = s.newNum ? `Slide ${s.newNum} / ${activeLesson.newTotal}` : 'Removed in staging';
     document.getElementById('beforeNum').textContent = beforeLabel;
     document.getElementById('beforeTitle').textContent = s.oldHtml ? s.title : '';

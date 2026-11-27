@@ -33,6 +33,14 @@ def git_show(ref: str, rel_path: str) -> str | None:
     return res.stdout if res.returncode == 0 else None
 
 
+def git_show_bytes(ref: str, rel_path: str) -> bytes | None:
+    res = subprocess.run(
+        ["git", "-C", str(ROOT), "show", f"{ref}:{rel_path}"],
+        capture_output=True,
+    )
+    return res.stdout if res.returncode == 0 else None
+
+
 def git_rev_short(ref: str) -> str:
     res = subprocess.run(
         ["git", "-C", str(ROOT), "rev-parse", "--short", ref],
@@ -383,9 +391,37 @@ def main() -> int:
                 if not cur_path.exists():
                     continue
                 new_html = cur_path.read_text(encoding="utf-8", errors="replace")
-                old_html = git_show(args.base, rel_deck)
+
+                # Prefer the latest frozen checked version v<latest>/ as baseline when present,
+                # so the comparer shows only what changed since the teacher last signed it off
+                # and all Before images/assets load directly from that frozen snapshot.
+                vers = sorted(t.get("versions") or [])
+                latest_v = vers[-1] if vers else None
+                before_base_url = f"/interactive/lessons/{sid}/{code}/draft/"
+                before_assets_url = None
+                before_tags_url = None
+                before_label = base_label
+                old_html = None
+                lesson_chem_changed = chem_comps_changed
+
+                if latest_v and args.base in ("origin/main", "main"):
+                    v_dir = ROOT / "interactive" / "lessons" / sid / code / f"v{latest_v}"
+                    v_file = v_dir / "deck.html" if (v_dir / "deck.html").exists() else v_dir / "index.html"
+                    if v_file.exists():
+                        old_html = v_file.read_text(encoding="utf-8", errors="replace")
+                        before_base_url = f"/interactive/lessons/{sid}/{code}/v{latest_v}/"
+                        if (v_dir / "assets" / "lesson.css").exists():
+                            before_assets_url = f"/interactive/lessons/{sid}/{code}/v{latest_v}/assets/"
+                        before_tags_url = "/interactive/lessons/tags.css"
+                        before_label = f"checked v{latest_v}"
+                        v_chem = v_dir / "assets" / "chem.js"
+                        if v_chem.exists():
+                            lesson_chem_changed = changed_chem_components(v_chem.read_text(encoding="utf-8", errors="replace"), cur_chem_js)
+
                 if old_html is None:
-                    old_html = git_show(args.base, rel_idx)
+                    old_html = git_show(args.base, rel_deck)
+                    if old_html is None:
+                        old_html = git_show(args.base, rel_idx)
 
                 new_slides = extract_slides(new_html)
                 old_slides = extract_slides(old_html) if old_html else []
@@ -404,18 +440,27 @@ def main() -> int:
                         for s in new_slides
                     ]
                 else:
-                    entries = align_and_diff(old_slides, new_slides, chem_comps_changed)
+                    entries = align_and_diff(old_slides, new_slides, lesson_chem_changed)
 
                 if not entries:
                     continue
 
-                # Verify old image files still exist on disk
-                img_dir = cur_path.parent
+                # Ensure every Before image resolves: if an old image from git was deleted/replaced
+                # in draft/img/, extract it into diff/base-imgs/<sid>/<code>/ and rewrite its path.
+                img_dir = (ROOT / before_base_url.lstrip("/")) if before_base_url else cur_path.parent
                 for e in entries:
                     if e.get("oldHtml"):
                         for im in set(re.findall(r'(?:src|href)=["\'](img/[^"\']+)["\']', e["oldHtml"], re.I)):
                             if not (img_dir / im).exists():
-                                missing_imgs.append(f"{sid}/{code}: {im}")
+                                blob = git_show_bytes(args.base, f"interactive/lessons/{sid}/{code}/draft/{im}")
+                                if blob is not None:
+                                    dest = DIFF_DIR / "base-imgs" / sid / code / im
+                                    dest.parent.mkdir(parents=True, exist_ok=True)
+                                    dest.write_bytes(blob)
+                                    new_url = f"/interactive/lessons/diff/base-imgs/{sid}/{code}/{im}"
+                                    e["oldHtml"] = e["oldHtml"].replace(f'"{im}"', f'"{new_url}"').replace(f"'{im}'", f"'{new_url}'")
+                                else:
+                                    missing_imgs.append(f"{sid}/{code}: {im}")
 
                 counts = {k: sum(1 for e in entries if e["kind"] == k) for k in ("changed", "added", "removed", "moved")}
                 lessons_out.append({
@@ -429,6 +474,10 @@ def main() -> int:
                     "draftUpdated": t.get("draftUpdated", ""),
                     "isNew": is_new_lesson,
                     "baseUrl": f"/interactive/lessons/{sid}/{code}/draft/",
+                    "beforeBaseUrl": before_base_url,
+                    "beforeAssetsUrl": before_assets_url,
+                    "beforeTagsUrl": before_tags_url,
+                    "beforeLabel": before_label,
                     "oldTotal": len(old_slides),
                     "newTotal": len(new_slides),
                     "counts": counts,

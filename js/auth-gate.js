@@ -48,7 +48,7 @@
   ]);
   var OPEN_PREFIX = [
     '/admin/', '/play/', '/leaderboards/', '/mascot/',
-    '/worksheets/diff/', '/interactive/lessons/diff/'
+    '/staging-review/', '/worksheets/diff/', '/interactive/lessons/diff/'
   ];
   var FREE_LESSON_RE = /^\/interactive\/lessons\/(biology\/1|chemistry\/1a|physics\/8)(\/|$)/i;
   var FREE_WORKSHEET_RE = /^\/worksheets\/(biology\/ks[34]\/1_living_organisms|chemistry\/ks[34]\/1a_states_of_matter|physics\/ks4\/3b2_wave_speed(?:_sa)?|physics\/ks3\/8bc_space_stars|maths\/1\.1_integers_negative_numbers)(?:_ms)?\.html$/i;

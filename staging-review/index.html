@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Staging Review Hub · Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111;--paper:#eeeae0;--card:#fff;--muted:#555;--line:#d4cfc2;
+  --bio:#1d6b2f;--chem:#8c0013;--phys:#a85d00;--maths:#7b1fa2;
+  --gold:#facc15;--green:#15803d;--greenBg:#dcfce7;--amber:#b45309;--amberBg:#fef3c7;
+  --red:#b91c1c;--redBg:#fee2e2;--blue:#1d4ed8;--blueBg:#dbeafe;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+a{color:inherit}
+button,input,textarea{font-family:'Barlow',Arial,sans-serif}
+button{cursor:pointer}
+
+.stbar{background:var(--gold);color:#111;font:800 13px/1.2 'Barlow',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:7px 20px;border-bottom:2px solid #111;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.lhead{background:#111;color:var(--paper);padding:20px 26px 18px;border-bottom:4px solid var(--gold)}
+.lhead-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.lhead .kick{font-size:12px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold);font-weight:800}
+.lhead h1{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,5vw,50px);line-height:1;margin-top:4px}
+.lhead h1 span{color:var(--gold)}
+.lhead .meta{margin-top:8px;font-size:14px;color:#ccc;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.lhead .meta a{color:#7fd39b;font-weight:700;text-decoration:none}
+.lhead .meta a:hover{text-decoration:underline}
+
+.rev-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rbtn{font:800 14px/1 'Barlow',sans-serif;padding:9px 14px;border:2px solid #111;border-radius:6px;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.rbtn.gold{background:var(--gold);color:#111}
+.rbtn.gold:hover{background:#fde047}
+.rbtn.dark{background:#222;color:#eee;border-color:#555}
+.rbtn.dark:hover{background:#333}
+.rbtn.good{background:var(--greenBg);border-color:var(--green);color:var(--green)}
+.rbtn.good.on{background:var(--green);color:#fff}
+.rbtn.fix{background:var(--redBg);border-color:var(--red);color:var(--red)}
+.rbtn.fix.on{background:var(--red);color:#fff}
+
+.tabs-wrap{background:#1c1c1c;border-bottom:3px solid #111;padding:0 20px;position:sticky;top:0;z-index:30}
+.tabs{max-width:1160px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.tab{flex:none;font:800 15px/1 'Barlow',sans-serif;padding:10px 16px;border:2px solid #444;border-radius:6px;background:#262626;color:#ddd;display:inline-flex;align-items:center;gap:8px}
+.tab:hover{background:#333;color:#fff}
+.tab.on{background:var(--gold);color:#111;border-color:var(--gold)}
+.tab .cnt{font-size:12px;font-weight:900;background:rgba(0,0,0,.22);color:inherit;padding:2px 7px;border-radius:999px}
+.tab.on .cnt{background:#111;color:var(--gold)}
+
+.wrap{max-width:1160px;margin:0 auto;padding:22px 20px 70px}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{font:700 13.5px/1 'Barlow',sans-serif;padding:7px 12px;border:2px solid #111;border-radius:5px;background:#fff;color:#111}
+.fbtn.on{background:#111;color:var(--gold)}
+.tally{font:700 14px/1.2 'Barlow',sans-serif;color:#333;background:#fff;border:2px solid #111;padding:7px 12px;border-radius:5px}
+.tally b.g{color:var(--green)} .tally b.r{color:var(--red)}
+
+.sec-h{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;border-bottom:3px solid #111;padding-bottom:4px;margin:22px 0 12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec-h:first-child{margin-top:0}
+.sec-h small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--muted);text-transform:none}
+
+.card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;padding:12px 16px;margin-bottom:10px}
+.card.m-good{border-left-color:var(--green);background:#f7fdf9}
+.card.m-fix{border-left-color:var(--red);background:#fff8f8}
+.card-row{display:grid;grid-template-columns:64px 1fr auto;gap:8px 14px;align-items:center}
+.card-row.nocode{grid-template-columns:1fr auto}
+.code{font:900 28px/1 'Barlow Condensed',sans-serif;color:var(--c,#111);text-transform:uppercase}
+.code small{display:block;font:700 11px/1.1 'Barlow',sans-serif;letter-spacing:.8px;color:#666;margin-top:2px}
+.info h3{font-size:18px;font-weight:800;line-height:1.2}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.pill{display:inline-block;font:700 12px/1 'Barlow',sans-serif;padding:4px 8px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+.pill.base{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
+.pill.changed{background:var(--amberBg);color:#92400e}
+.pill.added{background:var(--greenBg);color:#166534}
+.pill.removed{background:var(--redBg);color:#991b1b}
+.pill.newl{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pill.chk{background:var(--green);color:#fff;border-color:var(--green)}
+.pill.rev{background:var(--amberBg);color:#92400e;border-color:#f59e0b}
+.pill.tier{background:#111;color:#fff}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.btn{font:700 13.5px/1 'Barlow',sans-serif;padding:8px 12px;border:2px solid #111;border-radius:5px;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn.primary{background:#111;color:var(--gold)}
+.btn.primary:hover{background:#222}
+.btn:hover{background:#f5f2e8}
+.btn.mbtn{padding:7px 10px;font-size:13px}
+.btn.mbtn.g{border-color:var(--green);color:var(--green)}
+.btn.mbtn.g.on{background:var(--green);color:#fff}
+.btn.mbtn.f{border-color:var(--red);color:var(--red)}
+.btn.mbtn.f.on{background:var(--red);color:#fff}
+
+.note-row{margin-top:9px;padding-top:9px;border-top:1px dashed #d4cfc2;display:flex;gap:8px;align-items:center}
+.note-row input{flex:1;padding:6px 10px;border:1.5px solid #bbb;border-radius:5px;font-size:14px;background:#fff}
+.note-row input:focus{outline:none;border-color:#111}
+@media(max-width:760px){.card-row{grid-template-columns:52px 1fr}.card-row .acts,.card-row.nocode .acts{grid-column:1/-1;justify-content:flex-start}}
+
+/* Flashcard side-by-side grid */
+.fc-card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;margin-bottom:14px;overflow:hidden}
+.fc-card.m-good{border-left-color:var(--green)}
+.fc-card.m-fix{border-left-color:var(--red)}
+.fc-head{background:#f7f5ee;border-bottom:1.5px solid #ddd;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fc-pair{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:760px){.fc-pair{grid-template-columns:1fr}}
+.fc-side{padding:12px 16px;font-size:14.5px;line-height:1.45}
+.fc-side.before{background:#faf9f6;border-right:1.5px dashed #ccc}
+.fc-side .lbl{font:900 11.5px/1 'Barlow Condensed',sans-serif;letter-spacing:1.2px;text-transform:uppercase;padding:3px 7px;border-radius:3px;display:inline-block;margin-bottom:8px}
+.fc-side.before .lbl{background:#3f3f46;color:#fff}
+.fc-side.after .lbl{background:var(--green);color:#fff}
+.fc-front{font-weight:700;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #e5e0d4}
+.fc-side img{max-width:100%;max-height:220px;height:auto;display:block;margin:6px auto;border:1px solid #ddd;border-radius:4px;background:#fff}
+.fc-side .fc-points{margin:4px 0 0 18px}
+.fc-side .fc-points li{margin:2px 0}
+.fc-note{padding:8px 14px;background:#fcfbf8;border-top:1px dashed #ddd;display:flex;gap:8px;align-items:center}
+.fc-note input{flex:1;padding:6px 10px;border:1.5px solid #bbb;border-radius:5px;font-size:14px}
+
+/* Full-screen Student Study Guide side-by-side modal comparer */
+body.sg-viewing{overflow:hidden}
+#sgModal{display:none;position:fixed;inset:0;z-index:100;background:#141414;color:#eee;flex-direction:column}
+body.sg-viewing #sgModal{display:flex}
+.sg-top{background:#111;border-bottom:2px solid #333;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:none}
+.sg-top .tbtn{font:700 13.5px/1 'Barlow',sans-serif;padding:7px 11px;border:1.5px solid #555;background:#222;color:#eee;border-radius:5px;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.sg-top .tbtn:hover{background:#333;border-color:#888}
+.sg-top .tbtn.on{background:var(--gold);color:#111;border-color:var(--gold)}
+.sg-top .tbtn.g.on{background:var(--green);color:#fff;border-color:var(--green)}
+.sg-top .tbtn.f.on{background:var(--red);color:#fff;border-color:var(--red)}
+.sg-top .sg-title{font:800 16px/1.1 'Barlow',sans-serif;color:#fff;margin-right:auto;display:flex;align-items:center;gap:8px}
+.sg-top input.sg-note{background:#222;color:#fff;border:1.5px solid #555;border-radius:5px;padding:6px 10px;font-size:13.5px;min-width:210px}
+.sg-split{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#0d0d0d}
+.sg-split.single{grid-template-columns:1fr}
+.sg-split.single .sg-pane.before{display:none}
+@media(max-width:900px){.sg-split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+.sg-pane{display:flex;flex-direction:column;min-height:0;background:#1d1d1d;border:2px solid #333;border-radius:6px;overflow:hidden}
+.sg-phead{background:#222;padding:7px 12px;border-bottom:1px solid #333;display:flex;align-items:center;gap:8px;font:700 13px/1 'Barlow',sans-serif;flex:none}
+.sg-phead .badge{font:900 12px/1 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:3px}
+.sg-phead .badge.b{background:#3f3f46;color:#fff}
+.sg-phead .badge.a{background:var(--green);color:#fff}
+.sg-fwrap{flex:1;min-height:0;display:flex;justify-content:center;background:#2a2a2a;overflow:auto}
+.sg-fwrap iframe{width:100%;height:100%;border:0;background:#fff}
+.sg-fwrap.mobile iframe{width:390px;max-width:100%;border-left:2px solid #444;border-right:2px solid #444}
+.sg-empty{margin:auto;text-align:center;color:#aaa;padding:30px;max-width:360px}
+.sg-empty b{display:block;font:900 26px/1.1 'Barlow Condensed',sans-serif;color:#eee;text-transform:uppercase;margin-bottom:8px}
+
+.toast{position:fixed;bottom:20px;right:20px;background:#111;color:var(--gold);border:2px solid var(--gold);padding:10px 16px;border-radius:8px;font-weight:800;z-index:200;display:none}
+</style>
+</head>
+<body>
+<div class="stbar">
+  <span>STAGING REVIEW HUB · NO SIGN-IN REQUIRED · BLOCKED ON LIVE SITE</span>
+  <span id="metaCommits">Loading…</span>
+</div>
+<header class="lhead">
+  <div class="lhead-top">
+    <div>
+      <div class="kick">All Staging Changes In One Place</div>
+      <h1>Staging <span>Review Hub</span></h1>
+      <div class="meta">
+        <a href="/">← Home</a>
+        <a href="/interactive/lessons/">Lessons</a>
+        <a href="/worksheets/science.html">Worksheets</a>
+        <a href="/Flashcards/">Flashcards</a>
+        <a href="/admin/review.html#lessons">Admin Review (signed in) ↗</a>
+      </div>
+    </div>
+    <div class="rev-bar">
+      <button type="button" class="rbtn gold" id="btnCopy">📋 Copy review notes for chat</button>
+      <button type="button" class="rbtn dark" id="btnClear">Reset local marks</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs-wrap" aria-label="Review sections">
+  <div class="tabs" id="tabs">
+    <button type="button" class="tab" data-tab="decks">🎬 Projector Decks <span class="cnt" id="cnt-decks">…</span></button>
+    <button type="button" class="tab" data-tab="guides">📖 Student Study Guides <span class="cnt" id="cnt-guides">…</span></button>
+    <button type="button" class="tab" data-tab="worksheets">📄 Worksheets <span class="cnt" id="cnt-worksheets">…</span></button>
+    <button type="button" class="tab" data-tab="flashcards">🃏 Flashcards <span class="cnt" id="cnt-flashcards">…</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="controls">
+    <div class="filters" id="filters"></div>
+    <div class="tally" id="tally">Loading…</div>
+  </div>
+  <div id="content"><p>Loading staging changes…</p></div>
+</main>
+
+<!-- Full-screen side-by-side Student Study Guide Comparer -->
+<div id="sgModal" role="dialog" aria-modal="true" aria-label="Student Study Guide Comparer">
+  <div class="sg-top">
+    <button type="button" class="tbtn" id="sgClose">← Back to Hub</button>
+    <div class="sg-title" id="sgTitle"></div>
+    <button type="button" class="tbtn on" id="sgModeSplit">⚖️ Split</button>
+    <button type="button" class="tbtn" id="sgModeFull">📖 Full After</button>
+    <button type="button" class="tbtn" id="sgMobile">📱 390px</button>
+    <button type="button" class="tbtn g" id="sgGood">✓ Good</button>
+    <button type="button" class="tbtn f" id="sgFix">✏️ Needs a fix</button>
+    <input type="text" class="sg-note" id="sgNote" placeholder="Optional note for this guide…">
+    <a class="tbtn" id="sgOpenTab" href="#" target="_blank" rel="noopener">Open ↗</a>
+  </div>
+  <div class="sg-split" id="sgSplit">
+    <div class="sg-pane before">
+      <div class="sg-phead"><span class="badge b">BEFORE</span><span id="sgBeforeLbl"></span></div>
+      <div class="sg-fwrap" id="sgBeforeWrap"></div>
+    </div>
+    <div class="sg-pane after">
+      <div class="sg-phead"><span class="badge a">AFTER (STAGING DRAFT)</span><span id="sgAfterLbl"></span></div>
+      <div class="sg-fwrap" id="sgAfterWrap"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(async function(){
+  if (/^(www\.)?cakebreadscience\.com$/i.test(location.hostname)) {
+    document.body.innerHTML = '<main style="max-width:560px;margin:80px auto;font-family:sans-serif;text-align:center"><h1>404</h1><p>This staging review hub is not available on the live site.</p><p><a href="/">Go home</a></p></main>';
+    return;
+  }
+
+  const SUBJ_COL = { biology: '#1d6b2f', chemistry: '#8c0013', physics: '#a85d00', maths: '#7b1fa2' };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const STORE_KEY = 'cbs.staging.review.v1';
+
+  let MARKS = {};
+  try { MARKS = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { MARKS = {}; }
+  const saveMarks = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(MARKS)); } catch (e) {} updateTally(); };
+  const getMark = id => MARKS[id] || { state: '', note: '' };
+  const setMark = (id, state, note) => {
+    const cur = getMark(id);
+    const next = { state: state !== undefined ? state : cur.state, note: note !== undefined ? note : cur.note };
+    if (!next.state && !next.note) delete MARKS[id]; else MARKS[id] = next;
+    saveMarks();
+  };
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.style.display = 'block';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { t.style.display = 'none'; }, 2400);
+  }
+
+  const fetchJson = url => fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
+  const [LJ, LD, WD, FD] = await Promise.all([
+    fetchJson('/interactive/lessons/lessons.json'),
+    fetchJson('/interactive/lessons/diff/data.json'),
+    fetchJson('/worksheets/diff/data.json'),
+    fetchJson('/staging-review/flashcards-diff.json')
+  ]);
+
+  // Flatten lessons from lessons.json
+  const ALL_LESSONS = [];
+  if (LJ && LJ.subjects) {
+    LJ.subjects.forEach(s => (s.sections || []).forEach(sec => (sec.topics || []).forEach(t => {
+      if (!t.status) return;
+      const vers = (t.versions || []).slice().sort();
+      const latestV = vers.length ? vers[vers.length - 1] : null;
+      ALL_LESSONS.push({
+        id: `${s.id}-${t.code}`,
+        subject: s.id,
+        subjectName: s.name,
+        code: t.code,
+        title: t.title,
+        spec: t.spec || '',
+        status: t.status,
+        studentStatus: t.studentStatus || 'draft',
+        split: !!t.split,
+        latestV,
+        draftUrl: `/interactive/lessons/${s.id}/${t.code}/draft/`,
+        deckUrl: `/interactive/lessons/${s.id}/${t.code}/draft/${t.split ? 'deck.html' : ''}#present`,
+        beforeGuideUrl: latestV ? `/interactive/lessons/${s.id}/${t.code}/v${latestV}/` : null
+      });
+    })));
+  }
+
+  const DECKS = (LD && LD.lessons) || [];
+  const SHEETS = (WD && WD.sheets) || [];
+  const FCARDS = (FD && FD.cards) || [];
+
+  const deckReviewCount = ALL_LESSONS.filter(l => l.status !== 'checked').length;
+  const guideReviewCount = ALL_LESSONS.filter(l => l.split && l.studentStatus !== 'checked').length;
+  document.getElementById('cnt-decks').textContent = `${deckReviewCount} / ${ALL_LESSONS.length}`;
+  document.getElementById('cnt-guides').textContent = `${guideReviewCount} / ${ALL_LESSONS.length}`;
+  document.getElementById('cnt-worksheets').textContent = String(SHEETS.length);
+  document.getElementById('cnt-flashcards').textContent = String(FCARDS.length);
+  document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
+
+  let activeTab = (location.hash.replace(/^#/, '') || 'decks');
+  if (!['decks', 'guides', 'worksheets', 'flashcards'].includes(activeTab)) activeTab = 'decks';
+  let activeFilter = 'all';
+  let fcLimit = 24;
+
+  function updateTally() {
+    const vals = Object.values(MARKS);
+    const g = vals.filter(v => v.state === 'good').length;
+    const f = vals.filter(v => v.state === 'fix').length;
+    document.getElementById('tally').innerHTML = `Your local marks: <b class="g">✓ ${g} approved</b> · <b class="r">✏️ ${f} need fixes</b>`;
+  }
+
+  function markButtonsHtml(key, placeholder) {
+    const m = getMark(key);
+    return {
+      cls: m.state === 'good' ? ' m-good' : m.state === 'fix' ? ' m-fix' : '',
+      btns: `<button type="button" class="btn mbtn g${m.state === 'good' ? ' on' : ''}" data-mk="${esc(key)}" data-st="good">✓ Good</button>`
+          + `<button type="button" class="btn mbtn f${m.state === 'fix' ? ' on' : ''}" data-mk="${esc(key)}" data-st="fix">✏️ Fix</button>`,
+      note: `<div class="note-row"><input type="text" data-note="${esc(key)}" value="${esc(m.note)}" placeholder="${esc(placeholder || 'Add a review note or fix request (saved locally)…')}"></div>`
+    };
+  }
+
+  function renderDecks() {
+    const fEl = document.getElementById('filters');
+    const fs = [['all', `All (${ALL_LESSONS.length})`], ['review', `Needs review (${deckReviewCount})`], ['biology', 'Biology'], ['chemistry', 'Chemistry'], ['physics', 'Physics']];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'all';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const diffById = {};
+    DECKS.forEach(d => { diffById[d.id] = d; });
+
+    const list = ALL_LESSONS.filter(l => {
+      if (activeFilter === 'review') return l.status !== 'checked';
+      if (['biology', 'chemistry', 'physics'].includes(activeFilter)) return l.subject === activeFilter;
+      return true;
+    });
+
+    const cardHtml = l => {
+      const d = diffById[l.id];
+      const key = `deck|${l.subject}/${l.code}`;
+      const mk = markButtonsHtml(key, `Note for ${l.subjectName} ${l.code} projector deck…`);
+      const pills = [];
+      if (l.status === 'checked') pills.push('<span class="pill chk">Checked</span>');
+      else pills.push('<span class="pill rev">Under review</span>');
+      if (d) {
+        if (d.beforeLabel) pills.push(`<span class="pill base">vs ${esc(d.beforeLabel)}</span>`);
+        if (d.isNew) pills.push(`<span class="pill newl">NEW · ${d.newTotal} slides</span>`);
+        else {
+          if (d.counts.changed) pills.push(`<span class="pill changed">${d.counts.changed} changed</span>`);
+          if (d.counts.added) pills.push(`<span class="pill added">+${d.counts.added} added</span>`);
+          if (d.counts.removed) pills.push(`<span class="pill removed">−${d.counts.removed} removed</span>`);
+        }
+      }
+      const col = SUBJ_COL[l.subject] || '#111';
+      return `<div class="card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+        <div class="card-row">
+          <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
+          <div class="info"><h3>${esc(l.title)}</h3><div class="pills">${pills.join('')}</div></div>
+          <div class="acts">
+            ${d ? `<a class="btn primary" href="/interactive/lessons/diff/#${esc(l.id)}">⚖️ Side-by-side slides →</a>` : ''}
+            <a class="btn" href="${esc(l.deckUrl)}" target="_blank" rel="noopener">▶ Present draft</a>
+            ${mk.btns}
+          </div>
+        </div>${mk.note}
+      </div>`;
+    };
+
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">Projector Decks <small>click Side-by-side slides to see only what changed since your last checked version</small></h2>`
+      + (list.map(cardHtml).join('') || '<p>No decks match this filter.</p>');
+  }
+
+  function renderGuides() {
+    const fEl = document.getElementById('filters');
+    const fs = [['all', `All (${ALL_LESSONS.length})`], ['review', `Needs review (${guideReviewCount})`], ['checked', `Signed off (${ALL_LESSONS.length - guideReviewCount})`], ['biology', 'Biology'], ['chemistry', 'Chemistry'], ['physics', 'Physics']];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'all';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const list = ALL_LESSONS.filter(l => {
+      if (activeFilter === 'review') return l.studentStatus !== 'checked';
+      if (activeFilter === 'checked') return l.studentStatus === 'checked';
+      if (['biology', 'chemistry', 'physics'].includes(activeFilter)) return l.subject === activeFilter;
+      return true;
+    });
+
+    const cardHtml = l => {
+      const key = `guide|${l.subject}/${l.code}`;
+      const mk = markButtonsHtml(key, `Note for ${l.subjectName} ${l.code} student study guide…`);
+      const pills = [
+        l.studentStatus === 'checked' ? '<span class="pill chk">Signed off ✓</span>' : '<span class="pill rev">Needs review</span>',
+        l.beforeGuideUrl ? `<span class="pill base">Compare vs v${esc(l.latestV)}</span>` : '<span class="pill newl">First split study guide</span>',
+        `<span class="pill">Spec ${esc(l.spec)}</span>`
+      ];
+      const col = SUBJ_COL[l.subject] || '#111';
+      return `<div class="card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+        <div class="card-row">
+          <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
+          <div class="info"><h3>${esc(l.title)}</h3><div class="pills">${pills.join('')}</div></div>
+          <div class="acts">
+            <button type="button" class="btn primary" data-sg="${esc(l.id)}">⚖️ Side-by-side compare</button>
+            <a class="btn" href="${esc(l.draftUrl)}" target="_blank" rel="noopener">Open draft ↗</a>
+            ${mk.btns}
+          </div>
+        </div>${mk.note}
+      </div>`;
+    };
+
+    const need = list.filter(l => l.studentStatus !== 'checked');
+    const done = list.filter(l => l.studentStatus === 'checked');
+    let html = '';
+    if (need.length) html += `<h2 class="sec-h">Student Study Guides — Needs Review <small>${need.length} redesigned split study guides waiting for sign-off</small></h2>` + need.map(cardHtml).join('');
+    if (done.length) html += `<h2 class="sec-h">Already Signed Off <small>updated automatically with clickable spec chips &amp; Key Words links</small></h2>` + done.map(cardHtml).join('');
+    document.getElementById('content').innerHTML = html || '<p>No study guides match this filter.</p>';
+  }
+
+  function renderWorksheets() {
+    const fEl = document.getElementById('filters');
+    const subjs = [...new Set(SHEETS.map(s => s.subject))];
+    const fs = [['all', `All (${SHEETS.length})`], ...subjs.map(s => [s, `${s[0].toUpperCase() + s.slice(1)} (${SHEETS.filter(x => x.subject === s).length})`])];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'all';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const list = SHEETS.filter(s => activeFilter === 'all' || s.subject === activeFilter);
+    const cardHtml = s => {
+      const key = `sheet|${s.id}`;
+      const mk = markButtonsHtml(key, `Note for worksheet ${s.title}…`);
+      const pills = [`<span class="pill tier">${esc((s.tier || '').toUpperCase())}</span>`];
+      if (s.isNew) pills.push('<span class="pill newl">NEW SHEET</span>');
+      else {
+        if (s.sheetChanged) pills.push('<span class="pill changed">Sheet changed</span>');
+        if (s.msChanged) pills.push('<span class="pill base">Mark scheme changed</span>');
+      }
+      if (s.spec) pills.push(`<span class="pill">${esc(s.spec)}</span>`);
+      const col = SUBJ_COL[s.subject] || '#111';
+      return `<div class="card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+        <div class="card-row nocode">
+          <div class="info"><h3>${esc(s.subjectName || s.subject)} · ${esc(s.title)}</h3><div class="pills">${pills.join('')}</div></div>
+          <div class="acts">
+            <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Side-by-side sheet &amp; MS →</a>
+            <a class="btn" href="${esc(s.url)}" target="_blank" rel="noopener">Open ↗</a>
+            ${mk.btns}
+          </div>
+        </div>${mk.note}
+      </div>`;
+    };
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">Worksheets &amp; Mark Schemes <small>${list.length} changed vs live main</small></h2>`
+      + (list.map(cardHtml).join('') || '<p>No worksheet changes found.</p>');
+  }
+
+  function renderFlashcards() {
+    const fEl = document.getElementById('filters');
+    const c = (FD && FD.counts) || { image: 0, added: 0, reworked: 0 };
+    const fs = [
+      ['image', `🖼️ Image overhauls (${c.image})`],
+      ['added', `➕ New cards (${c.added})`],
+      ['reworked', `📝 Reworked backs (${c.reworked})`],
+      ['all', `All (${FCARDS.length})`],
+      ['biology', 'Biology'],
+      ['chemistry', 'Chemistry'],
+      ['physics', 'Physics']
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'image';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const list = FCARDS.filter(x => {
+      if (activeFilter === 'all') return true;
+      if (['image', 'added', 'reworked'].includes(activeFilter)) return x.kind === activeFilter;
+      return x.subject === activeFilter;
+    });
+
+    const shown = list.slice(0, fcLimit);
+    const cardHtml = fc => {
+      const key = `card|${fc.id}`;
+      const mk = markButtonsHtml(key, `Note for flashcard ${fc.id}…`);
+      const col = SUBJ_COL[fc.subject] || '#111';
+      const badge = fc.kind === 'image' ? '<span class="pill changed">Image overhauled</span>' : fc.kind === 'added' ? '<span class="pill newl">New card</span>' : '<span class="pill base">Back reworked</span>';
+      return `<div class="fc-card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+        <div class="fc-head">
+          <div><b>${esc(fc.subjectName)} · ${esc(fc.spec || fc.sub)}</b> <small style="color:#666">(${esc(fc.id)})</small> ${badge}</div>
+          <div class="acts">${mk.btns}</div>
+        </div>
+        <div class="fc-pair">
+          <div class="fc-side before">
+            <span class="lbl">BEFORE (LIVE MAIN)</span>
+            ${fc.kind === 'added' ? '<p style="color:#777;font-style:italic">Did not exist on live main — newly added to reach 100% spec coverage.</p>' : `<div class="fc-front">${fc.oldFront}</div><div>${fc.oldBack}</div>`}
+          </div>
+          <div class="fc-side after">
+            <span class="lbl">AFTER (STAGING)</span>
+            <div class="fc-front">${fc.newFront}</div>
+            <div>${fc.newBack}</div>
+          </div>
+        </div>
+        <div class="fc-note"><input type="text" data-note="${esc(key)}" value="${esc(getMark(key).note)}" placeholder="Add a note for ${esc(fc.id)}…"></div>
+      </div>`;
+    };
+
+    let html = `<h2 class="sec-h">Flashcards Before vs After <small>showing ${shown.length} of ${list.length} · <a href="/Flashcards/" target="_blank" rel="noopener">Open full Flashcards app ↗</a></small></h2>`
+      + (shown.map(cardHtml).join('') || '<p>No flashcards match this filter.</p>');
+    if (list.length > shown.length) {
+      html += `<div style="text-align:center;margin-top:16px"><button type="button" class="rbtn gold" id="btnMoreFc">Show 24 more (${list.length - shown.length} remaining)</button></div>`;
+    }
+    document.getElementById('content').innerHTML = html;
+    const more = document.getElementById('btnMoreFc');
+    if (more) more.onclick = () => { fcLimit += 24; renderFlashcards(); };
+  }
+
+  function render() {
+    document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === activeTab));
+    if (activeTab === 'decks') renderDecks();
+    else if (activeTab === 'guides') renderGuides();
+    else if (activeTab === 'worksheets') renderWorksheets();
+    else renderFlashcards();
+    updateTally();
+  }
+
+  // Tab switching
+  document.getElementById('tabs').addEventListener('click', e => {
+    const b = e.target.closest('.tab'); if (!b) return;
+    activeTab = b.dataset.tab;
+    activeFilter = activeTab === 'flashcards' ? 'image' : 'all';
+    fcLimit = 24;
+    history.replaceState(null, '', '#' + activeTab);
+    render();
+  });
+
+  // Filter switching
+  document.getElementById('filters').addEventListener('click', e => {
+    const b = e.target.closest('.fbtn'); if (!b) return;
+    activeFilter = b.dataset.f;
+    fcLimit = 24;
+    render();
+  });
+
+  // Mark Good / Needs Fix + Notes + Open Study Guide side-by-side modal
+  document.getElementById('content').addEventListener('click', e => {
+    const sgBtn = e.target.closest('[data-sg]');
+    if (sgBtn) { openStudyGuideModal(sgBtn.dataset.sg); return; }
+    const mb = e.target.closest('[data-mk]');
+    if (!mb) return;
+    const key = mb.dataset.mk, st = mb.dataset.st;
+    const cur = getMark(key);
+    const next = cur.state === st ? '' : st;
+    setMark(key, next, undefined);
+    const card = mb.closest('[data-card]');
+    if (card) {
+      card.classList.toggle('m-good', next === 'good');
+      card.classList.toggle('m-fix', next === 'fix');
+      card.querySelectorAll('[data-mk]').forEach(b => b.classList.toggle('on', b.dataset.st === next));
+    }
+  });
+  document.getElementById('content').addEventListener('input', e => {
+    const inp = e.target.closest('[data-note]'); if (!inp) return;
+    setMark(inp.dataset.note, undefined, inp.value);
+  });
+
+  // Built-in Student Study Guide Side-by-Side Comparer Modal
+  let sgCur = null;
+  function syncSgMarkUI() {
+    if (!sgCur) return;
+    const m = getMark(`guide|${sgCur.subject}/${sgCur.code}`);
+    document.getElementById('sgGood').classList.toggle('on', m.state === 'good');
+    document.getElementById('sgFix').classList.toggle('on', m.state === 'fix');
+    document.getElementById('sgNote').value = m.note || '';
+  }
+  function openStudyGuideModal(id) {
+    const l = ALL_LESSONS.find(x => x.id === id);
+    if (!l) return;
+    sgCur = l;
+    document.body.classList.add('sg-viewing');
+    document.getElementById('sgTitle').innerHTML = `<span style="background:${SUBJ_COL[l.subject]||'#444'};padding:3px 8px;border-radius:4px;font-size:13px;text-transform:uppercase">${esc(l.subjectName)} ${esc(l.code)}</span><span>${esc(l.title)}</span>`;
+    document.getElementById('sgOpenTab').href = l.draftUrl;
+    document.getElementById('sgBeforeLbl').textContent = l.beforeGuideUrl ? `Checked v${l.latestV}` : 'No previous frozen version';
+    document.getElementById('sgAfterLbl').textContent = `draft/index.html (Spec ${l.spec})`;
+    const bw = document.getElementById('sgBeforeWrap');
+    bw.innerHTML = l.beforeGuideUrl
+      ? `<iframe src="${esc(l.beforeGuideUrl)}" title="Before study guide"></iframe>`
+      : '<div class="sg-empty"><b>Brand-new split study guide</b><p>This lesson has not been frozen yet — inspect the staging draft on the right, or click <b>Full After</b> for full width.</p></div>';
+    document.getElementById('sgAfterWrap').innerHTML = `<iframe src="${esc(l.draftUrl)}" title="After study guide"></iframe>`;
+    syncSgMarkUI();
+  }
+  function closeStudyGuideModal() {
+    sgCur = null;
+    document.body.classList.remove('sg-viewing');
+    document.getElementById('sgBeforeWrap').innerHTML = '';
+    document.getElementById('sgAfterWrap').innerHTML = '';
+    render();
+  }
+  document.getElementById('sgClose').onclick = closeStudyGuideModal;
+  document.getElementById('sgModeSplit').onclick = () => {
+    document.getElementById('sgSplit').classList.remove('single');
+    document.getElementById('sgModeSplit').classList.add('on');
+    document.getElementById('sgModeFull').classList.remove('on');
+  };
+  document.getElementById('sgModeFull').onclick = () => {
+    document.getElementById('sgSplit').classList.add('single');
+    document.getElementById('sgModeFull').classList.add('on');
+    document.getElementById('sgModeSplit').classList.remove('on');
+  };
+  document.getElementById('sgMobile').onclick = function() {
+    const on = this.classList.toggle('on');
+    document.getElementById('sgBeforeWrap').classList.toggle('mobile', on);
+    document.getElementById('sgAfterWrap').classList.toggle('mobile', on);
+  };
+  document.getElementById('sgGood').onclick = () => {
+    if (!sgCur) return;
+    const key = `guide|${sgCur.subject}/${sgCur.code}`;
+    setMark(key, getMark(key).state === 'good' ? '' : 'good', undefined);
+    syncSgMarkUI();
+  };
+  document.getElementById('sgFix').onclick = () => {
+    if (!sgCur) return;
+    const key = `guide|${sgCur.subject}/${sgCur.code}`;
+    setMark(key, getMark(key).state === 'fix' ? '' : 'fix', undefined);
+    syncSgMarkUI();
+  };
+  document.getElementById('sgNote').oninput = function() {
+    if (!sgCur) return;
+    setMark(`guide|${sgCur.subject}/${sgCur.code}`, undefined, this.value);
+  };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && sgCur) closeStudyGuideModal(); });
+
+  // Copy review report for chat
+  document.getElementById('btnCopy').onclick = () => {
+    const groups = { deck: [], guide: [], sheet: [], card: [] };
+    Object.entries(MARKS).forEach(([k, v]) => {
+      if (!v.state && !v.note) return;
+      const [kind, id] = k.split('|');
+      if (groups[kind]) groups[kind].push({ id, state: v.state || 'note', note: (v.note || '').trim() });
+    });
+    const labels = { deck: 'Projector Decks', guide: 'Student Study Guides', sheet: 'Worksheets', card: 'Flashcards' };
+    const lines = ['Staging Review Report:'];
+    let any = false;
+    Object.keys(labels).forEach(k => {
+      if (!groups[k].length) return;
+      any = true;
+      lines.push('', `## ${labels[k]}`);
+      const ok = groups[k].filter(x => x.state === 'good');
+      const fx = groups[k].filter(x => x.state !== 'good');
+      if (ok.length) lines.push('- Approved: ' + ok.map(x => x.note ? `${x.id} (${x.note})` : x.id).join(', '));
+      fx.forEach(x => lines.push(`- Needs fix: ${x.id}${x.note ? ' — ' + x.note : ''}`));
+    });
+    if (!any) { toast('Mark at least one item ✓ Good or ✏️ Fix first!'); return; }
+    const out = lines.join('\n');
+    navigator.clipboard.writeText(out).then(() => toast('Copied review report to clipboard!')).catch(() => prompt('Copy your review report:', out));
+  };
+
+  document.getElementById('btnClear').onclick = () => {
+    if (!confirm('Clear all your local review marks in this browser?')) return;
+    MARKS = {};
+    saveMarks();
+    render();
+    toast('Local review marks cleared.');
+  };
+
+  window.addEventListener('hashchange', () => {
+    const h = location.hash.replace(/^#/, '');
+    if (['decks', 'guides', 'worksheets', 'flashcards'].includes(h) && h !== activeTab) {
+      activeTab = h; activeFilter = h === 'flashcards' ? 'image' : 'all'; render();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
