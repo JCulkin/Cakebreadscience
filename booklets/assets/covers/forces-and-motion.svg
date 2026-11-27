@@ -1,157 +1,36 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Velocity-time graph, resultant force vectors and Hooke's law spring illustration">
-  <defs>
-    <linearGradient id="bg-fm" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#472900"/>
-      <stop offset="52%" stop-color="#7a4a00"/>
-      <stop offset="100%" stop-color="#a36200"/>
-    </linearGradient>
-    <linearGradient id="stage-fm" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#2c1700" stop-opacity="0.52"/>
-      <stop offset="100%" stop-color="#1e1000" stop-opacity="0.28"/>
-    </linearGradient>
-    <linearGradient id="area-vt" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffd27a" stop-opacity="0.48"/>
-      <stop offset="100%" stop-color="#ffd27a" stop-opacity="0.1"/>
-    </linearGradient>
-    <radialGradient id="glow-fm" cx="72%" cy="48%" r="44%">
-      <stop offset="0%" stop-color="#ffe19e" stop-opacity="0.2"/>
-      <stop offset="100%" stop-color="#ffe19e" stop-opacity="0"/>
-    </radialGradient>
-    <pattern id="grid-fm" width="24" height="24" patternUnits="userSpaceOnUse">
-      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#fff8e8" stroke-opacity="0.075" stroke-width="1"/>
-    </pattern>
-    <pattern id="hatch-fm" width="6" height="6" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-      <line x1="0" y1="0" x2="0" y2="6" stroke="#ffd27a" stroke-opacity="0.55" stroke-width="1.6"/>
-    </pattern>
-  </defs>
-
-  <!-- Editorial amber-ochre ground + technical graph grid -->
-  <rect width="800" height="300" fill="url(#bg-fm)"/>
-  <rect width="800" height="300" fill="url(#grid-fm)"/>
-  <rect width="800" height="300" fill="url(#glow-fm)"/>
-
-  <!-- Subtle sweeping motion parabola & tick arcs across left text zone -->
-  <g fill="none" stroke="#ffe3a3" stroke-opacity="0.13" stroke-width="1.6">
-    <path d="M -10 295 Q 180 85 420 265"/>
-    <path d="M 20 300 Q 200 130 435 285" stroke-dasharray="6 7"/>
-  </g>
-
-  <!-- Angled editorial frame on right -->
-  <polygon points="445,0 800,0 800,300 395,300" fill="url(#stage-fm)"/>
-  <line x1="445" y1="0" x2="395" y2="300" stroke="#ffd27a" stroke-opacity="0.34" stroke-width="1.5"/>
-
-  <!-- ============================================================
-       MOTIF 1 (Upper-centre-right): Velocity-Time Graph + Shaded Area
-       Safe region: x 448..642, y 46..158
-       ============================================================ -->
-  <g transform="translate(454,50)">
-    <!-- Graph card plate -->
-    <rect x="0" y="0" width="184" height="108" rx="6" fill="#2a1600" fill-opacity="0.56" stroke="#ffd27a" stroke-opacity="0.4" stroke-width="1.4"/>
-
-    <!-- Inner gridlines -->
-    <g stroke="#fff8e8" stroke-opacity="0.14" stroke-width="1">
-      <line x1="26" y1="22" x2="170" y2="22"/>
-      <line x1="26" y1="44" x2="170" y2="44"/>
-      <line x1="26" y1="66" x2="170" y2="66"/>
-      <line x1="62" y1="16" x2="62" y2="88"/>
-      <line x1="98" y1="16" x2="98" y2="88"/>
-      <line x1="134" y1="16" x2="134" y2="88"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Simple line art of velocity-time graph, force arrow and coiled spring">
+  <g fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" opacity="0.34">
+    <!-- Left motif: Velocity-time graph + horizontal resultant force arrow -->
+    <g transform="translate(468,66)">
+      <!-- Axes -->
+      <path d="M 10 8 L 10 108 L 160 108" stroke-width="4.2"/>
+      <!-- Velocity-time polyline -->
+      <path d="M 10 108 L 54 34 L 114 34 L 148 108" stroke-width="4.8"/>
+      <!-- Minimal diagonal hatch lines under the graph -->
+      <g stroke-width="2.2" opacity="0.55">
+        <line x1="40" y1="108" x2="68" y2="34"/>
+        <line x1="64" y1="108" x2="92" y2="34"/>
+        <line x1="88" y1="108" x2="116" y2="34"/>
+        <line x1="112" y1="108" x2="132" y2="70"/>
+      </g>
+      <!-- Resultant force block + vector arrow below -->
+      <rect x="26" y="132" width="48" height="36" rx="5" stroke-width="4.2"/>
+      <line x1="74" y1="150" x2="146" y2="150" stroke-width="4.8"/>
+      <path d="M 132 138 L 150 150 L 132 162" stroke-width="4.8"/>
     </g>
 
-    <!-- Shaded area under v-t curve (distance travelled) -->
-    <polygon points="26,88 74,26 130,26 164,88" fill="url(#area-vt)"/>
-
-    <!-- Gradient construction triangle on acceleration ramp -->
-    <polyline points="42,67 66,67 66,36" fill="none" stroke="#ffd27a" stroke-width="1.4" stroke-dasharray="3 2.5"/>
-
-    <!-- Bold velocity-time polyline -->
-    <polyline points="26,88 74,26 130,26 164,88" fill="none" stroke="#fff9ee" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-    <!-- Key graph vertices -->
-    <circle cx="74" cy="26" r="3.6" fill="#ffd27a" stroke="#2b1700" stroke-width="1.4"/>
-    <circle cx="130" cy="26" r="3.6" fill="#ffd27a" stroke="#2b1700" stroke-width="1.4"/>
-
-    <!-- Axes -->
-    <g stroke="#fff9ee" stroke-width="2" stroke-linecap="round">
-      <line x1="26" y1="90" x2="26" y2="12"/>
-      <line x1="24" y1="88" x2="172" y2="88"/>
-    </g>
-    <!-- Axis labels -->
-    <text x="14" y="21" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="12" fill="#ffd27a">v</text>
-    <text x="169" y="102" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="12" fill="#ffd27a">t</text>
-    <text x="102" y="64" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="10.5" fill="#fff9ee" opacity="0.9">area = s</text>
-  </g>
-
-  <!-- ============================================================
-       MOTIF 2 (Lower-centre-right): Resultant Force Vectors (F = ma)
-       Safe region: x 448..642, y 174..254
-       ============================================================ -->
-  <g transform="translate(454,174)">
-    <!-- Track baseline -->
-    <line x1="4" y1="68" x2="184" y2="68" stroke="#ffd27a" stroke-opacity="0.55" stroke-width="2"/>
-    <!-- Motion speed lines behind block -->
-    <g stroke="#fff9ee" stroke-opacity="0.45" stroke-width="1.8" stroke-linecap="round">
-      <line x1="8" y1="24" x2="26" y2="24"/>
-      <line x1="16" y1="36" x2="30" y2="36"/>
-      <line x1="10" y1="48" x2="24" y2="48"/>
-    </g>
-
-    <!-- Friction/drag arrow pointing left -->
-    <g>
-      <line x1="56" y1="41" x2="28" y2="41" stroke="#f7c873" stroke-width="3.2" stroke-linecap="round"/>
-      <polygon points="18,41 31,34 31,48" fill="#f7c873"/>
-      <text x="34" y="27" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="11" fill="#ffe0a6">f</text>
-    </g>
-
-    <!-- Dynamics trolley / mass block -->
-    <rect x="56" y="18" width="54" height="40" rx="5" fill="#fff8eb" stroke="#2b1700" stroke-width="2.4"/>
-    <circle cx="70" cy="61" r="6.5" fill="#ffd27a" stroke="#2b1700" stroke-width="2"/>
-    <circle cx="96" cy="61" r="6.5" fill="#ffd27a" stroke="#2b1700" stroke-width="2"/>
-    <text x="83" y="44" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="18" fill="#472900">m</text>
-
-    <!-- Larger driving / resultant force arrow pointing right -->
-    <g>
-      <line x1="112" y1="38" x2="164" y2="38" stroke="#ffd27a" stroke-width="5.2" stroke-linecap="round"/>
-      <polygon points="181,38 159,26 159,50" fill="#ffd27a" stroke="#2b1700" stroke-width="1.2" stroke-linejoin="round"/>
-      <text x="147" y="22" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="13" fill="#fff9ee">F = ma</text>
+    <!-- Right motif: Hooke's law coiled spring + hanging mass -->
+    <g transform="translate(706,56)">
+      <!-- Fixed ceiling support + ticks -->
+      <line x1="-36" y1="6" x2="36" y2="6" stroke-width="4.8"/>
+      <path d="M -28 6 L -20 -4 M -12 6 L -4 -4 M 4 6 L 12 -4 M 20 6 L 28 -4" stroke-width="2.6"/>
+      <!-- Spring coils -->
+      <path d="M 0 6 L 0 22 L -18 32 L 18 46 L -18 60 L 18 74 L -18 88 L 18 102 L 0 112 L 0 128" stroke-width="4.4"/>
+      <!-- Hanging mass -->
+      <rect x="-22" y="128" width="44" height="36" rx="5" stroke-width="4.4"/>
+      <!-- Downward weight arrow -->
+      <line x1="0" y1="164" x2="0" y2="194" stroke-width="4.2"/>
+      <path d="M -10 183 L 0 196 L 10 183" stroke-width="4.2"/>
     </g>
   </g>
-
-  <!-- ============================================================
-       MOTIF 3 (Right hero vertical): Hooke's Law Spring & Weight Vectors
-       Safe region: x 668..768, y 46..254
-       ============================================================ -->
-  <g transform="translate(712,48)">
-    <!-- Fixed hatched support ceiling -->
-    <rect x="-32" y="0" width="64" height="9" fill="url(#hatch-fm)" stroke="#ffd27a" stroke-width="1.6"/>
-    <line x1="-34" y1="9" x2="34" y2="9" stroke="#fff9ee" stroke-width="2.4"/>
-
-    <!-- Vertical helical spring (clean geometric coils) -->
-    <path d="M 0 9 L 0 21 L -15 28 L 15 39 L -15 50 L 15 61 L -15 72 L 15 83 L -15 94 L 15 105 L 0 112 L 0 124"
-          fill="none" stroke="#fff9ee" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
-
-    <!-- Extension ruler ticks on right side of spring -->
-    <g stroke="#ffd27a" stroke-opacity="0.72" stroke-width="1.5">
-      <line x1="34" y1="22" x2="34" y2="122"/>
-      <line x1="29" y1="22" x2="39" y2="22"/>
-      <line x1="31" y1="47" x2="37" y2="47"/>
-      <line x1="31" y1="72" x2="37" y2="72"/>
-      <line x1="31" y1="97" x2="37" y2="97"/>
-      <line x1="29" y1="122" x2="39" y2="122"/>
-    </g>
-    <text x="45" y="76" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="11.5" fill="#ffd27a">x</text>
-
-    <!-- Hanging slotted mass -->
-    <rect x="-20" y="124" width="40" height="36" rx="4" fill="#ffd27a" stroke="#2b1700" stroke-width="2.4"/>
-    <line x1="-20" y1="136" x2="20" y2="136" stroke="#7a4a00" stroke-width="1.6"/>
-    <line x1="-20" y1="148" x2="20" y2="148" stroke="#7a4a00" stroke-width="1.6"/>
-
-    <!-- Downward weight vector arrow W -->
-    <line x1="0" y1="162" x2="0" y2="192" stroke="#fff9ee" stroke-width="4" stroke-linecap="round"/>
-    <polygon points="0,204 -9,187 9,187" fill="#fff9ee" stroke="#2b1700" stroke-width="1"/>
-    <text x="24" y="191" text-anchor="start" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="13" fill="#fff9ee">W</text>
-  </g>
-
-  <!-- Crisp right-edge publisher stripe accent -->
-  <rect x="789" y="0" width="11" height="300" fill="#ffd27a" fill-opacity="0.9"/>
-  <rect x="785" y="0" width="4" height="300" fill="#2b1700" fill-opacity="0.75"/>
 </svg>

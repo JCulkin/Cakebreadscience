@@ -232,24 +232,20 @@
     }
     .cover-title { padding: 4mm 0 0; }
     .ct-hero {
-      position: relative; overflow: hidden; border-radius: 2.5mm;
-      min-height: 68mm; padding: 10mm 84mm 10mm 9mm;
+      position: relative; overflow: hidden; border-radius: 2mm;
+      min-height: 66mm; padding: 10mm 84mm 10mm 9mm;
       display: flex; flex-direction: column; justify-content: center;
-      background: #1a43b2; color: #fff; margin-bottom: 7mm;
+      background: #f3f3f3; color: #111; border: 1.5pt solid #111; margin-bottom: 7mm;
       -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
     .ct-hero .ct-art {
       position: absolute; inset: 0; width: 100%; height: 100%;
       object-fit: cover; object-position: right center; z-index: 0;
     }
-    .ct-hero::after {
-      content: ""; position: absolute; inset: 0; z-index: 1;
-      background: linear-gradient(90deg, rgba(7,19,54,.28) 0%, rgba(7,19,54,.1) 48%, rgba(7,19,54,0) 64%);
-    }
     .ct-hero > :not(.ct-art) { position: relative; z-index: 2; }
-    .ct-board { font-size: 9pt; letter-spacing: .1em; text-transform: uppercase; color: #dbeafe; font-weight: 700; }
-    .ct-title { font-size: 40pt; font-weight: 800; line-height: 1.02; margin: 3.5mm 0 1.5mm; color: #fff; }
-    .ct-sub { font-size: 19pt; font-weight: 400; margin: 0; color: #eff6ff; }
+    .ct-board { font-size: 9pt; letter-spacing: .1em; text-transform: uppercase; color: #444; font-weight: 700; }
+    .ct-title { font-size: 40pt; font-weight: 800; line-height: 1.02; margin: 3.5mm 0 1.5mm; color: #111; }
+    .ct-sub { font-size: 19pt; font-weight: 400; margin: 0; color: #222; }
     .ct-desc { font-size: 11.5pt; max-width: 158mm; color: #333; margin: 0 2mm; }
     .ct-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.5mm; margin: 9mm 2mm 7mm; }
     .ct-strip div { min-width: 0; border-radius: 2mm; padding: 3mm 3.5mm; min-height: 22mm; color: #fff; font-size: 9pt; font-weight: 700; line-height: 1.25; }
@@ -532,7 +528,7 @@ function buildCovers(mode) {
 
   document.getElementById("coverTitle").innerHTML = `
     <div class="ct-hero">
-      <img class="ct-art" src="../../booklets/assets/covers/physics-6-markers.svg" alt="">
+      <img class="ct-art" src="../../booklets/assets/covers/physics-6-markers-bw.svg" alt="">
       <div class="ct-board">Edexcel International GCSE Science (Double Award)</div>
       <div class="ct-title">Physics</div>
       <div class="ct-sub">Long Answer Practice</div>
