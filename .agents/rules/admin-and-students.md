@@ -54,3 +54,4 @@ description: Teacher admin console (admin/), Review portal, study guides, set wo
 ## Open items the user knows about
 - Flashcards needs Firebase to draw; worksheet "Under review" chips don't follow portal marks automatically; an admin "over-confident" list;
   trackers linking KS3 sheets for Years 8–9 and KS4 for 10–11; optional Firestore rule so students can't set their own `course`.
+- **For main — rethink "Covered in class" UI clutter (user, 27 Nov):** wherever `school/taught/Y{year}` displays covered sub-topics (especially the flat chip list in `today/index.html`'s `<details class="covered">` inside "The spec"; also check `js/tracker.js`, `Flashcards/index.html`, and `admin/index.html` Teaching tab), it risks becoming cluttered as the taught list grows long over the year. Main chat to redesign/group or replace it (keep `today/index.html` without extra `🃏` chips on that list).
