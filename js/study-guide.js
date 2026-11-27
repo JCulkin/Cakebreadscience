@@ -193,9 +193,17 @@
     return { n: keys.length, sec, started };
   }
   const fmtShort = d => { if (!d) return ''; try { return new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return d; } };
-  /* To do: "Upcoming tests" (user, 23 Nov + decluttered 27 Nov with compact symbol revision buttons).
+  function todoRowsHtml(mine) {
+    return mine.map(g => { const d = daysTo(g.date), ch = chosen(g), k = tokens(ch), pr = progress(g), hasCards = cardCount(ch.flatMap(x => x.pts)) > 0;
+      const when = g.date ? `${fmtShort(g.date)}${d > 1 ? ` · ${d}d` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}` : '';
+      const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
+        <span class="small muted"><b>${pr.sec}/${pr.n}</b> secured${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
+      return `<div class="sg-todo-row"><div class="sg-todo-info"><div class="sg-todo-top"><b style="font-size:16px">${esc(g.title || 'Test')}</b>${when ? `<span class="sg-todo-date${d !== null && d <= 3 ? ' soon' : ''}">${esc(when)}</span>` : ''}</div>${bar}</div>
+        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Quiz</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Cakebread Questing">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
+  }
+  /* To do: "Upcoming tests" (user, 23 Nov + decluttered 27 Nov; supports inline mode inside unified From your teacher box).
      pre = the guides already loaded (To do keeps them for 30 s so progress can redraw without another read) */
-  async function todo(el, pre) {
+  async function todo(el, pre, opts) {
     if (!el || (!pre && (!window.firebase || !firebase.database))) return null;
     style();
     let all = pre || null;
@@ -203,14 +211,9 @@
     const y = window.CBSYear && CBSYear.year, sa = !!(window.CBSCourse && CBSCourse.sa);
     const mine = forMe(all, y, sa);
     if (!mine.length) { el.innerHTML = ''; return all; }
-    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards</span></div>
-      ${mine.map(g => { const d = daysTo(g.date), ch = chosen(g), k = tokens(ch), pr = progress(g), hasCards = cardCount(ch.flatMap(x => x.pts)) > 0;
-        const when = g.date ? `${fmtShort(g.date)}${d > 1 ? ` · ${d}d` : d === 1 ? ' · tomorrow' : d === 0 ? ' · today' : ''}` : '';
-        const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
-          <span class="small muted"><b>${pr.sec}/${pr.n}</b> secured${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
-        return `<div class="sg-todo-row"><div class="sg-todo-info"><div class="sg-todo-top"><b style="font-size:16px">${esc(g.title || 'Test')}</b>${when ? `<span class="sg-todo-date${d !== null && d <= 3 ? ' soon' : ''}">${esc(when)}</span>` : ''}</div>${bar}</div>
-          <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Quiz</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Cakebread Questing">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('')}</div>`;
+    if (opts && opts.inline) { el.innerHTML = todoRowsHtml(mine); return all; }
+    el.innerHTML = `<div class="card"><div class="sg-todo-head"><h2>📅 Upcoming tests</h2><span class="small muted">📄 Guide · 📝 Quiz · ⚔️ Quest · 🃏 Cards</span></div>${todoRowsHtml(mine)}</div>`;
     return all;
   }
-  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, progress, reviseUrl, flashcardsUrl, fmtDate, daysTo, ADVICE };
+  window.CBSGuide = { N, subs, subsFor, pointsFor, chosen, tokens, keyWords, render, style, forMe, loadAll, todo, todoRowsHtml, progress, reviseUrl, flashcardsUrl, fmtDate, daysTo, ADVICE };
 })();

@@ -38,7 +38,7 @@
 
   /* Free taster patterns */
   var OPEN_EXACT = new Set([
-    '/', '/404.html', '/test.html', '/recipes.html',
+    '/', '/404.html', '/test.html', '/recipes.html', '/how-to-use/',
     '/interactive/lessons/',
     '/worksheets/', '/worksheets/science.html', '/worksheets/maths.html',
     '/worksheets/cross-curricular.html', '/worksheets/archive.html',

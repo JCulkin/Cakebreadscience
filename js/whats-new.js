@@ -3,15 +3,15 @@
    data-place: "prepend" = first thing inside the target; default = just before the target (for pages that redraw <main>).
    For the next round of news, change KEY (e.g. cbs.whatsnew.v6) so it shows again. */
 (function () {
-  const KEY = 'cbs.whatsnew.v51';
+  const KEY = 'cbs.whatsnew.v60';
   try { if (localStorage.getItem(KEY)) return; } catch (e) { return; }
   const me = document.currentScript;
   const ITEMS = [
-    ['📄', 'Worksheets', 'new sheets for your year: KS4 and KS3 lists', '/worksheets/science.html'],
-    ['📖', 'Study guides', 'what\'s in your test, on To do, with Revise buttons', '/today/'],
-    ['📊', 'Diagram questions', 'graphs, circuits, cells and more in Practice and Questing', '/interactive/spec-quiz/practice.html'],
-    ['🗡️', 'Questing gear', 'items with stats and abilities, science sets that glow', '/interactive/spec-quiz/'],
-    ['📋', 'Spec trackers', 'points turn green when you prove them', '/specifications/science.html']
+    ['🏠', 'Student Home', 'signed-in students now land straight on their homework, upcoming tests & 1-click Revise button', '/today/'],
+    ['🎯', '2-day spaced homework', '1 short mission on 2 different days with a live progress bar', '/today/'],
+    ['🎓', 'New Study Guides', 'step-by-step notes, quick checks & self-marked exam questions', '/interactive/lessons/'],
+    ['🃏', 'Upgraded Flashcards', '100% of the IGCSE spec, Examiner Key Words deck & mixed due review', '/Flashcards/'],
+    ['❓', 'How to use this site', 'quick student guide & interactive page tours', '/how-to-use/']
   ];
   const css = `.cbs-new{position:relative;max-width:1100px;margin:14px auto;background:#fff;border:2px solid #111;box-shadow:0 4px 0 #111;padding:12px 44px 12px 14px;font-family:'Barlow',Arial,sans-serif;color:#111;line-height:1.35}
 .cbs-new-wrap{padding:0 18px}.cbs-new-wrap .cbs-new{max-width:1064px}.cbs-new-wrap.in{padding:0}.cbs-new-wrap.in .cbs-new{max-width:none;margin-top:0}

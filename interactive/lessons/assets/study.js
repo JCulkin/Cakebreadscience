@@ -547,6 +547,7 @@ initPractiseLinks();
 initKeyWords();
 initSiteResources();
 L.initComps(document);
+if (!window.CBSTour) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; (document.head || document.documentElement).appendChild(ts); }
 
 // Respect initial URL hash (e.g. #dot, #tests, #check)
 const h = location.hash.replace(/^#/, '');

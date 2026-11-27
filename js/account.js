@@ -11,6 +11,7 @@
    Shows: Sign in · or · (admins: ⚙️ Admin, 👥 Team quiz) To do → · first name · Sign out. Never the email address. */
 (function () {
   if (!window.__cbsAuthGate) { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
+  if (!window.CBSTour && !/^\/admin(\/|$)/.test(location.pathname)) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; (document.head || document.documentElement).appendChild(ts); }
   let box = document.getElementById('cbs-account');
   const me = document.currentScript;
   if (!box && me && me.hasAttribute('data-bar') && document.body) {
@@ -68,6 +69,9 @@
 @media(max-width:520px){.cbs-sitebar{padding:7px 12px}.cbs-sitebar .h{font-size:19px}.cbs-sitebar .h img{width:26px;height:26px}.cbs-sitebar .sec{display:none}}
 @media print{.cbs-sitebar,#cbs-account{display:none!important}}
 #cbs-account .day{background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}
+#cbs-account .hlp{background:none;color:#d6d2c6;border:1px solid #555;padding:3px 9px;font:700 13px Barlow,Arial,sans-serif;text-decoration:none;border-radius:6px}
+#cbs-account .hlp:hover{color:#fff;border-color:#facc15}
+#cbs-account.light .hlp{color:#444;border-color:#999}#cbs-account.light .hlp:hover{color:#111;border-color:#111}
 #cbs-account .day.due{background:#dc2626;color:#fff;display:inline-flex;align-items:center;gap:6px}
 #cbs-account .day .bang{background:#fff;color:#dc2626;border-radius:50%;width:18px;height:18px;display:inline-grid;place-items:center;font-size:14px;line-height:1;animation:cbsbang 1.2s ease-in-out infinite alternate}
 @keyframes cbsbang{to{transform:scale(1.18)}}@media(prefers-reduced-motion:reduce){#cbs-account .day .bang{animation:none}}`;
@@ -81,13 +85,14 @@
   } catch (e) { box.innerHTML = ''; return; }
   const first = u => ((u.displayName || u.email || 'Student').trim().split(/\s+/)[0]);
   function draw(u) {
+    const hlp = location.pathname.startsWith('/how-to-use') ? '' : '<a class="hlp" href="/how-to-use/" title="How to use Cakebread Science &amp; replay page tours">❓ Guide</a>';
     if (u) {
       const admin = (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).includes(u.email);
-      box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
+      box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}${hlp}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
       box.querySelector('.out').onclick = () => auth.signOut();
       badge();
     } else {
-      box.innerHTML = `<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
+      box.innerHTML = `${hlp}<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
       box.querySelector('.in').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .catch(e => { if (e && e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') alert('Sign-in did not work: ' + (e.message || e)); });
     }

@@ -190,8 +190,10 @@ const ADV = (() => {
       + tab('stats', 'adventurer-stats.html', '📊', 'Stats', 'sm')
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
+      + tab('guide', '/how-to-use/', '❓', 'Guide', 'sm')
       + `<span class="acct" id="advAcct"></span>`;
     document.body.prepend(n);
+    if (!window.CBSTour) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; document.head.appendChild(ts); }
     /* open set work (18 Nov, user): the To do tab turns red with a "!" (/js/openwork.js) */
     { const todo = n.querySelector('a[href="/today/"]'), go = () => CBSWork.onChange(w => {
         todo.classList.toggle('due', w.n > 0); todo.querySelectorAll('.dot').forEach(x => x.remove());
