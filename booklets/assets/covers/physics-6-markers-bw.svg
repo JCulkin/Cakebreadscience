@@ -1,11 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Greyscale line art of a transverse wave, circuit loop and orbital atom">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Physics booklet motif: transverse wave, electric circuit and planetary orbits">
   <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" opacity="0.28">
-    <!-- Left motif: Transverse sine wave above minimal circuit loop -->
-    <g transform="translate(466,76)">
-      <line x1="0" y1="34" x2="148" y2="34" stroke-width="2.4" stroke-dasharray="6 6" opacity="0.65"/>
-      <path d="M 4 34 C 20 -12, 36 -12, 52 34 C 68 80, 84 80, 100 34 C 116 -12, 132 -12, 146 34" stroke-width="4.8"/>
-
-      <g transform="translate(12,92)">
+    <!-- Left motif: Transverse wave (P3.2) above IEC circuit loop (P2.7) -->
+    <g transform="translate(460,74)">
+      <line x1="0" y1="34" x2="144" y2="34" stroke-width="2.4" stroke-dasharray="6 6" opacity="0.65"/>
+      <path d="M 4 34 C 20 -12, 36 -12, 52 34 C 68 80, 84 80, 100 34 C 116 -12, 132 -12, 142 34" stroke-width="4.8"/>
+      <g transform="translate(10,94)">
         <path d="M 16 18 L 16 4 L 116 4 L 116 62 L 82 62 M 50 62 L 16 62 L 16 36" stroke-width="3.8"/>
         <line x1="4" y1="18" x2="28" y2="18" stroke-width="3.6"/>
         <line x1="9" y1="29" x2="23" y2="29" stroke-width="5.6"/>
@@ -15,16 +14,15 @@
         <line x1="77" y1="51" x2="55" y2="73" stroke-width="3"/>
       </g>
     </g>
-
-    <!-- Right motif: Minimalist orbital atom -->
-    <g transform="translate(696,150)">
-      <ellipse cx="0" cy="0" rx="64" ry="24" stroke-width="4"/>
-      <ellipse cx="0" cy="0" rx="64" ry="24" transform="rotate(60)" stroke-width="4"/>
-      <ellipse cx="0" cy="0" rx="64" ry="24" transform="rotate(-60)" stroke-width="4"/>
-      <circle cx="0" cy="0" r="10" fill="#1a1a1a" stroke="none"/>
-      <circle cx="64" cy="0" r="5.5" fill="#1a1a1a" stroke="none"/>
-      <circle cx="-32" cy="-55" r="5.5" fill="#1a1a1a" stroke="none"/>
-      <circle cx="-32" cy="55" r="5.5" fill="#1a1a1a" stroke="none"/>
+    <!-- Right motif: Star with circular planet orbit and elliptical comet orbit (P8.5) -->
+    <g transform="translate(696,152)">
+      <circle cx="0" cy="0" r="13" fill="#1a1a1a" stroke="none"/>
+      <!-- Circular planet orbit -->
+      <circle cx="0" cy="0" r="44" stroke-width="4"/>
+      <circle cx="44" cy="0" r="7" fill="#1a1a1a" stroke="none"/>
+      <!-- Highly elliptical comet orbit (star near one focus) -->
+      <ellipse cx="18" cy="0" rx="76" ry="30" transform="rotate(-24)" stroke-width="3.6" stroke-dasharray="9 7"/>
+      <circle cx="-46" cy="30" r="5" fill="#1a1a1a" stroke="none"/>
     </g>
   </g>
 </svg>

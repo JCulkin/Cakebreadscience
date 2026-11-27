@@ -59,6 +59,7 @@
 .ps .qq > .qt .t { flex: 1; }
 .ps .mk { float: right; font-weight: bold; font-size: 9pt; color: #333; margin-left: 2mm; }
 .ps .star { color: var(--accent-color); font-weight: bold; }
+.ps .cue { display: inline-block; width: 3.4mm; height: 3.4mm; vertical-align: -0.55mm; margin-right: 0.4mm; }
 .ps .lines { margin: 0 0 0 8mm; }
 .ps .lines > i { display: block; height: 7mm; border-bottom: 0.75pt solid #8a8a8a; }
 .ps .box { border: 1px solid #777; border-radius: 1.5mm; position: relative; background: #fff; }

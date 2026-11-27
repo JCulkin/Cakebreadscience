@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Greyscale biology booklet motif: plant cell and DNA double helix">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Biology booklet motif: plant cell and leaf">
   <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" opacity="0.28">
-    <rect x="492" y="76" width="118" height="148" rx="18" stroke-width="5"/>
-    <rect x="504" y="88" width="94" height="124" rx="12" stroke-width="2.8"/>
-    <ellipse cx="556" cy="158" rx="28" ry="38" stroke-width="3.5"/>
-    <circle cx="526" cy="112" r="13" stroke-width="3.5"/>
-    <ellipse cx="578" cy="108" rx="10" ry="5.5" transform="rotate(-24 578 108)" stroke-width="2.6"/>
-    <ellipse cx="522" cy="186" rx="10" ry="5.5" transform="rotate(20 522 186)" stroke-width="2.6"/>
-    <path d="M 664 56 C 722 92, 650 132, 710 168 C 756 196, 672 222, 704 248" stroke-width="4.5"/>
-    <path d="M 710 56 C 652 92, 724 132, 664 168 C 618 196, 702 222, 670 248" stroke-width="4.5"/>
-    <line x1="674" y1="84" x2="700" y2="84" stroke-width="3"/>
-    <line x1="672" y1="112" x2="702" y2="112" stroke-width="3"/>
-    <line x1="674" y1="140" x2="700" y2="140" stroke-width="3"/>
-    <line x1="672" y1="186" x2="702" y2="186" stroke-width="3"/>
-    <line x1="674" y1="214" x2="700" y2="214" stroke-width="3"/>
+    <!-- Plant cell (Spec 2.2) -->
+    <rect x="476" y="76" width="118" height="148" rx="18" stroke-width="5"/>
+    <rect x="488" y="88" width="94" height="124" rx="12" stroke-width="2.8"/>
+    <ellipse cx="540" cy="158" rx="28" ry="38" stroke-width="3.5"/>
+    <circle cx="510" cy="112" r="13" stroke-width="3.5"/>
+    <ellipse cx="562" cy="108" rx="10" ry="5.5" transform="rotate(-24 562 108)" stroke-width="2.6"/>
+    <ellipse cx="506" cy="186" rx="10" ry="5.5" transform="rotate(20 506 186)" stroke-width="2.6"/>
+    <!-- Leaf with veins (Spec 2.18) -->
+    <g transform="translate(622,64)">
+      <path d="M 16 158 C 16 74, 72 16, 138 14 C 132 104, 82 162, 16 158 Z" stroke-width="5"/>
+      <path d="M 16 158 L 118 38" stroke-width="3.8"/>
+      <path d="M 48 120 L 90 124 M 66 98 L 62 62 M 84 78 L 116 80" stroke-width="3"/>
+      <path d="M 16 158 L 2 174" stroke-width="4.5"/>
+    </g>
   </g>
 </svg>

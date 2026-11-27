@@ -63,9 +63,10 @@ section{margin-top:34px}
 .fcard{display:flex;flex-direction:column;background:var(--paper);border:2px solid var(--ink);text-decoration:none;transition:transform .12s,box-shadow .12s}
 .fcard:hover{transform:translateY(-3px);box-shadow:0 6px 0 var(--ink)}
 .fcard .art{height:118px;background:var(--c);position:relative;overflow:hidden;color:#fff}
-.fcard .art .big{position:absolute;right:14px;bottom:-14px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:120px;line-height:1;opacity:.22;letter-spacing:-4px}
-.fcard .art .kicker{position:absolute;left:16px;top:12px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.9}
-.fcard .art h3{position:absolute;left:16px;bottom:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:34px;line-height:.95}
+.fcard .art .bg-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center;pointer-events:none;transition:transform .2s ease}
+.fcard:hover .art .bg-art{transform:scale(1.03)}
+.fcard .art .kicker{position:absolute;left:16px;top:12px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.92;z-index:2}
+.fcard .art h3{position:absolute;left:16px;bottom:12px;font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:34px;line-height:.95;z-index:2}
 .fcard .body{padding:12px 16px 14px;display:flex;flex-direction:column;gap:10px;flex:1}
 .fcard .body p{font-size:15px;color:#333}
 .tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
@@ -76,16 +77,16 @@ section{margin-top:34px}
 @media(max-width:520px){.subjects{grid-template-columns:1fr}}
 .subj{background:var(--paper);border:2px solid var(--ink);border-top:8px solid var(--k)}
 .subj h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:22px;padding:10px 14px 4px;color:var(--k)}
-.subj a{display:flex;align-items:center;gap:8px;padding:8px 14px;text-decoration:none;font-weight:600;border-top:1px solid var(--line)}
+.subj a{display:flex;align-items:center;gap:9px;padding:8px 14px;text-decoration:none;font-weight:600;border-top:1px solid var(--line)}
 .subj a:hover{background:var(--soft)}
-.subj a .ic{width:22px;text-align:center;flex:none}
+.subj a .ic{width:18px;height:18px;flex:none;display:block}
 /* resources */
 .res{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 @media(max-width:900px){.res{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){.res{grid-template-columns:1fr}}
 .rcard{display:flex;gap:12px;background:var(--paper);border:2px solid var(--ink);padding:14px 16px;text-decoration:none;align-items:flex-start}
 .rcard:hover{background:#fffdf6;box-shadow:inset 6px 0 0 var(--green2)}
-.rcard .ic{font-size:28px;line-height:1;flex:none;width:34px;text-align:center}
+.rcard .ic{width:28px;height:28px;flex:none;display:block;margin-top:2px}
 .rcard h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:22px;line-height:1.05}
 .rcard p{font-size:14px;color:var(--muted);margin-top:3px}
 .rcard.wide{grid-column:span 1}
@@ -93,8 +94,10 @@ section{margin-top:34px}
 .bottom{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:760px}
 @media(max-width:900px){.bottom{grid-template-columns:1fr}}
 .box{background:var(--paper);border:2px solid var(--ink)}
-.box h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;padding:12px 16px 6px}
-.box a.row{display:flex;gap:8px;padding:9px 16px;text-decoration:none;font-weight:600;border-top:1px solid var(--line)}
+.box h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;padding:12px 16px 6px;display:flex;align-items:center;gap:8px}
+.box h3 .hic{width:20px;height:20px;flex:none;display:block}
+.box a.row{display:flex;align-items:center;gap:9px;padding:9px 16px;text-decoration:none;font-weight:600;border-top:1px solid var(--line)}
+.box a.row .ric{width:17px;height:17px;flex:none;display:block}
 .box a.row:hover{background:var(--soft)}
 .box.eleven{display:flex;flex-direction:column;text-decoration:none;background:#111;color:var(--cream);border-color:#111}
 .box.eleven h3{color:var(--cream)}
@@ -114,7 +117,7 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 <main class="wrap">
   <div class="hw-banner" id="cbs-hw-banner" hidden><span id="cbs-hw-txt"></span><span class="acts" id="cbs-hw-acts"></span></div>
   <nav class="jump" aria-label="Sections">
-    <a href="#resources">Resources</a><a href="#interactives">Interactives</a><a href="#worksheets">Worksheets</a><a href="#more">More</a>
+    <a href="#resources">Resources</a><a href="#interactives">Interactives</a><a href="#worksheets">Worksheets</a><a href="#more">More</a><a href="/how-to-use/">❓ How to use</a>
   </nav>
 
   <!-- ===== RESOURCES ===== -->
@@ -129,12 +132,12 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
           <span class="play">Play →</span>
         </span>
       </a>
-      <a class="rcard" href="interactive/spec-quiz/practice.html"><span class="ic">📝</span><span><h3>Practice Questions</h3><p>Test yourself with no game: calculations, diagrams and misconception checks on any topic. Progress saves.</p></span></a>
-      <a class="rcard" href="Flashcards/index.html"><span class="ic">🃏</span><span><h3>Flashcards</h3><p>Memorise key words, definitions, tests and equations with spaced repetition. Counts towards Cakebread Questing.</p></span></a>
-      <a class="rcard" href="interactive/lessons/"><span class="ic">🎓</span><span><h3>Lessons<span class="new">New</span></h3><p>Learn a topic from scratch with diagrams, notes and projector slides for class.</p></span></a>
-      <a class="rcard" href="booklets/"><span class="ic">📚</span><span><h3>Question Booklets<span class="new">New</span></h3><p>Practise coherent written exam answers online or printed, with mark schemes (includes Physics 6-markers).</p></span></a>
-      <a class="rcard" href="specifications/science.html"><span class="ic">📋</span><span><h3>Spec Trackers</h3><p>Every spec point in one place: track what you’ve proved, see key words, and jump to lessons, cards or worksheets.</p></span></a>
-      <a class="rcard" href="https://notebooklm.google.com/notebook/64a15481-bc3b-42f9-93af-3eb82fe9918e" target="_blank" rel="noopener"><span class="ic">🤖</span><span><h3>AI Tutor</h3><p>Ask questions about the course (opens NotebookLM).</p></span></a>
+      <a class="rcard" href="interactive/spec-quiz/practice.html"><img class="ic" src="img/icons/res-practice.svg" alt=""><span><h3>Practice Questions</h3><p>Test yourself with no game: calculations, diagrams and misconception checks on any topic. Progress saves.</p></span></a>
+      <a class="rcard" href="Flashcards/index.html"><img class="ic" src="img/icons/res-flashcards.svg" alt=""><span><h3>Flashcards</h3><p>Memorise key words, definitions, tests and equations with spaced repetition. Counts towards Cakebread Questing.</p></span></a>
+      <a class="rcard" href="interactive/lessons/"><img class="ic" src="img/icons/res-lessons.svg" alt=""><span><h3>Lessons<span class="new">New</span></h3><p>Learn a topic from scratch with diagrams, notes and projector slides for class.</p></span></a>
+      <a class="rcard" href="booklets/"><img class="ic" src="img/icons/res-booklets.svg" alt=""><span><h3>Question Booklets<span class="new">New</span></h3><p>Practise coherent written exam answers online or printed, with mark schemes (includes Physics 6-markers).</p></span></a>
+      <a class="rcard" href="specifications/science.html"><img class="ic" src="img/icons/res-tracker.svg" alt=""><span><h3>Spec Trackers</h3><p>Every spec point in one place: track what you’ve proved, see key words, and jump to lessons, cards or worksheets.</p></span></a>
+      <a class="rcard" href="https://notebooklm.google.com/notebook/64a15481-bc3b-42f9-93af-3eb82fe9918e" target="_blank" rel="noopener"><img class="ic" src="img/icons/res-ai.svg" alt=""><span><h3>AI Tutor</h3><p>Ask questions about the course (opens NotebookLM).</p></span></a>
     </div>
   </section>
 
@@ -144,37 +147,37 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 
     <div class="feature">
       <a class="fcard" href="interactive/elements-game/" style="--c:#b45309">
-        <div class="art"><span class="kicker">Chemistry · New</span><span class="big">Ca</span><h3>Elements<br>1–20</h3></div>
+        <div class="art"><img class="bg-art" src="img/icons/feat-elements.svg" alt=""><span class="kicker">Chemistry · New</span><h3>Elements<br>1–20</h3></div>
         <div class="body"><p>Symbols, atomic numbers, groups and periods, metals and non-metals, then shells, configurations and ions. Over 900 questions, plus a clickable Explore table.</p>
           <div class="tags"><span>Solo</span><span>Team</span><span>High scores</span></div></div></a>
       <a class="fcard" href="interactive/cell-game/" style="--c:#2e7d32">
-        <div class="art"><span class="kicker">Biology · New</span><span class="big">🔬</span><h3>What The<br>Cell</h3></div>
+        <div class="art"><img class="bg-art" src="img/icons/feat-cell.svg" alt=""><span class="kicker">Biology · New</span><h3>What The<br>Cell</h3></div>
         <div class="body"><p>Animal, plant, fungus or bacterium? Recognise cells from diagrams and real microscope photos, then name their parts. Nine kinds of round, Normal or Hard.</p>
           <div class="tags"><span>Solo</span><span>Team</span><span>Gallery</span></div></div></a>
       <a class="fcard" href="interactive/typing-game/" style="--c:#c2185b">
-        <div class="art"><span class="kicker">All sciences · v2</span><span class="big">Aa</span><h3>Type Fast<br>or Perish v2</h3></div>
+        <div class="art"><img class="bg-art" src="img/icons/feat-typing.svg" alt=""><span class="kicker">All sciences · v2</span><h3>Type Fast<br>or Perish v2</h3></div>
         <div class="body"><p>Type reviewed IGCSE examiner key words, spelt properly, against the clock. Watch out for the existential teapot. Hard mode rains words from the sky.</p>
           <div class="tags"><span>Spelling</span><span>2 modes</span><span>High scores</span></div></div></a>
     </div>
 
     <div class="subjects">
       <div class="subj" style="--k:var(--bio)"><h3>Biology</h3>
-        <a href="interactive/cell-game/"><span class="ic">🔬</span>What The Cell<span class="new">New</span></a>
-        <a href="interactive/organisms/game.html"><span class="ic">🦁</span>Organisms Game</a>
-        <a href="interactive/genetics-game/index.html"><span class="ic">🧬</span>Genetics Simulator</a>
-        <a href="interactive/food-webs/index.html"><span class="ic">🕸️</span>Food Webs</a>
-        <a href="interactive/ecological-pyramids/index.html"><span class="ic">🌿</span>Ecological Pyramids</a></div>
+        <a href="interactive/cell-game/"><img class="ic" src="img/icons/game-cell.svg" alt="">What The Cell<span class="new">New</span></a>
+        <a href="interactive/organisms/game.html"><img class="ic" src="img/icons/game-organisms.svg" alt="">Organisms Game</a>
+        <a href="interactive/genetics-game/index.html"><img class="ic" src="img/icons/game-genetics.svg" alt="">Genetics Simulator</a>
+        <a href="interactive/food-webs/index.html"><img class="ic" src="img/icons/game-foodweb.svg" alt="">Food Webs</a>
+        <a href="interactive/ecological-pyramids/index.html"><img class="ic" src="img/icons/game-pyramids.svg" alt="">Ecological Pyramids</a></div>
       <div class="subj" style="--k:var(--chem)"><h3>Chemistry</h3>
-        <a href="interactive/elements-game/"><span class="ic">🧪</span>Elements 1–20<span class="new">New</span></a>
-        <a href="interactive/chemical-tests/index.html"><span class="ic">⚗️</span>Chemical Tests</a>
-        <a href="interactive/halogen_lab_10.html"><span class="ic">🟡</span>Halogens Lab</a></div>
+        <a href="interactive/elements-game/"><img class="ic" src="img/icons/game-elements.svg" alt="">Elements 1–20<span class="new">New</span></a>
+        <a href="interactive/chemical-tests/index.html"><img class="ic" src="img/icons/game-tests.svg" alt="">Chemical Tests</a>
+        <a href="interactive/halogen_lab_10.html"><img class="ic" src="img/icons/game-halogens.svg" alt="">Halogens Lab</a></div>
       <div class="subj" style="--k:var(--phys)"><h3>Physics</h3>
-        <a href="interactive/physics-equations/"><span class="ic">🧮</span>Physics Equations Trainer<span class="new">New</span></a>
-        <a href="interactive/waves/"><span class="ic">〰️</span>Transverse &amp; Longitudinal Waves<span class="new">New</span></a></div>
+        <a href="interactive/physics-equations/"><img class="ic" src="img/icons/game-equations.svg" alt="">Physics Equations Trainer<span class="new">New</span></a>
+        <a href="interactive/waves/"><img class="ic" src="img/icons/game-waves.svg" alt="">Transverse &amp; Longitudinal Waves<span class="new">New</span></a></div>
       <div class="subj" style="--k:var(--maths)"><h3>Maths</h3>
-        <a href="interactive/angle-rules/index.html"><span class="ic">📐</span>Angle Rules</a>
-        <a href="interactive/triangle-solver_3.html"><span class="ic">🔺</span>Triangle Solver</a>
-        <a href="interactive/quadrilaterals/index.html"><span class="ic">🔷</span>Quadrilaterals</a></div>
+        <a href="interactive/angle-rules/index.html"><img class="ic" src="img/icons/game-angles.svg" alt="">Angle Rules</a>
+        <a href="interactive/triangle-solver_3.html"><img class="ic" src="img/icons/game-triangles.svg" alt="">Triangle Solver</a>
+        <a href="interactive/quadrilaterals/index.html"><img class="ic" src="img/icons/game-quads.svg" alt="">Quadrilaterals</a></div>
     </div>
   </section>
 
@@ -182,20 +185,20 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
   <section id="worksheets">
     <div class="shead"><h2>Worksheets</h2><p>Printable practice.</p></div>
     <div class="res">
-      <a class="rcard" href="worksheets/science.html"><span class="ic">🔬</span><span><h3>Science</h3><p>Biology, chemistry and physics worksheets.</p></span></a>
-      <a class="rcard" href="worksheets/maths.html"><span class="ic">🧮</span><span><h3>Maths</h3><p>Maths worksheets.</p></span></a>
-      <a class="rcard" href="worksheets/cross-curricular.html"><span class="ic">🔗</span><span><h3>Cross-curricular</h3><p>Maths skills in science.</p></span></a>
+      <a class="rcard" href="worksheets/science.html"><img class="ic" src="img/icons/res-worksheets.svg" alt=""><span><h3>Science</h3><p>Biology, chemistry and physics worksheets.</p></span></a>
+      <a class="rcard" href="worksheets/maths.html"><img class="ic" src="img/icons/res-maths.svg" alt=""><span><h3>Maths</h3><p>Maths worksheets.</p></span></a>
+      <a class="rcard" href="worksheets/cross-curricular.html"><img class="ic" src="img/icons/res-cross.svg" alt=""><span><h3>Cross-curricular</h3><p>Maths skills in science.</p></span></a>
     </div>
   </section>
 
   <section id="more">
     <div class="shead"><h2>More</h2></div>
     <div class="bottom">
-      <a class="box eleven" href="Elevenstudents/index.html"><h3>🎓 Elevenstudents</h3><p>Games, simulations and maths tools for students.</p><span class="cta">Go to Elevenstudents →</span></a>
-      <div class="box"><h3>🔗 Useful websites</h3>
-        <a class="row" href="https://www.savemyexams.com/igcse/" target="_blank" rel="noopener">📝 Save My Exams</a>
-        <a class="row" href="https://www.physicsandmathstutor.com/" target="_blank" rel="noopener">📐 Physics &amp; Maths Tutor</a>
-        <a class="row" href="https://mathtrainer.ai/" target="_blank" rel="noopener">🧮 Math Trainer AI</a></div>
+      <a class="box eleven" href="Elevenstudents/index.html"><h3><img class="hic" src="img/icons/hdr-eleven.svg" alt="">Elevenstudents</h3><p>Games, simulations and maths tools for students.</p><span class="cta">Go to Elevenstudents →</span></a>
+      <div class="box"><h3><img class="hic" src="img/icons/ui-link.svg" alt="">Useful websites</h3>
+        <a class="row" href="https://www.savemyexams.com/igcse/" target="_blank" rel="noopener"><img class="ric" src="img/icons/res-practice.svg" alt="">Save My Exams</a>
+        <a class="row" href="https://www.physicsandmathstutor.com/" target="_blank" rel="noopener"><img class="ric" src="img/icons/res-maths.svg" alt="">Physics &amp; Maths Tutor</a>
+        <a class="row" href="https://mathtrainer.ai/" target="_blank" rel="noopener"><img class="ric" src="img/icons/game-equations.svg" alt="">Math Trainer AI</a></div>
     </div>
   </section>
 </main>
@@ -214,17 +217,29 @@ footer{text-align:center;font-size:13px;color:#777;padding:16px}
 (function () {
   var b = document.getElementById('cbs-hw-banner'), t = document.getElementById('cbs-hw-txt'), acts = document.getElementById('cbs-hw-acts');
   if (!b || !t || !acts) return;
+  var params = new URLSearchParams(location.search);
+  var wantDir = params.get('dir') === '1' || !!location.hash;
+  if (params.get('dir') === '1') { try { sessionStorage.setItem('cbs.dir', '1'); } catch (e) {} }
+  else { try { if (sessionStorage.getItem('cbs.dir') === '1') wantDir = true; } catch (e) {} }
+  var isAdmin = function (u) { return !!(u && (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).indexOf(u.email) >= 0); };
   function render(u, w) {
     if (!u) { b.hidden = true; return; }
+    // Signed-in students land directly on Student Home (/today/) unless they explicitly opened the full directory (?dir=1 or #section)
+    if (!isAdmin(u) && !wantDir) {
+      location.replace('/today/');
+      return;
+    }
     b.hidden = false;
     if (w && w.n > 0) {
       b.classList.toggle('late', w.late > 0); b.classList.remove('calm');
       t.innerHTML = '<b>📌 ' + w.n + ' piece' + (w.n === 1 ? '' : 's') + ' of homework to do</b>' + (w.late ? ' · <span style="color:#991b1b;font-weight:700">' + w.late + ' overdue</span>' : '');
-      acts.innerHTML = '<a class="go" href="/today/?go=1">⚡ Start now →</a><a class="go alt" href="/today/">To do</a>';
+      acts.innerHTML = '<a class="go" href="/today/?go=1">⚡ Start now →</a><a class="go alt" href="/today/">🏠 Student Home</a>';
     } else {
       b.classList.remove('late'); b.classList.add('calm');
-      t.innerHTML = '<b>⚡ Not sure what to revise?</b> <span style="color:#555;font-size:14px">One click starts what your teacher covered in class.</span>';
-      acts.innerHTML = '<a class="go" href="/today/?go=1">⚡ Start revising →</a>';
+      t.innerHTML = isAdmin(u)
+        ? '<b>Full site directory</b> <span style="color:#555;font-size:14px">Signed in as teacher.</span>'
+        : '<b>Full site directory</b> <span style="color:#555;font-size:14px">Jump straight back to your personal dashboard anytime.</span>';
+      acts.innerHTML = '<a class="go" href="/today/">🏠 Student Home →</a>';
     }
   }
   var curU = null, curW = null;

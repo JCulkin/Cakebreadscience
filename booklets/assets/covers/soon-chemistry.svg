@@ -1,15 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Chemistry booklet motif: conical flask and molecule">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Chemistry booklet motif: graphite hexagons and conical flask">
   <g fill="none" stroke="#8c0013" stroke-linecap="round" stroke-linejoin="round" opacity="0.28">
-    <!-- Conical flask -->
+    <!-- Graphite plain interlocking carbon hexagons (Spec 1.50) -->
+    <g transform="translate(468,78)" stroke-width="4.5">
+      <polygon points="30,10 56,25 56,55 30,70 4,55 4,25"/>
+      <polygon points="82,10 108,25 108,55 82,70 56,55 56,25"/>
+      <polygon points="56,55 82,70 82,100 56,115 30,100 30,70"/>
+      <line x1="108" y1="55" x2="124" y2="64"/>
+      <line x1="82" y1="100" x2="108" y2="115"/>
+    </g>
+    <!-- Conical flask (Spec 2.28 / 3.10) -->
     <path d="M 650 56 L 690 56 M 658 56 L 658 106 L 614 214 C 609 226, 617 238, 630 238 L 710 238 C 723 238, 731 226, 726 214 L 682 106 L 682 56" stroke-width="5"/>
     <path d="M 627 184 Q 650 174 670 184 T 713 184" stroke-width="3.5"/>
     <circle cx="655" cy="208" r="6" stroke-width="3"/>
     <circle cx="682" cy="216" r="8" stroke-width="3"/>
     <circle cx="668" cy="148" r="4.5" stroke-width="3"/>
-    <!-- Hexagonal molecule motif -->
-    <polygon points="535,104 567,122 567,158 535,176 503,158 503,122" stroke-width="4.5"/>
-    <circle cx="535" cy="140" r="18" stroke-width="3" stroke-dasharray="5 5"/>
-    <line x1="567" y1="122" x2="594" y2="106" stroke-width="4"/>
-    <line x1="503" y1="158" x2="476" y2="174" stroke-width="4"/>
   </g>
 </svg>
