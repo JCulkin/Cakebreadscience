@@ -165,6 +165,20 @@ button{font:inherit;cursor:pointer;color:inherit}
 .reprow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px}
 .repmsg{font-size:13px;color:var(--red)}
 body.proj .replink{font-size:15px}
+/* warmup neutral picker */
+.wgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+@media(max-width:640px){.wgrid{grid-template-columns:1fr}}
+.wcard{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:var(--paper);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);padding:24px 24px 22px;cursor:pointer;transition:transform .1s,box-shadow .1s,background .12s}
+.wcard:hover{background:#fffdf4;transform:translateY(-2px);box-shadow:0 7px 0 var(--ink)}
+.wcard:active{transform:translateY(1px);box-shadow:0 3px 0 var(--ink)}
+.wcard .wk{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:clamp(40px,6vw,58px);line-height:.95;text-transform:uppercase;color:var(--ink)}
+.wcard .wy{font-weight:700;font-size:19px;color:var(--green)}
+.wcard .ws{font-size:14.5px;color:var(--muted);margin-top:4px}
+.wcard .wgo{margin-top:10px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;text-transform:uppercase;letter-spacing:.5px;background:var(--ink);color:#facc15;padding:6px 14px}
+.werr{margin-top:18px;padding:16px 18px;background:#fef2f2;border:3px solid var(--red);color:#7f1d1d}
+.werr b{display:block;font-family:'Barlow Condensed',sans-serif;font-size:24px;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px;color:var(--red)}
+.werr p{font-size:16px;line-height:1.45;margin-top:4px}
+.wfoot{margin-top:22px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
 /* projector */
 body.proj .prompt{font-size:clamp(26px,2.8vw,44px)}
 body.proj .opt{font-size:clamp(20px,2.2vw,34px);padding:16px 18px}
@@ -201,6 +215,7 @@ body.proj .qtag{font-size:16px}
     </div>
   </section>
 
+  <section id="warmup" class="hidden"></section>
   <section id="solosetup" class="hidden"></section>
   <section id="teamsetup" class="hidden"></section>
 
@@ -219,6 +234,7 @@ body.proj .qtag{font-size:16px}
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script>try { if (window.firebase && window.firebaseConfig && !firebase.apps.length) firebase.initializeApp(window.firebaseConfig); } catch (e) {}</script>
 <script src="/js/admin-config.js"></script>
 <script src="/js/account.js"></script>
 <script src="spec.js"></script>
@@ -228,6 +244,5 @@ body.proj .qtag{font-size:16px}
 <script src="diagrams.js"></script>
 <script src="diagq.js"></script>
 <script src="quiz.js"></script>
-<script>try { if (window.firebase && window.firebaseConfig && !firebase.apps.length) firebase.initializeApp(window.firebaseConfig); } catch (e) {}</script>
 </body>
 </html>

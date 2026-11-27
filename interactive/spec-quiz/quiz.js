@@ -145,12 +145,15 @@ $('colAll').onclick = () => { $('tree').querySelectorAll('.node').forEach(li => 
 /* ---------- screens ---------- */
 let SOLO = null, TEAM = null, KEYS = null;
 function show(id) {
-  ['menu', 'solosetup', 'teamsetup', 'play', 'results'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  ['menu', 'warmup', 'solosetup', 'teamsetup', 'play', 'results'].forEach(x => $(x).classList.toggle('hidden', x !== id));
   document.body.classList.toggle('proj', !!TEAM && (id === 'play' || id === 'results'));
   window.scrollTo(0, 0);
 }
 function menu() { if (TEAM && TEAM.stop) TEAM.stop(); SOLO = TEAM = KEYS = null; show('menu'); }
-$('quit').onclick = menu;
+$('quit').onclick = () => {
+  if (SOLO && SOLO.warmup) { const ex = SOLO.exclude || ''; SOLO = TEAM = KEYS = null; showWarmupPicker(ex); return; }
+  menu();
+};
 
 function scopeText() {
   const pts = [...new Set(selectedPool().map(q => q.s))];
@@ -299,12 +302,13 @@ function soloHud() {
   const pips = SOLO.qs.map((_, i) => `<i class="${i < SOLO.res.length ? (SOLO.res[i] ? 'done' : 'miss') : i === SOLO.qi ? 'now' : ''}"></i>`).join('');
   const label = SOLO.title || 'Solo';
   const yBar = SOLO.warmup
-    ? `<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px">${['Y8', 'Y9', 'Y10', 'Y11'].map(y => `<button type="button" class="chip ${SOLO.year === y ? 'on' : ''}" data-wy="${y}" style="padding:3px 9px;font-size:13px">${y.replace('Y', 'Year ')}</button>`).join('')}<button type="button" class="chip" id="wNew5" style="padding:3px 9px;font-size:13px;background:#facc15;color:#111;border-color:#111">↻ New 5</button></div>`
+    ? `<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px">${['ks3', 'ks4'].map(k => `<button type="button" class="chip ${SOLO.ks === k ? 'on' : ''}" data-wks="${k}" style="padding:3px 10px;font-size:13px">${KS_DEF[k].label} (${KS_DEF[k].short})</button>`).join('')}<button type="button" class="chip" id="wNew5" style="padding:3px 9px;font-size:13px;background:#facc15;color:#111;border-color:#111">↻ New 5</button><button type="button" class="chip" id="wBack" style="padding:3px 9px;font-size:13px">← KS3 / KS4</button></div>`
     : '';
   $('hud').innerHTML = `<div><span class="meta">Question ${SOLO.qi + 1} of ${SOLO.qs.length}${SOLO.sub ? ' · ' + esc(SOLO.sub) : ''}</span><div class="rname">${esc(label)}</div><div class="pips">${pips}</div>${yBar}</div><div class="score">${SOLO.score}<small>CORRECT</small></div>`;
   if (SOLO.warmup) {
-    $('hud').querySelectorAll('[data-wy]').forEach(b => b.onclick = () => launchWarmup(b.dataset.wy, SOLO.exclude));
-    const nw = $('wNew5'); if (nw) nw.onclick = () => launchWarmup(SOLO.year, SOLO.exclude);
+    $('hud').querySelectorAll('[data-wks]').forEach(b => b.onclick = () => launchWarmup(b.dataset.wks, SOLO.exclude));
+    const nw = $('wNew5'); if (nw) nw.onclick = () => launchWarmup(SOLO.ks, SOLO.exclude);
+    const wb = $('wBack'); if (wb) wb.onclick = () => { const ex = SOLO.exclude; SOLO = KEYS = null; showWarmupPicker(ex); };
   }
 }
 function nextSolo() {
@@ -332,10 +336,10 @@ function soloResults() {
     <h2>Results</h2><div class="bigscore">${SOLO.score} / ${n}</div>
     <p style="font-size:18px;margin-top:4px">${pct}% · ${pct === 100 ? 'Perfect!' : pct >= 80 ? 'Great work.' : pct >= 50 ? 'Good start. Revise the points below.' : 'Go back over the points below, then try again.'}</p>
     ${pts.length ? `<h3>Revise these spec points</h3><ul class="revise">${pts.map(k => { const p = POINTS[k]; return `<li style="--sc:${SUBJ_COL[p.subject]}"><b>${p.subject} ${p.id}</b>${esc(p.text)}${missed.filter(q => q.s === k).map(q => `<span class="q">✗ ${nuc(q.q)}</span>`).join('')}</li>`; }).join('')}</ul>` : ''}
-    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">${SOLO.warmup ? '↻ Another 5 Warm-Up questions' : 'Play again'}</button><button class="btn big alt" id="tomenu">Change content</button></div>
+    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">${SOLO.warmup ? '↻ Another 5 Warm-Up questions' : 'Play again'}</button><button class="btn big alt" id="tomenu">${SOLO.warmup ? 'Choose KS3 / KS4' : 'Change content'}</button></div>
   </div></div>`;
-  $('again').onclick = () => SOLO.warmup ? launchWarmup(SOLO.year, SOLO.exclude) : startSolo(SOLO.n, SOLO.lv, SOLO.calc, SOLO.diag);
-  $('tomenu').onclick = menu;
+  $('again').onclick = () => SOLO.warmup ? launchWarmup(SOLO.ks, SOLO.exclude) : startSolo(SOLO.n, SOLO.lv, SOLO.calc, SOLO.diag);
+  $('tomenu').onclick = () => SOLO.warmup ? showWarmupPicker(SOLO.exclude) : menu();
   show('results');
 }
 
@@ -461,48 +465,177 @@ SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => {
   SUB_KEYS_MAP[sk.toUpperCase()] = keysOfSub(sb);
 })));
 
-async function fetchTaughtFor(yearKey) {
+const KS_DEF = {
+  ks3: { label: 'KS3', short: 'Y8 & Y9', years: ['Y8', 'Y9'], desc: 'Years 8 & 9' },
+  ks4: { label: 'KS4', short: 'Y10 & Y11', years: ['Y10', 'Y11'], desc: 'Years 10 & 11' }
+};
+const WARMUP = { exclude: '', data: null, err: '', loading: false, lastErrHtml: '' };
+
+function waitAuthReady(ms = 2500) {
+  return new Promise(resolve => {
+    if (!window.firebase || !firebase.apps || !firebase.apps.length || !firebase.auth) return resolve();
+    if (firebase.auth().currentUser) return resolve();
+    let done = false;
+    const finish = () => { if (!done) { done = true; clearTimeout(t); try { unsub(); } catch (e) {} resolve(); } };
+    const t = setTimeout(finish, ms);
+    const unsub = firebase.auth().onAuthStateChanged(() => finish());
+  });
+}
+
+async function fetchAllTaught(force) {
+  if (!force && WARMUP.data) return { ok: true, data: WARMUP.data };
+  WARMUP.loading = true;
+  await waitAuthReady(2500);
+  let lastErr = '';
   try {
     if (window.CBSNet && CBSNet.rtGet) {
-      const v = await CBSNet.rtGet('school/taught/' + yearKey, 6000);
-      if (v && typeof v === 'object') return Object.keys(v);
+      const v = await CBSNet.rtGet('school/taught', 8000);
+      WARMUP.data = (v && typeof v === 'object') ? v : {};
+      WARMUP.err = ''; WARMUP.loading = false;
+      return { ok: true, data: WARMUP.data };
     }
     if (window.firebase && firebase.apps && firebase.apps.length && firebase.database) {
       const snap = await Promise.race([
-        firebase.database().ref('school/taught/' + yearKey).once('value'),
-        new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 6000))
+        firebase.database().ref('school/taught').once('value'),
+        new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 8000))
       ]);
       const v = snap && snap.val();
-      if (v && typeof v === 'object') return Object.keys(v);
+      WARMUP.data = (v && typeof v === 'object') ? v : {};
+      WARMUP.err = ''; WARMUP.loading = false;
+      return { ok: true, data: WARMUP.data };
     }
-  } catch (e) {}
-  return [];
+    lastErr = 'Firebase is not available.';
+  } catch (e) {
+    lastErr = (e && e.message) ? e.message : 'Could not read covered topics.';
+  }
+  WARMUP.data = null; WARMUP.err = lastErr; WARMUP.loading = false;
+  return { ok: false, err: lastErr };
 }
 
-async function launchWarmup(yearKey, excludeCode) {
-  const Y = /^Y(8|9|10|11)$/.test(yearKey || '') ? yearKey : (store.get('warmupYear') || 'Y10');
-  store.set('warmupYear', Y);
+/* Strict intersection: ONLY sub-topics covered by BOTH year groups in the chosen key stage (minus excluded lesson). */
+function warmupPool(ksKey, excludeCode, taughtData) {
+  const def = KS_DEF[ksKey];
   const ex = String(excludeCode || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  let taughtSubs = await fetchTaughtFor(Y);
-  let filtered = taughtSubs.filter(sk => !ex || !sk.toUpperCase().startsWith(ex));
-  let pts = [...new Set(filtered.flatMap(sk => SUB_KEYS_MAP[sk.toUpperCase()] || []))].filter(k => QBY[k]);
-  let subNote = `${Y.replace('Y', 'Year ')} · ${filtered.length} covered topic${filtered.length === 1 ? '' : 's'} (easy recall)`;
-  if (pts.length < 5) {
-    // Fallback if year has fewer than 5 covered topics or Firebase is offline
-    pts = withQs().filter(k => !ex || !k.toUpperCase().startsWith(ex));
-    subNote = `${Y.replace('Y', 'Year ')} · mixed easy recall across all topics`;
+  const [yA, yB] = def.years;
+  const setA = new Set(Object.keys((taughtData && taughtData[yA]) || {}).map(k => k.toUpperCase()));
+  const setB = new Set(Object.keys((taughtData && taughtData[yB]) || {}).map(k => k.toUpperCase()));
+  const sharedAll = [...setA].filter(k => setB.has(k));
+  const shared = sharedAll.filter(sk => !ex || !sk.startsWith(ex));
+  const pts = [...new Set(shared.flatMap(sk => SUB_KEYS_MAP[sk] || []))].filter(k => QBY[k]);
+  const qTotal = qCount(pts);
+  return { def, yA, yB, countA: setA.size, countB: setB.size, sharedAll, shared, pts, qTotal, ex };
+}
+
+function renderWarmupPicker() {
+  const box = $('warmup');
+  const ex = String(WARMUP.exclude || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const statusFor = ksKey => {
+    if (WARMUP.loading) return 'Checking covered topics…';
+    if (WARMUP.err) return 'Sign in or check connection to load covered topics';
+    if (!WARMUP.data) return 'Covered topics not loaded yet';
+    const p = warmupPool(ksKey, WARMUP.exclude, WARMUP.data);
+    if (!p.shared.length || !p.qTotal) return `No shared topics covered by both ${p.yA} & ${p.yB}`;
+    return `${p.shared.length} topic${p.shared.length === 1 ? '' : 's'} covered by both · ${p.qTotal} question${p.qTotal === 1 ? '' : 's'} available`;
+  };
+  box.innerHTML = `<h1>🔥 Warm-Up</h1>
+    <p class="lede">Choose a key stage first. Questions are drawn <b>only</b> from topics covered by <b>both</b> year groups${ex ? ` (excluding current lesson <b>${esc(ex)}</b>)` : ''}.</p>
+    <div class="wgrid">
+      <button type="button" class="wcard" data-wks="ks3">
+        <span class="wk">KS3</span>
+        <span class="wy">Years 8 &amp; 9</span>
+        <span class="ws">${esc(statusFor('ks3'))}</span>
+        <span class="wgo">Start KS3 Warm-Up →</span>
+      </button>
+      <button type="button" class="wcard" data-wks="ks4">
+        <span class="wk">KS4</span>
+        <span class="wy">Years 10 &amp; 11</span>
+        <span class="ws">${esc(statusFor('ks4'))}</span>
+        <span class="wgo">Start KS4 Warm-Up →</span>
+      </button>
+    </div>
+    ${WARMUP.lastErrHtml ? `<div class="werr" role="alert">${WARMUP.lastErrHtml}</div>` : ''}
+    <div class="wfoot">
+      <button type="button" class="btn alt" id="wReload">↻ Refresh covered topics</button>
+      <button type="button" class="linkbtn" id="wToMenu">Open full Quick Quiz topic picker →</button>
+    </div>`;
+  box.querySelectorAll('[data-wks]').forEach(b => b.onclick = () => launchWarmup(b.dataset.wks, WARMUP.exclude));
+  const rl = $('wReload');
+  if (rl) rl.onclick = async () => { WARMUP.lastErrHtml = ''; renderWarmupPicker(); await fetchAllTaught(true); renderWarmupPicker(); };
+  const tm = $('wToMenu');
+  if (tm) tm.onclick = menu;
+}
+
+async function showWarmupPicker(excludeCode, errHtml) {
+  WARMUP.exclude = excludeCode || '';
+  WARMUP.lastErrHtml = errHtml || '';
+  SOLO = TEAM = KEYS = null;
+  const needLoad = !WARMUP.data && !WARMUP.loading;
+  if (needLoad) WARMUP.loading = true;
+  show('warmup');
+  renderWarmupPicker();
+  if (needLoad) {
+    await fetchAllTaught(false);
+    if (!$('warmup').classList.contains('hidden')) renderWarmupPicker();
   }
-  SEL = new Set(pts);
+}
+
+async function launchWarmup(ksKey, excludeCode) {
+  const ks = ksKey === 'ks3' ? 'ks3' : 'ks4';
+  WARMUP.exclude = excludeCode || '';
+  const res = await fetchAllTaught(!WARMUP.data);
+  if (!res.ok) {
+    showWarmupPicker(WARMUP.exclude,
+      `<b>⚠️ No questions error — could not load covered topics</b>` +
+      `<p>Could not read covered topics from the school list (${esc(res.err)}). Sign in at the top right or check your connection, then try again. No questions were drawn so students aren’t shown uncovered topics.</p>`);
+    return;
+  }
+  const p = warmupPool(ks, WARMUP.exclude, res.data);
+  if (!p.pts.length || !p.qTotal) {
+    const detail = p.ex && p.sharedAll.length && !p.shared.length
+      ? `The only shared covered topic (${esc(p.sharedAll.join(', '))}) is excluded because it’s the current lesson (${esc(p.ex)}).`
+      : `${p.yA} has <b>${p.countA}</b> covered topic${p.countA === 1 ? '' : 's'}, ${p.yB} has <b>${p.countB}</b>, and <b>${p.shared.length}</b> ${p.shared.length === 1 ? 'is' : 'are'} covered by both${p.ex ? ` (excluding ${esc(p.ex)})` : ''}.`;
+    showWarmupPicker(WARMUP.exclude,
+      `<b>⚠️ No questions error — no ${p.def.label} (${p.def.desc}) questions available</b>` +
+      `<p>Warm-Up only draws questions from topics covered by <b>both</b> ${p.yA.replace('Y', 'Year ')} and ${p.yB.replace('Y', 'Year ')}. ${detail} Tick shared topics in <b>Admin → Teaching</b> and refresh.</p>`);
+    return;
+  }
+  SEL = new Set(p.pts);
+  // Strictly draw from SEL (covered by both) — prefer Level 1 recall first, top up within SEL only if needed
   let qs = buildQuiz(5, [1], false, false);
-  if (qs.length < 5) qs = buildQuiz(5, [1, 2], true, true);
-  SOLO = { qs, qi: -1, score: 0, res: [], n: 5, lv: [1], calc: false, diag: false, warmup: true, year: Y, exclude: excludeCode || '', title: '🔥 Warm-Up', sub: subNote };
+  if (qs.length < 5) {
+    const q12 = buildQuiz(5, [1, 2], false, false);
+    if (q12.length > qs.length) qs = q12;
+  }
+  if (qs.length < 5) {
+    const qAll = buildQuiz(5, [1, 2, 3], true, true);
+    if (qAll.length > qs.length) qs = qAll;
+  }
+  if (!qs.length) {
+    showWarmupPicker(WARMUP.exclude,
+      `<b>⚠️ No questions error — no ${p.def.label} (${p.def.desc}) questions available</b>` +
+      `<p>None of the shared topics covered by both ${p.yA.replace('Y', 'Year ')} and ${p.yB.replace('Y', 'Year ')} have questions ready yet.</p>`);
+    return;
+  }
+  const subNote = `${p.def.label} (${p.def.short}) · ${p.shared.length} shared covered topic${p.shared.length === 1 ? '' : 's'}`;
+  SOLO = { qs, qi: -1, score: 0, res: [], n: qs.length, lv: [1], calc: false, diag: false, warmup: true, ks, exclude: WARMUP.exclude, title: '🔥 Warm-Up', sub: subNote };
   TEAM = null; show('play'); nextSolo();
 }
+
+// If teacher signs in while on the neutral Warm-Up screen, automatically refresh covered topics
+try {
+  if (window.firebase && firebase.apps && firebase.apps.length && firebase.auth) {
+    firebase.auth().onAuthStateChanged(u => {
+      if (u && !$('warmup').classList.contains('hidden') && !WARMUP.data && !WARMUP.loading) {
+        fetchAllTaught(true).then(() => { if (!$('warmup').classList.contains('hidden')) renderWarmupPicker(); });
+      }
+    });
+  }
+} catch (e) {}
 
 (function bootUrlModes() {
   const sp = new URLSearchParams(location.search);
   if (sp.get('warmup') === '1') {
-    launchWarmup(sp.get('year') || '', sp.get('exclude') || '');
+    showWarmupPicker(sp.get('exclude') || '');
     return;
   }
   const subsParam = sp.get('subs') || sp.get('point') || '';
