@@ -1,0 +1,151 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Physics long-answer montage: sine wave, planetary orbit, electric circuit and nuclear atom">
+  <defs>
+    <linearGradient id="bg-p6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1f4f"/>
+      <stop offset="50%" stop-color="#1a43b2"/>
+      <stop offset="100%" stop-color="#2558d9"/>
+    </linearGradient>
+    <linearGradient id="stage-p6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#071336" stop-opacity="0.54"/>
+      <stop offset="100%" stop-color="#0a1944" stop-opacity="0.28"/>
+    </linearGradient>
+    <radialGradient id="glow-star" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fde68a" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#fbbf24" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid-p6" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#dbeafe" stroke-opacity="0.075" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Deep cobalt blueprint ground + grid -->
+  <rect width="800" height="300" fill="url(#bg-p6)"/>
+  <rect width="800" height="300" fill="url(#grid-p6)"/>
+
+  <!-- Subtle sweeping planetary orbit across left text zone -->
+  <g fill="none" stroke="#93c5fd" stroke-opacity="0.14" stroke-width="1.5">
+    <ellipse cx="140" cy="240" rx="235" ry="96" transform="rotate(-14 140 240)"/>
+    <ellipse cx="140" cy="240" rx="165" ry="64" transform="rotate(-14 140 240)" stroke-dasharray="5 7"/>
+  </g>
+
+  <!-- Angled architectural stage on right -->
+  <polygon points="442,0 800,0 800,300 392,300" fill="url(#stage-p6)"/>
+  <line x1="442" y1="0" x2="392" y2="300" stroke="#93c5fd" stroke-opacity="0.34" stroke-width="1.5"/>
+
+  <!-- Subtle quadrant crosshairs inside the 4-panel Physics montage -->
+  <g stroke="#93c5fd" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="4 4">
+    <line x1="614" y1="42" x2="614" y2="258"/>
+    <line x1="448" y1="150" x2="774" y2="150"/>
+  </g>
+
+  <!-- ============================================================
+       QUADRANT 1 (Top-left of stage): Waves (Section 3)
+       Safe region: x 452..604, y 48..142
+       ============================================================ -->
+  <g transform="translate(456,96)">
+    <!-- Equilibrium axis -->
+    <line x1="0" y1="0" x2="144" y2="0" stroke="#93c5fd" stroke-opacity="0.55" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <!-- Smooth transverse sine wave (1.5 cycles) -->
+    <path d="M 4 0 C 18 -38, 34 -38, 48 0 C 62 38, 78 38, 92 0 C 106 -38, 122 -38, 136 0"
+          fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round"/>
+    <!-- Wavelength arrow (crest to crest) -->
+    <line x1="26" y1="-36" x2="114" y2="-36" stroke="#fbbf24" stroke-width="1.8"/>
+    <polygon points="26,-36 33,-40 33,-32" fill="#fbbf24"/>
+    <polygon points="114,-36 107,-40 107,-32" fill="#fbbf24"/>
+    <text x="70" y="-40" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="11.5" fill="#fde68a">λ</text>
+    <!-- Amplitude marker -->
+    <line x1="70" y1="0" x2="70" y2="26" stroke="#7dd3fc" stroke-width="1.8"/>
+    <polygon points="70,28 66,21 74,21" fill="#7dd3fc"/>
+    <text x="80" y="21" font-family="Arial, Helvetica, sans-serif" font-weight="800" font-size="10.5" fill="#7dd3fc">A</text>
+  </g>
+
+  <!-- ============================================================
+       QUADRANT 2 (Top-right of stage): Astrophysics & Orbits (Section 8)
+       Safe region: x 624..770, y 46..142
+       ============================================================ -->
+  <g transform="translate(696,95)">
+    <!-- Star glow halo -->
+    <circle cx="-6" cy="2" r="28" fill="url(#glow-star)"/>
+    <!-- Elliptical planetary & cometary orbits -->
+    <ellipse cx="0" cy="0" rx="64" ry="24" transform="rotate(-18)" fill="none" stroke="#93c5fd" stroke-opacity="0.72" stroke-width="1.7"/>
+    <ellipse cx="-8" cy="2" rx="40" ry="18" transform="rotate(14)" fill="none" stroke="#ffffff" stroke-opacity="0.52" stroke-width="1.4" stroke-dasharray="4 3"/>
+    <!-- Central star -->
+    <circle cx="-6" cy="2" r="12" fill="#fbbf24" stroke="#0b1a42" stroke-width="1.8"/>
+    <circle cx="-10" cy="-2" r="3.5" fill="#fef3c7"/>
+    <!-- Orbiting planet -->
+    <circle cx="48" cy="-16" r="5.5" fill="#ffffff" stroke="#0b1a42" stroke-width="1.5"/>
+    <!-- Distant comet dot -->
+    <circle cx="-46" cy="18" r="3.2" fill="#7dd3fc"/>
+    <!-- Subtle crisp star sparkles -->
+    <g fill="#fde68a" opacity="0.85">
+      <circle cx="-54" cy="-32" r="1.8"/>
+      <circle cx="52" cy="26" r="2"/>
+      <circle cx="24" cy="-36" r="1.5"/>
+    </g>
+  </g>
+
+  <!-- ============================================================
+       QUADRANT 3 (Bottom-left of stage): IEC Electric Circuit (Section 2)
+       Safe region: x 454..602, y 162..252
+       ============================================================ -->
+  <g transform="translate(464,168)">
+    <!-- Main circuit wire loop -->
+    <path d="M 14 26 L 14 10 L 42 10 M 78 10 L 122 10 L 122 68 L 88 68 M 58 68 L 14 68 L 14 40"
+          fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Cell symbol (left vertical wire) -->
+    <line x1="2" y1="26" x2="26" y2="26" stroke="#fbbf24" stroke-width="2.4"/>
+    <line x1="7" y1="35" x2="21" y2="35" stroke="#fbbf24" stroke-width="4.4"/>
+    <line x1="14" y1="35" x2="14" y2="40" stroke="#ffffff" stroke-width="2.4"/>
+    <!-- Resistor (top horizontal wire) -->
+    <rect x="42" y="2" width="36" height="16" rx="1.5" fill="#0d1f4f" stroke="#7dd3fc" stroke-width="2.4"/>
+    <!-- Ammeter circle (right vertical wire) -->
+    <circle cx="122" cy="39" r="13" fill="#0d1f4f" stroke="#fbbf24" stroke-width="2.2"/>
+    <text x="122" y="44" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="13" fill="#fde68a">A</text>
+    <!-- Filament lamp (bottom wire) -->
+    <circle cx="73" cy="68" r="13" fill="#0d1f4f" stroke="#ffffff" stroke-width="2.2"/>
+    <line x1="64" y1="59" x2="82" y2="77" stroke="#ffffff" stroke-width="2"/>
+    <line x1="82" y1="59" x2="64" y2="77" stroke="#ffffff" stroke-width="2"/>
+  </g>
+
+  <!-- ============================================================
+       QUADRANT 4 (Bottom-right of stage): Nuclear Atom + Radiation (Section 7)
+       Safe region: x 624..770, y 162..252
+       ============================================================ -->
+  <g transform="translate(696,207)">
+    <!-- Three tilted electron orbitals -->
+    <g fill="none" stroke="#93c5fd" stroke-opacity="0.82" stroke-width="1.8">
+      <ellipse cx="0" cy="0" rx="44" ry="15" transform="rotate(0)"/>
+      <ellipse cx="0" cy="0" rx="44" ry="15" transform="rotate(60)"/>
+      <ellipse cx="0" cy="0" rx="44" ry="15" transform="rotate(-60)"/>
+    </g>
+    <!-- Compact nucleus cluster (protons + neutrons) -->
+    <g stroke="#0b1a42" stroke-width="1.3">
+      <circle cx="-4" cy="-3" r="5" fill="#fbbf24"/>
+      <circle cx="5" cy="-2" r="5" fill="#ffffff"/>
+      <circle cx="0" cy="5" r="5" fill="#fbbf24"/>
+      <circle cx="-5" cy="4" r="4.5" fill="#7dd3fc"/>
+      <circle cx="5" cy="5" r="4.5" fill="#fbbf24"/>
+    </g>
+    <!-- Orbiting electrons -->
+    <circle cx="44" cy="0" r="3.6" fill="#ffffff"/>
+    <circle cx="-22" cy="-38" r="3.6" fill="#7dd3fc"/>
+    <circle cx="-22" cy="38" r="3.6" fill="#ffffff"/>
+    <!-- Emitted wave / radiation arrow -->
+    <path d="M 30 -18 Q 37 -26 44 -20 T 58 -24" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linecap="round"/>
+    <polygon points="65,-26 56,-29 58,-20" fill="#fbbf24"/>
+  </g>
+
+  <!-- 8-topic spectrum publisher spine bar on far right edge -->
+  <g transform="translate(789,0)">
+    <rect y="0" width="11" height="37.5" fill="#1d4ed8"/>
+    <rect y="37.5" width="11" height="37.5" fill="#d97706"/>
+    <rect y="75" width="11" height="37.5" fill="#0891b2"/>
+    <rect y="112.5" width="11" height="37.5" fill="#16a34a"/>
+    <rect y="150" width="11" height="37.5" fill="#7c3aed"/>
+    <rect y="187.5" width="11" height="37.5" fill="#dc2626"/>
+    <rect y="225" width="11" height="37.5" fill="#ca8a04"/>
+    <rect y="262.5" width="11" height="37.5" fill="#312e81"/>
+  </g>
+  <rect x="785" y="0" width="4" height="300" fill="#071336" fill-opacity="0.8"/>
+</svg>

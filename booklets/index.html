@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#5a5a5a;--line:#d8d3c4;--soft:#f6f4ee;
-  --bio:#2e7d32;--chem:#b45309;--phys:#1d4ed8}
+  --bio:#2e7d32;--chem:#8c0013;--phys:#1d4ed8;--phys-topic:#7a4a00}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px;min-height:100vh}
 a{color:inherit}
@@ -47,10 +47,14 @@ section{margin-top:40px}
 
 /* Booklet card */
 .book{display:flex;flex-direction:column;background:var(--paper);border:2px solid var(--ink)}
-.book .cover{background:var(--k);color:#fff;padding:14px 16px 16px;position:relative;overflow:hidden;min-height:132px}
-.book .cover .kicker{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:.9}
-.book .cover h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:34px;line-height:.95;margin-top:28px;position:relative}
-.book .cover .big{position:absolute;right:12px;bottom:-16px;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:118px;line-height:1;opacity:.2;letter-spacing:-4px}
+.book .cover{background:var(--k);color:#fff;padding:14px 16px 14px;position:relative;overflow:hidden;min-height:172px;display:flex;flex-direction:column;justify-content:space-between;border-bottom:2px solid var(--ink)}
+.book .cover .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:right center;pointer-events:none;z-index:0;transition:transform .25s ease}
+.book:not(.soon):hover .cover .art{transform:scale(1.03)}
+.book:not(.soon) .cover::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.38) 0%,rgba(0,0,0,.18) 46%,rgba(0,0,0,0) 64%)}
+.book .cover > :not(.art){position:relative;z-index:2}
+.book .cover .kicker{font-size:11.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;opacity:.92;max-width:62%}
+.book .cover h3{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:31px;line-height:.94;margin-top:14px;max-width:56%;text-shadow:0 1px 3px rgba(0,0,0,.38)}
+.book .cover .pill{align-self:flex-start;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;background:rgba(0,0,0,.34);border:1px solid rgba(255,255,255,.32);color:#fff}
 .book .body{padding:12px 16px 16px;display:flex;flex-direction:column;gap:12px;flex:1}
 .book .body p{font-size:15px;color:#333}
 .chips{display:flex;flex-wrap:wrap;gap:5px}
@@ -68,7 +72,8 @@ section{margin-top:40px}
 
 /* Placeholders */
 .book.soon{border-style:dashed;border-color:#9a968a;background:transparent}
-.book.soon .cover{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--k) 16%,var(--cream)) 0 12px,color-mix(in srgb,var(--k) 9%,var(--cream)) 12px 24px);color:var(--k)}
+.book.soon .cover{background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--k) 15%,var(--cream)) 0 12px,color-mix(in srgb,var(--k) 8%,var(--cream)) 12px 24px);color:var(--k);border-bottom:1.5px dashed #b5b0a2}
+.book.soon .cover h3{text-shadow:none;max-width:64%}
 .book.soon .body p{color:var(--muted)}
 .badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;background:var(--ink);color:var(--cream);align-self:flex-start}
 
@@ -101,9 +106,12 @@ footer{margin-top:48px;font-size:14px;color:var(--muted)}
 
       <div class="book" style="--k:var(--phys)">
         <div class="cover">
-          <div class="kicker">Physics · Sections 1–8</div>
-          <h3>Physics<br>6-markers</h3>
-          <span class="big">56</span>
+          <img class="art" src="assets/covers/physics-6-markers.svg" alt="">
+          <div>
+            <div class="kicker">Physics · Sections 1–8</div>
+            <h3>Physics<br>6-markers</h3>
+          </div>
+          <span class="pill">56 questions · 30 pages</span>
         </div>
         <div class="body">
           <p>56 long-answer questions covering every Double Award physics topic, in spec order. Each has guidance, an answer space and a full Edexcel-style mark scheme.</p>
@@ -129,8 +137,11 @@ footer{margin-top:48px;font-size:14px;color:var(--muted)}
 
       <div class="book soon" style="--k:var(--chem)">
         <div class="cover">
-          <div class="kicker">Chemistry · Sections 1–4</div>
-          <h3>Chemistry<br>6-markers</h3>
+          <img class="art" src="assets/covers/soon-chemistry.svg" alt="">
+          <div>
+            <div class="kicker">Chemistry · Sections 1–4</div>
+            <h3>Chemistry<br>6-markers</h3>
+          </div>
         </div>
         <div class="body">
           <span class="badge">Coming soon</span>
@@ -140,8 +151,11 @@ footer{margin-top:48px;font-size:14px;color:var(--muted)}
 
       <div class="book soon" style="--k:var(--bio)">
         <div class="cover">
-          <div class="kicker">Biology · Sections 1–5</div>
-          <h3>Biology<br>6-markers</h3>
+          <img class="art" src="assets/covers/soon-biology.svg" alt="">
+          <div>
+            <div class="kicker">Biology · Sections 1–5</div>
+            <h3>Biology<br>6-markers</h3>
+          </div>
         </div>
         <div class="body">
           <span class="badge">Coming soon</span>
@@ -159,8 +173,11 @@ footer{margin-top:48px;font-size:14px;color:var(--muted)}
 
       <div class="book soon" style="--k:var(--bio)">
         <div class="cover">
-          <div class="kicker">Biology</div>
-          <h3>Biology<br>topic booklets</h3>
+          <img class="art" src="assets/covers/soon-biology.svg" alt="">
+          <div>
+            <div class="kicker">Biology</div>
+            <h3>Biology<br>topic booklets</h3>
+          </div>
         </div>
         <div class="body">
           <span class="badge">Coming soon</span>
@@ -170,9 +187,12 @@ footer{margin-top:48px;font-size:14px;color:var(--muted)}
 
       <div class="book" style="--k:var(--chem)">
         <div class="cover">
-          <div class="kicker">Chemistry · Spec 1.37–1.51</div>
-          <h3>Ionic and<br>covalent bonding</h3>
-          <span class="big">12</span>
+          <img class="art" src="assets/covers/ionic-covalent-bonding.svg" alt="">
+          <div>
+            <div class="kicker">Chemistry · Spec 1.37–1.51</div>
+            <h3>Ionic and<br>covalent bonding</h3>
+          </div>
+          <span class="pill">12 A4 pages</span>
         </div>
         <div class="body">
           <p>Ions, formulae, dot-and-cross diagrams, giant and simple structures, and a boiling-point graph to plot. Starts with recall and builds up to exam-style questions.</p>
@@ -184,11 +204,14 @@ footer{margin-top:48px;font-size:14px;color:var(--muted)}
         </div>
       </div>
 
-      <div class="book" style="--k:var(--phys)">
+      <div class="book" style="--k:var(--phys-topic)">
         <div class="cover">
-          <div class="kicker">Physics · Spec 1.3–1.24</div>
-          <h3>Forces and<br>motion</h3>
-          <span class="big">14</span>
+          <img class="art" src="assets/covers/forces-and-motion.svg" alt="">
+          <div>
+            <div class="kicker">Physics · Spec 1.3–1.24</div>
+            <h3>Forces and<br>motion</h3>
+          </div>
+          <span class="pill">14 A4 pages</span>
         </div>
         <div class="body">
           <p>The whole of Section 1: speed, acceleration, motion graphs to read and plot, v² = u² + 2as, resultant forces, F = ma, stopping distances, terminal velocity and springs.</p>
