@@ -1,8 +1,8 @@
 ---
 trigger: model_decision
-description: Cakebread Questing (interactive/spec-quiz/) — the revision game, its engine and securing rules, Breadventure Land map, missions, Practice, Quick quiz, items, Stats, Flashcards-in-Questing. Use when editing anything in interactive/spec-quiz/, Flashcards/ or the To do page's game parts.
+description: Breadventure Land (interactive/spec-quiz/) — the revision game, its engine and securing rules, World Map, missions, Practice Questions, Quick quiz, items, Stats, Flashcards integration. Use when editing anything in interactive/spec-quiz/, Flashcards/ or the To do page's game parts.
 ---
-# Cakebread Questing (`interactive/spec-quiz/`)
+# Breadventure Land (`interactive/spec-quiz/`)
 
 ## Role in the site learning strategy & research principles
 - Owns **Layer 3 (application, misconception busting & spaced proof)** alongside plain Practice (`practice.html`):
@@ -11,7 +11,7 @@ description: Cakebread Questing (interactive/spec-quiz/) — the revision game, 
   - **Misconception Refutation & Transfer:** Plausible misconception distractors + elaborative feedback; Option A caps flashcards at half of securing so quiz questions prove AO2/AO3 transfer.
 
 ## Names (the user's)
-- The whole thing is **Cakebread Questing**; the map is always **Breadventure Land**. Game home = **the Cakelab** (`adventurer-home.html`).
+- The whole revision game is **Breadventure Land** (the map page is **World Map**, `adventurer-map.html`). Starting safe-spot in the story/map = **the Cakelab** (`7,4`).
   The mascot is the Professor; the dragon is Crumbmaw. One shared world, no classes, ≤ ~5 players at once.
 - Pixel art is drawn in code (sprite grids in `adventurer-shell.js` `ADV.ICONS`, items as layers in `adventurer-pixel.js`). No downloaded assets.
 - **Everything must also work without the game**: wherever a point offers "⚔️ Quiz me", also offer "📝 Prove it" (`practice.html?point=KEY`).

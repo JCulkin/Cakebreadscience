@@ -107,7 +107,7 @@
       ${g.date ? `<p class="sg-date">📅 ${esc(fmtDate(g.date))}${mode === 'online' && dd !== null ? (dd > 1 ? ` · in ${dd} days` : dd === 1 ? ' · tomorrow' : dd === 0 ? ' · today' : '') : ''}</p>` : ''}</div>
       <div class="sg-course">${label}</div></header>
       ${mode === 'online' && keys.length ? `<div class="sg-rev big"><span style="flex:1 1 100%"><b>Revise all of it:</b> ${N} questions at a time on exactly these points, or drill their flashcards.</span>
-        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Cakebread Questing</a>${hasCardsAll ? `<a class="sg-btn f" href="${flashcardsUrl(keys, T)}">🃏 Flashcards</a>` : ''}</div>` : ''}`;
+        <a class="sg-btn" href="${reviseUrl('plain', keys, T)}">📝 Revise</a><a class="sg-btn q" href="${reviseUrl('quest', keys, T)}">⚔️ Revise in Breadventure Land</a>${hasCardsAll ? `<a class="sg-btn f" href="${flashcardsUrl(keys, T)}">🃏 Flashcards</a>` : ''}</div>` : ''}`;
     let lastTopic = '';
     const body = list.map(x => {
       const sb = x.sb, code = sb.topic + sb.l, subToks = tokens([x]), subCards = cardCount(x.pts) > 0, subLessons = mode === 'online' ? lessonsFor(x.pts) : [], subBooklets = mode === 'online' && course !== 'SA' ? bookletsFor(x.pts) : [];
@@ -199,7 +199,7 @@
       const bar = pr ? `<div class="sg-prog"><div class="sg-bar" title="${pr.sec} secured, ${pr.started} started, ${pr.n - pr.sec - pr.started} not started"><i class="s" style="width:${pr.sec / pr.n * 100}%"></i><i class="l" style="width:${pr.started / pr.n * 100}%"></i></div>
         <span class="small muted"><b>${pr.sec}/${pr.n}</b> secured${pr.sec === pr.n ? ' ✓' : ''}</span></div>` : '';
       return `<div class="sg-todo-row"><div class="sg-todo-info"><div class="sg-todo-top"><b style="font-size:16px">${esc(g.title || 'Test')}</b>${when ? `<span class="sg-todo-date${d !== null && d <= 3 ? ' soon' : ''}">${esc(when)}</span>` : ''}</div>${bar}</div>
-        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Practice</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Cakebread Questing">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
+        <div class="sg-todo-acts"><a class="sg-btn f" href="/guide/?id=${encodeURIComponent(g.id)}" title="Study guide — what's in this test">📄 Guide</a><a class="sg-btn" href="${reviseUrl('plain', k, g.title)}" title="Practise ${N} revision questions on these points">📝 Practice</a><a class="sg-btn q" href="${reviseUrl('quest', k, g.title)}" title="Revise these points in Breadventure Land">⚔️ Quest</a>${hasCards ? `<a class="sg-btn f" href="${flashcardsUrl(k, g.title)}" title="Flashcards on these points">🃏 Cards</a>` : ''}</div></div>`; }).join('');
   }
   /* To do: "Upcoming tests" (user, 23 Nov + decluttered 27 Nov; supports inline mode inside unified From your teacher box).
      pre = the guides already loaded (To do keeps them for 30 s so progress can redraw without another read) */

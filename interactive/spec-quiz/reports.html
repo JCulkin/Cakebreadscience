@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Cakebread Questing: reported questions - Cakebread Science</title>
+<title>Breadventure Land: reported questions - Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
 <style>
@@ -118,7 +118,7 @@ function draw() {
 
 function copyForClaude() {
   const gs = groups().filter(g => g.open);
-  const text = 'Cakebread Questing reported questions (please check each, fix what is wrong in questions.js without changing ids, and tell me what you changed):\n\n' +
+  const text = 'Breadventure Land reported questions (please check each, fix what is wrong in questions.js without changing ids, and tell me what you changed):\n\n' +
     gs.map(g => {
       const q = BYID[g.qid];
       const cur = q && !q.gen ? `Current: ${strip(q.q)} | Options: ${('tf' in q ? ['True', 'False'] : q.o).map(strip).join(' / ')} | Marked answer: ${'tf' in q ? (q.tf ? 'True' : 'False') : strip(q.o[0])}` : q ? 'Randomised calculation' : 'Not in bank';

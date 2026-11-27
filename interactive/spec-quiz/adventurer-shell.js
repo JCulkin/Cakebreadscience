@@ -177,20 +177,20 @@ const ADV = (() => {
     const noMission = !QE.revisedToday();   // the "!" goes once the day's revision is done: a mission or today's flashcards
     const n = document.createElement('nav');
     n.className = 'advnav';
-    n.setAttribute('aria-label', 'Cakebread Questing');
+    n.setAttribute('aria-label', 'Breadventure Land');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
     n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
-      + `<a class="brand" href="index.html" title="Cakebread Questing menu">Cakebread <b>Questing</b></a>`
+      + `<a class="brand" href="index.html" title="Breadventure Land menu">Breadventure <b>Land</b></a>`
       + tab('home', 'adventurer-home.html', '🧁', 'Cakelab')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
+      + tab('map', 'adventurer-map.html', '🗺️', 'World Map', 'cta map')
       + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
       + tab('today', '/today/', '✅', 'To do')
       + `<span class="gap"></span>`
       + tab('stats', 'adventurer-stats.html', '📊', 'Stats', 'sm')
       + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
       + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
-      + tab('guide', '/how-to-use/', '❓', 'Guide', 'sm')
+      + tab('guide', '/how-to-use/', '❓', 'Help', 'sm')
       + `<span class="acct" id="advAcct"></span>`;
     document.body.prepend(n);
     if (!window.CBSTour) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; document.head.appendChild(ts); }

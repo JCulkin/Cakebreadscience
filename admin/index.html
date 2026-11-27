@@ -175,7 +175,7 @@ tr.overdue td{background:#fef2f2}tr.overdue:hover td{background:#fee2e2}
 <script src="/js/spec-index.js"></script>
 <script src="/admin/review-lib.js"></script>
 <script>
-/* Admin console (rebuilt 10 Nov 2026): the whole site + Cakebread Questing. Reads Firestore users/*, specProgress/*,
+/* Admin console (rebuilt 10 Nov 2026): the whole site + Breadventure Land. Reads Firestore users/*, specProgress/*,
    and Realtime Database specQuizBoard, specQuizReports, gameScores. Progress maths comes from QE.analyse (same rules as the game). */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -283,7 +283,7 @@ function drawOverview() {
   const waiting = S.filter(s => s.pending).sort((a, b) => a.pendingAt - b.pendingAt);
   $('p-overview').innerHTML = `${waiting.length ? `<div class="card" style="border-color:#7c3aed"><h2>Names waiting for you (${waiting.length})</h2><table>${waiting.map(s => `<tr><td><b class="nick" style="font-size:15px">${esc(s.pending)}</b></td><td>${esc(s.name)} <span class="small muted">now shown as ${esc(s.nick || googleName(s))} · asked ${ago(s.pendingAt)}</span></td><td style="text-align:right;white-space:nowrap"><button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></td></tr>`).join('')}</table><div class="msg" id="nqMsg"></div></div>` : ''}
     <div class="kpis">${kpi(act.length, 'students who have used the site', 'students')}${kpi(today, 'active today', 'students')}${kpi(week, 'active in the last 7 days', 'students')}
-      ${kpi(players, 'play Cakebread Questing', 'students')}${kpi(m7, 'missions in the last 7 days')}${kpi(c7, 'flashcards reviewed, last 7 days')}${kpi(wk, 'right answers, last 7 days')}
+      ${kpi(players, 'play Breadventure Land', 'students')}${kpi(m7, 'missions in the last 7 days')}${kpi(c7, 'flashcards reviewed, last 7 days')}${kpi(wk, 'right answers, last 7 days')}
       <a class="kpi link" href="/interactive/spec-quiz/reports.html" style="text-decoration:none;color:inherit${rep ? ';border-color:var(--bad)' : ''}"><div class="big" style="${rep ? 'color:var(--bad)' : ''}">${rep}</div><small>open question reports ⚑</small></a></div>
     <div class="card" id="buildCard"><h2>Building the site</h2><p class="muted">Counting lessons and worksheets…</p></div>
     <div class="cols">
@@ -292,7 +292,7 @@ function drawOverview() {
       <div class="card links"><h2>Quick links</h2>
         <a href="/test.html">Test page</a><a href="https://github.com/JCulkin/Cakebreadscience/pulls">Next release (open pull request → its preview)</a>
         <a href="/interactive/spec-quiz/reports.html">Question reports</a><a href="/leaderboards/">Leaderboards (student view)</a>
-        <a href="/interactive/spec-quiz/">Cakebread Questing</a><a href="/mascot/">Mascot sheet</a>
+        <a href="/interactive/spec-quiz/">Breadventure Land</a><a href="/mascot/">Mascot sheet</a>
         <p class="small muted" style="margin-top:8px">Data loaded ${new Date(D.at).toLocaleTimeString('en-GB')} · <a href="#" data-reload>reload</a>${D.rtOk ? '' : ' · <b style="color:var(--bad)">Realtime Database unreadable</b>'}</p></div>
     </div>
     <div class="card" style="margin-top:14px"><h2>Gone quiet <span class="small muted" style="text-transform:none;font-family:Barlow">7+ days</span></h2>${quiet.length ? `<table>${quiet.map(s => `<tr class="click" data-uid="${s.uid}"><td>${esc(s.name)}</td><td class="muted">${ago(s.last)}</td></tr>`).join('')}</table>` : '<p class="muted">Everyone has been on in the last week.</p>'}</div>`;
@@ -619,7 +619,7 @@ function openStudent(uid) {
     <div class="acts" style="align-items:center" id="dAccessRow"><b>Site &amp; game access</b>${(() => { const ga = GM.access[s.uid] && GM.access[s.uid].status; const lbl = ga === 'approved' ? '<span class="tag green">Approved</span>' : ga === 'blocked' ? '<span class="tag red">Blocked</span>' : ga === 'pending' ? '<span class="tag amber">Waiting for approval</span>' : s.used ? '<span class="tag green">Existing student</span>' : '<span class="tag">Not approved yet</span>'; return `${lbl}${ga !== 'approved' ? ` <button class="btn sm" id="dAccOk">Approve</button>` : ''}${ga !== 'blocked' ? ` <button class="btn sm warn" id="dAccBlk">Block</button>` : ''}<span class="small muted" id="dAccMsg"></span>`; })()}</div>
     ${hwCard}
     <div class="card" style="margin-top:12px"><h3 style="margin-top:0">Public name</h3>
-      <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Cakebread Questing name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
+      <p>${s.nick ? `<b>${esc(s.nick)}</b> (their Breadventure Land name)` : 'First name + initial from Google (no Questing name chosen)'}${s.badNick ? `<br><span class="tag red">blocked</span> they typed “${esc(s.badNick)}”, which the rules reject, so the boards show their Google name` : ''}</p>
       ${s.pending ? `<p style="margin-top:6px">⏳ Wants to be <b>${esc(s.pending)}</b> (asked ${ago(s.pendingAt)}) <button class="btn sm" data-ok="${s.uid}">Approve</button> <button class="btn alt sm" data-no="${s.uid}">Reject</button></p>` : ''}
       <div class="acts"><input id="nn" placeholder="New name" maxlength="16" style="font:inherit;padding:5px 8px;border:2px solid var(--ink)"><button class="btn sm" id="ren">Rename</button><button class="btn alt sm" id="clr">Use their Google name</button>
       ${s.prog ? `<button class="btn alt sm" id="hid">${s.hide ? 'Show on leaderboards' : 'Hide from leaderboards'}</button>` : ''}</div><div class="msg" id="dMsg"></div></div>
@@ -631,7 +631,7 @@ function openStudent(uid) {
       <div class="card"><h3 style="margin-top:0">Topics</h3><div class="legend"><span style="--c:var(--s)">Secured</span><span style="--c:var(--r)">Rusty</span><span style="--c:var(--l)">Learning</span></div><table>${topicBars(s.a)}</table></div>
       ${s.weak.length ? `<div class="card"><h3 style="margin-top:0">Flashcards they found hard</h3><p>${s.weak.map(k => `<span class="tag">${k}</span>`).join(' ')}</p></div>` : ''}
       ${missed.length ? `<div class="card"><h3 style="margin-top:0">Questions they get wrong most</h3><table>${missed.map(([id, x]) => { const q = QBYID[id]; return `<tr><td class="small"><b>${id}</b> ${q ? esc(strip(q.q || '(calculation)')).slice(0, 140) : ''}</td><td class="n small">${(x.r || 0)}/${x.n} right</td></tr>`; }).join('')}</table></div>` : ''}`
-    : '<p class="muted" style="margin:12px 0">Hasn\'t played Cakebread Questing yet.</p>'}
+    : '<p class="muted" style="margin:12px 0">Hasn\'t played Breadventure Land yet.</p>'}
     <div class="card"><h3 style="margin-top:0">Other tools</h3><p>Flashcards studied (all time): <b>${s.fc}</b><br>Spec tracker, rated confident: Biology ${s.trk[0] ?? '–'}% · Chemistry ${s.trk[1] ?? '–'}% · Physics ${s.trk[2] ?? '–'}%<br>Physics long answers: ${(() => { const p = s.raw.longAnswersSummary && s.raw.longAnswersSummary.physics; const lnk = `<a href="/interactive/physics-long-answer/learned.html?uid=${encodeURIComponent(s.uid)}" target="_blank">Learning bank →</a>`; return p ? `<b>${p.attempted || 0}</b> attempted · <b>${p.firstMarks || 0}/${p.possibleMarks || 0}</b> first-answer marks · <b>${p.learnedPoints || 0}</b> points learned · ${lnk}` : `none · ${lnk}`; })()}</p></div>
     ${dangerCard}`;
   $('dim').classList.add('on'); $('drawer').classList.add('on'); $('drawer').scrollTop = 0;
@@ -661,7 +661,7 @@ function openStudent(uid) {
     const next = !s.hide;
     try { await DB.collection('users').doc(uid).update({ 'specQuiz.hide': next, 'specQuiz.updatedAt': Date.now() }); s.hide = next; s.prog.hide = next;
       try { if (D.board[uid]) { await RT.ref('specQuizBoard/' + uid + '/hide').set(next); D.board[uid].hide = next; } } catch (e) {}
-      msg(next ? 'Hidden from the Cakebread Questing boards.' : 'Shown on the Cakebread Questing boards again.', true);
+      msg(next ? 'Hidden from the Breadventure Land boards.' : 'Shown on the Breadventure Land boards again.', true);
       $('hid').textContent = next ? 'Show on leaderboards' : 'Hide from leaderboards'; drawStudents(); drawBoards();
     } catch (e) { msg('Could not save: ' + (e.code || e.message)); }
   };
@@ -689,7 +689,7 @@ const COL = { s: 'var(--s)', r: 'var(--r)', l: 'var(--l)', n: 'var(--n)' };
 const mapOpen = new Set();
 function drawMap() {
   const S = D.students.filter(s => s.a && s.answered + Object.keys(s.prog.cards || {}).length > 0);
-  if (!S.length) { $('mTable').innerHTML = '<div class="empty">Nobody has started Cakebread Questing or Flashcards yet.</div>'; return; }
+  if (!S.length) { $('mTable').innerHTML = '<div class="empty">Nobody has started Breadventure Land or Flashcards yet.</div>'; return; }
   const sci = $('mSci').value, all = $('mOpen').checked;
   const short = s => googleName(s);   // students' real names (user, 23 Nov: "not their questing names"); full name on hover
   const shade = p => p == null ? 'var(--n)' : `color-mix(in srgb, var(--s) ${Math.round(p * 100)}%, #f3f0e6)`;
@@ -743,7 +743,7 @@ function drawBoards() {
   const boards = Object.keys(D.games).sort();
   $('p-boards').innerHTML = `${D.rtOk ? '' : '<div class="card" style="border-color:var(--bad)">Couldn\'t read the Realtime Database.</div>'}
     <div class="card"><h2>Main Character items · last 7 days</h2><table>${leg}</table></div>
-    <div class="card"><h2>Cakebread Questing board</h2><div class="wrapx"><table><thead><tr><th>Name on the board</th><th class="n">XP</th><th class="n">Points secured</th><th class="n">Last 7 days B / C / P</th><th>Last saved</th><th></th></tr></thead><tbody>
+    <div class="card"><h2>Breadventure Land board</h2><div class="wrapx"><table><thead><tr><th>Name on the board</th><th class="n">XP</th><th class="n">Points secured</th><th class="n">Last 7 days B / C / P</th><th>Last saved</th><th></th></tr></thead><tbody>
       ${rows.map(r => `<tr><td><b>${esc(r.name)}</b>${r.hide ? ' <span class="tag">hidden</span>' : ''}</td><td class="n">${r.xp || 0}</td><td class="n">${r.pts || 0}</td><td class="n">${r.l7.t ? `${r.l7.B} / ${r.l7.C} / ${r.l7.P}` : '–'}</td><td class="small">${ago(r.t)}</td><td><button class="btn alt sm" data-del="specQuizBoard/${r.uid}">Delete</button></td></tr>`).join('') || '<tr><td colspan="6" class="muted">Empty.</td></tr>'}</tbody></table></div></div>
     <div class="card"><h2>Game leaderboards</h2><div class="toolbar"><select id="gb">${boards.map(b => `<option>${b}</option>`).join('')}</select></div><div id="gbt"></div></div>
     <div class="msg" id="lbMsg"></div>`;

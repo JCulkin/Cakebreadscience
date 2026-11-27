@@ -68,7 +68,7 @@ h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
 /* Set work (17 Nov 2026). /work/?id=<school/assign id>.
    type 'test': the fixed questions in a.qids, one go; answers saved as they go to users/{uid}.work[id] =
    {ans: {qid: 1|0}, n, started, done, score, at} so leaving and coming back resumes (no retakes). Answers also count in
-   Cakebread Questing (QE.recordAnswer), and finishing counts as the day's revision (QE.finishMission).
+   Breadventure Land (QE.recordAnswer), and finishing counts as the day's revision (QE.finishMission).
    type 'practise' (or old work with no type): links to Practice, progress = CBSSchool.progress. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -131,7 +131,7 @@ const testQids = () => (A.qids || []).filter(id => QBY[id] && (!window.CBSCourse
 function intro() {
   const qids = testQids(), done = W ? qids.filter(id => id in (W.ans || {})).length : 0;
   if (!qids.length) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">${window.CBSCourse && CBSCourse.sa ? 'None of these questions are on the Single Award course, so there\'s nothing for you to do here.' : 'This test has no questions yet.'}</p><p style="margin-top:14px"><a class="btn alt" href="/today/">← Back to To do</a></p></div>`; return; }
-  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Cakebread Questing.</p>
+  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Breadventure Land.</p>
     ${done ? `<p style="margin-top:8px">You've answered ${done} of ${qids.length}. Carry on where you stopped.</p>` : ''}
     <p style="margin-top:14px"><button class="btn" id="go">${done ? 'Carry on →' : 'Start the test →'}</button> <a class="btn alt" href="/today/">← To do</a></p></div>`;
   $('go').onclick = start;

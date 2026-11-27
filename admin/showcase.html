@@ -8,7 +8,7 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Admin-only showcase of everything in Cakebread Questing (17 Nov 2026). Everything is drawn from the game's own files
+/* Admin-only showcase of everything in Breadventure Land (17 Nov 2026). Everything is drawn from the game's own files
    (bland.js, adventurer-shell.js, adventurer-items.js, adventurer-pixel.js, misconceptions.js, questions.js), so it stays
    up to date as the game grows. Nothing here writes anything. */
 :root{--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#5a5a5a;--line:#d8d3c4;--soft:#f6f4ee;--green:#00a03a;--dk:#005e22;--b:#16a34a;--c:#dc2626;--p:#d97706}
@@ -210,7 +210,7 @@ function build() {
 
   /* ---------- overview ---------- */
   const kpi = (n, l, href) => `<a class="kpi" href="#${href}"><div class="big">${n}</div><small>${l}</small></a>`;
-  sec('top', 'Everything in the game', 'Cakebread Questing + Breadventure Land, drawn live from the game files', `
+  sec('top', 'Everything in the game', 'Breadventure Land, drawn live from the game files', `
     <p class="lede">This page reads the same files the game runs on, so anything added to the game appears here automatically. It writes nothing. Click a picture on a map to jump to that place.</p>
     <div class="kpis">${kpi(2, 'maps (surface + Underworld)', 'maps')}${kpi(places.length, 'places on the maps', 'places')}${kpi(bosses.length + 1, 'bosses + the dragon', 'bosses')}${kpi(dens.length, 'small monsters', 'monsters')}
       ${kpi(dungeons.length, 'dungeons', 'dungeons')}${kpi(misc.length, 'misconceptions (one per mission)', 'missions')}${kpi(ADV_ITEMS.length, 'items to wear', 'items')}${kpi(Object.keys(BL.BREWS).length + BL.SPELL_INFO.length, 'brews and spells', 'brews')}

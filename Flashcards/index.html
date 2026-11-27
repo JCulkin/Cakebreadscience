@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flashcards - Cakebread Science</title>
-  <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Cakebread Questing adventurer. Study Biology, Chemistry, Physics, Physics Equations, and Examiner Key Words.">
+  <meta name="description" content="Spaced repetition flashcards for IGCSE Edexcel. Every card you review powers your Breadventure Land adventurer. Study Biology, Chemistry, Physics, Physics Equations, and Examiner Key Words.">
   <meta name="keywords" content="IGCSE, Edexcel, flashcards, spaced repetition, biology, chemistry, physics">
   <meta name="author" content="Cakebread Science">
   <link rel="icon" type="image/png" href="/favicon.png">
@@ -1141,11 +1141,11 @@
     <div class="deck-selector active">
       <div class="fc-head">
         <div class="fc-kick">
-          <span>🃏 Cakebread Questing</span>
+          <span>🃏 Breadventure Land</span>
           <span class="sa-pill" id="saPill" hidden>Single Award</span>
         </div>
         <h1 class="fc-h1">Flashcards</h1>
-        <p class="fc-sub">Key facts and definitions, with spaced repetition: cards you find hard come back sooner. Every card counts in Cakebread Questing.</p>
+        <p class="fc-sub">Key facts and definitions, with spaced repetition: cards you find hard come back sooner. Every card counts in Breadventure Land.</p>
       </div>
 
       <div class="top-buttons">
@@ -1158,7 +1158,7 @@
       </div>
 
       <div class="sync-banner" id="syncBanner" hidden>
-        <span id="syncText">Sign in with Google to save progress across devices and power your Cakebread Questing adventurer — or start studying now (saved in this browser).</span>
+        <span id="syncText">Sign in with Google to save progress across devices and power your Breadventure Land adventurer — or start studying now (saved in this browser).</span>
         <button type="button" class="btn sm" id="bannerSignIn" onclick="loginWithGoogle()">Sign in with Google</button>
       </div>
 
@@ -1267,8 +1267,8 @@
           <li><strong>Mastered</strong> — Review interval 21+ days.</li>
         </ul>
 
-        <h3>Cakebread Questing</h3>
-        <p>When signed in, flashcards power your adventurer in <a href="/interactive/spec-quiz/">Cakebread Questing</a>:</p>
+        <h3>Breadventure Land</h3>
+        <p>When signed in, flashcards power your adventurer in <a href="/interactive/spec-quiz/">Breadventure Land</a>:</p>
         <ul>
           <li>Every due card: <strong>+2 XP</strong> (up to 60 a day), <strong>+1 Health</strong> and <strong>+1 mana</strong> for Breadventure Land, and a coin every 5 cards.</li>
           <li>Review <strong>15 cards</strong> in a day (or all due cards if fewer) for <strong>+1 move</strong> and a loot drop.</li>
@@ -1377,7 +1377,7 @@
   <script src="/interactive/spec-quiz/adventurer-items.js"></script>
   <script src="/interactive/spec-quiz/adventurer-pixel.js"></script>
   <script>
-    /* Cakebread Science Flashcards — spaced repetition integrated with Cakebread Questing.
+    /* Cakebread Science Flashcards — spaced repetition integrated with Breadventure Land.
        Card data: Flashcards/data/<deck>.json (permanent Anki card ids).
        Progress: Firestore users/{uid}.progress['<deck>_<cardId>'] + localStorage fallback so the page works signed out or offline. */
 
@@ -1708,7 +1708,7 @@
         btn.hidden = true;
       } else {
         b.classList.remove('offline');
-        txt.textContent = 'Sign in with Google to save progress across devices and power your Cakebread Questing adventurer — or start studying now (saved in this browser).';
+        txt.textContent = 'Sign in with Google to save progress across devices and power your Breadventure Land adventurer — or start studying now (saved in this browser).';
         btn.hidden = false;
       }
     }
@@ -1940,7 +1940,7 @@
       });
     }
 
-    /* ---------- Cakebread Questing integration ---------- */
+    /* ---------- Breadventure Land integration ---------- */
     function importOldReviews() {
       if (typeof QE === 'undefined' || !currentUser) return;
       const list = [];
@@ -1972,7 +1972,7 @@
         : QE.missionsToday() ? 'Today\'s +1 move is already won (you did a mission). Cards still give XP, ❤ Health and 🔮 mana.'
         : `Review <b>${target}</b> card${target > 1 ? 's' : ''} today for <b>+1 move</b> on Breadventure Land and a loot drop`;
       el.innerHTML = `${pic ? `<img class="px" src="${pic}" alt="">` : ''}
-        <div class="q-main"><div class="q-kick">Cakebread Questing · every card counts</div>
+        <div class="q-main"><div class="q-kick">Breadventure Land · every card counts</div>
         <div class="q-title">${title}</div>
         <div class="q-bar ${d.done ? 'done' : ''}"><i style="width:${pct}%"></i></div>
         <div class="q-earned">Today: ${d.n} card${d.n === 1 ? '' : 's'} · +${d.xp} XP${d.xp >= QE.CARD.xpCap ? ' (daily max)' : ''} · ❤ +${d.n} Health · 🔮 +${d.n} mana · 🪙 +${d.coins}.
@@ -2425,7 +2425,7 @@
           ? 'Session complete!'
           : (noneCovered ? 'Not covered in class yet' : 'Nothing due right now!');
         const doneBody = sessionDone > 0
-          ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or prove these spec points with Practice Questions and Cakebread Questing.`
+          ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or prove these spec points with Practice Questions and Breadventure Land.`
           : (noneCovered
             ? `None of this deck has been marked as covered in class for Year ${userYear} yet. Turn on Study ahead if you want to revise topics ahead of lessons.`
             : 'All caught up on this deck for today.');

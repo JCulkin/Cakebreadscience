@@ -39,7 +39,7 @@
       waitFor: '.quest, #resources',
       steps: [
         { sel: '#cbs-hw-banner:not([hidden])', title: '🏠 Your Student Home', body: 'Jump straight back to your personal dashboard (homework, tests and one-click revision) anytime from here.' },
-        { sel: '.quest', title: '⚔️ Cakebread Questing', body: 'Answer IGCSE spec questions to power up your adventurer and team up with your class to defeat bosses on Breadventure Land.' },
+        { sel: '.quest', title: '⚔️ Breadventure Land', body: 'Answer IGCSE spec questions to power up your adventurer, explore the shared world map, and team up with your class to defeat bosses.' },
         { sel: '#resources .res', title: '📚 Everything in one account', body: 'Practice Questions, Flashcards, Revision Notes and Spec Trackers all share your progress — use whichever tool fits what you need.' }
       ]
     },
@@ -64,7 +64,7 @@
       waitFor: '#sugg, #topics',
       steps: [
         { sel: '#setwork .setw', title: '📌 Teacher homework', body: 'Any unfinished homework appears right here at the top — tap to launch with live progress tracking.' },
-        { sel: '#sugg', title: '⚡ Suggested next', body: 'Fastest way to pick what will secure spec points quickest. Same questions and progress as Questing, with no game on top.' },
+        { sel: '#sugg', title: '⚡ Suggested next', body: 'Fastest way to pick what will secure spec points quickest. Same questions and progress as Breadventure Land, with no game on top.' },
         { sel: '#topics', title: '🔬 Pick any topic or spec point', body: 'Expand "Spec points" on any row to drill one exact point or jump straight to its Revision Notes.' }
       ]
     },
@@ -89,7 +89,7 @@
       steps: [
         { sel: '.study-nav, .snav', title: '🎓 Step-by-step Revision Notes', body: 'Work through one short chunk at a time, or tap "All on one page" to view the whole topic.' },
         { sel: '.micro, .box, section.step', title: '✅ Quick checks & Examiner tips', body: 'Test yourself on every quick check before moving on — pulling answers from memory locks them in far better than re-reading.' },
-        { sel: '.next-hub', title: '🚀 Lock it in next', body: 'When you finish the notes, jump straight into Flashcards, Practice or Questing on this exact topic.' }
+        { sel: '.next-hub', title: '🚀 Lock it in next', body: 'When you finish the notes, jump straight into Flashcards, Practice Questions or Breadventure Land on this exact topic.' }
       ]
     }
   };

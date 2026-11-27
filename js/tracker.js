@@ -1,7 +1,7 @@
 /* One spec tracker (17 Nov 2026). One renderer for /specifications/{biology,chemistry,physics}.html (data-view="subject")
    and the overview /specifications/science.html (data-view="overview"), drawn from spec.js — no hand-written spec lists.
 
-   Colour = EVIDENCE, from the same progress as Cakebread Questing (QE.pointState): questions answered in Practice
+   Colour = EVIDENCE, from the same progress as Breadventure Land (QE.pointState): questions answered in Practice
    Questions (no game needed), Questing missions, Quick-quiz-free work, and Flashcards. So the tracker works with or
    without the game.
      not started · learning · secured (right on two different days) · rusty (secured, not practised for 3 weeks)
@@ -148,7 +148,7 @@
       <div class="tr-side">
         <span class="pill" data-pill></span>
         <div class="conf" role="group" aria-label="How sure do you feel?"><button type="button" data-conf="1" title="Not yet">Not yet</button><button type="button" data-conf="2" title="Unsure">Unsure</button><button type="button" data-conf="3" title="Confident">Confident</button></div>
-        <div class="acts">${hasQ ? `<a class="go" href="${Q}practice.html?point=${k}" title="Questions on this point, no game">Prove it →</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Cakebread Questing mission on this point">⚔️</a>` : ''}${nc ? `<a href="/Flashcards/?spec=${k}" title="Flashcards on this point">🃏 ${nc}</a>` : ''}${hasDrawer ? `<button type="button" data-res aria-expanded="false" title="Resources and key words">📚 ${res.length}${kws.length ? ` · 🔑${kws.length}` : ''}</button>` : ''}</div>
+        <div class="acts">${hasQ ? `<a class="go" href="${Q}practice.html?point=${k}" title="Questions on this point, no game">Prove it →</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Breadventure Land mission on this point">⚔️</a>` : ''}${nc ? `<a href="/Flashcards/?spec=${k}" title="Flashcards on this point">🃏 ${nc}</a>` : ''}${hasDrawer ? `<button type="button" data-res aria-expanded="false" title="Resources and key words">📚 ${res.length}${kws.length ? ` · 🔑${kws.length}` : ''}</button>` : ''}</div>
       </div>
       ${hasDrawer ? `<div class="tr-res" hidden>${kwHtml}${Object.entries(groups).map(([kind, links]) => `<div><b>${KIND[kind] || kind}</b> ${links.join(' · ')}</div>`).join('')}</div>` : ''}
     </div>`;
@@ -199,7 +199,7 @@
         return `<a class="ovc s-${s}" href="${s}.html"><h2>${SUBJ[s]}</h2>${bar(c)}<p><b>${c.secured}</b> of ${q} secured · ${c.learning} learning${c.rusty ? ` · ${c.rusty} rusty` : ''}</p>
           <p class="muted">${c.conf} rated confident${c.check ? ` · <b>${c.check} to check</b>` : ''}</p><span class="go">Open ${SUBJ[s]} →</span></a>`; }).join('')}
         <a class="ovc s-maths" href="maths.html"><h2>Maths</h2><p class="muted">The maths specification with worksheets for each topic.</p><span class="go">Open Maths →</span></a></div>
-      <p class="tr-lede" style="margin-top:14px">${uid ? '' : '<b>Not signed in:</b> progress shown is this browser only. '}Points turn green when proved in <a href="${Q}practice.html">Practice Questions</a> or Cakebread Questing (<a href="/Flashcards/">Flashcards</a> count for up to half).</p>`;
+      <p class="tr-lede" style="margin-top:14px">${uid ? '' : '<b>Not signed in:</b> progress shown is this browser only. '}Points turn green when proved in <a href="${Q}practice.html">Practice Questions</a> or Breadventure Land (<a href="/Flashcards/">Flashcards</a> count for up to half).</p>`;
   }
 
   function drawAll() {

@@ -283,7 +283,7 @@ function initEndTest(){
   let got = 0, tried = 0;
 
   out.insertAdjacentHTML('beforeend',
-    `<p class="check-note"><b>Immediate check:</b> this checks what you just read, so it doesn't count towards securing a spec point yet. Come back on another day in <b>Practice</b> or <b>Cakebread Questing</b> to lock it into long-term memory.</p>` +
+    `<p class="check-note"><b>Immediate check:</b> this checks what you just read, so it doesn't count towards securing a spec point yet. Come back on another day in <b>Practice</b> or <b>Breadventure Land</b> to lock it into long-term memory.</p>` +
     `<div class="score-bar"><span>Multiple choice score</span><span class="sc">0 / ${mcTotal}</span></div>`);
 
   qList.forEach((x, i) => {
