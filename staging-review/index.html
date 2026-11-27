@@ -128,6 +128,7 @@ body.sg-viewing #sgModal{display:flex}
         <a href="/">← Home</a>
         <a href="/interactive/lessons/">Lessons</a>
         <a href="/worksheets/science.html">Worksheets</a>
+        <a href="/booklets/">Booklets</a>
         <a href="/Flashcards/">Flashcards</a>
       </div>
     </div>
@@ -138,7 +139,7 @@ body.sg-viewing #sgModal{display:flex}
   <div class="tabs" id="tabs">
     <button type="button" class="tab" data-tab="decks">🎬 Projector Decks <span class="cnt" id="cnt-decks">…</span></button>
     <button type="button" class="tab" data-tab="guides">📖 Student Study Guides <span class="cnt" id="cnt-guides">…</span></button>
-    <button type="button" class="tab" data-tab="worksheets">📄 Worksheets <span class="cnt" id="cnt-worksheets">…</span></button>
+    <button type="button" class="tab" data-tab="printables">📄 Printables <span class="cnt" id="cnt-printables">…</span></button>
     <button type="button" class="tab" data-tab="flashcards">🃏 Flashcards <span class="cnt" id="cnt-flashcards">…</span></button>
   </div>
 </nav>
@@ -222,16 +223,19 @@ body.sg-viewing #sgModal{display:flex}
   const decksChecked = ALL_LESSONS.filter(l => l.status === 'checked');
   const guidesToReview = ALL_LESSONS.filter(l => l.split && l.studentStatus !== 'checked');
   const guidesChecked = ALL_LESSONS.filter(l => l.split && l.studentStatus === 'checked');
+  const printablesToReview = SHEETS.filter(s => s.underReview || !s.checked);
+  const printablesChecked = SHEETS.filter(s => !s.underReview && s.checked);
 
   document.getElementById('cnt-decks').textContent = String(decksToReview.length);
   document.getElementById('cnt-guides').textContent = String(guidesToReview.length);
-  document.getElementById('cnt-worksheets').textContent = String(SHEETS.length);
+  document.getElementById('cnt-printables').textContent = String(printablesToReview.length);
   document.getElementById('cnt-flashcards').textContent = String(FCARDS.length);
-  document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
+  document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (WD && WD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
 
-  let activeTab = (location.hash.replace(/^#/, '') || 'decks');
-  if (!['decks', 'guides', 'worksheets', 'flashcards'].includes(activeTab)) activeTab = 'decks';
-  const defaultFilter = tab => tab === 'flashcards' ? 'image' : (tab === 'worksheets' ? 'all' : 'review');
+  const normTab = h => h === 'worksheets' ? 'printables' : h;
+  let activeTab = normTab(location.hash.replace(/^#/, '') || 'decks');
+  if (!['decks', 'guides', 'printables', 'flashcards'].includes(activeTab)) activeTab = 'decks';
+  const defaultFilter = tab => tab === 'flashcards' ? 'image' : 'review';
   let activeFilter = defaultFilter(activeTab);
   let fcLimit = 24;
 
@@ -330,35 +334,59 @@ body.sg-viewing #sgModal{display:flex}
       + (list.map(cardHtml).join('') || '<p>All study guides in this filter are signed off! 🎉</p>');
   }
 
-  function renderWorksheets() {
+  function renderPrintables() {
     const fEl = document.getElementById('filters');
-    const subjs = [...new Set(SHEETS.map(s => s.subject))];
-    const fs = [['all', `All (${SHEETS.length})`], ...subjs.map(s => [s, `${s[0].toUpperCase() + s.slice(1)} (${SHEETS.filter(x => x.subject === s).length})`])];
-    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'all';
+    const bCount = printablesToReview.filter(s => s.format === 'booklet').length;
+    const wCount = printablesToReview.filter(s => s.format !== 'booklet').length;
+    const subjs = [...new Set(printablesToReview.map(s => s.subject))];
+    const fs = [
+      ['review', `Needs review (${printablesToReview.length})`],
+      ['booklet', `Topic Booklets (${bCount})`],
+      ['worksheet', `Worksheets (${wCount})`],
+      ...subjs.map(s => [s, `${s[0].toUpperCase() + s.slice(1)} (${printablesToReview.filter(x => x.subject === s).length})`]),
+      ...(printablesChecked.length ? [['checked', `Checked (${printablesChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
     fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
 
-    const list = SHEETS.filter(s => activeFilter === 'all' || s.subject === activeFilter);
+    const list = activeFilter === 'checked'
+      ? printablesChecked
+      : printablesToReview.filter(s => {
+          if (activeFilter === 'review') return true;
+          if (activeFilter === 'booklet') return s.format === 'booklet';
+          if (activeFilter === 'worksheet') return s.format !== 'booklet';
+          return s.subject === activeFilter;
+        });
+
     const cardHtml = s => {
+      const isBooklet = s.format === 'booklet';
       const pills = [`<span class="pill tier">${esc((s.tier || '').toUpperCase())}</span>`];
-      if (s.isNew) pills.push('<span class="pill newl">NEW SHEET</span>');
+      if (s.underReview) pills.push('<span class="pill rev">Under review</span>');
+      else if (s.checked) pills.push('<span class="pill chk">Checked ✓</span>');
+      if (s.kind === 'added') pills.push(isBooklet ? '<span class="pill newl">NEW BOOKLET</span>' : '<span class="pill newl">NEW SHEET</span>');
       else {
-        if (s.sheetChanged) pills.push('<span class="pill changed">Sheet changed</span>');
+        if (s.sheetChanged) pills.push(isBooklet ? '<span class="pill changed">Booklet changed</span>' : '<span class="pill changed">Sheet changed</span>');
         if (s.msChanged) pills.push('<span class="pill base">Mark scheme changed</span>');
       }
+      if (isBooklet && s.newPages) pills.push(`<span class="pill">${s.newPages} pages</span>`);
       if (s.spec) pills.push(`<span class="pill">${esc(s.spec)}</span>`);
       const col = SUBJ_COL[s.subject] || '#111';
       return `<div class="card" style="--c:${col}">
         <div class="card-row nocode">
           <div class="info"><h3>${esc(s.subjectName || s.subject)} · ${esc(s.title)}</h3><div class="pills">${pills.join('')}</div></div>
           <div class="acts">
-            <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Side-by-side sheet &amp; MS →</a>
+            <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Side-by-side ${isBooklet ? 'booklet' : 'sheet'} &amp; MS →</a>
             <a class="btn" href="${esc(s.url)}" target="_blank" rel="noopener">Open ↗</a>
           </div>
         </div>
       </div>`;
     };
-    document.getElementById('content').innerHTML = `<h2 class="sec-h">Worksheets &amp; Mark Schemes <small>${list.length} changed vs live main</small></h2>`
-      + (list.map(cardHtml).join('') || '<p>No worksheet changes found.</p>');
+
+    const heading = activeFilter === 'checked'
+      ? `Checked Printables <small>already approved (${printablesChecked.length})</small>`
+      : `Printables — Needs Review <small>${list.length} unchecked worksheets &amp; topic booklets · checked sheets hidden</small>`;
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || '<p>No printables match this filter.</p>');
   }
 
   function renderFlashcards() {
@@ -418,7 +446,7 @@ body.sg-viewing #sgModal{display:flex}
     document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === activeTab));
     if (activeTab === 'decks') renderDecks();
     else if (activeTab === 'guides') renderGuides();
-    else if (activeTab === 'worksheets') renderWorksheets();
+    else if (activeTab === 'printables') renderPrintables();
     else renderFlashcards();
   }
 
@@ -484,8 +512,8 @@ body.sg-viewing #sgModal{display:flex}
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && sgCur) closeStudyGuideModal(); });
 
   window.addEventListener('hashchange', () => {
-    const h = location.hash.replace(/^#/, '');
-    if (['decks', 'guides', 'worksheets', 'flashcards'].includes(h) && h !== activeTab) {
+    const h = normTab(location.hash.replace(/^#/, ''));
+    if (['decks', 'guides', 'printables', 'flashcards'].includes(h) && h !== activeTab) {
       activeTab = h; activeFilter = defaultFilter(h); render();
     }
   });

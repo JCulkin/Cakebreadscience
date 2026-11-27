@@ -1,15 +1,31 @@
-/* Screen-only cross-layer links for printable science worksheets.
- * Injects Flashcards, Practice, Study guide and Topic booklet links into
+/* Screen-only cross-layer links for printable science worksheets and topic booklets.
+ * Injects Flashcards, Practice, Study guide and Topic booklet / worksheet links into
  * .screen-links (which css/print-sheet.css hides completely on @media print).
  * Zero print footprint and zero effect on printable A4 pagination. */
 (function () {
   var bar = document.querySelector('.screen-links');
   if (!bar) return;
   var m = location.pathname.match(/\/worksheets\/(biology|chemistry|physics)\/(ks[34])\/([^/]+)\.html$/i);
-  if (!m) return;
+  var bm = !m && location.pathname.match(/\/booklets\/(biology|chemistry|physics)\/([^/]+)\.html$/i);
+  if (!m && !bm) return;
 
-  var subj = m[1].toLowerCase();
-  var stem = m[3].replace(/_ms$/i, '').replace(/_sa$/i, '');
+  var subj = (m ? m[1] : bm[1]).toLowerCase();
+  var stem = (m ? m[3] : bm[2]).replace(/_ms$/i, '').replace(/_sa$/i, '');
+
+  var BOOKLET_MAP = {
+    'chemistry/ionic-covalent-bonding': {
+      subs: ['C1f', 'C1g'],
+      lessons: [
+        { href: '/interactive/lessons/chemistry/1f/', text: 'Study guide (1f)' },
+        { href: '/interactive/lessons/chemistry/1g/', text: 'Study guide (1g)' }
+      ],
+      extra: [{ href: '/worksheets/chemistry/ks4/1fg1_bonding_electrons_charge.html', text: 'Worksheets (1fg1–2)' }]
+    },
+    'physics/forces-and-motion': {
+      subs: ['P1b', 'P1c'],
+      extra: [{ href: '/interactive/physics-equations/', text: 'Equations trainer' }]
+    }
+  };
 
   var MAP = {
     'biology/1_living_organisms':       { subs: ['B1a', 'B1b'], lesson: '/interactive/lessons/biology/1/' },
@@ -46,7 +62,7 @@
     'physics/8_review':                { subs: ['P8b', 'P8c'], lesson: '/interactive/lessons/physics/8/' }
   };
 
-  var info = MAP[subj + '/' + stem];
+  var info = bm ? BOOKLET_MAP[subj + '/' + stem] : MAP[subj + '/' + stem];
   if (!info) return;
 
   var items = [];
@@ -63,6 +79,9 @@
     items.push({ href: info.lesson, text: 'Study guide' });
   }
   if (info.booklet) items.push({ href: info.booklet, text: 'Topic booklet' });
+  if (info.extra && info.extra.length) {
+    for (var k = 0; k < info.extra.length; k++) items.push(info.extra[k]);
+  }
   if (!items.length) return;
 
   var anchor = bar.querySelector('.review-chip');

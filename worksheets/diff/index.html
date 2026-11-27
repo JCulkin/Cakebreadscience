@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Worksheet Comparer (Staging) · Cakebread Science</title>
+<title>Printables Comparer (Staging) · Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -104,11 +104,12 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
     <span id="baseInfo">Loading baseline…</span>
   </div>
   <header class="lhead">
-    <div class="kick">Staging Review Tool</div>
-    <h1>Worksheet <span>Comparer</span></h1>
+    <div class="kick">Staging Review Tool · Worksheets &amp; Topic Booklets</div>
+    <h1>Printables <span>Comparer</span></h1>
     <div class="meta">
-      <a href="/staging-review/#worksheets" style="background:#facc15;color:#111;padding:4px 10px;border-radius:4px;font-weight:800">← Staging Review Hub</a>
+      <a href="/staging-review/#printables" style="background:#facc15;color:#111;padding:4px 10px;border-radius:4px;font-weight:800">← Staging Review Hub</a>
       <a href="/worksheets/science.html">Science worksheets</a>
+      <a href="/booklets/">Question booklets</a>
       <a href="/interactive/lessons/diff/">Lesson comparer →</a>
       <a href="/">Home</a>
       <span id="summaryText"></span>
@@ -116,14 +117,14 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
   </header>
   <main class="wrap">
     <div class="filters" id="filters"></div>
-    <div id="sheetList"><p>Loading worksheet diffs…</p></div>
+    <div id="sheetList"><p>Loading printable diffs…</p></div>
   </main>
 </div>
 
 <div id="compareView">
   <div class="topbar">
-    <a class="tbtn" href="/staging-review/#worksheets">← Review Hub</a>
-    <button class="tbtn" id="btnBack">All sheets</button>
+    <a class="tbtn" href="/staging-review/#printables">← Review Hub</a>
+    <button class="tbtn" id="btnBack">All printables</button>
     <div class="wtitle" id="cmpTitle"></div>
     <button class="tbtn" id="btnSheet">📄 Sheet</button>
     <button class="tbtn" id="btnMs">✅ Mark scheme</button>
@@ -182,14 +183,19 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
   const baseLbl = DATA.baseLabel || DATA.baseRef;
   document.getElementById('baseInfo').textContent = `Comparing staging (${DATA.headCommit}) vs ${baseLbl} (${DATA.baseCommit})`;
   const allSheets = DATA.sheets || [];
+  const cntBooklets = allSheets.filter(s => s.format === 'booklet').length;
+  const cntReview = allSheets.filter(s => s.underReview).length;
   const cntAdded = allSheets.filter(s => s.kind === 'added').length;
   const cntChanged = allSheets.filter(s => s.kind === 'changed').length;
   const cntRemoved = allSheets.filter(s => s.kind === 'removed').length;
-  document.getElementById('summaryText').textContent = `${allSheets.length} worksheet${allSheets.length === 1 ? '' : 's'} changed (${cntChanged} edited · ${cntAdded} new${cntRemoved ? ` · ${cntRemoved} removed` : ''})`;
+  document.getElementById('summaryText').textContent = `${allSheets.length} printables (${cntBooklets} topic booklet${cntBooklets === 1 ? '' : 's'} · ${allSheets.length - cntBooklets} worksheets · ${cntReview} under review)`;
 
   let filter = 'all';
   const FILTS = [
     ['all', `All (${allSheets.length})`],
+    ['review', `Under review (${cntReview})`],
+    ['booklet', `Topic Booklets (${cntBooklets})`],
+    ['worksheet', `Worksheets (${allSheets.length - cntBooklets})`],
     ['changed', `Edited (${cntChanged})`],
     ['added', `New (${cntAdded})`],
     ['biology', 'Biology'],
@@ -198,16 +204,21 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
   ];
 
   function filteredList() {
-    return allSheets.filter(s => filter === 'all' || s.kind === filter || s.subject === filter);
+    return allSheets.filter(s => {
+      if (filter === 'all') return true;
+      if (filter === 'review') return s.underReview;
+      if (filter === 'booklet' || filter === 'worksheet') return s.format === filter;
+      return s.kind === filter || s.subject === filter;
+    });
   }
 
   function renderCard(s) {
     const col = SUBJ_COLOR[s.subject] || '#111';
     const pills = [`<span class="pill tier">${esc(s.tier)}</span>`];
-    if (s.kind === 'added') pills.push('<span class="pill added">+ NEW WORKSHEET</span>');
+    if (s.kind === 'added') pills.push(s.format === 'booklet' ? '<span class="pill added">+ NEW BOOKLET</span>' : '<span class="pill added">+ NEW WORKSHEET</span>');
     else if (s.kind === 'removed') pills.push('<span class="pill removed">− REMOVED</span>');
     else {
-      if (s.sheetChanged) pills.push('<span class="pill changed">Sheet changed</span>');
+      if (s.sheetChanged) pills.push(s.format === 'booklet' ? '<span class="pill changed">Booklet changed</span>' : '<span class="pill changed">Sheet changed</span>');
       if (s.msChanged) pills.push('<span class="pill ms">Mark scheme changed</span>');
     }
     if (s.underReview) pills.push('<span class="pill rev">Under review</span>');
@@ -249,6 +260,7 @@ body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:
       h = h.replace(/href=["'](?:\.\.\/|\/)*css\/(print-sheet|biology|chemistry|physics|maths)\.css["']/gi, (m, name) =>
         `href="/worksheets/diff/base-assets/${name}.css"`
       );
+      h = h.replace(/href=["'](?:\.\.\/|\/)*(?:booklets\/)?assets\/booklet\.css["']/gi, 'href="/worksheets/diff/base-assets/booklet.css"');
     }
     const baseTag = `<base href="${esc(location.origin + sheet.baseUrl)}">`;
     const helperStyle = `<style>.screen-links,.cbs-home-bar,.cbs-home-float{display:none!important}html{background:#d6d3cb}body{margin:0 auto!important;padding:12px 0 28px!important}</style>`;
