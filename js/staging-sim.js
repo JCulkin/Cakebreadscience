@@ -28,30 +28,22 @@
     var in3 = dstr(3), in4 = dstr(4), in5 = dstr(5), in6 = dstr(6), in14 = dstr(14);
     var now = Date.now(), past = now - 3600e3;
 
-    // Secured (2 different days), Learning (nearly secured = 1 day), Rusty (25 days ago)
-    var q = {
-      // Bio 1 (full topic secured)
-      'B1.1-01': { n: 2, r: 2, c: 2, s: 1, l: d2 }, 'B1.1-02': { n: 2, r: 2, c: 2, s: 1, l: d2 },
-      'B1.2-01': { n: 2, r: 2, c: 2, s: 1, l: d3 }, 'B1.2-02': { n: 2, r: 2, c: 2, s: 1, l: d3 },
-      'B1.3-01': { n: 2, r: 2, c: 2, s: 1, l: d3 }, 'B1.4-01': { n: 2, r: 2, c: 2, s: 1, l: d2 },
-      // Bio 2a/2b/2c/2d/2f mix (some secured, some nearly secured, some practised for hw_pract)
-      'B2.1-01': { n: 2, r: 2, c: 2, s: 1, l: d2 }, 'B2.1-02': { n: 2, r: 2, c: 2, s: 1, l: d2 },
-      'B2.2-01': { n: 2, r: 2, c: 2, s: 1, l: d2 }, 'B2.2-02': { n: 2, r: 2, c: 2, s: 1, l: d2 },
-      'B2.3-01': { n: 1, r: 1, c: 1, s: 0, l: yest }, 'B2.3-02': { n: 1, r: 1, c: 1, s: 0, l: yest },
-      'B2.7-01': { n: 2, r: 2, c: 2, s: 1, l: today }, 'B2.7-02': { n: 1, r: 1, c: 1, s: 0, l: today },
-      'B2.8-01': { n: 1, r: 1, c: 1, s: 0, l: today }, 'B2.9-01': { n: 1, r: 1, c: 1, s: 0, l: today },
-      'B2.10-01': { n: 1, r: 1, c: 1, s: 0, l: today }, 'B2.11-01': { n: 1, r: 1, c: 1, s: 0, l: today },
-      'B2.15-01': { n: 2, r: 1, c: 1, s: 0, l: d5 },
-      // Chem 1 (mix: C1.14 rusty, C1.42 nearly secured)
-      'C1.1-01': { n: 2, r: 2, c: 2, s: 1, l: d5 }, 'C1.2-01': { n: 2, r: 2, c: 2, s: 1, l: d5 },
-      'C1.8-01': { n: 2, r: 2, c: 2, s: 1, l: d5 }, 'C1.14-01': { n: 2, r: 2, c: 2, s: 1, l: d25 },
-      'C1.15-01': { n: 2, r: 2, c: 2, s: 1, l: d25 }, 'C1.37-01': { n: 2, r: 2, c: 2, s: 1, l: d3 },
-      'C1.38-01': { n: 2, r: 2, c: 2, s: 1, l: d3 }, 'C1.42-01': { n: 1, r: 1, c: 1, s: 0, l: yest },
-      // Phys 1 & 2 & 4 & 8
-      'P1.3-01': { n: 2, r: 2, c: 2, s: 1, l: d3 }, 'P1.4-01': { n: 2, r: 2, c: 2, s: 1, l: d3 },
-      'P1.17-01': { n: 1, r: 1, c: 1, s: 0, l: yest }, 'P2.4-01': { n: 2, r: 2, c: 2, s: 1, l: d25 },
-      'P4.2-01': { n: 2, r: 2, c: 2, s: 1, l: d3 }, 'P8.2-01': { n: 2, r: 2, c: 2, s: 1, l: d2 }
-    };
+    // 17 genuinely secured spec points (4 Qs each -> fills Bio/Chem/Phys progress bars + 2 rusty points >21d old)
+    var q = {};
+    function secPt(p, dFirst, dLast) {
+      for (var n = 1; n <= 4; n++) q[p + '-0' + n] = { n: 2, r: 2, c: 2, d: dFirst, l: dLast };
+    }
+    ['B1.1', 'B1.2', 'B1.3', 'B1.4', 'B2.1', 'B2.2'].forEach(function (p) { secPt(p, d8, d2); });
+    ['C1.1', 'C1.2', 'C1.8', 'C1.37', 'C1.38'].forEach(function (p) { secPt(p, d8, d3); });
+    ['P1.3', 'P1.4', 'P4.2', 'P8.2'].forEach(function (p) { secPt(p, d8, d3); });
+    secPt('C1.14', d25, d25);
+    secPt('P2.4', d25, d25);
+    // Nearly secured (ready for Day 2) + partial practise for hw_pract (B2c)
+    q['B2.3-01'] = { n: 1, r: 1, c: 1, d: yest, l: yest }; q['B2.3-02'] = { n: 1, r: 1, c: 1, d: yest, l: yest };
+    q['B2.7-01'] = { n: 2, r: 2, c: 2, d: yest, l: today }; q['B2.7-02'] = { n: 1, r: 1, c: 1, d: today, l: today };
+    q['B2.8-01'] = { n: 1, r: 1, c: 1, d: today, l: today }; q['B2.9-01'] = { n: 1, r: 1, c: 1, d: today, l: today };
+    q['B2.10-01'] = { n: 1, r: 1, c: 1, d: today, l: today }; q['B2.11-01'] = { n: 1, r: 1, c: 1, d: today, l: today };
+    q['C1.42-01'] = { n: 1, r: 1, c: 1, d: yest, l: yest }; q['P1.17-01'] = { n: 1, r: 1, c: 1, d: yest, l: yest };
 
     var daysAct = {};
     daysAct[today] = 1; daysAct[yest] = 1; daysAct[d2] = 1; daysAct[d3] = 1; daysAct[d5] = 1; daysAct[d8] = 1;
@@ -82,7 +74,7 @@
         correct: 86,
         updatedAt: now,
         q: q,
-        weak: { 'B2.13': 1, 'C1.42': 1 },
+        weak: { 'B2.13': yest, 'C1.42': yest },
         cards: {}
       },
       questing: {
@@ -376,63 +368,81 @@
     };
   }
 
-  /* Intercept window.firebase cleanly while letting compat SDK scripts register without errors */
+  /* Replace window.firebase with our self-contained localStorage sandbox.
+     Ignores subsequent UMD assignments from firebase-*-compat.js and provides no-op INTERNAL hooks
+     so firebase-app/auth/firestore/database-compat.js load silently with zero real Firebase traffic. */
   function installProxy() {
     var sim = makeSimFirebase();
-    var realFb = window.firebase || null;
-    var wrapped = null;
-    function wrap(target) {
-      if (!target || typeof Proxy === 'undefined') return target;
-      return new Proxy(target, {
-        get: function (t, prop) {
-          if (prop === 'apps') return [sim.simApp];
-          if (prop === 'initializeApp' || prop === 'app') return function () { return sim.simApp; };
-          if (prop === 'auth') return sim.authFn;
-          if (prop === 'firestore') return sim.fsFn;
-          if (prop === 'database') return sim.rtFn;
-          return Reflect.get(t, prop);
-        }
-      });
-    }
-    if (realFb) wrapped = wrap(realFb);
+    var noop = function () {};
+    var simFb = {
+      apps: [sim.simApp],
+      SDK_VERSION: '9.22.2',
+      initializeApp: function () { return sim.simApp; },
+      app: function () { return sim.simApp; },
+      auth: sim.authFn,
+      firestore: sim.fsFn,
+      database: sim.rtFn,
+      registerVersion: noop,
+      _registerComponent: noop,
+      onLog: noop,
+      setLogLevel: noop,
+      INTERNAL: {
+        registerComponent: noop,
+        registerVersion: noop,
+        removeApp: noop,
+        useAsService: noop,
+        extendNamespace: noop,
+        factories: {},
+        deepExtend: function (t) { return t; },
+        createSubscribe: function () { return function () { return noop; }; }
+      }
+    };
+    simFb.default = simFb;
     try {
       Object.defineProperty(window, 'firebase', {
         configurable: true,
-        get: function () { return wrapped; },
-        set: function (v) { realFb = v; wrapped = wrap(v); }
+        enumerable: true,
+        get: function () { return simFb; },
+        set: noop
       });
     } catch (e) {
-      if (wrapped) { try { window.firebase = wrapped; } catch (e2) {} }
+      try { window.firebase = simFb; } catch (e2) {}
     }
+  }
+
+  function clearSimCaches() {
+    try {
+      localStorage.removeItem('cbs.tour.v1');
+      localStorage.removeItem('cbs.school');
+      localStorage.removeItem('specquiz.camp.' + SIM_UID);
+      localStorage.removeItem('cbs.questing.game.' + SIM_UID);
+      localStorage.removeItem('cbs.questing.uid');
+      sessionStorage.removeItem('cbs.dir');
+      sessionStorage.removeItem('cbs.work.' + SIM_UID);
+      sessionStorage.removeItem('cbs.questing.reloaded');
+    } catch (e) {}
   }
 
   function start(goToday) {
     try {
       localStorage.setItem(FLAG, '1');
       localStorage.setItem(DBK, JSON.stringify(seedData()));
-      localStorage.removeItem('cbs.tour.v1');
-      localStorage.removeItem('cbs.school');
-      sessionStorage.removeItem('cbs.dir');
-      sessionStorage.removeItem('cbs.work.' + SIM_UID);
     } catch (e) {}
+    clearSimCaches();
     if (goToday) location.href = '/today/';
     else location.reload();
   }
   function reset() {
-    try {
-      localStorage.setItem(DBK, JSON.stringify(seedData()));
-      localStorage.removeItem('cbs.tour.v1');
-      sessionStorage.removeItem('cbs.work.' + SIM_UID);
-    } catch (e) {}
+    try { localStorage.setItem(DBK, JSON.stringify(seedData())); } catch (e) {}
+    clearSimCaches();
     location.reload();
   }
   function exit() {
     try {
       localStorage.removeItem(FLAG);
       localStorage.removeItem(DBK);
-      sessionStorage.removeItem('cbs.dir');
-      sessionStorage.removeItem('cbs.work.' + SIM_UID);
     } catch (e) {}
+    clearSimCaches();
     location.href = '/?dir=1';
   }
 
