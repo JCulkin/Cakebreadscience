@@ -17,8 +17,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow',Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
 a{color:inherit}
-button,input,textarea{font-family:'Barlow',Arial,sans-serif}
-button{cursor:pointer}
+button{font-family:'Barlow',Arial,sans-serif;cursor:pointer}
 
 .stbar{background:var(--gold);color:#111;font:800 13px/1.2 'Barlow',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:7px 20px;border-bottom:2px solid #111;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .lhead{background:#111;color:var(--paper);padding:20px 26px 18px;border-bottom:4px solid var(--gold)}
@@ -30,16 +29,9 @@ button{cursor:pointer}
 .lhead .meta a{color:#7fd39b;font-weight:700;text-decoration:none}
 .lhead .meta a:hover{text-decoration:underline}
 
-.rev-bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .rbtn{font:800 14px/1 'Barlow',sans-serif;padding:9px 14px;border:2px solid #111;border-radius:6px;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
 .rbtn.gold{background:var(--gold);color:#111}
 .rbtn.gold:hover{background:#fde047}
-.rbtn.dark{background:#222;color:#eee;border-color:#555}
-.rbtn.dark:hover{background:#333}
-.rbtn.good{background:var(--greenBg);border-color:var(--green);color:var(--green)}
-.rbtn.good.on{background:var(--green);color:#fff}
-.rbtn.fix{background:var(--redBg);border-color:var(--red);color:var(--red)}
-.rbtn.fix.on{background:var(--red);color:#fff}
 
 .tabs-wrap{background:#1c1c1c;border-bottom:3px solid #111;padding:0 20px;position:sticky;top:0;z-index:30}
 .tabs{max-width:1160px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:10px 0}
@@ -54,16 +46,12 @@ button{cursor:pointer}
 .filters{display:flex;gap:6px;flex-wrap:wrap}
 .fbtn{font:700 13.5px/1 'Barlow',sans-serif;padding:7px 12px;border:2px solid #111;border-radius:5px;background:#fff;color:#111}
 .fbtn.on{background:#111;color:var(--gold)}
-.tally{font:700 14px/1.2 'Barlow',sans-serif;color:#333;background:#fff;border:2px solid #111;padding:7px 12px;border-radius:5px}
-.tally b.g{color:var(--green)} .tally b.r{color:var(--red)}
 
 .sec-h{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;border-bottom:3px solid #111;padding-bottom:4px;margin:22px 0 12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .sec-h:first-child{margin-top:0}
 .sec-h small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--muted);text-transform:none}
 
 .card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;padding:12px 16px;margin-bottom:10px}
-.card.m-good{border-left-color:var(--green);background:#f7fdf9}
-.card.m-fix{border-left-color:var(--red);background:#fff8f8}
 .card-row{display:grid;grid-template-columns:64px 1fr auto;gap:8px 14px;align-items:center}
 .card-row.nocode{grid-template-columns:1fr auto}
 .code{font:900 28px/1 'Barlow Condensed',sans-serif;color:var(--c,#111);text-transform:uppercase}
@@ -84,21 +72,10 @@ button{cursor:pointer}
 .btn.primary{background:#111;color:var(--gold)}
 .btn.primary:hover{background:#222}
 .btn:hover{background:#f5f2e8}
-.btn.mbtn{padding:7px 10px;font-size:13px}
-.btn.mbtn.g{border-color:var(--green);color:var(--green)}
-.btn.mbtn.g.on{background:var(--green);color:#fff}
-.btn.mbtn.f{border-color:var(--red);color:var(--red)}
-.btn.mbtn.f.on{background:var(--red);color:#fff}
-
-.note-row{margin-top:9px;padding-top:9px;border-top:1px dashed #d4cfc2;display:flex;gap:8px;align-items:center}
-.note-row input{flex:1;padding:6px 10px;border:1.5px solid #bbb;border-radius:5px;font-size:14px;background:#fff}
-.note-row input:focus{outline:none;border-color:#111}
 @media(max-width:760px){.card-row{grid-template-columns:52px 1fr}.card-row .acts,.card-row.nocode .acts{grid-column:1/-1;justify-content:flex-start}}
 
 /* Flashcard side-by-side grid */
 .fc-card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;margin-bottom:14px;overflow:hidden}
-.fc-card.m-good{border-left-color:var(--green)}
-.fc-card.m-fix{border-left-color:var(--red)}
 .fc-head{background:#f7f5ee;border-bottom:1.5px solid #ddd;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .fc-pair{display:grid;grid-template-columns:1fr 1fr;gap:0}
 @media(max-width:760px){.fc-pair{grid-template-columns:1fr}}
@@ -111,8 +88,6 @@ button{cursor:pointer}
 .fc-side img{max-width:100%;max-height:220px;height:auto;display:block;margin:6px auto;border:1px solid #ddd;border-radius:4px;background:#fff}
 .fc-side .fc-points{margin:4px 0 0 18px}
 .fc-side .fc-points li{margin:2px 0}
-.fc-note{padding:8px 14px;background:#fcfbf8;border-top:1px dashed #ddd;display:flex;gap:8px;align-items:center}
-.fc-note input{flex:1;padding:6px 10px;border:1.5px solid #bbb;border-radius:5px;font-size:14px}
 
 /* Full-screen Student Study Guide side-by-side modal comparer */
 body.sg-viewing{overflow:hidden}
@@ -122,10 +97,7 @@ body.sg-viewing #sgModal{display:flex}
 .sg-top .tbtn{font:700 13.5px/1 'Barlow',sans-serif;padding:7px 11px;border:1.5px solid #555;background:#222;color:#eee;border-radius:5px;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
 .sg-top .tbtn:hover{background:#333;border-color:#888}
 .sg-top .tbtn.on{background:var(--gold);color:#111;border-color:var(--gold)}
-.sg-top .tbtn.g.on{background:var(--green);color:#fff;border-color:var(--green)}
-.sg-top .tbtn.f.on{background:var(--red);color:#fff;border-color:var(--red)}
 .sg-top .sg-title{font:800 16px/1.1 'Barlow',sans-serif;color:#fff;margin-right:auto;display:flex;align-items:center;gap:8px}
-.sg-top input.sg-note{background:#222;color:#fff;border:1.5px solid #555;border-radius:5px;padding:6px 10px;font-size:13.5px;min-width:210px}
 .sg-split{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#0d0d0d}
 .sg-split.single{grid-template-columns:1fr}
 .sg-split.single .sg-pane.before{display:none}
@@ -140,8 +112,6 @@ body.sg-viewing #sgModal{display:flex}
 .sg-fwrap.mobile iframe{width:390px;max-width:100%;border-left:2px solid #444;border-right:2px solid #444}
 .sg-empty{margin:auto;text-align:center;color:#aaa;padding:30px;max-width:360px}
 .sg-empty b{display:block;font:900 26px/1.1 'Barlow Condensed',sans-serif;color:#eee;text-transform:uppercase;margin-bottom:8px}
-
-.toast{position:fixed;bottom:20px;right:20px;background:#111;color:var(--gold);border:2px solid var(--gold);padding:10px 16px;border-radius:8px;font-weight:800;z-index:200;display:none}
 </style>
 </head>
 <body>
@@ -152,19 +122,14 @@ body.sg-viewing #sgModal{display:flex}
 <header class="lhead">
   <div class="lhead-top">
     <div>
-      <div class="kick">All Staging Changes In One Place</div>
+      <div class="kick">Items Waiting For Review</div>
       <h1>Staging <span>Review Hub</span></h1>
       <div class="meta">
         <a href="/">← Home</a>
         <a href="/interactive/lessons/">Lessons</a>
         <a href="/worksheets/science.html">Worksheets</a>
         <a href="/Flashcards/">Flashcards</a>
-        <a href="/admin/review.html#lessons">Admin Review (signed in) ↗</a>
       </div>
-    </div>
-    <div class="rev-bar">
-      <button type="button" class="rbtn gold" id="btnCopy">📋 Copy review notes for chat</button>
-      <button type="button" class="rbtn dark" id="btnClear">Reset local marks</button>
     </div>
   </div>
 </header>
@@ -181,7 +146,6 @@ body.sg-viewing #sgModal{display:flex}
 <main class="wrap">
   <div class="controls">
     <div class="filters" id="filters"></div>
-    <div class="tally" id="tally">Loading…</div>
   </div>
   <div id="content"><p>Loading staging changes…</p></div>
 </main>
@@ -194,9 +158,6 @@ body.sg-viewing #sgModal{display:flex}
     <button type="button" class="tbtn on" id="sgModeSplit">⚖️ Split</button>
     <button type="button" class="tbtn" id="sgModeFull">📖 Full After</button>
     <button type="button" class="tbtn" id="sgMobile">📱 390px</button>
-    <button type="button" class="tbtn g" id="sgGood">✓ Good</button>
-    <button type="button" class="tbtn f" id="sgFix">✏️ Needs a fix</button>
-    <input type="text" class="sg-note" id="sgNote" placeholder="Optional note for this guide…">
     <a class="tbtn" id="sgOpenTab" href="#" target="_blank" rel="noopener">Open ↗</a>
   </div>
   <div class="sg-split" id="sgSplit">
@@ -211,8 +172,6 @@ body.sg-viewing #sgModal{display:flex}
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script>
 (async function(){
   if (/^(www\.)?cakebreadscience\.com$/i.test(location.hostname)) {
@@ -222,25 +181,6 @@ body.sg-viewing #sgModal{display:flex}
 
   const SUBJ_COL = { biology: '#1d6b2f', chemistry: '#8c0013', physics: '#a85d00', maths: '#7b1fa2' };
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const STORE_KEY = 'cbs.staging.review.v1';
-
-  let MARKS = {};
-  try { MARKS = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { MARKS = {}; }
-  const saveMarks = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(MARKS)); } catch (e) {} updateTally(); };
-  const getMark = id => MARKS[id] || { state: '', note: '' };
-  const setMark = (id, state, note) => {
-    const cur = getMark(id);
-    const next = { state: state !== undefined ? state : cur.state, note: note !== undefined ? note : cur.note };
-    if (!next.state && !next.note) delete MARKS[id]; else MARKS[id] = next;
-    saveMarks();
-  };
-
-  function toast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.style.display = 'block';
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => { t.style.display = 'none'; }, 2400);
-  }
 
   const fetchJson = url => fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
   const [LJ, LD, WD, FD] = await Promise.all([
@@ -250,7 +190,6 @@ body.sg-viewing #sgModal{display:flex}
     fetchJson('/staging-review/flashcards-diff.json')
   ]);
 
-  // Flatten lessons from lessons.json
   const ALL_LESSONS = [];
   if (LJ && LJ.subjects) {
     LJ.subjects.forEach(s => (s.sections || []).forEach(sec => (sec.topics || []).forEach(t => {
@@ -279,57 +218,46 @@ body.sg-viewing #sgModal{display:flex}
   const SHEETS = (WD && WD.sheets) || [];
   const FCARDS = (FD && FD.cards) || [];
 
-  const deckReviewCount = ALL_LESSONS.filter(l => l.status !== 'checked').length;
-  const guideReviewCount = ALL_LESSONS.filter(l => l.split && l.studentStatus !== 'checked').length;
-  document.getElementById('cnt-decks').textContent = `${deckReviewCount} / ${ALL_LESSONS.length}`;
-  document.getElementById('cnt-guides').textContent = `${guideReviewCount} / ${ALL_LESSONS.length}`;
+  const decksToReview = ALL_LESSONS.filter(l => l.status !== 'checked');
+  const decksChecked = ALL_LESSONS.filter(l => l.status === 'checked');
+  const guidesToReview = ALL_LESSONS.filter(l => l.split && l.studentStatus !== 'checked');
+  const guidesChecked = ALL_LESSONS.filter(l => l.split && l.studentStatus === 'checked');
+
+  document.getElementById('cnt-decks').textContent = String(decksToReview.length);
+  document.getElementById('cnt-guides').textContent = String(guidesToReview.length);
   document.getElementById('cnt-worksheets').textContent = String(SHEETS.length);
   document.getElementById('cnt-flashcards').textContent = String(FCARDS.length);
   document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
 
   let activeTab = (location.hash.replace(/^#/, '') || 'decks');
   if (!['decks', 'guides', 'worksheets', 'flashcards'].includes(activeTab)) activeTab = 'decks';
-  let activeFilter = 'all';
+  const defaultFilter = tab => tab === 'flashcards' ? 'image' : (tab === 'worksheets' ? 'all' : 'review');
+  let activeFilter = defaultFilter(activeTab);
   let fcLimit = 24;
-
-  function updateTally() {
-    const vals = Object.values(MARKS);
-    const g = vals.filter(v => v.state === 'good').length;
-    const f = vals.filter(v => v.state === 'fix').length;
-    document.getElementById('tally').innerHTML = `Your local marks: <b class="g">✓ ${g} approved</b> · <b class="r">✏️ ${f} need fixes</b>`;
-  }
-
-  function markButtonsHtml(key, placeholder) {
-    const m = getMark(key);
-    return {
-      cls: m.state === 'good' ? ' m-good' : m.state === 'fix' ? ' m-fix' : '',
-      btns: `<button type="button" class="btn mbtn g${m.state === 'good' ? ' on' : ''}" data-mk="${esc(key)}" data-st="good">✓ Good</button>`
-          + `<button type="button" class="btn mbtn f${m.state === 'fix' ? ' on' : ''}" data-mk="${esc(key)}" data-st="fix">✏️ Fix</button>`,
-      note: `<div class="note-row"><input type="text" data-note="${esc(key)}" value="${esc(m.note)}" placeholder="${esc(placeholder || 'Add a review note or fix request (saved locally)…')}"></div>`
-    };
-  }
 
   function renderDecks() {
     const fEl = document.getElementById('filters');
-    const fs = [['all', `All (${ALL_LESSONS.length})`], ['review', `Needs review (${deckReviewCount})`], ['biology', 'Biology'], ['chemistry', 'Chemistry'], ['physics', 'Physics']];
-    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'all';
+    const fs = [
+      ['review', `Needs review (${decksToReview.length})`],
+      ['biology', `Biology (${decksToReview.filter(l => l.subject === 'biology').length})`],
+      ['chemistry', `Chemistry (${decksToReview.filter(l => l.subject === 'chemistry').length})`],
+      ['physics', `Physics (${decksToReview.filter(l => l.subject === 'physics').length})`],
+      ...(decksChecked.length ? [['checked', `Checked (${decksChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
     fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
 
     const diffById = {};
     DECKS.forEach(d => { diffById[d.id] = d; });
 
-    const list = ALL_LESSONS.filter(l => {
-      if (activeFilter === 'review') return l.status !== 'checked';
-      if (['biology', 'chemistry', 'physics'].includes(activeFilter)) return l.subject === activeFilter;
-      return true;
-    });
+    const list = activeFilter === 'checked'
+      ? decksChecked
+      : decksToReview.filter(l => activeFilter === 'review' || l.subject === activeFilter);
 
     const cardHtml = l => {
       const d = diffById[l.id];
-      const key = `deck|${l.subject}/${l.code}`;
-      const mk = markButtonsHtml(key, `Note for ${l.subjectName} ${l.code} projector deck…`);
       const pills = [];
-      if (l.status === 'checked') pills.push('<span class="pill chk">Checked</span>');
+      if (l.status === 'checked') pills.push('<span class="pill chk">Checked ✓</span>');
       else pills.push('<span class="pill rev">Under review</span>');
       if (d) {
         if (d.beforeLabel) pills.push(`<span class="pill base">vs ${esc(d.beforeLabel)}</span>`);
@@ -341,64 +269,65 @@ body.sg-viewing #sgModal{display:flex}
         }
       }
       const col = SUBJ_COL[l.subject] || '#111';
-      return `<div class="card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+      return `<div class="card" style="--c:${col}">
         <div class="card-row">
           <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
           <div class="info"><h3>${esc(l.title)}</h3><div class="pills">${pills.join('')}</div></div>
           <div class="acts">
             ${d ? `<a class="btn primary" href="/interactive/lessons/diff/#${esc(l.id)}">⚖️ Side-by-side slides →</a>` : ''}
             <a class="btn" href="${esc(l.deckUrl)}" target="_blank" rel="noopener">▶ Present draft</a>
-            ${mk.btns}
           </div>
-        </div>${mk.note}
+        </div>
       </div>`;
     };
 
-    document.getElementById('content').innerHTML = `<h2 class="sec-h">Projector Decks <small>click Side-by-side slides to see only what changed since your last checked version</small></h2>`
-      + (list.map(cardHtml).join('') || '<p>No decks match this filter.</p>');
+    const heading = activeFilter === 'checked'
+      ? `Checked Projector Decks <small>already signed off and frozen</small>`
+      : `Projector Decks — Needs Review <small>only decks still waiting for approval · checked decks hidden</small>`;
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || '<p>All projector decks in this filter are checked! 🎉</p>');
   }
 
   function renderGuides() {
     const fEl = document.getElementById('filters');
-    const fs = [['all', `All (${ALL_LESSONS.length})`], ['review', `Needs review (${guideReviewCount})`], ['checked', `Signed off (${ALL_LESSONS.length - guideReviewCount})`], ['biology', 'Biology'], ['chemistry', 'Chemistry'], ['physics', 'Physics']];
-    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'all';
+    const fs = [
+      ['review', `Needs review (${guidesToReview.length})`],
+      ['biology', `Biology (${guidesToReview.filter(l => l.subject === 'biology').length})`],
+      ['chemistry', `Chemistry (${guidesToReview.filter(l => l.subject === 'chemistry').length})`],
+      ['physics', `Physics (${guidesToReview.filter(l => l.subject === 'physics').length})`],
+      ...(guidesChecked.length ? [['checked', `Signed off (${guidesChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
     fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
 
-    const list = ALL_LESSONS.filter(l => {
-      if (activeFilter === 'review') return l.studentStatus !== 'checked';
-      if (activeFilter === 'checked') return l.studentStatus === 'checked';
-      if (['biology', 'chemistry', 'physics'].includes(activeFilter)) return l.subject === activeFilter;
-      return true;
-    });
+    const list = activeFilter === 'checked'
+      ? guidesChecked
+      : guidesToReview.filter(l => activeFilter === 'review' || l.subject === activeFilter);
 
     const cardHtml = l => {
-      const key = `guide|${l.subject}/${l.code}`;
-      const mk = markButtonsHtml(key, `Note for ${l.subjectName} ${l.code} student study guide…`);
       const pills = [
         l.studentStatus === 'checked' ? '<span class="pill chk">Signed off ✓</span>' : '<span class="pill rev">Needs review</span>',
         l.beforeGuideUrl ? `<span class="pill base">Compare vs v${esc(l.latestV)}</span>` : '<span class="pill newl">First split study guide</span>',
         `<span class="pill">Spec ${esc(l.spec)}</span>`
       ];
       const col = SUBJ_COL[l.subject] || '#111';
-      return `<div class="card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+      return `<div class="card" style="--c:${col}">
         <div class="card-row">
           <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
           <div class="info"><h3>${esc(l.title)}</h3><div class="pills">${pills.join('')}</div></div>
           <div class="acts">
             <button type="button" class="btn primary" data-sg="${esc(l.id)}">⚖️ Side-by-side compare</button>
             <a class="btn" href="${esc(l.draftUrl)}" target="_blank" rel="noopener">Open draft ↗</a>
-            ${mk.btns}
           </div>
-        </div>${mk.note}
+        </div>
       </div>`;
     };
 
-    const need = list.filter(l => l.studentStatus !== 'checked');
-    const done = list.filter(l => l.studentStatus === 'checked');
-    let html = '';
-    if (need.length) html += `<h2 class="sec-h">Student Study Guides — Needs Review <small>${need.length} redesigned split study guides waiting for sign-off</small></h2>` + need.map(cardHtml).join('');
-    if (done.length) html += `<h2 class="sec-h">Already Signed Off <small>updated automatically with clickable spec chips &amp; Key Words links</small></h2>` + done.map(cardHtml).join('');
-    document.getElementById('content').innerHTML = html || '<p>No study guides match this filter.</p>';
+    const heading = activeFilter === 'checked'
+      ? `Signed-Off Student Study Guides <small>already approved</small>`
+      : `Student Study Guides — Needs Review <small>${list.length} waiting for approval · signed-off guides hidden</small>`;
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || '<p>All study guides in this filter are signed off! 🎉</p>');
   }
 
   function renderWorksheets() {
@@ -410,8 +339,6 @@ body.sg-viewing #sgModal{display:flex}
 
     const list = SHEETS.filter(s => activeFilter === 'all' || s.subject === activeFilter);
     const cardHtml = s => {
-      const key = `sheet|${s.id}`;
-      const mk = markButtonsHtml(key, `Note for worksheet ${s.title}…`);
       const pills = [`<span class="pill tier">${esc((s.tier || '').toUpperCase())}</span>`];
       if (s.isNew) pills.push('<span class="pill newl">NEW SHEET</span>');
       else {
@@ -420,15 +347,14 @@ body.sg-viewing #sgModal{display:flex}
       }
       if (s.spec) pills.push(`<span class="pill">${esc(s.spec)}</span>`);
       const col = SUBJ_COL[s.subject] || '#111';
-      return `<div class="card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+      return `<div class="card" style="--c:${col}">
         <div class="card-row nocode">
           <div class="info"><h3>${esc(s.subjectName || s.subject)} · ${esc(s.title)}</h3><div class="pills">${pills.join('')}</div></div>
           <div class="acts">
             <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Side-by-side sheet &amp; MS →</a>
             <a class="btn" href="${esc(s.url)}" target="_blank" rel="noopener">Open ↗</a>
-            ${mk.btns}
           </div>
-        </div>${mk.note}
+        </div>
       </div>`;
     };
     document.getElementById('content').innerHTML = `<h2 class="sec-h">Worksheets &amp; Mark Schemes <small>${list.length} changed vs live main</small></h2>`
@@ -458,14 +384,11 @@ body.sg-viewing #sgModal{display:flex}
 
     const shown = list.slice(0, fcLimit);
     const cardHtml = fc => {
-      const key = `card|${fc.id}`;
-      const mk = markButtonsHtml(key, `Note for flashcard ${fc.id}…`);
       const col = SUBJ_COL[fc.subject] || '#111';
       const badge = fc.kind === 'image' ? '<span class="pill changed">Image overhauled</span>' : fc.kind === 'added' ? '<span class="pill newl">New card</span>' : '<span class="pill base">Back reworked</span>';
-      return `<div class="fc-card${mk.cls}" style="--c:${col}" data-card="${esc(key)}">
+      return `<div class="fc-card" style="--c:${col}">
         <div class="fc-head">
           <div><b>${esc(fc.subjectName)} · ${esc(fc.spec || fc.sub)}</b> <small style="color:#666">(${esc(fc.id)})</small> ${badge}</div>
-          <div class="acts">${mk.btns}</div>
         </div>
         <div class="fc-pair">
           <div class="fc-side before">
@@ -478,7 +401,6 @@ body.sg-viewing #sgModal{display:flex}
             <div>${fc.newBack}</div>
           </div>
         </div>
-        <div class="fc-note"><input type="text" data-note="${esc(key)}" value="${esc(getMark(key).note)}" placeholder="Add a note for ${esc(fc.id)}…"></div>
       </div>`;
     };
 
@@ -498,20 +420,17 @@ body.sg-viewing #sgModal{display:flex}
     else if (activeTab === 'guides') renderGuides();
     else if (activeTab === 'worksheets') renderWorksheets();
     else renderFlashcards();
-    updateTally();
   }
 
-  // Tab switching
   document.getElementById('tabs').addEventListener('click', e => {
     const b = e.target.closest('.tab'); if (!b) return;
     activeTab = b.dataset.tab;
-    activeFilter = activeTab === 'flashcards' ? 'image' : 'all';
+    activeFilter = defaultFilter(activeTab);
     fcLimit = 24;
     history.replaceState(null, '', '#' + activeTab);
     render();
   });
 
-  // Filter switching
   document.getElementById('filters').addEventListener('click', e => {
     const b = e.target.closest('.fbtn'); if (!b) return;
     activeFilter = b.dataset.f;
@@ -519,37 +438,12 @@ body.sg-viewing #sgModal{display:flex}
     render();
   });
 
-  // Mark Good / Needs Fix + Notes + Open Study Guide side-by-side modal
   document.getElementById('content').addEventListener('click', e => {
     const sgBtn = e.target.closest('[data-sg]');
-    if (sgBtn) { openStudyGuideModal(sgBtn.dataset.sg); return; }
-    const mb = e.target.closest('[data-mk]');
-    if (!mb) return;
-    const key = mb.dataset.mk, st = mb.dataset.st;
-    const cur = getMark(key);
-    const next = cur.state === st ? '' : st;
-    setMark(key, next, undefined);
-    const card = mb.closest('[data-card]');
-    if (card) {
-      card.classList.toggle('m-good', next === 'good');
-      card.classList.toggle('m-fix', next === 'fix');
-      card.querySelectorAll('[data-mk]').forEach(b => b.classList.toggle('on', b.dataset.st === next));
-    }
-  });
-  document.getElementById('content').addEventListener('input', e => {
-    const inp = e.target.closest('[data-note]'); if (!inp) return;
-    setMark(inp.dataset.note, undefined, inp.value);
+    if (sgBtn) openStudyGuideModal(sgBtn.dataset.sg);
   });
 
-  // Built-in Student Study Guide Side-by-Side Comparer Modal
   let sgCur = null;
-  function syncSgMarkUI() {
-    if (!sgCur) return;
-    const m = getMark(`guide|${sgCur.subject}/${sgCur.code}`);
-    document.getElementById('sgGood').classList.toggle('on', m.state === 'good');
-    document.getElementById('sgFix').classList.toggle('on', m.state === 'fix');
-    document.getElementById('sgNote').value = m.note || '';
-  }
   function openStudyGuideModal(id) {
     const l = ALL_LESSONS.find(x => x.id === id);
     if (!l) return;
@@ -564,14 +458,12 @@ body.sg-viewing #sgModal{display:flex}
       ? `<iframe src="${esc(l.beforeGuideUrl)}" title="Before study guide"></iframe>`
       : '<div class="sg-empty"><b>Brand-new split study guide</b><p>This lesson has not been frozen yet — inspect the staging draft on the right, or click <b>Full After</b> for full width.</p></div>';
     document.getElementById('sgAfterWrap').innerHTML = `<iframe src="${esc(l.draftUrl)}" title="After study guide"></iframe>`;
-    syncSgMarkUI();
   }
   function closeStudyGuideModal() {
     sgCur = null;
     document.body.classList.remove('sg-viewing');
     document.getElementById('sgBeforeWrap').innerHTML = '';
     document.getElementById('sgAfterWrap').innerHTML = '';
-    render();
   }
   document.getElementById('sgClose').onclick = closeStudyGuideModal;
   document.getElementById('sgModeSplit').onclick = () => {
@@ -589,61 +481,12 @@ body.sg-viewing #sgModal{display:flex}
     document.getElementById('sgBeforeWrap').classList.toggle('mobile', on);
     document.getElementById('sgAfterWrap').classList.toggle('mobile', on);
   };
-  document.getElementById('sgGood').onclick = () => {
-    if (!sgCur) return;
-    const key = `guide|${sgCur.subject}/${sgCur.code}`;
-    setMark(key, getMark(key).state === 'good' ? '' : 'good', undefined);
-    syncSgMarkUI();
-  };
-  document.getElementById('sgFix').onclick = () => {
-    if (!sgCur) return;
-    const key = `guide|${sgCur.subject}/${sgCur.code}`;
-    setMark(key, getMark(key).state === 'fix' ? '' : 'fix', undefined);
-    syncSgMarkUI();
-  };
-  document.getElementById('sgNote').oninput = function() {
-    if (!sgCur) return;
-    setMark(`guide|${sgCur.subject}/${sgCur.code}`, undefined, this.value);
-  };
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && sgCur) closeStudyGuideModal(); });
-
-  // Copy review report for chat
-  document.getElementById('btnCopy').onclick = () => {
-    const groups = { deck: [], guide: [], sheet: [], card: [] };
-    Object.entries(MARKS).forEach(([k, v]) => {
-      if (!v.state && !v.note) return;
-      const [kind, id] = k.split('|');
-      if (groups[kind]) groups[kind].push({ id, state: v.state || 'note', note: (v.note || '').trim() });
-    });
-    const labels = { deck: 'Projector Decks', guide: 'Student Study Guides', sheet: 'Worksheets', card: 'Flashcards' };
-    const lines = ['Staging Review Report:'];
-    let any = false;
-    Object.keys(labels).forEach(k => {
-      if (!groups[k].length) return;
-      any = true;
-      lines.push('', `## ${labels[k]}`);
-      const ok = groups[k].filter(x => x.state === 'good');
-      const fx = groups[k].filter(x => x.state !== 'good');
-      if (ok.length) lines.push('- Approved: ' + ok.map(x => x.note ? `${x.id} (${x.note})` : x.id).join(', '));
-      fx.forEach(x => lines.push(`- Needs fix: ${x.id}${x.note ? ' — ' + x.note : ''}`));
-    });
-    if (!any) { toast('Mark at least one item ✓ Good or ✏️ Fix first!'); return; }
-    const out = lines.join('\n');
-    navigator.clipboard.writeText(out).then(() => toast('Copied review report to clipboard!')).catch(() => prompt('Copy your review report:', out));
-  };
-
-  document.getElementById('btnClear').onclick = () => {
-    if (!confirm('Clear all your local review marks in this browser?')) return;
-    MARKS = {};
-    saveMarks();
-    render();
-    toast('Local review marks cleared.');
-  };
 
   window.addEventListener('hashchange', () => {
     const h = location.hash.replace(/^#/, '');
     if (['decks', 'guides', 'worksheets', 'flashcards'].includes(h) && h !== activeTab) {
-      activeTab = h; activeFilter = h === 'flashcards' ? 'image' : 'all'; render();
+      activeTab = h; activeFilter = defaultFilter(h); render();
     }
   });
 
