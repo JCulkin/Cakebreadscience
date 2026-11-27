@@ -11,12 +11,14 @@ Strict split between the two audiences:
   - **Segmenting & Signalling:** Stepped `data-s` reveals, bold key terms, colour-coded boxes/indents (`.ilist`) rather than walls of text.
   - **Hinge AfL:** Brief mid-lesson mini-whiteboard / whole-class checks at natural breakpoints before moving on.
   - **Spatial Contiguity:** Label directly on diagrams; share one label across comparisons.
-- **Student study guide (`draft/index.html`, `study.js` + `study.css`):** Built for independent catch-up/revision:
-  - **Segmenting:** One `<section class="step">` at a time + sticky progress bar (`All on one page` toggle for scanning/printing).
+- **Student study guide (`draft/index.html`, `study.js` + `study.css`):** Built for independent catch-up/revision — **strict Edexcel IGCSE core content, Cognito / Seneca / Bitesize / Save My Exams style** (NOT a dump of projector slides!):
+  - **Segmenting:** One `<section class="step">` at a time + sticky progress bar (`All on one page` toggle for scanning/printing), short scannable paragraphs, crisp `.pts` bullets, and comparison `.cmp` tables.
+  - **Visual discipline (~1–2 purposeful diagrams/photos per step, ~6–14 per topic):** Keep ONLY visuals that directly teach an exam point (labelled SVGs, comparison/process diagrams, practical apparatus, interactive `data-comp="cell"`/`particles`/`dq`). Strip decorative photo strips, classroom photo galleries, reading-passage worksheets, and YouTube/Kahoot/Wordwall linkcard walls (those stay in `deck.html`).
+  - **Strict IGCSE focus:** Anything Beyond IGCSE is omitted or tucked inside a collapsed `<details class="beyond-block">`; DA-only steps/blocks use `.da-only` / `.da-block`.
   - **Worked-Example Fading:** `.worked` models paired with `<details class="your-turn">`.
   - **Refutation Texts:** `.mistake-box` names and corrects common exam traps.
-  - **Immediate Retrieval (Rosenshine):** `.micro-check` at the end of each step + `#check` end-of-topic test. `#check` is an *immediate comprehension check* only (`study.js` notes that spaced securing happens on two different days in Practice/Questing).
-  - **Auto vocabulary & course:** `study.js` auto-loads `/js/key-words.js` (per-step **Examiner key words** from `.spec` chips), `/js/course.js` (auto-hides `.da-only`/`.da-block` + `'DA'` key words & filters `.specbox` for Single Award), and `/js/auth-gate.js`.
+  - **Immediate Retrieval (Rosenshine):** `.micro-check` (1–2 MCQs with `data-why`) at the end of each step + `#check` end-of-topic test (100% `data-why`, no duplicate True/False walls inside teaching steps). `#check` is an *immediate comprehension check* only (`study.js` notes that spaced securing happens on two different days in Practice/Questing).
+  - **Auto vocabulary & course:** `study.js` auto-loads `/js/key-words.js` (per-step **Examiner key words** with Flashcards & Typing links), `/js/course.js` (auto-hides `.da-only`/`.da-block` + `'DA'` key words, DA steps & `.specbox` items for Single Award), `/js/spec-index.js` (auto-enriches `.next-hub` & links `.spec` chips to Spec Trackers), and `/js/auth-gate.js`.
   - **Handoffs (`.next-hub`):** Link to **Flashcards** (`?sub=`), **Practice** (`practice.html?sub=`), **Cakebread Questing** (`adventurer-mission.html?sub=`), matching **Worksheets**, and any matching **Topic Booklet** (`/booklets/…`). Never build a separate flashcard/SRS engine inside a lesson.
 
 ## Format & lifecycle
