@@ -9,6 +9,21 @@ window.firebaseConfig = {
     measurementId: "G-W9RMF38FLL"
 };
 
+/* Staging-only Year 10 student simulator loader (does nothing on live cakebreadscience.com or /admin/).
+   Loaded synchronously only when simulation mode is active so it wraps window.firebase before compat SDKs initialize. */
+(function () {
+  try {
+    if (typeof location === 'undefined' || /^(www\.)?cakebreadscience\.com$/i.test(location.hostname)) return;
+    if (/^\/admin(\/|$)/.test(location.pathname || '')) return;
+    if (localStorage.getItem('cbs.sim.y10') === '1' && !window.CBSSim) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/js/staging-sim.js', false);
+      xhr.send(null);
+      if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText) (0, eval)(xhr.responseText);
+    }
+  } catch (e) {}
+})();
+
 /* School Wi-Fi transport layer (27 Nov 2026):
    - Auto-configures Firestore with experimentalAutoDetectLongPolling so SSL-inspecting school proxies don't stall streams.
    - Provides full HTTPS REST fallbacks for RTDB (get/set/update/push/ETag transactions) and Firestore (get/merge-set),

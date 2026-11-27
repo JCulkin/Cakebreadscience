@@ -71,6 +71,8 @@
 #cbs-account .day{background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}
 #cbs-account .hlp{background:none;color:#d6d2c6;border:1px solid #555;padding:3px 9px;font:700 13px Barlow,Arial,sans-serif;text-decoration:none;border-radius:6px}
 #cbs-account .hlp:hover{color:#fff;border-color:#facc15}
+#cbs-account .sim{background:#4c1d95;color:#fff;border:2px solid #facc15;padding:4px 10px;font:800 13px Barlow,Arial,sans-serif;border-radius:6px}
+#cbs-account .sim:hover{background:#5b21b6}
 #cbs-account.light .hlp{color:#444;border-color:#999}#cbs-account.light .hlp:hover{color:#111;border-color:#111}
 #cbs-account .day.due{background:#dc2626;color:#fff;display:inline-flex;align-items:center;gap:6px}
 #cbs-account .day .bang{background:#fff;color:#dc2626;border-radius:50%;width:18px;height:18px;display:inline-grid;place-items:center;font-size:14px;line-height:1;animation:cbsbang 1.2s ease-in-out infinite alternate}
@@ -86,15 +88,29 @@
   const first = u => ((u.displayName || u.email || 'Student').trim().split(/\s+/)[0]);
   function draw(u) {
     const hlp = location.pathname.startsWith('/how-to-use') ? '' : '<a class="hlp" href="/how-to-use/" title="How to use Cakebread Science &amp; replay page tours">❓ Guide</a>';
+    const isStaging = !/^(www\.)?cakebreadscience\.com$/i.test(location.hostname) && !/^\/admin(\/|$)/.test(location.pathname || '');
+    const simActive = isStaging && (() => { try { return localStorage.getItem('cbs.sim.y10') === '1'; } catch (e) { return false; } })();
+    const simBtn = isStaging && !simActive ? '<button type="button" class="sim" title="Staging only: simulate signing in as a Year 10 student with homework, tests and progress">🧑‍🎓 Sim Y10</button>' : '';
+    const wireSim = () => {
+      const sb = box.querySelector('.sim');
+      if (!sb) return;
+      sb.onclick = () => {
+        const go = () => { if (window.CBSSim) CBSSim.start(true); };
+        if (window.CBSSim) return go();
+        const sc = document.createElement('script'); sc.src = '/js/staging-sim.js'; sc.onload = go; document.head.appendChild(sc);
+      };
+    };
     if (u) {
       const admin = (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).includes(u.email);
-      box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}${hlp}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
+      box.innerHTML = `${simBtn}${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}${hlp}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
       box.querySelector('.out').onclick = () => auth.signOut();
+      wireSim();
       badge();
     } else {
-      box.innerHTML = `${hlp}<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
+      box.innerHTML = `${simBtn}${hlp}<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
       box.querySelector('.in').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .catch(e => { if (e && e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') alert('Sign-in did not work: ' + (e.message || e)); });
+      wireSim();
     }
   }
   /* open set work → the To do button turns red with a "!" (18 Nov, /js/openwork.js) */
