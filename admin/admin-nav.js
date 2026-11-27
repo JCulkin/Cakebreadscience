@@ -14,7 +14,7 @@
     ['Students', [['overview', 'Overview'], ['students', 'Students'], ['map', 'Spec map'], ['teach', 'Teaching']]],
     ['Content', [['questions', 'Questions', ['/interactive/spec-quiz/reports.html']], ['/admin/review.html', 'Review'], ['/admin/study-guide.html', 'Study guides']]],
     ['Games', [['games', 'Games', ['boards']], ['bland', 'Breadventure Land', ['/admin/showcase.html']]]],
-    ['Site', [['backup', 'Backup']], true]   // true = pushed to the right
+    ['Site', [['/research/', 'Research'], ['backup', 'Backup']], true]   // true = pushed to the right
   ];
   const onConsole = /^\/admin\/?(index\.html)?$/.test(location.pathname);
   const css = `.anav{background:#151515;padding:0 22px;display:flex;flex-wrap:wrap;align-items:flex-end;gap:0 26px;font-family:'Barlow',Arial,sans-serif;border-bottom:1px solid #2a2a2a}

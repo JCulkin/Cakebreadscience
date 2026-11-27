@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>The Research &amp; Design Behind Cakebread Science | Teachers &amp; Families</title>
+<meta name="description" content="The cognitive science, classroom pedagogy, visual and print design principles, game psychology, and family learning evidence behind Cakebread Science — with curated external links.">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--green:#00a03a;--dk:#005e22;--gold:#facc15;--bio:#005e22;--chem:#c8001e;--phys:#d08000;--blue:#1d4ed8;--purple:#5b21b6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.58;font-size:17px}
+a{color:var(--dk);text-underline-offset:2px}
+a:hover{color:#111}
+h1,h2,h3,.btn,.pill{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
+header{background:#111;border-bottom:3px solid var(--green);padding:10px 18px;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+header a.home{display:inline-flex;align-items:center;gap:9px;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:clamp(22px,4.5vw,28px);line-height:1;text-transform:uppercase;letter-spacing:-.3px;color:var(--cream);text-decoration:none}
+header a.home img{width:34px;height:34px;object-fit:contain;display:block}
+header a.home span{color:var(--green)}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9a968c}
+header #cbs-account{margin-left:auto}
+main{max-width:1020px;margin:0 auto;padding:24px 18px 76px}
+
+.hero{background:#111;color:var(--cream);border:3px solid #111;box-shadow:0 5px 0 #111;padding:24px 26px;margin-bottom:20px}
+.hero .kick{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.hero h1{font-size:clamp(34px,6vw,48px);color:#fff}.hero h1 span{color:var(--green)}
+.hero p{color:#d6d3cb;max-width:64ch;margin-top:8px;font-size:16.5px}
+.hero .cta{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-block;background:var(--gold);color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;padding:8px 15px;font-size:18px;text-decoration:none}
+.btn:hover{background:#fde047;color:#111}
+.btn.alt{background:#fff;color:#111}.btn.alt:hover{background:#fef3c7}
+
+.toc{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:26px}
+.toc a{background:var(--paper);border:2px solid #111;padding:5px 11px;text-decoration:none;color:#111;font:700 14px Barlow,Arial,sans-serif}
+.toc a:hover{background:#111;color:var(--cream)}
+
+section{margin-top:34px;scroll-margin-top:18px}
+section h2{font-size:30px;border-bottom:3px solid #111;padding-bottom:5px;margin-bottom:12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+section h2 small{font:600 14.5px Barlow,Arial;text-transform:none;color:var(--muted)}
+.lede{max-width:68ch;margin-bottom:14px;color:#222}
+
+/* Architecture map table */
+.tbl-wrap{overflow-x:auto;background:var(--paper);border:2px solid #111}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#111;color:var(--cream);font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.4px}
+tr:last-child td{border-bottom:0}
+td b{color:#111}
+
+/* Cards */
+.grid2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--paper);border:2px solid #111;border-top:6px solid var(--c,var(--dk));padding:15px 17px;display:flex;flex-direction:column;gap:8px}
+.card h3{font-size:22px;color:var(--c,#111)}
+.card p{font-size:15.5px;color:#222}
+.card ul{margin-left:18px;font-size:15px;color:#222;display:grid;gap:4px}
+.card .site-link{margin-top:auto;padding-top:8px;border-top:1px dashed var(--line);font-size:14px;color:var(--muted)}
+.card .site-link b{color:#111}
+.ext-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.ext{display:inline-flex;align-items:center;gap:4px;font-size:13.5px;font-weight:700;background:var(--soft);border:1.5px solid #111;padding:3px 9px;text-decoration:none;color:#111;border-radius:4px}
+.ext:hover{background:var(--gold)}
+
+/* Family highlight box */
+.fam-box{background:#fffdf5;border:3px solid #111;border-left:9px solid var(--dk);box-shadow:0 4px 0 #111;padding:18px 20px;margin-top:12px}
+.fam-box h3{font-size:24px;color:var(--dk);margin-bottom:6px}
+.fam-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+@media(max-width:740px){.fam-steps{grid-template-columns:1fr}}
+.fstep{background:#fff;border:2px solid #111;padding:12px 14px}
+.fstep b{display:block;font:900 18px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin-bottom:4px;color:#111}
+.fstep p{font-size:14.5px;color:#222}
+
+/* Resource directory */
+.links-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:700px){.links-grid{grid-template-columns:1fr}}
+.lgroup{background:var(--paper);border:2px solid #111;padding:14px 16px}
+.lgroup h3{font-size:20px;margin-bottom:8px;border-bottom:2px solid var(--line);padding-bottom:4px}
+.lgroup ul{list-style:none;display:grid;gap:7px;font-size:15px}
+.lgroup li small{display:block;color:var(--muted);font-size:13.5px}
+
+footer{margin-top:42px;padding-top:16px;border-top:2px solid var(--line);font-size:14.5px;color:var(--muted);display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px}
+@media print{header,.toc,.hero .cta{display:none!important}body{background:#fff;font-size:11pt}.hero{background:#fff;color:#111;box-shadow:none}.hero h1,.hero p{color:#111}.card,.fam-box,.lgroup{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header>
+  <a class="home" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a>
+  <span class="sub">Research &amp; Design · Teachers</span>
+  <div id="cbs-account"></div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="kick">For Teachers, Colleagues &amp; Families</div>
+    <h1>The Research &amp; Design Behind <span>Cakebread Science</span></h1>
+    <p>Every feature on this site — from two-day spaced homework and greyscale worksheets to Breadventure Land and Spec Trackers — is built around evidence from cognitive science, UK secondary classroom practice, accessible visual design, and game motivation research.</p>
+    <div class="cta">
+      <a class="btn" href="#architecture">Site Architecture</a>
+      <a class="btn alt" href="#families">Guide for Families</a>
+      <a class="btn alt" href="/how-to-use/science-of-learning.html">Student Version →</a>
+    </div>
+  </div>
+
+  <nav class="toc" aria-label="Jump to section">
+    <a href="#architecture">Architecture</a>
+    <a href="#science-pedagogy">Science &amp; Classroom</a>
+    <a href="#barton-toolkit">Mr Barton &amp; TeacherToolkit</a>
+    <a href="#memory">Memory &amp; Metacognition</a>
+    <a href="#design">Web &amp; Print Clarity</a>
+    <a href="#games">Games &amp; Motivation</a>
+    <a href="#families">Families &amp; Home</a>
+    <a href="#reading">External Links</a>
+  </nav>
+
+  <section id="architecture">
+    <h2>How the site fits together <small>one job per layer — no duplication</small></h2>
+    <p class="lede">Edexcel International GCSE Science (4SD0 / 4SS0) assesses roughly <b>40% AO1 knowledge</b>, <b>40% AO2 application and calculations</b>, and <b>20% AO3 practical and data skills</b>. Rather than cramming everything into one tool, each part of Cakebread Science owns a distinct stage of learning.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Layer</th><th>Where on the site</th><th>Pedagogical job</th><th>Core evidence base</th></tr></thead>
+        <tbody>
+          <tr><td><b>1. Understand</b></td><td><a href="/interactive/lessons/">Lessons</a> (Projector decks + Student Study Guides)</td><td>Teacher-led whole-class visuals &amp; hinge AfL; chunked student catch-up with worked examples and micro-checks.</td><td>Sweller (CLT), Mayer (Multimedia), Wiliam (Hinge AfL), Rosenshine, Caviglioli.</td></tr>
+          <tr><td><b>2. Memorise</b></td><td><a href="/Flashcards/">Flashcards</a>, Examiner Key Words, <a href="/interactive/typing-game/">Type Fast or Perish</a></td><td>Cold AO1 recall of definitions, equations, chemical tests, and exact mark-scheme wording.</td><td>Roediger &amp; Karpicke (Testing Effect), Cepeda (Spacing), SM-2, EEF Science Language.</td></tr>
+          <tr><td><b>3. Apply &amp; Prove</b></td><td><a href="/interactive/spec-quiz/">Cakebread Questing</a> &amp; <a href="/interactive/spec-quiz/practice.html">Practice</a></td><td>Diagnostic misconceptions, L1→L3 calculations &amp; diagrams; 2-different-days securing + 21-day rust.</td><td>Bjork (Desirable Difficulties), Craig Barton (Diagnostic Questions), Rohrer (Interleaving).</td></tr>
+          <tr><td><b>4. Write Exam Answers</b></td><td><a href="/worksheets/science.html">Worksheets</a>, <a href="/booklets/">Topic Booklets</a> &amp; 6-Markers</td><td>Faded scaffolding from recall to 4–6 mark extended answers; attempt-first self-marking (DIRT).</td><td>CogSciSci (SLOP), Sweller (Worked-Example Fading), Barton (Variation), TeacherToolkit (DIRT).</td></tr>
+          <tr><td><b>5. Route &amp; Calibrate</b></td><td><a href="/today/">Student Home</a>, <a href="/specifications/science.html">Spec Trackers</a>, Study Guides</td><td>Eliminate "what do I revise?" friction; expose the Illusion of Competence via confidence vs. proof.</td><td>EEF Metacognition (+7 mo), EEF Homework (+5 mo), NN/g Cognitive Load.</td></tr>
+          <tr><td><b>6. Motivation &amp; Play</b></td><td>Breadventure Land, Cakelab, Topic Interactives</td><td>Sustain spaced return visits through narrative, character agency, and cooperative boss fights.</td><td>Ryan &amp; Deci (SDT), Sailer &amp; Homner (2020), Plass, Homer &amp; Kinzer (GBL).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="science-pedagogy">
+    <h2>1. Secondary Science Pedagogy &amp; Classroom Practice</h2>
+    <div class="grid2">
+      <div class="card" style="--c:var(--bio)">
+        <h3>EEF: Improving Secondary Science</h3>
+        <p>The Education Endowment Foundation identifies seven pillars for high-impact secondary science: tackling <b>preconceptions</b>, developing <b>self-regulation</b>, critiquing <b>models</b>, strengthening <b>memory</b>, making <b>practical work</b> purposeful, explicitly teaching the <b>language of science</b>, and giving <b>structured feedback</b>.</p>
+        <div class="site-link"><b>On this site:</b> Misconception refutation boxes in study guides/worksheets, a single Examiner Key Words database across five tools, and practical/AO3 questions built into every spec point.</div>
+        <div class="ext-row"><a class="ext" href="https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/secondary-science" target="_blank" rel="noopener">EEF Secondary Science ↗</a></div>
+      </div>
+
+      <div class="card" style="--c:var(--chem)">
+        <h3>CogSciSci, Rosenshine &amp; SLOP</h3>
+        <p><b>Barak Rosenshine</b> (popularised by Tom Sherrington) and the UK science teacher collective <b>CogSciSci</b> (Adam Boxer et al.) translate cognitive architecture into lesson sequences: daily review, small steps, worked models, high initial success (~80%), and <b>SLOP</b> (Shed Loads of Practice) to build automaticity before complex exam problems.</p>
+        <div class="site-link"><b>On this site:</b> Stepped projector decks, Topic Booklets ramping from guided recall to unguided synthesis, and generator-backed calculation drills.</div>
+        <div class="ext-row"><a class="ext" href="https://cogscisci.wordpress.com/" target="_blank" rel="noopener">CogSciSci ↗</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="barton-toolkit">
+    <h2>2. Classroom Craft: Mr Barton &amp; TeacherToolkit</h2>
+    <div class="grid2">
+      <div class="card" style="--c:var(--blue)">
+        <h3>Craig Barton (Mr Barton): Diagnostics, Worked Examples &amp; Variation</h3>
+        <p>Craig Barton's work across <i>Diagnostic Questions</i>, <i>Variation Theory</i>, and <i>Tips for Teachers</i> shapes how questions and practice are written here:</p>
+        <ul>
+          <li><b>Diagnostic distractors:</b> Every wrong MCQ choice targets a specific, common misconception so wrong answers immediately reveal <i>why</i> a student got stuck.</li>
+          <li><b>Example–Problem Pairs:</b> A fully worked model placed directly beside a parallel "Now you try" problem cuts extraneous working-memory load.</li>
+          <li><b>Variation Theory:</b> Changing one feature at a time across consecutive questions forces learners to notice the underlying rule (<i>Reflect → Expect → Check → Explain</i>).</li>
+        </ul>
+        <div class="ext-row">
+          <a class="ext" href="https://mrbartonmaths.com" target="_blank" rel="noopener">Mr Barton Maths ↗</a>
+          <a class="ext" href="https://variationtheory.com" target="_blank" rel="noopener">Variation Theory ↗</a>
+          <a class="ext" href="https://tipsforteachers.co.uk" target="_blank" rel="noopener">Tips for Teachers ↗</a>
+        </div>
+      </div>
+
+      <div class="card" style="--c:var(--phys)">
+        <h3>Ross Morrison McGill (TeacherToolkit): Feedback, DIRT &amp; Workload</h3>
+        <p>TeacherToolkit bridges cognitive science with sustainable teaching — replacing unsustainable written marking with <b>low-stakes retrieval</b>, <b>whole-class feedback</b>, and <b>DIRT</b> (Directed Improvement and Reflection Time) where students actively correct and redraft their work.</p>
+        <p>Research highlighted on TeacherToolkit also stresses a crucial reality: students often <i>dislike</i> retrieval practice because it feels effortful compared to re-reading, so we explicitly explain <i>why</i> productive struggle works.</p>
+        <div class="site-link"><b>On this site:</b> Attempt-first black-then-purple mark schemes, automated Admin homework/spec tracking, and a plain-English <a href="/how-to-use/">student guide</a>.</div>
+        <div class="ext-row"><a class="ext" href="https://www.teachertoolkit.co.uk" target="_blank" rel="noopener">TeacherToolkit ↗</a></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="memory">
+    <h2>3. Memory, Spacing &amp; Metacognition</h2>
+    <div class="grid2">
+      <div class="card" style="--c:var(--dk)">
+        <h3>Retrieval, Spacing &amp; Desirable Difficulties</h3>
+        <p><b>Roediger &amp; Karpicke</b> (the Testing Effect) and <b>Cepeda et al.</b> show that recalling from memory across spaced intervals outperforms re-reading and cramming. <b>Robert &amp; Elizabeth Bjork</b> explain why: letting retrieval strength dip slightly between days turns recall into a <i>desirable difficulty</i> that dramatically raises long-term <b>storage strength</b>.</p>
+        <div class="site-link"><b>On this site:</b> Spec points require right answers on <b>two different days</b>, decay to "rusty" after 21 days, exclude same-day Second Wind retries from securing, and homework defaults to <b>1 short mission on 2 different days</b>.</div>
+        <div class="ext-row">
+          <a class="ext" href="https://www.learningscientists.org/" target="_blank" rel="noopener">The Learning Scientists ↗</a>
+          <a class="ext" href="https://www.retrievalpractice.org/" target="_blank" rel="noopener">RetrievalPractice.org ↗</a>
+        </div>
+      </div>
+
+      <div class="card" style="--c:var(--purple)">
+        <h3>Metacognition (+7 months) &amp; Homework (+5 months)</h3>
+        <p>The EEF rates <b>Metacognition &amp; Self-Regulated Learning</b> as one of the highest-impact, lowest-cost levers (+7 months), and purposeful secondary <b>Homework</b> at +5 months — stressing quality, curriculum link, and independent achievability over sheer volume.</p>
+        <p>Because students routinely overestimate what they know (the <i>Illusion of Competence</i>), Spec Trackers explicitly compare self-rated confidence against 2-day quiz proof and flag blind spots with <b>Check these</b>.</p>
+        <div class="ext-row">
+          <a class="ext" href="https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/metacognition-and-self-regulated-learning" target="_blank" rel="noopener">EEF Metacognition ↗</a>
+          <a class="ext" href="https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit/homework" target="_blank" rel="noopener">EEF Homework Toolkit ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="design">
+    <h2>4. Beautiful, Cognitively Clear Websites &amp; Printed Material</h2>
+    <div class="grid2">
+      <div class="card" style="--c:#111">
+        <h3>Web Clarity: Cognitive Load, Scannability &amp; Accessibility</h3>
+        <p>Following <b>Nielsen Norman Group</b>, <b>GOV.UK Design System</b>, and <b>WCAG 2.2</b>, every student screen aims to cut extraneous load so working memory stays on the science:</p>
+        <ul>
+          <li><b>One clear primary action:</b> Student Home puts teacher work and a single <i>⚡ Start now</i> button first, tucking secondary lists behind collapsible drawers.</li>
+          <li><b>Calm, glare-free reading:</b> Cream paper (<code>#eeeae0</code>) with dark ink (<code>#111</code>), <code>16–17px</code> sans-serif type, <code>1.45–1.6</code> line height, left-aligned text, and bolding instead of long italics or ALL CAPS.</li>
+          <li><b>Never colour alone:</b> Status badges always pair colour with clear text labels and consistent subject coding.</li>
+        </ul>
+        <div class="ext-row">
+          <a class="ext" href="https://www.nngroup.com/articles/minimize-cognitive-load/" target="_blank" rel="noopener">NN/g Cognitive Load ↗</a>
+          <a class="ext" href="https://design-system.service.gov.uk" target="_blank" rel="noopener">GOV.UK Design System ↗</a>
+        </div>
+      </div>
+
+      <div class="card" style="--c:var(--chem)">
+        <h3>Print &amp; Visual Clarity: Caviglioli, Mayer &amp; BDA</h3>
+        <p>Grounded in <b>Oliver Caviglioli</b> (<i>Dual Coding with Teachers</i>), <b>Richard Mayer</b> (Coherence &amp; Spatial Contiguity), and the <b>British Dyslexia Association</b> style guide:</p>
+        <ul>
+          <li><b>Zero seductive details:</b> Diagrams exist to teach (processes, comparisons, apparatus) — never decorative clipart or faint watermarks behind questions.</li>
+          <li><b>Integrated labels:</b> Labels sit directly on diagrams so eyes don't split attention between a picture and a separate legend.</li>
+          <li><b>Photocopy-first greyscale:</b> Dedicated monochrome SVG emblems, stroke widths ≥ 0.35 mm, dashed/labelled graph lines, and light tints instead of solid dark toner blocks.</li>
+        </ul>
+        <div class="ext-row">
+          <a class="ext" href="https://olicav.com" target="_blank" rel="noopener">Oliver Caviglioli ↗</a>
+          <a class="ext" href="https://www.bdadyslexia.org.uk" target="_blank" rel="noopener">British Dyslexia Association ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="games">
+    <h2>5. Game-Based Learning &amp; Motivation <small>Questing &amp; Breadventure Land</small></h2>
+    <div class="grid2">
+      <div class="card" style="--c:var(--purple)">
+        <h3>Self-Determination Theory &amp; Sailer &amp; Homner (2020)</h3>
+        <p>In their landmark 2020 meta-analysis in <i>Educational Psychology Review</i>, <b>Michael Sailer &amp; Lisa Homner</b> found meaningful positive effects of gamification on cognitive (<i>g</i> = 0.49), motivational (<i>g</i> = 0.36), and behavioural (<i>g</i> = 0.25) outcomes — with the biggest gains coming from <b>game fiction</b> (narrative, world, avatars) and <b>combining collaboration with light competition</b>, rather than bare points and badges.</p>
+        <p>Grounded in <b>Ryan &amp; Deci's Self-Determination Theory</b>, Cakebread Questing supports:</p>
+        <ul>
+          <li><b>Autonomy:</b> Students choose topics, gear, or plain non-game <a href="/interactive/spec-quiz/practice.html">Practice</a> mode with identical progress.</li>
+          <li><b>Competence:</b> Character power grows directly from genuine 2-day secured science points, not aimless grinding.</li>
+          <li><b>Relatedness:</b> Everyone explores Breadventure Land together and teams up on midnight bosses.</li>
+        </ul>
+      </div>
+
+      <div class="card" style="--c:var(--phys)">
+        <h3>Avoiding Gamification Pitfalls</h3>
+        <p>Game-based learning research (<b>Plass, Homer &amp; Kinzer</b>; Deci's <i>overjustification effect</i>) warns that poorly designed game loops encourage rapid guessing and demotivate lower-attaining students. Cakebread Questing deliberately guards against this:</p>
+        <ul>
+          <li><b>No spam-clicking rewards:</b> Two-different-days securing and short 10-question missions stop "keep clicking until 20 right" frustration.</li>
+          <li><b>Graceful failure:</b> Missed questions give immediate elaborative feedback and a Second Wind chance to learn without punishing progress.</li>
+          <li><b>Healthy leaderboards:</b> Rolling 7-day boards reward recent consistency rather than cementing an untouchable top three all year.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="families">
+    <h2>6. Working with Families at Home <small>high impact, zero GCSE science required</small></h2>
+    <p class="lede">Research by <b>Alma Harris &amp; Janet Goodall</b> and the <b>EEF Guidance Report on Working with Parents</b> reveals a clear finding for secondary school: <b>20–22% of secondary parents feel unable to help with GCSE subject content</b> — yet parents do <i>not</i> need to act as science tutors to make a major difference. What matters most is calm routine, showing interest in learning, and supporting independence rather than policing homework.</p>
+    <div class="fam-box">
+      <h3>How families can help in 5 minutes a week (no science knowledge needed)</h3>
+      <div class="fam-steps">
+        <div class="fstep">
+          <b>1. Protect a short, phone-free slot</b>
+          <p>A 10-minute session on <b>two different days</b> beats a stressful Sunday-night cram. Ask <i>"Which two days this week will you do your science missions?"</i> rather than hovering over every click.</p>
+        </div>
+        <div class="fstep">
+          <b>2. Quiz from Flashcards or Key Words</b>
+          <p>Open the student's <a href="/Flashcards/">Flashcards</a> or Upcoming Test Study Guide. Read the front aloud and check if they include the <b>bold key words</b> on the back — you don't need to know the topic yourself.</p>
+        </div>
+        <div class="fstep">
+          <b>3. Praise consistency, not just scores</b>
+          <p>Struggling to recall something from last week means the brain is building stronger memory. Celebrate turning up for Day 2 and fixing mistakes rather than chasing 100% first time.</p>
+        </div>
+      </div>
+      <div class="ext-row" style="margin-top:12px">
+        <a class="ext" href="https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/working-with-parents" target="_blank" rel="noopener">EEF: Working with Parents ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="reading">
+    <h2>Curated External Links &amp; Further Reading</h2>
+    <div class="links-grid">
+      <div class="lgroup">
+        <h3>UK Classroom &amp; Science Evidence</h3>
+        <ul>
+          <li><a href="https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/secondary-science" target="_blank" rel="noopener">EEF — Improving Secondary Science ↗</a><small>Seven evidence-based recommendations for secondary science departments.</small></li>
+          <li><a href="https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/metacognition-and-self-regulated-learning" target="_blank" rel="noopener">EEF — Metacognition &amp; Self-Regulated Learning ↗</a><small>High-impact framework for Plan–Monitor–Evaluate routines.</small></li>
+          <li><a href="https://educationendowmentfoundation.org.uk/education-evidence/teaching-learning-toolkit/homework" target="_blank" rel="noopener">EEF — Homework (Teaching &amp; Learning Toolkit) ↗</a><small>Why quality, spacing, and classroom alignment beat sheer volume.</small></li>
+          <li><a href="https://cogscisci.wordpress.com/" target="_blank" rel="noopener">CogSciSci ↗</a><small>Grassroots UK science teachers applying cognitive science, worked examples, and SLOP.</small></li>
+        </ul>
+      </div>
+      <div class="lgroup">
+        <h3>Pedagogy &amp; Question Design</h3>
+        <ul>
+          <li><a href="https://www.teachertoolkit.co.uk" target="_blank" rel="noopener">TeacherToolkit (Ross Morrison McGill) ↗</a><small>Practical retrieval routines, DIRT, and workload-conscious feedback.</small></li>
+          <li><a href="https://mrbartonmaths.com" target="_blank" rel="noopener">Mr Barton Maths (Craig Barton) ↗</a><small>Diagnostic questions, worked example–problem pairs, and classroom research.</small></li>
+          <li><a href="https://variationtheory.com" target="_blank" rel="noopener">Variation Theory ↗</a><small>Minimally varying question sequences (Reflect, Expect, Check, Explain).</small></li>
+          <li><a href="https://tipsforteachers.co.uk" target="_blank" rel="noopener">Tips for Teachers ↗</a><small>Low-prep, high-impact secondary teaching strategies.</small></li>
+        </ul>
+      </div>
+      <div class="lgroup">
+        <h3>Memory &amp; Learning Science</h3>
+        <ul>
+          <li><a href="https://www.learningscientists.org/" target="_blank" rel="noopener">The Learning Scientists ↗</a><small>Six evidence-based study strategies with student- and family-friendly posters.</small></li>
+          <li><a href="https://www.retrievalpractice.org/" target="_blank" rel="noopener">RetrievalPractice.org (Dr Pooja Agarwal) ↗</a><small>Research summaries and guides on retrieval, spacing, interleaving, and metacognition.</small></li>
+          <li><a href="https://educationendowmentfoundation.org.uk/education-evidence/guidance-reports/working-with-parents" target="_blank" rel="noopener">EEF — Working with Parents ↗</a><small>Practical strategies for home-learning partnerships without content barriers.</small></li>
+        </ul>
+      </div>
+      <div class="lgroup">
+        <h3>Visual, Web &amp; Print Clarity</h3>
+        <ul>
+          <li><a href="https://olicav.com" target="_blank" rel="noopener">Oliver Caviglioli (Dual Coding with Teachers) ↗</a><small>Information design, graphic organisers, and eliminating extraneous visual clutter.</small></li>
+          <li><a href="https://www.nngroup.com/articles/minimize-cognitive-load/" target="_blank" rel="noopener">Nielsen Norman Group — Minimize Cognitive Load ↗</a><small>UX research on visual hierarchy, scannability, and clean interfaces.</small></li>
+          <li><a href="https://design-system.service.gov.uk" target="_blank" rel="noopener">GOV.UK Design System ↗</a><small>Gold-standard accessible, plain-English web typography and layout patterns.</small></li>
+          <li><a href="https://www.bdadyslexia.org.uk" target="_blank" rel="noopener">British Dyslexia Association ↗</a><small>Dyslexia-friendly typography, spacing, and print legibility standards.</small></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Cakebread Science · Edexcel International GCSE Double &amp; Single Award</span>
+    <span><a href="/how-to-use/">Student Guide</a> · <a href="/how-to-use/science-of-learning.html">Student Science-of-Learning Page</a> · <a href="/">Home</a></span>
+  </footer>
+</main>
+
+<script src="/js/firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+<script src="/js/admin-config.js"></script>
+<script src="/js/account.js"></script>
+</body>
+</html>
