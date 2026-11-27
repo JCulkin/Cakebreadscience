@@ -1,17 +1,17 @@
 ---
 trigger: model_decision
-description: Interactive lessons (interactive/lessons/) — projector decks vs. student study guides (study.js), slide style guide, draft → checked lifecycle with freeze.py, templates and slide tags. Use when building or editing any lesson.
+description: Cakebread Lessons (interactive/lessons/) — Class Slides (deck.html) vs. Revision Notes (index.html, study.js), slide style guide, draft → checked lifecycle with freeze.py, templates and slide tags. Use when building or editing any lesson.
 ---
-# Lessons (`interactive/lessons/`)
+# Cakebread Lessons (`interactive/lessons/`)
 
-## Strategy & cognitive-science principles (Layer 1 — Understand)
-Strict split between the two audiences:
-- **Teacher projector deck (`draft/deck.html` / `#present`, 1600×900):** Grounded in **Cognitive Load Theory** (Sweller), **Mayer's Multimedia Principles**, and **Formative Hinge Checks** (Wiliam):
+## Official naming & strategy (Layer 1 — Understand)
+Umbrella brand: **Cakebread Lessons** — split strictly into two named parts (**never** call lesson pages *"Study Guides"*, which is reserved by the school for printable test study guides in `/guide/`):
+- **Class Slides (`draft/deck.html` / `#present`, 1600×900):** Teacher projector deck grounded in **Cognitive Load Theory** (Sweller), **Mayer's Multimedia Principles**, and **Formative Hinge Checks** (Wiliam):
   - **Dual Coding & Coherence:** Picture or diagram on every slide paired with spoken narration — never word-only slides, never individual flashcard drills or self-study widgets on slides.
   - **Segmenting & Signalling:** Stepped `data-s` reveals, bold key terms, colour-coded boxes/indents (`.ilist`) rather than walls of text.
   - **Hinge AfL:** Brief mid-lesson mini-whiteboard / whole-class checks at natural breakpoints before moving on.
   - **Spatial Contiguity:** Label directly on diagrams; share one label across comparisons.
-- **Student study guide (`draft/index.html`, `study.js` + `study.css`):** Built for independent catch-up/revision — **strict Edexcel IGCSE core content, Cognito / Seneca / Bitesize / Save My Exams style** (NOT a dump of projector slides!):
+- **Revision Notes (`draft/index.html`, `study.js` + `study.css`):** Student at-home catch-up and revision — **strict Edexcel IGCSE core content, Cognito / Seneca / Bitesize / Save My Exams style** (NOT a dump of Class Slides!):
   - **Segmenting:** One `<section class="step">` at a time + sticky progress bar (`All on one page` toggle for scanning/printing), short scannable paragraphs, crisp `.pts` bullets, and comparison `.cmp` tables.
   - **Visual discipline (~1–2 purposeful diagrams/photos per step, ~6–14 per topic):** Keep ONLY visuals that directly teach an exam point (labelled SVGs, comparison/process diagrams, practical apparatus, interactive `data-comp="cell"`/`particles`/`dq`). Strip decorative photo strips, classroom photo galleries, reading-passage worksheets, and YouTube/Kahoot/Wordwall linkcard walls (those stay in `deck.html`).
   - **Strict IGCSE focus:** Anything Beyond IGCSE is omitted or tucked inside a collapsed `<details class="beyond-block">`; DA-only steps/blocks use `.da-only` / `.da-block`.
@@ -27,7 +27,7 @@ Strict split between the two audiences:
 - Keep `/interactive/lessons/` landing & headers minimal: code, title, spec, Open / ▶ Present, plain "Under review" chip on drafts (no extra badges, dates, or older-version dropdowns).
 - **Workflow:**
   1. Edit `draft/` only; bump `data-updated` on `<body>` and `draftUpdated` in `lessons.json`.
-  2. Teacher reviews **Projector decks** (by slide number, `school/review/l/{subj|code}`) and **Student study guides** (`school/review/l/{subj|code|student}`) independently on Admin → Review → Lessons. Give a numbered slide list for deck edits.
+  2. Teacher reviews **Class Slides** (by slide number, `school/review/l/{subj|code}`) and **Revision Notes** (`school/review/l/{subj|code|student}`) independently on Staging Review / Admin → Review → Lessons. Give a numbered slide list for slide edits.
   3. When marked checked (or user-asked edit on checked): `python tools/lessons/freeze.py <subject>/<code> --date <today>` (`--roots` after adding a new lesson folder) and update `status` / `studentStatus` in `lessons.json`. Unrequested edits stay draft.
   4. Run `node tools/spec/build_index.js`, `python tools/lessons/build_diff.py --base <commit-before-prompt> --label "before last prompt"`, update `VERSION_HISTORY.md` (read top ~40 lines only), push to `staging`.
 
@@ -49,7 +49,7 @@ Strict split between the two audiences:
 15. **Exam Question Slide Standard:** dedicated exam-question slides pair a crisp question box + `[N]` mark badge + visual context with **individual mark-scheme rows** offering **more valid mark points than the max marks** (e.g. 5 points for `[3]`, `Any 3 linked points (max 3)`). For **Explain** questions, show explicit **causal links** (`↓ so… / therefore… / which causes…`) between numbered steps rather than disconnected bullets; never copy verbatim from the private Pearson Exam Bank (write original Edexcel-style questions).
 16. **Vertical flex safety:** never stack `.ps .fig` (which has `height: 100%` in `lesson.css`) above another block inside a column slide — give top diagrams an explicit pixel height (`flex:none;height:…px`) and verify visually in headless Chrome at 1600×900 before pushing so nothing overflows or clips.
 
-## Split Student Study Guide template (`draft/index.html`)
+## Revision Notes template (`draft/index.html`)
 - `<head>`: `#present` → `deck.html#present` redirect + `/interactive/lessons/assets/study.css`.
 - `<body class="subj-biology|subj-chemistry|subj-physics" data-status="draft" data-updated="…" data-topic="subject/code">`; `.shead` (`.crumb` Home + All lessons + optional status chip, `.kick`, `h1`). Do **not** load `home-link.js`.
 - `<main class="wrap">`: `<details class="specbox">` (verbatim spec points), then `<section class="step" id data-toc="Short label">` chunks with `<h2>Title <span class="spec">1.44</span></h2>`.
@@ -58,7 +58,7 @@ Strict split between the two audiences:
 - Final step `<section class="step" id="check" data-toc="End-of-topic test">`: `#qs` (built from hidden `#qsrc`), optional `[data-comp="dq"]`, and `.next-hub` (Flashcards + Practice + Questing + Worksheets + matching Topic Booklet).
 - Scripts last: `cells.js` (if needed), `diagrams.js` + `diagq.js`, `bio.js`/`chem.js`, then `study.js`.
 
-## Teacher Projector Deck (`draft/deck.html`)
+## Class Slides template (`draft/deck.html`)
 - `<body class="subj-…" data-status="draft" data-updated="…" data-deck-ui="v2">`; `.lhead` + launcher card (`.pbtn,#hdrPresent{display:none!important}`). `lesson.js` adds the home link and loads `/js/auth-gate.js` — don't load `home-link.js`.
 - Slides in `#deck-src`: `<section class="ps">…</section>`; `data-s`, `data-hide-from`, `data-hide-until`, `data-auto="quiz"|"exam"`. Unique inline SVG IDs per copy. **Check every `<section>` is closed.**
 - Scripts last: `cells.js` (if needed), `diagrams.js` + `diagq.js`, `bio.js`/`chem.js`, then `lesson.js`. Note hand-edited HTML in commits/changelog.

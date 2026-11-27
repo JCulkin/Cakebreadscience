@@ -214,7 +214,7 @@ function drawPick() {
     return `<div class="topic" style="--sc:${COL[SCI]}"><b>${t.slice(1)} · ${esc(topicName(t))}<span>${a}/${b} secured</span></b>${xs.map(s => {
       const open = OPEN.has(s.key), sLessons = lessonsForKeys(s.keys);
       return `<div class="sub"><div class="subrow"><span class="nm"><small>${s.key.slice(1)}</small>${esc(s.name)}</span><div class="pb"><i style="width:${s.st.n ? s.st.secured / s.st.n * 100 : 0}%"></i></div><span class="n">${s.st.secured}/${s.st.n}${s.st.rusty ? ` · ${s.st.rusty} rusty` : ''}</span>
-        ${sLessons.map(r => `<a class="sglink" href="${esc(r[2])}" title="${esc(r[1])}">📖 Study guide</a>`).join('')}
+        ${sLessons.map(r => `<a class="sglink" href="${esc(r[2])}" title="${esc(r[1])}">📖 Revision notes</a>`).join('')}
         <button type="button" class="tgl" data-tgl="${s.key}" aria-expanded="${open}">Spec points ${open ? '▴' : '▾'}</button><button type="button" class="go" data-sub="${s.key}">Practise →</button></div>
         ${open ? `<div class="pts">${[...s.keys].map(k => { const p = QE.pointState(k), P = (window.SPECPT && SPECPT.of(k)) || QE.POINTS[k]; if (!p.has) return '';
           const [c, w] = p.rusty ? ['r', 'Rusty'] : p.secured ? ['s', 'Secured'] : p.started ? ['l', 'Learning'] : ['n', 'New'];

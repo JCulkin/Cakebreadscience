@@ -27,8 +27,8 @@
     var pCount = (wd && wd.sheets) ? wd.sheets.filter(function(s){ return s.underReview || !s.checked; }).length : 0;
     var fCount = (fd && fd.total) ? fd.total : 0;
     var parts = [];
-    if (deckRev) parts.push(deckRev + ' deck' + (deckRev === 1 ? '' : 's'));
-    if (guideRev) parts.push(guideRev + ' study guide' + (guideRev === 1 ? '' : 's'));
+    if (deckRev) parts.push(deckRev + ' class slide' + (deckRev === 1 ? '' : 's'));
+    if (guideRev) parts.push(guideRev + ' revision notes');
     if (pCount) parts.push(pCount + ' printable' + (pCount === 1 ? '' : 's'));
     if (fCount) parts.push(fCount + ' flashcard' + (fCount === 1 ? '' : 's'));
     if (!parts.length) parts.push('Everything up to date');
@@ -43,8 +43,8 @@
       + '<span style="display:flex;gap:7px;flex-wrap:wrap;align-items:center">'
       + simBtn
       + '<a href="/staging-review/" style="background:#111;color:#facc15;text-decoration:none;padding:6px 14px;font-weight:800;border-radius:4px;white-space:nowrap">Open Staging Review Hub →</a>'
-      + '<a href="/staging-review/#decks" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Decks</a>'
-      + '<a href="/staging-review/#guides" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Study guides</a>'
+      + '<a href="/staging-review/#decks" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Class Slides</a>'
+      + '<a href="/staging-review/#guides" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Revision Notes</a>'
       + '<a href="/staging-review/#printables" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Printables</a>'
       + '<a href="/staging-review/#flashcards" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Flashcards</a>'
       + '</span>';

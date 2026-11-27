@@ -505,7 +505,7 @@ async function drawL(msg) {
   const stuOk = studs.filter(L => lSt(L) === 'checked').length;
   const want = { todo: s => s === 'todo' || s === 'changed', ok: s => s === 'ok', fix: s => s === 'fix', checked: s => s === 'checked', all: () => true }[RV.lfilter];
   const F = [['todo', `To review (${c.todo + c.changed})`], ['ok', `Approved, not frozen yet (${c.ok})`], ['fix', `Needs a fix (${c.fix})`], ['checked', `Checked (${c.checked})`], ['all', `All (${S.length})`]];
-  const K = [['all', `Both (${ALL.length})`], ['deck', `▶ Projector decks (${decks.length})`], ['student', `📖 Student guides (${studs.length})`]];
+  const K = [['all', `Both (${ALL.length})`], ['deck', `▶ Class Slides (${decks.length})`], ['student', `📖 Revision Notes (${studs.length})`]];
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
   const rows = Object.keys(LSUBJ).map(sj => {
     const all = S.filter(L => L.subj === sj); if (!all.length) return '';
@@ -514,8 +514,8 @@ async function drawL(msg) {
       + (list.length ? list.map(L => {
         const k = lkey(L.subj, L.code, L.kind), st = lSt(L), r = RV.recs.l[REVIEW.key(k)], last = L.versions[L.versions.length - 1];
         const chip = { checked: 'ok', ok: 'ok', fix: 'fix', changed: 'changed', todo: 'todo' }[st];
-        const kindTag = L.kind === 'student' ? '<span class="lkind student">📖 Student guide</span>' : '<span class="lkind deck">▶ Deck</span>';
-        const openLbl = L.kind === 'student' ? 'Open student guide' : '▶ Present draft deck';
+        const kindTag = L.kind === 'student' ? '<span class="lkind student">📖 Revision Notes</span>' : '<span class="lkind deck">▶ Class Slides</span>';
+        const openLbl = L.kind === 'student' ? 'Open Revision Notes' : '▶ Present Class Slides';
         const extraLink = L.kind === 'deck' && L.split ? ` · <a href="${L.url}draft/deck.html" target="_blank">Launcher</a>` : '';
         return `<div class="wrow" data-l="${esc(k)}"><span><span class="st ${chip}">${LLABEL[st]}</span></span>
           <span class="t">${kindTag}<b>${esc(L.code)} · ${esc(L.title)}</b><small>Spec ${esc(L.spec || '')}${L.draftUpdated ? ` · updated ${fmt(L.draftUpdated)}` : ''}${last ? ` · last frozen ${fmt(last)}` : ' · not frozen yet'}${L.missing ? ' · ⚠️ page not found' : ''}${st === 'ok' && r ? ` · approved ${new Date(r.at).toLocaleDateString('en-GB')}` : ''}${st === 'changed' ? ' · changed since you checked it' : ''}</small>
@@ -526,11 +526,11 @@ async function drawL(msg) {
         : '<p class="muted small">Nothing in this list.</p>');
   }).join('');
   const toSend = ALL.filter(L => ['ok', 'fix'].includes(lSt(L)));
-  box.innerHTML = `<div class="sum"><div class="chips"><span><b>${deckOk}</b>/${decks.length} decks checked</span><span><b>${stuOk}</b>/${studs.length} student guides checked</span><span><b>${c.todo + c.changed}</b> to review</span><span><b style="color:var(--ok)">${c.ok}</b> approved</span><span><b style="color:var(--fix)">${c.fix}</b> need a fix</span></div></div>
+  box.innerHTML = `<div class="sum"><div class="chips"><span><b>${deckOk}</b>/${decks.length} class slides checked</span><span><b>${stuOk}</b>/${studs.length} revision notes checked</span><span><b>${c.todo + c.changed}</b> to review</span><span><b style="color:var(--ok)">${c.ok}</b> approved</span><span><b style="color:var(--fix)">${c.fix}</b> need a fix</span></div></div>
     <div class="ltypebar">${K.map(([k, t]) => `<button data-lk="${k}" class="${RV.lkind === k ? 'on' : ''}">${t}</button>`).join('')}</div>
     <div class="filters">${F.map(([k, t]) => `<button data-lf="${k}" class="${RV.lfilter === k ? 'on' : ''}">${t}</button>`).join('')}
       <button class="lcopy" id="lCopy" ${toSend.length ? '' : 'disabled'}>📋 Copy for the lessons chat (${toSend.length})</button></div>
-    <p class="small muted" style="margin-bottom:6px">Projector decks and Student study guides are tracked separately. Open either draft, mark ✓ Good or ✏️ Needs a fix, then paste the copied list into the lessons chat. Any edit sends only the edited half back to "Changed".</p>
+    <p class="small muted" style="margin-bottom:6px">Class Slides and Revision Notes are tracked separately. Open either draft, mark ✓ Good or ✏️ Needs a fix, then paste the copied list into the lessons chat. Any edit sends only the edited half back to "Changed".</p>
     ${msg ? `<p class="saved">${msg}</p>` : ''}${rows}`;
   box.querySelectorAll('[data-lk]').forEach(b => b.onclick = () => { RV.lkind = b.dataset.lk; drawL(); });
   box.querySelectorAll('[data-lf]').forEach(b => b.onclick = () => { RV.lfilter = b.dataset.lf; drawL(); });
@@ -539,9 +539,9 @@ async function drawL(msg) {
     const okS = toSend.filter(L => L.kind === 'student' && lSt(L) === 'ok');
     const fx = toSend.filter(L => lSt(L) === 'fix');
     const t = ['Review portal → Lessons (' + new Date().toLocaleDateString('en-GB') + '):',
-      okD.length ? 'Mark projector deck checked: ' + okD.map(L => `${L.subj}/${L.code} (draft ${L.draftUpdated})`).join(', ') + '.' : '',
-      okS.length ? 'Mark student study guide checked: ' + okS.map(L => `${L.subj}/${L.code} (draft ${L.draftUpdated})`).join(', ') + '.' : '',
-      ...fx.map(L => `Needs a fix — ${L.subj}/${L.code} (${L.kind === 'student' ? 'student guide' : 'deck'}): ${(RV.recs.l[REVIEW.key(lkey(L.subj, L.code, L.kind))] || {}).note || ''}`)].filter(Boolean).join('\n');
+      okD.length ? 'Mark Class Slides checked: ' + okD.map(L => `${L.subj}/${L.code} (draft ${L.draftUpdated})`).join(', ') + '.' : '',
+      okS.length ? 'Mark Revision Notes checked: ' + okS.map(L => `${L.subj}/${L.code} (draft ${L.draftUpdated})`).join(', ') + '.' : '',
+      ...fx.map(L => `Needs a fix — ${L.subj}/${L.code} (${L.kind === 'student' ? 'Revision Notes' : 'Class Slides'}): ${(RV.recs.l[REVIEW.key(lkey(L.subj, L.code, L.kind))] || {}).note || ''}`)].filter(Boolean).join('\n');
     try { await navigator.clipboard.writeText(t); drawL('Copied. Paste it into the lessons chat.'); } catch (e) { prompt('Copy this for the lessons chat:', t); }
   };
   box.querySelectorAll('.wrow[data-l]').forEach(row => {
@@ -551,7 +551,7 @@ async function drawL(msg) {
       try { await REVIEW.save(RT, 'l', k, rec); RV.recs.l[REVIEW.key(k)] = rec; drawL(); } catch (e) { alert('Not saved — check your connection.'); } };
     const g = row.querySelector('.wgood'); if (g) g.onclick = () => set('ok');
     const u = row.querySelector('.wun'); if (u) u.onclick = async () => { try { await REVIEW.clear(RT, 'l', k); delete RV.recs.l[REVIEW.key(k)]; drawL(); } catch (e) { alert('Not saved — check your connection.'); } };
-    const f = row.querySelector('.wfix'); if (f) f.onclick = () => { const lbl = L.kind === 'student' ? 'student study guide' : 'projector deck'; const n = prompt(`What needs fixing in ${L.subj} ${L.code} (${lbl})?`, (RV.recs.l[REVIEW.key(k)] || {}).note || ''); if (n !== null) set('fix', n); };
+    const f = row.querySelector('.wfix'); if (f) f.onclick = () => { const lbl = L.kind === 'student' ? 'Revision Notes' : 'Class Slides'; const n = prompt(`What needs fixing in ${L.subj} ${L.code} (${lbl})?`, (RV.recs.l[REVIEW.key(k)] || {}).note || ''); if (n !== null) set('fix', n); };
   });
 }
 

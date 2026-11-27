@@ -216,7 +216,7 @@ async function draw() {
   if ((!QE.known || QE.status === 'loading') && !waited) return;
   const u = QE.user;
   if (!u) {
-    $('main').innerHTML = `<div class="gate"><b>Sign in to open your Student Home.</b> One Google account covers homework, Cakebread Questing, Flashcards, Study Guides and Spec Trackers. <button id="si">Sign in</button></div>
+    $('main').innerHTML = `<div class="gate"><b>Sign in to open your Student Home.</b> One Google account covers homework, Cakebread Questing, Flashcards, Revision Notes and Spec Trackers. <button id="si">Sign in</button></div>
       <h2 style="margin:22px 0 8px">Or jump in</h2><div class="links"><a href="/how-to-use/">❓ How to use this site</a><a href="${Q}">⚔️ Cakebread Questing</a><a href="/Flashcards/">🃏 Flashcards</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/?dir=1">📂 Full site directory</a></div>`;
     $('si').onclick = () => QE.signIn().catch(() => {});
     drawn = false; return;
@@ -270,7 +270,7 @@ async function draw() {
   const IDX = (typeof SPEC_INDEX !== 'undefined' && SPEC_INDEX) || window.SPEC_INDEX || { pts: {}, res: [] };
   const resLink = (k, kind, sym, title) => { const idx = ((IDX.pts[k] || {}).r || []).find(i => IDX.res[i] && IDX.res[i][0] === kind); return idx != null ? `<a class="ico" href="${esc(IDX.res[idx][2])}" title="${title}" aria-label="${title}">${sym}</a>` : ''; };
   const ptRow = ({ k, tag, cls }) => `<div class="pt"><a class="k ${k[0]}" href="/specifications/${TRK[k[0]]}.html#${k}" title="Open on spec tracker">${k[0]} ${P(k).id}</a><span class="t">${esc(strip(P(k).text).slice(0, 82))}${strip(P(k).text).length > 82 ? '…' : ''}<br><small class="${cls}">${tag}</small></span>
-    <span class="ac">${QE.POINT_QS[k] ? `<a class="ico" href="${Q}practice.html?point=${k}" title="Practice questions" aria-label="Practice questions">📝</a><a class="ico" href="${Q}adventurer-mission.html?point=${k}" title="Cakebread Questing mission" aria-label="Cakebread Questing mission">⚔️</a>` : ''}${QE.CARDS_ON[k] ? `<a class="ico" href="/Flashcards/?spec=${k}" title="Flashcards" aria-label="Flashcards">🃏</a>` : ''}${resLink(k, 'lesson', '🎓', 'Study guide')}${resLink(k, 'sheet', '📄', 'Worksheet')}</span></div>`;
+    <span class="ac">${QE.POINT_QS[k] ? `<a class="ico" href="${Q}practice.html?point=${k}" title="Practice questions" aria-label="Practice questions">📝</a><a class="ico" href="${Q}adventurer-mission.html?point=${k}" title="Cakebread Questing mission" aria-label="Cakebread Questing mission">⚔️</a>` : ''}${QE.CARDS_ON[k] ? `<a class="ico" href="/Flashcards/?spec=${k}" title="Flashcards" aria-label="Flashcards">🃏</a>` : ''}${resLink(k, 'lesson', '🎓', 'Revision notes')}${resLink(k, 'sheet', '📄', 'Worksheet')}</span></div>`;
 
   const sec = QE.securedBySci();
   const sciRow = (L, sub, col) => { const pc = Math.round(sec[L.toLowerCase()] / ADV.TOTAL[L.toLowerCase()] * 100);
@@ -297,7 +297,7 @@ async function draw() {
           <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
           <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a>
         </div>
-        ${top3.length ? `<div class="up-head"><h3>Top 3 targets</h3><span>📝 Practice · ⚔️ Quest · 🃏 Cards · 🎓 Guide</span></div>${top3.map(ptRow).join('')}<p class="small" style="margin-top:10px"><a href="/specifications/science.html">See all spec points on your trackers →</a>${check.length ? ` · <a href="/specifications/${TRK[check[0].k[0]]}.html?f=check">${check.length} unproved “confident” points →</a>` : ''}</p>`
+        ${top3.length ? `<div class="up-head"><h3>Top 3 targets</h3><span>📝 Practice · ⚔️ Quest · 🃏 Cards · 🎓 Notes</span></div>${top3.map(ptRow).join('')}<p class="small" style="margin-top:10px"><a href="/specifications/science.html">See all spec points on your trackers →</a>${check.length ? ` · <a href="/specifications/${TRK[check[0].k[0]]}.html?f=check">${check.length} unproved “confident” points →</a>` : ''}</p>`
           : `<p class="small muted">${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Finish a quick mission, Practice set, or Flashcards session and your closest targets will appear here automatically.</p><p style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a><a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p>`}
       </div>
 
@@ -315,7 +315,7 @@ async function draw() {
     <div id="exploreDock">
       <div class="dock-head"><h2>Explore the site</h2><a class="small" href="/how-to-use/" style="font-weight:700">❓ How to use this site →</a></div>
       <div class="dock">
-        <a class="dtile" href="/interactive/lessons/"><span class="ic">🎓</span><span><b>Study Guides</b><small>Step-by-step topic notes &amp; checks</small></span></a>
+        <a class="dtile" href="/interactive/lessons/"><span class="ic">🎓</span><span><b>Revision Notes</b><small>Step-by-step topic notes &amp; checks</small></span></a>
         <a class="dtile" href="/Flashcards/"><span class="ic">🃏</span><span><b>Flashcards</b><small>Spaced recall &amp; examiner key words</small></span></a>
         <a class="dtile" href="${Q}practice.html"><span class="ic">📝</span><span><b>Practice Questions</b><small>Clean topic quizzes, no game</small></span></a>
         <a class="dtile" href="/specifications/science.html"><span class="ic">📋</span><span><b>Spec Trackers</b><small>Check every IGCSE point</small></span></a>

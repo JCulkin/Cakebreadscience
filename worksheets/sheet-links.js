@@ -1,5 +1,5 @@
 /* Screen-only cross-layer links for printable science worksheets and topic booklets.
- * Injects Flashcards, Practice, Study guide and Topic booklet / worksheet links into
+ * Injects Flashcards, Practice, Revision notes and Topic booklet / worksheet links into
  * .screen-links (which css/print-sheet.css hides completely on @media print).
  * Zero print footprint and zero effect on printable A4 pagination. */
 (function () {
@@ -16,8 +16,8 @@
     'chemistry/ionic-covalent-bonding': {
       subs: ['C1f', 'C1g'],
       lessons: [
-        { href: '/interactive/lessons/chemistry/1f/', text: 'Study guide (1f)' },
-        { href: '/interactive/lessons/chemistry/1g/', text: 'Study guide (1g)' }
+        { href: '/interactive/lessons/chemistry/1f/', text: 'Revision notes (1f)' },
+        { href: '/interactive/lessons/chemistry/1g/', text: 'Revision notes (1g)' }
       ],
       extra: [{ href: '/worksheets/chemistry/ks4/1fg1_bonding_electrons_charge.html', text: 'Worksheets (1fg1–2)' }]
     },
@@ -30,7 +30,7 @@
   var MAP = {
     'biology/1_living_organisms':       { subs: ['B1a', 'B1b'], lesson: '/interactive/lessons/biology/1/' },
     'biology/1b_classifying_organisms': { subs: ['B1a', 'B1b'], lesson: '/interactive/lessons/biology/1/' },
-    'biology/2ab_cells_organisation':   { subs: ['B2a', 'B2b'], lessons: [{ href: '/interactive/lessons/biology/2a/', text: 'Study guide (2a)' }, { href: '/interactive/lessons/biology/2b/', text: 'Study guide (2b)' }] },
+    'biology/2ab_cells_organisation':   { subs: ['B2a', 'B2b'], lessons: [{ href: '/interactive/lessons/biology/2a/', text: 'Revision notes (2a)' }, { href: '/interactive/lessons/biology/2b/', text: 'Revision notes (2b)' }] },
     'biology/2c1_molecules_food_tests': { subs: ['B2c'], lesson: '/interactive/lessons/biology/2c/' },
     'biology/2c2_enzymes':              { subs: ['B2c'], lesson: '/interactive/lessons/biology/2c/' },
     'biology/2d_diffusion_osmosis':     { subs: ['B2d'], lesson: '/interactive/lessons/biology/2d/' },
@@ -50,8 +50,8 @@
     'chemistry/1e3_reacting_masses':            { subs: ['C1e'] },
     'chemistry/1e4_empirical_formulae':         { subs: ['C1e'] },
     'chemistry/1e5_moles_2':                    { subs: ['C1e'] },
-    'chemistry/1fg1_bonding_electrons_charge':  { subs: ['C1f', 'C1g'], lessons: [{ href: '/interactive/lessons/chemistry/1f/', text: 'Study guide (1f)' }, { href: '/interactive/lessons/chemistry/1g/', text: 'Study guide (1g)' }], booklet: '/booklets/chemistry/ionic-covalent-bonding.html' },
-    'chemistry/1fg2_structure_properties':      { subs: ['C1f', 'C1g'], lessons: [{ href: '/interactive/lessons/chemistry/1f/', text: 'Study guide (1f)' }, { href: '/interactive/lessons/chemistry/1g/', text: 'Study guide (1g)' }], booklet: '/booklets/chemistry/ionic-covalent-bonding.html' },
+    'chemistry/1fg1_bonding_electrons_charge':  { subs: ['C1f', 'C1g'], lessons: [{ href: '/interactive/lessons/chemistry/1f/', text: 'Revision notes (1f)' }, { href: '/interactive/lessons/chemistry/1g/', text: 'Revision notes (1g)' }], booklet: '/booklets/chemistry/ionic-covalent-bonding.html' },
+    'chemistry/1fg2_structure_properties':      { subs: ['C1f', 'C1g'], lessons: [{ href: '/interactive/lessons/chemistry/1f/', text: 'Revision notes (1f)' }, { href: '/interactive/lessons/chemistry/1g/', text: 'Revision notes (1g)' }], booklet: '/booklets/chemistry/ionic-covalent-bonding.html' },
     'chemistry/1_review':                       { subs: ['C1a', 'C1b', 'C1c', 'C1d', 'C1e', 'C1f', 'C1g'] },
     'chemistry/2d_reactivity_series':           { subs: ['C2d'] },
     'chemistry/2f_making_salts':                { subs: ['C2f'] },
@@ -76,7 +76,7 @@
   if (info.lessons && info.lessons.length) {
     for (var j = 0; j < info.lessons.length; j++) items.push(info.lessons[j]);
   } else if (info.lesson) {
-    items.push({ href: info.lesson, text: 'Study guide' });
+    items.push({ href: info.lesson, text: 'Revision notes' });
   }
   if (info.booklet) items.push({ href: info.booklet, text: 'Topic booklet' });
   if (info.extra && info.extra.length) {

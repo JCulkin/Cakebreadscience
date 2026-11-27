@@ -15,7 +15,7 @@ description: Printable worksheets and booklets (worksheets/, booklets/) — code
   - **Refutation:** at least one *"Spot the mistake" / "A student wrote… explain why this is wrong"* (KS4) or guided T/F-and-fix / circle-the-correction check (KS3/SA) targeting a real IGCSE misconception.
   - **Examiner Key Words (`/js/key-words.js`):** reinforce the exact mark-earning terms for the sheet's spec points; avoid banned/vague exam phrasing (`amount of` for measurable quantities, `reliable` alone, `germs`, `enzymes are killed` outside refutation).
   - **Attempt-first self-marking (mark schemes):** `.howto` banner at the top (*mark in a different colour, add missing key words*), explicit bulleted credit points with **bolded key words** on extended answers, and **≥2 targeted `.tip` misconception notes** explaining *why* common slips lose marks.
-  - **Cross-layer glue (screen-only):** `worksheets/science.html` links to Topic Booklets and 6-Marker Booklets; individual sheets inject screen-only (`@media print { display: none }`) Flashcards / Practice / Study Guide links via `worksheets/sheet-links.js`.
+  - **Cross-layer glue (screen-only):** `worksheets/science.html` links to Topic Booklets and 6-Marker Booklets; individual sheets inject screen-only (`@media print { display: none }`) Flashcards / Practice / Revision Notes links via `worksheets/sheet-links.js`.
 
 ## Products
 - **Worksheet** (KS4 and KS3 sets) and **Booklet** (whole topic, 10–14 pages). Built in teaching order

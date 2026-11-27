@@ -1,4 +1,4 @@
-/* Cakebread Science — Student Study Guide engine (Option B split architecture)
+/* Cakebread Science — Revision Notes engine (Option B split architecture)
    Powers chunked Bitesize-style steps, Seneca-style inline micro-checks,
    course/extension filtering, self-marked end-of-topic tests, and Lesson.comps. */
 (function(){

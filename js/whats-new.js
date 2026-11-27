@@ -9,7 +9,7 @@
   const ITEMS = [
     ['🏠', 'Student Home', 'signed-in students now land straight on their homework, upcoming tests & 1-click Revise button', '/today/'],
     ['🎯', '2-day spaced homework', '1 short mission on 2 different days with a live progress bar', '/today/'],
-    ['🎓', 'New Study Guides', 'step-by-step notes, quick checks & self-marked exam questions', '/interactive/lessons/'],
+    ['🎓', 'New Revision Notes', 'step-by-step notes, quick checks & self-marked exam questions', '/interactive/lessons/'],
     ['🃏', 'Upgraded Flashcards', '100% of the IGCSE spec, Examiner Key Words deck & mixed due review', '/Flashcards/'],
     ['❓', 'How to use this site', 'quick student guide & interactive page tours', '/how-to-use/']
   ];

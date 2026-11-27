@@ -137,8 +137,8 @@ body.sg-viewing #sgModal{display:flex}
 
 <nav class="tabs-wrap" aria-label="Review sections">
   <div class="tabs" id="tabs">
-    <button type="button" class="tab" data-tab="decks">🎬 Projector Decks <span class="cnt" id="cnt-decks">…</span></button>
-    <button type="button" class="tab" data-tab="guides">📖 Student Study Guides <span class="cnt" id="cnt-guides">…</span></button>
+    <button type="button" class="tab" data-tab="decks">🎬 Class Slides <span class="cnt" id="cnt-decks">…</span></button>
+    <button type="button" class="tab" data-tab="guides">📖 Revision Notes <span class="cnt" id="cnt-guides">…</span></button>
     <button type="button" class="tab" data-tab="printables">📄 Printables <span class="cnt" id="cnt-printables">…</span></button>
     <button type="button" class="tab" data-tab="flashcards">🃏 Flashcards <span class="cnt" id="cnt-flashcards">…</span></button>
   </div>
@@ -151,8 +151,8 @@ body.sg-viewing #sgModal{display:flex}
   <div id="content"><p>Loading staging changes…</p></div>
 </main>
 
-<!-- Full-screen side-by-side Student Study Guide Comparer -->
-<div id="sgModal" role="dialog" aria-modal="true" aria-label="Student Study Guide Comparer">
+<!-- Full-screen side-by-side Revision Notes Comparer -->
+<div id="sgModal" role="dialog" aria-modal="true" aria-label="Revision Notes Comparer">
   <div class="sg-top">
     <button type="button" class="tbtn" id="sgClose">← Back to Hub</button>
     <div class="sg-title" id="sgTitle"></div>
@@ -286,10 +286,10 @@ body.sg-viewing #sgModal{display:flex}
     };
 
     const heading = activeFilter === 'checked'
-      ? `Checked Projector Decks <small>already signed off and frozen</small>`
-      : `Projector Decks — Needs Review <small>only decks still waiting for approval · checked decks hidden</small>`;
+      ? `Checked Class Slides <small>already signed off and frozen</small>`
+      : `Class Slides — Needs Review <small>only slide decks still waiting for approval · checked decks hidden</small>`;
     document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
-      + (list.map(cardHtml).join('') || '<p>All projector decks in this filter are checked! 🎉</p>');
+      + (list.map(cardHtml).join('') || '<p>All class slides in this filter are checked! 🎉</p>');
   }
 
   function renderGuides() {
@@ -311,7 +311,7 @@ body.sg-viewing #sgModal{display:flex}
     const cardHtml = l => {
       const pills = [
         l.studentStatus === 'checked' ? '<span class="pill chk">Signed off ✓</span>' : '<span class="pill rev">Needs review</span>',
-        l.beforeGuideUrl ? `<span class="pill base">Compare vs v${esc(l.latestV)}</span>` : '<span class="pill newl">First split study guide</span>',
+        l.beforeGuideUrl ? `<span class="pill base">Compare vs v${esc(l.latestV)}</span>` : '<span class="pill newl">First Revision Notes</span>',
         `<span class="pill">Spec ${esc(l.spec)}</span>`
       ];
       const col = SUBJ_COL[l.subject] || '#111';
@@ -328,10 +328,10 @@ body.sg-viewing #sgModal{display:flex}
     };
 
     const heading = activeFilter === 'checked'
-      ? `Signed-Off Student Study Guides <small>already approved</small>`
-      : `Student Study Guides — Needs Review <small>${list.length} waiting for approval · signed-off guides hidden</small>`;
+      ? `Signed-Off Revision Notes <small>already approved</small>`
+      : `Revision Notes — Needs Review <small>${list.length} waiting for approval · signed-off notes hidden</small>`;
     document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
-      + (list.map(cardHtml).join('') || '<p>All study guides in this filter are signed off! 🎉</p>');
+      + (list.map(cardHtml).join('') || '<p>All revision notes in this filter are signed off! 🎉</p>');
   }
 
   function renderPrintables() {
@@ -483,9 +483,9 @@ body.sg-viewing #sgModal{display:flex}
     document.getElementById('sgAfterLbl').textContent = `draft/index.html (Spec ${l.spec})`;
     const bw = document.getElementById('sgBeforeWrap');
     bw.innerHTML = l.beforeGuideUrl
-      ? `<iframe src="${esc(l.beforeGuideUrl)}" title="Before study guide"></iframe>`
-      : '<div class="sg-empty"><b>Brand-new split study guide</b><p>This lesson has not been frozen yet — inspect the staging draft on the right, or click <b>Full After</b> for full width.</p></div>';
-    document.getElementById('sgAfterWrap').innerHTML = `<iframe src="${esc(l.draftUrl)}" title="After study guide"></iframe>`;
+      ? `<iframe src="${esc(l.beforeGuideUrl)}" title="Before revision notes"></iframe>`
+      : '<div class="sg-empty"><b>Brand-new Revision Notes</b><p>This lesson has not been frozen yet — inspect the staging draft on the right, or click <b>Full After</b> for full width.</p></div>';
+    document.getElementById('sgAfterWrap').innerHTML = `<iframe src="${esc(l.draftUrl)}" title="After revision notes"></iframe>`;
   }
   function closeStudyGuideModal() {
     sgCur = null;
