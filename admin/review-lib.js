@@ -29,6 +29,8 @@
     return (D && D.M && D.M[q.dg] ? String(D.M[q.dg]) : 'maker:' + q.dg) + '|' + (row && row.rx ? String(row.rx) : ''); };
   /* key words (22 Nov): one review item per spec point = its list of [word, meaning] in /js/key-words.js */
   const kHash = k => hash(JSON.stringify([k, (window.KEYWORDS || {})[k] || []]));
+  /* flashcards (27 Nov): one review item per card = deck + spec + daOnly + front + back */
+  const fcHash = c => hash(JSON.stringify([c.deck, c.spec || '', !!c.daOnly, c.front || '', c.back || '']));
   const qHash = q => hash(JSON.stringify([q.s, q.q || '', q.o || null, q.tf === undefined ? null : q.tf, q.x || '', !!q.hard, q.dg ? dgOf(q) : q.gen ? String(q.gen) : null]));
   function textOf(html) {
     const d = new DOMParser().parseFromString(html || '', 'text/html');
@@ -41,7 +43,7 @@
      account change it"). A chat that makes an edit the user asked for runs  node tools/review/keep.js q <id…> | w <path…>,
      which writes the new fingerprint to /admin/review-approved.json. That counts as checked until the content changes again.
      Worksheets use a plain-text fingerprint here (rawHash) because node has no DOM. */
-  let APPROVED = { q: {}, w: {}, k: {} };
+  let APPROVED = { q: {}, w: {}, k: {}, fc: {} };
   const rawText = html => String(html || '').replace(/<(script|style|noscript|template)\b[\s\S]*?<\/\1>/gi, ' ')
     .replace(/<img\b[^>]*?\bsrc="([^"]*)"[^>]*>/gi, ' [img:$1] ').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
   const rawHash = (sheet, ms) => hash(rawText(sheet) + '\u0002' + rawText(ms));
@@ -56,7 +58,8 @@
     return APPROVED.w[s.p] ? 'ok' : 'todo';
   };
   const statusK = (recs, k) => full(recs[key(k)], kHash(k), (APPROVED.k[k] || {}).h === kHash(k));
-  const keptQ = id => APPROVED.q[id] || null, keptW = p => APPROVED.w[p] || null, keptK = k => APPROVED.k[k] || null;
+  const statusFC = (recs, cid, h) => full((recs || {})[key(cid)], h, ((APPROVED.fc || {})[cid] || {}).h === h);
+  const keptQ = id => APPROVED.q[id] || null, keptW = p => APPROVED.w[p] || null, keptK = k => APPROVED.k[k] || null, keptFC = cid => (APPROVED.fc || {})[cid] || null;
   const LABEL = { todo: 'To review', changed: 'Changed since checked', fix: 'Needs a fix', ok: 'Checked ✓' };
 
   /* the whole question bank in spec order (questions.js + gens.js must be loaded) */
@@ -67,10 +70,10 @@
   }
   async function loadReview(rt) {
     const get = async p => { try { return (window.CBSSchool && CBSSchool.rtGet) ? await CBSSchool.rtGet(rt, p, 15000) : (await rt.ref(p).once('value')).val(); } catch (e) { return null; } };
-    const [q, w, k, l, ap] = await Promise.all([get('school/review/q'), get('school/review/w'), get('school/review/k'), get('school/review/l'),
+    const [q, w, k, l, fc, ap] = await Promise.all([get('school/review/q'), get('school/review/w'), get('school/review/k'), get('school/review/l'), get('school/review/fc'),
       fetch('/admin/review-approved.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null)]);
-    APPROVED = { q: (ap && ap.q) || {}, w: (ap && ap.w) || {}, k: (ap && ap.k) || {} };
-    return { q: q || {}, w: w || {}, k: k || {}, l: l || {} };
+    APPROVED = { q: (ap && ap.q) || {}, w: (ap && ap.w) || {}, k: (ap && ap.k) || {}, fc: (ap && ap.fc) || {} };
+    return { q: q || {}, w: w || {}, k: k || {}, l: l || {}, fc: fc || {} };
   }
   async function save(rt, kind, id, rec) { await rt.ref(`school/review/${kind}/${key(id)}`).set(rec); }
   async function clear(rt, kind, id) { await rt.ref(`school/review/${kind}/${key(id)}`).remove(); }
@@ -99,5 +102,5 @@
     items.forEach(it => c[full(recs[key(idOf(it))], hOf(it), (APPROVED.q[idOf(it)] || {}).h === hOf(it))]++);
     return c;
   }
-  window.REVIEW = { key, hash, qHash, kHash, textOf, rawText, rawHash, status, statusQ, statusW, statusWFast, statusK, keptQ, keptW, keptK, LABEL, questions, loadReview, save, clear, sheets, sheetsList, counts };
+  window.REVIEW = { key, hash, qHash, kHash, fcHash, textOf, rawText, rawHash, status, statusQ, statusW, statusWFast, statusK, statusFC, keptQ, keptW, keptK, keptFC, LABEL, questions, loadReview, save, clear, sheets, sheetsList, counts };
 })();

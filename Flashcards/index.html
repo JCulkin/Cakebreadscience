@@ -237,6 +237,21 @@
     .fc-total .tdc { font: 900 44px/1 'Barlow Condensed', Arial, sans-serif; color: var(--ink); }
     .fc-total .tdl { font: 900 20px 'Barlow Condensed', Arial, sans-serif; text-transform: uppercase; }
     .fc-total .tdt { color: var(--muted); font-size: 14px; }
+    .fc-quick-acts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin: 0 0 14px;
+    }
+    .fc-quick-acts:empty { display: none; }
+    .fc-weak-btn {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #991b1b;
+      box-shadow: 0 2px 0 #991b1b;
+    }
+    .fc-weak-btn:hover { background: #fecaca; }
 
     .taught-bar {
       display: flex;
@@ -1166,6 +1181,8 @@
         </div>
       </div>
 
+      <div class="fc-quick-acts" id="quickActs"></div>
+
       <div class="deck-list" id="deckList">
         <div class="loading">Loading flashcards…</div>
       </div>
@@ -1432,7 +1449,9 @@
     let sessionDone = 0;
     let sessionInitialTotal = 0;
     let sessionSeen = new Set(); // cardKeys already rated in this session (prevents double Questing rewards on Again re-queue)
-    let sessionMode = 'deck';    // 'deck' | 'topic' | 'spec'
+    let sessionSpecs = [];       // unique spec points reviewed in this session (in order)
+    let sessionWeakSpecs = [];   // unique spec points rated Again (1) or Hard (2) in this session
+    let sessionMode = 'deck';    // 'deck' | 'mixed' | 'weak' | 'topic' | 'spec'
     let sessionLabel = '';
     let lastUndo = null;         // snapshot for Undo
     let activeTopicSubj = 'B';
@@ -2076,11 +2095,59 @@
 
       updateTaughtBar();
       updateTotalDueToday();
+      renderQuickActions();
       renderBadges();
       renderQuest();
       renderTopicBrowser();
       if (typeof QE !== 'undefined' && currentUser) QE.cardsDue(totalDue());
     }
+
+    function getStrugglingCards() {
+      const out = [];
+      Object.keys(DECK_META).filter(isDeckEnabled).forEach(deckId => {
+        activeCards(deckId).forEach(card => {
+          const p = userProgress[`${deckId}_${card.id}`];
+          if (p && ((p.lapses || 0) > 0 || (typeof p.easiness === 'number' && p.easiness < 2.4))) {
+            out.push({ card, score: (p.lapses || 0) * 2 + (2.5 - (p.easiness || 2.5)) });
+          }
+        });
+      });
+      out.sort((a, b) => b.score - a.score);
+      return out.map(x => x.card);
+    }
+
+    function renderQuickActions() {
+      const box = document.getElementById('quickActs');
+      if (!box) return;
+      const due = totalDue();
+      const weak = getStrugglingCards();
+      const parts = [];
+      if (due > 0) {
+        parts.push(`<button type="button" class="btn sm" id="studyAllDueBtn" onclick="startAllDueMixed()">⚡ Study all ${due} due (mixed)</button>`);
+      }
+      if (weak.length > 0) {
+        parts.push(`<button type="button" class="btn sm fc-weak-btn" id="studyWeakBtn" onclick="startWeakCards()">🔥 Struggling cards (${weak.length})</button>`);
+      }
+      box.innerHTML = parts.join('');
+    }
+
+    window.startAllDueMixed = function () {
+      const reviews = [], fresh = [];
+      Object.keys(DECK_META).filter(isDeckEnabled).forEach(deckId => {
+        const d = getDueCardsForDeck(deckId, false);
+        reviews.push(...d.reviews);
+        fresh.push(...d.fresh);
+      });
+      const mixed = shuffle(reviews).concat(shuffle(fresh));
+      const label = `⚡ All due · Mixed (${mixed.length})` + (isCoveredOnly() ? ' · Covered in class' : '');
+      beginSession(mixed, label, '#111', 'mixed', null);
+    };
+
+    window.startWeakCards = function () {
+      const weak = getStrugglingCards();
+      const label = `🔥 Struggling cards (${weak.length})`;
+      beginSession(weak.slice(0, 25), label, '#991b1b', 'weak', null);
+    };
 
     function updateTotalDueToday() {
       const total = totalDue();
@@ -2197,6 +2264,8 @@
       sessionDone = 0;
       sessionInitialTotal = studyQueue.length;
       sessionSeen = new Set();
+      sessionSpecs = [];
+      sessionWeakSpecs = [];
       sessionMode = mode;
       sessionLabel = label;
       lastUndo = null;
@@ -2356,10 +2425,27 @@
           ? 'Session complete!'
           : (noneCovered ? 'Not covered in class yet' : 'Nothing due right now!');
         const doneBody = sessionDone > 0
-          ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or keep going in Cakebread Questing.`
+          ? `You reviewed <b>${sessionDone}</b> card${sessionDone === 1 ? '' : 's'}. Come back tomorrow for your next reviews, or prove these spec points with Practice Questions and Cakebread Questing.`
           : (noneCovered
             ? `None of this deck has been marked as covered in class for Year ${userYear} yet. Turn on Study ahead if you want to revise topics ahead of lessons.`
             : 'All caught up on this deck for today.');
+        const quizEligible = sp => (typeof QE !== 'undefined' && QE.POINT_QS) ? !!(QE.POINT_QS[sp] && QE.POINT_QS[sp].length) : !!PT_TO_SUB[sp];
+        const revPts = sessionSpecs.filter(quizEligible);
+        const weakPts = sessionWeakSpecs.filter(quizEligible);
+        const cleanTitle = (sessionLabel || 'Flashcards').replace(/^[^\w]+/, '').trim();
+        const pracHref = revPts.length
+          ? `/interactive/spec-quiz/practice.html?subs=${encodeURIComponent(revPts.join(','))}&n=10&t=${encodeURIComponent(cleanTitle)}`
+          : '/interactive/spec-quiz/practice.html';
+        const pracLabel = revPts.length
+          ? `📝 Prove ${revPts.length === 1 ? revPts[0] : `these ${revPts.length} points`} in Practice`
+          : '📝 Practice Questions';
+        const questPts = weakPts.length ? weakPts : revPts;
+        const questHref = questPts.length
+          ? `/interactive/spec-quiz/adventurer-mission.html?subs=${encodeURIComponent(questPts.join(','))}&n=10&t=${encodeURIComponent(cleanTitle)}`
+          : '/interactive/spec-quiz/adventurer-home.html';
+        const questLabel = weakPts.length
+          ? `⚔️ Quest on the ${weakPts.length} you found hard`
+          : (revPts.length ? `⚔️ Quest on these points` : '🧁 Cakelab →');
         box.innerHTML = `<div class="fc-done">
           <img src="/img/mascot/head-laugh.webp" alt="">
           <h2>${doneHead}</h2>
@@ -2368,8 +2454,9 @@
             <button type="button" class="btn" onclick="backToDecks()">Back to decks</button>
             ${noneCovered ? `<button type="button" class="btn alt" onclick="toggleStudyAhead(true);startDeck('${currentDeck}',false)">🚀 Study ahead</button>` : ''}
             ${canAddMore ? `<button type="button" class="btn alt" onclick="startDeck('${currentDeck}',true)">+5 new cards</button>` : ''}
-            <a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a>
-            <a class="btn alt" href="/interactive/spec-quiz/practice.html">📝 Practice Questions</a>
+            ${sessionDone > 0 ? `<a class="btn" style="background:#bbf7d0" href="${pracHref}">${pracLabel}</a>` : `<a class="btn alt" href="${pracHref}">${pracLabel}</a>`}
+            <a class="btn alt" href="${questHref}">${questLabel}</a>
+            ${sessionDone > 0 && questPts.length ? `<a class="btn alt" href="/interactive/spec-quiz/adventurer-home.html">🧁 Cakelab →</a>` : ''}
           </div>
         </div>`;
         updateStats();
@@ -2464,6 +2551,8 @@
           prevNewCount,
           prevQueue: studyQueue.slice(),
           prevDone: sessionDone,
+          prevSpecs: sessionSpecs.slice(),
+          prevWeakSpecs: sessionWeakSpecs.slice(),
           wasAlreadySeen: alreadyRatedThisSession
         };
         document.getElementById('undoBtn').hidden = false;
@@ -2488,6 +2577,10 @@
           sessionDone++;
         }
         sessionSeen.add(cardKey);
+        if (card.spec) {
+          if (!sessionSpecs.includes(card.spec)) sessionSpecs.push(card.spec);
+          if (quality <= 2 && !sessionWeakSpecs.includes(card.spec)) sessionWeakSpecs.push(card.spec);
+        }
 
         // Questing rewards (only on first rating of this card in this session)
         if (typeof QE !== 'undefined' && currentUser && !alreadyRatedThisSession) {
@@ -2532,6 +2625,8 @@
       settings.newCardsToday[u.card.deck] = u.prevNewCount;
       studyQueue = u.prevQueue;
       sessionDone = u.prevDone;
+      if (u.prevSpecs) sessionSpecs = u.prevSpecs;
+      if (u.prevWeakSpecs) sessionWeakSpecs = u.prevWeakSpecs;
       if (!u.wasAlreadySeen) sessionSeen.delete(u.cardKey);
 
       saveLocal();

@@ -191,7 +191,7 @@
   {
     "id": 1675697143002,
     "front": "How are ionic compounds held together?",
-    "back": "They are held together by electrostatic attraction between positive and negative ions&nbsp;in a giant lattice.",
+    "back": "They are held together by electrostatic attraction between positive and negative ions in a giant lattice.",
     "spec": "C1.41",
     "topic": "C1"
   },
@@ -204,7 +204,7 @@
   },
   {
     "id": 1675697173889,
-    "front": "How are ionic compounds\nformed?&nbsp;",
+    "front": "How are ionic compounds\nformed? ",
     "back": "Reaction of a metal with a non-metal.\nElectron transfer occurs - metal gives away its outer shell electrons to\nnon-metal.",
     "spec": "C1.41",
     "topic": "C1"
@@ -366,7 +366,7 @@
   {
     "id": 1675745596270,
     "front": "Write the\nequation and state the colour change seen when a bromine solution reacts with a sodium iodide solution.",
-    "back": "Br<sub>2</sub>(aq)&nbsp; + 2NaI(aq)&nbsp;→ I<sub>2</sub>(aq)&nbsp; + 2NaBr(aq);&nbsp;a <b><span style=\"color: rgb(170, 0, 0);\">brown </span></b>colour of I<sub>2</sub>&nbsp;in solution would appear",
+    "back": "Br<sub>2</sub>(aq)  + 2NaI(aq) → I<sub>2</sub>(aq)  + 2NaBr(aq); a <b><span style=\"color: rgb(170, 0, 0);\">brown </span></b>colour of I<sub>2</sub> in solution would appear",
     "spec": "C2.7",
     "topic": "C2"
   },
@@ -380,7 +380,7 @@
   {
     "id": 1675759945185,
     "front": "You have a sample of a<br>pure liquid. What's the simple way to check its identity?",
-    "back": "Measure the boiling point.<br>Say we have water - it boils at 100 Celsius degrees.&nbsp;",
+    "back": "Measure the boiling point.<br>Say we have water - it boils at 100 Celsius degrees. ",
     "spec": "C1.9",
     "topic": "C1"
   },
@@ -415,7 +415,7 @@
   {
     "id": 1675760478304,
     "front": "What is oxidation/reduction in terms of\nelectron transfer ?",
-    "back": "Oxidation – loss of electrons.&nbsp; &nbsp;OIL<br>Reduction – gain of electrons.&nbsp; RIG",
+    "back": "Oxidation – loss of electrons.   OIL<br>Reduction – gain of electrons.  RIG",
     "spec": "C2.20",
     "topic": "C2"
   },
@@ -731,7 +731,7 @@
   {
     "id": 1675762729333,
     "front": "What are addition reactions\nof alkenes?",
-    "back": "<div>When atoms are added across a carbon-carbon double bond, converting it to a single bond.&nbsp;</div><div><br></div><div>(This reaction increases the <b>saturation </b>of the molecule.)<br></div>",
+    "back": "<div>When atoms are added across a carbon-carbon double bond, converting it to a single bond. </div><div><br></div><div>(This reaction increases the <b>saturation </b>of the molecule.)<br></div>",
     "spec": "C4.27",
     "topic": "C4"
   },
@@ -753,7 +753,7 @@
   {
     "id": 1675762933521,
     "front": "What is the arrangement of\nC-H bonds in methane?",
-    "back": "Tetrahedral&nbsp;<img alt=\"Tetrahedral molecular geometry - Wikipedia\" src=\"Tetrahedral-3D-balls.png\">",
+    "back": "Tetrahedral <img alt=\"Tetrahedral molecular geometry - Wikipedia\" src=\"Tetrahedral-3D-balls.png\">",
     "spec": "C4.21",
     "topic": "C4"
   },
@@ -795,7 +795,7 @@
   {
     "id": 1675763160758,
     "front": "Define alkali",
-    "back": "Alkalis are soluble bases that produce hydroxide ions (OH<sup>-</sup>) in aqueous solutions. They have a pH range between 7 and 14.&nbsp;",
+    "back": "Alkalis are soluble bases that produce hydroxide ions (OH<sup>-</sup>) in aqueous solutions. They have a pH range between 7 and 14. ",
     "spec": "C2.31",
     "topic": "C2"
   },
@@ -1336,7 +1336,7 @@
   },
   {
     "id": 1675765619627,
-    "front": "Define&nbsp;alkenes, including the general formula",
+    "front": "Define alkenes, including the general formula",
     "back": "Hydrocarbons with a double bond between two of the carbon atoms in their chain (C=C),\ncausing them to be unsaturated. They have the general formula C<sub>n</sub>H<sub>2n</sub>.",
     "spec": "C4.24",
     "topic": "C4"
@@ -1442,7 +1442,7 @@
   {
     "id": 1675766638917,
     "front": "What do particulates come from and why are they bad?",
-    "back": "Carbon particulates (soot) are a product of incomplete combustion. They cause global dimming and health problems for\nhumans.&nbsp;",
+    "back": "Carbon particulates (soot) are a product of incomplete combustion. They cause global dimming and health problems for\nhumans. ",
     "spec": "C4.12",
     "topic": "C4"
   },
@@ -1578,14 +1578,14 @@
   {
     "id": 1723925882840,
     "front": "Write the equation and state the colour change seen when a chlorine solution reacts with a sodium bromide solution.",
-    "back": "Cl<sub>2</sub>(aq) + 2NaBr(aq)&nbsp;→ Br<sub>2</sub>(aq)&nbsp; + 2NaCl(aq)<br><br>in this reaction, an <b><span style=\"color: rgb(255, 170, 0);\">orange </span></b>colour of Br<sub>2</sub> in solution would appear",
+    "back": "Cl<sub>2</sub>(aq) + 2NaBr(aq) → Br<sub>2</sub>(aq)  + 2NaCl(aq)<br><br>in this reaction, an <b><span style=\"color: rgb(255, 170, 0);\">orange </span></b>colour of Br<sub>2</sub> in solution would appear",
     "spec": "C2.5",
     "topic": "C2"
   },
   {
     "id": 1723926877866,
     "front": "Name the commonly <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span> </b>ionic compounds",
-    "back": "Common carbonates - all <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and ammonium<br><br>Common hydroxides - all&nbsp;<b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and calcium",
+    "back": "Common carbonates - all <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and ammonium<br><br>Common hydroxides - all <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and calcium",
     "spec": "C2.34",
     "topic": "C2"
   },
@@ -1634,13 +1634,13 @@
   {
     "id": 1732286586754,
     "front": "What does soluble mean?",
-    "back": "A substance is&nbsp;<b>soluble&nbsp;</b>if it can be dissolved in a solvent, e.g. salt in water. An insoluble substance won’t dissolve in a particular solvent.",
+    "back": "A substance is <b>soluble </b>if it can be dissolved in a solvent, e.g. salt in water. An insoluble substance won’t dissolve in a particular solvent.",
     "spec": "C1.4",
     "topic": "C1"
   },
   {
     "id": 1740669287138,
-    "front": "What is the link between relative formula mass and moles&nbsp;",
+    "front": "What is the link between relative formula mass and moles ",
     "back": "Relative formula mass of a substance is numerically equal to the mass of one mole of the substance in grams",
     "spec": "C1.26",
     "topic": "C1"
@@ -1889,5 +1889,75 @@
     "topic": "C3",
     "front": "Core practical: how do you investigate surface area and acid concentration using marble chips and dilute HCl? (4 points)",
     "back": "<ul class=\"fc-points\"><li>React <b>calcium carbonate (marble chips) + dilute HCl</b> → CO<sub>2</sub> gas</li><li>Measure rate by <b>volume of CO<sub>2</sub></b> (gas syringe / upturned cylinder) or <b>mass loss</b> on a balance at regular time intervals</li><li><b>Surface area:</b> compare equal masses of large vs small marble chips (same acid volume, concentration &amp; temperature)</li><li><b>Concentration:</b> vary HCl concentration (same mass/size of marble chips &amp; temperature) → smaller chips / higher concentration give steeper initial gradient</li></ul>"
+  },
+  {
+    "id": 2026112700011,
+    "spec": "C1.11",
+    "topic": "C1",
+    "front": "On a chromatogram, how can you tell if an unknown dye contains a specific reference colouring?",
+    "back": "<ul class=\"fc-points\"><li>Run both samples on the <b>same chromatogram in the same solvent</b></li><li>If the unknown produces a spot at the <b>exact same height (same <i>R</i><sub>f</sub> value)</b> as the reference, that substance is present</li></ul>"
+  },
+  {
+    "id": 2026112700012,
+    "spec": "C1.13",
+    "topic": "C1",
+    "front": "In paper chromatography, why must the baseline be drawn in pencil and kept above the solvent level?",
+    "back": "<ul class=\"fc-points\"><li><b>Pencil (graphite):</b> insoluble in the solvent, so it <b>won’t dissolve and smudge/run</b> up the paper like ink would</li><li><b>Above solvent level:</b> stops the sample spots <b>dissolving straight into the solvent</b> at the bottom</li></ul>"
+  },
+  {
+    "id": 2026112700013,
+    "spec": "C1.39",
+    "topic": "C1",
+    "front": "Write the chemical formulae for: magnesium chloride, aluminium oxide, and calcium hydroxide",
+    "back": "<ul class=\"fc-points\"><li><b>Magnesium chloride</b> (Mg<sup>2+</sup>, Cl<sup>−</sup>): <b>MgCl<sub>2</sub></b></li><li><b>Aluminium oxide</b> (Al<sup>3+</sup>, O<sup>2−</sup>): <b>Al<sub>2</sub>O<sub>3</sub></b></li><li><b>Calcium hydroxide</b> (Ca<sup>2+</sup>, OH<sup>−</sup>): <b>Ca(OH)<sub>2</sub></b></li></ul>"
+  },
+  {
+    "id": 2026112700014,
+    "spec": "C2.2",
+    "topic": "C2",
+    "front": "Write the balanced symbol equation for sodium reacting with water",
+    "back": "<div class=\"fc-eq\">2Na(s) + 2H<sub>2</sub>O(l) → 2NaOH(aq) + H<sub>2</sub>(g)</div><div style=\"font-size:15px;color:#555;margin-top:4px\">(Same pattern for Li and K: forms alkaline metal hydroxide + hydrogen gas)</div>"
+  },
+  {
+    "id": 2026112700015,
+    "spec": "C2.6",
+    "topic": "C2",
+    "front": "Predict the state, colour and reactivity of astatine (bottom of Group 7)",
+    "back": "<ul class=\"fc-points\"><li><b>State &amp; colour:</b> dark <b>black solid</b> at room temperature (highest melting/boiling point in Group 7)</li><li><b>Reactivity:</b> <b>least reactive</b> halogen (outer shell furthest from nucleus, hardest to gain an electron)</li></ul>"
+  },
+  {
+    "id": 2026112700016,
+    "spec": "C2.10",
+    "topic": "C2",
+    "front": "In the copper / iron % oxygen in air experiment, why might your measured value come out <b>less</b> than 21%?",
+    "back": "<ul class=\"fc-points\"><li>Not enough metal (not in <b>excess</b>) or not heated/left long enough → <b>not all O<sub>2</sub> reacted</b></li><li>Apparatus was <b>not cooled back to room temperature</b> before reading final gas volume (warm gas expands)</li></ul>"
+  },
+  {
+    "id": 2026112700017,
+    "spec": "C2.17",
+    "topic": "C2",
+    "front": "Which metals in the Reactivity Series do <b>not</b> react with dilute acids, and why?",
+    "back": "<ul class=\"fc-points\"><li><b>Copper, silver and gold</b></li><li>They are <b>below hydrogen</b> in the reactivity series, so they cannot displace H<sup>+</sup> ions from acids</li></ul>"
+  },
+  {
+    "id": 2026112700018,
+    "spec": "C3.3",
+    "topic": "C3",
+    "front": "In <i>Q</i> = <i>mc</i>Δ<i>T</i>, what mistake do students make with <i>m</i> when a small mass of solid dissolves in 50 cm<sup>3</sup> of water?",
+    "back": "<ul class=\"fc-points\"><li><b><i>m</i> is the mass of water/solution heated (50 g)</b>, <b>not</b> the mass of the solid added</li><li>For aqueous solutions assume <b>1 cm<sup>3</sup> = 1 g</b> and <i>c</i> = 4.18 J/(g °C)</li></ul>"
+  },
+  {
+    "id": 2026112700019,
+    "spec": "C4.13",
+    "topic": "C4",
+    "front": "How is carbon monoxide (CO) formed from hydrocarbon fuels?",
+    "back": "<ul class=\"fc-points\"><li>Formed by <b>incomplete combustion</b> when a hydrocarbon burns in a <b>limited supply of oxygen</b></li><li>Also produces soot (carbon) and water</li></ul>"
+  },
+  {
+    "id": 2026112700020,
+    "spec": "C4.23",
+    "topic": "C4",
+    "front": "What is the chemical test to distinguish an alkene from an alkane?",
+    "back": "<ul class=\"fc-points\"><li>Shake with <b>orange bromine water</b></li><li><b>Alkene (C=C):</b> <b>decolourises</b> bromine water (orange → <b>colourless</b>)</li><li><b>Alkane:</b> stays <b>orange</b> (no reaction in the dark)</li></ul>"
   }
 ]

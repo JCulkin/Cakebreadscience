@@ -234,7 +234,7 @@
   {
     "id": 1675790850140,
     "front": "What is meant by acceleration?\nGive its unit.",
-    "back": "A&nbsp;<b>vector&nbsp;</b>quantity that&nbsp;is the change in velocity per\nunit of time. Unit is m/s<sup>2</sup>",
+    "back": "A <b>vector </b>quantity that is the change in velocity per\nunit of time. Unit is m/s<sup>2</sup>",
     "spec": "P1.6",
     "topic": "P1"
   },
@@ -803,7 +803,7 @@
   {
     "id": 1675920637612,
     "front": "At what speed does an electromagnetic\nwave travel in a vacuum?",
-    "back": "3 x10<sup>8</sup>&nbsp;m/s",
+    "back": "3 x10<sup>8</sup> m/s",
     "spec": "P3.10",
     "topic": "P3"
   },
@@ -1209,7 +1209,7 @@
   {
     "id": 1675923433009,
     "front": "Define absolute zero",
-    "back": "The lowest possible temperature: −273°C or 0K.&nbsp;At this temperature the particles have no\nkinetic energy and so are completely stationary.",
+    "back": "The lowest possible temperature: −273°C or 0K. At this temperature the particles have no\nkinetic energy and so are completely stationary.",
     "spec": "P5.16",
     "topic": "P5"
   },
@@ -1272,7 +1272,7 @@
   {
     "id": 1675924231559,
     "front": "How do you convert between degree\nCelsius and Kelvin?",
-    "back": "<ul class=\"fc-points\"><li><b>°C → K:</b> add 273 &nbsp;(<b><i>T</i>(K) = <i>θ</i>(°C) + 273</b>)</li><li><b>K → °C:</b> subtract 273 &nbsp;(<b><i>θ</i>(°C) = <i>T</i>(K) − 273</b>)</li><li>Absolute zero: <b>0 K = −273 °C</b></li></ul>",
+    "back": "<ul class=\"fc-points\"><li><b>°C → K:</b> add 273  (<b><i>T</i>(K) = <i>θ</i>(°C) + 273</b>)</li><li><b>K → °C:</b> subtract 273  (<b><i>θ</i>(°C) = <i>T</i>(K) − 273</b>)</li><li>Absolute zero: <b>0 K = −273 °C</b></li></ul>",
     "spec": "P5.17",
     "topic": "P5"
   },
@@ -1306,7 +1306,7 @@
   },
   {
     "id": 1675924424313,
-    "front": "State 2 assumptions you should make while\nusing P<sub>1</sub>&nbsp;x V<sub>1</sub>&nbsp;= P<sub>2</sub>&nbsp;x V<sub>2</sub>",
+    "front": "State 2 assumptions you should make while\nusing P<sub>1</sub> x V<sub>1</sub> = P<sub>2</sub> x V<sub>2</sub>",
     "back": "- Fixed mass(number of molecules)<br>- Fixed Temperature",
     "spec": "P5.22",
     "topic": "P5"
@@ -1601,7 +1601,7 @@
   {
     "id": 1675936761046,
     "front": "What is the relative masses of a proton,\nneutron and electron?",
-    "back": "● Proton: 1&nbsp;<br>● Neutron: 1&nbsp;<br>● Electron: roughly 1/2000&nbsp;",
+    "back": "● Proton: 1 <br>● Neutron: 1 <br>● Electron: roughly 1/2000 ",
     "spec": "P7.3",
     "topic": "P7"
   },
@@ -1636,14 +1636,14 @@
   {
     "id": 1675936927524,
     "front": "Order the types of ionising radiations\nstarting with the least ionising to most\nionising",
-    "back": "Gamma&nbsp;<b>→</b>&nbsp;Beta&nbsp;<b>→&nbsp;</b>Alpha",
+    "back": "Gamma <b>→</b> Beta <b>→ </b>Alpha",
     "spec": "P7.5",
     "topic": "P7"
   },
   {
     "id": 1675936947256,
     "front": "Order the types of ionising radiation,\nstarting with the most penetrating first.",
-    "back": "Gamma&nbsp;<b>→&nbsp;</b>Beta&nbsp;<b>→&nbsp;</b>Alpha",
+    "back": "Gamma <b>→ </b>Beta <b>→ </b>Alpha",
     "spec": "P7.5",
     "topic": "P7"
   },
@@ -1916,7 +1916,7 @@
   {
     "id": 1675939140657,
     "front": "Stars can be classified according to colour.<br>Order the given colours of stars from coldest to<br>hottest:<br>● Yellow<br>● Blue<br>● Red<br>● White<br>● Orange",
-    "back": "<b>Coldest&nbsp;→&nbsp;Hottest</b><br>Red&nbsp;<b>→&nbsp;</b>Orange&nbsp;<b>→&nbsp;</b>Yellow&nbsp;<b>→&nbsp;</b>White&nbsp;<b>→&nbsp;</b>Blue",
+    "back": "<b>Coldest → Hottest</b><br>Red <b>→ </b>Orange <b>→ </b>Yellow <b>→ </b>White <b>→ </b>Blue",
     "spec": "P8.7",
     "topic": "P8"
   },
@@ -1999,8 +1999,8 @@
   },
   {
     "id": 1681565249806,
-    "front": "Which electrical component does this <i>I</i>–<i>V</i> graph show?<br><img src=\"iv-diode.svg\" alt=\"Diode I-V graph\">",
-    "back": "<b>Diode</b> (current only flows in the forward direction above threshold voltage)",
+    "front": "Explain the shape of this diode <i>I</i>–<i>V</i> graph in forward and reverse bias (2 points)<br><img src=\"iv-diode.svg\" alt=\"Diode I-V graph\">",
+    "back": "<ul class=\"fc-points\"><li><b>Reverse bias (negative <i>V</i>):</b> very high resistance → virtually <b>zero current</b> flows</li><li><b>Forward bias (positive <i>V</i>):</b> once voltage exceeds the <b>threshold voltage</b> (~0.6 V), resistance drops sharply and <b>current rises steeply</b></li></ul>",
     "spec": "P2.9",
     "topic": "P2",
     "daOnly": true
@@ -2144,5 +2144,75 @@
     "topic": "P8",
     "front": "How is a star’s colour related to its surface temperature?",
     "back": "<ul class=\"fc-points\"><li><b>Hotter stars</b> appear <b>blue / white</b> (emit more short-wavelength light)</li><li><b>Cooler stars</b> appear <b>orange / red</b></li><li>Order from hottest to coolest: <b>blue → white → yellow → orange → red</b></li></ul>"
+  },
+  {
+    "id": 2026112700021,
+    "spec": "P1.5",
+    "topic": "P1",
+    "front": "In the investigating motion practical, why are light gates better than a handheld stopwatch?",
+    "back": "<ul class=\"fc-points\"><li>Light gates eliminate <b>human reaction-time error</b> (~0.2 s)</li><li>Measure very short time intervals with much higher <b>resolution and accuracy</b></li></ul>"
+  },
+  {
+    "id": 2026112700022,
+    "spec": "P2.19",
+    "topic": "P2",
+    "front": "If a 4 Ω and a 6 Ω resistor are connected in series across a 20 V supply, find the current and each resistor’s voltage",
+    "back": "<ul class=\"fc-points\"><li><b>Total resistance:</b> <i>R</i> = 4 + 6 = <b>10 Ω</b></li><li><b>Current:</b> <i>I</i> = <i>V</i> ÷ <i>R</i> = 20 ÷ 10 = <b>2 A</b> (same in both)</li><li><b>Voltages:</b> <i>V</i><sub>1</sub> = 2 × 4 = <b>8 V</b> · <i>V</i><sub>2</sub> = 2 × 6 = <b>12 V</b> (check: 8 + 12 = 20 V)</li></ul>"
+  },
+  {
+    "id": 2026112700023,
+    "spec": "P3.9",
+    "topic": "P3",
+    "front": "What changes — and what stays the same — when a wave refracts into a slower medium?",
+    "back": "<ul class=\"fc-points\"><li><b>Speed decreases</b> and <b>wavelength decreases</b></li><li><b>Frequency stays constant</b> (set only by the wave source)</li></ul>"
+  },
+  {
+    "id": 2026112700024,
+    "spec": "P3.17",
+    "topic": "P3",
+    "front": "In the refraction practical, where must you measure angles <i>i</i> and <i>r</i> from?",
+    "back": "<ul class=\"fc-points\"><li>Always measure angles <i>i</i> and <i>r</i> from the <b>normal</b> (the dashed line drawn at <b>90° to the surface</b>), never from the glass edge</li></ul>"
+  },
+  {
+    "id": 2026112700025,
+    "spec": "P4.15",
+    "topic": "P4",
+    "front": "A ball falls from rest. Ignoring air resistance, how do you find its speed just before hitting the ground from its starting height <i>h</i>?",
+    "back": "<ul class=\"fc-points\"><li>Set <b>GPE lost = KE gained</b>: <i>mgh</i> = ½<i>mv</i><sup>2</sup></li><li>Mass <i>m</i> cancels → <b><i>v</i> = √(2<i>gh</i>)</b> (speed doesn’t depend on mass!)</li></ul>"
+  },
+  {
+    "id": 2026112700026,
+    "spec": "P5.6",
+    "topic": "P5",
+    "front": "Why does water spurt further out of a hole near the bottom of a tall tank than from a hole near the top?",
+    "back": "<ul class=\"fc-points\"><li>Liquid pressure increases with <b>depth</b> (<i>p</i> = <i>ρgh</i>) because of the greater weight of liquid above</li><li>Pressure acts <b>equally in all directions</b>, pushing water sideways out of the lower hole with greater force</li></ul>"
+  },
+  {
+    "id": 2026112700027,
+    "spec": "P7.6",
+    "topic": "P7",
+    "front": "In the radiation penetration practical, why must you subtract the background count rate and take repeat readings?",
+    "back": "<ul class=\"fc-points\"><li><b>Subtract background:</b> ensures you only measure radiation from the source, not natural background</li><li><b>Repeat &amp; average:</b> radioactive decay is <b>random</b>, so averaging gives a more accurate count rate</li></ul>"
+  },
+  {
+    "id": 2026112700028,
+    "spec": "P7.17",
+    "topic": "P7",
+    "front": "Where does the energy released in fission, fusion and radioactive decay come from?",
+    "back": "<ul class=\"fc-points\"><li>Transferred from the <b>nuclear energy store</b> of atomic nuclei into <b>kinetic energy</b> of the products and <b>thermal / radiation energy</b></li></ul>"
+  },
+  {
+    "id": 2026112700029,
+    "spec": "P8.3",
+    "topic": "P8",
+    "front": "Why is an astronaut’s <b>weight</b> smaller on the Moon than on Earth, even though their <b>mass</b> is unchanged?",
+    "back": "<ul class=\"fc-points\"><li><b>Mass</b> is the amount of matter (stays constant everywhere)</li><li>The Moon has much smaller mass → smaller <b>gravitational field strength <i>g</i></b> (~1.6 vs ~10 N/kg), so <b><i>W</i> = <i>mg</i></b> is smaller</li></ul>"
+  },
+  {
+    "id": 2026112700030,
+    "spec": "P8.8",
+    "topic": "P8",
+    "front": "Which star has a higher surface temperature: a blue-white star or a red giant? Explain briefly.",
+    "back": "<ul class=\"fc-points\"><li>A <b>blue-white star</b> has a much higher surface temperature</li><li>Hotter stars emit more high-frequency / <b>short-wavelength blue light</b>; cooler stars peak in longer-wavelength <b>red light</b></li></ul>"
   }
 ]

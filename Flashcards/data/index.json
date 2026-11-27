@@ -1,17 +1,17 @@
 {
   "biology": {
     "name": "Biology",
-    "cards": 387,
+    "cards": 397,
     "specs": 134
   },
   "chemistry": {
     "name": "Chemistry",
-    "cards": 269,
+    "cards": 279,
     "specs": 130
   },
   "physics": {
     "name": "Physics",
-    "cards": 306,
+    "cards": 316,
     "specs": 130
   },
   "physics-eqns": {
