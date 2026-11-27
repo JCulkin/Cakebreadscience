@@ -166,6 +166,12 @@ const ADV = (() => {
 .advnav .dot{background:#e11d48;color:#fff;border-radius:10px;font-size:12px;font-weight:900;padding:0 6px;line-height:18px;animation:advpulse 1.6s infinite}
 @keyframes advpulse{50%{transform:scale(1.18)}}
 .advnav .sm{font-size:14px;padding:6px 8px}
+.advnav .morebtn{background:none;font-family:inherit;cursor:pointer;white-space:nowrap}
+.advmenu{position:fixed;z-index:120;background:#1b1b20;border:2px solid #00a03a;border-radius:8px;box-shadow:0 8px 24px #000a;padding:6px;min-width:176px;display:flex;flex-direction:column;gap:2px;font-family:Barlow,Arial,sans-serif}
+.advmenu[hidden]{display:none}
+.advmenu a{color:#eeeae0;text-decoration:none;font-weight:700;font-size:15px;padding:9px 12px;border-radius:6px;display:flex;align-items:center;gap:8px;min-height:40px;white-space:nowrap}
+.advmenu a:hover,.advmenu a:focus-visible{background:#ffffff1a;color:#fff;outline:none}
+.advmenu a.on{background:#eeeae0;color:#111}
 .advnav .gap{flex:1;min-width:8px}
 .advnav .acct{display:flex;gap:6px;align-items:center;white-space:nowrap;padding-left:8px;border-left:1px solid #333;color:#ccc;font-size:14px;font-weight:700}
 .advnav .acct button{font:700 14px Barlow,Arial;background:#eeeae0;border:2px solid #111;color:#111;padding:4px 10px;border-radius:7px;cursor:pointer}
@@ -179,20 +185,38 @@ const ADV = (() => {
     n.className = 'advnav';
     n.setAttribute('aria-label', 'Breadventure Land');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
+    const moreActive = ['cards', 'stats', 'look', 'guide'].includes(active);
     n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
       + `<a class="brand" href="index.html" title="Breadventure Land menu">Breadventure <b>Land</b></a>`
       + tab('home', 'adventurer-home.html', '🧭', 'My Adventurer')
       + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', '🗺️', 'World Map', 'cta map')
-      + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
+      + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe')
       + tab('today', '/today/', '✅', 'To do')
       + `<span class="gap"></span>`
-      + tab('stats', 'adventurer-stats.html', '📊', 'Stats', 'sm')
-      + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
-      + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
-      + tab('guide', '/how-to-use/', '❓', 'Help', 'sm')
+      + `<button type="button" class="tab sm morebtn${moreActive ? ' on' : ''}" id="advMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="advMoreMenu" title="More pages">⋯<span class="lbl"> More</span> ▾</button>`
       + `<span class="acct" id="advAcct"></span>`;
     document.body.prepend(n);
+    const menu = document.createElement('div');
+    menu.className = 'advmenu'; menu.id = 'advMoreMenu'; menu.setAttribute('role', 'menu'); menu.hidden = true;
+    const mlink = (k, href, icon, label) => `<a href="${href}" role="menuitem" class="${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon} <span>${label}</span></a>`;
+    menu.innerHTML = mlink('cards', '/Flashcards/', '🃏', 'Flashcards')
+      + mlink('stats', 'adventurer-stats.html', '📊', 'Stats')
+      + mlink('look', 'adventurer-create.html', '✏️', 'My look')
+      + mlink('guide', '/how-to-use/', '❓', 'Help');
+    document.body.appendChild(menu);
+    const mBtn = n.querySelector('#advMoreBtn');
+    const closeMenu = () => { if (!menu.hidden) { menu.hidden = true; mBtn.setAttribute('aria-expanded', 'false'); } };
+    const placeMenu = () => {
+      const r = mBtn.getBoundingClientRect(), mw = menu.offsetWidth || 180;
+      menu.style.top = Math.min(window.innerHeight - 200, Math.max(8, r.bottom + 6)) + 'px';
+      menu.style.left = Math.max(8, Math.min(window.innerWidth - mw - 8, r.right - mw)) + 'px';
+    };
+    mBtn.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; mBtn.setAttribute('aria-expanded', String(!menu.hidden)); if (!menu.hidden) placeMenu(); };
+    document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target) && e.target !== mBtn) closeMenu(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    window.addEventListener('resize', closeMenu);
+    window.addEventListener('scroll', closeMenu, { passive: true });
     if (!window.CBSTour) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; document.head.appendChild(ts); }
     /* open set work (18 Nov, user): the To do tab turns red with a "!" (/js/openwork.js) */
     { const todo = n.querySelector('a[href="/today/"]'), go = () => CBSWork.onChange(w => {

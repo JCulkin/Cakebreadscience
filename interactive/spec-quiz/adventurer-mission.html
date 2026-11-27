@@ -25,8 +25,18 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 .choice b{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:22px;text-transform:uppercase;line-height:1}
 .choice .topic{font-size:14px;color:var(--muted)}
 .prof{display:flex;gap:12px;align-items:center;margin-top:12px;background:#fffaf0;border:2px solid var(--ink);padding:8px 12px}.prof img{width:60px;image-rendering:pixelated;flex:none}.prof p{font-size:15px}
-.all{margin-top:22px}
-.all h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:26px;margin:0 0 8px}
+.allbox{margin-top:20px;border:2px solid var(--ink);background:#fff}
+.allbox>summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fffaf0}
+.allbox>summary::-webkit-details-marker{display:none}
+.allbox>summary:hover{background:#fff8d6}
+.allbox .allhead{min-width:180px}
+.allbox h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;margin:0;line-height:1}
+.allbox .allsub{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.allbox .bustbar{margin:0;flex:1;min-width:200px}
+.allbox .allbtn{margin-left:auto;font:700 14px Barlow,Arial,sans-serif;padding:6px 12px;border:2px solid var(--ink);background:#fff;box-shadow:0 2px 0 #111;white-space:nowrap}
+.allbox[open]>summary{border-bottom:2px solid var(--line)}
+.allbox[open] .allbtn .show,.allbox:not([open]) .allbtn .hide{display:none}
+.allbox .allbody{padding:12px 14px 14px}
 .scitabs{display:flex;gap:6px;flex-wrap:wrap}
 .scitabs button{font:700 16px Barlow,Arial,sans-serif;padding:7px 14px;border:2px solid var(--ink);background:#fff;cursor:pointer;color:var(--sc)}
 .scitabs button.on{background:var(--sc);color:#fff}
@@ -123,7 +133,11 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 .gain .up{color:var(--green);font-weight:700}
 .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
 .review{margin-top:18px;text-align:left}
-.review li{margin:8px 0 0 18px;font-size:15px}
+.review li{margin:10px 0 0 18px;font-size:15px}
+.dirt{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.dirt a{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;padding:2px 8px;border:1.5px solid var(--ink);background:var(--soft);color:var(--ink);text-decoration:none}
+.dirt a:hover{background:#fff8d6}
+@media(prefers-reduced-motion:reduce){#foeFig,.hit #foeFig,.hit::after,.dead #foeFig,.puff,.ouch #youFig,.dmg,.weak #foeFig,.streak,.drop img{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -132,11 +146,13 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 
   <section id="choose">
     <h1>Choose a mission</h1>
-    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Every mission drops loot, right answers count towards securing spec points (which make you stronger), and a question you get right first time on two different days is secured for good.</p>
+    <p class="lede">10 questions against a misconception. Get them right first time to hit it. Get at least 3 right (first time or in Second Wind) to earn loot and your daily +1 map move; right answers count towards securing spec points, and a question you get right first time on two different days is secured for good.</p>
     <div class="prof" id="prof"></div>
     <div class="choices" id="choices"></div>
-    <div class="all"><h2>All missions</h2><p class="small" style="margin:-4px 0 8px">One mission for each part of the spec. The bar shows how many of its spec points you've secured.</p>
-      <div class="bustbar" id="bustBar"></div><div class="scitabs" id="sciTabs"></div><div id="allTopics"></div></div>
+    <details class="allbox" id="allBox">
+      <summary><div class="allhead"><h2>Browse all missions</h2><span class="allsub">Pick any sub-topic in Biology, Chemistry or Physics</span></div><div class="bustbar" id="bustBar"></div><span class="allbtn"><span class="show">Show all ▾</span><span class="hide">Hide ▴</span></span></summary>
+      <div class="allbody"><p class="small" style="margin:0 0 8px">One mission for each part of the spec. The bar shows how many of its spec points you've secured.</p><div class="scitabs" id="sciTabs"></div><div id="allTopics"></div></div>
+    </details>
   </section>
 
   <section id="fight" class="hidden">
@@ -169,6 +185,7 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="spec.js"></script>
+<script src="/js/spec-index.js"></script>
 <script src="questions.js"></script>
 <script src="gens.js"></script>
 <script src="/interactive/cell-game/cells.js"></script>
@@ -185,7 +202,7 @@ try { if (localStorage.getItem('cbs.plain') === '1' && /[?&](?:point|sub)=/.test
 <script>
 ADV.nav('mission');
 const S = ADV.S, $ = id => document.getElementById(id);
-const SCI_COL = { B: '#16a34a', C: '#dc2626', P: '#d97706' }, STAT = { B: ['Health', 'b', 'hp'], C: ['Magic', 'c', 'mag'], P: ['Strength', 'p', 'str'] };
+const SCI_COL = { B: '#005e22', C: '#c8001e', P: '#b45309' }, STAT = { B: ['Health', 'b', 'hp'], C: ['Magic', 'c', 'mag'], P: ['Strength', 'p', 'str'] };
 /* misconceptions to fight: one per sub-topic, with its own lines and sprite (misconceptions.js) */
 
 /* sub-topics with questions (Units hidden), from the engine */
@@ -215,9 +232,10 @@ async function loadHw() {
   if (!HW.id || HW.loaded || !window.CBSSchool || !window.firebase || !firebase.database) return;
   HW.loaded = true;
   HW.a = await CBSSchool.loadOne(firebase.database(), HW.id);
-  if (HW.a && CBSSchool.isSpaced(HW.a) && QE.user && firebase.firestore) {
+  if (HW.a && CBSSchool.isSpaced(HW.a) && QE.user && (window.CBSNet || firebase.firestore)) {
     try {
-      const doc = (await firebase.firestore().collection('users').doc(QE.user.uid).get()).data() || {};
+      const doc = window.CBSNet ? ((await CBSNet.fsGet('users', QE.user.uid, 6000)) || {})
+        : ((await firebase.firestore().collection('users').doc(QE.user.uid).get()).data() || {});
       HW.spaced = CBSSchool.spacedOf(doc, HW.a);
     } catch (e) {}
   }
@@ -269,7 +287,7 @@ let MS = null;
 /* start(sub-topic key) — or start(sub-topic key, spec point) for a mission on one point (from the spec tracker's "Quiz me";
    its questions come first, topped up from the rest of the sub-topic) */
 function start(k, point, G) {
-  const sub = anySub(k), foe = foeOf(sub);
+  const sub = anySub(k), foe = (G && G.foe) || foeOf(sub);
   const topicKeys = new Set(); SUBS.filter(x => x.topic === sub.topic).forEach(x => x.keys.forEach(k => topicKeys.add(k)));
   const qs = G ? G.qs : point ? QE.buildMission(new Set([point]), sub.keys) : QE.buildMission(sub.keys, topicKeys);
   MS = { sub, foe, qs, point, guide: G ? G.guide : null, i: 0, hp: 100, res: [], xp0: S.xp, st0: QE.stats(), sec0: Object.assign({}, S.secured), before: ADV.stats(), cap0: ADV.levelCap() };
@@ -279,23 +297,32 @@ function start(k, point, G) {
   $('youFig').src = PIXEL.figure(ADV.eq(), ADV.look());
   $('youName').textContent = ADV.nick();
   $('foeFig').src = foe.img; $('foeName').textContent = foe.name;
-  $('quote').textContent = `“${foe.o}”` + (G ? ` · ${G.guide.title || 'Study guide'}` : '') + (point ? ` · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : '');
+  $('quote').textContent = `“${foe.o}”` + (G && (!G.foe || !G.guide.title) ? ` · ${G.guide.title || 'Study guide'}` : '') + (point ? ` · Spec point ${point.slice(0, 1) === 'B' ? 'Biology' : point.slice(0, 1) === 'C' ? 'Chemistry' : 'Physics'} ${point.slice(1)}` : '');
   MS.nh = 0; MS.nw = 0; MS.streak = 0; MS.top = 0; MS.retry = null; MS.ri = 0; MS.fixed = 0; MS.fixedIds = new Set();
   renderHwBar();
   scrollTo(0, 0); show();
 }
-/* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — a mission of n questions from those sub-topics against
-   one of their misconceptions; "another n" leaves out the questions shown in this browser's last runs of the same set */
+/* study-guide revision (22 Nov): ?subs=C1a,C2.5&n=15&t=<guide title> (sub-topic or exact point keys) — a mission of n questions from those sub-topics;
+   multi-topic sets face a mixed revision monster instead of an unrelated single sub-topic misconception */
 const GSEEN = keys => 'cbs.guide.seen.' + keys.join(',');
 const anySub = k => subBy(k) || QE.allSubs().find(x => x.key === k || x.keys.has(k));
 function startGuide(keys, n, title) {
   const subs = [...new Set(keys.map(anySub).filter(Boolean))]; if (!subs.length) return false;
-  const sub = subs[Math.floor(Math.random() * subs.length)], foe = foeOf(sub);
+  const sub = subs[Math.floor(Math.random() * subs.length)];
+  const sameSci = subs.every(x => x.L === subs[0].L);
+  const mixCol = sameSci ? SCI_COL[subs[0].L] : '#475569';
+  const mixFoe = subs.length > 1 ? {
+    name: title || 'The Mixed Revision Monster', shape: 'boss', col: mixCol, img: ADV.icon('boss', mixCol),
+    o: 'A whole mix of topics — let’s see what actually stuck.',
+    w: ['Mixed topics tripped you up!', 'Wait — which topic was that from?'],
+    h: ['Ow! You actually remembered that one.', 'Stop connecting the topics!'],
+    d: 'Noooo, you knew the whole lot!', t: ''
+  } : null;
   const set = new Set(); keys.forEach(k => { const x = QE.allSubs().find(s => s.key === k); x ? x.keys.forEach(y => set.add(y)) : set.add(k); });   // sub-topic keys or exact points
   let seen = []; try { seen = JSON.parse(sessionStorage.getItem(GSEEN(keys)) || '[]'); } catch (e) {}
   const qs = QE.buildMission(set, null, { n, avoid: new Set(seen) });
   try { sessionStorage.setItem(GSEEN(keys), JSON.stringify([...seen, ...qs.map(q => q.id)].slice(-Math.max(3 * n, 45)))); } catch (e) {}
-  start(sub.key, undefined, { qs, guide: { keys, n, title } });
+  start(sub.key, undefined, { qs, foe: mixFoe, guide: { keys, n, title } });
   return true;
 }
 /* ?point=B2.27 (from the spec tracker): go straight into a mission on that point */
@@ -412,10 +439,40 @@ function verdict(right, won) {   // the Professor's reaction (mascot heads, 10 N
     : ['worried', 'Oof, it is still looking smug. Check the answers below: this is exactly how you get better.'];
   return `<div class="verdict"><img src="${ADV.face(f)}" alt=""><p><b>The Professor${S.chapter < 2 ? ' <span class="small">(shouting from his cage)</span>' : ''}:</b> <i>“${line}”</i></p></div>`;
 }
+function lessonsForKeys(keys) {
+  const idx = typeof SPEC_INDEX !== 'undefined' ? SPEC_INDEX : window.SPEC_INDEX;
+  if (!idx || !idx.pts || !idx.res) return [];
+  const seen = new Set(), out = [];
+  for (const k of keys) {
+    const row = idx.pts[k]; if (!row || !row.r) continue;
+    for (const rid of row.r) {
+      const r = idx.res[rid];
+      if (r && r[0] === 'lesson' && !seen.has(r[2])) { seen.add(r[2]); out.push(r); }
+    }
+  }
+  return out;
+}
+function dirtLinks(specKey) {
+  const links = [];
+  const idx = typeof SPEC_INDEX !== 'undefined' ? SPEC_INDEX : window.SPEC_INDEX;
+  const row = idx && idx.pts && idx.pts[specKey];
+  if (row && row.r) {
+    const res = row.r.map(i => idx.res[i]).filter(Boolean);
+    const les = res.find(r => r[0] === 'lesson');
+    if (les) links.push(`<a href="${esc(les[2])}">📖 Revision notes</a>`);
+    const sht = !les && res.find(r => r[0] === 'sheet');
+    if (sht) links.push(`<a href="${esc(sht[2])}">📄 Worksheet</a>`);
+    if (row.c > 0) links.push(`<a href="/Flashcards/">🃏 Flashcards</a>`);
+  }
+  links.push(`<a href="adventurer-mission.html?point=${encodeURIComponent(specKey)}">⚔ Drill spec ${esc(specKey.slice(1))}</a>`);
+  return `<div class="dirt">${links.join('')}</div>`;
+}
 async function finish() {
   const right = MS.res.filter(r => r.ok).length, won = MS.hp === 0;
+  const totalRight = right + (MS.fixed || 0), minRight = Math.min(3, MS.qs.length), metEffort = totalRight >= minRight;
   const before = MS.before, capBefore = MS.cap0, [statName, sk, cssk] = STAT[MS.sub.L];
-  const flawless = right === MS.qs.length, coins = 10 + (won ? 10 : 0) + (flawless ? 10 : 0);
+  const flawless = right === MS.qs.length;
+  const coins = metEffort ? 10 + (won ? 10 : 0) + (flawless ? 10 : 0) : right * 2;
   /* your record on this mission (not for single-point missions from "Quiz me") */
   let record = '';
   if (!MS.point && !MS.guide) { const g = QE.game; g.best = g.best || {}; const b = g.best[MS.sub.key] || { r: 0, w: 0 };
@@ -424,16 +481,16 @@ async function finish() {
     g.best[MS.sub.key] = { r: Math.max(b.r, right), w: b.w || won ? 1 : 0 }; }
   $('wind').classList.add('hidden');
   const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !i.dark);
-  const drop = Math.random() < 1 / 67 && ADV_ITEMS.find(i => i.id === 'calc67') || pool[Math.floor(Math.random() * pool.length)];   // the 6-7 Calculator: 1 in 67, as its card always said
+  const drop = metEffort ? (Math.random() < 1 / 67 && ADV_ITEMS.find(i => i.id === 'calc67') || pool[Math.floor(Math.random() * pool.length)]) : null;   // the 6-7 Calculator: 1 in 67; requires honest effort (≥3 right incl. Second Wind)
   const firstRev = !QE.revisedToday();
-  QE.finishMission({ coins, loot: drop.id, right });
-  QE.log('⚔️', `Mission ${MS.sub.key.slice(1)} vs “${MS.foe.name}”: ${right}/${MS.qs.length} right first time, ${won ? 'busted it' : 'it got away'} · +${coins} coins · loot: ${drop.name}`);
+  QE.finishMission({ coins, loot: drop ? drop.id : null, right, countDay: metEffort });
+  QE.log('⚔️', `Mission ${MS.sub.key.slice(1)} vs “${MS.foe.name}”: ${right}/${MS.qs.length} right first time${MS.fixed ? ` (+${MS.fixed} fixed)` : ''}, ${won ? 'busted it' : 'it got away'} · +${coins} coins · ${drop ? 'loot: ' + drop.name : `no loot (< ${minRight} right)`}`);
   if (HW.id && !HW.a) await loadHw();
   let hwRes = null;
   if (HW.a && window.CBSSchool) {
     if (CBSSchool.isSpaced(HW.a)) {
-      if (QE.user && firebase.firestore) {
-        try { hwRes = await CBSSchool.recordSpaced(firebase.firestore(), QE.user.uid, HW.id, HW.a, { n: MS.qs.length, right, mode: 'quest' }); HW.spaced = hwRes; } catch (e) {}
+      if (QE.user && (window.CBSNet || firebase.firestore)) {
+        try { hwRes = await CBSSchool.recordSpaced(firebase.firestore && firebase.firestore(), QE.user.uid, HW.id, HW.a, { n: MS.qs.length, right, mode: 'quest' }); HW.spaced = hwRes; } catch (e) {}
       }
       if (!hwRes) { const prev = HW.spaced || { daysDone: 0, daysNeed: HW.a.days || 2, doneToday: false }; const dDone = prev.doneToday ? prev.daysDone : prev.daysDone + 1; hwRes = { state: dDone >= prev.daysNeed ? 'done' : 'started', daysDone: dDone, daysNeed: prev.daysNeed, doneToday: true }; }
     } else {
@@ -446,6 +503,7 @@ async function finish() {
   const gainP = st.securedP - MS.st0.securedP, gainQ = st.securedQ - MS.st0.securedQ, xp = S.xp - MS.xp0;
   const statUps = [['p', 'Strength', 'str'], ['b', 'Health', 'hp'], ['c', 'Magic', 'mag']].filter(([k]) => S.secured[k] > MS.sec0[k]);
   const wrong = MS.res.filter(r => !r.ok);
+  const studyGuides = lessonsForKeys(wrong.length ? [...new Set(wrong.map(r => r.q.s))] : [...MS.sub.keys]);
   const hwBanner = HW.a && hwRes && window.CBSSchool ? CBSSchool.hwDoneHtml(HW.a, hwRes, { mode: 'quest', continueId: 'hwCont' }) : '';
   const hwContinue = HW.a && hwRes && window.CBSSchool && !CBSSchool.isSpaced(HW.a) && !hwRes.done;
   $('fight').classList.add('hidden');
@@ -457,18 +515,20 @@ async function finish() {
     ${verdict(right, won)}
     ${MS.foe.t ? `<div class="card truth"><span class="kick">${won ? 'Misconception busted' : 'The misconception'}: “${esc(MS.foe.name)}”</span><p><b>What's actually true:</b> ${esc(MS.foe.t)}</p></div>` : ''}
     <div class="rewards">
-      <div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_TAG(drop)}</span><br><b style="font-size:20px">${drop.name}</b><br>${[ADV_STATS_TXT(drop), ...ADV_FX_TXT(drop.fx)].filter(Boolean).map(t => `<b style="font-size:14px">${t}</b><br>`).join('')}<i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>
+      ${drop
+        ? `<div class="card drop"><img class="px" src="${PIXEL.item(drop.id)}" alt=""><div><span class="kick" style="color:#2563eb">Loot · ${ADV_TAG(drop)}</span><br><b style="font-size:20px">${drop.name}</b><br>${[ADV_STATS_TXT(drop), ...ADV_FX_TXT(drop.fx)].filter(Boolean).map(t => `<b style="font-size:14px">${t}</b><br>`).join('')}<i>${drop.d}</i><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`
+        : `<div class="card drop" style="border-top-color:#b45309"><img class="px" src="${ADV.face('determined')}" alt=""><div><span class="kick" style="color:#b45309">Almost there · no loot drop this time</span><br><b style="font-size:20px">Get ${minRight}+ right to earn loot</b><br><span class="small">You got ${totalRight} right${MS.fixed ? ` (${right} first time + ${MS.fixed} in Second Wind)` : ''}. Check the answers below and have another go — getting at least ${minRight} right unlocks loot and your daily +1 map move.</span></div></div>`}
       <div class="card"><h3 style="margin-top:0">What you got</h3><ul class="gain">
         <li>⭐ +${xp} XP · ${gainQ > 0 ? `<b>${gainQ} question${gainQ === 1 ? '' : 's'} secured</b>` : 'questions you got right today secure when you get them right again on another day'}</li>
         ${gainP > 0 ? `<li class="up">📌 ${gainP} spec point${gainP === 1 ? '' : 's'} secured${statUps.length ? ' → ' + statUps.map(([, n, c]) => `<b>${n} ${before[c]} → ${after[c]}</b>`).join(', ') : ''}</li>` : `<li>Secure ${MS.sub.subj} spec points to raise your ${statName}.</li>`}
         ${capAfter > capBefore ? `<li class="up">⬆ Level cap raised to ${capAfter}! XP you had banked now counts.</li>` : `<li>Level cap ${capAfter} · ${toCap} more spec point${toCap === 1 ? '' : 's'} to raise it.</li>`}
         ${record}<li>🪙 +${coins} coins${flawless ? ' (defeat and flawless bonuses)' : won ? ' (defeat bonus)' : ''}${MS.top >= 3 ? ` · 🔥 best run ${MS.top} in a row` : ''}</li>
-        <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) && ADV.can('spells') ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
+        <li>❤ +${right * QE.HEAL_MISSION} Health${Math.floor(right / 3) && ADV.can('spells') ? ` · 🔮 +${Math.floor(right / 3)} mana` : ''} for Breadventure Land${firstRev && metEffort ? ' · <b>+1 move</b> (first revision today)' : ''}</li>
         <li>⚔ Missions today: ${S.missionsToday}</li></ul></div>
     </div>
-    ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : nuc(r.q.o[0])}. `}${nuc(r.q.x || '')}</span></li>`).join('')}</ul></div>` : ''}
+    ${wrong.length ? `<div class="card review"><h3 style="margin-top:0">Worth another look</h3><ul>${wrong.map(r => `<li>${nuc(r.q.tf !== undefined ? 'True or false? ' + r.q.q : r.q.q)}<br><span class="small">${r.q.tf !== undefined && /^(true|false)\b/i.test(r.q.x || '') ? '' : `<b>Answer:</b> ${r.q.tf !== undefined ? (r.q.tf ? 'True' : 'False') : nuc(r.q.o[0])}. `}${nuc(r.q.x || '')}</span>${dirtLinks(r.q.s)}</li>`).join('')}</ul></div>` : ''}
     <div class="acts">${MS.guide && !hwContinue ? `<button class="btn ${HW.a ? 'alt' : 'gold big'}" id="guideAgain">Another ${MS.guide.n} →</button><a class="btn alt" href="/today/">Back to To do</a>` : ''}${MS.guide ? '' : (() => { const nx = QE.picks().map(p => subBy(p.sub.key)).find(x => x && x.key !== MS.sub.key);
-      return (won ? '' : `<a class="btn gold big" href="adventurer-mission.html?sub=${MS.sub.key}">⚔ Fight it again</a>`) + (nx ? `<a class="btn ${won ? 'gold big' : 'alt'}" href="adventurer-mission.html?sub=${nx.key}">Next: ${esc(foeOf(nx).name)} →</a>` : ''); })()}<a class="btn alt" href="adventurer-mission.html">All missions</a><a class="btn alt" href="adventurer-home.html">🧭 My Adventurer</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
+      return (won ? '' : `<a class="btn gold big" href="adventurer-mission.html?sub=${MS.sub.key}">⚔ Fight it again</a>`) + (nx ? `<a class="btn ${won ? 'gold big' : 'alt'}" href="adventurer-mission.html?sub=${nx.key}">Next: ${esc(foeOf(nx).name)} →</a>` : ''); })()}${studyGuides.slice(0, 2).map(r => `<a class="btn alt" href="${esc(r[2])}">📖 Revise: ${esc(r[1].replace(/\s*\(draft\)$/i, ''))} →</a>`).join('')}<a class="btn alt" href="adventurer-mission.html">All missions</a><a class="btn alt" href="adventurer-home.html">🧭 My Adventurer</a><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a></div>
     <p class="savenote" id="saveNote">${QE.user ? 'Saving to your account…' : 'That was your free sample mission! Sign in with Google (top right) to save your progress and unlock unlimited missions (new accounts are approved by your teacher).'}</p>`;
   const goAgain = () => {
     if (window.CBSAuth && !CBSAuth.checkMissionGate()) return;

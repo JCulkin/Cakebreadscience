@@ -73,10 +73,13 @@
     return { state, daysDone, daysNeed, qPerDay, doneToday, days, scores, lastAt };
   }
   async function recordSpaced(fs, uid, id, a, info) {
-    if (!fs || !uid || !id || !a) return null;
-    const td = todayStr(), ref = fs.collection('users').doc(uid);
+    if ((!fs && !window.CBSNet) || !uid || !id || !a) return null;
+    const td = todayStr(), ref = fs && fs.collection ? fs.collection('users').doc(uid) : null;
     let cur = {};
-    try { cur = (((await ref.get()).data() || {}).work || {})[id] || {}; } catch (e) {}
+    try {
+      const doc = window.CBSNet ? await CBSNet.fsGet('users', uid, 8000) : (ref ? (await ref.get()).data() : null);
+      cur = ((doc || {}).work || {})[id] || {};
+    } catch (e) {}
     const days = Object.assign({}, cur.days || {});
     const prev = days[td];
     const entry = { n: info.n || a.qPerDay || 10, right: info.right || 0, mode: info.mode || 'quest', at: Date.now() };
@@ -84,7 +87,8 @@
     const daysNeed = Math.max(1, +a.days || 2);
     const done = Object.keys(days).length >= daysNeed;
     const next = { days, done, at: Date.now() };
-    await ref.set({ work: { [id]: next } }, { merge: true });
+    if (window.CBSNet) await CBSNet.fsSetMerge('users', uid, { work: { [id]: next } }, { ms: 8000, mergeMaps: ['work'] });
+    else if (ref) await ref.set({ work: { [id]: next } }, { merge: true });
     return spacedOf({ work: { [id]: next } }, Object.assign({ id }, a), td);
   }
   function testOf(userDoc, a, course) {   // {state: 'todo'|'started'|'done', answered, n, score}

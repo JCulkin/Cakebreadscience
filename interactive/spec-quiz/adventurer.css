@@ -1,6 +1,6 @@
 /* The Adventurer mock-up pages (start, base camp, mission). Same look as the Spec Quiz. */
 :root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--red:#c8001e;
-  --str:#d08000;--hp:#16a34a;--mag:#c8001e;--b:#16a34a;--c:#dc2626;--p:#d97706}
+  --str:#b45309;--hp:#005e22;--mag:#c8001e;--b:#005e22;--c:#c8001e;--p:#b45309}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
 header{background:#111;padding:14px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}

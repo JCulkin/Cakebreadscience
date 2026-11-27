@@ -509,8 +509,9 @@ const QE = (() => {
       for (const q of shuffle(again)) { if (pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); if (q.dg) nd++; } } }
     return climb(pick).map(inst);   // the run climbs from level 1 to level 3
   }
-  /* a finished mission: counts it, adds coins and loot, saves everything */
-  function finishMission({ coins = 0, loot = null, right = 0 } = {}) {
+  /* a finished mission: counts it, adds coins and loot, saves everything.
+     countDay = false when a student doesn't hit the honest-effort floor (< 3 right incl. Second Wind), so spam-clicking never earns daily moves/loot. */
+  function finishMission({ coins = 0, loot = null, right = 0, countDay = true } = {}) {
     if ((!FB.user || !window.__cbsAuthApproved) && window.CBSAuth && CBSAuth.recordFreeMission) {
       CBSAuth.recordFreeMission();
     } else if (!FB.user) {
@@ -520,7 +521,7 @@ const QE = (() => {
     if (right) earn({ mana: Math.floor(right / 3) });
     GAME.coins = (GAME.coins || 0) + coins;
     if (loot) { GAME.bag = [...new Set([...(GAME.bag || []), loot])]; GAME.lastLoot = loot; }
-    GAME.days[TODAY] = (GAME.days[TODAY] || 0) + 1;
+    if (countDay) GAME.days[TODAY] = (GAME.days[TODAY] || 0) + 1;
     GAME.updatedAt = Date.now();
     return save(true);
   }

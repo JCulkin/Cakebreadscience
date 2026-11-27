@@ -199,7 +199,7 @@ async function landLive() {
 }
 landLive(); QE.onChange(landLive);
 if (!S.storySeen) ADV.storyIntro();
-{ const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#16a34a', C: '#dc2626', P: '#d97706' }[sg.key[0]] : '#d97706'); }
+{ const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#005e22', C: '#c8001e', P: '#d08000' }[sg.key[0]] : '#d08000'); }
 if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;

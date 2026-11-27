@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--str:#d08000;--hp:#16a34a;--mag:#c8001e;--sea:#4f9fd1}
+:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--str:#b45309;--hp:#005e22;--mag:#c8001e;--sea:#4f9fd1}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
 header{background:#111;padding:10px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
@@ -69,6 +69,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .hud .mana.lk{opacity:.55;font-size:13px}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
 .questbar .ev{display:block;margin-top:3px;padding-top:3px;border-top:1px dashed #bbb;font-size:12px;font-weight:600;max-width:270px;line-height:1.25}.questbar .ev u{text-decoration:none;font-weight:900;color:#b45309}
+.questbar .rally{display:block;margin-top:4px;padding:3px 7px;background:#fef9c3;border:1.5px solid #111;font-size:12px;font-weight:700;color:#111;cursor:pointer;pointer-events:auto;text-align:left;max-width:270px;line-height:1.25}.questbar .rally:hover{background:#fde047}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
 @media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px;padding:3px 8px 4px 4px}.questbar img{width:30px}.questbar small{display:none}.questbar b{display:inline;font-size:15px;margin-right:4px}.questbar span{font-size:12px}.questbar .ev{max-width:none;font-size:11.5px;margin-top:2px;padding-top:2px}}
 #map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:2}
@@ -102,7 +103,8 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 @media(hover:none){.tip{display:none!important}}
 .panel{position:absolute;top:10px;right:10px;width:310px;max-height:calc(100% - 20px);overflow:auto;background:#fff;border:2px solid var(--ink);box-shadow:4px 4px 0 #0005;padding:12px 14px;z-index:6;display:none}
 .panel.on{display:block}
-.panel .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:20px;line-height:1}
+.panel .x{position:absolute;top:4px;right:4px;border:0;background:none;font-size:22px;line-height:1;min-width:36px;min-height:36px;display:grid;place-items:center;border-radius:6px}
+.panel .x:hover{background:var(--soft)}
 .panel .tp{font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted)}
 .panel .tn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;line-height:1;text-transform:uppercase;padding-right:20px;display:flex;gap:8px;align-items:center}
 .panel .tn img{width:36px;height:36px;flex:none}
@@ -148,7 +150,7 @@ details.notes .cols{display:grid;gap:16px;margin-top:6px}
 table.st{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
 table.st td,table.st th{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
 table.st th{background:var(--soft)}
-@media(max-width:760px){.hud{gap:3px 10px;padding:5px 8px}.hud .lv{display:none}.hud .hp .bar{width:48px}.hud .hp #spellBtn{font-size:12px!important}.hud .st{gap:8px}.hud .tools{width:auto;margin-left:auto}.hud .tools .btn{padding:3px 8px}}
+@media(max-width:760px){.hud{gap:3px 10px;padding:5px 8px}.hud .lv{display:none}.hud .hp .bar{width:48px}.hud .hp #spellBtn{font-size:12px!important;min-height:32px}.hud .st{gap:8px}.hud .tools{width:auto;margin-left:auto}.hud .tools .btn{padding:6px 10px;min-height:36px}}
 </style>
 </head>
 <body>
@@ -533,6 +535,23 @@ function renderHud() {
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
   if (ADV.can('events')) { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
+  if (shared && BL.world && BL.states) {
+    const camps = {};
+    Object.entries(BL.states).forEach(([u, st]) => {
+      if (u === BL.uid || !st || !st.camp || st.camp.day !== BL.world.day || st.at !== st.camp.k) return;
+      const P = PLACES[st.camp.k];
+      if (!P || P.type !== 'boss' || (P.ch || 1) > S.chapter || !(S.boss[st.camp.k] > 0)) return;
+      (camps[st.camp.k] = camps[st.camp.k] || []).push(((BL.pubs || {})[u] || {}).name || 'Someone');
+    });
+    const top = Object.entries(camps).sort((a, b) => b[1].length - a[1].length)[0];
+    const d = $('questbar').querySelector('div');
+    if (top && d) {
+      const [bk, names] = top, shown = names.length <= 2 ? names.map(esc).join(' & ') : `${esc(names[0])} + ${names.length - 1} more`;
+      d.insertAdjacentHTML('beforeend', `<button type="button" class="rally" data-rally="${bk}">⛺ Rally: ${shown} at ${esc(PLACES[bk].name)} tonight (+10% each)</button>`);
+      const rb = d.querySelector('[data-rally]');
+      if (rb) rb.onclick = () => { sel = bk; renderAll(); };
+    }
+  }
   $('repBtn').onclick = () => showReport();
   $('meBtn').onclick = () => { const m = document.querySelector('#map .pp[data-p="me"]'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
@@ -683,6 +702,13 @@ function renderPanel() {
     + (layerOf(sel) && !S.under && layerOf(S.at) === 0 ? `<div class="cap">It's in the Underworld: you'll need to dig through the Abandoned Mine first.</div>` : ''); }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
     h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
+  if (P && (P.science === 'b' || P.science === 'c') && ((P.type === 'monster' && denHp(sel) > 0) || (P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0))) {
+    const stNow = ADV.stats(), aff = P.science === 'b' ? stNow.hp - 7 - stNow.l : ADV.BASE.str + stNow.l + stNow.mag;
+    if (aff > stNow.str) {
+      const isB = P.science === 'b';
+      h += `<div class="loot" style="background:${isB ? '#effaf2' : '#fdf0f0'};border-left:4px solid var(--${isB ? 'hp' : 'mag'});padding:5px 8px">${isB ? '🧬 <b>Biology affinity active:</b>' : '🧪 <b>Chemistry affinity active:</b>'} your ${ADV.SCI[P.science]} training hits with <b>${aff}</b> power instead of ${stNow.str} Strength.</div>`;
+    }
+  }
   if (P && P.type === 'monster') {
     const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (fightStr(P.science) * 1.5)));
     h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits you for about ${P.power} if you get its question wrong</div><div class="loot">⚔ <b>Fight it now, on your own.</b> Each move here is one ${ADV.SCI[P.science] || ''} question: right and you hit it (about ${n} right answer${n > 1 ? 's' : ''} to beat it), wrong and it hits you. Beat it for ${monsterCoins()} coins.</div>`
