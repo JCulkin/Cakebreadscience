@@ -15,14 +15,15 @@
               "title": "Living organisms (1a characteristics, 1b variety)",
               "spec": "1.1–1.4",
               "status": "checked",
-              "draftUpdated": "2026-11-27",
+              "draftUpdated": "2026-11-28",
               "versions": [
                 "2026-11-23",
                 "2026-11-26",
-                "2026-11-28"
+                "2026-11-28",
+                "2026-11-28-2"
               ],
               "split": true,
-              "studentStatus": "draft"
+              "studentStatus": "checked"
             }
           ]
         },
@@ -35,7 +36,7 @@
               "title": "Level of organisation",
               "spec": "2.1",
               "status": "checked",
-              "draftUpdated": "2026-11-26",
+              "draftUpdated": "2026-11-28",
               "versions": [
                 "2026-11-22",
                 "2026-11-25",
