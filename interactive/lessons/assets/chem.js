@@ -341,19 +341,22 @@ C['dilution'] = el => {
 
 C['heating-curve'] = el => {
   const steps = el.dataset.steps==='1'; const ds = i => steps?` data-s="${i}"`:'';
-  const X=t=>70+t*6.2, Y=T=>300-(T+30)*1.45;
-  const pts=[[0,-25],[10,0],[30,0],[50,100],[80,100],[88,125]];
-  const path=pts.map((p,i)=>(i?'L':'M')+X(p[0])+' '+Y(p[1])).join('');
-  const lbl=(t,T,txt,i,anchor='middle',dy=-12)=>`<text x="${X(t)}" y="${Y(T)+dy}" text-anchor="${anchor}" font-size="17" font-weight="700" font-family="Barlow,Arial,sans-serif"${ds(i)}>${txt}</text>`;
-  el.innerHTML=`<svg viewBox="0 0 640 340" role="img" aria-label="Heating curve for water: temperature rises, stays flat at 0 °C while melting, rises, stays flat at 100 °C while boiling, then rises again">
-   <line x1="70" y1="300" x2="620" y2="300" stroke="#111" stroke-width="2.5"/><line x1="70" y1="300" x2="70" y2="20" stroke="#111" stroke-width="2.5"/>
-   <text x="600" y="325" text-anchor="end" font-size="15" font-family="Barlow,Arial,sans-serif">time (heating at a steady rate) →</text>
-   <text x="20" y="160" font-size="15" font-family="Barlow,Arial,sans-serif" transform="rotate(-90 20 160)" text-anchor="middle">temperature / °C</text>
-   <text x="62" y="${Y(0)+5}" text-anchor="end" font-size="14" font-family="Barlow,Arial,sans-serif">0</text><text x="62" y="${Y(100)+5}" text-anchor="end" font-size="14" font-family="Barlow,Arial,sans-serif">100</text>
-   <line x1="70" x2="620" y1="${Y(0)}" y2="${Y(0)}" stroke="#bbb" stroke-dasharray="4 4"/><line x1="70" x2="620" y1="${Y(100)}" y2="${Y(100)}" stroke="#bbb" stroke-dasharray="4 4"/>
+  const X=t=>70+t*6.2, Y=T=>294-(T+25)*1.48;
+  const pts=[[0,-22],[9,0],[32,0],[50,100],[78,100],[87,124]];
+  const path=pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('');
+  el.innerHTML=`<svg viewBox="0 0 640 340" role="img" aria-label="Heating curve for water: temperature rises, stays flat at 0 °C while melting, rises, stays flat at 100 °C while boiling, then rises again" font-family="Barlow,Arial,sans-serif">
+   <line x1="70" y1="296" x2="622" y2="296" stroke="#111" stroke-width="2.5"/><line x1="70" y1="296" x2="70" y2="18" stroke="#111" stroke-width="2.5"/>
+   <text x="612" y="328" text-anchor="end" font-size="15" font-weight="600">time (heating at a steady rate) →</text>
+   <text x="20" y="158" font-size="15" font-weight="600" transform="rotate(-90 20 158)" text-anchor="middle">temperature / °C</text>
+   <text x="62" y="${(Y(0)+5).toFixed(1)}" text-anchor="end" font-size="14" font-weight="700">0</text><text x="62" y="${(Y(100)+5).toFixed(1)}" text-anchor="end" font-size="14" font-weight="700">100</text>
+   <line x1="70" x2="622" y1="${Y(0).toFixed(1)}" y2="${Y(0).toFixed(1)}" stroke="#bbb" stroke-dasharray="4 4"/><line x1="70" x2="622" y1="${Y(100).toFixed(1)}" y2="${Y(100).toFixed(1)}" stroke="#bbb" stroke-dasharray="4 4"/>
    <path d="${path}" fill="none" stroke="var(--acc,#8c0013)" stroke-width="5" stroke-linejoin="round"/>
-   <text x="74" y="226" font-size="17" font-weight="700" font-family="Barlow,Arial,sans-serif"${ds(1)}>solid</text>${lbl(22,0,'melting: solid + liquid',2)}${lbl(40,50,'liquid',1,'end',0)}${lbl(65,100,'boiling: liquid + gas',3)}${lbl(88,125,'gas',1,'end',-10)}
-   <text x="475" y="215" text-anchor="middle" font-size="14" fill="#555" font-family="Barlow,Arial,sans-serif"${ds(4)}>flat sections: energy breaks forces between particles,</text><text x="475" y="231" text-anchor="middle" font-size="14" fill="#555" font-family="Barlow,Arial,sans-serif"${ds(4)}>so the temperature stays constant</text>
+   <text x="82" y="236" font-size="17" font-weight="800" fill="#1565c0"${ds(1)}>solid</text>
+   <g${ds(2)}><text x="${X(20.5).toFixed(1)}" y="${(Y(0)-13).toFixed(1)}" text-anchor="middle" font-size="17" font-weight="800" fill="#111">melting</text><text x="${X(20.5).toFixed(1)}" y="${(Y(0)+20).toFixed(1)}" text-anchor="middle" font-size="14" font-weight="700" fill="#555">(solid + liquid)</text></g>
+   <text x="${(X(41)-18).toFixed(1)}" y="${(Y(50)+4).toFixed(1)}" text-anchor="end" font-size="17" font-weight="800" fill="#00838f"${ds(1)}>liquid</text>
+   <text x="${X(64).toFixed(1)}" y="${(Y(100)-14).toFixed(1)}" text-anchor="middle" font-size="17" font-weight="800" fill="#111"${ds(3)}>boiling: liquid + gas</text>
+   <text x="${(X(82)-10).toFixed(1)}" y="${(Y(118)-4).toFixed(1)}" text-anchor="end" font-size="17" font-weight="800" fill="#c8001e"${ds(1)}>gas</text>
+   <g${ds(4)}><rect x="352" y="196" width="260" height="50" rx="8" fill="#fff8e1" stroke="#c0611b" stroke-width="2"/><text x="482" y="217" text-anchor="middle" font-size="13.5" font-weight="700" fill="#333">flat sections: energy breaks forces</text><text x="482" y="235" text-anchor="middle" font-size="13.5" font-weight="700" fill="#333">between particles (temp stays constant)</text></g>
   </svg>`;
 };
 

@@ -110,10 +110,10 @@ body.pm #deck{display:flex;position:fixed;inset:0;align-items:center;justify-con
 .ps .hint{position:absolute;left:90px;bottom:22px;font:600 24px 'Barlow',Arial,sans-serif;color:#aaa}
 .ps .opts{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:30px}
 .ps .opt{border:6px solid #111;padding:20px 26px;font-size:44px;font-weight:600;background:#fff;display:flex;gap:20px;align-items:center}
-.ps .opt b{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:56px;color:var(--acc)}
+.ps .opt>b{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-size:56px;color:var(--acc)}
 .ps .opt.correct.on{background:#d7f0de;border-color:var(--green);opacity:1}
 .ps .opt.correct:not(.on){opacity:1}
-.ps .opt.correct.on b{color:var(--green)}
+.ps .opt.correct.on>b{color:var(--green)}
 .ps .three{display:grid;grid-template-columns:repeat(3,1fr);gap:36px;flex:1;min-height:0}
 .ps .two{display:grid;grid-template-columns:1fr 1fr;gap:50px;flex:1;min-height:0;align-items:center}
 .ps .stack{display:grid;grid-template-rows:1fr 1fr;gap:10px;flex:1;min-height:0}
@@ -336,11 +336,13 @@ table.cmpcell td.no{background:#fde3e3;color:#b71c1c}
 .ps .gaps{line-height:1.9}
 .ps .gaps u{text-decoration:none;color:var(--acc);font-weight:900;border-bottom:4px solid var(--acc);padding:0 6px}
 .ps.containw .galrow img{object-fit:contain;background:#fff}
-/* fractions and equations (Biology 2d, 2f) */
-.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 6px}
-.frac b:first-child{border-bottom:3px solid currentColor;padding:0 6px}
+/* fractions and equations (Biology 2d, 2f, Physics 8) */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;text-align:center;margin:0 6px;gap:8px}
+.frac b{display:flex;justify-content:center;align-items:center;width:100%}
+.frac b:first-child{border-bottom:4px solid #111;padding:0 10px 8px}
+.frac b:last-child{padding:2px 10px 0}
 .eqn{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0;font:800 20px 'Barlow',Arial,sans-serif}
-.eqn .term{padding:6px 12px;border:3px solid var(--c);color:var(--c);background:#fff;border-radius:8px}
+.eqn .term{display:inline-block;padding:6px 12px;border:3px solid var(--c);color:var(--c);background:#fff;border-radius:8px;line-height:1.12}
 .eqn .op{font-size:1.2em;color:#111}
 .eqn .arr{font-size:1.55em;font-weight:900;color:#111;margin:0 8px;line-height:1}
 .ps .eqn{font-size:46px;gap:16px;margin:18px 0}
