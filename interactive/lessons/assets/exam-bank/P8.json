@@ -111,8 +111,8 @@
             "style": "calc",
             "rule": "3 marks (ECF applies)",
             "points": [
-              { "code": "M1", "text": "Formula & time conversion: <b><i>v</i> = 2π<i>r</i> / <i>T</i></b> and <i>T</i> = 98 × 60 = <b>5880 s</b>" },
-              { "code": "M2", "text": "Substitution: <i>v</i> = (2 × π × 7 000 000) ÷ 5880" },
+              { "code": "M1", "text": "Formula &amp; time conversion: <b><i>v</i> = <span class=\"eb-frac\"><span>2 × π × <i>r</i></span><span><i>T</i></span></span></b> and <i>T</i> = 98 × 60 = <b>5880 s</b>" },
+              { "code": "M2", "text": "Substitution: <i>v</i> = <span class=\"eb-frac\"><span>2 × π × 7 000 000</span><span>5880</span></span>" },
               { "code": "A1", "text": "<i>v</i> = 7479.98… ≈ <b>7500 m/s</b> (2 s.f.)" }
             ],
             "accept": ["7.5 × 10³ m/s", "ECF from part (a) if r was substituted correctly into 2πr / T"],

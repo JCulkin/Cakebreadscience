@@ -1530,36 +1530,33 @@ const DG = (() => {
       let s = `<rect x="${x0}" y="12" width="148" height="190" rx="8" fill="#fff" stroke="${INK}" stroke-width="1.6"/>`;
       s += `<rect x="${x0 + 8}" y="20" width="26" height="24" rx="4" fill="#111"/>` + T(x0 + 21, 37, lab, { size: 14, w: 700, fill: '#fff' });
       if (kind === 'diamond') {
-        const pts = [[cx,58],[cx-34,86],[cx+34,86],[cx,100],[cx-48,128],[cx-14,126],[cx+18,126],[cx+48,128],[cx-30,158],[cx+2,158],[cx+32,158]];
+        const pts = [[cx,58],[cx-36,88],[cx+36,88],[cx,104],[cx-50,136],[cx-15,134],[cx+19,134],[cx+50,136],[cx-32,172],[cx+2,172],[cx+34,172]];
         const edges = [[0,1],[0,2],[0,3],[1,4],[1,5],[2,6],[2,7],[3,5],[3,6],[4,8],[5,8],[5,9],[6,9],[6,10],[7,10]];
-        edges.forEach(([a,b]) => { s += `<line x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}" stroke="${INK}" stroke-width="2"/>`; });
-        pts.forEach(([x,y]) => { s += `<circle cx="${x}" cy="${y}" r="6.5" fill="#111" stroke="#fff" stroke-width="1.2"/>`; });
-        s += T(cx, 186, '4 bonds per C atom', { size: 11, fill: '#444' });
+        edges.forEach(([a,b]) => { s += `<line x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}" stroke="${INK}" stroke-width="2.4"/>`; });
+        pts.forEach(([x,y]) => { s += `<circle cx="${x}" cy="${y}" r="7.5" fill="#111" stroke="#fff" stroke-width="1.3"/>`; });
       } else if (kind === 'graphite') {
         const layer = y0 => {
-          const xs = [cx-46, cx-23, cx, cx+23, cx+46], p = xs.map((x,i) => [x, y0 + (i%2 ? -10 : 6)]);
-          const p2 = xs.map((x,i) => [x, y0 + 20 + (i%2 ? -10 : 6)]);
+          const xs = [cx-48, cx-24, cx, cx+24, cx+48], p = xs.map((x,i) => [x, y0 + (i%2 ? -10 : 6)]);
+          const p2 = xs.map((x,i) => [x, y0 + 22 + (i%2 ? -10 : 6)]);
           let t = '';
-          for (let i = 0; i < 4; i++) { t += `<line x1="${p[i][0]}" y1="${p[i][1]}" x2="${p[i+1][0]}" y2="${p[i+1][1]}" stroke="${INK}" stroke-width="2"/>`; t += `<line x1="${p2[i][0]}" y1="${p2[i][1]}" x2="${p2[i+1][0]}" y2="${p2[i+1][1]}" stroke="${INK}" stroke-width="2"/>`; }
-          for (let i = 0; i < 5; i += 2) t += `<line x1="${p[i][0]}" y1="${p[i][1]}" x2="${p2[i][0]}" y2="${p2[i][1]}" stroke="${INK}" stroke-width="2"/>`;
-          [...p, ...p2].forEach(([x,y]) => { t += `<circle cx="${x}" cy="${y}" r="5" fill="#111" stroke="#fff" stroke-width="1"/>`; });
+          for (let i = 0; i < 4; i++) { t += `<line x1="${p[i][0]}" y1="${p[i][1]}" x2="${p[i+1][0]}" y2="${p[i+1][1]}" stroke="${INK}" stroke-width="2.4"/>`; t += `<line x1="${p2[i][0]}" y1="${p2[i][1]}" x2="${p2[i+1][0]}" y2="${p2[i+1][1]}" stroke="${INK}" stroke-width="2.4"/>`; }
+          for (let i = 0; i < 5; i += 2) t += `<line x1="${p[i][0]}" y1="${p[i][1]}" x2="${p2[i][0]}" y2="${p2[i][1]}" stroke="${INK}" stroke-width="2.4"/>`;
+          [...p, ...p2].forEach(([x,y]) => { t += `<circle cx="${x}" cy="${y}" r="5.5" fill="#111" stroke="#fff" stroke-width="1.1"/>`; });
           return t;
         };
-        s += layer(66) + layer(136);
-        [-23, 0, 23].forEach(dx => { s += `<line x1="${cx+dx}" y1="95" x2="${cx+dx}" y2="124" stroke="#666" stroke-width="1.6" stroke-dasharray="3 3"/>`; });
-        s += `<rect x="${cx - 34}" y="103" width="68" height="15" rx="3" fill="#fff"/>` + T(cx, 114, 'weak forces', { size: 10, fill: '#444' }) + T(cx, 186, '3 bonds/C + layers', { size: 11, fill: '#444' });
+        s += layer(68) + layer(146);
+        [-24, 0, 24].forEach(dx => { s += `<line x1="${cx+dx}" y1="100" x2="${cx+dx}" y2="132" stroke="#666" stroke-width="2" stroke-dasharray="4 4"/>`; });
       } else {
         const ball = (bx, by) => {
-          let t = `<circle cx="${bx}" cy="${by}" r="26" fill="#f1f5f9" stroke="${INK}" stroke-width="1.8"/>`;
-          const hex = Array.from({length:6}, (_,k) => [bx + 10*Math.cos(k*Math.PI/3), by + 10*Math.sin(k*Math.PI/3)]);
-          t += `<polygon points="${hex.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${INK}" stroke-width="1.4"/>`;
-          hex.forEach(([hx,hy],k) => { const ox = bx + 24*Math.cos(k*Math.PI/3), oy = by + 24*Math.sin(k*Math.PI/3); t += `<line x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${INK}" stroke-width="1.2"/>`; });
+          let t = `<circle cx="${bx}" cy="${by}" r="30" fill="#f1f5f9" stroke="${INK}" stroke-width="2"/>`;
+          const hex = Array.from({length:6}, (_,k) => [bx + 12*Math.cos(k*Math.PI/3), by + 12*Math.sin(k*Math.PI/3)]);
+          t += `<polygon points="${hex.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${INK}" stroke-width="1.6"/>`;
+          hex.forEach(([hx,hy],k) => { const ox = bx + 28*Math.cos(k*Math.PI/3), oy = by + 28*Math.sin(k*Math.PI/3); t += `<line x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${INK}" stroke-width="1.4"/>`; });
           return t;
         };
-        s += ball(cx - 28, 108) + ball(cx + 30, 108);
-        s += `<line x1="${cx - 1}" y1="100" x2="${cx + 3}" y2="100" stroke="#666" stroke-width="1.6" stroke-dasharray="2 2"/>`
-          + `<line x1="${cx - 1}" y1="116" x2="${cx + 3}" y2="116" stroke="#666" stroke-width="1.6" stroke-dasharray="2 2"/>`;
-        s += T(cx, 152, 'weak forces between', { size: 10, fill: '#555' }) + T(cx, 164, 'separate molecules', { size: 10, fill: '#555' }) + T(cx, 186, 'hollow C₆₀ spheres', { size: 11, fill: '#444' });
+        s += ball(cx - 31, 118) + ball(cx + 33, 118);
+        s += `<line x1="${cx - 1}" y1="108" x2="${cx + 3}" y2="108" stroke="#666" stroke-width="2" stroke-dasharray="3 3"/>`
+          + `<line x1="${cx - 1}" y1="128" x2="${cx + 3}" y2="128" stroke="#666" stroke-width="2" stroke-dasharray="3 3"/>`;
       }
       return s;
     };

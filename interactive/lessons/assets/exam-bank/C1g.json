@@ -101,6 +101,8 @@
           "spec": ["C1.48"],
           "sa": false,
           "marks": 3,
+          "stimulus": "The table compares the relative molecular mass (Mᵣ) and boiling point of four simple molecular Group 4 hydrides.",
+          "hideDiagram": true,
           "text": "Use the table to explain why the boiling point increases from CH₄ to SnH₄.",
           "markScheme": {
             "style": "chain",

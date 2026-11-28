@@ -166,7 +166,6 @@
           "marks": 2,
           "text": "Explain why Substance P conducts electricity when molten or dissolved in water, but does <b>not</b> conduct when solid.",
           "markScheme": {
-            "style": "chain",
             "rule": "2 marks",
             "points": [
               { "code": "B1", "text": "When <b>solid</b>, the ions are held in <b>fixed positions</b> in the lattice and <b>cannot move</b>" },
