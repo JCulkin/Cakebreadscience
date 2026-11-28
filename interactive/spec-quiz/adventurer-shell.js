@@ -188,7 +188,7 @@ img.ui-svg{display:inline-block;width:1.1em;height:1.1em;vertical-align:-0.18em;
     n.className = 'advnav';
     n.setAttribute('aria-label', 'Breadventure Land');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
-    const moreActive = ['cards', 'stats', 'look', 'guide'].includes(active);
+    const moreActive = ['cards', 'stats', 'guide'].includes(active);
     n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
       + `<a class="brand" href="index.html" title="Breadventure Land menu">Breadventure <b>Land</b></a>`
       + tab('home', 'adventurer-home.html', ui('compass', 18), 'My Adventurer')
@@ -205,7 +205,6 @@ img.ui-svg{display:inline-block;width:1.1em;height:1.1em;vertical-align:-0.18em;
     const mlink = (k, href, icon, label) => `<a href="${href}" role="menuitem" class="${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon} <span>${label}</span></a>`;
     menu.innerHTML = mlink('cards', '/Flashcards/', mono('res-flashcards', 16), 'Flashcards')
       + mlink('stats', 'adventurer-stats.html', ui('stats', 18), 'Stats')
-      + mlink('look', 'adventurer-create.html', ui('pencil', 18), 'My look')
       + mlink('guide', '/how-to-use/', mono('ui-guide', 16), 'Help');
     document.body.appendChild(menu);
     const mBtn = n.querySelector('#advMoreBtn');

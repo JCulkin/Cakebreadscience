@@ -80,7 +80,7 @@
       <div class="xp"><i id="xpbar"></i></div>
       <div class="cap" id="cap"></div>
       <div id="stats"></div>
-      <div class="links" id="meLinks"><a class="btn alt" href="adventurer-wardrobe.html">Wardrobe</a><a class="btn alt" href="adventurer-create.html">My look</a></div>
+      <div class="links" id="meLinks"><a class="btn alt" href="adventurer-wardrobe.html">Wardrobe &amp; look</a></div>
     </div>
 
     <div>
@@ -139,7 +139,7 @@
 <script>
 ADV.nav('home');
 const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats(), ui = ADV.ui;
-$('meLinks').innerHTML = `<a class="btn alt" href="adventurer-wardrobe.html">${ui('shirt')} Wardrobe</a><a class="btn alt" href="adventurer-create.html">${ui('pencil')} My look</a>`;
+$('meLinks').innerHTML = `<a class="btn alt" href="adventurer-wardrobe.html">${ui('shirt')} Wardrobe &amp; look</a>`;
 $('coinIc').innerHTML = ui('coin');
 $('nm').textContent = ADV.nick();
 $('ttl').textContent = '“' + (s.gear.set ? ADV_SETS[s.gear.set].title : 'Side Quest Enjoyer') + '”';
