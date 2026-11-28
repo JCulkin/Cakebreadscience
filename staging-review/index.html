@@ -51,7 +51,14 @@ button{font-family:'Barlow',Arial,sans-serif;cursor:pointer}
 .sec-h:first-child{margin-top:0}
 .sec-h small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--muted);text-transform:none}
 
-.card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;padding:12px 16px;margin-bottom:10px}
+.card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;padding:12px 16px;margin-bottom:10px;transition:opacity .18s ease,transform .18s ease}
+.card.dismissing{opacity:0;transform:translateX(18px)}
+.card.is-bad{border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.16)}
+.card.is-good{border-color:var(--green)}
+.pr-bad-box{margin-top:10px;background:#fff5f5;border:1.5px solid #fecaca;border-radius:5px;padding:9px 12px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.pr-bad-box label{font:800 12px/1 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.9px;color:var(--red);padding-top:7px;flex:none}
+.pr-bad-box textarea{flex:1 1 280px;min-height:46px;font:600 14px/1.4 'Barlow',Arial,sans-serif;padding:6px 9px;border:2px solid #f87171;border-radius:5px;background:#fff;color:#111;resize:vertical}
+.pr-bad-box textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.15)}
 .card-row{display:grid;grid-template-columns:64px 1fr auto;gap:8px 14px;align-items:center}
 .card-row.nocode{grid-template-columns:1fr auto}
 .code{font:900 28px/1 'Barlow Condensed',sans-serif;color:var(--c,#111);text-transform:uppercase}
@@ -345,9 +352,70 @@ body.sg-viewing #sgModal{display:flex}
     showToast(`✓ Copied review notes (${st.bad} to fix, ${st.good} good) — paste straight into chat!`);
   }
 
+  /* Persistent local Printables (Worksheets & Booklets) Good / Bad + notes store — shared with /worksheets/diff/ */
+  const PR_STORE_KEY = 'cbs.staging.prReview.v1';
+  let prMarks = {};
+  const loadPrMarks = () => { try { prMarks = JSON.parse(localStorage.getItem(PR_STORE_KEY) || '{}') || {}; } catch (e) { prMarks = {}; } };
+  loadPrMarks();
+  const prMarkOf = s => prMarks[s.id] || null;
+  const savePrMarks = () => { try { localStorage.setItem(PR_STORE_KEY, JSON.stringify(prMarks)); } catch (e) {} };
+  const prStats = () => {
+    let good = 0, bad = 0;
+    printablesToReview.forEach(s => {
+      const m = prMarkOf(s);
+      if (m && m.status === 'good') good++;
+      else if (m && m.status === 'bad') bad++;
+    });
+    return { good, bad, total: printablesToReview.length, left: printablesToReview.length - good };
+  };
+  function updatePrTabCount() {
+    document.getElementById('cnt-printables').textContent = String(prStats().left);
+  }
+  function buildPrReport() {
+    const badList = [], goodList = [];
+    SHEETS.forEach(s => {
+      const m = prMarkOf(s);
+      if (!m) return;
+      if (m.status === 'bad') badList.push({ s, note: (m.note || '').trim() });
+      else if (m.status === 'good') goodList.push(s);
+    });
+    const lines = [
+      `Printables Staging Review (${new Date().toISOString().slice(0, 10)})`,
+      `Checked: ${goodList.length + badList.length} of ${printablesToReview.length} · Good: ${goodList.length} · Needs fix: ${badList.length}`,
+      ''
+    ];
+    if (badList.length) {
+      lines.push(`=== NEEDS FIX (${badList.length}) ===`);
+      badList.forEach(({ s, note }, i) => {
+        lines.push(`${i + 1}. [${s.subjectName || s.subject} · ${s.tier || ''} · ${s.title}] (${s.path || s.url})`);
+        lines.push(`   Fix: ${note || '(marked bad — no note typed)'}`);
+      });
+      lines.push('');
+    }
+    if (goodList.length) {
+      lines.push(`=== APPROVED / GOOD (${goodList.length}) ===`);
+      goodList.forEach(s => {
+        lines.push(`- [${s.subjectName || s.subject} · ${s.tier || ''}] ${s.title} (${s.path || s.url})`);
+      });
+    }
+    return lines.join('\n');
+  }
+  async function copyPrReport() {
+    const st = prStats();
+    const anyChecked = Object.keys(prMarks).length;
+    if (!anyChecked) { showToast('Mark at least one worksheet or booklet Good or Bad first.'); return; }
+    const text = buildPrReport();
+    try { await navigator.clipboard.writeText(text); } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    showToast(`✓ Copied printable review notes (${st.bad} to fix, ${st.good} good) — paste straight into chat!`);
+  }
+
   document.getElementById('cnt-decks').textContent = String(decksToReview.length);
   document.getElementById('cnt-guides').textContent = String(guidesToReview.length);
-  document.getElementById('cnt-printables').textContent = String(printablesToReview.length);
+  updatePrTabCount();
   updateFcTabCount();
   document.getElementById('cnt-site').textContent = String(siteToReview.length);
   document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (WD && WD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
@@ -454,32 +522,76 @@ body.sg-viewing #sgModal{display:flex}
       + (list.map(cardHtml).join('') || '<p>All revision notes in this filter are signed off! 🎉</p>');
   }
 
-  function renderPrintables() {
+  function renderPrFiltersAndToolbar() {
     const fEl = document.getElementById('filters');
-    const bCount = printablesToReview.filter(s => s.format === 'booklet').length;
-    const wCount = printablesToReview.filter(s => s.format !== 'booklet').length;
+    const st = prStats();
+    const unrev = printablesToReview.filter(s => { const m = prMarkOf(s); return !m || m.status !== 'good'; });
+    const bCount = unrev.filter(s => s.format === 'booklet').length;
+    const wCount = unrev.filter(s => s.format !== 'booklet').length;
     const subjs = [...new Set(printablesToReview.map(s => s.subject))];
     const fs = [
-      ['review', `Needs review (${printablesToReview.length})`],
+      ['review', `Needs review (${unrev.length})`],
       ['booklet', `Topic Booklets (${bCount})`],
       ['worksheet', `Worksheets (${wCount})`],
-      ...subjs.map(s => [s, `${s[0].toUpperCase() + s.slice(1)} (${printablesToReview.filter(x => x.subject === s).length})`]),
-      ...(printablesChecked.length ? [['checked', `Checked (${printablesChecked.length})`]] : [])
+      ...subjs.map(s => [s, `${s[0].toUpperCase() + s.slice(1)} (${unrev.filter(x => x.subject === s).length})`]),
+      ['bad', `✏️ Needs fix (${st.bad})`],
+      ['good', `✓ Good / dismissed (${st.good})`],
+      ...(printablesChecked.length ? [['checked', `Already signed off (${printablesChecked.length})`]] : [])
     ];
     if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
     fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
 
+    const tb = document.getElementById('prToolbar');
+    if (tb) {
+      const checked = st.good + st.bad;
+      tb.innerHTML = `
+        <div class="fc-stats">
+          <span><b>${st.left}</b> left to check</span>
+          <span>· ✓ <b>${st.good}</b> good</span>
+          <span>· ✏️ <b>${st.bad}</b> need fix</span>
+        </div>
+        <div class="fc-tacts">
+          <button type="button" class="rbtn gold" id="btnCopyPr">📋 Copy review notes${checked ? ` (${checked})` : ''}</button>
+          ${checked ? '<button type="button" class="rbtn" id="btnResetPr" style="background:#262626;color:#ddd;border-color:#555;font-size:13px;padding:7px 10px">Reset marks</button>' : ''}
+        </div>`;
+      document.getElementById('btnCopyPr').onclick = copyPrReport;
+      const rst = document.getElementById('btnResetPr');
+      if (rst) rst.onclick = () => {
+        if (!confirm(`Clear all ${checked} local worksheet/booklet review marks & notes?`)) return;
+        prMarks = {};
+        savePrMarks();
+        updatePrTabCount();
+        renderPrintables();
+        showToast('Cleared printable review marks.');
+      };
+    }
+    updatePrTabCount();
+  }
+
+  function renderPrintables() {
+    loadPrMarks();
+    renderPrFiltersAndToolbar();
+
     const list = activeFilter === 'checked'
       ? printablesChecked
-      : printablesToReview.filter(s => {
-          if (activeFilter === 'review') return true;
-          if (activeFilter === 'booklet') return s.format === 'booklet';
-          if (activeFilter === 'worksheet') return s.format !== 'booklet';
-          return s.subject === activeFilter;
-        });
+      : activeFilter === 'good'
+        ? printablesToReview.filter(s => { const m = prMarkOf(s); return m && m.status === 'good'; })
+        : activeFilter === 'bad'
+          ? printablesToReview.filter(s => { const m = prMarkOf(s); return m && m.status === 'bad'; })
+          : printablesToReview.filter(s => {
+              const m = prMarkOf(s);
+              if (m && m.status === 'good') return false;
+              if (activeFilter === 'review') return true;
+              if (activeFilter === 'booklet') return s.format === 'booklet';
+              if (activeFilter === 'worksheet') return s.format !== 'booklet';
+              return s.subject === activeFilter;
+            });
 
     const cardHtml = s => {
       const isBooklet = s.format === 'booklet';
+      const m = prMarkOf(s);
+      const isBad = !!(m && m.status === 'bad');
+      const isGood = !!(m && m.status === 'good');
       const pills = [`<span class="pill tier">${esc((s.tier || '').toUpperCase())}</span>`];
       if (s.underReview) pills.push('<span class="pill rev">Under review</span>');
       else if (s.checked) pills.push('<span class="pill chk">Checked ✓</span>');
@@ -491,22 +603,31 @@ body.sg-viewing #sgModal{display:flex}
       if (isBooklet && s.newPages) pills.push(`<span class="pill">${s.newPages} pages</span>`);
       if (s.spec) pills.push(`<span class="pill">${esc(s.spec)}</span>`);
       const col = SUBJ_COL[s.subject] || '#111';
-      return `<div class="card" style="--c:${col}">
+      return `<div class="card${isBad ? ' is-bad' : ''}${isGood ? ' is-good' : ''}" data-prk="${esc(s.id)}" style="--c:${col}">
         <div class="card-row nocode">
           <div class="info"><h3>${esc(s.subjectName || s.subject)} · ${esc(s.title)}</h3><div class="pills">${pills.join('')}</div></div>
           <div class="acts">
-            <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Side-by-side ${isBooklet ? 'booklet' : 'sheet'} &amp; MS →</a>
+            <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Compare →</a>
             <a class="btn" href="${esc(s.url)}" target="_blank" rel="noopener">Open ↗</a>
+            <button type="button" class="fc-btn good${isGood ? ' on' : ''}" data-pr-act="good" data-prk="${esc(s.id)}" title="Approve and dismiss from review list">✓ Good</button>
+            <button type="button" class="fc-btn bad${isBad ? ' on' : ''}" data-pr-act="bad" data-prk="${esc(s.id)}" title="Flag for fixing and write a note">✗ Bad</button>
+            ${(isGood || isBad) ? `<button type="button" class="fc-btn undo" data-pr-act="clear" data-prk="${esc(s.id)}" title="Clear mark">Clear</button>` : ''}
           </div>
         </div>
+        ${isBad ? `<div class="pr-bad-box"><label for="prnote-${esc(s.id)}">What needs fixing?</label><textarea id="prnote-${esc(s.id)}" data-pr-note="${esc(s.id)}" placeholder="Type what's wrong or what you want changed on this sheet/mark scheme (auto-saved)…">${esc(m.note || '')}</textarea></div>` : ''}
       </div>`;
     };
 
     const heading = activeFilter === 'checked'
-      ? `Checked Printables <small>already approved (${printablesChecked.length})</small>`
-      : `Printables — Needs Review <small>${list.length} unchecked worksheets &amp; topic booklets · checked sheets hidden</small>`;
-    document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
-      + (list.map(cardHtml).join('') || '<p>No printables match this filter.</p>');
+      ? `Already Signed-Off Printables <small>approved in Git (${printablesChecked.length})</small>`
+      : activeFilter === 'good'
+        ? `Approved / Dismissed Printables <small>${list.length} marked Good — click Clear or ✗ Bad to move back</small>`
+        : activeFilter === 'bad'
+          ? `Flagged Printables Needing Fixes <small>${list.length} marked Bad — click 📋 Copy review notes above to paste into chat</small>`
+          : `Printables — Needs Review <small>${list.length} remaining · ✓ Good dismisses · ✗ Bad opens a note box (synced with side-by-side comparer)</small>`;
+    document.getElementById('content').innerHTML = `<div class="fc-toolbar" id="prToolbar"></div><h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || `<p>${activeFilter === 'good' ? 'No printables marked Good yet.' : activeFilter === 'bad' ? 'No printables flagged as Bad!' : 'All printables in this filter have been reviewed! 🎉'}</p>`);
+    renderPrFiltersAndToolbar();
   }
 
   function renderFcFiltersAndToolbar() {
@@ -697,6 +818,59 @@ body.sg-viewing #sgModal{display:flex}
     const sgBtn = e.target.closest('[data-sg]');
     if (sgBtn) { openStudyGuideModal(sgBtn.dataset.sg); return; }
 
+    const prBtn = e.target.closest('[data-pr-act]');
+    if (prBtn) {
+      const act = prBtn.dataset.prAct;
+      const k = prBtn.dataset.prk;
+      const cardEl = prBtn.closest('.card');
+      const prev = prMarks[k] ? Object.assign({}, prMarks[k]) : null;
+      if (act === 'good') {
+        prMarks[k] = { status: 'good', note: (prev && prev.note) || '', at: Date.now() };
+        savePrMarks();
+        if (activeFilter !== 'good' && cardEl) {
+          cardEl.classList.add('dismissing');
+          setTimeout(() => { cardEl.remove(); renderPrFiltersAndToolbar(); }, 180);
+        } else {
+          renderPrintables();
+        }
+        showToast('Marked ✓ Good and dismissed.', () => {
+          if (prev) prMarks[k] = prev; else delete prMarks[k];
+          savePrMarks();
+          renderPrintables();
+        });
+      } else if (act === 'bad') {
+        const existingNote = (prev && prev.note) || '';
+        prMarks[k] = { status: 'bad', note: existingNote, at: Date.now() };
+        savePrMarks();
+        if (activeFilter === 'good') {
+          renderPrintables();
+        } else if (cardEl) {
+          cardEl.classList.remove('is-good');
+          cardEl.classList.add('is-bad');
+          const gB = cardEl.querySelector('[data-pr-act="good"]'); if (gB) gB.classList.remove('on');
+          const bB = cardEl.querySelector('[data-pr-act="bad"]'); if (bB) bB.classList.add('on');
+          const acts = cardEl.querySelector('.acts');
+          if (acts && !acts.querySelector('[data-pr-act="clear"]')) {
+            acts.insertAdjacentHTML('beforeend', `<button type="button" class="fc-btn undo" data-pr-act="clear" data-prk="${esc(k)}" title="Clear mark">Clear</button>`);
+          }
+          let box = cardEl.querySelector('.pr-bad-box');
+          if (!box) {
+            cardEl.insertAdjacentHTML('beforeend',
+              `<div class="pr-bad-box"><label for="prnote-${esc(k)}">What needs fixing?</label><textarea id="prnote-${esc(k)}" data-pr-note="${esc(k)}" placeholder="Type what's wrong or what you want changed on this sheet/mark scheme (auto-saved)…">${esc(existingNote)}</textarea></div>`);
+            box = cardEl.querySelector('.pr-bad-box');
+          }
+          const ta = box && box.querySelector('textarea');
+          if (ta) ta.focus();
+          renderPrFiltersAndToolbar();
+        }
+      } else if (act === 'clear') {
+        delete prMarks[k];
+        savePrMarks();
+        renderPrintables();
+      }
+      return;
+    }
+
     const fcBtn = e.target.closest('[data-fc-act]');
     if (!fcBtn) return;
     const act = fcBtn.dataset.fcAct;
@@ -751,11 +925,26 @@ body.sg-viewing #sgModal{display:flex}
   });
 
   document.getElementById('content').addEventListener('input', e => {
+    const pta = e.target.closest('[data-pr-note]');
+    if (pta) {
+      const k = pta.dataset.prNote;
+      prMarks[k] = { status: 'bad', note: pta.value, at: Date.now() };
+      savePrMarks();
+      return;
+    }
     const ta = e.target.closest('[data-fc-note]');
     if (!ta) return;
     const k = ta.dataset.fcNote;
     fcMarks[k] = { status: 'bad', note: ta.value, at: Date.now() };
     saveFcMarks();
+  });
+
+  window.addEventListener('storage', e => {
+    if (e.key === PR_STORE_KEY) { loadPrMarks(); updatePrTabCount(); if (activeTab === 'printables') renderPrintables(); }
+  });
+  window.addEventListener('focus', () => {
+    loadPrMarks(); updatePrTabCount();
+    if (activeTab === 'printables' && !document.activeElement.closest('textarea')) renderPrintables();
   });
 
   let sgCur = null;
