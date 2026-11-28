@@ -277,8 +277,9 @@
   <section class="ps"><h2>Try it: heat and cool</h2><div class="fig" style="flex:1;flex-direction:column;align-items:center"><div data-comp="particles" data-state="solid" style="width:52%"></div></div></section>
   <section class="ps" data-nomatch><h2>Melting and freezing</h2><div class="row" style="flex:1;min-height:0;gap:28px;align-items:center"><div class="col" style="flex:1.0"><ul class="ilist" style="border-left-color:#c8001e"><li><b>Heating a solid:</b> particles <span class="em">vibrate more</span></li><li data-s="1">At the <b>melting point</b> they overcome fixed positions and move around: <b>melting</b></li><li data-s="2"><b>Cooling a liquid:</b> at the <b>freezing point</b> forces hold them in place again</li></ul><div data-s="3" style="background:#fff3e0;border:4px solid #111;border-left:14px solid #c8001e;border-radius:12px;padding:14px 20px;margin-top:20px;font:900 34px/1.2 'Barlow',sans-serif;color:#c8001e">melting point = freezing point</div></div><div class="col" style="flex:1.18" data-comp="state-change" data-mode="melt"></div></div></section>
   <section class="ps" data-nomatch><h2>Boiling and condensing</h2><div class="row" style="flex:1;min-height:0;gap:28px;align-items:center"><div class="col" style="flex:1.0"><ul class="ilist" style="border-left-color:#c8001e"><li><b>Heating a liquid:</b> particles <span class="em">move faster</span></li><li data-s="1">At the <b>boiling point</b> they overcome <b>all</b> forces of attraction</li><li data-s="2">Particles spread far apart → <b>boiling</b></li></ul><div data-s="3" style="background:#e3f2fd;border:4px solid #111;border-left:14px solid #0b4f8a;border-radius:12px;padding:14px 20px;margin-top:20px;font:800 32px/1.2 'Barlow',sans-serif"><b style="color:#0b4f8a">Condensing:</b> gas → liquid when cooled</div></div><div class="col" style="flex:1.18" data-comp="state-change" data-mode="boil"></div></div></section>
-  <section class="ps" data-nomatch><h2>Evaporation</h2><div class="row" style="flex:1;min-height:0;gap:28px;align-items:center"><div class="col" style="flex:.85"><div class="mid">Liquid → gas <b class="em">without boiling</b></div><ul class="ilist sm mt"><li data-s="1">Fastest particles escape from the <b>surface</b></li><li data-s="2">Happens at <b>any temperature</b> below the boiling point</li><li data-s="3"><b>Boiling</b> forms bubbles throughout the liquid at the boiling point</li></ul></div><div class="fig" style="flex:1.25;height:100%" data-s="1"><svg viewBox="0 0 780 470" style="width:100%;height:100%;display:block" role="img" aria-label="Evaporation vs boiling: evaporation shows clean liquid with fastest particles escaping only from the surface; boiling shows heat underneath with bubbles and gas particles forming throughout the liquid and escaping outside" font-family="Barlow,Arial,sans-serif">
+  <section class="ps" data-nomatch><h2>Evaporation</h2><div class="row" style="flex:1;min-height:0;gap:28px;align-items:center"><div class="col" style="flex:.85"><div class="mid">Liquid → gas <b class="em">without boiling</b></div><ul class="ilist sm mt"><li data-s="1">Fastest particles escape from the <b>surface</b></li><li data-s="2">Happens at <b>any temperature</b> below the boiling point</li><li data-s="3"><b>Boiling</b> forms bubbles throughout the liquid at the boiling point</li></ul></div><div class="fig" style="flex:1.25;height:100%" data-s="1"><svg viewBox="0 0 780 470" style="width:100%;height:100%;display:block" role="img" aria-label="Evaporation vs boiling: evaporation shows calm liquid with only a couple of particles slowly escaping from the surface; boiling shows heat underneath with rising bubbles throughout the liquid and many gas particles escaping above the surface" font-family="Barlow,Arial,sans-serif">
   <defs>
+    <marker id="evA1" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#00838f"/></marker>
     <marker id="evA2" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c8001e"/></marker>
     <radialGradient id="evLiqP" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#b2ebf2"/><stop offset="50%" stop-color="#26c6da"/><stop offset="100%" stop-color="#00838f"/></radialGradient>
     <radialGradient id="evGasP" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#ffcdd2"/><stop offset="50%" stop-color="#ef5350"/><stop offset="100%" stop-color="#b71c1c"/></radialGradient>
@@ -286,89 +287,97 @@
     <linearGradient id="flameIn" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#2979ff"/><stop offset="100%" stop-color="#80d8ff"/></linearGradient>
   </defs>
 
-  <!-- LEFT CARD: EVAPORATION (clean liquid; only escaped particles above surface) -->
+  <!-- LEFT CARD: EVAPORATION (calm liquid; only 2 particles slowly escaping from the surface) -->
   <rect x="8" y="8" width="368" height="454" rx="16" fill="#fff" stroke="#00838f" stroke-width="5"/>
   <text x="192" y="48" text-anchor="middle" font-size="33" font-weight="900" fill="#00838f">EVAPORATION</text>
-  <!-- Clean beaker liquid fill & surface wave -->
-  <path d="M68 206 Q130 198 192 206 T316 206 V340 Q316 352 304 352 H80 Q68 352 68 340 Z" fill="#d8f5fa"/>
-  <path d="M68 206 Q130 198 192 206 T316 206" fill="none" stroke="#00838f" stroke-width="4"/>
+  <!-- Calm beaker liquid fill & gentle surface -->
+  <path d="M68 206 Q130 201 192 206 T316 206 V340 Q316 352 304 352 H80 Q68 352 68 340 Z" fill="#d8f5fa"/>
+  <path d="M68 206 Q130 201 192 206 T316 206" fill="none" stroke="#00838f" stroke-width="4"/>
   <!-- Beaker glass outline -->
   <path d="M64 134 V340 Q64 356 80 356 H304 Q320 356 320 340 V134" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"/>
-  <!-- Fastest particles escaping from the surface only -->
-  <g stroke="#c8001e" stroke-width="4" stroke-linecap="round" marker-end="url(#evA2)">
-    <line x1="108" y1="196" x2="90" y2="128"/>
-    <line x1="156" y1="194" x2="146" y2="144"/>
-    <line x1="200" y1="196" x2="210" y2="104"/>
-    <line x1="264" y1="198" x2="288" y2="128"/>
+  <!-- Just 2 particles gently escaping from the surface -->
+  <g stroke="#00838f" stroke-width="3.5" stroke-linecap="round" marker-end="url(#evA1)">
+    <line x1="146" y1="192" x2="136" y2="144"/>
+    <line x1="238" y1="194" x2="250" y2="136"/>
   </g>
   <g fill="url(#evLiqP)" stroke="#005662" stroke-width="2.5">
-    <circle cx="86" cy="112" r="11"/><circle cx="144" cy="128" r="11"/><circle cx="212" cy="88" r="11"/><circle cx="292" cy="112" r="11"/>
+    <circle cx="133" cy="128" r="11"/>
+    <circle cx="253" cy="120" r="11"/>
   </g>
-  <!-- Clean captions ONLY below beaker -->
-  <text x="192" y="406" text-anchor="middle" font-size="25" font-weight="900" fill="#006064">Surface only</text>
+  <!-- Clean captions below beaker -->
+  <text x="192" y="406" text-anchor="middle" font-size="25" font-weight="900" fill="#006064">Surface only — slow</text>
   <text x="192" y="438" text-anchor="middle" font-size="21" font-weight="700" fill="#444">Any temperature below boiling point</text>
 
-  <!-- RIGHT CARD: BOILING (bubbles + particles forming inside AND escaping outside) -->
+  <!-- RIGHT CARD: BOILING (clean bubbles throughout liquid; many particles escaping outside above surface) -->
   <rect x="404" y="8" width="368" height="454" rx="16" fill="#fff" stroke="#c8001e" stroke-width="5"/>
   <text x="588" y="48" text-anchor="middle" font-size="33" font-weight="900" fill="#c8001e">BOILING</text>
-  <!-- Turbulent boiling liquid -->
-  <path d="M464 190 Q494 178 524 192 T588 188 T652 194 T712 188 V312 Q712 324 700 324 H476 Q464 324 464 312 Z" fill="#ffe1e5"/>
-  <path d="M464 190 Q494 178 524 192 T588 188 T652 194 T712 188" fill="none" stroke="#c8001e" stroke-width="3.5"/>
-  <!-- Rising steam bubbles throughout the liquid -->
-  <g fill="#fff" stroke="#c8001e" stroke-width="2.6">
-    <circle cx="496" cy="312" r="7"/><circle cx="540" cy="314" r="8"/><circle cx="592" cy="312" r="9"/><circle cx="642" cy="314" r="8"/><circle cx="684" cy="312" r="7"/>
-    <circle cx="516" cy="274" r="14"/><circle cx="576" cy="278" r="16"/><circle cx="648" cy="272" r="15"/>
-    <circle cx="544" cy="226" r="17"/><circle cx="614" cy="232" r="18"/><circle cx="674" cy="224" r="15"/>
+  <!-- Turbulent boiling water -->
+  <path d="M464 202 Q494 190 524 204 T588 200 T652 206 T712 200 V312 Q712 324 700 324 H476 Q464 324 464 312 Z" fill="#d8f5fa"/>
+  <path d="M464 202 Q494 190 524 204 T588 200 T652 206 T712 200" fill="none" stroke="#00838f" stroke-width="4"/>
+  <!-- Clean rising steam bubbles throughout the liquid (no atoms drawn inside bubbles) -->
+  <g fill="#fff" fill-opacity=".88" stroke="#00838f" stroke-width="2.6">
+    <circle cx="496" cy="312" r="6"/><circle cx="538" cy="314" r="7"/><circle cx="588" cy="312" r="8"/><circle cx="638" cy="314" r="7"/><circle cx="682" cy="312" r="6"/>
+    <circle cx="514" cy="278" r="11"/><circle cx="568" cy="282" r="13"/><circle cx="626" cy="276" r="12"/><circle cx="672" cy="282" r="10"/>
+    <circle cx="494" cy="242" r="13"/><circle cx="546" cy="236" r="15"/><circle cx="604" cy="240" r="16"/><circle cx="660" cy="234" r="14"/>
   </g>
-  <!-- Gas particles forming inside the bubbles throughout the liquid -->
-  <g fill="url(#evGasP)" stroke="#7f0000" stroke-width="2">
-    <circle cx="516" cy="274" r="7.5"/><circle cx="576" cy="278" r="8"/><circle cx="648" cy="272" r="7.5"/>
-    <circle cx="544" cy="226" r="8.5"/><circle cx="614" cy="232" r="8.5"/><circle cx="674" cy="224" r="7.5"/>
+  <!-- Many energetic particles escaping outside (above the surface) -->
+  <g stroke="#c8001e" stroke-width="3.2" stroke-linecap="round" marker-end="url(#evA2)">
+    <line x1="494" y1="186" x2="478" y2="140"/>
+    <line x1="528" y1="184" x2="516" y2="108"/>
+    <line x1="560" y1="184" x2="554" y2="132"/>
+    <line x1="588" y1="182" x2="588" y2="94"/>
+    <line x1="618" y1="184" x2="624" y2="132"/>
+    <line x1="650" y1="184" x2="660" y2="108"/>
+    <line x1="684" y1="186" x2="698" y2="140"/>
   </g>
-  <!-- Escaping gas particles outside (above the surface) -->
-  <g stroke="#c8001e" stroke-width="3.8" stroke-linecap="round" marker-end="url(#evA2)">
-    <line x1="510" y1="176" x2="494" y2="114"/>
-    <line x1="564" y1="172" x2="554" y2="96"/>
-    <line x1="616" y1="174" x2="626" y2="96"/>
-    <line x1="670" y1="176" x2="688" y2="120"/>
-  </g>
-  <g fill="url(#evGasP)" stroke="#7f0000" stroke-width="2.5">
-    <circle cx="490" cy="98" r="11"/><circle cx="552" cy="80" r="11"/><circle cx="628" cy="80" r="11"/><circle cx="692" cy="104" r="11"/>
+  <g fill="url(#evGasP)" stroke="#7f0000" stroke-width="2.3">
+    <circle cx="473" cy="126" r="10.5"/>
+    <circle cx="513" cy="92" r="10.5"/>
+    <circle cx="552" cy="116" r="10.5"/>
+    <circle cx="588" cy="78" r="10.5"/>
+    <circle cx="626" cy="116" r="10.5"/>
+    <circle cx="663" cy="92" r="10.5"/>
+    <circle cx="703" cy="126" r="10.5"/>
+    <circle cx="548" cy="72" r="10.5"/>
+    <circle cx="628" cy="72" r="10.5"/>
   </g>
   <!-- Beaker outline -->
-  <path d="M460 124 V312 Q460 328 476 328 H700 Q716 328 716 312 V124" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"/>
+  <path d="M460 132 V312 Q460 328 476 328 H700 Q716 328 716 312 V132" fill="none" stroke="#111" stroke-width="6" stroke-linecap="round"/>
   <!-- Gauze & heat source (Bunsen burner flame) underneath -->
   <line x1="444" y1="336" x2="732" y2="336" stroke="#37474f" stroke-width="6" stroke-linecap="round"/>
   <path d="M588 338 C562 356 562 384 588 394 C614 384 614 356 588 338 Z" fill="url(#flameOut)" stroke="#e65100" stroke-width="2.5"/>
   <path d="M588 354 C575 366 575 384 588 390 C601 384 601 366 588 354 Z" fill="url(#flameIn)"/>
   <rect x="576" y="392" width="24" height="14" rx="3" fill="#455a64" stroke="#111" stroke-width="2"/>
   <!-- Clean captions below -->
-  <text x="588" y="428" text-anchor="middle" font-size="22" font-weight="900" fill="#c8001e">Bubbles throughout (from bottom)</text>
+  <text x="588" y="428" text-anchor="middle" font-size="22" font-weight="900" fill="#c8001e">Bubbles throughout — fast</text>
   <text x="588" y="454" text-anchor="middle" font-size="21" font-weight="700" fill="#444">At the boiling point</text>
 </svg></div></div></section>
-  <section class="ps"><h2>Sublimation and deposition</h2><div class="row"><div class="col" style="flex:.92"><div class="mid"><b class="em">Sublimation:</b> solid → gas</div><ul class="ilist sm"><li>e.g. dry ice (solid CO<sub>2</sub>)</li></ul><div class="mid mt" data-s="1"><b class="em">Deposition:</b> gas → solid</div><ul class="ilist sm" data-s="1"><li>e.g. frost forming in a freezer</li></ul></div><div class="fig" style="flex:1.18"><svg viewBox="0 0 780 540" style="width:100%;height:100%;display:block" role="img" aria-label="Sublimation turns a solid straight into a gas; deposition turns a gas straight into a solid, skipping the liquid state" font-family="Barlow,Arial,sans-serif">
+  <section class="ps"><h2>Sublimation and deposition</h2><div class="row"><div class="col" style="flex:.92"><div class="mid"><b class="em">Sublimation:</b> solid → gas</div><ul class="ilist sm"><li>e.g. dry ice (solid CO<sub>2</sub>)</li></ul><div class="mid mt" data-s="1"><b class="em">Deposition:</b> gas → solid</div><ul class="ilist sm" data-s="1"><li>e.g. frost forming in a freezer</li></ul></div><div class="fig" style="flex:1.18"><svg viewBox="0 0 780 540" style="width:100%;height:100%;display:block" role="img" aria-label="Sublimation turns a 2D regular solid lattice straight into a 2D gas; deposition turns a gas straight into a solid, skipping the liquid state" font-family="Barlow,Arial,sans-serif">
     <defs>
       <marker id="sbRed" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c8001e"/></marker>
       <marker id="sbBlu" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#0b4f8a"/></marker>
       <marker id="s17gasa" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c8001e"/></marker>
-      <radialGradient id="s17s3df" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#e3f2fd"/><stop offset="45%" stop-color="#64b5f6"/><stop offset="100%" stop-color="#1565c0"/></radialGradient>
-      <radialGradient id="s17s3db" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#bbdefb"/><stop offset="48%" stop-color="#42a5f5"/><stop offset="100%" stop-color="#0d47a1"/></radialGradient>
+      <radialGradient id="s17s2d" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#e3f2fd"/><stop offset="48%" stop-color="#42a5f5"/><stop offset="100%" stop-color="#1565c0"/></radialGradient>
       <radialGradient id="s17gasg" cx="32%" cy="28%" r="70%"><stop offset="0%" stop-color="#ffcdd2"/><stop offset="50%" stop-color="#ef5350"/><stop offset="100%" stop-color="#b71c1c"/></radialGradient>
     </defs>
-    <!-- SOLID: exact 3D cube lattice reused from Solids slide -->
-    <text x="142" y="102" text-anchor="middle" font-size="36" font-weight="900" fill="#1565c0">SOLID</text>
-    <g transform="translate(8, 86) scale(0.84)">
-      <polygon points="54,312 232,312 296,260 120,260" fill="#cbd5e1" opacity=".55"/>
-      <circle cx="142" cy="107" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="186" cy="107" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="230" cy="107" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="274" cy="107" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="274" cy="151" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="274" cy="195" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="274" cy="239" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="120" cy="124" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="164" cy="124" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="208" cy="124" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="252" cy="124" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="252" cy="168" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="252" cy="212" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="252" cy="256" r="22" fill="url(#s17s3db)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="98" cy="141" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="142" cy="141" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="186" cy="141" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="230" cy="141" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="230" cy="185" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="230" cy="229" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="230" cy="273" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="76" cy="158" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="120" cy="158" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="164" cy="158" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="208" cy="158" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="76" cy="202" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="120" cy="202" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="164" cy="202" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="208" cy="202" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="76" cy="246" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="120" cy="246" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="164" cy="246" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="208" cy="246" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="76" cy="290" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="120" cy="290" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="164" cy="290" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/><circle cx="208" cy="290" r="22" fill="url(#s17s3df)" stroke="#0b3d75" stroke-width="2.6"/>
-      <g fill="none" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round">
-        <path d="M46 148 Q42 158 46 168"/><path d="M39 151 Q36 158 39 165"/>
-        <path d="M46 234 Q42 244 46 254"/><path d="M39 237 Q36 244 39 251"/>
-        <path d="M138 84 Q148 79 158 83"/><path d="M224 84 Q234 79 244 83"/>
-        <path d="M300 124 Q305 134 300 144"/><path d="M300 208 Q305 218 300 228"/>
+    <!-- SOLID: matching 2D regular touching lattice in same 280x280 container -->
+    <text x="146" y="102" text-anchor="middle" font-size="36" font-weight="900" fill="#1565c0">SOLID</text>
+    <g transform="translate(12, 122) scale(0.84)">
+      <rect x="20" y="20" width="280" height="280" rx="16" fill="#eef6ff" stroke="#111" stroke-width="6"/>
+      <g fill="url(#s17s2d)" stroke="#0b3d75" stroke-width="3">
+        <circle cx="72" cy="98" r="22"/><circle cx="116" cy="98" r="22"/><circle cx="160" cy="98" r="22"/><circle cx="204" cy="98" r="22"/><circle cx="248" cy="98" r="22"/>
+        <circle cx="72" cy="142" r="22"/><circle cx="116" cy="142" r="22"/><circle cx="160" cy="142" r="22"/><circle cx="204" cy="142" r="22"/><circle cx="248" cy="142" r="22"/>
+        <circle cx="72" cy="186" r="22"/><circle cx="116" cy="186" r="22"/><circle cx="160" cy="186" r="22"/><circle cx="204" cy="186" r="22"/><circle cx="248" cy="186" r="22"/>
+        <circle cx="72" cy="230" r="22"/><circle cx="116" cy="230" r="22"/><circle cx="160" cy="230" r="22"/><circle cx="204" cy="230" r="22"/><circle cx="248" cy="230" r="22"/>
+        <circle cx="72" cy="274" r="22"/><circle cx="116" cy="274" r="22"/><circle cx="160" cy="274" r="22"/><circle cx="204" cy="274" r="22"/><circle cx="248" cy="274" r="22"/>
+      </g>
+      <g fill="none" stroke="#1e293b" stroke-width="3" stroke-linecap="round">
+        <path d="M62 66 Q72 60 82 66"/><path d="M150 66 Q160 60 170 66"/><path d="M238 66 Q248 60 258 66"/>
+        <path d="M40 132 Q34 142 40 152"/><path d="M280 176 Q286 186 280 196"/>
       </g>
     </g>
-    <text x="142" y="420" text-anchor="middle" font-size="25" font-weight="700" fill="#555">e.g. dry ice (CO₂)</text>
-    <!-- GAS: exact gas diagram reused from Gases slide -->
+    <text x="146" y="420" text-anchor="middle" font-size="25" font-weight="700" fill="#555">e.g. dry ice (CO₂)</text>
+    <!-- GAS: matching 2D gas diagram in same 280x280 container -->
     <text x="634" y="102" text-anchor="middle" font-size="36" font-weight="900" fill="#c8001e">GAS</text>
     <g transform="translate(500, 122) scale(0.84)">
       <rect x="20" y="20" width="280" height="280" rx="16" fill="#fff6f6" stroke="#111" stroke-width="6"/>
@@ -386,13 +395,13 @@
     </g>
     <text x="634" y="420" text-anchor="middle" font-size="25" font-weight="700" fill="#555">CO₂ gas / frost</text>
     <!-- Top red arrow: Sublimation -->
-    <path d="M292 212 H488" stroke="#c8001e" stroke-width="9" marker-end="url(#sbRed)"/>
-    <text x="394" y="182" text-anchor="middle" font-size="30" font-weight="900" fill="#c8001e">Sublimation</text>
-    <text x="394" y="246" text-anchor="middle" font-size="21" font-weight="700" fill="#c8001e">heat energy in</text>
+    <path d="M286 212 H490" stroke="#c8001e" stroke-width="9" marker-end="url(#sbRed)"/>
+    <text x="390" y="182" text-anchor="middle" font-size="30" font-weight="900" fill="#c8001e">Sublimation</text>
+    <text x="390" y="246" text-anchor="middle" font-size="21" font-weight="700" fill="#c8001e">heat energy in</text>
     <!-- Bottom blue arrow: Deposition -->
-    <path d="M500 318 H304" stroke="#0b4f8a" stroke-width="9" marker-end="url(#sbBlu)"/>
-    <text x="394" y="364" text-anchor="middle" font-size="30" font-weight="900" fill="#0b4f8a">Deposition</text>
-    <text x="394" y="392" text-anchor="middle" font-size="21" font-weight="700" fill="#0b4f8a">heat energy out</text>
+    <path d="M494 318 H290" stroke="#0b4f8a" stroke-width="9" marker-end="url(#sbBlu)"/>
+    <text x="390" y="364" text-anchor="middle" font-size="30" font-weight="900" fill="#0b4f8a">Deposition</text>
+    <text x="390" y="392" text-anchor="middle" font-size="21" font-weight="700" fill="#0b4f8a">heat energy out</text>
     <!-- Skips liquid badge -->
     <rect x="220" y="464" width="340" height="56" rx="14" fill="#fff8e1" stroke="#c0611b" stroke-width="4"/>
     <text x="390" y="501" text-anchor="middle" font-size="27" font-weight="900" fill="#c0611b">Skips the liquid state!</text>
