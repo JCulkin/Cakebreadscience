@@ -233,7 +233,7 @@
               "code": "1f",
               "title": "Ionic bonding",
               "spec": "1.37–1.43",
-              "status": "checked",
+              "status": "draft",
               "split": true,
               "draftUpdated": "2026-11-28",
               "versions": [
@@ -248,15 +248,15 @@
               "code": "1g",
               "title": "Covalent bonding",
               "spec": "1.44–1.51",
-              "status": "checked",
+              "status": "draft",
               "split": true,
-              "draftUpdated": "2026-11-26",
+              "draftUpdated": "2026-11-28",
               "versions": [
                 "2026-11-26",
                 "2026-11-26-2",
                 "2026-11-27"
               ],
-              "studentStatus": "checked"
+              "studentStatus": "draft"
             }
           ]
         },

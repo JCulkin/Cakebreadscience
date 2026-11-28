@@ -9,8 +9,9 @@
 <link rel="icon" type="image/png" href="/favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/interactive/lessons/assets/study.css">
+<link rel="stylesheet" href="/interactive/lessons/assets/exam-bank.css">
 </head>
-<body class="subj-chemistry" data-status="draft" data-updated="2026-11-26" data-topic="chemistry/1g">
+<body class="subj-chemistry" data-status="draft" data-updated="2026-11-28" data-topic="chemistry/1g">
 <div class="stripes"><i style="height:4px;background:var(--acc)"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:var(--acc)"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:var(--acc)"></i></div>
 
 <header class="shead">
@@ -424,6 +425,10 @@
   <p style="margin-bottom:14px">Test yourself without looking back! Answer the multiple-choice questions, write your own long answers, then open the mark schemes and tick off every mark you earned.</p>
   <div id="qs"></div>
 
+  <h3 style="margin-top:24px">Exam-style questions</h3>
+  <p class="cap">Write your answer to each part before opening the mark scheme, then tick every mark point you earned.</p>
+  <div data-comp="examq" data-topic="C1g"></div>
+
   <h3>Diagram questions</h3>
   <p class="cap">Click an answer, then press <b>↻ Another example</b> to generate a fresh molecule.</p>
   <div data-comp="dq" data-id="C1.46-d1" data-seed="2122244205"></div>
@@ -454,9 +459,6 @@
   <div class="q" data-type="mc" data-a="1" data-why="Boiling only overcomes the weak intermolecular forces between H₂O molecules — the strong covalent bonds inside H₂O stay intact."><p>When water boils, what is broken?</p><ol><li>Covalent bonds between O and H</li><li>Intermolecular forces between water molecules</li><li>Ionic bonds</li><li>Both covalent bonds and intermolecular forces</li></ol></div>
   <div class="q" data-type="mc" data-a="3" data-why="Butane (C₄H₁₀) has the largest relative molecular mass, so it has the strongest intermolecular forces between molecules."><p>Which has the highest boiling point?</p><ol><li>Methane, CH<sub>4</sub></li><li>Ethane, C<sub>2</sub>H<sub>6</sub></li><li>Propane, C<sub>3</sub>H<sub>8</sub></li><li>Butane, C<sub>4</sub>H<sub>10</sub></li></ol></div>
   <div class="q" data-type="mc" data-a="1" data-why="Every carbon atom in diamond uses all 4 outer electrons in strong covalent bonds, leaving no delocalised electrons."><p>Why does diamond not conduct electricity?</p><ol><li>It has no electrons</li><li>All four outer electrons of each carbon are used in covalent bonds</li><li>Its ions cannot move</li><li>It is a simple molecular substance</li></ol></div>
-  <div class="q" data-type="long" data-m="2"><p>Explain why methane has a low boiling point.</p><ul><li>Methane is made of simple molecules / has weak <b>intermolecular forces</b> between molecules</li><li>Little energy is needed to overcome these forces (covalent bonds are <u>not</u> broken)</li></ul></div>
-  <div class="q" data-type="long" data-m="5"><p>Explain why graphite conducts electricity and is soft, but diamond is hard and does not conduct.</p><ul><li>Graphite: each carbon is bonded to 3 others</li><li>One electron per carbon is <b>delocalised</b> and can move through the structure to carry charge</li><li>Graphite has layers held by <b>weak forces</b>, so the layers slide over each other</li><li>Diamond: each carbon is bonded to 4 others in a rigid 3D network of strong covalent bonds</li><li>Diamond has no delocalised electrons</li></ul></div>
-  <div class="q" data-type="long" data-m="2"><p>Draw a dot-and-cross diagram for carbon dioxide, CO<sub>2</sub>. Show outer electrons only.</p><ul><li>Two shared pairs (a double bond) between C and each O</li><li>Two lone pairs on each O; C with no lone pairs (8 electrons around each atom)</li></ul><p class="tip">Check your drawing using the interactive explorer in <a href="#dot">Step 2</a>.</p></div>
 </div>
 
 <div class="credit" style="max-width:900px;margin:0 auto 24px;padding:0 16px">Photos: Diamonds by Smithsonian Institution (Public Domain) · Graphite (Ceylon) by James St. John, CC BY 2.0 · Quartz crystals by Jon Zander, CC BY-SA 3.0 · Buckminsterfullerene 3D model by Jynto (CC0).</div>
@@ -464,6 +466,7 @@
 <script src="/interactive/lessons/assets/diagrams.js"></script>
 <script src="/interactive/lessons/assets/diagq.js"></script>
 <script src="/interactive/lessons/assets/chem.js"></script>
+<script src="/interactive/lessons/assets/exam-bank.js"></script>
 <script src="/interactive/lessons/assets/study.js"></script>
 </body>
 </html>

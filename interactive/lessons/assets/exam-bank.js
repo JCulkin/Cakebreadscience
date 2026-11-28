@@ -7,7 +7,19 @@
    Renders diagrams live via diagrams.js (DG). Zero past-paper content. */
 (function () {
   const BASE = '/interactive/lessons/assets/exam-bank/';
+  const CSS_HREF = '/interactive/lessons/assets/exam-bank.css';
   const cache = {};
+
+  function ensureCss() {
+    if (typeof document === 'undefined') return;
+    if (!document.querySelector('link[href*="exam-bank.css"]')) {
+      const l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = CSS_HREF;
+      (document.head || document.documentElement).appendChild(l);
+    }
+  }
+  ensureCss();
 
   function esc(s) {
     return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -104,7 +116,7 @@
     </article>`;
   }
 
-  function renderSlideQuestion(q, onlyPart, revealed) {
+  function renderSlideQuestion(q, onlyPart, revealed, hideHd) {
     const part = onlyPart ? (q.parts.find(p => p.label === onlyPart) || q.parts[0]) : q.parts[0];
     const parts = onlyPart ? [part] : q.parts;
     const totMarks = parts.reduce((t, p) => t + p.marks, 0);
@@ -117,6 +129,8 @@
     const focus = onlyPart ? part : q.parts.slice().sort((a, b) => b.marks - a.marks)[0];
     const ms = focus.markScheme;
     const isChain = ms.style === 'chain';
+    const compactQ = parts.length > 1 ? ' compact' : '';
+    const compactMs = (ms.points.length >= 4 || parts.length > 1) ? ' compact' : '';
     const msRows = ms.points.map((pt, i) => {
       const link = isChain && pt.link && i < ms.points.length - 1
         ? `<div class="eb-slide-link"><span>↓</span><i>${esc(pt.link)}</i></div>` : '';
@@ -124,19 +138,17 @@
     }).join('');
     const trap = ms.reject && ms.reject.length ? `<div class="eb-slide-trap"><b>Do not allow:</b> ${ms.reject.slice(0, 2).map(esc).join(' · ')}</div>` : '';
     const qLines = parts.map(p => `<div class="eb-pq-s">${parts.length > 1 ? `(${p.label}) ` : ''}${p.text} <span style="color:var(--acc,#005e22)">[${p.marks}]</span></div>`).join('');
+    const hdHtml = hideHd ? '' : `<div class="eb-slide-hd"><h2>Exam question · ${esc(q.id)}</h2><span class="eb-mk">${totMarks} ${totMarks === 1 ? 'mark' : 'marks'}</span></div>`;
 
     return `<div class="eb-slide">
-      <div class="eb-slide-hd">
-        <h2>Exam question · ${esc(q.id)}</h2>
-        <span class="eb-mk">${totMarks} ${totMarks === 1 ? 'mark' : 'marks'}</span>
-      </div>
+      ${hdHtml}
       <div class="eb-slide-row">
         <div class="eb-slide-l">
-          <div class="eb-slide-q">
+          <div class="eb-slide-q${compactQ}">
             <div class="eb-stim-s">${q.stimulus}</div>
             ${qLines}
           </div>
-          <div class="eb-slide-ms"${revealed ? '' : ' data-s="1"'}>
+          <div class="eb-slide-ms${compactMs}${revealed ? ' on' : ''}" data-s="1">
             <div class="eb-slide-ms-hd">
               <span class="lbl">Mark scheme${parts.length > 1 ? ` — Part (${focus.label})` : ''}${isChain ? ' · linked chain' : ''}</span>
               <span class="rule">${esc(ms.rule || focus.marks + ' marks')}</span>
@@ -169,19 +181,33 @@
   }
 
   async function mount(el) {
+    ensureCss();
     const id = el.dataset.id;
     const topic = el.dataset.topic || topicFromId(id);
     const onlyPart = el.dataset.part || '';
     const onSlide = el.dataset.mode === 'slide' || !!el.closest('#stage, #deck-src');
+    const sec = onSlide ? el.closest('section.ps') : null;
+    const hideHd = el.dataset.nohd === '1' || !!(sec && sec.querySelector(':scope > h2'));
+
+    // Synchronously register a data-s="1" placeholder so lesson.js & diff/index.html
+    // immediately count step 1 (p.max = 1) before the async JSON fetch resolves.
+    if (onSlide && el.dataset.reveal !== '1') {
+      el.innerHTML = '<div class="eb-slide"><div class="eb-slide-ms" data-s="1"></div></div>';
+    }
+
     try {
       const data = await loadTopic(topic);
       const qs = id ? data.questions.filter(q => q.id === id) : data.questions;
       if (!qs.length) { el.textContent = 'Exam question not found: ' + (id || topic); return; }
       if (onSlide) {
-        el.innerHTML = renderSlideQuestion(qs[0], onlyPart, el.dataset.reveal === '1');
-        if (qs[0].sa === false) {
-          const sec = el.closest('section.ps');
-          if (sec && !sec.querySelector('.stag.da')) sec.insertAdjacentHTML('afterbegin', '<i class="stag da"></i>');
+        const pre = el.querySelector('[data-s="1"]');
+        const alreadyShown = el.dataset.reveal === '1' || !!(pre && pre.classList.contains('on')) || !!(sec && sec.shown >= 1);
+        el.innerHTML = renderSlideQuestion(qs[0], onlyPart, alreadyShown, hideHd);
+        if (sec) {
+          sec.max = Math.max(sec.max || 0, 1);
+          if (qs[0].sa === false && !sec.querySelector(':scope > .stag.da')) {
+            sec.insertAdjacentHTML('afterbegin', '<i class="stag da"></i>');
+          }
         }
       } else {
         el.innerHTML = `<div class="eb-wrap">${qs.map(q => renderNotesQuestion(q, onlyPart)).join('')}</div>`;
