@@ -33,7 +33,7 @@
     if (guideRev) parts.push(guideRev + ' revision notes');
     if (pCount) parts.push(pCount + ' printable' + (pCount === 1 ? '' : 's'));
     if (fCount) parts.push(fCount + ' flashcard' + (fCount === 1 ? '' : 's'));
-    if (sCount) parts.push(sCount + ' site change' + (sCount === 1 ? '' : 's'));
+    if (sCount) parts.push(sCount + ' showcase/page' + (sCount === 1 ? '' : 's'));
     if (!parts.length) parts.push('Everything up to date');
 
     var simOn = false; try { simOn = localStorage.getItem('cbs.sim.y10') === '1'; } catch (e) {}
@@ -50,7 +50,7 @@
       + '<a href="/staging-review/#guides" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Revision Notes</a>'
       + '<a href="/staging-review/#printables" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Printables</a>'
       + '<a href="/staging-review/#flashcards" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Flashcards</a>'
-      + '<a href="/staging-review/#site" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Site &amp; Features</a>'
+      + '<a href="/staging-review/#site" style="background:#fff;color:#111;border:2px solid #111;text-decoration:none;padding:4px 10px;font-weight:800;border-radius:4px;white-space:nowrap">Showcases &amp; Pages</a>'
       + '</span>';
     document.body.insertBefore(bar, document.body.firstChild);
     var sb = bar.querySelector('#staging-sim-btn');

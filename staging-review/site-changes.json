@@ -1,126 +1,17 @@
 {
   "updated": "2026-11-28",
-  "note": "Every new page, UI redesign, tool, or site-wide feature waiting for teacher review on staging MUST be listed here so it appears on /staging-review/#site before going live.",
+  "note": "ONLY list directly reviewable standalone deliverables here: dedicated asset/screenshot showcase pages (e.g. /staging-review/game-icons.html), visual comparison sheets, or brand-new standalone pages to read end-to-end (e.g. /research/). Do NOT log general in-situ UI tweaks, buttons, filters, or behaviour changes — the teacher checks those directly in-situ.",
   "items": [
     {
       "id": "breadventure-pixel-icons",
-      "category": "design",
+      "category": "showcase",
       "status": "review",
       "date": "2026-11-28",
-      "title": "Breadventure Land Pixel-Art Icon Kit (272 → 0 OS Emojis)",
-      "summary": "Replaced all OS emojis across Breadventure Land and Practice with 34 new 12×12 pixel-art UI icons (stats, coins, mana, brews, spells, camp, keys, nav tabs, locks, weekly events) plus reused site monoline SVGs for study links (Revision Notes, Worksheets, Flashcards, To Do, Help). Open the live showcase to inspect all 41 icons on light/dark swatches and Before vs After UI comparisons.",
-      "before": "272 Windows/OS emojis across the game nav, World Map HUD, boss panels, Mission rewards, Wardrobe, Stats, and Practice.",
-      "after": "Cohesive 12×12 pixel-art RPG icon kit (ADV.ui) + site monoline SVGs for study links + clean typography in morning reports.",
+      "title": "Breadventure Land Pixel-Art Icon Kit (Showcase)",
+      "summary": "Dedicated visual showcase of all 41 new 12×12 pixel-art RPG UI icons on light/dark swatches plus Before vs After UI comparisons (replacing OS emojis across Breadventure Land & Practice).",
       "previewUrl": "/staging-review/game-icons.html",
       "extraLinks": [
-        { "label": "My Adventurer", "url": "/interactive/spec-quiz/adventurer-home.html" },
-        { "label": "World Map", "url": "/interactive/spec-quiz/adventurer-map.html" },
-        { "label": "Mission", "url": "/interactive/spec-quiz/adventurer-mission.html" },
         { "label": "Full Game Showcase", "url": "/admin/showcase.html" }
-      ]
-    },
-    {
-      "id": "lessons-rename-and-plain-mode",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-28",
-      "title": "Renamed 'Lessons' + Synced Game Mode / Plain Mode Switch (Hide Breadventure Land)",
-      "summary": "Renamed 'Cakebread Lessons' → 'Lessons' on the homepage with updated blurb ('Revision Notes for catch-up at home and Class Slides for the board'). Built a cross-device synced revision style preference (window.CBSMode, saved in localStorage['cbs.plain'] and Firestore users/{uid}.settings.plainMode) so students can hide Breadventure Land and default to plain Practice Questions anywhere: first-sign-in Year picker, a compact [⚔️ Game | 📝 Plain] switch beside Year 10 on Student Home, Upcoming Test Study Guides, an escape link on Missions (plus auto-redirect of ?subs= homework/guide links), Practice Questions, Flashcards Settings (hiding the XP/mana/loot bar and toasts while keeping IGCSE securing identical), and /how-to-use/#mode.",
-      "before": "Only a local-only checkbox hidden at the bottom of Practice Questions redirected ?point=/?sub= links; Breadventure Land still appeared on Student Home, Study Guides, and Flashcards.",
-      "after": "One account-synced Game / Plain mode toggle across onboarding, Student Home, Study Guides, Missions, Practice, Flashcards, and Help — hiding the game cleanly while keeping all IGCSE progress identical.",
-      "previewUrl": "/today/",
-      "extraLinks": [
-        { "label": "Homepage ('Lessons' card)", "url": "/?dir=1#resources" },
-        { "label": "Flashcards Settings", "url": "/Flashcards/" },
-        { "label": "Help → Revision style", "url": "/how-to-use/#mode" },
-        { "label": "Practice Questions", "url": "/interactive/spec-quiz/practice.html" }
-      ]
-    },
-    {
-      "id": "whats-new-removed-and-ks3-ks4",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-28",
-      "title": "Homepage 'What's New' Box Removed + KS3/KS4 Filters Everywhere in Admin",
-      "summary": "Removed the top-of-page 'What's new' banner from index.html (replaced /js/whats-new.js with a silent dismiss-once modal popup engine CBSAnnounce for future announcements). Added KS3 (Years 8–9) and KS4 (Years 10–11) filters alongside granular Year 8–11 across Admin Students, Spec Map, Teaching, All Set Work, Misconception Radar, and Study Guide builder. Auto-chained js/lesson-slides.js inside tools/spec/build_index.js so all future lessons wire into Misconception Radar automatically.",
-      "before": "Inline What's New strip sat at the top of the homepage; Admin filters only showed single years or all.",
-      "after": "Clean homepage with zero top strip; KS3, KS4 and Year 8–11 filters everywhere in Admin.",
-      "previewUrl": "/?dir=1",
-      "extraLinks": [
-        { "label": "Admin → Students", "url": "/admin/#students" },
-        { "label": "Admin → Spec map", "url": "/admin/#map" },
-        { "label": "Admin → Teaching", "url": "/admin/#teach" }
-      ]
-    },
-    {
-      "id": "misconception-radar",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "Admin Misconception & Reteach Radar → Exact Class Slide Jump",
-      "summary": "New '🎯 Misconception Radar' view in Admin → Teaching (and linked from Overview) grouped by Year 8/9/10/11 or KS3/KS4 and time window (14d / 30d / All). Surfaces struggling spec points + over-confident tracker blind spots with one-click '🎬 Slide N' jumps straight to the exact projector slide, '⚡ Reteach 5-Q' board quizzes, and '📌 Set 2-day HW' prefill.",
-      "before": "Overview only showed a flat all-time 'Hardest questions' list with no year filter or lesson slide link.",
-      "after": "Year/KS-grouped reteach dashboard indexed to exact Class Slides (js/lesson-slides.js) for immediate classroom reteaching.",
-      "previewUrl": "/admin/#teach",
-      "extraLinks": [
-        { "label": "Board Reteach example (C1.40)", "url": "/interactive/spec-quiz/quiz.html?subs=C1.40&n=5&auto=1" }
-      ]
-    },
-    {
-      "id": "brain-warmup",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "🔥 Warm-Up (5-Question Covered-Topics Recall Starter)",
-      "summary": "Added a '🔥 Warm-Up' button to the Class Slides projector toolbar and header (zero edits to existing slide decks). Opens 5 random easy Level-1 recall questions pulled across ANY previously covered topic for Year 8/9/10/11 (excluding the current lesson), with Year buttons and '↻ New 5'.",
-      "before": "No one-click whole-class retrieval starter built into Class Slides.",
-      "after": "One click from any Class Slides deck launches a 5-question cross-topic Warm-Up on the board.",
-      "previewUrl": "/interactive/spec-quiz/quiz.html?warmup=1&year=Y10",
-      "extraLinks": [
-        { "label": "Try from Chem 1f Class Slides", "url": "/interactive/lessons/chemistry/1f/draft/deck.html" }
-      ]
-    },
-    {
-      "id": "family-quiz-and-home-tips",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "Flashcards Family Quiz Mode & Study Guide 'At Home' Tip",
-      "summary": "Added '👨‍👩‍👧 Family Quiz' on /Flashcards/ (10 large tap-to-reveal or printable cards with a 1-line parent instruction requiring zero GCSE science knowledge) plus a 2-line 'At home (for families)' key-words quizzing tip on /guide/ Study Guides.",
-      "before": "No low-friction way for parents/carers to quiz students without knowing GCSE science.",
-      "after": "One-tap 10-card Family Quiz + printable strip on Flashcards and a concise family cue on every Study Guide.",
-      "previewUrl": "/Flashcards/",
-      "extraLinks": [
-        { "label": "Families guide on /research/", "url": "/research/#families" }
-      ]
-    },
-    {
-      "id": "dirt-calc-tracker-print-polish",
-      "category": "design",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "Post-Test DIRT Button, Worked Calc Steps, Tracker Touch/Blind-Spot Polish, Print Ergonomics & Streak Grace",
-      "summary": "Added '🛠️ Fix your N missed points →' on /work/ test results (DIRT); 3-step worked Formula → Substitute → Answer card on L2/L3 calculation misses in Practice & Questing; larger mobile touch targets & unmistakable amber '⚠️ check' warning on Spec Trackers; upright .ps-spec & 1.32 line-height in print-sheet.css; side-by-side .ep-pair CSS ready for future calculation slides; and a 1-day streak grace + weekly count on Student Home.",
-      "before": "Test results had no direct missed-points repair button; calculation misses showed one inline line; small tracker buttons and italic print spec lines.",
-      "after": "Closed DIRT feedback loop, structured calculation working, BDA/WCAG-cleaner mobile trackers & print sheets, and kinder streak tracking.",
-      "previewUrl": "/today/",
-      "extraLinks": [
-        { "label": "Spec Trackers", "url": "/specifications/biology.html" },
-        { "label": "Sample Worksheet (4.5 print)", "url": "/worksheets/biology/ks4/2f_respiration.html" }
-      ]
-    },
-    {
-      "id": "subject-colours",
-      "category": "design",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "Subject colour alignment (Chemistry red / Physics amber)",
-      "summary": "Aligned Chemistry (#c8001e / #8c0013) and Physics (#d08000 / #8a5000) across the Homepage directory and Question Booklets so subject colours match Spec Trackers, Worksheets, and Revision Notes everywhere.",
-      "before": "Homepage used amber for Chemistry and blue for Physics; Booklets used blue for Physics 6-Markers.",
-      "after": "Biology = green, Chemistry = crimson red, Physics = amber gold consistently across all hubs.",
-      "previewUrl": "/?dir=1#interactives",
-      "extraLinks": [
-        { "label": "Question Booklets", "url": "/booklets/" }
       ]
     },
     {
@@ -129,12 +20,10 @@
       "status": "review",
       "date": "2026-11-27",
       "title": "Teacher & Family Research Page (/research/)",
-      "summary": "Explains the cognitive science, UK classroom pedagogy (EEF, Mr Barton, TeacherToolkit, CogSciSci), web/print clarity (Caviglioli, NN/g, GOV.UK, BDA), game motivation (SDT, Sailer & Homner), and family learning routines behind Cakebread Science, with verified external links.",
-      "before": "No teacher- or family-facing explanation page existed on the site.",
-      "after": "Public (no sign-in, noindex while in review) page linked from Admin → Site → Research, including a shareable #families guide.",
+      "summary": "Standalone public page explaining the cognitive science, UK classroom pedagogy, print/web clarity, game motivation, and family learning routines behind Cakebread Science, with verified external links.",
       "previewUrl": "/research/",
       "extraLinks": [
-        { "label": "Jump to Families section", "url": "/research/#families" }
+        { "label": "Families section", "url": "/research/#families" }
       ]
     },
     {
@@ -143,83 +32,17 @@
       "status": "review",
       "date": "2026-11-27",
       "title": "Curious-Student Science of Learning Page (/how-to-use/science-of-learning.html)",
-      "summary": "Plain-English deep dive for curious Years 8–11 students covering Illusion of Competence, Desirable Difficulties, 2-day spacing, interleaving, Questing psychology, and 5-minute family quizzing.",
-      "before": "No deeper student-facing memory science page existed.",
-      "after": "Subtly linked at the bottom of /how-to-use/ (not pushed in headers, tours, or Student Home).",
-      "previewUrl": "/how-to-use/science-of-learning.html",
-      "extraLinks": [
-        { "label": "How to Use This Site", "url": "/how-to-use/" }
-      ]
+      "summary": "Standalone plain-English deep dive for Years 8–11 students on memory science, 2-day spacing, interleaving, and family quizzing (subtly linked at the bottom of /how-to-use/).",
+      "previewUrl": "/how-to-use/science-of-learning.html"
     },
     {
-      "id": "student-home-redesign",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-28",
-      "title": "Student Home v2 (/today/): Unified 2-Column To Do, Breadventure Banner & Full-Width IGCSE Progress",
-      "summary": "Merged 'From your teacher' and 'Suggested for you' into one crisp 2-column To Do hub (replacing tiny emoji rows with clean 'Practise →' cards), added the full-width Cakebread Questing / Breadventure Land pixel-art banner with live moves & level right beneath it, expanded 'Your IGCSE progress' + 'Covered in class' across the full page width, and upgraded the Explore dock to site monoline SVG icons.",
-      "before": "Half-width cramped progress/covered box, tiny unreadable icons on target rows, no Breadventure banner.",
-      "after": "Vibrant, balanced Student Home matching the homepage look, with full-width IGCSE progress & Covered in class.",
-      "previewUrl": "/today/",
-      "extraLinks": [
-        { "label": "Full Directory (?dir=1)", "url": "/?dir=1" }
-      ]
-    },
-    {
-      "id": "how-to-use-and-tours",
-      "category": "features",
+      "id": "how-to-use-page",
+      "category": "pages",
       "status": "review",
       "date": "2026-11-27",
-      "title": "Student Guide (/how-to-use/) & Spotlight Guided Tours (/js/tour.js)",
-      "summary": "Brief student-facing tutorial page (linked via ❓ Guide in headers) plus first-visit dimmed spotlight + directional-arrow tours across key student pages (never shown on /admin/ or Class Slides).",
-      "before": "No guided onboarding or student tutorial page.",
-      "after": "One-time per-page Spotlight tours with a reminder pointing to ❓ Guide + replay links.",
-      "previewUrl": "/how-to-use/",
-      "extraLinks": [
-        { "label": "Preview Student Home tour", "url": "/today/?tour=1" }
-      ]
-    },
-    {
-      "id": "spaced-homework",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "2-Day Spaced Homework Default & Live Homework Progress Bar",
-      "summary": "Admin → Teaching now defaults to 2-day spaced missions (10 Qs × 2 different days). Practice & Questing track ?hw=<id> live with a progress bar and clear Continue / Day-1-done / Homework-complete end banners.",
-      "before": "Homework defaulted to 20 right in one sitting; Practice/Questing didn't know when a mission was part of homework.",
-      "after": "Research-backed 2-day spaced missions with unmistakable completion feedback and automatic next-day badge wakeup.",
-      "previewUrl": "/admin/#teach",
-      "extraLinks": [
-        { "label": "Student Home", "url": "/today/" }
-      ]
-    },
-    {
-      "id": "y10-simulator",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "Staging-Only Year 10 Student Simulator (/js/staging-sim.js)",
-      "summary": "Top-bar '🧑‍🎓 Simulate Y10 student' button (strictly disabled on live cakebreadscience.com and /admin/) that previews Alex Ten (Year 10) with rich homework, tests, 30 covered sub-topics, 14 due flashcards, and tours in an isolated localStorage sandbox.",
-      "before": "Testing student flows on staging required signing in as a separate student account.",
-      "after": "One click launches a full sandboxed Y10 student with Replay tour, Reset demo, and Exit sim controls.",
-      "previewUrl": "/?dir=1",
-      "extraLinks": [
-        { "label": "Student Home", "url": "/today/" }
-      ]
-    },
-    {
-      "id": "admin-homework-cleanup",
-      "category": "features",
-      "status": "review",
-      "date": "2026-11-27",
-      "title": "Admin Outstanding Homework View & Inactive Account Cleanup",
-      "summary": "Added Outstanding Homework summary cards in Admin → Teaching, sortable Homework column + Outstanding filter + inactive account cleanup in Admin → Students, and per-student outstanding homework + Remove account in the Student drawer.",
-      "before": "Hard to see overdue homework across a year group or clean up unused student accounts.",
-      "after": "At-a-glance overdue badges, student filtering, and safe non-admin data deletion.",
-      "previewUrl": "/admin/#teach",
-      "extraLinks": [
-        { "label": "Admin → Students", "url": "/admin/#students" }
-      ]
+      "title": "Student Guide Page (/how-to-use/)",
+      "summary": "Standalone student-facing guide explaining how each part of the site works, how spec points turn green, revision mode switching, and page tour replays.",
+      "previewUrl": "/how-to-use/"
     }
   ]
 }

@@ -52,12 +52,12 @@ All content, UI, print sheets, games, and teacher/family features on **cakebread
 - **Engagement over policing:** What matters most in secondary school is parents valuing learning, protecting a calm routine, and encouraging independence — *not* policing homework or acting as GCSE tutors (20–22% of secondary parents report lacking subject confidence).
 - **Zero-content-barrier design:** Any student/family-facing revision aid (Study Guides `/guide/`, Flashcards, Key Words, `/research/#families`) must work without parents needing to know IGCSE science: clear questions with bolded mark-scheme terms, short 5-minute routines, and transparent upcoming-test summaries.
 
-## 8. Staging Review Hub Mandate (NEVER SKIP)
-- **Literally everything new or changed that needs teacher review MUST appear on `/staging-review/` before going live:**
+## 8. Staging Review Hub Scope
+- Keep `/staging-review/` focused strictly on **items the teacher can actually inspect directly as a diff, showcase, or standalone document**:
   - Class Slides / Revision Notes → `interactive/lessons/lessons.json` + `interactive/lessons/diff/data.json` (`#decks` / `#guides`).
   - Worksheets & Topic Booklets → `worksheets/diff/data.json` (`#printables`).
   - Flashcards → `staging-review/flashcards-diff.json` (`#flashcards`).
-  - **Every new page, UI change, colour fix, dashboard update, or site-wide feature** → add/update an entry in **`staging-review/site-changes.json`** (with `status: "review"`, `before`, `after`, and direct `previewUrl`) so it shows up automatically under **`🌐 Site & Features`** (`/staging-review/#site`) and in the yellow staging bar.
+  - **Showcases & Standalone Pages (`staging-review/site-changes.json` → `#site`):** **ONLY** add dedicated asset/screenshot showcase documents (e.g. `/staging-review/game-icons.html`), visual comparison sheets, or brand-new standalone pages to read end-to-end (e.g. `/research/`, `/how-to-use/`). **Do NOT log** general in-situ UI tweaks, buttons, filters, or behaviour changes (the teacher checks those directly in-situ on staging).
 
 ## 9. Public Reference Pages (Keep Aligned)
 - **Teacher & family guide (with external links):** `/research/`

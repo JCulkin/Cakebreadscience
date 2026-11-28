@@ -141,7 +141,7 @@ body.sg-viewing #sgModal{display:flex}
     <button type="button" class="tab" data-tab="guides">📖 Revision Notes <span class="cnt" id="cnt-guides">…</span></button>
     <button type="button" class="tab" data-tab="printables">📄 Printables <span class="cnt" id="cnt-printables">…</span></button>
     <button type="button" class="tab" data-tab="flashcards">🃏 Flashcards <span class="cnt" id="cnt-flashcards">…</span></button>
-    <button type="button" class="tab" data-tab="site">🌐 Site &amp; Features <span class="cnt" id="cnt-site">…</span></button>
+    <button type="button" class="tab" data-tab="site">🖼️ Showcases &amp; Pages <span class="cnt" id="cnt-site">…</span></button>
   </div>
 </nav>
 
@@ -450,13 +450,12 @@ body.sg-viewing #sgModal{display:flex}
 
   function renderSite() {
     const fEl = document.getElementById('filters');
-    const CAT_COL = { pages: '#1d6b2f', features: '#1d4ed8', design: '#8c0013' };
-    const CAT_LBL = { pages: 'New Page', features: 'Feature', design: 'Design' };
+    const CAT_COL = { showcase: '#8c0013', pages: '#1d6b2f', design: '#8c0013', features: '#1d4ed8' };
+    const CAT_LBL = { showcase: 'Showcase', pages: 'Page', design: 'Visual', features: 'Feature' };
+    const cats = [...new Set(siteToReview.map(x => x.category).filter(Boolean))];
     const fs = [
       ['review', `Needs review (${siteToReview.length})`],
-      ['pages', `New pages (${siteToReview.filter(x => x.category === 'pages').length})`],
-      ['features', `Features (${siteToReview.filter(x => x.category === 'features').length})`],
-      ['design', `Design (${siteToReview.filter(x => x.category === 'design').length})`],
+      ...cats.map(c => [c, `${CAT_LBL[c] || c}s (${siteToReview.filter(x => x.category === c).length})`]),
       ...(siteChecked.length ? [['checked', `Checked (${siteChecked.length})`]] : [])
     ];
     if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
@@ -481,20 +480,20 @@ body.sg-viewing #sgModal{display:flex}
             <p style="margin-top:4px;font-size:14.5px;color:#333;line-height:1.45">${esc(x.summary)}</p>
             <div class="pills">
               <span class="pill ${x.status === 'checked' ? 'chk' : 'rev'}">${x.status === 'checked' ? '✓ Checked' : 'Needs review'}</span>
-              <span class="pill tier">${esc(CAT_LBL[x.category] || x.category || 'Site')}</span>
+              <span class="pill tier">${esc(CAT_LBL[x.category] || x.category || 'Showcase')}</span>
               ${x.date ? `<span class="pill base">${esc(x.date)}</span>` : ''}
             </div>
             ${ba}
           </div>
           <div class="acts">
-            <a class="btn primary" href="${esc(x.previewUrl)}" target="_blank" rel="noopener">Open preview ↗</a>
+            <a class="btn primary" href="${esc(x.previewUrl)}" target="_blank" rel="noopener">Open ↗</a>
             ${extras}
           </div>
         </div>
       </div>`;
     };
 
-    document.getElementById('content').innerHTML = `<h2 class="sec-h">Site Pages &amp; Features <small>${list.length} item${list.length === 1 ? '' : 's'} · everything non-lesson/worksheet waiting for review on staging</small></h2>`
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">Showcases &amp; Standalone Pages <small>${list.length} item${list.length === 1 ? '' : 's'} · dedicated asset showcases, comparison sheets &amp; new pages to review directly</small></h2>`
       + (list.map(cardHtml).join('') || '<p>Nothing waiting for review in this filter.</p>');
   }
 
