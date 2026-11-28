@@ -1,26 +1,112 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 205" width="600" height="205">
-  <rect width="600" height="205" fill="#fff"/>
-  <!-- Box 1: Pentane -->
-  <rect x="8" y="8" width="212" height="188" rx="6" fill="#fafaf7" stroke="#d8d3c4" stroke-width="1.5"/>
-  <text x="114" y="28" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#c8001e" text-anchor="middle">1. pentane</text>
-  <text x="114" y="106" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#111" text-anchor="middle">CH₃—CH₂—CH₂—CH₂—CH₃</text>
-  <text x="114" y="180" font-family="Barlow, Arial, sans-serif" font-size="11.5" fill="#555" text-anchor="middle">Unbranched 5-carbon chain</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 326" width="640" height="326">
+  <rect width="640" height="326" fill="#fff"/>
+  <style>
+    .a { font-family: Barlow, Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #111; text-anchor: middle; dominant-baseline: central; }
+    .b { stroke: #111; stroke-width: 2.2; stroke-linecap: round; }
+    .lbl { font-family: Barlow, Arial, sans-serif; font-size: 15px; font-weight: 700; fill: #c8001e; text-anchor: middle; }
+  </style>
 
-  <!-- Box 2: 2-methylbutane -->
-  <rect x="228" y="8" width="178" height="188" rx="6" fill="#fafaf7" stroke="#d8d3c4" stroke-width="1.5"/>
-  <text x="317" y="28" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#c8001e" text-anchor="middle">2. 2-methylbutane</text>
-  <text x="317" y="106" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#111" text-anchor="middle">CH₃—CH—CH₂—CH₃</text>
-  <line x1="303" y1="112" x2="303" y2="132" stroke="#111" stroke-width="2"/>
-  <text x="303" y="148" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">CH₃</text>
-  <text x="317" y="180" font-family="Barlow, Arial, sans-serif" font-size="11.5" fill="#555" text-anchor="middle">4-C chain + 1 methyl branch</text>
+  <!-- 1. PENTANE (top-left, full displayed formula: 5 C in a row, 12 H) -->
+  <g transform="translate(18, 10)">
+    <line class="b" x1="22" y1="50" x2="36" y2="50"/>
+    <line class="b" x1="60" y1="50" x2="80" y2="50"/>
+    <line class="b" x1="104" y1="50" x2="124" y2="50"/>
+    <line class="b" x1="148" y1="50" x2="168" y2="50"/>
+    <line class="b" x1="192" y1="50" x2="212" y2="50"/>
+    <line class="b" x1="236" y1="50" x2="250" y2="50"/>
+    <line class="b" x1="48" y1="24" x2="48" y2="38"/><line class="b" x1="48" y1="62" x2="48" y2="76"/>
+    <line class="b" x1="92" y1="24" x2="92" y2="38"/><line class="b" x1="92" y1="62" x2="92" y2="76"/>
+    <line class="b" x1="136" y1="24" x2="136" y2="38"/><line class="b" x1="136" y1="62" x2="136" y2="76"/>
+    <line class="b" x1="180" y1="24" x2="180" y2="38"/><line class="b" x1="180" y1="62" x2="180" y2="76"/>
+    <line class="b" x1="224" y1="24" x2="224" y2="38"/><line class="b" x1="224" y1="62" x2="224" y2="76"/>
+    <text class="a" x="12" y="50">H</text>
+    <text class="a" x="48" y="50">C</text><text class="a" x="48" y="14">H</text><text class="a" x="48" y="86">H</text>
+    <text class="a" x="92" y="50">C</text><text class="a" x="92" y="14">H</text><text class="a" x="92" y="86">H</text>
+    <text class="a" x="136" y="50">C</text><text class="a" x="136" y="14">H</text><text class="a" x="136" y="86">H</text>
+    <text class="a" x="180" y="50">C</text><text class="a" x="180" y="14">H</text><text class="a" x="180" y="86">H</text>
+    <text class="a" x="224" y="50">C</text><text class="a" x="224" y="14">H</text><text class="a" x="224" y="86">H</text>
+    <text class="a" x="260" y="50">H</text>
+    <text class="lbl" x="136" y="112">1. pentane</text>
+  </g>
 
-  <!-- Box 3: 2,2-dimethylpropane -->
-  <rect x="414" y="8" width="178" height="188" rx="6" fill="#fafaf7" stroke="#d8d3c4" stroke-width="1.5"/>
-  <text x="503" y="28" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#c8001e" text-anchor="middle">3. 2,2-dimethylpropane</text>
-  <text x="503" y="68" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">CH₃</text>
-  <line x1="503" y1="74" x2="503" y2="90" stroke="#111" stroke-width="2"/>
-  <text x="503" y="106" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#111" text-anchor="middle">CH₃—C—CH₃</text>
-  <line x1="503" y1="112" x2="503" y2="130" stroke="#111" stroke-width="2"/>
-  <text x="503" y="146" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#1d4ed8" text-anchor="middle">CH₃</text>
-  <text x="503" y="180" font-family="Barlow, Arial, sans-serif" font-size="11.5" fill="#555" text-anchor="middle">3-C chain + 2 methyl branches</text>
+  <!-- 2. 2-METHYLBUTANE (bottom-left, generous vertical clearance for methyl H atoms) -->
+  <g transform="translate(38, 146)">
+    <!-- Methyl branch above C2 (x=92, y=38), backbone lowered to y=104 for crisp spacing -->
+    <line class="b" x1="92" y1="14" x2="92" y2="26"/>
+    <line class="b" x1="66" y1="38" x2="80" y2="38"/>
+    <line class="b" x1="104" y1="38" x2="118" y2="38"/>
+    <line class="b" x1="92" y1="50" x2="92" y2="92"/>
+    <text class="a" x="92" y="4">H</text>
+    <text class="a" x="56" y="38">H</text>
+    <text class="a" x="92" y="38">C</text>
+    <text class="a" x="128" y="38">H</text>
+
+    <!-- 4-C horizontal backbone: x = 48, 92, 136, 180 at y = 104 -->
+    <line class="b" x1="22" y1="104" x2="36" y2="104"/>
+    <line class="b" x1="60" y1="104" x2="80" y2="104"/>
+    <line class="b" x1="104" y1="104" x2="124" y2="104"/>
+    <line class="b" x1="148" y1="104" x2="168" y2="104"/>
+    <line class="b" x1="192" y1="104" x2="206" y2="104"/>
+    <!-- Vertical C-H bonds -->
+    <line class="b" x1="48" y1="78" x2="48" y2="92"/><line class="b" x1="48" y1="116" x2="48" y2="130"/>
+    <line class="b" x1="92" y1="116" x2="92" y2="130"/>
+    <line class="b" x1="136" y1="78" x2="136" y2="92"/><line class="b" x1="136" y1="116" x2="136" y2="130"/>
+    <line class="b" x1="180" y1="78" x2="180" y2="92"/><line class="b" x1="180" y1="116" x2="180" y2="130"/>
+    <!-- Atoms -->
+    <text class="a" x="12" y="104">H</text>
+    <text class="a" x="48" y="104">C</text><text class="a" x="48" y="68">H</text><text class="a" x="48" y="140">H</text>
+    <text class="a" x="92" y="104">C</text><text class="a" x="92" y="140">H</text>
+    <text class="a" x="136" y="104">C</text><text class="a" x="136" y="68">H</text><text class="a" x="136" y="140">H</text>
+    <text class="a" x="180" y="104">C</text><text class="a" x="180" y="68">H</text><text class="a" x="180" y="140">H</text>
+    <text class="a" x="216" y="104">H</text>
+    <text class="lbl" x="114" y="166">2. 2-methylbutane</text>
+  </g>
+
+  <!-- 3. 2,2-DIMETHYLPROPANE (right, full displayed formula: central C + 4 methyls) -->
+  <g transform="translate(362, 36)">
+    <!-- Top methyl C at (130, 62) -->
+    <line class="b" x1="130" y1="36" x2="130" y2="50"/>
+    <line class="b" x1="104" y1="62" x2="118" y2="62"/>
+    <line class="b" x1="142" y1="62" x2="156" y2="62"/>
+    <line class="b" x1="130" y1="74" x2="130" y2="110"/>
+    <text class="a" x="130" y="26">H</text>
+    <text class="a" x="94" y="62">H</text>
+    <text class="a" x="130" y="62">C</text>
+    <text class="a" x="166" y="62">H</text>
+
+    <!-- Bottom methyl C at (130, 182) -->
+    <line class="b" x1="130" y1="134" x2="130" y2="170"/>
+    <line class="b" x1="104" y1="182" x2="118" y2="182"/>
+    <line class="b" x1="142" y1="182" x2="156" y2="182"/>
+    <line class="b" x1="130" y1="194" x2="130" y2="208"/>
+    <text class="a" x="94" y="182">H</text>
+    <text class="a" x="130" y="182">C</text>
+    <text class="a" x="166" y="182">H</text>
+    <text class="a" x="130" y="218">H</text>
+
+    <!-- Left methyl C at (70, 122) -->
+    <line class="b" x1="44" y1="122" x2="58" y2="122"/>
+    <line class="b" x1="70" y1="96" x2="70" y2="110"/>
+    <line class="b" x1="70" y1="134" x2="70" y2="148"/>
+    <line class="b" x1="82" y1="122" x2="118" y2="122"/>
+    <text class="a" x="34" y="122">H</text>
+    <text class="a" x="70" y="86">H</text>
+    <text class="a" x="70" y="122">C</text>
+    <text class="a" x="70" y="158">H</text>
+
+    <!-- Center C -->
+    <text class="a" x="130" y="122">C</text>
+
+    <!-- Right methyl C at (190, 122) -->
+    <line class="b" x1="142" y1="122" x2="178" y2="122"/>
+    <line class="b" x1="190" y1="96" x2="190" y2="110"/>
+    <line class="b" x1="190" y1="134" x2="190" y2="148"/>
+    <line class="b" x1="202" y1="122" x2="216" y2="122"/>
+    <text class="a" x="190" y="86">H</text>
+    <text class="a" x="190" y="122">C</text>
+    <text class="a" x="190" y="158">H</text>
+    <text class="a" x="226" y="122">H</text>
+
+    <text class="lbl" x="130" y="254">3. 2,2-dimethylpropane</text>
+  </g>
 </svg>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 185" width="480" height="185">
+  <rect width="480" height="185" fill="#fff"/>
+  <!-- Left: 1 Glycerol + 3 Fatty acids -->
+  <!-- Glycerol bar -->
+  <rect x="20" y="54" width="32" height="86" rx="14" fill="#fde047" stroke="#a16207" stroke-width="2.5"/>
+  <text x="36" y="164" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#111" text-anchor="middle">1 glycerol</text>
+
+  <!-- Plus sign -->
+  <text x="72" y="104" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">+</text>
+
+  <!-- 3 Fatty acid chains -->
+  <g stroke="#78350f" stroke-width="2.5" fill="#d97706">
+    <!-- Chain 1 -->
+    <line x1="94" y1="68" x2="178" y2="68"/>
+    <circle cx="104" cy="68" r="6"/><circle cx="126" cy="68" r="6"/><circle cx="148" cy="68" r="6"/><circle cx="170" cy="68" r="6"/>
+    <!-- Chain 2 -->
+    <line x1="94" y1="97" x2="178" y2="97"/>
+    <circle cx="104" cy="97" r="6"/><circle cx="126" cy="97" r="6"/><circle cx="148" cy="97" r="6"/><circle cx="170" cy="97" r="6"/>
+    <!-- Chain 3 -->
+    <line x1="94" y1="126" x2="178" y2="126"/>
+    <circle cx="104" cy="126" r="6"/><circle cx="126" cy="126" r="6"/><circle cx="148" cy="126" r="6"/><circle cx="170" cy="126" r="6"/>
+  </g>
+  <text x="137" y="164" font-family="Barlow, Arial, sans-serif" font-size="13.5" font-weight="700" fill="#111" text-anchor="middle">3 fatty acids</text>
+
+  <!-- Arrow -->
+  <line x1="204" y1="97" x2="274" y2="97" stroke="#1d4ed8" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="292,97 268,83 268,111" fill="#1d4ed8"/>
+
+  <!-- Right: Assembled Lipid molecule (1 glycerol bonded to 3 fatty acids) -->
+  <rect x="312" y="54" width="32" height="86" rx="14" fill="#fde047" stroke="#a16207" stroke-width="2.5"/>
+  <g stroke="#78350f" stroke-width="2.5" fill="#d97706">
+    <!-- Bonded Chain 1 -->
+    <line x1="344" y1="68" x2="444" y2="68"/>
+    <circle cx="368" cy="68" r="6"/><circle cx="390" cy="68" r="6"/><circle cx="412" cy="68" r="6"/><circle cx="434" cy="68" r="6"/>
+    <!-- Bonded Chain 2 -->
+    <line x1="344" y1="97" x2="444" y2="97"/>
+    <circle cx="368" cy="97" r="6"/><circle cx="390" cy="97" r="6"/><circle cx="412" cy="97" r="6"/><circle cx="434" cy="97" r="6"/>
+    <!-- Bonded Chain 3 -->
+    <line x1="344" y1="126" x2="444" y2="126"/>
+    <circle cx="368" cy="126" r="6"/><circle cx="390" cy="126" r="6"/><circle cx="412" cy="126" r="6"/><circle cx="434" cy="126" r="6"/>
+  </g>
+  <text x="380" y="34" font-family="Barlow, Arial, sans-serif" font-size="16" font-weight="700" fill="#111" text-anchor="middle">Lipid molecule</text>
+  <text x="380" y="164" font-family="Barlow, Arial, sans-serif" font-size="13" fill="#555" text-anchor="middle">(1 glycerol + 3 fatty acids)</text>
+</svg>

@@ -2285,7 +2285,7 @@
   {
     "id": 1675852563889,
     "front": "How is the ileum adapted for absorption?",
-    "back": "<ul class=\"fc-points\"><li>Lined with millions of finger-like <b>villi</b> (with <b>microvilli</b>) for a huge surface area</li><li><b>1-cell-thick wall</b> (short diffusion distance), dense <b>capillary network</b> (glucose/amino acids), and <b>lacteal</b> (fatty acids/glycerol)</li></ul><img src=\"villus.svg\" alt=\"Structure of a villus in the small intestine\">",
+    "back": "The ileum is lined with finger-like <b>villi</b> which provide a <b>large surface area</b> for absorption.<br><img src=\"villus.svg\" alt=\"Cross-section of the ileum lined with villi\">",
     "spec": "B2.27",
     "topic": "B2"
   },
@@ -2369,14 +2369,14 @@
   {
     "id": 1675852903153,
     "front": "Draw a Punnett square for a cross\nbetween a homozygous recessive blue\neyed female (bb) with a heterozygous\nbrown eyed male (Bb)",
-    "back": "<table class=\"fc-punnett\"><tr><th></th><th>B</th><th>b</th></tr><tr><th>b</th><td style=\"background:#fde68a\">Bb</td><td style=\"background:#bfdbfe\">bb</td></tr><tr><th>b</th><td style=\"background:#fde68a\">Bb</td><td style=\"background:#bfdbfe\">bb</td></tr></table><ul class=\"fc-points\"><li><b>50% Bb</b> (brown eyes) · <b>50% bb</b> (blue eyes)</li><li>Ratio <b>1 : 1</b></li></ul>",
+    "back": "<img src=\"punnett-eyes-bb-Bb.svg\" alt=\"Punnett square for bb × Bb: 50% Bb brown eyes, 50% bb blue eyes\">",
     "spec": "B3.25",
     "topic": "B3"
   },
   {
     "id": 1675852915987,
     "front": "Draw a Punnett square for a cross\nbetween a homozygous dominant red\nflower (RR) with a homozygous\nrecessive white flower (rr)",
-    "back": "<table class=\"fc-punnett\"><tr><th></th><th>R</th><th>R</th></tr><tr><th>r</th><td style=\"background:#fecaca\">Rr</td><td style=\"background:#fecaca\">Rr</td></tr><tr><th>r</th><td style=\"background:#fecaca\">Rr</td><td style=\"background:#fecaca\">Rr</td></tr></table><ul class=\"fc-points\"><li><b>100% Rr</b> (all heterozygous, all <b>red flowers</b>)</li></ul>",
+    "back": "<img src=\"punnett-flowers-RR-rr.svg\" alt=\"Punnett square for RR × rr: 100% Rr red flowers\">",
     "spec": "B3.25",
     "topic": "B3"
   },
@@ -2460,7 +2460,7 @@
   {
     "id": 1681471223810,
     "front": "What are lipids made of? Give two examples of lipids.",
-    "back": "<ul class=\"fc-points\"><li>Built from <b>1 glycerol molecule joined to 3 fatty acids</b></li><li>Contain the elements <b>carbon, hydrogen and oxygen</b></li><li>Examples: <b>fats</b> (solid at room temp, e.g. butter) and <b>oils</b> (liquid, e.g. olive oil)</li></ul>",
+    "back": "<ul class=\"fc-points\"><li>Built from <b>1 glycerol molecule joined to 3 fatty acids</b></li><li>Contain <b>carbon, hydrogen and oxygen</b></li><li>Examples: <b>fats</b> (solid) and <b>oils</b> (liquid)</li></ul><img src=\"lipid-structure.svg\" alt=\"1 glycerol and 3 fatty acids forming a lipid molecule\">",
     "spec": "B2.8",
     "topic": "B2"
   },
@@ -2495,7 +2495,7 @@
   {
     "id": 1681471646778,
     "front": "Why do plants need <b>nitrates </b>and what happens when they are deficient?",
-    "back": "<ul class=\"fc-points\"><li><b>Use:</b> nitrates provide nitrogen to make <b>amino acids and proteins</b> for growth</li><li><b>Deficiency:</b> <b>stunted growth</b> and yellowing of older leaves</li></ul><img src=\"nitrate-deficiency.svg\" alt=\"Healthy plant vs nitrate deficiency\">",
+    "back": "<ul class=\"fc-points\"><li><b>Use:</b> nitrates provide nitrogen to make <b>amino acids and proteins</b> for growth</li><li><b>Deficiency:</b> <b>stunted growth</b> and yellowing of older leaves</li></ul><img src=\"paste-5f9512ef635a7f52bb440201c8fe391b57a7fa08.jpg\" alt=\"Nitrate deficiency: yellowing starts in older lower leaves and moves upward\">",
     "spec": "B2.22",
     "topic": "B2"
   },
