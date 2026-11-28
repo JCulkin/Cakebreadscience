@@ -1,0 +1,74 @@
+/* Cakebread Science — Synthetic Lesson Exam Bank (Class Slides + Revision Notes) */
+.eb-wrap{display:flex;flex-direction:column;gap:22px;margin:16px 0}
+.eb-card{background:#fff;border:2.5px solid #111;border-radius:10px;overflow:hidden;color:#111;font-family:'Barlow',Arial,sans-serif}
+.eb-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;background:#111;color:#eeeae0;flex-wrap:wrap}
+.eb-head-l{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.eb-id{font:900 16px/1 'Barlow Condensed',Arial,sans-serif;letter-spacing:.05em;background:var(--acc,#005e22);color:#fff;padding:4px 9px;border-radius:5px;text-transform:uppercase}
+.eb-title{font:700 17px/1.2 'Barlow',Arial,sans-serif;color:#eeeae0}
+.eb-badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.eb-badge{font:700 12px/1 'Barlow',Arial,sans-serif;padding:4px 8px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em}
+.eb-badge.marks{background:#eeeae0;color:#111}
+.eb-badge.da{background:#fef3c7;color:#78350f;border:1.5px solid #d97706}
+.eb-badge.spec{background:#2a2a2a;color:#ddd;border:1px solid #555}
+.eb-body{padding:16px;display:flex;flex-direction:column;gap:14px}
+.eb-stim{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:start}
+@media(min-width:740px){.eb-stim.has-vis{grid-template-columns:minmax(0,1.05fr) minmax(0,1.15fr)}}
+.eb-stim-txt{font:400 16.5px/1.55 'Barlow',Arial,sans-serif;color:#111}
+.eb-vis{background:#fff;border:1.5px solid #d8d3c4;border-radius:8px;padding:8px}
+.eb-vis svg{display:block;width:100%;height:auto;max-height:300px}
+.eb-tbl{width:100%;border-collapse:collapse;font:400 15px/1.35 'Barlow',Arial,sans-serif;margin-top:4px}
+.eb-tbl th,.eb-tbl td{border:1.5px solid #111;padding:6px 10px;text-align:left}
+.eb-tbl th{background:#eeeae0;font-weight:700}
+.eb-part{border-top:1.5px solid #e5e1d5;padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.eb-part:first-child{border-top:none;padding-top:0}
+.eb-pq{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font:600 16.5px/1.45 'Barlow',Arial,sans-serif}
+.eb-cmd{font-weight:800;color:var(--acc,#005e22)}
+.eb-pmk{flex:none;font:800 14px/1 'Barlow',Arial,sans-serif;background:#eeeae0;border:1.5px solid #111;padding:3px 8px;border-radius:5px;white-space:nowrap}
+.eb-ans{width:100%;min-height:58px;font:400 15.5px/1.45 'Barlow',Arial,sans-serif;padding:8px 10px;border:1.5px solid #bbb;border-radius:6px;background:#fafaf7;resize:vertical}
+.eb-ms-det{border:1.5px solid #1b5e20;border-radius:8px;background:#f7fbf7;overflow:hidden}
+.eb-ms-det summary{cursor:pointer;padding:8px 12px;font:700 15px/1.2 'Barlow',Arial,sans-serif;color:#1b5e20;display:flex;align-items:center;justify-content:space-between;gap:8px;user-select:none}
+.eb-ms-det[open] summary{border-bottom:1.5px solid #cde5cf;background:#e8f5e9}
+.eb-ms-in{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.eb-ms-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font:700 13.5px/1.2 'Barlow',Arial,sans-serif;color:#1b5e20}
+.eb-ms-score{background:#1b5e20;color:#fff;padding:3px 9px;border-radius:5px;font:800 13px/1 'Barlow',Arial,sans-serif}
+.eb-ms-pts{display:flex;flex-direction:column;gap:0}
+.eb-pt{display:flex;align-items:flex-start;gap:10px;background:#fff;border:1.5px solid #1b5e20;border-radius:7px;padding:7px 10px;cursor:pointer;transition:background .12s}
+.eb-pt.checked{background:#dcfce7}
+.eb-pt input[type="checkbox"]{margin-top:3px;width:18px;height:18px;accent-color:#1b5e20;flex:none;cursor:pointer}
+.eb-pt-code{flex:none;font:800 12px/1 'Barlow',Arial,sans-serif;background:#e8f5e9;color:#1b5e20;border:1px solid #1b5e20;border-radius:4px;padding:3px 6px;margin-top:2px}
+.eb-pt-txt{flex:1;font:400 15px/1.4 'Barlow',Arial,sans-serif;color:#111}
+.eb-link{display:flex;align-items:center;gap:6px;padding-left:20px;height:20px;font:700 13.5px/1 'Barlow',Arial,sans-serif;color:#1b5e20}
+.eb-notes{display:flex;flex-direction:column;gap:5px;font:400 13.5px/1.4 'Barlow',Arial,sans-serif;margin-top:2px}
+.eb-acc{background:#eff6ff;border-left:4px solid #1d4ed8;padding:5px 9px;border-radius:4px;color:#1e3a8a}
+.eb-rej{background:#fef2f2;border-left:4px solid #c8001e;padding:5px 9px;border-radius:4px;color:#7f1d1d}
+
+/* ---------- Class Slides mode (1600x900 projector standard) ---------- */
+.eb-slide{display:flex;flex-direction:column;gap:14px;height:100%;min-height:0;color:#111;font-family:'Barlow',Arial,sans-serif}
+.eb-slide-hd{display:flex;align-items:center;justify-content:space-between;gap:14px;flex:none}
+.eb-slide-hd h2{margin:0;font:900 44px/1.05 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:#111}
+.eb-slide-hd .eb-mk{background:var(--acc,#005e22);color:#fff;font:900 28px/1 'Barlow Condensed',Arial,sans-serif;padding:7px 14px;border-radius:10px;white-space:nowrap}
+.eb-slide-row{display:flex;gap:24px;flex:1;min-height:0;align-items:stretch}
+.eb-slide-l{flex:1.35;display:flex;flex-direction:column;gap:12px;min-height:0}
+.eb-slide-r{flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:0}
+.eb-slide-q{background:#fff;border:4px solid #111;border-left:14px solid var(--acc,#005e22);border-radius:14px;padding:14px 20px;flex:none}
+.eb-slide-q .eb-stim-s{font:500 22px/1.28 'Barlow',Arial,sans-serif;color:#333;margin-bottom:8px}
+.eb-slide-q .eb-pq-s{font:700 27px/1.22 'Barlow',Arial,sans-serif;color:#111}
+.eb-slide-fig{background:#fff;border:3px solid #111;border-radius:14px;padding:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.eb-slide-fig svg{display:block;width:100%;height:auto;max-height:540px}
+.eb-slide-ms{flex:1;display:flex;flex-direction:column;gap:8px;min-height:0}
+.eb-slide-ms-hd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.eb-slide-ms-hd .lbl{font:900 23px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:#1b5e20}
+.eb-slide-ms-hd .rule{background:#e8f5e9;border:2.5px solid #1b5e20;border-radius:8px;padding:4px 12px;font:800 18px/1 'Barlow',Arial,sans-serif;color:#1b5e20;white-space:nowrap}
+.eb-slide-pt{display:flex;align-items:center;gap:12px;background:#fff;border:3px solid #1b5e20;border-radius:11px;padding:8px 14px}
+.eb-slide-num{flex:none;width:32px;height:32px;border-radius:50%;background:#1b5e20;color:#fff;display:inline-flex;align-items:center;justify-content:center;font:900 18px/1 'Barlow',Arial,sans-serif}
+.eb-slide-pt-txt{flex:1;font:600 22px/1.2 'Barlow',Arial,sans-serif;color:#111}
+.eb-slide-pt-mk{flex:none;font:900 19px/1 'Barlow',Arial,sans-serif;color:#1b5e20}
+.eb-slide-link{display:flex;align-items:center;gap:8px;padding-left:22px;height:20px;font:800 17px/1 'Barlow',Arial,sans-serif;color:#1b5e20}
+.eb-slide-trap{font:700 17px/1.25 'Barlow',Arial,sans-serif;background:#fef2f2;border:2.5px solid #c8001e;border-radius:8px;padding:6px 12px;color:#7f1d1d}
+
+@media print{
+  .eb-ans{min-height:76px;background:#fff;border-color:#555}
+  .eb-head{background:#eeeae0;color:#111;border-bottom:2px solid #111}
+  .eb-title{color:#111}
+  .eb-id,.eb-ms-score{background:#111;color:#fff}
+}

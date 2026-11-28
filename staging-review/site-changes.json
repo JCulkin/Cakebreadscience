@@ -3,6 +3,18 @@
   "note": "ONLY list directly reviewable standalone deliverables here: dedicated asset/screenshot showcase pages (e.g. /staging-review/game-icons.html), visual comparison sheets, or brand-new standalone pages to read end-to-end (e.g. /research/). Do NOT log general in-situ UI tweaks, buttons, filters, or behaviour changes — the teacher checks those directly in-situ.",
   "items": [
     {
+      "id": "synthetic-lesson-exam-bank-pilot",
+      "category": "showcase",
+      "status": "review",
+      "date": "2026-11-28",
+      "title": "Synthetic Lesson Exam Bank Pilot (B2f, C1f, C1g, P8) + 4 New Diagram Makers",
+      "summary": "Standalone preview of 13 original Edexcel-style exam questions (58 marks) across Biology 2f Respiration, Chemistry 1f Ionic bonding, Chemistry 1g Covalent bonding, and Physics 8 Astrophysics, with linked-chain & calculation mark schemes (Accept/Reject, Single Award filtering) rendered in both Revision Notes and 16:9 Class Slides views using 4 new live diagrams.js makers (respiration, allotropes, orbit, starlife).",
+      "previewUrl": "/interactive/lessons/assets/exam-bank/preview.html",
+      "extraLinks": [
+        { "label": "Diagram Lab (4 new makers)", "url": "/interactive/spec-quiz/diagram-lab.html" }
+      ]
+    },
+    {
       "id": "breadventure-pixel-icons",
       "category": "showcase",
       "status": "review",

@@ -1,0 +1,181 @@
+{
+  "topic": "C1f",
+  "subject": "chemistry",
+  "title": "Ionic bonding",
+  "spec": "C1.37–C1.43",
+  "questions": [
+    {
+      "id": "C1f-01",
+      "title": "Electron transfer in sodium oxide",
+      "spec": ["C1.37", "C1.39", "C1.40", "C1.41"],
+      "sa": true,
+      "level": "core",
+      "marks": 4,
+      "stimulus": "Sodium reacts with oxygen to form the ionic compound sodium oxide. The dot-and-cross diagram shows the ions formed (outer electron shells only).",
+      "diagram": {
+        "source": "dg",
+        "maker": "ionic",
+        "hard": false,
+        "seed": 29
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Describe",
+          "spec": ["C1.37", "C1.40"],
+          "sa": false,
+          "marks": 2,
+          "text": "Describe, in terms of electrons, how sodium atoms and oxygen atoms form the ions shown.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "Any 2 linked points (max 2)",
+            "points": [
+              { "code": "M1", "text": "Each <b>sodium atom loses 1 (outer) electron</b> to form an Na⁺ ion", "link": "while…" },
+              { "code": "M2", "text": "Each <b>oxygen atom gains 2 electrons</b> to form an O²⁻ ion", "link": "so…" },
+              { "code": "M3", "text": "<b>Two sodium atoms</b> transfer 1 electron each to <b>one oxygen atom</b> (giving full outer shells)" }
+            ],
+            "accept": ["electrons are transferred from sodium to oxygen"],
+            "reject": ["atoms share electrons", "sodium gains electrons"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "State",
+          "spec": ["C1.39"],
+          "sa": true,
+          "marks": 1,
+          "text": "Give the chemical formula of sodium oxide.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>Na₂O</b>" }
+            ],
+            "reject": ["NaO", "Na²O", "O₂Na"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "State",
+          "spec": ["C1.41"],
+          "sa": true,
+          "marks": 1,
+          "text": "State the type of force that holds the Na⁺ and O²⁻ ions together in sodium oxide.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>Strong electrostatic attraction</b> between oppositely charged ions" }
+            ],
+            "accept": ["electrostatic forces of attraction"],
+            "reject": ["intermolecular forces", "shared pairs of electrons"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "C1f-02",
+      "title": "Ionic formulae and compound ions",
+      "spec": ["C1.38", "C1.39", "C1.40"],
+      "sa": true,
+      "level": "core",
+      "marks": 4,
+      "stimulus": "The diagram shows how calcium atoms and fluorine atoms react to form calcium fluoride (outer electron shells only).",
+      "diagram": {
+        "source": "dg",
+        "maker": "ionic",
+        "hard": true,
+        "seed": 2
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Explain",
+          "spec": ["C1.38", "C1.39", "C1.40"],
+          "sa": false,
+          "marks": 2,
+          "text": "State the charges on the calcium ion and the fluoride ion, and explain why the formula of calcium fluoride is CaF₂.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "B1", "text": "Calcium forms <b>Ca²⁺</b> (loses 2 electrons) and fluorine forms <b>F⁻</b> (gains 1 electron)", "link": "so…" },
+              { "code": "B2", "text": "<b>Two F⁻ ions</b> are needed to balance the <b>2+ charge</b> of one Ca²⁺ ion (making the compound electrically neutral)" }
+            ],
+            "accept": ["total positive charge equals total negative charge (2+ and 2 × 1−)"],
+            "reject": ["CaF because they share electrons"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Write",
+          "spec": ["C1.38", "C1.39"],
+          "sa": true,
+          "marks": 2,
+          "text": "Write the chemical formulae for (i) <b>magnesium hydroxide</b> and (ii) <b>ammonium sulfate</b>.",
+          "markScheme": {
+            "rule": "1 mark each (max 2)",
+            "points": [
+              { "code": "B1", "text": "(i) <b>Mg(OH)₂</b> (Mg²⁺ with two OH⁻ ions)" },
+              { "code": "B2", "text": "(ii) <b>(NH₄)₂SO₄</b> (two NH₄⁺ ions with one SO₄²⁻ ion)" }
+            ],
+            "reject": ["MgOH₂ (missing brackets)", "NH₄₂SO₄ (missing brackets)"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "C1f-03",
+      "title": "Properties of giant ionic lattices",
+      "spec": ["C1.41", "C1.42", "C1.43"],
+      "sa": true,
+      "level": "stretch",
+      "marks": 5,
+      "stimulus": "A chemist tests two white solids, Substance P and Substance Q, and records their melting points and electrical conductivity in the table below.",
+      "table": {
+        "headers": ["Substance", "Melting point (°C)", "Conducts when solid?", "Conducts when molten?", "Conducts in aqueous solution?"],
+        "rows": [
+          ["P", "985", "No", "Yes", "Yes"],
+          ["Q", "44", "No", "No", "No"]
+        ]
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Explain",
+          "spec": ["C1.41", "C1.42"],
+          "sa": true,
+          "marks": 3,
+          "text": "Substance P has a giant ionic lattice. Explain why Substance P has a very high melting point.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "Any 3 linked points (max 3)",
+            "points": [
+              { "code": "M1", "text": "Giant <b>3D ionic lattice</b> of oppositely charged ions", "link": "held together by…" },
+              { "code": "M2", "text": "<b>Many strong electrostatic forces of attraction</b> acting in all directions", "link": "therefore…" },
+              { "code": "M3", "text": "A <b>large amount of (thermal) energy</b> is needed to overcome / break these attractions", "link": "giving…" },
+              { "code": "M4", "text": "A very high melting point" }
+            ],
+            "accept": ["strong ionic bonds throughout the lattice"],
+            "reject": ["weak intermolecular forces", "ionic molecules", "covalent bonds"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["C1.43"],
+          "sa": false,
+          "marks": 2,
+          "text": "Explain why Substance P conducts electricity when molten or dissolved in water, but does <b>not</b> conduct when solid.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 marks",
+            "points": [
+              { "code": "B1", "text": "When <b>solid</b>, the ions are held in <b>fixed positions</b> in the lattice and <b>cannot move</b>" },
+              { "code": "B2", "text": "When <b>molten or in aqueous solution</b>, the <b>ions are free to move</b> and carry electrical charge" }
+            ],
+            "reject": ["delocalised electrons / free electrons carry charge", "atoms move"]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "updated": "2026-11-28",
+  "note": "100% original, synthetic Edexcel-style exam questions and mark schemes for Cakebread Science Class Slides and Revision Notes. All diagrams are rendered live by diagrams.js (DG).",
+  "topics": [
+    {
+      "code": "B2f",
+      "subject": "biology",
+      "title": "Respiration",
+      "spec": "B2.34–B2.39",
+      "file": "B2f.json",
+      "questions": 3,
+      "marks": 14
+    },
+    {
+      "code": "C1f",
+      "subject": "chemistry",
+      "title": "Ionic bonding",
+      "spec": "C1.37–C1.43",
+      "file": "C1f.json",
+      "questions": 3,
+      "marks": 13
+    },
+    {
+      "code": "C1g",
+      "subject": "chemistry",
+      "title": "Covalent bonding",
+      "spec": "C1.44–C1.51",
+      "file": "C1g.json",
+      "questions": 3,
+      "marks": 14
+    },
+    {
+      "code": "P8",
+      "subject": "physics",
+      "title": "Astrophysics",
+      "spec": "P8.1–P8.10",
+      "file": "P8.json",
+      "questions": 4,
+      "marks": 17
+    }
+  ]
+}
