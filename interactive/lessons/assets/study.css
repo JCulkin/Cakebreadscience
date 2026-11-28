@@ -293,15 +293,36 @@ body.hide-beyond .beyond-only,body.hide-beyond .beyond-block{display:none!import
 
 figure.pic{
   background:#fff;border:2px solid var(--ink);border-radius:8px;
-  padding:10px;text-align:center;margin:14px 0;
+  padding:10px 12px 12px;text-align:center;margin:14px 0;
+  display:flex;flex-direction:column;justify-content:space-between;
 }
 .grid2 > figure.pic,.grid3 > figure.pic{margin:0}
 figure.pic img{
   display:block;margin:0 auto;max-width:100%;max-height:320px;
   width:auto;height:auto;border-radius:4px;
 }
+figure.pic svg{width:100%;height:auto;display:block}
 figure.pic.cover img{width:100%;height:200px;object-fit:cover;max-height:none}
-figcaption,.cap{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.35}
+figcaption,.cap{font-size:14px;color:var(--muted);margin-top:6px;line-height:1.38}
+figure.pic figcaption{margin-top:10px;padding-top:8px;border-top:1px solid #ece6d8;color:#333;font-weight:600}
+
+/* colour-coded equations & fractions (Bio 2f, Phys 8, etc.) */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;text-align:center;margin:0 4px;gap:5px}
+.frac b{display:flex;justify-content:center;align-items:center;width:100%}
+.frac b:first-child{border-bottom:3px solid #111;padding:0 6px 5px}
+.frac b:last-child{padding:2px 6px 0}
+.eqn{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0;font:800 18px 'Barlow',Arial,sans-serif}
+.eqn .term{display:inline-block;padding:5px 11px;border:3px solid var(--c);color:var(--c);background:#fff;border-radius:8px;line-height:1.12}
+.eqn .op{font-size:1.15em;color:#111;font-weight:900}
+.eqn .arr{font-size:1.35em;font-weight:900;color:#111;margin:0 4px;line-height:1}
+
+/* comparison checkmarks, structure badges & aerobic/anaerobic tinting */
+table.cmpcell td.yes,table.cmpcell td.no{text-align:center;font-weight:900;font-size:18px}
+table.cmpcell td.yes{background:#dff3df;color:#1b5e20}
+table.cmpcell td.no{background:#fde3e3;color:#b71c1c}
+.stype{display:inline-block;color:#fff;font-weight:700;font-size:13px;padding:2px 8px;border-radius:4px;white-space:nowrap}
+table.aer td:nth-child(2){background:#e3f2fd}
+table.aer td:nth-child(3){background:#f3e5f5}
 
 .table-scroll{overflow-x:auto;margin:14px 0}
 table.cmp{width:100%;border-collapse:collapse;background:#fff;font-size:15px}

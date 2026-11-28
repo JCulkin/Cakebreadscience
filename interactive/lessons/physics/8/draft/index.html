@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/interactive/lessons/assets/study.css">
 </head>
-<body class="subj-physics" data-status="draft" data-updated="2026-11-27" data-topic="physics/8">
+<body class="subj-physics" data-status="draft" data-updated="2026-11-28" data-topic="physics/8">
 <div class="stripes"><i style="height:4px;background:var(--acc)"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:var(--acc)"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:var(--acc)"></i></div>
 
 <header class="shead">
@@ -70,14 +70,7 @@
     </svg>
   </figure>
 
-  <div class="key-box">
-    <div class="callout-tag">Key idea — Exam definitions</div>
-    <ul class="pts" style="margin-bottom:0">
-      <li>The <b>universe</b> is a large collection of <b>billions of galaxies</b>.</li>
-      <li>A <b>galaxy</b> is a large collection of <b>billions of stars</b>.</li>
-      <li>Our <b>Solar System</b> (the Sun, 8 planets, moons, asteroids and comets) is in the <b>Milky Way</b> galaxy.</li>
-    </ul>
-  </div>
+  <p>Our <b>Solar System</b> (the Sun, 8 planets, moons, asteroids and comets) is in the <b>Milky Way</b> galaxy — one of billions of galaxies in the <b>universe</b>.</p>
 
   <h3>The 8 planets in order from the Sun</h3>
   <figure class="pic"><img decoding="async" loading="lazy" src="img/div8b-v2.webp" alt="The Sun and the eight planets (not to scale)"><figcaption>The Sun and the eight planets (not to scale): Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune.</figcaption></figure>
@@ -142,6 +135,10 @@
     <li><b>Comets:</b> highly <b>elliptical</b> orbits — they travel <b>fastest closest to the Sun</b> (strongest gravitational pull) and slowest far away.</li>
     <li><b>Artificial satellites:</b> low orbits for Earth monitoring/weather; high 24-hour <b>geostationary</b> orbits for TV and communications.</li>
   </ul>
+  <div class="grid2" style="margin:12px 0">
+    <figure class="pic cover"><img decoding="async" loading="lazy" src="img/comet.webp" alt="Comet with glowing tail in the night sky"><figcaption>Comets: balls of ice &amp; dust in very elliptical orbits</figcaption></figure>
+    <figure class="pic cover"><img decoding="async" loading="lazy" src="img/geo-sat.webp" alt="Artificial satellite orbiting above Earth"><figcaption>Artificial satellites: kept in orbit by Earth's gravity</figcaption></figure>
+  </div>
 
   <h3>Gravitational field strength (<i>g</i>)</h3>
   <p><b>Weight</b> is the force of gravity on a mass: <b>Weight (N) = mass (kg) × gravitational field strength (N/kg)</b>, or <b><i>W = m × g</i></b>.</p>
@@ -272,14 +269,20 @@
   <h2>Star birth &amp; star colours <span class="spec">8.7</span><span class="spec">8.8</span><span class="spec">8.9</span></h2>
 
   <h3>How a star is born</h3>
-  <ul class="pts">
-    <li>A <b>nebula</b> is a huge cloud of <b>dust and hydrogen gas</b>.</li>
-    <li><b>Gravitational attraction</b> pulls the gas and dust inward, making it collapse into a hot, dense core called a <b>protostar</b> (gravitational potential energy transfers to thermal energy).</li>
-    <li>When the core gets hot and dense enough, <b>nuclear fusion</b> of hydrogen into helium begins — a <b>main sequence star</b> is born.</li>
-  </ul>
+  <div class="grid2" style="align-items:center">
+    <ul class="pts" style="margin:0 0 0 20px">
+      <li>A <b>nebula</b> is a huge cloud of <b>dust and hydrogen gas</b>.</li>
+      <li><b>Gravitational attraction</b> pulls the gas and dust inward into a hot, dense <b>protostar</b> (GPE → thermal energy).</li>
+      <li>When the core is hot and dense enough, <b>nuclear fusion</b> of hydrogen into helium starts — forming a <b>main sequence star</b>.</li>
+    </ul>
+    <figure class="pic cover"><img decoding="async" loading="lazy" src="img/helix.webp" alt="Helix Nebula cloud of gas and dust in space"><figcaption>Nebula: giant cloud of hydrogen gas and dust</figcaption></figure>
+  </div>
 
   <h3>Classifying stars by colour &amp; temperature</h3>
-  <p>A star's <b>colour</b> tells us its <b>surface temperature</b> — just like heated metal glowing red, then orange, then white-hot:</p>
+  <div class="grid2" style="align-items:center">
+    <p>A star's <b>colour</b> tells us its <b>surface temperature</b> — just like heated steel glowing red, then orange, then yellow and white-hot as its temperature rises.</p>
+    <figure class="pic cover"><img decoding="async" loading="lazy" src="img/hot-metal-v2.webp" alt="Hot steel bar glowing red, orange, yellow and white-hot"><figcaption>Hotter objects emit shorter-wavelength (bluer/whiter) light</figcaption></figure>
+  </div>
   <figure class="pic" data-nomatch>
     <svg viewBox="0 0 1560 440" style="width:100%;height:auto;display:block" role="img" aria-label="Star colour and surface temperature from hottest blue-white to coolest red" font-family="Barlow,Arial,sans-serif">
       <defs>
@@ -382,11 +385,15 @@
         <circle cx="1390" cy="330" r="52" fill="#ff9800" opacity=".55"/><circle cx="1390" cy="330" r="36" fill="#000"/><text x="1456" y="326" font-size="38" font-weight="900" fill="#111">Black hole</text><text x="1456" y="362" font-size="26" font-weight="700" fill="#444">largest stars only</text>
       </svg>
     </figure>
-    <ol class="pts" style="margin-bottom:0">
+    <ol class="pts" style="margin-bottom:10px">
       <li>Massive main sequence stars fuse hydrogen much <b>faster</b> and expand into a <b>red supergiant</b>.</li>
       <li>When fusion stops, the core collapses violently and explodes as a <b>supernova</b>.</li>
       <li>The remaining core becomes an ultra-dense <b>neutron star</b>, or (for the very largest stars) a <b>black hole</b> whose gravity is so strong not even light can escape.</li>
     </ol>
+    <div class="grid2" style="margin:8px 0 0">
+      <figure class="pic cover"><img decoding="async" loading="lazy" src="img/supernova-v2.webp" alt="Crab Nebula supernova remnant"><figcaption>Supernova remnant (Crab Nebula, Hubble)</figcaption></figure>
+      <figure class="pic cover"><img decoding="async" loading="lazy" src="img/black-hole-v2.webp" alt="Black hole surrounded by glowing accretion disk"><figcaption>Black hole: gravity so strong even light cannot escape</figcaption></figure>
+    </div>
   </div>
 
   <div class="worked">
@@ -424,10 +431,20 @@
   </div>
 </section>
 
-<!-- ==================== STEP 6 ==================== -->
-<section class="step" id="check" data-toc="End-of-topic test">
-  <h2>End-of-topic test</h2>
-  <p style="margin-bottom:14px">Test yourself without looking back! Answer the multiple-choice questions, write your own long answers, then check the mark schemes.</p>
+<!-- ==================== STEP 6: SUMMARY & TEST ==================== -->
+<section class="step" id="check" data-toc="Summary &amp; test">
+  <h2>Summary &amp; end-of-topic test</h2>
+  <div class="summary-box">
+    <div class="callout-tag">Topic summary — the big picture</div>
+    <ul class="pts">
+      <li><b>Scale:</b> Planet → Solar System → Galaxy (the <b>Milky Way</b>, billions of stars) → Universe (billions of galaxies).</li>
+      <li><b>Orbits &amp; gravity:</b> gravity keeps moons, planets, satellites (nearly circular) and comets (very elliptical, fastest near the Sun) in orbit; <b><i>W = m × g</i></b> (mass stays constant, weight changes with <i>g</i>).</li>
+      <li class="da-only"><b>Orbital speed (DA):</b> <b><i>v = 2πr ÷ T</i></b> (convert <i>r</i> to metres from the planet's centre and <i>T</i> to seconds for m/s).</li>
+      <li><b>Stars:</b> hottest = <b>blue-white</b>, coolest = <b>red</b>. Sun-like: nebula → protostar → main sequence → red giant → white dwarf. <span class="da-only">Massive (DA): → red supergiant → supernova → neutron star or black hole.</span></li>
+    </ul>
+  </div>
+  <h3 class="test-head" style="margin-top:20px">End-of-topic test</h3>
+  <p style="margin-bottom:12px">Test yourself one question at a time without looking back — answer each question to unlock the next, or tap <b>Show all</b>.</p>
   <div id="qs"></div>
   <div class="next-hub">
     <h3>Keep practising Physics 8</h3>
