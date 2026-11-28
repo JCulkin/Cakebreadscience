@@ -26,7 +26,7 @@ Umbrella brand: **Cakebread Lessons** — split strictly into two named parts (*
 - `lessons.json`: `{code, title, spec, status 'checked'|'draft', studentStatus 'checked'|'draft', split: true, draftUpdated, versions[]}`. Frozen `<subject>/<code>/v<date>/` folders: **never edit**.
 - Keep `/interactive/lessons/` landing & headers minimal: code, title, spec, Open / ▶ Present, plain "Under review" chip on drafts (no extra badges, dates, or older-version dropdowns).
 - **Workflow:**
-  1. Edit `draft/` only; bump `data-updated` on `<body>` and `draftUpdated` in `lessons.json`.
+  1. Edit `draft/` only; bump `data-updated` on `<body>` and `draftUpdated` in `lessons.json`. **Whenever you edit a previously `checked` half (`deck.html` or `index.html`), ALWAYS flip its `status` or `studentStatus` back to `"draft"` in `lessons.json` and rebuild `diff/data.json`** so it automatically moves back into **Needs review** on `/staging-review/`!
   2. Teacher reviews **Class Slides** (by slide number, `school/review/l/{subj|code}`) and **Revision Notes** (`school/review/l/{subj|code|student}`) independently on Staging Review / Admin → Review → Lessons. Give a numbered slide list for slide edits.
   3. When marked checked (or user-asked edit on checked): `python tools/lessons/freeze.py <subject>/<code> --date <today>` (`--roots` after adding a new lesson folder) and update `status` / `studentStatus` in `lessons.json`. Unrequested edits stay draft.
   4. Run `node tools/spec/build_index.js`, `python tools/lessons/build_diff.py --base <commit-before-prompt> --label "before last prompt"`, update `VERSION_HISTORY.md` (read top ~40 lines only), push to `staging`.
@@ -65,5 +65,5 @@ Umbrella brand: **Cakebread Lessons** — split strictly into two named parts (*
 
 ## Sources & status
 - Source decks: teacher's Google Drive (`2. Science\<Subject>\…`). Never publish from `# Resources/`, no watermarked/past-paper images, keep CC credits, GIFs → MP4.
-- **Current status (all 10 lessons split):** Student checked (`Bio 2c`, `Chem 1g`) · All 10 Decks + 8 Student guides under review (`Bio 1, 2a, 2b, 2c deck, 2d, 2f`, `Chem 1a, 1f, 1g deck`, `Phys 8`).
+- **Current status (all 10 lessons split):** Both checked (`Bio 1`, `Bio 2a`, `Bio 2c`, `Chem 1g`) · Class Slides checked / Revision Notes under review (`Bio 2b`, `Bio 2d`, `Chem 1f`) · Both under review (`Bio 2f`, `Chem 1a`, `Phys 8`).
 - **Staging comparer rule:** `tools/lessons/build_diff.py` MUST always compare each lesson's `draft/` against its **most recently approved frozen snapshot (`v<latest>/`)** when one exists (falling back to `origin/main` only for lessons never frozen yet), ignoring `../img/` vs `img/` and lossless same-stem WebP conversions so only real visual/content changes appear. Rebuild `diff/data.json` + `/staging-review/` before handing staging over for review.

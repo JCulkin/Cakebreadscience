@@ -40,10 +40,11 @@
               "versions": [
                 "2026-11-22",
                 "2026-11-25",
-                "2026-11-27"
+                "2026-11-27",
+                "2026-11-28"
               ],
               "split": true,
-              "studentStatus": "draft"
+              "studentStatus": "checked"
             },
             {
               "code": "2b",
