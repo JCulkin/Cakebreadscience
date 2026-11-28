@@ -17,6 +17,7 @@ h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppe
 .small{font-size:13px;color:var(--muted)}
 a{color:var(--green)}
 button{font:inherit;cursor:pointer;color:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #facc15;outline-offset:2px}
 .btn{display:inline-block;background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:9px 16px;font-weight:700;text-decoration:none;text-align:center}
 .btn.alt{background:var(--paper);color:var(--ink)}
 .btn.green{background:var(--green);border-color:var(--green);color:#fff}

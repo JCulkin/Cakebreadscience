@@ -66,6 +66,10 @@
 .land .mk{font-size:12px;margin-top:6px}.land .mk button{font:inherit;background:none;border:1px solid #aaa;padding:1px 6px;cursor:pointer}
 @media(max-width:560px){.scene{height:118px}.scene .me{height:76px}.scene .foe img{height:52px}.scene .cage{height:64px;width:54px}.scene .cage img{width:44px}.scene .hp{width:46px}.scene .foe span{display:none}.scene .drag{height:38px}.land .txt{grid-template-columns:1fr}}
 .loot img{width:72px;height:72px;background:var(--soft);border-radius:10px;padding:4px;flex:none}
+.lb{list-style:none;font-size:14.5px;margin-top:4px}.lb li{display:flex;align-items:center;gap:8px;padding:4px 6px;border-bottom:1px solid var(--line)}
+.lb img{width:26px;height:26px;border:1px solid var(--line);border-radius:4px;background:var(--soft)}
+.lb .n{flex:1}.lb .v{font-weight:700}.lb .you{background:#fff3c4}
+.leg{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:14px}.leg img{width:38px;height:38px;background:var(--soft);border-radius:8px;flex:none}
 </style>
 </head>
 <body>
@@ -114,6 +118,19 @@
           <h3>Brews</h3>
           <div id="brews" style="font-size:15px"></div>
           <p class="small"><span id="coinIc"></span> <span id="coins"></span> coins · spend them on brews at the Tuck Shop in Breadventure Land.</p>
+        </div>
+      </div>
+
+      <div class="grid2" id="weekRow">
+        <div class="card">
+          <h3 style="margin-top:0">Last 7 days · most correct</h3>
+          <ol class="lb" id="lbWeek"><li class="small">Loading…</li></ol>
+          <p class="small" style="margin-top:8px"><a href="/leaderboards/">All leaderboards →</a></p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Main Characters</h3>
+          <div id="legs"><p class="small">Loading…</p></div>
+          <p class="small" style="margin-top:6px">Held by whoever has the most correct answers in that science over the last 7 days.</p>
         </div>
       </div>
     </div>
@@ -225,6 +242,31 @@ $('brews').innerHTML = !ADV.can('shop') ? `<span class="small">${ui('lock')} Bre
 $('coins').textContent = S.coins;
 $('showMe').checked = !QE.prog.hide;
 $('showMe').onchange = () => QE.setHide(!$('showMe').checked);
+
+/* 7-day leaderboard + Main Characters right on My Adventurer (no extra landing-page hop) */
+{
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const faceOf = r => r.look ? PIXEL.portrait(r.look) : PIXEL.portrait(PIXEL.DEFAULT);
+  const LEG = [['syringe', 'Biology', 'B'], ['pebble', 'Chemistry', 'C'], ['dodgeball', 'Physics', 'P']];
+  let boardUid;
+  function drawWeek() {
+    if (!QE.known) return;
+    const who = QE.user ? QE.user.uid : '-'; if (who === boardUid) return; boardUid = who;
+    if (!QE.user) { $('lbWeek').innerHTML = '<li class="small">Sign in to see the board.</li>'; $('legs').innerHTML = '<p class="small">Sign in to see who holds them.</p>'; return; }
+    QE.board().then(rows => {
+      const week = rows.filter(r => r.l7.t > 0).sort((a, b) => b.l7.t - a.l7.t);
+      const top = week.slice(0, 5), me = week.findIndex(r => r.me);
+      const li = (r, i) => `<li class="${r.me ? 'you' : ''}"><b>${i + 1}</b><img class="px" src="${faceOf(r)}" alt=""><span class="n">${esc(r.name)}${r.me ? ' (you)' : ''}</span><span class="v">${r.l7.t}</span></li>`;
+      $('lbWeek').innerHTML = top.length ? top.map(li).join('') + (me >= 5 ? `<li class="small" style="justify-content:center">…</li>` + li(week[me], me) : '')
+        : '<li class="small">No correct answers in the last 7 days. Be the first!</li>';
+      $('legs').innerHTML = LEG.map(([id, sci, f]) => {
+        const item = ADV_ITEMS.find(i => i.id === id), best = week.filter(r => r.l7[f] > 0).sort((a, b) => b.l7[f] - a.l7[f])[0];
+        return `<div class="leg"><img class="px" src="${PIXEL.item(id)}" alt=""><div><b>${item ? esc(item.name) : id}</b><br><span class="small">${sci} · ${best ? `held by <b>${esc(best.name)}${best.me ? ' (you!)' : ''}</b> · ${best.l7[f]} correct` : 'nobody in the last 7 days'}</span></div></div>`;
+      }).join('');
+    }).catch(() => { $('lbWeek').innerHTML = '<li class="small">The leaderboard can\'t be reached right now.</li>'; $('legs').innerHTML = ''; });
+  }
+  drawWeek(); QE.onChange(drawWeek);
+}
 </script>
 </body>
 </html>

@@ -190,7 +190,7 @@ img.ui-svg{display:inline-block;width:1.1em;height:1.1em;vertical-align:-0.18em;
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
     const moreActive = ['cards', 'stats', 'guide'].includes(active);
     n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
-      + `<a class="brand" href="index.html" title="Breadventure Land menu">Breadventure <b>Land</b></a>`
+      + `<a class="brand" href="${hasLook() ? 'adventurer-home.html' : 'index.html'}" title="Breadventure Land">Breadventure <b>Land</b></a>`
       + tab('home', 'adventurer-home.html', ui('compass', 18), 'My Adventurer')
       + tab('mission', 'adventurer-mission.html', ui('sword', 18), 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
       + tab('map', 'adventurer-map.html', ui('map', 18), 'World Map', 'cta map')

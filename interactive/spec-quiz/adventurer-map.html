@@ -9,26 +9,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
 <style>
-:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--str:#b45309;--hp:#005e22;--mag:#c8001e;--sea:#4f9fd1}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
-header{background:#111;padding:10px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
-@media(min-width:700px){header{padding:10px 28px}}
-header a{text-decoration:none}
-header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(24px,4vw,32px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
-header .brand span{color:var(--green2)}
-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
-.wrap{max-width:1500px;margin:0 auto;padding:10px 12px 40px}
-h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1.05;margin:0 0 8px}
-h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:18px;margin:12px 0 4px}
-button{font:inherit;cursor:pointer;color:inherit}
-.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:6px 12px;font-weight:700;white-space:nowrap}
-.btn.alt{background:var(--paper);color:var(--ink)}
-.btn.green{background:var(--green);border-color:var(--green);color:#fff}
-.btn.gold{background:#facc15;color:#111}
+:root{--sea:#4f9fd1}
+.wrap{max-width:1500px;padding:10px 12px 40px}
+.btn{padding:6px 12px;white-space:nowrap}
 .btn:disabled{opacity:.35;cursor:default}
-img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* HUD */
 .gate{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.gate[hidden]{display:none}
@@ -50,21 +36,22 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .netdiag .dacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .preview{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:15px}
 .preview b{font-size:17px}
-.hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:#fff;border:2px solid var(--ink);border-bottom:0;padding:7px 10px}
-.hud .who{display:flex;align-items:center;gap:8px}
-.hud .who img{width:40px;height:40px;border:2px solid var(--ink);background:var(--soft);border-radius:6px}
-.hud .nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;text-transform:uppercase;line-height:1}
-.hud .lv{font-size:13px;color:var(--muted);font-weight:700}
-.hud .hp{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px}
-.hud .hp .bar{width:110px;height:12px;border:2px solid var(--ink);background:#eee;position:relative}
+.hud{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;background:#fff;border:2px solid var(--ink);border-bottom:0;padding:6px 10px}
+.hud-l,.hud-r{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.hud .who{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;text-align:left;cursor:pointer;border-radius:6px}
+.hud .who:hover .nm{color:var(--green)}
+.hud .who img{width:38px;height:38px;border:2px solid var(--ink);background:var(--soft);border-radius:6px}
+.hud .nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}
+.hud .lv{font-size:12.5px;color:var(--muted);font-weight:700}
+.hud .hp{display:flex;align-items:center;gap:5px;font-weight:700;font-size:14px}
+.hud .hp .bar{width:92px;height:12px;border:2px solid var(--ink);background:#eee;position:relative}
 .hud .hp .bar i{position:absolute;inset:0 auto 0 0;background:var(--hp)}
-.hud .st{font-weight:700;font-size:14px;display:flex;gap:10px}
+.hud .st{font-weight:700;font-size:14px;display:flex;gap:8px;align-items:center}
 .hud .moves{display:flex;gap:4px;align-items:center;font-weight:700;font-size:13px}
 .hud .moves span{width:22px;height:22px;border:2px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;background:#fde047}
 .hud .moves span.used{background:#eee;color:#aaa}
-.hud .tools{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
-.hud .tools .btn{padding:4px 10px;font-size:14px}
-.hud .day{font-size:13px;color:var(--muted);font-weight:700}
+.hud .tools{display:flex;gap:5px;flex-wrap:wrap}
+.hud .tools .btn{padding:4px 9px;font-size:13.5px}
 .questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
 .hud .mana.lk{opacity:.55;font-size:13px}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
@@ -94,7 +81,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 /* map */
 .mapwrap{position:relative;border:2px solid var(--ink);background:var(--sea)}
 .mapscroll{overflow:auto;-webkit-overflow-scrolling:touch}
-#map{display:block;width:100%;height:auto;max-height:calc(100vh - 180px);min-height:340px;background:var(--sea);user-select:none;-webkit-user-select:none}
+#map{display:block;width:100%;height:auto;max-height:calc(100vh - 140px);min-height:340px;background:var(--sea);user-select:none;-webkit-user-select:none}
 @media(max-width:760px){#map{width:1000px;max-height:none}}
 #map .hit{fill:transparent;cursor:pointer}
 #map .hit:hover{fill:#ffffff22}
@@ -524,14 +511,14 @@ function renderMap() {
 function renderHud() {
   setLayer();
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
-  $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${esc(ADV.nick())}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
+  const brewN = Object.values(S.brews).reduce((a, b) => a + b, 0);
+  $('hud').innerHTML = `<div class="hud-l"><button type="button" class="who" id="whoBtn" title="Strength ${s.str} · Health ${S.health}/${s.hp} · Magic ${s.mag} · Day ${S.dayNo || 1} — click for full stats"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${esc(ADV.nick())}</div><div class="lv">Lv ${l}${l >= cap ? ' (cap)' : ''} · Day ${S.dayNo || 1}</div></div></button>
     <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">${ui('heart')} <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">${ui('mana')} <span>${ui('lock', 13)} Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers, plus overnight refill (+1 + 1 per 10 Magic). Holds up to 10 + Magic.">${ui('mana')} <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px" ${shared ? '' : 'disabled title="Connect to the shared world to cast spells or drink brews"'}>Spells & brews${S.shield ? ` · ${ui('shield', 14)}` : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ` · ${ui(BL.BREWS[b].px, 14)}`).join('')}</button></div>`}
-    <div class="st"><span style="color:var(--str)">${ui('sword')} ${s.str}</span><span style="color:var(--mag)">${ui('spark')} ${s.mag}</span><span>${ui('coin')} ${S.coins}</span>${ADV.can('shop') ? `<span title="Brews">${ui('flask')} ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span>` : ''}</div>
-    <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' ' + ui('gift', 15) : ''}</div>
-    ${conn === 'live' ? `<span class="conn ok" title="Synced with the shared world">● Live · ${PEOPLE.length + 1} player${PEOPLE.length ? 's' : ''}</span>` : conn === 'connecting' ? `<span class="conn wait" title="Connecting to the shared world">◌ Connecting…</span>` : `<span class="conn off" title="Viewing map only — actions locked until reconnected">● Offline (view only)</span>`}
-    <div class="day">Day ${S.dayNo || 1} · boss fights happen at midnight</div>
-    <div class="tools"><button class="btn alt" id="meBtn" title="Find me on the map">${ui('pin', 15)}<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">${ui('scroll', 15)}<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? `${ui('fog', 15)}<span class="t"> Fog on</span>` : `${ui('eye', 15)}<span class="t"> Whole map</span>`}</button>` : ''}</div>`;
+    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">${ui('mana')} <span>${ui('lock', 13)} Lv ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers, plus overnight refill (+1 + 1 per 10 Magic). Holds up to 10 + Magic.">${ui('mana')} <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px" ${shared ? '' : 'disabled title="Connect to the shared world to cast spells or drink brews"'}>Spells${ADV.can('shop') && brewN ? ` &amp; ${brewN} brew${brewN === 1 ? '' : 's'}` : ''}${S.shield ? ` · ${ui('shield', 14)}` : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ` · ${ui(BL.BREWS[b].px, 14)}`).join('')}</button></div>`}
+    <div class="st"><span title="Coins">${ui('coin')} ${S.coins}</span></div>
+    <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' ' + ui('gift', 15) : ''}</div></div>
+    <div class="hud-r">${conn === 'live' ? `<span class="conn ok" title="Synced with the shared world · boss fights happen at midnight">● Live · ${PEOPLE.length + 1} player${PEOPLE.length ? 's' : ''}</span>` : conn === 'connecting' ? `<span class="conn wait" title="Connecting to the shared world">◌ Connecting…</span>` : `<span class="conn off" title="Viewing map only — actions locked until reconnected">● Offline (view only)</span>`}
+    <div class="tools"><button class="btn alt" id="meBtn" title="Find me on the map">${ui('pin', 15)}<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">${ui('scroll', 15)}<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? `${ui('fog', 15)}<span class="t"> Fog on</span>` : `${ui('eye', 15)}<span class="t"> Whole map</span>`}</button>` : ''}</div></div>`;
   $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">${ui('key', 15)}</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
   if (ADV.can('events')) { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ui(ev.px, 14)} <u>${ev.name}</u>: ${ev.text}</span>`); }
@@ -552,6 +539,7 @@ function renderHud() {
       if (rb) rb.onclick = () => { sel = bk; renderAll(); };
     }
   }
+  $('whoBtn').onclick = () => { sel = null; renderMap(); renderPerson('me'); };
   $('repBtn').onclick = () => showReport();
   $('meBtn').onclick = () => { const m = document.querySelector('#map .pp[data-p="me"]'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
@@ -771,8 +759,10 @@ function renderPerson(who) {
   const me = who === 'me', p = me ? null : PEOPLE[who], at = me ? S.at : S.people[p.i], [c, r] = unkey(at), P = PLACES[at];
   const where = P ? P.name : LAND[T_AT(c, r)] ? LAND[T_AT(c, r)].name : '';
   let fig; try { fig = me ? PIXEL.figure(ADV.eq(), ADV.look()) : PIXEL.figure(p.eq, p.base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
-  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? ADV.stats().l : p.lvl}</div>
+  const mySt = me ? ADV.stats() : null;
+  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? mySt.l : p.lvl}</div>
     <div class="tn">${esc(me ? ADV.nick() : p.nick)}</div><img class="px fig" src="${fig}" alt="">
+    ${me ? `<div class="loot" style="display:flex;flex-wrap:wrap;gap:6px 12px;font-weight:700"><span style="color:var(--str)">${ui('sword')} ${mySt.str} Strength</span><span style="color:var(--hp)">${ui('heart')} ${S.health}/${mySt.hp} Health</span><span style="color:var(--mag)">${ui('spark')} ${mySt.mag} Magic</span><span>${ui('coin')} ${S.coins}</span></div>` : ''}
     <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : (() => { const c = (BL.states[p.uid] || {}).camp; return c && BL.world && c.day === BL.world.day && PLACES[c.k] ? ` ${ui('camp')} Camped at ${PLACES[c.k].name} with ${c.n} attack${c.n > 1 ? 's' : ''} for midnight.` : ''; })()}</p>
     ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">Camp here too and you'll fight alongside them at midnight (rally: +10% damage each).</p>` : ''}
     ${!me && shared && at === S.at && !ADV.can('help') ? `<p class="cap">${ui('lock')} Helping other players opens at level ${ADV.unlockLv('help')}.</p>` : ''}
