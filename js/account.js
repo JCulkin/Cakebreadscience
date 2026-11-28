@@ -10,14 +10,21 @@
        (Cakebread Science home link on the left, the box on the right) and replaces /js/home-link.js's pill.
    Shows: Sign in · or · (admins: ⚙️ Admin, 👥 Team quiz) To do → · first name · Sign out. Never the email address. */
 (function () {
+  if (!window.__cbsAuthGate) { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
+  if (!window.CBSTour && !/^\/admin(\/|$)/.test(location.pathname)) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; (document.head || document.documentElement).appendChild(ts); }
   let box = document.getElementById('cbs-account');
   const me = document.currentScript;
   if (!box && me && me.hasAttribute('data-bar') && document.body) {
-    window.__cbsHomeLink = true;   // the bar has the home link; stop home-link.js adding its pill
-    document.querySelectorAll('.cbs-home-bar').forEach(n => n.remove());
+    window.__cbsHomeLink = true;   // the bar has the home link; stop home-link.js adding its bar/button
+    document.querySelectorAll('.cbs-home-bar,.cbs-home-float').forEach(n => n.remove());
+    const escA = t => String(t || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const bk = me.getAttribute('data-back'), bkl = me.getAttribute('data-back-label'), sec = me.getAttribute('data-section');
     const bar = document.createElement('div');
     bar.className = 'cbs-sitebar';
-    bar.innerHTML = '<a class="h" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <b>Science</b></a><div id="cbs-account"></div>';
+    bar.innerHTML = '<a class="h" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <b>Science</b></a>'
+      + (bk ? `<span class="sep" aria-hidden="true">›</span><a class="crumb" href="${escA(bk)}">${escA(bkl || 'Back')}</a>` : '')
+      + (sec ? `<span class="sec">${escA(sec)}</span>` : '')
+      + '<div id="cbs-account"></div>';
     document.body.insertBefore(bar, document.body.firstChild);
     box = bar.querySelector('#cbs-account');
     /* pages whose body is a flex/grid layout (e.g. Flashcards, centred) would put the bar beside the content:
@@ -49,12 +56,24 @@
 #cbs-account.light{color:#333}#cbs-account.light .who{color:#111}#cbs-account.light .who small{color:#777}
 #cbs-account.light .in{background:#111;color:#fff;border-color:#111}#cbs-account.light .in:hover{background:#333}
 #cbs-account.light .out{color:#555;border-color:#999}#cbs-account.light .out:hover{color:#111;border-color:#111}
-.cbs-sitebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#111;padding:7px 14px;position:relative;z-index:1000;font-family:Barlow,Arial,sans-serif;text-align:left}
-.cbs-sitebar .h{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#eeeae0;font:900 19px 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase}
-.cbs-sitebar .h b{color:#00a03a}.cbs-sitebar .h img{width:28px;height:28px;object-fit:contain}
+.cbs-sitebar{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;background:#111;border-bottom:3px solid #00a03a;padding:8px 18px;min-height:50px;position:relative;z-index:1000;font-family:Barlow,Arial,sans-serif;text-align:left;box-sizing:border-box}
+.cbs-sitebar .h{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:#eeeae0;font:900 22px/1 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase;letter-spacing:-.3px;transition:color .14s}
+.cbs-sitebar .h b{color:#00a03a;font-weight:900;transition:color .14s}
+.cbs-sitebar .h:hover{color:#fff}.cbs-sitebar .h:hover b{color:#4ade80}
+.cbs-sitebar .h img{width:30px;height:30px;object-fit:contain;display:block;flex:none}
+.cbs-sitebar .sep{color:#555;font-weight:700;user-select:none}
+.cbs-sitebar .crumb{font-size:14px;font-weight:700;color:#d6d2c6;text-decoration:none}
+.cbs-sitebar .crumb:hover{color:#facc15}
+.cbs-sitebar .sec{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9a968c}
 .cbs-sitebar #cbs-account{margin-left:auto}
+@media(max-width:520px){.cbs-sitebar{padding:7px 12px}.cbs-sitebar .h{font-size:19px}.cbs-sitebar .h img{width:26px;height:26px}.cbs-sitebar .sec{display:none}}
 @media print{.cbs-sitebar,#cbs-account{display:none!important}}
 #cbs-account .day{background:#facc15;color:#111;border:2px solid #111;padding:5px 12px;font:900 16px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;text-decoration:none;border-radius:6px}
+#cbs-account .hlp{background:none;color:#d6d2c6;border:1px solid #555;padding:3px 9px;font:700 13px Barlow,Arial,sans-serif;text-decoration:none;border-radius:6px}
+#cbs-account .hlp:hover{color:#fff;border-color:#facc15}
+#cbs-account .sim{background:#4c1d95;color:#fff;border:2px solid #facc15;padding:4px 10px;font:800 13px Barlow,Arial,sans-serif;border-radius:6px}
+#cbs-account .sim:hover{background:#5b21b6}
+#cbs-account.light .hlp{color:#444;border-color:#999}#cbs-account.light .hlp:hover{color:#111;border-color:#111}
 #cbs-account .day.due{background:#dc2626;color:#fff;display:inline-flex;align-items:center;gap:6px}
 #cbs-account .day .bang{background:#fff;color:#dc2626;border-radius:50%;width:18px;height:18px;display:inline-grid;place-items:center;font-size:14px;line-height:1;animation:cbsbang 1.2s ease-in-out infinite alternate}
 @keyframes cbsbang{to{transform:scale(1.18)}}@media(prefers-reduced-motion:reduce){#cbs-account .day .bang{animation:none}}`;
@@ -68,15 +87,30 @@
   } catch (e) { box.innerHTML = ''; return; }
   const first = u => ((u.displayName || u.email || 'Student').trim().split(/\s+/)[0]);
   function draw(u) {
+    const hlp = location.pathname.startsWith('/how-to-use') ? '' : '<a class="hlp" href="/how-to-use/" title="How to use Cakebread Science &amp; replay page tours">❓ Help</a>';
+    const isStaging = !/^(www\.)?cakebreadscience\.com$/i.test(location.hostname) && !/^\/admin(\/|$)/.test(location.pathname || '');
+    const simActive = isStaging && (() => { try { return localStorage.getItem('cbs.sim.y10') === '1'; } catch (e) { return false; } })();
+    const simBtn = isStaging && !simActive ? '<button type="button" class="sim" title="Staging only: simulate signing in as a Year 10 student with homework, tests and progress">🧑‍🎓 Sim Y10</button>' : '';
+    const wireSim = () => {
+      const sb = box.querySelector('.sim');
+      if (!sb) return;
+      sb.onclick = () => {
+        const go = () => { if (window.CBSSim) CBSSim.start(true); };
+        if (window.CBSSim) return go();
+        const sc = document.createElement('script'); sc.src = '/js/staging-sim.js'; sc.onload = go; document.head.appendChild(sc);
+      };
+    };
     if (u) {
       const admin = (window.ADMIN_EMAILS || ['culkincakebread@gmail.com', 'stem@elevenschool.com']).includes(u.email);
-      box.innerHTML = `${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
+      box.innerHTML = `${simBtn}${admin ? '<a class="adm" href="/admin/" title="Admin console">⚙️ Admin</a><a class="tq" href="/interactive/spec-quiz/quiz.html?team" title="Team quiz for the board">👥 Team quiz</a>' : ''}${location.pathname.startsWith('/today') ? '' : '<a class="day" href="/today/">To do →</a>'}${hlp}<span class="who"><small>Signed in</small>${first(u).replace(/[<>&"]/g, '')}</span><button type="button" class="out">Sign out</button>`;
       box.querySelector('.out').onclick = () => auth.signOut();
+      wireSim();
       badge();
     } else {
-      box.innerHTML = `<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
+      box.innerHTML = `${simBtn}${hlp}<button type="button" class="in" title="Sign in with Google to save your progress across the site">${G}Sign in</button>`;
       box.querySelector('.in').onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
         .catch(e => { if (e && e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') alert('Sign-in did not work: ' + (e.message || e)); });
+      wireSim();
     }
   }
   /* open set work → the To do button turns red with a "!" (18 Nov, /js/openwork.js) */

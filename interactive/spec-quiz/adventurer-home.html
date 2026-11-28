@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Cakelab - Cakebread Questing</title>
+<title>My Adventurer · Breadventure Land</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -66,10 +66,14 @@
 .land .mk{font-size:12px;margin-top:6px}.land .mk button{font:inherit;background:none;border:1px solid #aaa;padding:1px 6px;cursor:pointer}
 @media(max-width:560px){.scene{height:118px}.scene .me{height:76px}.scene .foe img{height:52px}.scene .cage{height:64px;width:54px}.scene .cage img{width:44px}.scene .hp{width:46px}.scene .foe span{display:none}.scene .drag{height:38px}.land .txt{grid-template-columns:1fr}}
 .loot img{width:72px;height:72px;background:var(--soft);border-radius:10px;padding:4px;flex:none}
+.lb{list-style:none;font-size:14.5px;margin-top:4px}.lb li{display:flex;align-items:center;gap:8px;padding:4px 6px;border-bottom:1px solid var(--line)}
+.lb img{width:26px;height:26px;border:1px solid var(--line);border-radius:4px;background:var(--soft)}
+.lb .n{flex:1}.lb .v{font-weight:700}.lb .you{background:#fff3c4}
+.leg{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:14px}.leg img{width:38px;height:38px;background:var(--soft);border-radius:8px;flex:none}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Cakebread Questing · Cakelab</span></header>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub">Breadventure Land · My Adventurer</span></header>
 <main class="wrap">
   <div class="camp">
     <div class="card me">
@@ -80,14 +84,14 @@
       <div class="xp"><i id="xpbar"></i></div>
       <div class="cap" id="cap"></div>
       <div id="stats"></div>
-      <div class="links"><a class="btn alt" href="adventurer-wardrobe.html">👕 Wardrobe</a><a class="btn alt" href="adventurer-create.html">✏️ My look</a></div>
+      <div class="links" id="meLinks"><a class="btn alt" href="adventurer-wardrobe.html">Wardrobe &amp; look</a></div>
     </div>
 
     <div>
       <div class="today">
         <h2 id="dayTitle">Today</h2>
         <a class="card land" id="tMap" href="adventurer-map.html"><div class="scene" id="scene"></div>
-          <div class="txt"><div><span class="kick" id="landKick" style="color:var(--green)"></span><div class="h2">Breadventure Land</div><div class="st" id="landSt"></div>
+          <div class="txt"><div><span class="kick" id="landKick" style="color:var(--green)"></span><div class="h2">World Map</div><div class="st" id="landSt"></div>
           <div class="mk"><button id="replayIntro" type="button">Replay the story</button></div></div><span class="btn green big">Play →</span></div></a>
         <div class="card todo main" id="tMission">
           <div class="ic"><img class="px" id="enemyIc" alt=""></div>
@@ -95,7 +99,7 @@
           <a class="btn gold big" href="adventurer-mission.html" id="mBtn">Start →</a>
         </div>
         <div class="card todo slim" id="tCards">
-          <div class="ic">🃏</div>
+          <div class="ic"><img class="ui-svg" src="/img/icons/res-flashcards.svg" style="width:24px;height:24px" alt=""></div>
           <div><b class="h">Flashcards <span class="tick" id="cDone" hidden>Done</span></b><p id="cText"></p></div>
           <a class="btn alt" href="/Flashcards/" id="cBtn">Flashcards →</a>
         </div>
@@ -105,7 +109,7 @@
         <div class="card">
           <h3 style="margin-top:0">Spec points secured</h3>
           <div id="sci"></div>
-          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days — flashcards rated Good on two different days count too. Each one adds 1 to its stat for good.</p>
+          <p class="small" style="margin-top:10px">A point is secured when you get its questions right first time on two different days — flashcards rated Good or Easy on two different days count for up to half. Each one adds 1 to its stat for good.</p>
           <label class="small" style="display:flex;gap:6px;align-items:center;margin-top:10px"><input type="checkbox" id="showMe"> Show me on the leaderboards</label>
         </div>
         <div class="card">
@@ -113,7 +117,20 @@
           <div id="loot"></div>
           <h3>Brews</h3>
           <div id="brews" style="font-size:15px"></div>
-          <p class="small">🪙 <span id="coins"></span> coins · spend them on brews at the Tuck Shop in Breadventure Land.</p>
+          <p class="small"><span id="coinIc"></span> <span id="coins"></span> coins · spend them on brews at the Tuck Shop in Breadventure Land.</p>
+        </div>
+      </div>
+
+      <div class="grid2" id="weekRow">
+        <div class="card">
+          <h3 style="margin-top:0">Last 7 days · most correct</h3>
+          <ol class="lb" id="lbWeek"><li class="small">Loading…</li></ol>
+          <p class="small" style="margin-top:8px"><a href="/leaderboards/">All leaderboards →</a></p>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Main Characters</h3>
+          <div id="legs"><p class="small">Loading…</p></div>
+          <p class="small" style="margin-top:6px">Held by whoever has the most correct answers in that science over the last 7 days.</p>
         </div>
       </div>
     </div>
@@ -138,24 +155,27 @@
 <script src="misconceptions.js"></script>
 <script>
 ADV.nav('home');
-const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats();
+const S = ADV.S, $ = id => document.getElementById(id), s = ADV.stats(), ui = ADV.ui;
+$('meLinks').innerHTML = `<a class="btn alt" href="adventurer-wardrobe.html">${ui('shirt')} Wardrobe &amp; look</a>`;
+$('coinIc').innerHTML = ui('coin');
 $('nm').textContent = ADV.nick();
+$('ttl').textContent = '“' + (s.gear.set ? ADV_SETS[s.gear.set].title : 'Side Quest Enjoyer') + '”';
 $('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
 const l = s.l, cap = ADV.levelCap(), cur = ADV.xpFor(l), next = ADV.xpFor(l + 1);
 $('lvl').textContent = `Level ${l}`;
 $('xpTxt').textContent = `${S.xp - cur} / ${next - cur} XP`;
 $('xpbar').style.width = Math.min(100, (S.xp - cur) / (next - cur) * 100) + '%';
-const toNextCap = 8 - ADV.securedTotal() % 8;
+const step = ADV.CAP_STEP(), toNextCap = step - ADV.securedTotal() % step;
 /* what the next level brings (unlocks, 17 Nov) */
-{ const nx = ADV.nextUnlock(); if (nx) $('cap').insertAdjacentHTML('afterend', `<p class="small" id="nextUnlock" style="margin-top:4px">🔓 <b>Next:</b> ${nx.ic} ${nx.name} at level ${nx.lv}.</p>`); }
+{ const nx = ADV.nextUnlock(); if (nx) $('cap').insertAdjacentHTML('afterend', `<p class="small" id="nextUnlock" style="margin-top:4px">${ui('unlock')} <b>Next:</b> ${ui(nx.px)} ${nx.name} at level ${nx.lv}.</p>`); }
 $('cap').innerHTML = ADV.rawLevel() > cap ? `<b>Level cap ${cap}.</b> XP is waiting: secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to unlock level ${cap + 1}.`
   : `Level cap ${cap} · secure ${toNextCap} more spec point${toNextCap === 1 ? '' : 's'} to raise it.`;
 const gx = k => (s.gear[k] ? ` + gear ${s.gear[k]}` : '') + (s.gear.set && ADV_SETS[s.gear.set].stat === k ? ` + ${ADV_SETS[s.gear.set].name} set ${s.set}` : '');
-$('stats').innerHTML = [['💪 Strength', s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l}${gx('str')}`, s.str / 70],
-  ['❤ Health', `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}${gx('hp')}`, S.health / s.hp],
-  ['✨ Magic', s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l}${gx('mag')} · more Magic = more mana`, s.mag / 70],
-  ADV.can('spells') ? ['🔮 Mana', `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]
-    : ['🔮 Mana', `🔒 Lv ${ADV.unlockLv('spells')}`, 'mag', `mana and spells unlock at level ${ADV.unlockLv('spells')}`, 0]]
+$('stats').innerHTML = [[`${ui('sword')} Strength`, s.str, 'str', `base ${ADV.BASE.str} + Physics ${S.secured.p} + level ${ADV.LV.str * l}${gx('str')}`, s.str / 70],
+  [`${ui('heart')} Health`, `${S.health}/${s.hp}`, 'hp', `base ${ADV.BASE.hp} + Biology ${S.secured.b} + level ${ADV.LV.hp * l}${gx('hp')}`, S.health / s.hp],
+  [`${ui('spark')} Magic`, s.mag, 'mag', `Chemistry ${S.secured.c} + level ${ADV.LV.mag * l}${gx('mag')} · boosts mana & Patch Up`, s.mag / 70],
+  ADV.can('spells') ? [`${ui('mana')} Mana`, `${S.mana}/${s.mana}`, 'mag', `for spells on Breadventure Land · +1 per flashcard, +1 per 3 right mission answers`, S.mana / s.mana]
+    : [`${ui('mana')} Mana`, `${ui('lock')} Lv ${ADV.unlockLv('spells')}`, 'mag', `mana and spells unlock at level ${ADV.unlockLv('spells')}`, 0]]
   .map(([n, v, c, how, f]) => `<div class="stat"><span style="color:var(--${c})">${n}</span><div class="bar"><i style="width:${Math.min(1, f) * 100}%;background:var(--${c})"></i></div><span>${v}</span><small>${how}</small></div>`).join('');
 
 $('dayTitle').textContent = `Today · day ${S.dayNo || 1}`;   // S.day is the map's epoch day number, not the world's day
@@ -168,12 +188,17 @@ function renderLand() {
     : `<img src="${ADV.icon('prof')}" alt="The Professor" style="height:84px">`;
   $('scene').innerHTML = `<img class="drag" src="${ADV.icon('dragonzz')}" alt="${ADV.DRAGON} the dragon, asleep"><img class="me" src="${PIXEL.figure(ADV.eq(), ADV.look())}" alt="You">` +
     foes.slice(0, 2).map(foe).join('') + prof + foes.slice(2).map(foe).join('');
-  $('landKick').textContent = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 🔑` : 'Chapter 2 · the monsters wake';
-  const mv = S.moves || 0, camp = S.camp && BL.PLACES[S.camp.k];
-  if (ADV.can('events')) { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ev.ic} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
-  $('landSt').innerHTML = (camp ? `⛺ Camped at ${camp.name} with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} for midnight. ` : '') + (mv ? `<b>${mv} move${mv === 1 ? '' : 's'} to use</b> today. ` : 'No moves left today. ')
-    + (S.chestsUp ? `✨ <b>${S.chestsUp} treasure chest${S.chestsUp > 1 ? 's' : ''}</b> on the map: first to reach one opens it. ` : '')
-    + `❤ ${S.health} Health · 🔮 ${S.mana} mana. Fight the guards together; every spec point you secure makes you stronger.`;
+  $('landKick').innerHTML = ch < 2 ? `Chapter 1 · everyone's quest: free the Professor · ${k}/3 ${ui('key', 14)}` : 'Chapter 2 · the monsters wake';
+  const p = ADV.pending(), extra = s.gear.fx.revise ? 1 : 0;
+  const mv0 = S.moves || 0, cap = (S.joined === QE.TODAY ? BL.FIRST_MOVES : BL.MOVE_BANK) + 1 + extra;
+  const mv = p.move ? Math.max(mv0, Math.min(cap, mv0 + p.move)) : mv0;
+  const hpNow = Math.min(s.hp, (S.health ?? s.hp) + (p.hp || 0));
+  const manaNow = Math.min(s.mana, (S.mana || 0) + (p.mana || 0));
+  const camp = S.camp && BL.PLACES[S.camp.k];
+  if (ADV.can('events')) { const ev = BL.eventOf(QE.TODAY); $('landKick').insertAdjacentHTML('afterend', `<div class="small" style="font-weight:700;color:#b45309">${ui(ev.px, 15)} ${ev.name}: <span style="font-weight:400;color:#333">${ev.text}</span></div>`); }
+  $('landSt').innerHTML = (camp ? `${ui('camp')} Camped at ${camp.name} with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} for midnight. ` : '') + (mv ? `<b>${mv} move${mv === 1 ? '' : 's'} to use</b> today. ` : 'No moves left today. ')
+    + (S.chestsUp ? `${ui('chest')} <b>${S.chestsUp} treasure chest${S.chestsUp > 1 ? 's' : ''}</b> on the map: first to reach one opens it. ` : '')
+    + `${ui('heart')} ${hpNow} Health · ${ui('mana')} ${manaNow} mana. Fight the guards together; every spec point you secure makes you stronger.`;
   $('replayIntro').onclick = e => { e.preventDefault(); e.stopPropagation(); ADV.storyIntro(); };
 }
 renderLand();
@@ -181,10 +206,11 @@ renderLand();
 async function landLive() {
   if (!QE.known || !QE.user || landLive.done) return; landLive.done = true;
   try {
-    const rt = firebase.database(), u = QE.user.uid;
-    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => rt.ref(p).once('value').then(x => x.val())));
-    if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
-    else { S.moves = BL.movesOf(st); S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = BL.bossNow(w);
+    const u = QE.user.uid;
+    const [w, st, pb] = await Promise.all(['bland/world', 'bland/state/' + u, 'bland/pub/' + u].map(p => QE.rtGet(p, 12000)));
+    if (w && w.day) { S.day = BL.dayNum(w.day); S.dayNo = S.day - BL.dayNum(w.started || w.day) + 1; $('dayTitle').textContent = `Today · day ${S.dayNo || 1}`; }
+    if (!w || !st || !st.at) { S.moves = Math.max(BL.movesOf(st), 6); S.joined = QE.TODAY; S.plan = []; }   // not on the map yet: 6 moves are waiting (plus any extra from the teacher)
+    else { S.moves = BL.movesOf(st); S.joined = st.joined || null; S.health = st.health ?? S.health; S.mana = st.mana || 0; S.chapter = w.chapter; S.boss = BL.bossNow(w);
       S.plan = []; S.camp = st.camp && st.camp.day === w.day && st.at === st.camp.k ? st.camp : null; }
     S.chestsUp = w ? Object.keys(w.chests || {}).filter(k => !BL.isUnder(k) || st && st.under).length : 0;
     ADV.save(); document.querySelectorAll('#landKick ~ .small').forEach(x => x.remove()); renderLand();
@@ -192,7 +218,7 @@ async function landLive() {
 }
 landLive(); QE.onChange(landLive);
 if (!S.storySeen) ADV.storyIntro();
-{ const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#16a34a', C: '#dc2626', P: '#d97706' }[sg.key[0]] : '#d97706'); }
+{ const sg = QE.suggestion(), m = sg && typeof MISCON !== 'undefined' && MISCON[sg.key]; $('enemyIc').src = ADV.icon(m && ADV.ICONS[m.s] ? m.s : 'boss', sg ? { B: '#005e22', C: '#c8001e', P: '#d08000' }[sg.key[0]] : '#d08000'); }
 if (S.missionsToday) {
   $('tMission').classList.add('done'); $('mDone').hidden = false;
   $('mText').textContent = `${S.missionsToday} done today. Another one still counts for securing spec points and loot.`;
@@ -201,7 +227,7 @@ if (S.missionsToday) {
 
 {
   const cd = QE.cardsToday(), target = QE.cardsTarget(), won = QE.revisedToday();
-  if (cd.done) { $('tCards').classList.add('done'); $('cDone').hidden = false; $('cText').textContent = `${cd.n} cards today: +${cd.xp} XP, ❤ +${cd.n}, 🔮 +${cd.n} and a loot drop.`; }
+  if (cd.done) { $('tCards').classList.add('done'); $('cDone').hidden = false; $('cText').innerHTML = `${cd.n} cards today: +${cd.xp} XP, ${ui('heart')} +${cd.n}, ${ui('mana')} +${cd.n} and a loot drop.`; }
   else $('cText').innerHTML = `${cd.n ? `${cd.n} of ${target} cards today. ` : ''}${target} cards → ${won ? 'a loot drop' : '+1 move and a loot drop'}.`;
 }
 $('mText').insertAdjacentHTML('beforeend', QE.revisedToday() ? '' : ' <b>Your first mission today also gives +1 move.</b>');
@@ -211,11 +237,36 @@ $('sci').innerHTML = [['b', 'Biology', 'Health'], ['c', 'Chemistry', 'Magic'], [
 const it = S.lastLoot && ADV_ITEMS.find(i => i.id === S.lastLoot);
 if (it) $('loot').innerHTML = `<div class="loot"><img class="px" src="${PIXEL.item(it.id)}" alt=""><div><b>${it.name}</b><br><span class="small">${ADV_TAG(it)}${ADV_STATS_TXT(it) ? ' · ' + ADV_STATS_TXT(it) : ''} · ${it.d}</span><br><a href="adventurer-wardrobe.html">Wear it →</a></div></div>`;
 else { $('lootTitle').textContent = 'Loot'; $('loot').innerHTML = `<p style="font-size:15px">Every mission drops an item. Finish today's mission to see what you get.</p>`; }
-$('brews').innerHTML = !ADV.can('shop') ? `<span class="small">🔒 Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.</span>`
-  : Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `${(BL.BREWS[n] || {}).ic || '🧪'} ${(BL.BREWS[n] || {}).name || n} ×${q}`).join('<br>') || 'None';
+$('brews').innerHTML = !ADV.can('shop') ? `<span class="small">${ui('lock')} Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.</span>`
+  : Object.entries(S.brews).filter(([, q]) => q).map(([n, q]) => `${ui((BL.BREWS[n] || {}).px || 'flask')} ${(BL.BREWS[n] || {}).name || n} ×${q}`).join('<br>') || 'None';
 $('coins').textContent = S.coins;
 $('showMe').checked = !QE.prog.hide;
 $('showMe').onchange = () => QE.setHide(!$('showMe').checked);
+
+/* 7-day leaderboard + Main Characters right on My Adventurer (no extra landing-page hop) */
+{
+  const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const faceOf = r => r.look ? PIXEL.portrait(r.look) : PIXEL.portrait(PIXEL.DEFAULT);
+  const LEG = [['syringe', 'Biology', 'B'], ['pebble', 'Chemistry', 'C'], ['dodgeball', 'Physics', 'P']];
+  let boardUid;
+  function drawWeek() {
+    if (!QE.known) return;
+    const who = QE.user ? QE.user.uid : '-'; if (who === boardUid) return; boardUid = who;
+    if (!QE.user) { $('lbWeek').innerHTML = '<li class="small">Sign in to see the board.</li>'; $('legs').innerHTML = '<p class="small">Sign in to see who holds them.</p>'; return; }
+    QE.board().then(rows => {
+      const week = rows.filter(r => r.l7.t > 0).sort((a, b) => b.l7.t - a.l7.t);
+      const top = week.slice(0, 5), me = week.findIndex(r => r.me);
+      const li = (r, i) => `<li class="${r.me ? 'you' : ''}"><b>${i + 1}</b><img class="px" src="${faceOf(r)}" alt=""><span class="n">${esc(r.name)}${r.me ? ' (you)' : ''}</span><span class="v">${r.l7.t}</span></li>`;
+      $('lbWeek').innerHTML = top.length ? top.map(li).join('') + (me >= 5 ? `<li class="small" style="justify-content:center">…</li>` + li(week[me], me) : '')
+        : '<li class="small">No correct answers in the last 7 days. Be the first!</li>';
+      $('legs').innerHTML = LEG.map(([id, sci, f]) => {
+        const item = ADV_ITEMS.find(i => i.id === id), best = week.filter(r => r.l7[f] > 0).sort((a, b) => b.l7[f] - a.l7[f])[0];
+        return `<div class="leg"><img class="px" src="${PIXEL.item(id)}" alt=""><div><b>${item ? esc(item.name) : id}</b><br><span class="small">${sci} · ${best ? `held by <b>${esc(best.name)}${best.me ? ' (you!)' : ''}</b> · ${best.l7[f]} correct` : 'nobody in the last 7 days'}</span></div></div>`;
+      }).join('');
+    }).catch(() => { $('lbWeek').innerHTML = '<li class="small">The leaderboard can\'t be reached right now.</li>'; $('legs').innerHTML = ''; });
+  }
+  drawWeek(); QE.onChange(drawWeek);
+}
 </script>
 </body>
 </html>

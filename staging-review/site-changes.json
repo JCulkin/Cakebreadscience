@@ -1,0 +1,60 @@
+{
+  "updated": "2026-11-28",
+  "note": "ONLY list directly reviewable standalone deliverables here: dedicated asset/screenshot showcase pages (e.g. /staging-review/game-icons.html), visual comparison sheets, or brand-new standalone pages to read end-to-end (e.g. /research/). Do NOT log general in-situ UI tweaks, buttons, filters, or behaviour changes — the teacher checks those directly in-situ.",
+  "items": [
+    {
+      "id": "synthetic-lesson-exam-bank-pilot",
+      "category": "showcase",
+      "status": "review",
+      "date": "2026-11-28",
+      "title": "Synthetic Lesson Exam Bank Pilot (B2f, C1f, C1g, P8) + 4 New Diagram Makers",
+      "summary": "Standalone preview of 13 original Edexcel-style exam questions (58 marks) across Biology 2f Respiration, Chemistry 1f Ionic bonding, Chemistry 1g Covalent bonding, and Physics 8 Astrophysics, with linked-chain & calculation mark schemes (Accept/Reject, Single Award filtering) rendered in both Revision Notes and 16:9 Class Slides views using 4 new live diagrams.js makers (respiration, allotropes, orbit, starlife).",
+      "previewUrl": "/interactive/lessons/assets/exam-bank/preview.html",
+      "extraLinks": [
+        { "label": "Diagram Lab (4 new makers)", "url": "/interactive/spec-quiz/diagram-lab.html" }
+      ]
+    },
+    {
+      "id": "breadventure-pixel-icons",
+      "category": "showcase",
+      "status": "review",
+      "date": "2026-11-28",
+      "title": "Breadventure Land Pixel-Art Icon Kit (Showcase)",
+      "summary": "Dedicated visual showcase of all 41 new 12×12 pixel-art RPG UI icons on light/dark swatches plus Before vs After UI comparisons (replacing OS emojis across Breadventure Land & Practice).",
+      "previewUrl": "/staging-review/game-icons.html",
+      "extraLinks": [
+        { "label": "Full Game Showcase", "url": "/admin/showcase.html" }
+      ]
+    },
+    {
+      "id": "research-page",
+      "category": "pages",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Teacher & Family Research Page (/research/)",
+      "summary": "Standalone public page explaining the cognitive science, UK classroom pedagogy, print/web clarity, game motivation, and family learning routines behind Cakebread Science, with verified external links.",
+      "previewUrl": "/research/",
+      "extraLinks": [
+        { "label": "Families section", "url": "/research/#families" }
+      ]
+    },
+    {
+      "id": "student-science-of-learning",
+      "category": "pages",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Curious-Student Science of Learning Page (/how-to-use/science-of-learning.html)",
+      "summary": "Standalone plain-English deep dive for Years 8–11 students on memory science, 2-day spacing, interleaving, and family quizzing (subtly linked at the bottom of /how-to-use/).",
+      "previewUrl": "/how-to-use/science-of-learning.html"
+    },
+    {
+      "id": "how-to-use-page",
+      "category": "pages",
+      "status": "review",
+      "date": "2026-11-27",
+      "title": "Student Guide Page (/how-to-use/)",
+      "summary": "Standalone student-facing guide explaining how each part of the site works, how spec points turn green, revision mode switching, and page tour replays.",
+      "previewUrl": "/how-to-use/"
+    }
+  ]
+}

@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Staging Review Hub · Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111;--paper:#eeeae0;--card:#fff;--muted:#555;--line:#d4cfc2;
+  --bio:#1d6b2f;--chem:#8c0013;--phys:#a85d00;--maths:#7b1fa2;
+  --gold:#facc15;--green:#15803d;--greenBg:#dcfce7;--amber:#b45309;--amberBg:#fef3c7;
+  --red:#b91c1c;--redBg:#fee2e2;--blue:#1d4ed8;--blueBg:#dbeafe;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+a{color:inherit}
+button{font-family:'Barlow',Arial,sans-serif;cursor:pointer}
+
+.stbar{background:var(--gold);color:#111;font:800 13px/1.2 'Barlow',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:7px 20px;border-bottom:2px solid #111;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.lhead{background:#111;color:var(--paper);padding:20px 26px 18px;border-bottom:4px solid var(--gold)}
+.lhead-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.lhead .kick{font-size:12px;letter-spacing:2.4px;text-transform:uppercase;color:var(--gold);font-weight:800}
+.lhead h1{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,5vw,50px);line-height:1;margin-top:4px}
+.lhead h1 span{color:var(--gold)}
+.lhead .meta{margin-top:8px;font-size:14px;color:#ccc;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.lhead .meta a{color:#7fd39b;font-weight:700;text-decoration:none}
+.lhead .meta a:hover{text-decoration:underline}
+
+.rbtn{font:800 14px/1 'Barlow',sans-serif;padding:9px 14px;border:2px solid #111;border-radius:6px;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.rbtn.gold{background:var(--gold);color:#111}
+.rbtn.gold:hover{background:#fde047}
+
+.tabs-wrap{background:#1c1c1c;border-bottom:3px solid #111;padding:0 20px;position:sticky;top:0;z-index:30}
+.tabs{max-width:1160px;margin:0 auto;display:flex;gap:6px;overflow-x:auto;padding:10px 0}
+.tab{flex:none;font:800 15px/1 'Barlow',sans-serif;padding:10px 16px;border:2px solid #444;border-radius:6px;background:#262626;color:#ddd;display:inline-flex;align-items:center;gap:8px}
+.tab:hover{background:#333;color:#fff}
+.tab.on{background:var(--gold);color:#111;border-color:var(--gold)}
+.tab .cnt{font-size:12px;font-weight:900;background:rgba(0,0,0,.22);color:inherit;padding:2px 7px;border-radius:999px}
+.tab.on .cnt{background:#111;color:var(--gold)}
+
+.wrap{max-width:1160px;margin:0 auto;padding:22px 20px 70px}
+.controls{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.fbtn{font:700 13.5px/1 'Barlow',sans-serif;padding:7px 12px;border:2px solid #111;border-radius:5px;background:#fff;color:#111}
+.fbtn.on{background:#111;color:var(--gold)}
+
+.sec-h{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;border-bottom:3px solid #111;padding-bottom:4px;margin:22px 0 12px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.sec-h:first-child{margin-top:0}
+.sec-h small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--muted);text-transform:none}
+
+.card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;padding:12px 16px;margin-bottom:10px;transition:opacity .18s ease,transform .18s ease}
+.card.dismissing{opacity:0;transform:translateX(18px)}
+.card.is-bad{border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.16)}
+.card.is-good{border-color:var(--green)}
+.pr-bad-box{margin-top:10px;background:#fff5f5;border:1.5px solid #fecaca;border-radius:5px;padding:9px 12px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.pr-bad-box label{font:800 12px/1 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.9px;color:var(--red);padding-top:7px;flex:none}
+.pr-bad-box textarea{flex:1 1 280px;min-height:46px;font:600 14px/1.4 'Barlow',Arial,sans-serif;padding:6px 9px;border:2px solid #f87171;border-radius:5px;background:#fff;color:#111;resize:vertical}
+.pr-bad-box textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.15)}
+.card-row{display:grid;grid-template-columns:64px 1fr auto;gap:8px 14px;align-items:center}
+.card-row.nocode{grid-template-columns:1fr auto}
+.code{font:900 28px/1 'Barlow Condensed',sans-serif;color:var(--c,#111);text-transform:uppercase}
+.code small{display:block;font:700 11px/1.1 'Barlow',sans-serif;letter-spacing:.8px;color:#666;margin-top:2px}
+.info h3{font-size:18px;font-weight:800;line-height:1.2}
+.pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;align-items:center}
+.pill{display:inline-block;font:700 12px/1 'Barlow',sans-serif;padding:4px 8px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+.pill.base{background:#eef2ff;color:#3730a3;border-color:#c7d2fe}
+.pill.changed{background:var(--amberBg);color:#92400e}
+.pill.added{background:var(--greenBg);color:#166534}
+.pill.removed{background:var(--redBg);color:#991b1b}
+.pill.newl{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pill.chk{background:var(--green);color:#fff;border-color:var(--green)}
+.pill.rev{background:var(--amberBg);color:#92400e;border-color:#f59e0b}
+.pill.tier{background:#111;color:#fff}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;align-items:center}
+.btn{font:700 13.5px/1 'Barlow',sans-serif;padding:8px 12px;border:2px solid #111;border-radius:5px;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.btn.primary{background:#111;color:var(--gold)}
+.btn.primary:hover{background:#222}
+.btn:hover{background:#f5f2e8}
+@media(max-width:760px){.card-row{grid-template-columns:52px 1fr}.card-row .acts,.card-row.nocode .acts{grid-column:1/-1;justify-content:flex-start}}
+
+/* Flashcard side-by-side grid & Good/Bad review controls */
+.fc-card{background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);border-radius:6px;margin-bottom:14px;overflow:hidden;transition:opacity .18s ease,transform .18s ease}
+.fc-card.dismissing{opacity:0;transform:translateX(18px)}
+.fc-card.is-bad{border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.16)}
+.fc-card.is-good{border-color:var(--green)}
+.fc-head{background:#f7f5ee;border-bottom:1.5px solid #ddd;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.fc-card.is-bad .fc-head{background:#fef2f2;border-bottom-color:#fecaca}
+.fc-card.is-good .fc-head{background:#f0fdf4;border-bottom-color:#bbf7d0}
+.fc-rev-acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.fc-btn{font:800 13px/1 'Barlow',sans-serif;padding:6px 12px;border:2px solid #111;border-radius:5px;background:#fff;color:#111;display:inline-flex;align-items:center;gap:4px}
+.fc-btn.good:hover,.fc-btn.good.on{background:var(--green);color:#fff;border-color:var(--green)}
+.fc-btn.bad:hover,.fc-btn.bad.on{background:var(--red);color:#fff;border-color:var(--red)}
+.fc-btn.undo{font-size:12px;padding:5px 9px;color:#555;border-color:#999}
+.fc-btn.undo:hover{background:#eee;color:#111}
+.fc-bad-box{background:#fff5f5;border-bottom:1.5px solid #fecaca;padding:10px 14px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.fc-bad-box label{font:800 12px/1 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.9px;color:var(--red);padding-top:7px;flex:none}
+.fc-bad-box textarea{flex:1 1 280px;min-height:48px;font:600 14px/1.4 'Barlow',Arial,sans-serif;padding:6px 9px;border:2px solid #f87171;border-radius:5px;background:#fff;color:#111;resize:vertical}
+.fc-bad-box textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 2px rgba(185,28,28,.15)}
+.fc-toolbar{position:sticky;top:58px;z-index:25;background:#111;color:#fff;border:2px solid #111;border-radius:6px;padding:10px 14px;margin-bottom:14px;box-shadow:0 3px 10px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:space-between;gap:10px 14px;flex-wrap:wrap}
+.fc-toolbar .fc-stats{font-size:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.fc-toolbar .fc-stats b{color:var(--gold)}
+.fc-toolbar .fc-tacts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fc-toast{position:fixed;right:18px;bottom:18px;z-index:200;background:#111;color:#fff;border:2px solid var(--gold);border-radius:6px;padding:10px 14px;font:700 14px/1.3 'Barlow',sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.3);display:flex;align-items:center;gap:10px}
+.fc-toast button{background:var(--gold);color:#111;border:0;border-radius:4px;padding:4px 10px;font:800 13px 'Barlow',sans-serif}
+.fc-pair{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:760px){.fc-pair{grid-template-columns:1fr}}
+.fc-side{padding:12px 16px;font-size:14.5px;line-height:1.45}
+.fc-side.before{background:#faf9f6;border-right:1.5px dashed #ccc}
+.fc-side .lbl{font:900 11.5px/1 'Barlow Condensed',sans-serif;letter-spacing:1.2px;text-transform:uppercase;padding:3px 7px;border-radius:3px;display:inline-block;margin-bottom:8px}
+.fc-side.before .lbl{background:#3f3f46;color:#fff}
+.fc-side.after .lbl{background:var(--green);color:#fff}
+.fc-front{font-weight:700;padding-bottom:8px;margin-bottom:8px;border-bottom:1px solid #e5e0d4}
+.fc-side img{max-width:100%;max-height:220px;height:auto;display:block;margin:6px auto;border:1px solid #ddd;border-radius:4px;background:#fff}
+.fc-side .fc-points{margin:4px 0 0 18px}
+.fc-side .fc-points li{margin:2px 0}
+
+/* Full-screen Student Study Guide side-by-side modal comparer */
+body.sg-viewing{overflow:hidden}
+#sgModal{display:none;position:fixed;inset:0;z-index:100;background:#141414;color:#eee;flex-direction:column}
+body.sg-viewing #sgModal{display:flex}
+.sg-top{background:#111;border-bottom:2px solid #333;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:none}
+.sg-top .tbtn{font:700 13.5px/1 'Barlow',sans-serif;padding:7px 11px;border:1.5px solid #555;background:#222;color:#eee;border-radius:5px;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.sg-top .tbtn:hover{background:#333;border-color:#888}
+.sg-top .tbtn.on{background:var(--gold);color:#111;border-color:var(--gold)}
+.sg-top .sg-title{font:800 16px/1.1 'Barlow',sans-serif;color:#fff;margin-right:auto;display:flex;align-items:center;gap:8px}
+.sg-split{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#0d0d0d}
+.sg-split.single{grid-template-columns:1fr}
+.sg-split.single .sg-pane.before{display:none}
+@media(max-width:900px){.sg-split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+.sg-pane{display:flex;flex-direction:column;min-height:0;background:#1d1d1d;border:2px solid #333;border-radius:6px;overflow:hidden}
+.sg-phead{background:#222;padding:7px 12px;border-bottom:1px solid #333;display:flex;align-items:center;gap:8px;font:700 13px/1 'Barlow',sans-serif;flex:none}
+.sg-phead .badge{font:900 12px/1 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:3px}
+.sg-phead .badge.b{background:#3f3f46;color:#fff}
+.sg-phead .badge.a{background:var(--green);color:#fff}
+.sg-fwrap{flex:1;min-height:0;display:flex;justify-content:center;background:#2a2a2a;overflow:auto}
+.sg-fwrap iframe{width:100%;height:100%;border:0;background:#fff}
+.sg-fwrap.mobile iframe{width:390px;max-width:100%;border-left:2px solid #444;border-right:2px solid #444}
+.sg-empty{margin:auto;text-align:center;color:#aaa;padding:30px;max-width:360px}
+.sg-empty b{display:block;font:900 26px/1.1 'Barlow Condensed',sans-serif;color:#eee;text-transform:uppercase;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="stbar">
+  <span>STAGING REVIEW HUB · NO SIGN-IN REQUIRED · BLOCKED ON LIVE SITE</span>
+  <span id="metaCommits">Loading…</span>
+</div>
+<header class="lhead">
+  <div class="lhead-top">
+    <div>
+      <div class="kick">Items Waiting For Review</div>
+      <h1>Staging <span>Review Hub</span></h1>
+      <div class="meta">
+        <a href="/">← Home</a>
+        <a href="/interactive/lessons/">Lessons</a>
+        <a href="/worksheets/science.html">Worksheets</a>
+        <a href="/booklets/">Booklets</a>
+        <a href="/Flashcards/">Flashcards</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs-wrap" aria-label="Review sections">
+  <div class="tabs" id="tabs">
+    <button type="button" class="tab" data-tab="decks">🎬 Class Slides <span class="cnt" id="cnt-decks">…</span></button>
+    <button type="button" class="tab" data-tab="guides">📖 Revision Notes <span class="cnt" id="cnt-guides">…</span></button>
+    <button type="button" class="tab" data-tab="printables">📄 Printables <span class="cnt" id="cnt-printables">…</span></button>
+    <button type="button" class="tab" data-tab="flashcards">🃏 Flashcards <span class="cnt" id="cnt-flashcards">…</span></button>
+    <button type="button" class="tab" data-tab="site">🖼️ Showcases &amp; Pages <span class="cnt" id="cnt-site">…</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="controls">
+    <div class="filters" id="filters"></div>
+  </div>
+  <div id="content"><p>Loading staging changes…</p></div>
+</main>
+
+<!-- Full-screen side-by-side Revision Notes Comparer -->
+<div id="sgModal" role="dialog" aria-modal="true" aria-label="Revision Notes Comparer">
+  <div class="sg-top">
+    <button type="button" class="tbtn" id="sgClose">← Back to Hub</button>
+    <div class="sg-title" id="sgTitle"></div>
+    <button type="button" class="tbtn on" id="sgModeSplit">⚖️ Split</button>
+    <button type="button" class="tbtn" id="sgModeFull">📖 Full After</button>
+    <button type="button" class="tbtn" id="sgMobile">📱 390px</button>
+    <a class="tbtn" id="sgOpenTab" href="#" target="_blank" rel="noopener">Open ↗</a>
+  </div>
+  <div class="sg-split" id="sgSplit">
+    <div class="sg-pane before">
+      <div class="sg-phead"><span class="badge b">BEFORE</span><span id="sgBeforeLbl"></span></div>
+      <div class="sg-fwrap" id="sgBeforeWrap"></div>
+    </div>
+    <div class="sg-pane after">
+      <div class="sg-phead"><span class="badge a">AFTER (STAGING DRAFT)</span><span id="sgAfterLbl"></span></div>
+      <div class="sg-fwrap" id="sgAfterWrap"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(async function(){
+  if (/^(www\.)?cakebreadscience\.com$/i.test(location.hostname)) {
+    document.body.innerHTML = '<main style="max-width:560px;margin:80px auto;font-family:sans-serif;text-align:center"><h1>404</h1><p>This staging review hub is not available on the live site.</p><p><a href="/">Go home</a></p></main>';
+    return;
+  }
+
+  const SUBJ_COL = { biology: '#1d6b2f', chemistry: '#8c0013', physics: '#a85d00', maths: '#7b1fa2' };
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const fetchJson = url => fetch(url, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null);
+  const [LJ, LD, WD, FD, SD] = await Promise.all([
+    fetchJson('/interactive/lessons/lessons.json'),
+    fetchJson('/interactive/lessons/diff/data.json'),
+    fetchJson('/worksheets/diff/data.json'),
+    fetchJson('/staging-review/flashcards-diff.json'),
+    fetchJson('/staging-review/site-changes.json')
+  ]);
+
+  const ALL_LESSONS = [];
+  if (LJ && LJ.subjects) {
+    LJ.subjects.forEach(s => (s.sections || []).forEach(sec => (sec.topics || []).forEach(t => {
+      if (!t.status) return;
+      const vers = (t.versions || []).slice().sort();
+      const latestV = vers.length ? vers[vers.length - 1] : null;
+      ALL_LESSONS.push({
+        id: `${s.id}-${t.code}`,
+        subject: s.id,
+        subjectName: s.name,
+        code: t.code,
+        title: t.title,
+        spec: t.spec || '',
+        status: t.status,
+        studentStatus: t.studentStatus || 'draft',
+        split: !!t.split,
+        latestV,
+        draftUrl: `/interactive/lessons/${s.id}/${t.code}/draft/`,
+        deckUrl: `/interactive/lessons/${s.id}/${t.code}/draft/${t.split ? 'deck.html' : ''}#present`,
+        beforeGuideUrl: latestV ? `/interactive/lessons/${s.id}/${t.code}/v${latestV}/` : null
+      });
+    })));
+  }
+
+  const DECKS = (LD && LD.lessons) || [];
+  const SHEETS = (WD && WD.sheets) || [];
+  const FCARDS = (FD && FD.cards) || [];
+  const SITE_ITEMS = (SD && SD.items) || [];
+
+  const decksToReview = ALL_LESSONS.filter(l => l.status !== 'checked');
+  const decksChecked = ALL_LESSONS.filter(l => l.status === 'checked');
+  const guidesToReview = ALL_LESSONS.filter(l => l.split && l.studentStatus !== 'checked');
+  const guidesChecked = ALL_LESSONS.filter(l => l.split && l.studentStatus === 'checked');
+  const printablesToReview = SHEETS.filter(s => s.underReview || !s.checked);
+  const printablesChecked = SHEETS.filter(s => !s.underReview && s.checked);
+  const siteToReview = SITE_ITEMS.filter(x => x.status !== 'checked');
+  const siteChecked = SITE_ITEMS.filter(x => x.status === 'checked');
+
+  /* Persistent local Flashcards Good / Bad + notes store */
+  const FC_STORE_KEY = 'cbs.staging.fcReview.v1';
+  let fcMarks = {};
+  try { fcMarks = JSON.parse(localStorage.getItem(FC_STORE_KEY) || '{}') || {}; } catch (e) { fcMarks = {}; }
+  const fcKey = fc => `${fc.subject}:${fc.id}`;
+  const fcMarkOf = fc => fcMarks[fcKey(fc)] || null;
+  const saveFcMarks = () => { try { localStorage.setItem(FC_STORE_KEY, JSON.stringify(fcMarks)); } catch (e) {} };
+  const stripHtml = s => String(s || '').replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+  const fcStats = () => {
+    let good = 0, bad = 0;
+    FCARDS.forEach(fc => {
+      const m = fcMarkOf(fc);
+      if (m && m.status === 'good') good++;
+      else if (m && m.status === 'bad') bad++;
+    });
+    return { good, bad, total: FCARDS.length, left: FCARDS.length - good };
+  };
+  function updateFcTabCount() {
+    document.getElementById('cnt-flashcards').textContent = String(fcStats().left);
+  }
+  let toastTimer = null;
+  function showToast(msg, undoFn) {
+    let t = document.getElementById('fcToast');
+    if (t) t.remove();
+    if (toastTimer) clearTimeout(toastTimer);
+    t = document.createElement('div');
+    t.id = 'fcToast';
+    t.className = 'fc-toast';
+    t.innerHTML = `<span>${esc(msg)}</span>${undoFn ? '<button type="button" id="fcToastUndo">Undo</button>' : ''}`;
+    document.body.appendChild(t);
+    if (undoFn) {
+      document.getElementById('fcToastUndo').onclick = () => {
+        t.remove();
+        if (toastTimer) clearTimeout(toastTimer);
+        undoFn();
+      };
+    }
+    toastTimer = setTimeout(() => { if (t.isConnected) t.remove(); }, undoFn ? 4500 : 2500);
+  }
+  function buildFcReport() {
+    const badList = [], goodList = [];
+    FCARDS.forEach(fc => {
+      const m = fcMarkOf(fc);
+      if (!m) return;
+      if (m.status === 'bad') badList.push({ fc, note: (m.note || '').trim() });
+      else if (m.status === 'good') goodList.push(fc);
+    });
+    const lines = [
+      `Flashcards Staging Review (${new Date().toISOString().slice(0, 10)})`,
+      `Checked: ${goodList.length + badList.length} of ${FCARDS.length} · Good: ${goodList.length} · Needs fix: ${badList.length}`,
+      ''
+    ];
+    if (badList.length) {
+      lines.push(`=== NEEDS FIX (${badList.length}) ===`);
+      badList.forEach(({ fc, note }, i) => {
+        const front = stripHtml(fc.newFront).slice(0, 110);
+        lines.push(`${i + 1}. [${fc.subjectName} · ${fc.spec || fc.sub || 'no spec'} · id:${fc.id} · ${fc.kind}] "${front}"`);
+        lines.push(`   Fix: ${note || '(marked bad — no note typed)'}`);
+      });
+      lines.push('');
+    }
+    if (goodList.length) {
+      lines.push(`=== APPROVED / GOOD (${goodList.length}) ===`);
+      const bySubj = {};
+      goodList.forEach(fc => {
+        const s = fc.subjectName || fc.subject;
+        (bySubj[s] = bySubj[s] || []).push(`${fc.spec || fc.sub || '?'}#${fc.id}`);
+      });
+      Object.entries(bySubj).forEach(([s, ids]) => {
+        lines.push(`${s} (${ids.length}): ${ids.join(', ')}`);
+      });
+    }
+    return lines.join('\n');
+  }
+  async function copyFcReport() {
+    const st = fcStats();
+    if (!st.good && !st.bad) { showToast('Mark at least one flashcard Good or Bad first.'); return; }
+    const text = buildFcReport();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+    showToast(`✓ Copied review notes (${st.bad} to fix, ${st.good} good) — paste straight into chat!`);
+  }
+
+  /* Persistent local Printables (Worksheets & Booklets) Good / Bad + notes store — shared with /worksheets/diff/ */
+  const PR_STORE_KEY = 'cbs.staging.prReview.v1';
+  let prMarks = {};
+  const loadPrMarks = () => { try { prMarks = JSON.parse(localStorage.getItem(PR_STORE_KEY) || '{}') || {}; } catch (e) { prMarks = {}; } };
+  loadPrMarks();
+  const prMarkOf = s => prMarks[s.id] || null;
+  const savePrMarks = () => { try { localStorage.setItem(PR_STORE_KEY, JSON.stringify(prMarks)); } catch (e) {} };
+  const prStats = () => {
+    let good = 0, bad = 0;
+    printablesToReview.forEach(s => {
+      const m = prMarkOf(s);
+      if (m && m.status === 'good') good++;
+      else if (m && m.status === 'bad') bad++;
+    });
+    return { good, bad, total: printablesToReview.length, left: printablesToReview.length - good };
+  };
+  function updatePrTabCount() {
+    document.getElementById('cnt-printables').textContent = String(prStats().left);
+  }
+  function buildPrReport() {
+    const badList = [], goodList = [];
+    SHEETS.forEach(s => {
+      const m = prMarkOf(s);
+      if (!m) return;
+      if (m.status === 'bad') badList.push({ s, note: (m.note || '').trim() });
+      else if (m.status === 'good') goodList.push(s);
+    });
+    const lines = [
+      `Printables Staging Review (${new Date().toISOString().slice(0, 10)})`,
+      `Checked: ${goodList.length + badList.length} of ${printablesToReview.length} · Good: ${goodList.length} · Needs fix: ${badList.length}`,
+      ''
+    ];
+    if (badList.length) {
+      lines.push(`=== NEEDS FIX (${badList.length}) ===`);
+      badList.forEach(({ s, note }, i) => {
+        lines.push(`${i + 1}. [${s.subjectName || s.subject} · ${s.tier || ''} · ${s.title}] (${s.path || s.url})`);
+        lines.push(`   Fix: ${note || '(marked bad — no note typed)'}`);
+      });
+      lines.push('');
+    }
+    if (goodList.length) {
+      lines.push(`=== APPROVED / GOOD (${goodList.length}) ===`);
+      goodList.forEach(s => {
+        lines.push(`- [${s.subjectName || s.subject} · ${s.tier || ''}] ${s.title} (${s.path || s.url})`);
+      });
+    }
+    return lines.join('\n');
+  }
+  async function copyPrReport() {
+    const st = prStats();
+    const anyChecked = Object.keys(prMarks).length;
+    if (!anyChecked) { showToast('Mark at least one worksheet or booklet Good or Bad first.'); return; }
+    const text = buildPrReport();
+    try { await navigator.clipboard.writeText(text); } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    showToast(`✓ Copied printable review notes (${st.bad} to fix, ${st.good} good) — paste straight into chat!`);
+  }
+
+  document.getElementById('cnt-decks').textContent = String(decksToReview.length);
+  document.getElementById('cnt-guides').textContent = String(guidesToReview.length);
+  updatePrTabCount();
+  updateFcTabCount();
+  document.getElementById('cnt-site').textContent = String(siteToReview.length);
+  document.getElementById('metaCommits').textContent = `HEAD ${(LD && LD.headCommit) || (WD && WD.headCommit) || (FD && FD.headCommit) || 'staging'} · Live main ${(WD && WD.baseCommit) || (FD && FD.baseCommit) || ''}`;
+
+  const normTab = h => h === 'worksheets' ? 'printables' : h;
+  let activeTab = normTab(location.hash.replace(/^#/, '') || 'decks');
+  if (!['decks', 'guides', 'printables', 'flashcards', 'site'].includes(activeTab)) activeTab = 'decks';
+  const defaultFilter = tab => tab === 'flashcards' ? 'image' : 'review';
+  let activeFilter = defaultFilter(activeTab);
+  let fcLimit = 24;
+
+  function renderDecks() {
+    const fEl = document.getElementById('filters');
+    const fs = [
+      ['review', `Needs review (${decksToReview.length})`],
+      ['biology', `Biology (${decksToReview.filter(l => l.subject === 'biology').length})`],
+      ['chemistry', `Chemistry (${decksToReview.filter(l => l.subject === 'chemistry').length})`],
+      ['physics', `Physics (${decksToReview.filter(l => l.subject === 'physics').length})`],
+      ...(decksChecked.length ? [['checked', `Checked (${decksChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const diffById = {};
+    DECKS.forEach(d => { diffById[d.id] = d; });
+
+    const list = activeFilter === 'checked'
+      ? decksChecked
+      : decksToReview.filter(l => activeFilter === 'review' || l.subject === activeFilter);
+
+    const cardHtml = l => {
+      const d = diffById[l.id];
+      const pills = [];
+      if (l.status === 'checked') pills.push('<span class="pill chk">Checked ✓</span>');
+      else pills.push('<span class="pill rev">Under review</span>');
+      if (d) {
+        if (d.beforeLabel) pills.push(`<span class="pill base">vs ${esc(d.beforeLabel)}</span>`);
+        if (d.isNew) pills.push(`<span class="pill newl">NEW · ${d.newTotal} slides</span>`);
+        else {
+          if (d.counts.changed) pills.push(`<span class="pill changed">${d.counts.changed} changed</span>`);
+          if (d.counts.added) pills.push(`<span class="pill added">+${d.counts.added} added</span>`);
+          if (d.counts.removed) pills.push(`<span class="pill removed">−${d.counts.removed} removed</span>`);
+        }
+      }
+      const col = SUBJ_COL[l.subject] || '#111';
+      return `<div class="card" style="--c:${col}">
+        <div class="card-row">
+          <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
+          <div class="info"><h3>${esc(l.title)}</h3><div class="pills">${pills.join('')}</div></div>
+          <div class="acts">
+            ${d ? `<a class="btn primary" href="/interactive/lessons/diff/#${esc(l.id)}">⚖️ Side-by-side slides →</a>` : ''}
+            <a class="btn" href="${esc(l.deckUrl)}" target="_blank" rel="noopener">▶ Present draft</a>
+          </div>
+        </div>
+      </div>`;
+    };
+
+    const heading = activeFilter === 'checked'
+      ? `Checked Class Slides <small>already signed off and frozen</small>`
+      : `Class Slides — Needs Review <small>only slide decks still waiting for approval · checked decks hidden</small>`;
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || '<p>All class slides in this filter are checked! 🎉</p>');
+  }
+
+  function renderGuides() {
+    const fEl = document.getElementById('filters');
+    const fs = [
+      ['review', `Needs review (${guidesToReview.length})`],
+      ['biology', `Biology (${guidesToReview.filter(l => l.subject === 'biology').length})`],
+      ['chemistry', `Chemistry (${guidesToReview.filter(l => l.subject === 'chemistry').length})`],
+      ['physics', `Physics (${guidesToReview.filter(l => l.subject === 'physics').length})`],
+      ...(guidesChecked.length ? [['checked', `Signed off (${guidesChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const list = activeFilter === 'checked'
+      ? guidesChecked
+      : guidesToReview.filter(l => activeFilter === 'review' || l.subject === activeFilter);
+
+    const cardHtml = l => {
+      const pills = [
+        l.studentStatus === 'checked' ? '<span class="pill chk">Signed off ✓</span>' : '<span class="pill rev">Needs review</span>',
+        l.beforeGuideUrl ? `<span class="pill base">Compare vs v${esc(l.latestV)}</span>` : '<span class="pill newl">First Revision Notes</span>',
+        `<span class="pill">Spec ${esc(l.spec)}</span>`
+      ];
+      const col = SUBJ_COL[l.subject] || '#111';
+      return `<div class="card" style="--c:${col}">
+        <div class="card-row">
+          <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
+          <div class="info"><h3>${esc(l.title)}</h3><div class="pills">${pills.join('')}</div></div>
+          <div class="acts">
+            <button type="button" class="btn primary" data-sg="${esc(l.id)}">⚖️ Side-by-side compare</button>
+            <a class="btn" href="${esc(l.draftUrl)}" target="_blank" rel="noopener">Open draft ↗</a>
+          </div>
+        </div>
+      </div>`;
+    };
+
+    const heading = activeFilter === 'checked'
+      ? `Signed-Off Revision Notes <small>already approved</small>`
+      : `Revision Notes — Needs Review <small>${list.length} waiting for approval · signed-off notes hidden</small>`;
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || '<p>All revision notes in this filter are signed off! 🎉</p>');
+  }
+
+  function renderPrFiltersAndToolbar() {
+    const fEl = document.getElementById('filters');
+    const st = prStats();
+    const unrev = printablesToReview.filter(s => { const m = prMarkOf(s); return !m || m.status !== 'good'; });
+    const bCount = unrev.filter(s => s.format === 'booklet').length;
+    const wCount = unrev.filter(s => s.format !== 'booklet').length;
+    const subjs = [...new Set(printablesToReview.map(s => s.subject))];
+    const fs = [
+      ['review', `Needs review (${unrev.length})`],
+      ['booklet', `Topic Booklets (${bCount})`],
+      ['worksheet', `Worksheets (${wCount})`],
+      ...subjs.map(s => [s, `${s[0].toUpperCase() + s.slice(1)} (${unrev.filter(x => x.subject === s).length})`]),
+      ['bad', `✏️ Needs fix (${st.bad})`],
+      ['good', `✓ Good / dismissed (${st.good})`],
+      ...(printablesChecked.length ? [['checked', `Already signed off (${printablesChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const tb = document.getElementById('prToolbar');
+    if (tb) {
+      const checked = st.good + st.bad;
+      tb.innerHTML = `
+        <div class="fc-stats">
+          <span><b>${st.left}</b> left to check</span>
+          <span>· ✓ <b>${st.good}</b> good</span>
+          <span>· ✏️ <b>${st.bad}</b> need fix</span>
+        </div>
+        <div class="fc-tacts">
+          <button type="button" class="rbtn gold" id="btnCopyPr">📋 Copy review notes${checked ? ` (${checked})` : ''}</button>
+          ${checked ? '<button type="button" class="rbtn" id="btnResetPr" style="background:#262626;color:#ddd;border-color:#555;font-size:13px;padding:7px 10px">Reset marks</button>' : ''}
+        </div>`;
+      document.getElementById('btnCopyPr').onclick = copyPrReport;
+      const rst = document.getElementById('btnResetPr');
+      if (rst) rst.onclick = () => {
+        if (!confirm(`Clear all ${checked} local worksheet/booklet review marks & notes?`)) return;
+        prMarks = {};
+        savePrMarks();
+        updatePrTabCount();
+        renderPrintables();
+        showToast('Cleared printable review marks.');
+      };
+    }
+    updatePrTabCount();
+  }
+
+  function renderPrintables() {
+    loadPrMarks();
+    renderPrFiltersAndToolbar();
+
+    const list = activeFilter === 'checked'
+      ? printablesChecked
+      : activeFilter === 'good'
+        ? printablesToReview.filter(s => { const m = prMarkOf(s); return m && m.status === 'good'; })
+        : activeFilter === 'bad'
+          ? printablesToReview.filter(s => { const m = prMarkOf(s); return m && m.status === 'bad'; })
+          : printablesToReview.filter(s => {
+              const m = prMarkOf(s);
+              if (m && m.status === 'good') return false;
+              if (activeFilter === 'review') return true;
+              if (activeFilter === 'booklet') return s.format === 'booklet';
+              if (activeFilter === 'worksheet') return s.format !== 'booklet';
+              return s.subject === activeFilter;
+            });
+
+    const cardHtml = s => {
+      const isBooklet = s.format === 'booklet';
+      const m = prMarkOf(s);
+      const isBad = !!(m && m.status === 'bad');
+      const isGood = !!(m && m.status === 'good');
+      const pills = [`<span class="pill tier">${esc((s.tier || '').toUpperCase())}</span>`];
+      if (s.underReview) pills.push('<span class="pill rev">Under review</span>');
+      else if (s.checked) pills.push('<span class="pill chk">Checked ✓</span>');
+      if (s.kind === 'added') pills.push(isBooklet ? '<span class="pill newl">NEW BOOKLET</span>' : '<span class="pill newl">NEW SHEET</span>');
+      else {
+        if (s.sheetChanged) pills.push(isBooklet ? '<span class="pill changed">Booklet changed</span>' : '<span class="pill changed">Sheet changed</span>');
+        if (s.msChanged) pills.push('<span class="pill base">Mark scheme changed</span>');
+      }
+      if (isBooklet && s.newPages) pills.push(`<span class="pill">${s.newPages} pages</span>`);
+      if (s.spec) pills.push(`<span class="pill">${esc(s.spec)}</span>`);
+      const col = SUBJ_COL[s.subject] || '#111';
+      return `<div class="card${isBad ? ' is-bad' : ''}${isGood ? ' is-good' : ''}" data-prk="${esc(s.id)}" style="--c:${col}">
+        <div class="card-row nocode">
+          <div class="info"><h3>${esc(s.subjectName || s.subject)} · ${esc(s.title)}</h3><div class="pills">${pills.join('')}</div></div>
+          <div class="acts">
+            <a class="btn primary" href="/worksheets/diff/#${esc(s.id)}">⚖️ Compare →</a>
+            <a class="btn" href="${esc(s.url)}" target="_blank" rel="noopener">Open ↗</a>
+            <button type="button" class="fc-btn good${isGood ? ' on' : ''}" data-pr-act="good" data-prk="${esc(s.id)}" title="Approve and dismiss from review list">✓ Good</button>
+            <button type="button" class="fc-btn bad${isBad ? ' on' : ''}" data-pr-act="bad" data-prk="${esc(s.id)}" title="Flag for fixing and write a note">✗ Bad</button>
+            ${(isGood || isBad) ? `<button type="button" class="fc-btn undo" data-pr-act="clear" data-prk="${esc(s.id)}" title="Clear mark">Clear</button>` : ''}
+          </div>
+        </div>
+        ${isBad ? `<div class="pr-bad-box"><label for="prnote-${esc(s.id)}">What needs fixing?</label><textarea id="prnote-${esc(s.id)}" data-pr-note="${esc(s.id)}" placeholder="Type what's wrong or what you want changed on this sheet/mark scheme (auto-saved)…">${esc(m.note || '')}</textarea></div>` : ''}
+      </div>`;
+    };
+
+    const heading = activeFilter === 'checked'
+      ? `Already Signed-Off Printables <small>approved in Git (${printablesChecked.length})</small>`
+      : activeFilter === 'good'
+        ? `Approved / Dismissed Printables <small>${list.length} marked Good — click Clear or ✗ Bad to move back</small>`
+        : activeFilter === 'bad'
+          ? `Flagged Printables Needing Fixes <small>${list.length} marked Bad — click 📋 Copy review notes above to paste into chat</small>`
+          : `Printables — Needs Review <small>${list.length} remaining · ✓ Good dismisses · ✗ Bad opens a note box (synced with side-by-side comparer)</small>`;
+    document.getElementById('content').innerHTML = `<div class="fc-toolbar" id="prToolbar"></div><h2 class="sec-h">${heading}</h2>`
+      + (list.map(cardHtml).join('') || `<p>${activeFilter === 'good' ? 'No printables marked Good yet.' : activeFilter === 'bad' ? 'No printables flagged as Bad!' : 'All printables in this filter have been reviewed! 🎉'}</p>`);
+    renderPrFiltersAndToolbar();
+  }
+
+  function renderFcFiltersAndToolbar() {
+    const fEl = document.getElementById('filters');
+    const st = fcStats();
+    const unrev = FCARDS.filter(fc => { const m = fcMarkOf(fc); return !m || m.status !== 'good'; });
+    const cImg = unrev.filter(x => x.kind === 'image').length;
+    const cAdd = unrev.filter(x => x.kind === 'added').length;
+    const cRew = unrev.filter(x => x.kind === 'reworked').length;
+    const fs = [
+      ['image', `🖼️ Image overhauls (${cImg})`],
+      ['added', `➕ New cards (${cAdd})`],
+      ['reworked', `📝 Reworked backs (${cRew})`],
+      ['all', `All remaining (${unrev.length})`],
+      ['biology', `Biology (${unrev.filter(x => x.subject === 'biology').length})`],
+      ['chemistry', `Chemistry (${unrev.filter(x => x.subject === 'chemistry').length})`],
+      ['physics', `Physics (${unrev.filter(x => x.subject === 'physics').length})`],
+      ['bad', `✏️ Needs fix (${st.bad})`],
+      ['good', `✓ Good / dismissed (${st.good})`]
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'image';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const tb = document.getElementById('fcToolbar');
+    if (tb) {
+      const checked = st.good + st.bad;
+      tb.innerHTML = `
+        <div class="fc-stats">
+          <span><b>${st.left}</b> left to check</span>
+          <span>· ✓ <b>${st.good}</b> good</span>
+          <span>· ✏️ <b>${st.bad}</b> need fix</span>
+        </div>
+        <div class="fc-tacts">
+          <button type="button" class="rbtn gold" id="btnCopyFc">📋 Copy review notes${checked ? ` (${checked})` : ''}</button>
+          ${checked ? '<button type="button" class="rbtn" id="btnResetFc" style="background:#262626;color:#ddd;border-color:#555;font-size:13px;padding:7px 10px">Reset marks</button>' : ''}
+        </div>`;
+      document.getElementById('btnCopyFc').onclick = copyFcReport;
+      const rst = document.getElementById('btnResetFc');
+      if (rst) rst.onclick = () => {
+        if (!confirm(`Clear all ${checked} local flashcard review marks & notes?`)) return;
+        fcMarks = {};
+        saveFcMarks();
+        updateFcTabCount();
+        renderFlashcards();
+        showToast('Cleared flashcard review marks.');
+      };
+    }
+    updateFcTabCount();
+  }
+
+  function renderFlashcards() {
+    renderFcFiltersAndToolbar();
+    const list = FCARDS.filter(x => {
+      const m = fcMarkOf(x);
+      if (activeFilter === 'good') return m && m.status === 'good';
+      if (activeFilter === 'bad') return m && m.status === 'bad';
+      if (m && m.status === 'good') return false;
+      if (activeFilter === 'all') return true;
+      if (['image', 'added', 'reworked'].includes(activeFilter)) return x.kind === activeFilter;
+      return x.subject === activeFilter;
+    });
+
+    const shown = list.slice(0, fcLimit);
+    const cardHtml = fc => {
+      const k = fcKey(fc);
+      const m = fcMarkOf(fc);
+      const isBad = !!(m && m.status === 'bad');
+      const isGood = !!(m && m.status === 'good');
+      const col = SUBJ_COL[fc.subject] || '#111';
+      const badge = fc.kind === 'image' ? '<span class="pill changed">Image overhauled</span>' : fc.kind === 'added' ? '<span class="pill newl">New card</span>' : '<span class="pill base">Back reworked</span>';
+      return `<div class="fc-card${isBad ? ' is-bad' : ''}${isGood ? ' is-good' : ''}" data-fck="${esc(k)}" style="--c:${col}">
+        <div class="fc-head">
+          <div><b>${esc(fc.subjectName)} · ${esc(fc.spec || fc.sub)}</b> <small style="color:#666">(${esc(fc.id)})</small> ${badge}</div>
+          <div class="fc-rev-acts">
+            <button type="button" class="fc-btn good${isGood ? ' on' : ''}" data-fc-act="good" data-fck="${esc(k)}" title="Approve and dismiss from review list">✓ Good</button>
+            <button type="button" class="fc-btn bad${isBad ? ' on' : ''}" data-fc-act="bad" data-fck="${esc(k)}" title="Flag for fixing and write a note">✗ Bad</button>
+            ${(isGood || isBad) ? `<button type="button" class="fc-btn undo" data-fc-act="clear" data-fck="${esc(k)}" title="Clear mark">Clear</button>` : ''}
+          </div>
+        </div>
+        ${isBad ? `<div class="fc-bad-box"><label for="note-${esc(k)}">What needs fixing?</label><textarea id="note-${esc(k)}" data-fc-note="${esc(k)}" placeholder="Type what's wrong or how you want this card changed (auto-saved)…">${esc(m.note || '')}</textarea></div>` : ''}
+        <div class="fc-pair">
+          <div class="fc-side before">
+            <span class="lbl">BEFORE (LIVE MAIN)</span>
+            ${fc.kind === 'added' ? '<p style="color:#777;font-style:italic">Did not exist on live main — newly added to reach 100% spec coverage.</p>' : `<div class="fc-front">${fc.oldFront}</div><div>${fc.oldBack}</div>`}
+          </div>
+          <div class="fc-side after">
+            <span class="lbl">AFTER (STAGING)</span>
+            <div class="fc-front">${fc.newFront}</div>
+            <div>${fc.newBack}</div>
+          </div>
+        </div>
+      </div>`;
+    };
+
+    const subHead = activeFilter === 'good'
+      ? `Approved / dismissed flashcards (${list.length}) — click Clear or ✗ Bad to move one back`
+      : activeFilter === 'bad'
+        ? `Flagged flashcards needing fixes (${list.length}) — click 📋 Copy review notes above to paste into chat`
+        : `showing ${shown.length} of ${list.length} remaining · ✓ Good dismisses · ✗ Bad opens a note box · <a href="/Flashcards/" target="_blank" rel="noopener">Open full Flashcards app ↗</a>`;
+
+    let html = `<div class="fc-toolbar" id="fcToolbar"></div>`
+      + `<h2 class="sec-h">Flashcards Before vs After <small>${subHead}</small></h2>`
+      + (shown.map(cardHtml).join('') || `<p>${activeFilter === 'good' ? 'No flashcards marked Good yet.' : activeFilter === 'bad' ? 'No flashcards flagged as Bad!' : 'All flashcards in this filter have been reviewed! 🎉'}</p>`);
+    if (list.length > shown.length) {
+      html += `<div style="text-align:center;margin-top:16px"><button type="button" class="rbtn gold" id="btnMoreFc">Show 24 more (${list.length - shown.length} remaining)</button></div>`;
+    }
+    document.getElementById('content').innerHTML = html;
+    renderFcFiltersAndToolbar();
+    const more = document.getElementById('btnMoreFc');
+    if (more) more.onclick = () => { fcLimit += 24; renderFlashcards(); };
+  }
+
+  function renderSite() {
+    const fEl = document.getElementById('filters');
+    const CAT_COL = { showcase: '#8c0013', pages: '#1d6b2f', design: '#8c0013', features: '#1d4ed8' };
+    const CAT_LBL = { showcase: 'Showcase', pages: 'Page', design: 'Visual', features: 'Feature' };
+    const cats = [...new Set(siteToReview.map(x => x.category).filter(Boolean))];
+    const fs = [
+      ['review', `Needs review (${siteToReview.length})`],
+      ...cats.map(c => [c, `${CAT_LBL[c] || c}s (${siteToReview.filter(x => x.category === c).length})`]),
+      ...(siteChecked.length ? [['checked', `Checked (${siteChecked.length})`]] : [])
+    ];
+    if (!fs.some(x => x[0] === activeFilter)) activeFilter = 'review';
+    fEl.innerHTML = fs.map(([k, t]) => `<button type="button" class="fbtn${activeFilter === k ? ' on' : ''}" data-f="${k}">${t}</button>`).join('');
+
+    const list = activeFilter === 'checked'
+      ? siteChecked
+      : siteToReview.filter(x => activeFilter === 'review' || x.category === activeFilter);
+
+    const cardHtml = x => {
+      const col = CAT_COL[x.category] || '#111';
+      const extras = (x.extraLinks || []).map(l => `<a class="btn" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`).join('');
+      const ba = (x.before || x.after)
+        ? `<div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13.5px;line-height:1.4">
+            <div style="background:#faf9f6;border:1px solid #ddd;border-radius:4px;padding:7px 10px"><b style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#555;display:block;margin-bottom:2px">Before</b>${esc(x.before || '—')}</div>
+            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:4px;padding:7px 10px"><b style="font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:#15803d;display:block;margin-bottom:2px">After (Staging)</b>${esc(x.after || '—')}</div>
+          </div>` : '';
+      return `<div class="card" style="--c:${col}">
+        <div class="card-row nocode">
+          <div class="info">
+            <h3>${esc(x.title)}</h3>
+            <p style="margin-top:4px;font-size:14.5px;color:#333;line-height:1.45">${esc(x.summary)}</p>
+            <div class="pills">
+              <span class="pill ${x.status === 'checked' ? 'chk' : 'rev'}">${x.status === 'checked' ? '✓ Checked' : 'Needs review'}</span>
+              <span class="pill tier">${esc(CAT_LBL[x.category] || x.category || 'Showcase')}</span>
+              ${x.date ? `<span class="pill base">${esc(x.date)}</span>` : ''}
+            </div>
+            ${ba}
+          </div>
+          <div class="acts">
+            <a class="btn primary" href="${esc(x.previewUrl)}" target="_blank" rel="noopener">Open ↗</a>
+            ${extras}
+          </div>
+        </div>
+      </div>`;
+    };
+
+    document.getElementById('content').innerHTML = `<h2 class="sec-h">Showcases &amp; Standalone Pages <small>${list.length} item${list.length === 1 ? '' : 's'} · dedicated asset showcases, comparison sheets &amp; new pages to review directly</small></h2>`
+      + (list.map(cardHtml).join('') || '<p>Nothing waiting for review in this filter.</p>');
+  }
+
+  function render() {
+    document.querySelectorAll('#tabs .tab').forEach(b => b.classList.toggle('on', b.dataset.tab === activeTab));
+    if (activeTab === 'decks') renderDecks();
+    else if (activeTab === 'guides') renderGuides();
+    else if (activeTab === 'printables') renderPrintables();
+    else if (activeTab === 'site') renderSite();
+    else renderFlashcards();
+  }
+
+  document.getElementById('tabs').addEventListener('click', e => {
+    const b = e.target.closest('.tab'); if (!b) return;
+    activeTab = b.dataset.tab;
+    activeFilter = defaultFilter(activeTab);
+    fcLimit = 24;
+    history.replaceState(null, '', '#' + activeTab);
+    render();
+  });
+
+  document.getElementById('filters').addEventListener('click', e => {
+    const b = e.target.closest('.fbtn'); if (!b) return;
+    activeFilter = b.dataset.f;
+    fcLimit = 24;
+    render();
+  });
+
+  document.getElementById('content').addEventListener('click', e => {
+    const sgBtn = e.target.closest('[data-sg]');
+    if (sgBtn) { openStudyGuideModal(sgBtn.dataset.sg); return; }
+
+    const prBtn = e.target.closest('[data-pr-act]');
+    if (prBtn) {
+      const act = prBtn.dataset.prAct;
+      const k = prBtn.dataset.prk;
+      const cardEl = prBtn.closest('.card');
+      const prev = prMarks[k] ? Object.assign({}, prMarks[k]) : null;
+      if (act === 'good') {
+        prMarks[k] = { status: 'good', note: (prev && prev.note) || '', at: Date.now() };
+        savePrMarks();
+        if (activeFilter !== 'good' && cardEl) {
+          cardEl.classList.add('dismissing');
+          setTimeout(() => { cardEl.remove(); renderPrFiltersAndToolbar(); }, 180);
+        } else {
+          renderPrintables();
+        }
+        showToast('Marked ✓ Good and dismissed.', () => {
+          if (prev) prMarks[k] = prev; else delete prMarks[k];
+          savePrMarks();
+          renderPrintables();
+        });
+      } else if (act === 'bad') {
+        const existingNote = (prev && prev.note) || '';
+        prMarks[k] = { status: 'bad', note: existingNote, at: Date.now() };
+        savePrMarks();
+        if (activeFilter === 'good') {
+          renderPrintables();
+        } else if (cardEl) {
+          cardEl.classList.remove('is-good');
+          cardEl.classList.add('is-bad');
+          const gB = cardEl.querySelector('[data-pr-act="good"]'); if (gB) gB.classList.remove('on');
+          const bB = cardEl.querySelector('[data-pr-act="bad"]'); if (bB) bB.classList.add('on');
+          const acts = cardEl.querySelector('.acts');
+          if (acts && !acts.querySelector('[data-pr-act="clear"]')) {
+            acts.insertAdjacentHTML('beforeend', `<button type="button" class="fc-btn undo" data-pr-act="clear" data-prk="${esc(k)}" title="Clear mark">Clear</button>`);
+          }
+          let box = cardEl.querySelector('.pr-bad-box');
+          if (!box) {
+            cardEl.insertAdjacentHTML('beforeend',
+              `<div class="pr-bad-box"><label for="prnote-${esc(k)}">What needs fixing?</label><textarea id="prnote-${esc(k)}" data-pr-note="${esc(k)}" placeholder="Type what's wrong or what you want changed on this sheet/mark scheme (auto-saved)…">${esc(existingNote)}</textarea></div>`);
+            box = cardEl.querySelector('.pr-bad-box');
+          }
+          const ta = box && box.querySelector('textarea');
+          if (ta) ta.focus();
+          renderPrFiltersAndToolbar();
+        }
+      } else if (act === 'clear') {
+        delete prMarks[k];
+        savePrMarks();
+        renderPrintables();
+      }
+      return;
+    }
+
+    const fcBtn = e.target.closest('[data-fc-act]');
+    if (!fcBtn) return;
+    const act = fcBtn.dataset.fcAct;
+    const k = fcBtn.dataset.fck;
+    const cardEl = fcBtn.closest('.fc-card');
+    const prev = fcMarks[k] ? Object.assign({}, fcMarks[k]) : null;
+
+    if (act === 'good') {
+      fcMarks[k] = { status: 'good', note: (prev && prev.note) || '', at: Date.now() };
+      saveFcMarks();
+      if (activeFilter !== 'good' && cardEl) {
+        cardEl.classList.add('dismissing');
+        setTimeout(() => { cardEl.remove(); renderFcFiltersAndToolbar(); }, 180);
+      } else {
+        renderFlashcards();
+      }
+      showToast('Marked ✓ Good and dismissed.', () => {
+        if (prev) fcMarks[k] = prev; else delete fcMarks[k];
+        saveFcMarks();
+        renderFlashcards();
+      });
+    } else if (act === 'bad') {
+      const existingNote = (prev && prev.note) || '';
+      fcMarks[k] = { status: 'bad', note: existingNote, at: Date.now() };
+      saveFcMarks();
+      if (activeFilter === 'good') {
+        renderFlashcards();
+      } else if (cardEl) {
+        cardEl.classList.remove('is-good');
+        cardEl.classList.add('is-bad');
+        const gB = cardEl.querySelector('[data-fc-act="good"]'); if (gB) gB.classList.remove('on');
+        const bB = cardEl.querySelector('[data-fc-act="bad"]'); if (bB) bB.classList.add('on');
+        const acts = cardEl.querySelector('.fc-rev-acts');
+        if (acts && !acts.querySelector('[data-fc-act="clear"]')) {
+          acts.insertAdjacentHTML('beforeend', `<button type="button" class="fc-btn undo" data-fc-act="clear" data-fck="${esc(k)}" title="Clear mark">Clear</button>`);
+        }
+        let box = cardEl.querySelector('.fc-bad-box');
+        if (!box) {
+          cardEl.querySelector('.fc-head').insertAdjacentHTML('afterend',
+            `<div class="fc-bad-box"><label for="note-${esc(k)}">What needs fixing?</label><textarea id="note-${esc(k)}" data-fc-note="${esc(k)}" placeholder="Type what's wrong or how you want this card changed (auto-saved)…">${esc(existingNote)}</textarea></div>`);
+          box = cardEl.querySelector('.fc-bad-box');
+        }
+        const ta = box && box.querySelector('textarea');
+        if (ta) ta.focus();
+        renderFcFiltersAndToolbar();
+      }
+    } else if (act === 'clear') {
+      delete fcMarks[k];
+      saveFcMarks();
+      renderFlashcards();
+    }
+  });
+
+  document.getElementById('content').addEventListener('input', e => {
+    const pta = e.target.closest('[data-pr-note]');
+    if (pta) {
+      const k = pta.dataset.prNote;
+      prMarks[k] = { status: 'bad', note: pta.value, at: Date.now() };
+      savePrMarks();
+      return;
+    }
+    const ta = e.target.closest('[data-fc-note]');
+    if (!ta) return;
+    const k = ta.dataset.fcNote;
+    fcMarks[k] = { status: 'bad', note: ta.value, at: Date.now() };
+    saveFcMarks();
+  });
+
+  window.addEventListener('storage', e => {
+    if (e.key === PR_STORE_KEY) { loadPrMarks(); updatePrTabCount(); if (activeTab === 'printables') renderPrintables(); }
+  });
+  window.addEventListener('focus', () => {
+    loadPrMarks(); updatePrTabCount();
+    if (activeTab === 'printables' && !document.activeElement.closest('textarea')) renderPrintables();
+  });
+
+  let sgCur = null;
+  function openStudyGuideModal(id) {
+    const l = ALL_LESSONS.find(x => x.id === id);
+    if (!l) return;
+    sgCur = l;
+    document.body.classList.add('sg-viewing');
+    document.getElementById('sgTitle').innerHTML = `<span style="background:${SUBJ_COL[l.subject]||'#444'};padding:3px 8px;border-radius:4px;font-size:13px;text-transform:uppercase">${esc(l.subjectName)} ${esc(l.code)}</span><span>${esc(l.title)}</span>`;
+    document.getElementById('sgOpenTab').href = l.draftUrl;
+    document.getElementById('sgBeforeLbl').textContent = l.beforeGuideUrl ? `Checked v${l.latestV}` : 'No previous frozen version';
+    document.getElementById('sgAfterLbl').textContent = `draft/index.html (Spec ${l.spec})`;
+    const bw = document.getElementById('sgBeforeWrap');
+    bw.innerHTML = l.beforeGuideUrl
+      ? `<iframe src="${esc(l.beforeGuideUrl)}" title="Before revision notes"></iframe>`
+      : '<div class="sg-empty"><b>Brand-new Revision Notes</b><p>This lesson has not been frozen yet — inspect the staging draft on the right, or click <b>Full After</b> for full width.</p></div>';
+    document.getElementById('sgAfterWrap').innerHTML = `<iframe src="${esc(l.draftUrl)}" title="After revision notes"></iframe>`;
+  }
+  function closeStudyGuideModal() {
+    sgCur = null;
+    document.body.classList.remove('sg-viewing');
+    document.getElementById('sgBeforeWrap').innerHTML = '';
+    document.getElementById('sgAfterWrap').innerHTML = '';
+  }
+  document.getElementById('sgClose').onclick = closeStudyGuideModal;
+  document.getElementById('sgModeSplit').onclick = () => {
+    document.getElementById('sgSplit').classList.remove('single');
+    document.getElementById('sgModeSplit').classList.add('on');
+    document.getElementById('sgModeFull').classList.remove('on');
+  };
+  document.getElementById('sgModeFull').onclick = () => {
+    document.getElementById('sgSplit').classList.add('single');
+    document.getElementById('sgModeFull').classList.add('on');
+    document.getElementById('sgModeSplit').classList.remove('on');
+  };
+  document.getElementById('sgMobile').onclick = function() {
+    const on = this.classList.toggle('on');
+    document.getElementById('sgBeforeWrap').classList.toggle('mobile', on);
+    document.getElementById('sgAfterWrap').classList.toggle('mobile', on);
+  };
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && sgCur) closeStudyGuideModal(); });
+
+  window.addEventListener('hashchange', () => {
+    const h = normTab(location.hash.replace(/^#/, ''));
+    if (['decks', 'guides', 'printables', 'flashcards', 'site'].includes(h) && h !== activeTab) {
+      activeTab = h; activeFilter = defaultFilter(h); render();
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

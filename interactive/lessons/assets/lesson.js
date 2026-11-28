@@ -3,26 +3,32 @@
    - components: elements with data-comp="name" are initialised by functions registered in Lesson.comps
 */
 (function(){
+if (!window.__cbsAuthGate) { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
 const L = window.Lesson = window.Lesson || {};
 L.comps = L.comps || {};
 const $ = (s, r=document) => r.querySelector(s), $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const body = document.body;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmtDate = d => { if(!d) return ''; const [y,m,dd]=d.split('-'); return `${+dd} ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1]} ${y}`; };
-L.initComps = function(root){ $$('[data-comp]', root).forEach(el => { if(el._inited) return; const f = L.comps[el.dataset.comp]; if(f){ el._inited = true; try{ f(el); }catch(e){ console.error(e); el.textContent = 'Component error: '+e.message; } } }); };
+L.initComps = function(root){ $$('[data-comp]', root).forEach(el => { if(el._inited) return; if(root === document && el.closest('#deck-src')) return; const f = L.comps[el.dataset.comp]; if(f){ el._inited = true; try{ f(el); }catch(e){ console.error(e); el.textContent = 'Component error: '+e.message; } } }); };
 
 /* ---------- rolodex: a stack of examples per column; click the card, ▲▼ or scroll to flip (22 Nov) ---------- */
 L.comps.rolodex = el => {
-  $$('.rcol', el).forEach(col => {
+  const cols = $$('.rcol', el), sync = el.dataset.sync === '1';
+  const ctl = cols.map(col => {
     const items = $$('.ritem', col), card = $('.rcard', col), cap = $('.rcap', col), cnt = $('.rc', col), crd = $('.rcr', col);
     let i = 0, busy = 0;
     const paint = () => { items.forEach((x,j) => x.classList.toggle('on', j===i)); cap.innerHTML = items[i].dataset.cap || ''; if(crd) crd.innerHTML = items[i].dataset.cr || ''; cnt.textContent = (i+1)+' / '+items.length; };
     const go = d => { if(busy) return; busy = 1; card.classList.remove('fu','fd'); void card.offsetWidth; card.classList.add(d>0?'fd':'fu');
       setTimeout(() => { i = (i + d + items.length) % items.length; paint(); }, 150); setTimeout(() => busy = 0, 320); };
     paint();
-    const stop = (e, d) => { e.preventDefault(); e.stopPropagation(); go(d); };
-    $('.rn', col).onclick = e => stop(e, 1); $('.rp', col).onclick = e => stop(e, -1); card.onclick = e => stop(e, 1);
-    card.addEventListener('wheel', e => { if(Math.abs(e.deltaY) < 3) return; stop(e, e.deltaY > 0 ? 1 : -1); }, {passive:false});
+    return {col, card, go};
+  });
+  const trigger = (c, d) => { if(sync) ctl.forEach(x => x.go(d)); else c.go(d); };
+  ctl.forEach(c => {
+    const stop = (e, d) => { e.preventDefault(); e.stopPropagation(); trigger(c, d); };
+    $('.rn', c.col).onclick = e => stop(e, 1); $('.rp', c.col).onclick = e => stop(e, -1); c.card.onclick = e => stop(e, 1);
+    c.card.addEventListener('wheel', e => { if(Math.abs(e.deltaY) < 3) return; stop(e, e.deltaY > 0 ? 1 : -1); }, {passive:false});
   });
 };
 
@@ -66,7 +72,8 @@ function header(){
   if(nav){
     if(!nav.querySelector('a[href="/"]')) nav.insertAdjacentHTML('afterbegin', `<a href="/" title="Cakebread Science home">🏠 Home</a>`);
     const badge = st === 'checked' ? '' : `<span class="status draft">Under review</span>`;
-    nav.insertAdjacentHTML('beforeend', badge + `<button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
+    const ex = body.dataset.topic ? '&exclude=' + encodeURIComponent(body.dataset.topic.replace(/^[a-z]/i, c => c.toUpperCase()).replace('/', '')) : '';
+    nav.insertAdjacentHTML('beforeend', badge + `<a class="pbtn2" style="background:#facc15;color:#111;text-decoration:none;border:2px solid #111" href="/interactive/spec-quiz/quiz.html?warmup=1${ex}" target="_blank" title="5 quick easy recall questions from topics covered before">🔥 Warm-Up</a><button class="pbtn2" id="hdrPresent">▶ Present on projector</button>`);
   }
   const toc = $('.lhead .toc');
   if(toc && !toc.children.length){
@@ -130,12 +137,12 @@ function deck(){
   });
   const root = document.createElement('div'); root.id = 'deck';
   root.innerHTML = `<div id="stageWrap"><div id="stage"></div></div>
-   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, skipping reveals (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button id="dExit" title="Esc">✕ Exit</button></div>
+   <div class="dbar"><button class="v2only" id="dPrevS" title="Previous slide (Shift+←)">⏮ Slide</button><button id="dPrev" title="Back one step (←)">‹ Back</button><span id="dCount"></span><button id="dNext" title="Next step or slide (→, space, click)">Next ›</button><button class="v2only" id="dNextS" title="Next slide, fully revealed (Shift+→)">Next slide ⏭</button><button class="v2only" id="dAll" title="All slides (G)">▦ All slides</button><button id="dWarmup" title="5 quick recall questions from topics covered before">🔥 Warm-Up</button><button id="dBlack" title="Blank screen (B)">■ Blank</button><button id="dFull" title="F">⛶ Full screen</button><button id="dExit" title="Esc">✕ Exit</button></div>
    <div id="black"></div><div id="overview"><div class="ovhead"><b>All slides</b><span>Click a slide to jump to it · Esc to close</span><button id="ovClose">✕ Close</button></div><div class="ovgrid"></div></div>`;
   document.body.appendChild(root);
   const stage = $('#stage');
   const slides = $$('section.ps', src);
-  stage.innerHTML = slides.map((s,i) => `<section class="ps ${s.className.replace('ps','')}" ${s.getAttribute('style')?`style="${s.getAttribute('style')}"`:''}><div class="sbar"></div>${s.innerHTML}<div class="num">${i+1} / ${slides.length}</div></section>`).join('');
+  stage.innerHTML = slides.map((s,i) => `<section class="ps ${s.className.replace('ps','')}" ${s.hasAttribute('data-nomatch')?'data-nomatch ':''}${s.getAttribute('style')?`style="${s.getAttribute('style')}"`:''}><div class="sbar"></div>${s.innerHTML}<div class="num">${i+1} / ${slides.length}</div></section>`).join('');
   src.remove();
   L.initComps(stage);
   const ps = $$('.ps', stage);
@@ -152,7 +159,7 @@ function deck(){
   function show(i){ cur = Math.max(0, Math.min(ps.length-1, i)); ps.forEach((p,j) => p.classList.toggle('cur', j===cur)); apply(ps[cur]); $('#dCount').textContent = (cur+1)+' / '+ps.length; ps[cur].dispatchEvent(new CustomEvent('shown')); }
   function next(){ const p = ps[cur]; if(p.shown < p.max){ p.shown++; apply(p); } else show(cur+1); }
   function prev(){ const p = ps[cur]; if(p.shown > 0){ p.shown--; apply(p); } else show(cur-1); }
-  function nextSlide(){ if(cur < ps.length-1){ ps[cur+1].shown = 0; show(cur+1); } }
+  function nextSlide(){ if(cur < ps.length-1){ ps[cur+1].shown = ps[cur+1].max; show(cur+1); } }
   function prevSlide(){ if(cur > 0){ ps[cur-1].shown = 0; show(cur-1); } }
   /* overview: grid of every slide, fully revealed; click to jump */
   const ov = $('#overview'), ovGrid = $('.ovgrid', ov); let ovBuilt = false;
@@ -186,6 +193,10 @@ function deck(){
   const hb = $('#hdrPresent'); if(hb) hb.onclick = enter;
   $('#dNext').onclick = next; $('#dPrev').onclick = prev;
   $('#dNextS').onclick = nextSlide; $('#dPrevS').onclick = prevSlide; $('#dAll').onclick = () => ovOpen() ? ovClose() : overview(); $('#ovClose').onclick = ovClose; $('#dExit').onclick = exit; $('#dFull').onclick = full;
+  $('#dWarmup').onclick = () => {
+    const ex = body.dataset.topic ? '&exclude=' + encodeURIComponent(body.dataset.topic.replace(/^[a-z]/i, c => c.toUpperCase()).replace('/', '')) : '';
+    window.open('/interactive/spec-quiz/quiz.html?warmup=1' + ex, '_blank');
+  };
   const blk = $('#black'); $('#dBlack').onclick = () => blk.classList.toggle('on'); blk.onclick = () => blk.classList.remove('on');
   stage.addEventListener('click', e => {
     if(e.target.closest('button,input,select,a,canvas,.nonav')) return;
@@ -193,7 +204,7 @@ function deck(){
   });
   addEventListener('keydown', e => {
     if(!isP() || e.target.closest('textarea,input')) return;
-    const v2 = body.dataset.deckUi === 'v2';
+    const v2 = body.dataset.deckUi !== 'v1';
     if(ovOpen()){ if(e.key==='Escape'||e.key==='g'||e.key==='G'){ e.preventDefault(); ovClose(); } return; }
     if(v2 && e.shiftKey && e.key==='ArrowRight'){ e.preventDefault(); nextSlide(); }
     else if(v2 && e.shiftKey && e.key==='ArrowLeft'){ e.preventDefault(); prevSlide(); }
@@ -210,7 +221,10 @@ function deck(){
   let mt; addEventListener('mousemove', () => { body.classList.add('mouse'); clearTimeout(mt); mt = setTimeout(()=>body.classList.remove('mouse'), 1500); });
   addEventListener('resize', () => { if(isP()) fit(); if(ovOpen()) ovScale(); });
   deckApi = L.deck = { show, next, prev, nextSlide, prevSlide, overview, enter, exit, count: ps.length, get cur(){ return cur; } };
-  if(location.hash === '#present') enter();
+  const hStr = location.hash || '', qSlide = new URLSearchParams(location.search).get('slide');
+  const hSlide = (hStr.match(/slide=(\d+)/i) || [])[1] || qSlide;
+  if (hSlide && +hSlide >= 1) cur = Math.min(ps.length - 1, +hSlide - 1);
+  if (/^#present\b/i.test(hStr) || hSlide) enter();
 }
 
 /* ---------- checked versions: point to a newer one if it exists ---------- */
@@ -249,7 +263,7 @@ function whenLoaded(img, f){ if(img.complete && img.naturalWidth) f(); else img.
 function matchBg(){
   $$('#stage .ps').forEach(p => {
     if(p.hasAttribute('data-nomatch') || p.classList.contains('tslide')) return;
-    const imgs = $$('img', p).filter(i => !i.closest('.linkcard,.ovs,.soft'));
+    const imgs = $$('img', p).filter(i => !i.closest('.linkcard,.ovs,.soft,.terms'));
     if(!imgs.length) return;
     let done = 0;
     imgs.forEach(img => whenLoaded(img, () => {
@@ -269,6 +283,6 @@ function matchBg(){
   });
 }
 
-function init(){ header(); newer(); L.initComps(document.querySelector('.wrap') || document); questions(); practise(); deck(); matchBg(); }
+function init(){ header(); newer(); const wrap = document.querySelector('.wrap'); if(wrap) L.initComps(wrap); questions(); practise(); deck(); matchBg(); }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

@@ -25,18 +25,20 @@
 .topic .links a{font:700 14px 'Barlow',Arial,sans-serif;text-decoration:none;border:2px solid #111;padding:4px 10px;color:#111;background:#fff;white-space:nowrap}
 .topic .links a.main{background:var(--acc);border-color:var(--acc);color:#fff}
 .topic .links a.dr{background:#fff3b8}
-.topic details{grid-column:2 / -1;font-size:14px}
-.topic details a{color:var(--green);margin-right:10px}
+.topic .lock-chip{font:800 10px 'Barlow',Arial,sans-serif;text-transform:uppercase;letter-spacing:.6px;padding:1px 6px;margin-left:8px;vertical-align:middle;border:1.5px solid #111;display:inline-block}
+.topic .lock-chip.locked{background:#f3f4f6;color:#444;border-color:#888}
+body.cbs-approved .lock-chip{display:none}
 @media(max-width:620px){.topic{grid-template-columns:44px 1fr}.topic .links{grid-column:1 / -1;justify-content:flex-start}}
 </style>
 </head>
 <body class="subj-chemistry">
+<script src="/js/auth-gate.js"></script>
+<script src="/interactive/lessons/diff/banner.js" defer></script>
 <div class="stripes"><i style="height:4px;background:var(--acc)"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:var(--acc)"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:var(--acc)"></i></div>
 <header class="lhead">
-  <div class="kick">IGCSE Science (Double Award) · interactive lessons</div>
+  <div class="kick">IGCSE Science (Double Award) · revision notes &amp; class slides</div>
   <h1>Cakebread <span>Lessons</span></h1>
-  <div class="navrow"><a href="/">← Home</a></div>
-  <div class="tabs" id="tabs"><button data-s="biology">Biology</button><button data-s="chemistry">Chemistry</button><button disabled>Physics · coming</button></div>
+  <div class="tabs" id="tabs"><button data-s="biology">Biology</button><button data-s="chemistry">Chemistry</button><button data-s="physics">Physics</button></div>
 </header>
 <div class="stripes"><i style="height:3px;background:var(--acc)"></i><i style="height:8px;background:var(--paper)"></i><i style="height:2px;background:#111"></i></div>
 
@@ -56,14 +58,31 @@
   const html = subj.sections.map(sec => `<div class="sec"><h2>${sec.code} · ${sec.name}</h2>` + sec.topics.map(t => {
     const v = (t.versions||[]).slice().sort().reverse(), latest = v[0], url = base + t.code + '/';
     if(!t.status) return `<div class="topic none"><div class="code">${t.code}</div><div class="t">${t.title}<small>Spec ${t.spec} · not started</small></div></div>`;
-    const draftNote = t.status === 'draft' ? `<span class="status draft">Under review</span>` : '';
-    const links = (latest ? `<a class="main" href="${url}v${latest}/">Open</a><a href="${url}v${latest}/#present">▶ Present</a>` : `<a class="main dr" href="${url}draft/" style="color:#111">Open</a><a href="${url}draft/#present">▶ Present</a>`)
-      + (latest && t.status === 'draft' ? `<a class="dr" href="${url}draft/">Under review</a>` : '');
-    const older = v.length > 1 ? `<details><summary>Older checked versions</summary>${v.slice(1).map(d=>`<a href="${url}v${d}/">${fmt(d)}</a>`).join('')}</details>` : '';
-    return `<div class="topic"><div class="code">${t.code}</div><div class="t">${t.title}<small>Spec ${t.spec} &nbsp;${draftNote}</small></div><div class="links">${links}</div>${older}</div>`;
+    const needsReview = t.status === 'draft' || (t.split && t.studentStatus === 'draft');
+    const draftNote = needsReview ? `<span class="status draft">Under review</span>` : '';
+    const draftPresent = t.split ? `${url}draft/deck.html#present` : `${url}draft/#present`;
+    const draftLinks = latest && needsReview
+      ? (t.studentStatus === 'draft' || !t.split ? `<a class="dr" href="${url}draft/">Draft notes</a>` : '')
+        + (t.status === 'draft' ? `<a class="dr" href="${draftPresent}">▶ Draft slides</a>` : '')
+      : '';
+    const links = (latest ? `<a class="main" href="${url}v${latest}/">📖 Revision Notes</a><a href="${url}v${latest}/#present">▶ Class Slides</a>` : `<a class="main dr" href="${url}draft/" style="color:#111">📖 Revision Notes</a><a href="${draftPresent}">▶ Class Slides</a>`)
+      + draftLinks;
+    const isFree = window.CBSAuth ? CBSAuth.isFreeHref(url + 'draft/') : false;
+    const chip = isFree ? '' : `<span class="lock-chip locked">🔒 Sign in</span>`;
+    return `<div class="topic" data-free="${isFree ? '1' : '0'}"><div class="code">${t.code}</div><div class="t">${t.title}${chip}<small>Spec ${t.spec} &nbsp;${draftNote}</small></div><div class="links">${links}</div></div>`;
   }).join('') + '</div>').join('');
   document.getElementById('list').innerHTML = html;
+  if (window.CBSAuth) {
+    CBSAuth.onStatus(st => { document.body.classList.toggle('cbs-approved', st.status === 'approved'); });
+    document.getElementById('list').addEventListener('click', e => {
+      const a = e.target.closest('a[href]'); if (!a) return;
+      if (CBSAuth.state.status === 'approved' || CBSAuth.isFreeHref(a.href)) return;
+      e.preventDefault();
+      CBSAuth.showGate('require');
+    });
+  }
 })();
 </script>
+<script src="/js/home-link.js" data-section="Lessons"></script>
 </body>
 </html>

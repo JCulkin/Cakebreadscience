@@ -1,0 +1,266 @@
+{
+  "topic": "P8",
+  "subject": "physics",
+  "title": "Astrophysics",
+  "spec": "P8.1–P8.10",
+  "questions": [
+    {
+      "id": "P8-01",
+      "title": "Orbits of planets, moons and comets",
+      "spec": ["P8.2", "P8.4", "P8.5"],
+      "sa": true,
+      "level": "core",
+      "marks": 5,
+      "stimulus": "The diagram shows the orbits of a planet, its moon, and a comet in our Solar System (which lies inside the Milky Way galaxy).",
+      "diagram": {
+        "source": "dg",
+        "maker": "orbit",
+        "hard": false,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "State",
+          "spec": ["P8.4"],
+          "sa": true,
+          "marks": 1,
+          "text": "Name the force that causes the planet to orbit the Sun and the moon to orbit the planet.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>Gravitational force</b> (gravity)" }
+            ],
+            "reject": ["magnetic force", "electrostatic force", "air resistance"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Compare",
+          "spec": ["P8.5"],
+          "sa": true,
+          "marks": 2,
+          "text": "Describe two differences between the orbit of the <b>planet</b> and the orbit of the <b>comet</b>.",
+          "markScheme": {
+            "rule": "Any 2 valid comparisons (max 2)",
+            "points": [
+              { "code": "B1", "text": "The planet's orbit is <b>nearly circular</b>, whereas the comet's orbit is <b>highly elliptical</b>" },
+              { "code": "B2", "text": "The Sun is near the <b>centre</b> of the planet's orbit, whereas the Sun is <b>off-centre</b> (near one end) of the comet's orbit" },
+              { "code": "B3", "text": "The planet moves at a nearly <b>constant speed</b>, whereas the comet's speed <b>changes greatly</b> during its orbit" }
+            ],
+            "accept": ["planet stays roughly the same distance from the Sun while comet's distance varies greatly"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "Explain",
+          "spec": ["P8.4", "P8.5"],
+          "sa": true,
+          "marks": 2,
+          "text": "Explain how the speed of the comet at position <b>X</b> compares with its speed at position <b>Y</b>.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "M1", "text": "The comet travels <b>faster at X</b> (and slower at Y)", "link": "because…" },
+              { "code": "M2", "text": "At X the comet is <b>closer to the Sun</b>, so the <b>gravitational force</b> pulling it is stronger (or GPE has transferred to kinetic energy)" }
+            ],
+            "reject": ["comet travels fastest at Y", "gravity is the same at X and Y"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "P8-02",
+      "title": "Orbital speed of a low-Earth satellite",
+      "spec": ["P8.1", "P8.4", "P8.6"],
+      "sa": false,
+      "level": "stretch",
+      "marks": 5,
+      "stimulus": "An Earth-observation satellite travels in a circular orbit at an altitude of 600 km above Earth's surface. Earth's radius is 6400 km, and the satellite completes one full orbit every 98 minutes.",
+      "diagram": {
+        "source": "dg",
+        "maker": "orbit",
+        "hard": true,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Calculate",
+          "spec": ["P8.1", "P8.6"],
+          "sa": false,
+          "marks": 1,
+          "text": "State the orbital radius <i>r</i> of the satellite in <b>metres</b>.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "A1", "text": "<i>r</i> = 6400 + 600 = 7000 km = <b>7 000 000 m</b> (7.0 × 10⁶ m)" }
+            ],
+            "reject": ["600 000 m (forgot Earth's radius)", "7000 m (forgot km → m conversion)"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Calculate",
+          "spec": ["P8.1", "P8.6"],
+          "sa": false,
+          "marks": 3,
+          "text": "Calculate the orbital speed of the satellite in <b>m/s</b>. Give your answer to <b>2 significant figures</b>.",
+          "markScheme": {
+            "style": "calc",
+            "rule": "3 marks (ECF applies)",
+            "points": [
+              { "code": "M1", "text": "Formula &amp; time conversion: <b><i>v</i> = <span class=\"eb-frac\"><span>2 × π × <i>r</i></span><span><i>T</i></span></span></b> and <i>T</i> = 98 × 60 = <b>5880 s</b>" },
+              { "code": "M2", "text": "Substitution: <i>v</i> = <span class=\"eb-frac\"><span>2 × π × 7 000 000</span><span>5880</span></span>" },
+              { "code": "A1", "text": "<i>v</i> = 7479.98… ≈ <b>7500 m/s</b> (2 s.f.)" }
+            ],
+            "accept": ["7.5 × 10³ m/s", "ECF from part (a) if r was substituted correctly into 2πr / T"],
+            "reject": ["448 800 m/s (using T = 98 min without converting to seconds)"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "Explain",
+          "spec": ["P8.4"],
+          "sa": false,
+          "marks": 1,
+          "text": "Even though the satellite moves at a constant speed, its <b>velocity</b> is constantly changing. State why.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "Its <b>direction of motion</b> is constantly changing (and velocity is a vector quantity)" }
+            ],
+            "reject": ["gravity speeds it up continuously"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "P8-03",
+      "title": "Evolution of Sun-like and massive stars",
+      "spec": ["P8.9", "P8.10"],
+      "sa": true,
+      "level": "core",
+      "marks": 4,
+      "stimulus": "The flowchart summarises the life cycles of stars of similar mass to the Sun and stars with a much larger mass than the Sun.",
+      "diagram": {
+        "source": "dg",
+        "maker": "starlife",
+        "hard": false,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Identify",
+          "spec": ["P8.9"],
+          "sa": true,
+          "marks": 1,
+          "text": "Name the missing stage marked <b>?</b> in the life cycle of a star of similar mass to the Sun.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>Red giant</b>" }
+            ],
+            "reject": ["red supergiant", "supernova"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["P8.9"],
+          "sa": true,
+          "marks": 2,
+          "text": "Explain why a <b>main sequence</b> star remains stable in size for billions of years.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "M1", "text": "<b>Nuclear fusion</b> of hydrogen into helium in the core releases energy, creating outward <b>radiation / gas pressure</b>", "link": "which…" },
+              { "code": "M2", "text": "<b>Balances</b> the inward pull of <b>gravitational force</b> (forces are in equilibrium)" }
+            ],
+            "accept": ["inward gravity equals outward thermal/radiation pressure"],
+            "reject": ["hydrogen is burning (chemical combustion)", "no forces act on the star"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "State",
+          "spec": ["P8.10"],
+          "sa": false,
+          "marks": 1,
+          "text": "For a star much more massive than the Sun, describe what happens at the <b>supernova</b> stage.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "The red supergiant undergoes a <b>massive explosion</b> (throwing outer layers into space and leaving a dense core — a neutron star or black hole)" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "P8-04",
+      "title": "Star colour, surface temperature and gravity",
+      "spec": ["P8.3", "P8.7", "P8.8"],
+      "sa": true,
+      "level": "foundation",
+      "marks": 3,
+      "stimulus": "Astronomers measure the surface temperature and colour of four main-sequence stars: P, Q, R and S.",
+      "diagram": {
+        "source": "dg",
+        "maker": "starlife",
+        "hard": true,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "State",
+          "spec": ["P8.7", "P8.8"],
+          "sa": true,
+          "marks": 1,
+          "text": "State the relationship between a star's surface temperature and its colour.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "The <b>hotter</b> the star, the closer its colour is to <b>blue-white / blue</b> (and the <b>cooler</b> the star, the closer to <b>red</b>)" }
+            ],
+            "reject": ["red stars are the hottest"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Predict",
+          "spec": ["P8.7", "P8.8"],
+          "sa": true,
+          "marks": 1,
+          "text": "A newly discovered star has a surface temperature of <b>10 200 K</b>. Use the chart to predict its colour.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>White</b>" }
+            ],
+            "accept": ["blue-white"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "Explain",
+          "spec": ["P8.3"],
+          "sa": true,
+          "marks": 1,
+          "text": "The gravitational field strength <i>g</i> is 25 N/kg on Jupiter compared with 10 N/kg on Earth. State the main reason why <i>g</i> is greater on Jupiter.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "Jupiter has a much <b>larger mass</b> than Earth" }
+            ],
+            "reject": ["Jupiter is bigger (volume/size alone without mentioning mass)", "Jupiter is further from the Sun"]
+          }
+        }
+      ]
+    }
+  ]
+}

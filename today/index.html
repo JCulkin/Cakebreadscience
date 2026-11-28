@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>To do | Cakebread Science</title>
+<title>Student Home | Cakebread Science</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
@@ -12,62 +12,197 @@
 :root{--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#5a5a5a;--line:#d8d3c4;--soft:#f6f4ee;--green:#00a03a;--dk:#005e22;
   --bio:#2e7d32;--chem:#c8001e;--phys:#d08000;--s:#16a34a;--r:#ea580c;--l:#facc15;--n:#e7e2d6}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4;font-size:16px}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.4;font-size:15.5px}
 a{color:var(--dk)}
 h1,h2,h3,.big,.btn{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
-header{background:#111;padding:14px 22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-header img{width:46px}
-header a.home{font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:28px;text-transform:uppercase;color:var(--cream);text-decoration:none}
-header a.home span{color:var(--green)}
+header{background:#111;border-bottom:3px solid var(--green);padding:10px 18px;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+header a.home{display:inline-flex;align-items:center;gap:9px;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:clamp(22px,4.5vw,28px);line-height:1;text-transform:uppercase;letter-spacing:-.3px;color:var(--cream);text-decoration:none;transition:color .14s}
+header a.home img{width:34px;height:34px;object-fit:contain;display:block}
+header a.home span{color:var(--green);transition:color .14s}
+header a.home:hover{color:#fff}header a.home:hover span{color:#4ade80}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9a968c}
 header #cbs-account{margin-left:auto}
-main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
-.hello{display:flex;gap:16px;align-items:center;margin-bottom:18px}
-.hello img{width:84px;image-rendering:pixelated;background:var(--paper);border:2px solid var(--ink)}
-.hello h1{font-size:40px}.hello p{color:var(--muted)}
-.btn{display:inline-block;background:#facc15;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;padding:7px 14px;font-size:19px;text-decoration:none;align-self:flex-start}
-.btn.alt{background:var(--paper)}.btn.green{background:#4ade80}
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:820px){.cols{grid-template-columns:1fr}}
+main{max-width:1100px;margin:0 auto;padding:20px 18px 60px}
+
+/* Zone 1: Greeting + integrated 1-click Revise CTA */
+.hello{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+.hello-l{display:flex;gap:14px;align-items:center;min-width:0}
+.hello img{width:68px;height:68px;image-rendering:pixelated;background:var(--paper);border:2px solid var(--ink);flex:none}
+.hello h1{font-size:clamp(28px,5vw,38px)}.hello p{color:var(--muted);font-size:14px}
+.yr{background:#111;color:#fff;border:0;font:700 12px Barlow,Arial;padding:2px 8px;margin-left:6px;cursor:pointer;vertical-align:1px;border-radius:3px}
+.mode-sw{display:inline-flex;align-items:center;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;margin-left:8px;vertical-align:1px;background:var(--paper)}
+.mode-sw button{border:0;background:transparent;color:var(--muted);font:700 12px Barlow,Arial,sans-serif;padding:2px 8px;cursor:pointer;line-height:1.25;white-space:nowrap}
+.mode-sw button:hover{background:#fef3c7;color:var(--ink)}
+.mode-sw button.on{background:#111;color:#facc15}
+.plain-foot{margin:16px 0 4px;padding:10px 14px;background:var(--soft);border:1.5px dashed var(--line);border-radius:4px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.plain-foot button{background:var(--paper);border:1.5px solid var(--ink);border-radius:4px;padding:4px 10px;font:700 13px Barlow,Arial,sans-serif;cursor:pointer;color:var(--ink)}
+.plain-foot button:hover{background:#facc15}
+.qgo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#111;color:var(--cream);border:2px solid #111;border-left:6px solid var(--green);padding:8px 12px 8px 14px}
+.qgo-txt b{font:900 16px/1.1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;display:block;color:#facc15;letter-spacing:.3px}
+.qgo-txt span{font-size:13px;color:#d6d3cb}
+.btn{display:inline-block;background:#facc15;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;padding:6px 14px;font-size:18px;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#fde047}
+.btn.alt{background:var(--paper)}.btn.alt:hover{background:#fef3c7}
+.btn.green{background:#4ade80}
+
 .card{background:var(--paper);border:2px solid var(--ink);padding:14px 16px;margin-bottom:14px}
-.card h2{font-size:22px;margin-bottom:8px}
-.pt{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
-.pt:first-of-type{border-top:0}
-.pt .k{font:900 15px 'Barlow Condensed',Arial;min-width:58px;padding:2px 6px;color:#fff;text-align:center}
-.k.B{background:var(--bio)}.k.C{background:var(--chem)}.k.P{background:var(--phys)}
-.pt .t{flex:1;font-size:14px}
-.pt .t small{display:block;color:var(--muted)}
-.pt a{font-size:14px;font-weight:700;white-space:nowrap}
-.pt a.k{text-decoration:none}
-.pt .ac{display:flex;flex-wrap:wrap;gap:4px 10px;justify-content:flex-end}
-@media(max-width:560px){.pt{flex-wrap:wrap}.pt .ac{width:100%;justify-content:flex-start;padding-left:68px}}
+.card h2{font-size:21px;margin-bottom:8px}
 .muted{color:var(--muted)}.small{font-size:13px}
-.sci{display:grid;grid-template-columns:90px 1fr 70px;gap:6px 10px;align-items:center;font-size:14px}
-.bar{height:12px;background:var(--n);display:flex}.bar i{display:block;height:100%}
-.strip{display:flex;gap:3px;margin-top:4px}.strip i{width:18px;height:26px;background:var(--n)}.strip i.y{background:var(--s)}
+.bar{height:10px;background:var(--n);display:flex;border:1.5px solid var(--ink);overflow:hidden}.bar i{display:block;height:100%}
+.pill{display:inline-block;font:700 11.5px Barlow,Arial;text-transform:uppercase;letter-spacing:.3px;padding:2px 7px;border-radius:4px;border:1px solid var(--line);background:var(--soft);color:var(--ink);white-space:nowrap}
+.pill.late{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.pill.open{background:#fef08a;color:#713f12;border-color:#eab308}
+.pill.done{background:#dcfce7;color:#15803d;border-color:#86efac}
+.pill.cool{background:#e0f2fe;color:#075985;border-color:#7dd3fc}
+
+/* Unified To Do Hub (left: From your teacher · right: Suggested for you) */
+.todo-hub{background:var(--paper);border:3px solid var(--ink);box-shadow:0 5px 0 var(--ink);margin-bottom:18px;display:grid;grid-template-columns:1.15fr .85fr}
+@media(max-width:860px){.todo-hub{grid-template-columns:1fr}}
+.todo-pane{padding:16px 18px;min-width:0}
+.todo-pane.teach{border-right:2px solid var(--line)}
+.todo-pane.teach.has-late{box-shadow:inset 7px 0 0 #dc2626}
+.todo-pane.teach.has-open{box-shadow:inset 7px 0 0 #eab308}
+.todo-pane.teach.all-done{box-shadow:inset 7px 0 0 var(--s)}
+.todo-pane.sugg{background:#fbfaf5}
+@media(max-width:860px){.todo-pane.teach{border-right:0;border-bottom:2px solid var(--line)}}
+.pane-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.pane-head h2{font-size:23px;margin:0}
+.subsec{font:900 13px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:12px 0 4px;padding-top:8px;border-top:2px solid var(--cream);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.subsec:first-of-type{margin-top:4px;padding-top:6px;border-top:1px solid var(--line)}
+.subsec span.sym{font:600 12px Barlow,Arial;text-transform:none;letter-spacing:0}
+.todo-pane .a{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding:9px 0}
+.todo-pane .a:first-of-type{border-top:0;padding-top:4px}
+.todo-pane .a-info{flex:1 1 220px;min-width:0}
+.todo-pane .a-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.todo-pane .a-title{font:900 18.5px/1.1 'Barlow Condensed','Arial Narrow',Arial,sans-serif;text-transform:uppercase}
+.todo-pane .a-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;font-size:13px;color:var(--muted)}
+.todo-pane .a-meta .bar{flex:0 1 130px;min-width:80px}
+.todo-pane .a-acts{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.todo-pane .a-note{font-size:13px;color:var(--muted);margin-top:3px}
+.todo-pane details.topics{margin-top:5px}.todo-pane details.topics summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--muted);list-style:none}
+.todo-pane details.topics summary::-webkit-details-marker{display:none}.todo-pane details.topics summary::after{content:' ▾'}.todo-pane details.topics[open] summary::after{content:' ▴'}
+.todo-pane .items{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+details.done-list{margin-top:10px;padding-top:8px;border-top:1px dashed var(--line)}
+details.done-list summary{cursor:pointer;font-size:13px;font-weight:700;color:#15803d;list-style:none}
+details.done-list summary::-webkit-details-marker{display:none}
+details.done-list summary::after{content:' ▾';color:var(--muted)}details.done-list[open] summary::after{content:' ▴'}
+.done-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid var(--line);font-size:13.5px}
+.done-row:first-of-type{margin-top:5px}
+
+/* Action buttons */
+.ico{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:32px;height:31px;padding:0 9px;border:2px solid var(--ink);background:var(--paper);color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:700;border-radius:4px;line-height:1;white-space:nowrap}
+.ico:hover{background:#fef3c7}
+.ico.go{background:#facc15;padding:0 12px;font-size:14px}
+.ico.q{background:#111;color:#fff}.ico.q:hover{background:#333}
+
+/* Right pane of To Do: Daily loop + clean target cards (no tiny icon clutter) */
+.dloop{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:8px 10px;background:#fff;border:1.5px solid var(--ink);border-radius:4px;margin-bottom:12px}
+.dloop b{font:900 14.5px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin-right:2px}
+.dloop a{padding:4px 9px;border:1.5px solid #111;text-decoration:none;color:#111;font-weight:700;font-size:13px;background:#fef3c7;border-radius:4px}
+.dloop a.ok{background:#dcfce7;border-color:#15803d;color:#15803d}
+.sugg-list{display:grid;gap:8px}
+.sitem{background:#fff;border:2px solid var(--ink);border-left:6px solid var(--c,var(--ink));padding:9px 11px;display:flex;flex-direction:column;gap:6px;border-radius:4px}
+.sitem-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sitem .k{font:900 14px 'Barlow Condensed',Arial;padding:2px 7px;color:#fff;text-decoration:none;border-radius:3px}
+.k.B{background:var(--bio)}.k.C{background:var(--chem)}.k.P{background:var(--phys)}
+.sitem .why{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:3px;background:var(--soft);border:1px solid var(--line);color:#444}
+.sitem .why.near{background:#dcfce7;border-color:#86efac;color:#166534}
+.sitem .why.rusty{background:#ffedd5;border-color:#fdba74;color:#9a3412}
+.sitem .why.weak{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+.sitem .why.check{background:#fef08a;border-color:#eab308;color:#713f12}
+.sitem .txt{font-size:14px;color:#222;line-height:1.35}
+.sitem-acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:2px}
+.sitem-acts .go-btn{font:800 13.5px Barlow,Arial;background:#facc15;color:#111;border:2px solid #111;padding:4px 10px;border-radius:4px;text-decoration:none}
+.sitem-acts .go-btn:hover{background:#fde047}
+.sitem-acts .sub-lnk{font:700 13px Barlow,Arial;color:#333;text-decoration:none}
+.sitem-acts .sub-lnk:hover{color:#005e22;text-decoration:underline}
+
+/* Zone 2: Full-width Breadventure Land / Cakebread Questing hero banner (matches homepage vibrancy) */
+.quest-hero{position:relative;display:block;min-height:225px;background:#151518 url(/img/questing-banner.webp) 380px center/auto 100% no-repeat;border:3px solid #111;box-shadow:0 5px 0 #111;overflow:hidden;margin-bottom:18px;color:var(--cream)}
+.quest-hero::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(17,17,20,1) 0,rgba(17,17,20,1) 380px,rgba(17,17,20,.65) 435px,rgba(17,17,20,.1) 560px)}
+.quest-hero .in{position:relative;z-index:2;max-width:455px;padding:20px 24px;display:flex;flex-direction:column;gap:6px}
+.quest-hero .kick{display:flex;align-items:center;gap:8px;color:#facc15;font:900 14.5px 'Barlow Condensed',sans-serif;letter-spacing:1.8px;text-transform:uppercase}
+.quest-hero .kick img{width:34px;height:34px;image-rendering:pixelated}
+.quest-hero h2{font-size:clamp(32px,4.5vw,42px);line-height:.95;color:#eeeae0;margin:0;letter-spacing:-.5px}
+.quest-hero h2 span{color:#00a03a}
+.quest-hero p{color:#d6d3cb;font-size:14.5px;line-height:1.38}
+.quest-hero .qstats{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.quest-hero .qpill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12.5px;font-weight:700;padding:2px 8px;border-radius:4px}
+.quest-hero .qpill.hot{background:#facc15;color:#111;border-color:#facc15}
+.quest-hero .qacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.quest-hero .play{background:#facc15;color:#111;font:900 20px 'Barlow Condensed',sans-serif;text-transform:uppercase;padding:6px 18px;border:2px solid #111;box-shadow:0 3px 0 #000;text-decoration:none}
+.quest-hero .play:hover{background:#fde047}
+.quest-hero .play.sec{background:#fff;color:#111}.quest-hero .play.sec:hover{background:#fef3c7}
+@media(max-width:700px){.quest-hero{background-position:35% top;background-size:auto 140px;padding-top:120px;min-height:0}.quest-hero::before{background:linear-gradient(180deg,rgba(17,17,20,0) 0,rgba(17,17,20,0) 90px,rgba(17,17,20,1) 138px)}.quest-hero .in{padding:0 16px 16px;max-width:none}}
+
+/* Zone 3: Full-width IGCSE Progress card + spacious full-width Covered in class drawer */
+.prog-card{background:var(--paper);border:2px solid var(--ink);box-shadow:0 4px 0 var(--ink);padding:16px 18px;margin-bottom:18px}
+.prog-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.prog-top h2{font-size:23px;margin:0}
+.prog-grid{display:grid;grid-template-columns:1fr auto;gap:16px 24px;align-items:center}
+@media(max-width:800px){.prog-grid{grid-template-columns:1fr}}
+.sci-bars{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:640px){.sci-bars{grid-template-columns:1fr}}
+.scib{background:var(--soft);border:1.5px solid var(--line);border-top:5px solid var(--c);padding:8px 10px;border-radius:4px;text-decoration:none;color:var(--ink);display:block}
+.scib:hover{border-color:var(--ink);background:#fffbe6}
+.scib-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px;font-size:14px}
+.scib-h b{font:900 17px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:var(--c)}
+.streak-box{display:flex;flex-direction:column;gap:4px;align-items:flex-end}
+@media(max-width:800px){.streak-box{align-items:flex-start}}
+.strip{display:flex;gap:3px}.strip i{width:13px;height:20px;background:var(--n);border-radius:2px}.strip i.y{background:var(--s)}
+
+/* Full-width Covered in class (expands cleanly across entire page!) */
+.covered{margin-top:14px;padding-top:12px;border-top:2px solid #e3ddcf}
+.covered>summary{cursor:pointer;font-weight:800;font-size:15.5px;list-style:none;display:flex;align-items:center;gap:8px;padding:4px 0}
+.covered>summary::-webkit-details-marker{display:none}
+.covered>summary::after{content:'Expand ▾';font-size:13px;font-weight:700;color:var(--dk);margin-left:auto;border:1.5px solid var(--dk);padding:2px 9px;border-radius:4px;background:#f0fdf4}
+.covered[open]>summary::after{content:'Hide ▴';background:#fff;color:#333;border-color:#999}
+.cov-sci{margin-top:12px}
+.cov-sci h3{font-size:15px;letter-spacing:.6px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+.cov-sci h3.B{color:var(--bio)}.cov-sci h3.C{color:var(--chem)}.cov-sci h3.P{color:var(--phys)}
+.cov-sci h3 span{font:600 12.5px Barlow,Arial;color:var(--muted);text-transform:none;letter-spacing:0}
+.cov-fulls{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:8px;margin-bottom:7px}
+details.cov-full{border:2px solid var(--c);border-left-width:7px;border-radius:5px;background:#fff}
+details.cov-full[open]{grid-column:1/-1;background:var(--soft)}
+details.cov-full>summary{cursor:pointer;list-style:none;padding:8px 11px;display:flex;flex-direction:column;gap:5px}
+details.cov-full>summary::-webkit-details-marker{display:none}
+details.cov-full>summary:hover{background:#fffbe6}
+.cf-top{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14.5px;font-weight:700;line-height:1.2}
+.cf-top .chev{color:var(--muted);font-size:12px;flex:none}
+details.cov-full[open] .cf-top .chev::after{content:'▴'}
+details.cov-full:not([open]) .cf-top .chev::after{content:'▾'}
+.cf-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.cf-bar{flex:1;height:7px;background:var(--n);border:1px solid #999;overflow:hidden}.cf-bar i{display:block;height:100%;background:var(--s)}
+.cf-body{padding:8px 11px 10px;border-top:1px dashed var(--line);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.cf-go{background:#facc15;border:1.5px solid #111;padding:3px 10px;font:700 13px Barlow,Arial;text-decoration:none;color:#111;border-radius:4px}
+.cf-go:hover{background:#fde047}
+.cov-part{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--ink);background:var(--paper);padding:3px 8px;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);border-radius:4px}
+.chip:hover{background:#fef3c7}.chip i{font-style:normal;font-weight:600;color:var(--muted);font-size:11.5px}
+.chip.B{border-color:var(--bio)}.chip.C{border-color:var(--chem)}.chip.P{border-color:var(--phys)}
+
+/* Zone 4: Clean 6-tile Explore the Site dock with site monoline SVG icons */
+.dock-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:18px 0 8px}
+.dock-head h2{font-size:21px;margin:0}
+.dock{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:820px){.dock{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.dock{grid-template-columns:1fr}}
+.dtile{display:flex;gap:11px;align-items:center;background:var(--paper);border:2px solid var(--ink);padding:11px 13px;text-decoration:none;color:var(--ink);transition:background .12s}
+.dtile:hover{background:#fffbe6;box-shadow:inset 5px 0 0 var(--green)}
+.dtile img.ic{width:28px;height:28px;flex:none;display:block}
+.dtile b{font:900 18px/1.05 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;display:block}
+.dtile small{font-size:12.5px;color:var(--muted);display:block;margin-top:2px}
+.dock-foot{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13.5px}
+.dock-foot a{font-weight:700;text-decoration:none}.dock-foot a:hover{text-decoration:underline}
+
 .gate{background:#fde047;border:2px solid var(--ink);padding:16px 18px;font-size:17px}
 .gate button{font:900 19px 'Barlow Condensed',Arial;text-transform:uppercase;background:#111;color:#fff;border:0;padding:8px 16px;margin-left:8px;cursor:pointer}
 .links{display:flex;flex-wrap:wrap;gap:8px}
 .links a{background:var(--paper);border:2px solid var(--ink);padding:6px 12px;text-decoration:none;color:var(--ink);font-weight:700}
-.tline{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#fff;border:2px solid #111;padding:10px 12px;margin:0 0 18px}
-.tline b{font:900 20px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin-right:4px}
-.tline a{padding:5px 10px;border:2px solid #111;text-decoration:none;color:#111;font-weight:700;font-size:14px;background:#fef3c7}
-.tline a.ok{background:#dcfce7;border-color:#15803d;color:#15803d}
-.tline a.go{margin-left:auto;background:#111;color:#fff}
-.yr{background:#111;color:#fff;border:0;font:700 13px Barlow,Arial;padding:2px 9px;margin-left:6px;cursor:pointer;vertical-align:2px}
-.setw .a{border-top:1px solid var(--line);padding:9px 0}.setw .a:first-of-type{border-top:0}
-.setw .a h3{font-size:19px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}.setw .a h3 small{font:600 13px Barlow,Arial;color:var(--muted);text-transform:none}
-.setw .a h3 .done{background:#dcfce7;color:#15803d;border:1px solid #15803d;font:700 12px Barlow,Arial;padding:0 6px;text-transform:uppercase}
-.setw .a h3 .late{background:#fee2e2;color:#991b1b;border:1px solid #991b1b;font:700 12px Barlow,Arial;padding:0 6px;text-transform:uppercase}
-.setw .items{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.chip{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);background:var(--paper);padding:3px 9px;font-size:14px;font-weight:700;text-decoration:none;color:var(--ink)}
-.chip:hover{background:#fef3c7}.chip i{font-style:normal;font-weight:600;color:var(--muted);font-size:12px}
-.chip.B{border-color:var(--bio)}.chip.C{border-color:var(--chem)}.chip.P{border-color:var(--phys)}
-.covered h3{font-size:16px;margin:10px 0 6px}.covered h3:first-of-type{margin-top:0}
-@media(max-width:560px){.tline a.go{margin-left:0}}
 </style>
 </head>
 <body>
-<header><img src="/img/mascot/head-pixel-hd.webp" alt=""><a class="home" href="/">Cakebread <span>Science</span></a><div id="cbs-account"></div></header>
+<header><a class="home" href="/?dir=1" title="Full Cakebread Science directory"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Student Home</span><div id="cbs-account"></div></header>
 <main id="main"><p class="muted">Loading your day…</p></main>
 
 <script src="/js/firebase-config.js"></script>
@@ -90,18 +225,19 @@ main{max-width:1100px;margin:0 auto;padding:22px 18px 60px}
 <script src="/js/admin-config.js"></script>
 <script src="/js/year.js"></script>
 <script src="/js/school.js"></script>
+<script src="/js/spec-index.js"></script>
 <script src="/js/study-guide.js"></script>
 <script>
-/* To do (10 Nov 2026): one page that answers "what should I do today?" across the site — the v4 "one revision journey".
-   Reads Cakebread Questing (QE), the account doc (flashcard reviews due, spec tracker ticks) and Breadventure Land (bland/). */
+/* Student Home / To do (redesigned 27 Nov 2026 into 3 calm zones):
+   Zone 1: Greeting + integrated 1-click "Start now" CTA + unified "From your teacher" (Homework + Upcoming tests)
+   Zone 2: "Up next for you" (daily loop + strictly top 3 highest-value spec points) | "Your GCSE progress" (B/C/P bars + 14d dots + compact Covered in class drawer)
+   Zone 3: Clean 6-tile "Explore the site" dock. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const strip = s => String(s || '').replace(/<[^>]+>/g, '');
 const Q = '/interactive/spec-quiz/';
 let drawn = false;
 
-/* nothing on this page may wait forever (17 Nov: students at school were stuck on "Loading your day…"):
-   every database call has a time limit, and what couldn't be reached is named at the bottom of the page */
 const SLOW = new Set();
 const within = (p, ms, label) => new Promise((ok, no) => {
   const t = setTimeout(() => { SLOW.add(label); no(new Error('timeout: ' + label)); }, ms);
@@ -114,166 +250,408 @@ function slowNote() {
   if (!SLOW.size || !$('main')) return;
   $('main').insertAdjacentHTML('beforeend', `<p id="slowNote" class="small muted" style="margin-top:16px">⚠️ Couldn't reach ${[...SLOW].join(', ')}. If this keeps happening at school, the school network is probably blocking part of Firebase — tell your teacher.</p>`);
 }
+
 async function draw() {
   if ((!QE.known || QE.status === 'loading') && !waited) return;
   const u = QE.user;
   if (!u) {
-    $('main').innerHTML = `<div class="gate"><b>Sign in to see your day.</b> One Google account covers Cakebread Questing, Flashcards, the spec trackers and Breadventure Land. <button id="si">Sign in</button></div>
-      <h2 style="margin:22px 0 8px">Or jump in</h2><div class="links"><a href="${Q}">⚔️ Cakebread Questing</a><a href="/Flashcards/">🃏 Flashcards</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/">🏠 Homepage</a></div>`;
+    $('main').innerHTML = `<div class="gate"><b>Sign in to open your Student Home.</b> One Google account covers homework, Breadventure Land, Flashcards, Revision Notes and Spec Trackers. <button id="si">Sign in</button></div>
+      <h2 style="margin:22px 0 8px">Or jump in</h2><div class="links"><a href="/how-to-use/">❓ How to use this site</a><a href="${Q}">⚔️ Breadventure Land</a><a href="/Flashcards/">🃏 Flashcards</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/?dir=1">📂 Full site directory</a></div>`;
     $('si').onclick = () => QE.signIn().catch(() => {});
     drawn = false; return;
   }
   if (drawn) return; drawn = true;
-  /* the account doc: flashcard reviews due + spec tracker ticks */
   let doc = {}, spec = {};
   const fs = firebase.firestore(), rt0 = firebase.database();
   const [dR, sR, lR] = await Promise.allSettled([
     within(fs.collection('users').doc(u.uid).get(), 6000, 'your account (Firestore)'),
     within(fs.collection('specProgress').doc(u.uid).get(), 6000, 'the spec trackers (Firestore)'),
     within(Promise.all(['bland/world', 'bland/state/' + u.uid, 'bland/pub/' + u.uid].map(p => CBSSchool.rtGet(rt0, p, 15000))), 15000, 'Breadventure Land (Realtime Database)')]);
-  if (dR.status === 'fulfilled') doc = dR.value.data() || {};
+  if (dR.status === 'fulfilled') { doc = dR.value.data() || {}; if (window.CBSMode) CBSMode.syncFromDoc(doc); }
+  const plain = !!(window.CBSMode && CBSMode.isPlain());
   let conf = null;
   if (sR.status === 'fulfilled') { const s = sR.value; spec = (s.exists && s.data().subjects) || doc.specSubjects || {}; conf = (s.exists && s.data().conf) || null; } else spec = doc.specSubjects || {};
   const now = Date.now(), prog = doc.progress || {};
   const due = Object.values(prog).filter(p => p && p.repetitions > 0 && p.nextReview <= now).length;
-  /* Breadventure Land */
   let land = null;
   if (lR.status === 'fulfilled') { const [w, st, pb] = lR.value; land = { w, st, pb }; }
 
-  const st = QE.stats(), s = ADV.stats(), name = QE.boardName().split(' ')[0];
+  const st = QE.stats(), s = ADV.stats();
+  const realFirst = ((u && u.displayName) || '').trim().split(/\s+/)[0];
+  const name = plain ? (realFirst || QE.boardName().split(' ')[0]) : QE.boardName().split(' ')[0];
   const missionDone = QE.missionsToday() > 0, cd = QE.cardsToday(), cardsDone = !!(cd && cd.done);
   const pick = QE.picks()[0];
   let face; try { face = PIXEL.portrait(ADV.look(), ADV.eq()); } catch (e) { face = '/img/mascot/head-pixel.png'; }
   const hr = new Date().getHours(), hi = hr < 12 ? 'Morning' : hr < 18 ? 'Afternoon' : 'Evening';
 
-  /* step 3: Breadventure Land */
-  let landTxt = 'One world shared by everyone who plays. Plan your moves; they happen at midnight.', landDone = false, landBtn = 'Into Breadventure Land →';
+  let landDone = false, landShort = 'Map';
   if (land && land.st && land.w) {
-    const camp = land.st.camp && land.st.camp.day === land.w.day && land.st.at === land.st.camp.k && BL.PLACES[land.st.camp.k], mv = BL.movesOf(land.st);   // moves happen at once now; only boss camps wait
-    const newRep = land.w.day < BL.TODAY ? 'Last night is waiting to happen: open the map to run it.' : land.st.reportDay === land.w.day && (ADV.S.seenRep || {})[u.uid] !== land.st.reportDay ? '📜 Your morning report is waiting.' : '';
+    const camp = land.st.camp && land.st.camp.day === land.w.day && land.st.at === land.st.camp.k, mv = BL.movesOf(land.st);
     landDone = mv === 0 || !!camp;
-    landTxt = `${newRep ? newRep + ' ' : ''}${camp ? `⛺ Camped at ${camp.name} for midnight. ` : ''}${mv ? `${mv} move${mv === 1 ? '' : 's'} to use today.` : 'No moves left today.'} ❤ ${land.st.health ?? '–'}/${s.hp} Health${land.st.pending ? ' · 🎁 rewards to collect' : ''}.`;
-    landBtn = mv ? 'Play your moves →' : 'See the map →';
-  } else if (!land) landTxt = 'Breadventure Land couldn\'t load just now.';
-  let landShort = 'Breadventure Land';
-  if (land && land.st && land.w) { const camp = land.st.camp && land.st.camp.day === land.w.day && land.st.at === land.st.camp.k, mv = BL.movesOf(land.st);
-    landShort = land.st.pending ? '🎁 Rewards waiting' : mv ? `${mv} move${mv > 1 ? 's' : ''} to use` : camp ? '⛺ Camped' : 'No moves left'; }
+    landShort = land.st.pending ? '🎁 Loot' : mv ? `${mv} move${mv > 1 ? 's' : ''}` : camp ? '⛺ Camped' : '0 moves';
+  }
 
-  /* nearly secured, rusty, weak flashcards */
-  const near = Object.keys(QE.POINT_QS).map(k => [k, QE.pointState(k)]).filter(([, p]) => p.started && !p.secured && p.need - (p.sec + p.cSec) <= 1.5)
-    .sort((a, b) => (a[1].need - a[1].sec - a[1].cSec) - (b[1].need - b[1].sec - b[1].cSec)).slice(0, 6);
-  const rusty = Object.keys(QE.POINT_QS).filter(k => QE.pointState(k).rusty).slice(0, 6);
-  const weak = QE.weakPoints().slice(0, 6);
+  /* Curate strictly top 3 highest-leverage spec points across nearly-secured, hard cards, rusty, and unproved-confident */
+  const gotOf = p => p.got != null ? p.got : Math.min(p.need, (p.sec || 0) + (p.cCredit != null ? p.cCredit : (p.cSec || 0)));
+  const near = Object.keys(QE.POINT_QS).map(k => [k, QE.pointState(k)]).filter(([, p]) => p.started && !p.secured && p.need - gotOf(p) <= 1.5)
+    .sort((a, b) => (a[1].need - gotOf(a[1])) - (b[1].need - gotOf(b[1]))).map(([k]) => ({ k, tag: 'Nearly secured', cls: 'near' }));
+  const weak = QE.weakPoints().map(k => ({ k, tag: 'Hard flashcard', cls: 'weak' }));
+  const rusty = Object.keys(QE.POINT_QS).filter(k => QE.pointState(k).rusty).map(k => ({ k, tag: 'Gone rusty', cls: 'rusty' }));
+  const check = (conf ? Object.keys(conf).filter(k => conf[k] === 3 && QE.POINT_QS[k] && !QE.pointState(k).secured) : []).map(k => ({ k, tag: 'Rated confident — prove it', cls: 'check' }));
+  const seen = new Set(), top3 = [];
+  for (const list of [near, weak, rusty, check]) {
+    for (const item of list) {
+      if (top3.length >= 3) break;
+      if (!seen.has(item.k)) { seen.add(item.k); top3.push(item); }
+    }
+    if (top3.length >= 3) break;
+  }
+
   const P = k => QE.POINTS[k] || { id: k.slice(1), text: '' };
   const TRK = { B: 'biology', C: 'chemistry', P: 'physics' };
-  const row = (k, why) => `<div class="pt"><a class="k ${k[0]}" href="/specifications/${TRK[k[0]]}.html#${k}" title="See it on the spec tracker">${k[0]} ${P(k).id}</a><span class="t">${esc(strip(P(k).text).slice(0, 90))}${strip(P(k).text).length > 90 ? '…' : ''}<small>${why}</small></span>
-    <span class="ac">${QE.POINT_QS[k] ? `<a class="pv" href="${Q}practice.html?point=${k}">📝 Prove it</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Cakebread Questing mission on this point">⚔️ Quiz me</a>` : ''}${QE.CARDS_ON[k] ? `<a href="/Flashcards/?spec=${k}">🃏 Cards</a>` : ''}</span></div>`;
-  /* the student's own tracker ratings: "Confident" but not proved yet */
-  const check = conf ? Object.keys(conf).filter(k => conf[k] === 3 && QE.POINT_QS[k] && !QE.pointState(k).secured) : [];
-  const checkSub = check.length ? TRK[Object.entries(check.reduce((m, k) => (m[k[0]] = (m[k[0]] || 0) + 1, m), {})).sort((a, b) => b[1] - a[1])[0][0]] : '';
+  const SCOL = { B: 'var(--bio)', C: 'var(--chem)', P: 'var(--phys)' };
+  const ptCard = ({ k, tag, cls }) => `<div class="sitem" style="--c:${SCOL[k[0]] || '#111'}">
+    <div class="sitem-top"><a class="k ${k[0]}" href="/specifications/${TRK[k[0]]}.html#${k}" title="Open on spec tracker">${k[0]} ${P(k).id}</a><span class="why ${cls}">${tag}</span></div>
+    <div class="txt">${esc(strip(P(k).text).slice(0, 96))}${strip(P(k).text).length > 96 ? '…' : ''}</div>
+    <div class="sitem-acts">${QE.POINT_QS[k] ? `<a class="go-btn" href="${Q}practice.html?point=${k}">Practise →</a>${plain ? '' : `<a class="sub-lnk" href="${Q}adventurer-mission.html?point=${k}">Quest</a>`}` : ''}${QE.CARDS_ON[k] ? `<a class="sub-lnk" href="/Flashcards/?spec=${k}">Cards</a>` : ''}<a class="sub-lnk" href="/specifications/${TRK[k[0]]}.html#${k}">Spec</a></div>
+  </div>`;
 
-  /* the spec: Questing secured vs tracker ticks */
   const sec = QE.securedBySci();
-  const tick = sub => { if (conf) { const L = sub[0].toUpperCase(), all = Object.keys(QE.POINTS).filter(k => k[0] === L); const n = all.filter(k => conf[k] === 3).length; return all.length && n ? Math.round(n / all.length * 100) : null; } const x = spec[sub]; if (!x) return null; const it = x.items || {}, tot = x.total || Object.keys(it).length; return tot ? Math.round(Object.values(it).filter(v => v && v.checkbox).length / tot * 100) : null; };
-  const sciRow = (L, sub, col) => { const pc = Math.round(sec[L.toLowerCase()] / ADV.TOTAL[L.toLowerCase()] * 100), t = tick(sub);
-    return `<span><b>${ADV.SCI[L.toLowerCase()]}</b></span><div><div class="bar" title="${sec[L.toLowerCase()]} of ${ADV.TOTAL[L.toLowerCase()]} spec points secured"><i style="width:${pc}%;background:${col}"></i></div>${t != null ? `<div class="small muted">You rated ${t}% "confident" on the <a href="/specifications/${sub}.html">tracker</a></div>` : `<div class="small muted"><a href="/specifications/${sub}.html">Open the tracker</a></div>`}</div><span class="small"><b>${sec[L.toLowerCase()]}</b>/${ADV.TOTAL[L.toLowerCase()]}</span>`; };
+  const sciCard = (L, sub, col) => { const pc = Math.round(sec[L.toLowerCase()] / ADV.TOTAL[L.toLowerCase()] * 100);
+    return `<a class="scib" href="/specifications/${sub}.html" style="--c:${col}"><div class="scib-h"><b>${ADV.SCI[L.toLowerCase()]}</b><span><b>${sec[L.toLowerCase()]}</b>/${ADV.TOTAL[L.toLowerCase()]}</span></div><div class="bar"><i style="width:${pc}%;background:${col}"></i></div></a>`; };
 
-  /* last 14 days of revision */
   const days = [...Array(14)].map((_, i) => { const d = new Date(Date.parse(QE.TODAY + 'T12:00:00') - (13 - i) * 864e5); return BL.dstr(d); });
   const did = d => (QE.game.days || {})[d] || ((QE.game.cd || {})[d] || {}).n;
-  const streak = (() => { let n = 0; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i < days.length - 1) break; } return n; })();
+  const active7 = days.slice(-7).filter(did).length;
+  /* Friendly consistency streak: allows 1 rest/grace day so one busy evening doesn't wipe motivation to zero */
+  const streak = (() => { let n = 0, grace = 1; for (let i = days.length - 1; i >= 0; i--) { if (did(days[i])) n++; else if (i === days.length - 1) continue; else if (grace > 0 && n > 0) grace--; else break; } return n; })();
+  const streakTxt = streak > 1 ? ` · 🔥 ${streak} days (${active7}/7 this week)` : active7 >= 2 ? ` · 📅 ${active7} of last 7 days` : '';
 
-  $('main').innerHTML = `<div class="hello"><img src="${face}" alt=""><div><h1>${hi}, ${esc(name)}</h1><p>Level ${s.l} · ${st.securedP} of ${QE.stats().withQ} spec points secured${streak > 1 ? ` · 🔥 ${streak} days in a row` : ''}</p></div></div>
-    <div class="tline"><b>Today</b>
-      <a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission to do'}</a>
-      <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} card${due > 1 ? 's' : ''} due` : 'New cards'}</a>
-      <a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>
-      <a class="go" href="${Q}adventurer-home.html">🧁 Cakelab →</a></div>
-    <div id="school"></div><div id="guides"></div>
-    <h2 style="font-size:22px;margin:4px 0 8px">What to revise</h2>
-    <div class="cols">
-      <div>
-        ${near.length ? `<div class="card"><h2>Nearly secured</h2><p class="small muted" style="margin-bottom:4px">One more right answer or card on another day locks these in.</p>${near.map(([k]) => row(k, 'Nearly there')).join('')}</div>` : ''}
-        ${weak.length ? `<div class="card"><h2>From your flashcards</h2>${weak.map(k => row(k, 'You rated these cards hard')).join('')}</div>` : ''}
-        ${rusty.length ? `<div class="card"><h2>Gone rusty</h2>${rusty.map(k => row(k, 'Secured, but not practised for 3 weeks')).join('')}</div>` : ''}
-        ${check.length ? `<div class="card"><h2>Check these</h2><p class="small muted" style="margin-bottom:4px">You rated these "Confident" on the spec tracker but haven't proved them yet.</p>${check.slice(0, 6).map(k => row(k, 'Rated confident, not proved yet')).join('')}${check.length > 6 ? `<p class="small" style="margin-top:6px"><a href="/specifications/${checkSub}.html?f=check">All ${check.length} on the tracker →</a></p>` : ''}</div>` : ''}
-        ${!near.length && !weak.length && !rusty.length && !check.length ? `<div class="card"><h2>Where to start</h2><p>${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Do some Practice Questions, a mission or some flashcards: this page then lists the spec points you're closest to securing and the ones that need another look.</p><p style="margin-top:8px"><a class="btn" href="${Q}adventurer-mission.html">⚔️ Start a mission →</a> <a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p></div>` : ''}
+  $('main').innerHTML = `
+    <div class="hello">
+      <div class="hello-l">${plain ? '' : `<img src="${face}" alt="">`}<div><h1>${hi}, ${esc(name)}</h1><p>${plain ? '' : `Level ${s.l} · `}${st.securedP} of ${QE.stats().withQ} IGCSE spec points secured${streakTxt}</p></div></div>
+      <div id="quickGo"></div>
+    </div>
+
+    <div class="todo-hub" id="todoHub">
+      <div class="todo-pane teach" id="school"><div class="pane-head"><h2>📌 From your teacher</h2></div><p class="small muted">Loading homework &amp; upcoming tests…</p></div>
+      <div class="todo-pane sugg" id="upNextCard">
+        <div class="pane-head"><h2>🎯 Suggested for you</h2></div>
+        <div class="dloop" id="dailyLoop"><b>Today</b>
+          ${plain ? `<a class="${missionDone ? 'ok' : ''}" href="${Q}practice.html">📝 ${missionDone ? 'Practice ✓' : 'Practice'}</a>`
+            : `<a class="${missionDone ? 'ok' : ''}" href="${Q}adventurer-mission.html">⚔️ ${missionDone ? 'Mission ✓' : 'Mission'}</a>`}
+          <a class="${cardsDone ? 'ok' : ''}" href="/Flashcards/">🃏 ${cardsDone ? 'Cards ✓' : due ? `${due} due` : 'Cards'}</a>
+          ${plain ? '' : `<a class="${landDone ? 'ok' : ''}" href="${Q}adventurer-map.html">🗺️ ${landShort}</a>`}
+        </div>
+        ${top3.length ? `<div class="sugg-list">${top3.map(ptCard).join('')}</div><p class="small" style="margin-top:10px"><a href="/specifications/science.html">See all spec points →</a>${check.length ? ` · <a href="/specifications/${TRK[check[0].k[0]]}.html?f=check">${check.length} “confident” points to prove →</a>` : ''}</p>`
+          : `<p class="small muted">${pick ? `Try <b>${esc(pick.sub.subj)} · ${esc(pick.sub.name)}</b>. ` : ''}Finish a quick ${plain ? 'Practice set' : 'mission, Practice set,'} or Flashcards session and your best next targets will show up here.</p><p style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="${Q}${plain ? 'practice.html' : 'adventurer-mission.html'}">${plain ? '📝 Start practising →' : '⚔️ Start a mission →'}</a><a class="btn alt" href="/Flashcards/">🃏 Flashcards →</a></p>`}
       </div>
-      <div>
-        <div class="card"><h2>The spec</h2><div class="sci">${sciRow('B', 'biology', 'var(--bio)')}${sciRow('C', 'chemistry', 'var(--chem)')}${sciRow('P', 'physics', 'var(--phys)')}</div>
-          <p class="small muted" style="margin-top:8px">Bars = spec points secured (Practice Questions, missions and flashcards).</p></div>
-        <div class="card"><h2>Last 14 days</h2><div class="strip">${days.map(d => `<i class="${did(d) ? 'y' : ''}" title="${d}"></i>`).join('')}</div><p class="small muted" style="margin-top:6px">Green = you revised that day.</p></div>
-        <div class="card"><h2>Everything else</h2><div class="links"><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice Questions</a><a href="/specifications/science.html">📋 Spec trackers</a><a href="/booklets/">📚 Question booklets</a><a href="/interactive/physics-long-answer/">✍️ 6-mark questions</a><a href="/leaderboards/">🏆 Leaderboards</a><a href="/interactive/lessons/">🎓 Lessons</a></div></div>
+    </div>
+
+    ${plain ? '' : `<section class="quest-hero" id="questHero" aria-label="Breadventure Land">
+      <div class="in">
+        <div class="kick"><img src="/img/mascot/head-pixel-hd.webp" alt="">Live Revision Adventure</div>
+        <h2>Breadventure <span>Land</span></h2>
+        <p>Turn IGCSE revision into real power: secure spec points across two days to level up your pixel adventurer and team up on midnight bosses.</p>
+        <div class="qstats">
+          <span class="qpill hot">Level ${s.l}</span>
+          <span class="qpill">🗺️ ${esc(landShort)}</span>
+          <span class="qpill">${missionDone ? '✓ Daily mission done' : '⚔️ Daily mission ready'}</span>
+        </div>
+        <div class="qacts">
+          <a class="play" href="${Q}adventurer-map.html">Play World Map →</a>
+          <a class="play sec" href="${Q}adventurer-home.html">🧭 My Adventurer</a>
+        </div>
       </div>
+    </section>`}
+
+    <section class="prog-card" id="progCard">
+      <div class="prog-top">
+        <h2>Your IGCSE progress</h2>
+        <a class="small" href="/specifications/science.html" style="font-weight:700">Open full Spec Trackers →</a>
+      </div>
+      <div class="prog-grid">
+        <div class="sci-bars">${sciCard('B', 'biology', 'var(--bio)')}${sciCard('C', 'chemistry', 'var(--chem)')}${sciCard('P', 'physics', 'var(--phys)')}</div>
+        <div class="streak-box">
+          <div class="small"><b>Last 14 days</b> <span class="muted">· green = revised</span></div>
+          <div class="strip">${days.map(d => `<i class="${did(d) ? 'y' : ''}" title="${d}"></i>`).join('')}</div>
+        </div>
+      </div>
+      <div id="covered"></div>
+    </section>
+
+    <div id="exploreDock">
+      <div class="dock-head"><h2>Explore the site</h2><a class="small" href="/how-to-use/" style="font-weight:700">❓ How to use this site →</a></div>
+      <div class="dock">
+        <a class="dtile" href="/interactive/lessons/"><img class="ic" src="/img/icons/res-lessons.svg" alt=""><span><b>Lessons</b><small>Revision Notes &amp; Class Slides</small></span></a>
+        <a class="dtile" href="/Flashcards/"><img class="ic" src="/img/icons/res-flashcards.svg" alt=""><span><b>Flashcards</b><small>Spaced recall &amp; examiner key words</small></span></a>
+        <a class="dtile" href="${Q}practice.html"><img class="ic" src="/img/icons/res-practice.svg" alt=""><span><b>Practice Questions</b><small>Multiple-choice &amp; diagram drills, instant marking</small></span></a>
+        <a class="dtile" href="/specifications/science.html"><img class="ic" src="/img/icons/res-tracker.svg" alt=""><span><b>Spec Trackers</b><small>Check every IGCSE spec point</small></span></a>
+        <a class="dtile" href="/booklets/"><img class="ic" src="/img/icons/res-booklets.svg" alt=""><span><b>Exam Booklets</b><small>Written exam answers, 6-markers &amp; mark schemes</small></span></a>
+        <a class="dtile" href="/?dir=1#interactives"><img class="ic" src="/img/icons/game-cell.svg" alt=""><span><b>Science Games</b><small>Cells, Elements, Typing &amp; more</small></span></a>
+      </div>
+      <div class="dock-foot">
+        <a href="/worksheets/science.html">Printable worksheets</a>
+        <a href="/interactive/physics-long-answer/">Physics 6-markers</a>
+        <a href="/interactive/physics-equations/">Physics equations</a>
+        <a href="/leaderboards/">Leaderboards</a>
+        <a href="/?dir=1">Full site directory →</a>
+      </div>
+      ${plain ? `<div class="plain-foot"><span><b>Plain mode is on</b> — Breadventure Land is hidden while your IGCSE progress saves the exact same way.</span><button type="button" id="switchGameBtn">⚔️ Switch back to Game mode</button></div>` : ''}
     </div>`;
+  if ($('switchGameBtn')) $('switchGameBtn').onclick = () => window.CBSMode && CBSMode.set(false);
   drawSchool(); slowNote();
 }
-/* from your teacher (17 Nov 2026): work set for your year + what's been covered in class (js/school.js, js/year.js) */
+
+/* Unified "From your teacher" (Homework + Upcoming tests) + compact Covered in class */
 let SCHOOL = null;
-/* study guides (22 Nov): the student's guides for their year and course, with Revise buttons (js/study-guide.js) */
-let GUIDES = { at: 0, html: null, busy: false };   // one read per 30 s; redraws of the page reuse it
-function drawGuides() { const el = $('guides'); if (!el || !QE.user || !window.CBSGuide) return;
-  if (window.CBSYear && !CBSYear.known) return;   // the year decides which guides show; drawSchool runs again once it's known
-  if (GUIDES.html !== null && Date.now() - GUIDES.at < 30000) { el.innerHTML = GUIDES.html; return; }
-  if (GUIDES.busy) return; GUIDES.busy = true; GUIDES.at = Date.now();
-  CBSGuide.todo(el).then(() => { GUIDES.html = el.innerHTML; }).catch(() => {}).finally(() => { GUIDES.busy = false; const e2 = $('guides'); if (e2 && e2 !== el && GUIDES.html !== null) e2.innerHTML = GUIDES.html; }); }
+let GUIDES = { at: 0, all: null, busy: false };
+async function ensureGuides() {
+  if (!window.CBSGuide || !window.firebase || !firebase.database) return null;
+  if (GUIDES.all && Date.now() - GUIDES.at < 30000) return GUIDES.all;
+  if (GUIDES.busy) return GUIDES.all;
+  GUIDES.busy = true; GUIDES.at = Date.now();
+  try { GUIDES.all = await CBSGuide.loadAll(firebase.database()); } catch (e) {}
+  GUIDES.busy = false;
+  return GUIDES.all;
+}
+
+function buildCompactCovered(taughtKeys, y) {
+  const S = CBSSchool;
+  const tSet = new Set(taughtKeys);
+  const secured = k => QE.pointState(k).secured;
+  const chip = k => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length}</i></a>`; };
+  const SCIS = { B: ['Biology', 'var(--bio)'], C: ['Chemistry', 'var(--chem)'], P: ['Physics', 'var(--phys)'] };
+  let totalFull = 0;
+  const blocks = SPEC.map(sc => {
+    const L = sc.name[0], [sName, col] = SCIS[L];
+    const fullTopics = [], partSubs = [];
+    sc.topics.forEach(tp => {
+      const validSubs = tp.subs.filter(sb => sb.name !== 'Units').map(sb => L + tp.n + sb.l).filter(k => S.SUBS[k] && S.pointsOf(k).length > 0);
+      if (!validSubs.length) return;
+      const covSubs = validSubs.filter(k => tSet.has(k));
+      if (!covSubs.length) return;
+      if (covSubs.length === validSubs.length) {
+        totalFull++;
+        const allPts = [...new Set(validSubs.flatMap(S.pointsOf))];
+        const scCnt = allPts.filter(secured).length;
+        fullTopics.push({ code: tp.n, name: tp.name, subs: validSubs, sec: scCnt, pts: allPts.length });
+      } else {
+        covSubs.forEach(k => partSubs.push(k));
+      }
+    });
+    if (!fullTopics.length && !partSubs.length) return '';
+    const meta = [fullTopics.length ? `${fullTopics.length} full topic${fullTopics.length > 1 ? 's' : ''}` : '', partSubs.length ? `${partSubs.length} in progress` : ''].filter(Boolean).join(' · ');
+    const fullHtml = fullTopics.length ? `<div class="cov-fulls">${fullTopics.map(f => {
+      const pc = f.pts ? Math.round(f.sec / f.pts * 100) : 0;
+      const mixUrl = `${Q}practice.html?subs=${encodeURIComponent(f.subs.join(','))}&n=10&t=${encodeURIComponent(`${sName} ${f.code} · ${f.name}`)}`;
+      return `<details class="cov-full" style="--c:${col}"><summary><div class="cf-top"><span>✓ ${f.code}. ${esc(f.name)}</span><span class="chev"></span></div><div class="cf-meta"><div class="cf-bar"><i style="width:${pc}%"></i></div><span>${f.sec}/${f.pts}</span></div></summary><div class="cf-body"><a class="cf-go" href="${mixUrl}">📝 Practise topic</a>${f.subs.map(chip).join('')}</div></details>`;
+    }).join('')}</div>` : '';
+    const partHtml = partSubs.length ? `<div class="cov-part">${partSubs.map(chip).join('')}</div>` : '';
+    return `<div class="cov-sci"><h3 class="${L}">${sName} <span>${meta}</span></h3>${fullHtml}${partHtml}</div>`;
+  }).filter(Boolean).join('');
+  return { totalFull, html: blocks };
+}
+
 async function drawSchool() {
-  drawGuides();
   const box = $('school'); if (!box || !QE.user) return;
-  if (window.CBSYear && !CBSYear.known && !waited) return;   // wait for the year, at most 5 s (CBSYear.onChange redraws)
+  if (window.CBSYear && !CBSYear.known && !waited) return;
   const y = window.CBSYear && CBSYear.year;
-  const hp = document.querySelector('.hello p'), old = $('yrBtn'); if (old) old.remove();
-  if (hp) hp.insertAdjacentHTML('beforeend', y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>');
-  if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
-  if (!SCHOOL) {
-    try { SCHOOL = await within(CBSSchool.load(firebase.database()), 16000, "your teacher's work (Realtime Database)"); SLOW.delete("your teacher's work (Realtime Database)"); }
-    catch (e) { console.warn('school', e); SCHOOL = CBSSchool.cached();
-      if (!SCHOOL) { box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p>Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`; slowNote(); return; }
-      SCHOOL.stale = true; }
+  const plain = !!(window.CBSMode && CBSMode.isPlain());
+  const hp = document.querySelector('.hello p'), old = $('yrBtn'), oldSw = $('modeSw');
+  if (old) old.remove();
+  if (oldSw) oldSw.remove();
+  if (hp) {
+    hp.insertAdjacentHTML('beforeend',
+      (y ? `<span class="yr" id="yrBtn" style="cursor:default">Year ${y}</span>` : '<button class="yr" id="yrBtn">Choose your year</button>') +
+      `<span class="mode-sw" id="modeSw" role="group" aria-label="Revision style"><button type="button" data-plain="0" class="${plain ? '' : 'on'}" title="Show Breadventure Land game">⚔️ Game</button><button type="button" data-plain="1" class="${plain ? 'on' : ''}" title="Hide the game and use Plain Practice">📝 Plain</button></span>`);
+    const sw = $('modeSw');
+    if (sw) sw.querySelectorAll('button').forEach(b => b.onclick = () => { if (window.CBSMode) CBSMode.set(b.dataset.plain === '1'); });
   }
+  if (!y && $('yrBtn')) $('yrBtn').onclick = () => CBSYear.ask();
+
+  const [, guidesAll] = await Promise.all([
+    (async () => {
+      if (SCHOOL) return;
+      try { SCHOOL = await within(CBSSchool.load(firebase.database()), 16000, "your teacher's work (Realtime Database)"); SLOW.delete("your teacher's work (Realtime Database)"); }
+      catch (e) { console.warn('school', e); SCHOOL = CBSSchool.cached(); if (SCHOOL) SCHOOL.stale = true; }
+    })(),
+    ensureGuides()
+  ]);
+
+  if (!SCHOOL) {
+    box.innerHTML = `<div class="card"><h2>📌 From your teacher</h2><p class="small">Couldn't load the work your teacher set just now. Try reloading the page; if it still doesn't come, tell your teacher.</p></div>`;
+    slowNote(); return;
+  }
+
   let udoc = {}; try { udoc = (await within(firebase.firestore().collection('users').doc(QE.user.uid).get(), 5000, 'your account (Firestore)')).data() || {}; } catch (e) {}
-  const S = CBSSchool, prog = QE.prog, today = QE.TODAY;
-  const set = S.forMe(SCHOOL.assign, y, QE.user.uid);   // your year's work + anything set for you by name (18 Nov)
-  if (window.CBSWork) CBSWork.refresh();   // keep the red "To do !" buttons in step with this page
+  const S = CBSSchool, prog = QE.prog, today = QE.TODAY, sa = !!(window.CBSCourse && CBSCourse.sa);
+  const set = S.forMe(SCHOOL.assign, y, QE.user.uid);
+  const mineGuides = window.CBSGuide && guidesAll ? CBSGuide.forMe(guidesAll, y, sa) : [];
+  if (window.CBSWork) CBSWork.refresh();
   const secured = k => QE.pointState(k).secured;
   const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-  const chip = k => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length} secured</i></a>`; };
-  const testHtml = a => { const r = S.testOf(udoc, a), late = a.due && a.due < today && r.state !== 'done';
-    return `<div class="a"><h3>${esc(a.title || 'Test')} ${r.state === 'done' ? '<span class="done">Done ✓</span>' : late ? '<span class="late">Overdue</span>' : ''}<small>Test · ${r.n} questions${a.due ? ' · due ' + fmt(a.due) : ''}</small></h3>
-      ${a.note ? `<p class="small">${esc(a.note)}</p>` : ''}
-      <p class="small" style="margin:6px 0">${r.state === 'done' ? `You scored <b>${r.score} / ${r.n}</b>.` : r.state === 'started' ? `${r.answered} of ${r.n} answered.` : 'One go: your score goes to your teacher.'}</p>
-      <a class="btn ${r.state === 'done' ? 'alt' : ''}" style="font-size:17px;padding:5px 12px" href="/work/?id=${encodeURIComponent(a.id)}">${r.state === 'done' ? 'See your answers' : r.state === 'started' ? 'Carry on →' : 'Start the test →'}</a></div>`; };
-  const setHtml = set.map(a => { if (S.isTest(a)) return testHtml(a); const p = S.progress(prog, a), late = a.due && a.due < today && !p.done;
-    return `<div class="a"><h3>${esc(a.title || 'Work set')} ${p.done ? '<span class="done">Done ✓</span>' : late ? '<span class="late">Overdue</span>' : ''}<small>${a.due ? 'due ' + fmt(a.due) : ''}</small></h3>
-      ${a.note ? `<p class="small">${esc(a.note)}</p>` : ''}
-      <div class="bar" style="margin-top:6px" title="${p.got} of ${p.target}"><i style="width:${p.got / p.target * 100}%;background:${p.done ? 'var(--s)' : 'var(--l)'}"></i></div>
-      <p class="small muted">Practise until you've got ${p.target} different questions right (${p.got} so far). Any of these:</p><div class="items">${(a.items || []).map(chip).join('')}</div></div>`; }).join('');
+  const chip = (k, hwId) => { const pts = S.pointsOf(k), sc = pts.filter(secured).length; return `<a class="chip ${k[0]}" href="${S.practise(k)}${hwId ? '&hw=' + encodeURIComponent(hwId) : ''}">${esc(S.shortLabel(k))}<i>${sc}/${pts.length}</i></a>`; };
+
+  const openItems = [], doneItems = [];
+  let hasLate = false, hasPractiseOpen = false, firstAction = null;
+  set.forEach(a => {
+    const encHw = encodeURIComponent(a.id), encT = encodeURIComponent(a.title || 'Homework');
+    if (S.isTest(a)) {
+      const r = S.testOf(udoc, a), late = !!(a.due && a.due < today && r.state !== 'done');
+      if (r.state === 'done') {
+        doneItems.push(`<div class="done-row"><span>✓ <b>${esc(a.title || 'Test')}</b> <span class="small muted">· scored ${r.score}/${r.n}</span></span><a class="small" href="/work/?id=${encHw}">Review →</a></div>`);
+        return;
+      }
+      if (late) hasLate = true;
+      const url = `/work/?id=${encHw}`;
+      if (!firstAction) firstAction = { url, label: `Homework test: ${a.title || 'Test'}${late ? ' (overdue)' : ''}`, cta: r.state === 'started' ? '▶ Carry on test →' : '▶ Start test →' };
+      const pct = r.n ? Math.round(r.answered / r.n * 100) : 0;
+      openItems.push(`<div class="a"><div class="a-info">
+        <div class="a-top"><span class="a-title">📋 ${esc(a.title || 'Test')}</span>${late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}<span class="pill">Test</span></div>
+        ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
+        <div class="a-meta">${r.state === 'started' ? `<div class="bar"><i style="width:${pct}%;background:var(--l)"></i></div><span>${r.answered}/${r.n} answered</span>` : `<span>${r.n} questions · one go</span>`}</div>
+      </div><div class="a-acts"><a class="ico go" href="${url}">▶ ${r.state === 'started' ? 'Carry on' : 'Start test'}</a></div></div>`);
+    } else if (S.isSpaced(a)) {
+      const r = S.spacedOf(udoc, a, today), late = !!(a.due && a.due < today && r.state !== 'done');
+      if (r.state === 'done') {
+        doneItems.push(`<div class="done-row"><span>✓ <b>${esc(a.title || 'Homework')}</b> <span class="small muted">· ${r.daysDone}/${r.daysNeed} days</span></span><span class="pill done">Done</span></div>`);
+        return;
+      }
+      if (late) hasLate = true;
+      hasPractiseOpen = true;
+      const validItems = (a.items || []).filter(k => S.pointsOf(k).length);
+      const pts = [...new Set(validItems.flatMap(S.pointsOf))];
+      const hasCards = pts.some(k => QE.CARDS_ON && QE.CARDS_ON[k]);
+      const encSubs = encodeURIComponent(validItems.join(','));
+      const questUrl = `${Q}adventurer-mission.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
+      const practUrl = `${Q}practice.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
+      const cardsUrl = `/Flashcards/?subs=${encSubs}&t=${encT}`;
+      if (!r.doneToday && validItems.length && !firstAction) {
+        firstAction = plain
+          ? { url: practUrl, label: `Homework: ${a.title || 'Practice'} (Day ${r.daysDone + 1}/${r.daysNeed} · ${r.qPerDay} Qs)`, cta: `📝 Start Day ${r.daysDone + 1} →` }
+          : { url: questUrl, label: `Homework: ${a.title || 'Mission'} (Day ${r.daysDone + 1}/${r.daysNeed} · ${r.qPerDay} Qs)`, cta: `⚔️ Start Day ${r.daysDone + 1} →` };
+      }
+      openItems.push(`<div class="a"><div class="a-info">
+        <div class="a-top"><span class="a-title">🎯 ${esc(a.title || 'Homework')}</span>${r.doneToday ? `<span class="pill cool">Day ${r.daysDone}/${r.daysNeed} done today ✓</span>` : late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}</div>
+        ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
+        <div class="a-meta"><div class="bar" title="${r.daysDone} of ${r.daysNeed} days done"><i style="width:${r.daysDone / r.daysNeed * 100}%;background:${r.doneToday ? 'var(--s)' : 'var(--l)'}"></i></div><span>${r.doneToday ? `Come back another day for Day ${r.daysDone + 1}` : `<b>Day ${r.daysDone + 1} of ${r.daysNeed}</b> · 1 set (${r.qPerDay} Qs)`}</span></div>
+      </div><div class="a-acts">
+        ${validItems.length ? (r.doneToday ? `<a class="ico" href="${practUrl}" title="Extra practice">📝 Extra</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards" aria-label="Flashcards">🃏</a>` : ''}`
+          : (plain
+            ? `<a class="ico go" href="${practUrl}" title="Do today's questions in Practice">📝 Day ${r.daysDone + 1}</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}`
+            : `<a class="ico go" href="${questUrl}" title="Do today's mission in Breadventure Land">⚔️ Day ${r.daysDone + 1}</a><a class="ico" href="${practUrl}" title="Do today's mission in Practice (no game)" aria-label="Practice">📝</a>${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}`)) : ''}
+      </div></div>`);
+    } else {
+      const p = S.progress(prog, a), late = !!(a.due && a.due < today && !p.done);
+      if (p.done) {
+        doneItems.push(`<div class="done-row"><span>✓ <b>${esc(a.title || 'Work set')}</b> <span class="small muted">· ${p.got}/${p.target} right</span></span><span class="pill done">Done</span></div>`);
+        return;
+      }
+      if (late) hasLate = true;
+      hasPractiseOpen = true;
+      const validItems = (a.items || []).filter(k => S.pointsOf(k).length);
+      const pts = [...new Set(validItems.flatMap(S.pointsOf))];
+      const hasCards = pts.some(k => QE.CARDS_ON && QE.CARDS_ON[k]);
+      const nRun = Math.max(5, Math.min(20, p.target - p.got));
+      const encSubs = encodeURIComponent(validItems.join(','));
+      const practUrl = validItems.length === 1 ? `${S.practise(validItems[0])}&hw=${encHw}` : `${Q}practice.html?subs=${encSubs}&n=${nRun}&t=${encT}&hw=${encHw}`;
+      const questUrl = `${Q}adventurer-mission.html?subs=${encSubs}&n=${nRun}&t=${encT}&hw=${encHw}`;
+      const cardsUrl = `/Flashcards/?subs=${encSubs}&t=${encT}`;
+      if (validItems.length && !firstAction) {
+        firstAction = { url: practUrl, label: `Homework: ${a.title || 'Work set'} (${p.got}/${p.target} right)`, cta: '📝 Continue →' };
+      }
+      const topicDrop = validItems.length > 1 ? `<details class="topics"><summary>Pick a topic (${validItems.length})</summary><div class="items">${validItems.map(k => chip(k, a.id)).join('')}</div></details>` : '';
+      openItems.push(`<div class="a"><div class="a-info">
+        <div class="a-top"><span class="a-title">🎯 ${esc(a.title || 'Work set')}</span>${late ? '<span class="pill late">Overdue</span>' : a.due ? `<span class="pill">Due ${fmt(a.due)}</span>` : ''}</div>
+        ${a.note ? `<p class="a-note">${esc(a.note)}</p>` : ''}
+        <div class="a-meta"><div class="bar" title="${p.got} of ${p.target} right"><i style="width:${p.got / p.target * 100}%;background:var(--l)"></i></div><span><b>${p.got}/${p.target}</b> right</span></div>
+        ${topicDrop}
+      </div><div class="a-acts">
+        ${validItems.length ? `<a class="ico go" href="${practUrl}" title="Practise questions for this homework">📝 Practise</a>${plain ? '' : `<a class="ico q" href="${questUrl}" title="Revise in Breadventure Land (counts towards homework)" aria-label="Breadventure Land">⚔️</a>`}${hasCards ? `<a class="ico" href="${cardsUrl}" title="Flashcards on these topics" aria-label="Flashcards">🃏</a>` : ''}` : ''}
+      </div></div>`);
+    }
+  });
+
+  /* Priority 2 for 1-click Revise: soonest upcoming test study guide with unsecured points */
+  if (!firstAction && mineGuides.length && window.CBSGuide) {
+    const g0 = mineGuides.find(g => { const pr = CBSGuide.progress(g); return !pr || pr.sec < pr.n; }) || mineGuides[0];
+    const ch = CBSGuide.chosen(g0), toks = CBSGuide.tokens(ch);
+    if (toks.length) firstAction = { url: CBSGuide.reviseUrl(plain ? 'plain' : 'quest', toks, g0.title), label: `Upcoming test: ${g0.title || 'Test'}`, cta: plain ? '📝 Revise test →' : '⚔️ Revise test →' };
+  }
   const taught = y ? Object.keys(SCHOOL.taught['Y' + y] || {}).filter(k => S.SUBS[k]) : [];
-  const noYear = y ? '' : `<div class="card setw"><h2>Which year are you in?</h2><p>Choose your year to see the work your teacher sets for it.</p><p style="margin-top:8px"><button class="btn" id="yrBtn2">Choose your year</button></p></div>`;
-  const bySci = L => taught.filter(k => k[0] === L).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const cov = ['B', 'C', 'P'].filter(L => bySci(L).length).map(L => `<h3>${({ B: 'Biology', C: 'Chemistry', P: 'Physics' })[L]}</h3><div class="items" style="display:flex;flex-wrap:wrap;gap:6px">${bySci(L).map(chip).join('')}</div>`).join('');
-  const staleNote = SCHOOL.stale ? `<p class="small muted" style="margin-bottom:6px">⚠️ Showing the copy saved on ${new Date(SCHOOL.savedAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}: the network wouldn't answer just now, so anything set since then is missing. Reload to try again.</p>` : '';
-  box.innerHTML = noYear + (set.length ? `<div class="card setw"><h2>Set by your teacher</h2>${staleNote}${setHtml}</div>` : staleNote ? `<div class="card">${staleNote}</div>` : '')
-    + (taught.length ? `<div class="card covered"><h2>Covered in class</h2><p class="small muted" style="margin-bottom:8px">What Year ${y} has done in lessons so far. Tap one to practise it.</p>${cov}</div>` : '');
-  if (y && !set.length && !taught.length) box.innerHTML = `<div class="card"><h2>Set by your teacher</h2><p class="muted">Nothing set for you right now.</p></div>`;
+  /* Priority 3: Covered in class (weakest/rustiest covered sub-topic) */
+  if (!firstAction && taught.length) {
+    const allSubs = QE.allSubs(), subMap = {}; allSubs.forEach(x => subMap[x.key] = x);
+    const covSubs = taught.map(k => subMap[k]).filter(x => x && x.st.n > 0);
+    const unsec = covSubs.filter(x => x.st.secured < x.st.n);
+    const pickCov = (unsec.length ? unsec : covSubs).sort((a, b) => (b.st.rusty - a.st.rusty) || (a.st.secured / a.st.n) - (b.st.secured / b.st.n))[0];
+    if (pickCov) firstAction = { url: `${Q}${plain ? 'practice.html' : 'adventurer-mission.html'}?sub=${encodeURIComponent(pickCov.key)}`, label: `Covered in class: ${pickCov.subj} ${pickCov.key.slice(1)} · ${pickCov.name}`, cta: '⚡ Revise now →' };
+  }
+  if (!firstAction) {
+    const pk = QE.picks()[0];
+    if (pk) firstAction = { url: `${Q}${plain ? 'practice.html' : 'adventurer-mission.html'}?sub=${encodeURIComponent(pk.sub.key)}`, label: `Recommended: ${pk.sub.subj} ${pk.sub.key.slice(1)} · ${pk.sub.name}`, cta: '⚡ Revise now →' };
+  }
+  const qg = $('quickGo');
+  if (qg && firstAction && y) {
+    qg.innerHTML = `<div class="qgo"><div class="qgo-txt"><b>⚡ Don't know what to do?</b><span>${esc(firstAction.label)}</span></div><a class="btn" href="${firstAction.url}">${firstAction.cta}</a></div>`;
+    if (new URLSearchParams(location.search).get('go') === '1') {
+      try { history.replaceState(null, '', '/today/'); } catch (e) {}
+      location.href = firstAction.url;
+      return;
+    }
+  } else if (qg) { qg.innerHTML = ''; }
+
+  /* Render left pane of unified To Do box ("📌 From your teacher": Homework + Upcoming tests) */
+  const noYear = y ? '' : `<div style="background:#fef3c7;border:2px solid #111;padding:10px 12px;margin-bottom:10px"><b>Which year are you in?</b><p class="small" style="margin-top:3px">Choose your year to see your homework, upcoming tests and covered topics.</p><p style="margin-top:8px"><button class="btn" id="yrBtn2" style="font-size:15px;padding:4px 11px">Choose your year</button></p></div>`;
+  const staleNote = SCHOOL.stale ? `<p class="small muted" style="margin-bottom:6px">⚠️ Showing the copy saved on ${new Date(SCHOOL.savedAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}: reload to try again.</p>` : '';
+  const doneBlock = doneItems.length ? `<details class="done-list"><summary>✓ Completed homework (${doneItems.length})</summary>${doneItems.join('')}</details>` : '';
+  const testsHtml = mineGuides.length && window.CBSGuide ? (() => { CBSGuide.style(); return CBSGuide.todoRowsHtml(mineGuides); })() : '';
+
+  box.classList.remove('has-late', 'has-open', 'all-done');
+  if (hasLate) box.classList.add('has-late');
+  else if (openItems.length || testsHtml) box.classList.add('has-open');
+  else box.classList.add('all-done');
+
+  const pills = [
+    openItems.length ? `<span class="pill ${hasLate ? 'late' : 'open'}">${openItems.length} to do</span>` : (doneItems.length ? '<span class="pill done">All caught up ✓</span>' : ''),
+    mineGuides.length ? `<span class="pill open">${mineGuides.length} upcoming test${mineGuides.length > 1 ? 's' : ''}</span>` : ''
+  ].filter(Boolean).join('');
+
+  box.innerHTML = `<div id="teacherCard">
+    <div class="pane-head"><h2>📌 From your teacher</h2>${pills}</div>
+    ${noYear}${staleNote}
+    ${openItems.length ? `<div class="subsec"><span>Homework to do</span>${hasPractiseOpen ? `<span class="sym">📝 Practice${plain ? '' : ' · ⚔️ Quest'} · 🃏 Cards</span>` : ''}</div>${openItems.join('')}` : (!testsHtml && y ? `<p class="small muted" style="margin:6px 0">No open homework right now — pick something from <b>Suggested for you</b>${plain ? ' or open Practice Questions below.' : ' or jump into Breadventure Land below.'}</p>` : '')}
+    ${testsHtml ? `<div class="subsec"><span>📅 Upcoming tests</span><span class="sym">📄 Guide · 📝 Practice${plain ? '' : ' · ⚔️ Quest'} · 🃏 Cards</span></div>${testsHtml}` : ''}
+    ${doneBlock}
+  </div>`;
+
+  /* Compact "Covered in class" tucked at bottom of Progress card (closed by default; full topics collapse into clickable boxes) */
+  const cv = $('covered');
+  if (cv) {
+    if (taught.length) {
+      const built = buildCompactCovered(taught, y);
+      cv.innerHTML = `<details class="covered"><summary>📚 Covered in class <span class="small muted">· ${taught.length} sub-topic${taught.length > 1 ? 's' : ''}${built.totalFull ? ` (${built.totalFull} full topic${built.totalFull > 1 ? 's' : ''})` : ''}</span></summary><p class="small muted" style="margin:5px 0 2px">Full topics collapse into one card — tap any card to open its sub-topics or practise the whole topic.</p>${built.html}</details>`;
+    } else { cv.innerHTML = ''; }
+  }
   if ($('yrBtn2')) $('yrBtn2').onclick = () => CBSYear.ask();
   slowNote();
 }
-/* never leave a student on "Loading your day…": if anything above throws (odd saved data), show a simple page instead */
+
 function safeDraw() {
   draw().catch(e => {
     console.error('To do', e);
     if (!QE.user) return;
-    $('main').innerHTML = `<div class="hello"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div>
-      <div id="school"></div><div id="guides"></div>
-      <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ Breadventure Land</a><a href="${Q}adventurer-home.html">🧁 Cakelab</a><a href="${Q}practice.html">📝 Practice</a></div>
+    $('main').innerHTML = `<div class="hello"><div class="hello-l"><div><h1>Hello, ${esc(QE.boardName().split(' ')[0])}</h1><p></p></div></div><div id="quickGo"></div></div>
+      <div id="school"></div>
+      <div class="card"><h2>Today</h2><div class="links"><a href="${Q}adventurer-mission.html">⚔️ Mission</a><a href="/Flashcards/">🃏 Flashcards</a><a href="${Q}adventurer-map.html">🗺️ World Map</a><a href="${Q}adventurer-home.html">🧭 My Adventurer</a><a href="${Q}practice.html">📝 Practice</a></div>
       <p class="small muted" style="margin-top:8px">Part of this page couldn't load, so here's the short version.</p></div>`;
     drawSchool();
   });
 }
 QE.onChange(() => { safeDraw(); drawSchool(); }); safeDraw(); drawSchool();
 if (window.CBSYear) CBSYear.onChange(() => drawSchool());
+if (window.CBSMode) CBSMode.onChange(() => { drawn = false; safeDraw(); drawSchool(); });
 </script>
-<script src="/js/whats-new.js" data-target="main#main"></script>
 </body>
 </html>

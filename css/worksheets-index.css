@@ -2,11 +2,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap');
 
 :root {
-    --maths:    #2255cc;
-    --physics:  #d08000;
-    --chemistry:#c8001e;
+    --maths:    #1a3a8c;
+    --physics:  #7a4a00;
+    --chemistry:#8c0013;
     --biology:  #005e22;
-    --cross:    #555;
+    --cross:    #262626;
     --cream:    #eeeae0;
     --ink:      #111;
 }
@@ -69,6 +69,16 @@ header h1 {
     letter-spacing: -1px;
     color: var(--cream);
     line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+header h1 .hdr-ic {
+    width: 34px;
+    height: 34px;
+    flex: none;
+    display: block;
 }
 
 .subtitle {
@@ -108,20 +118,26 @@ header h1 {
 }
 
 .section-header {
-    padding: 14px 20px;
+    padding: 15px 20px;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
     color: white;
     font-family: 'Barlow Condensed', Arial, sans-serif;
-    font-size: 22px;
+    font-size: 24px;
     font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 1px;
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: auto 90%;
 }
 
-.section-header.maths    { background: var(--maths); }
-.section-header.physics  { background: var(--physics); }
-.section-header.chemistry{ background: var(--chemistry); }
-.section-header.biology  { background: var(--biology); }
-.section-header.cross    { background: var(--ink); }
+.section-header.maths    { background-color: var(--maths);     background-image: url("../img/icons/banner-maths.svg"); }
+.section-header.physics  { background-color: var(--physics);   background-image: url("../img/icons/banner-physics.svg"); }
+.section-header.chemistry{ background-color: var(--chemistry); background-image: url("../img/icons/banner-chemistry.svg"); }
+.section-header.biology  { background-color: var(--biology);   background-image: url("../img/icons/banner-biology.svg"); }
+.section-header.cross    { background-color: var(--cross);     background-image: url("../img/icons/banner-cross.svg"); }
 
 .section-actions { padding: 8px 20px 0; background: #f8f6f0; }
 

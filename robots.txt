@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
-Disallow: /hidden/
+Disallow: /admin/
+Disallow: /tools/
+Disallow: /test.html
 
 Sitemap: https://cakebreadscience.com/sitemap.xml

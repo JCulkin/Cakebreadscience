@@ -13,12 +13,16 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.5;font-size:16px}
 .stripes{display:flex;flex-direction:column}.stripes i{display:block}
-header{background:#111;padding:22px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
-@media(min-width:700px){header{padding:26px 40px 22px}}
+header{background:#111;padding:12px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+@media(min-width:700px){header{padding:14px 32px}}
 header a{text-decoration:none}
-header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,6vw,44px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
-header .brand span{color:var(--green2)}
-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+header .brand{display:inline-flex;align-items:center;gap:9px;font-family:'Barlow Condensed',sans-serif;font-size:clamp(24px,4.5vw,34px);font-weight:900;text-transform:uppercase;letter-spacing:-.5px;color:var(--cream);line-height:1;transition:color .14s}
+header .brand img{width:34px;height:34px;object-fit:contain;display:block}
+header .brand span{color:var(--green2);transition:color .14s}
+header .brand:hover{color:#fff}header .brand:hover span{color:#4ade80}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#9a968c}
+header .homebtn{margin-left:auto;font:700 13px/1 Barlow,Arial,sans-serif;color:var(--cream);border:1.5px solid #444;border-radius:999px;padding:6px 13px;white-space:nowrap}
+header .homebtn:hover{background:var(--green);border-color:var(--green2);color:#fff}
 .wrap{max-width:1050px;margin:0 auto;padding:24px 16px 56px}
 .back{display:inline-block;margin-bottom:14px;color:var(--green);font-weight:600;text-decoration:none}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(32px,6vw,48px);line-height:1;letter-spacing:-.5px}
@@ -113,11 +117,10 @@ td.sym{font-weight:700;font-size:17px;width:56px;text-align:center}
 </head>
 <body>
 <div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
-<header><a href="/" class="brand">Cakebread <span>Science</span></a><span class="sub">Physics · Equations</span></header>
+<header><a href="/" class="brand" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Physics · Equations</span><a class="homebtn" href="/">← Home</a></header>
 <div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
 
 <main class="wrap">
-  <a class="back" href="/">← Home</a>
   <h1>Physics Equations Trainer</h1>
   <p class="lede">Every equation in the Edexcel International GCSE Science (Double Award) physics specification. Explore them with a built-in calculator, then test yourself on recall, units, rearranging and calculations.</p>
   <div class="legend">
@@ -125,9 +128,12 @@ td.sym{font-weight:700;font-size:17px;width:56px;text-align:center}
     <span><span class="badge">Given</span> Spec says <i>"use"</i>: it is printed on the exam paper.</span>
   </div>
 
-  <div class="modes" role="tablist">
-    <button id="mExplore" class="on" role="tab">Explore</button>
-    <button id="mQuiz" role="tab">Test yourself</button>
+  <div class="modes-row" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:22px 0 0">
+    <div class="modes" role="tablist" style="margin:0">
+      <button id="mExplore" class="on" role="tab">Explore</button>
+      <button id="mQuiz" role="tab">Test yourself</button>
+    </div>
+    <a class="btn alt" href="/Flashcards/?deck=physics-eqns" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">🃏 Practise as spaced-repetition flashcards →</a>
   </div>
 
   <!-- EXPLORE -->
@@ -418,5 +424,6 @@ function showQ(){
 }
 $('qStart').onclick=startQuiz;renderQSetup();
 </script>
+<script src="/js/auth-gate.js"></script>
 </body>
 </html>

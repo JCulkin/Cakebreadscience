@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 200" width="430" height="200">
+  <rect width="430" height="200" fill="#fff"/>
+  <circle cx="104" cy="100" r="76" fill="#fca5a5" stroke="#991b1b" stroke-width="3"/>
+  <circle cx="104" cy="100" r="62" fill="#ef4444" stroke="#991b1b" stroke-width="2"/>
+  <circle cx="104" cy="100" r="24" fill="#fff" stroke="#7f1d1d" stroke-width="2.5"/>
+  <text x="206" y="52" font-family="Barlow, Arial, sans-serif" font-size="14" font-weight="700" fill="#991b1b">Thick muscular &amp; elastic wall</text>
+  <text x="206" y="68" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444">(withstands high pressure)</text>
+  <line x1="158" y1="68" x2="200" y2="52" stroke="#111" stroke-width="1.5"/>
+  <text x="206" y="112" font-family="Barlow, Arial, sans-serif" font-size="14" font-weight="700" fill="#111">Narrow lumen</text>
+  <text x="206" y="128" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444">(maintains high blood pressure)</text>
+  <line x1="120" y1="100" x2="200" y2="110" stroke="#111" stroke-width="1.5"/>
+  <text x="206" y="166" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#555">No valves</text>
+</svg>

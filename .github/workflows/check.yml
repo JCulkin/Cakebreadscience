@@ -1,0 +1,137 @@
+name: Site checks
+
+on:
+  push:
+    branches: [staging, main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check question bank
+        run: |
+          OUT=$(node tools/spec-quiz/check_bank.js interactive/spec-quiz)
+          echo "$OUT"
+          echo "$OUT" | grep -q "problems 0" || { echo "::error::Question bank reported problems"; exit 1; }
+          if echo "$OUT" | grep -q "level problems"; then
+            echo "::error::Question bank reported level problems"
+            exit 1
+          fi
+
+      - name: Check internal links
+        run: |
+          python - <<'PY'
+          import subprocess, sys
+          out = subprocess.check_output([sys.executable, 'tools/test/links.py', '.'], text=True)
+          print(out)
+          EXPECTED = {
+              'BROKEN admin/index.html ([^',
+              'BROKEN admin/templates/MATHS_TEMPLATE.html ../css/maths.css',
+              'BROKEN tools/pptx/b_template.html ../',
+          }
+          unexpected = [l for l in out.splitlines() if l.startswith('BROKEN ') and l.strip() not in EXPECTED]
+          if unexpected:
+              print('::error::Unexpected broken internal links:')
+              for l in unexpected:
+                  print(' ', l)
+              sys.exit(1)
+          PY
+
+      - name: Validate netlify.toml, sitemap.xml, and past-paper guard
+        run: |
+          python - <<'PY'
+          import os, re, sys, tomllib, xml.etree.ElementTree as ET
+
+          # 1. netlify.toml parses cleanly
+          if os.path.isfile('netlify.toml'):
+              tomllib.load(open('netlify.toml', 'rb'))
+              print('netlify.toml OK')
+
+          # 2. sitemap.xml valid, every URL exists, none are noindex
+          tree = ET.parse('sitemap.xml')
+          ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          locs = [el.text for el in tree.getroot().findall('s:url/s:loc', ns)]
+          errs = []
+          if len(locs) != len(set(locs)):
+              errs.append('Duplicate URLs in sitemap.xml')
+          for u in locs:
+              if not u.startswith('https://cakebreadscience.com/'):
+                  errs.append(f'Unexpected sitemap host: {u}')
+                  continue
+              rel = u[len('https://cakebreadscience.com/'):]
+              local = rel + 'index.html' if (rel == '' or rel.endswith('/')) else rel
+              if not os.path.isfile(local):
+                  errs.append(f'Sitemap target missing: {u} ({local})')
+              elif re.search(r'<meta[^>]+noindex', open(local, encoding='utf-8', errors='ignore').read(), re.I):
+                  errs.append(f'Noindex page in sitemap: {u}')
+          print(f'sitemap.xml checked: {len(locs)} URLs')
+
+          # 3. Past-paper exam code guard (Pearson copyright hard rule)
+          paper_re = re.compile(r'\b(4SD0|4BI1|4CH1|4PH1)\b')
+          for dp, _, fn in os.walk('.'):
+              if '.git' in dp:
+                  continue
+              for f in fn:
+                  if not f.endswith('.html'):
+                      continue
+                  p = os.path.join(dp, f)
+                  if paper_re.search(open(p, encoding='utf-8', errors='ignore').read()):
+                      errs.append(f'Past-paper code found in {p}')
+
+          # 4. Keep AGENTS.md lean (<= 15 KB) to prevent instruction dilution
+          agents_sz = os.path.getsize('AGENTS.md')
+          print(f'AGENTS.md size: {agents_sz / 1024:.1f} KB (limit 15.0 KB)')
+          if agents_sz > 15 * 1024:
+              errs.append(f'AGENTS.md is {agents_sz / 1024:.1f} KB (>15.0 KB limit) — trim historical/duplicate rules')
+
+          if errs:
+              for e in errs:
+                  print(f'::error::{e}')
+              sys.exit(1)
+          print('Config, sitemap, and copyright guards OK')
+          PY
+
+      - name: Install Playwright (Chromium)
+        run: |
+          python -m pip install --upgrade pip playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Run browser smoke test (~40 pages)
+        run: |
+          python -m http.server 8765 >/tmp/http.log 2>&1 &
+          SRV_PID=$!
+          trap "kill $SRV_PID 2>/dev/null || true" EXIT
+          for i in $(seq 1 20); do
+            curl -sf http://localhost:8765/ >/dev/null && break
+            sleep 0.5
+          done
+          OUT=$(python tools/test/smoke.py)
+          echo "$OUT"
+          COUNT=$(echo "$OUT" | grep -c "done, pages with errors: 0" || true)
+          if [ "$COUNT" -lt 3 ]; then
+            echo "::error::Smoke test reported page errors (expected 3 clean runs, got $COUNT)"
+            exit 1
+          fi

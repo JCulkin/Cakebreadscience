@@ -6,8 +6,14 @@
    Needs, first: questing-engine.js (and its scripts) and adventurer-pixel.js. */
 const ADV = (() => {
   const KEY = 'cbs.adventurer.state';
-  /* Totals of non-Units spec points per science (Double Award): used for progress bars. */
-  const TOTAL = { b: 134, c: 130, p: 139 };
+  /* Totals of non-Units spec points per science (computed from QE.POINT_QS so Single Award students see their own totals). */
+  const TOTAL = (() => {
+    const o = { b: 0, c: 0, p: 0 };
+    if (typeof QE !== 'undefined' && QE.POINT_QS) {
+      for (const k in QE.POINT_QS) { const l = k[0].toLowerCase(); if (l in o) o[l]++; }
+    }
+    return o.b || o.c || o.p ? o : { b: 134, c: 130, p: 139 };
+  })();
   const SCI = { b: 'Biology', c: 'Chemistry', p: 'Physics' };
   const STARTER = { head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler' };
   const DEF = () => ({
@@ -57,7 +63,8 @@ const ADV = (() => {
   const gear = () => ADV_GEAR(eq());
   const BASE = { str: 8, hp: 15 };   // every adventurer starts with this, so a brand-new student can still win small fights
   const securedTotal = () => { const s = S.secured; return s.p + s.b + s.c; };
-  const levelCap = () => 2 + Math.floor(securedTotal() / 8);
+  const CAP_STEP = () => (typeof CBSCourse !== 'undefined' && CBSCourse.sa ? 4 : 5);
+  const levelCap = () => 2 + Math.floor(securedTotal() / CAP_STEP());
   const xpFor = l => 100 * l * (l - 1) / 2;
   const rawLevel = () => { let l = 1; while (xpFor(l + 1) <= S.xp) l++; return l; };
   const level = () => Math.min(rawLevel(), levelCap());
@@ -65,18 +72,17 @@ const ADV = (() => {
      Level is capped by spec points secured, so every unlock is earned by revision. Nothing a player already owns is
      taken away: worn items stay worn and held brews stay held, they just can't be changed or used until the level. ---------- */
   const UNLOCKS = [
-    { lv: 1, id: 'clothes', ic: '👕', name: 'Tops, bottoms and shoes', what: 'Change your outfit in the Wardrobe.' },
-    { lv: 2, id: 'spells', ic: '🔮', name: 'Mana and your first spell', what: 'Patch Up: +5 Health on Breadventure Land. Flashcards and missions fill your mana.' },
-    { lv: 3, id: 'hats', ic: '🎩', name: 'Hats', what: 'Wear anything you have found for your head.' },
-    { lv: 4, id: 'shop', ic: '🥤', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
-    { lv: 4, id: 'events', ic: '📅', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
-    { lv: 5, id: 'dungeons', ic: '🕯', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
-    { lv: 5, id: 'hands', ic: '🧤', name: 'Things to hold', what: 'Wear items in both hands.' },
-    { lv: 6, id: 'shield', ic: '🛡', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
-    { lv: 6, id: 'help', ic: '🩹', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
-    { lv: 7, id: 'fog', ic: '🌫', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
-    { lv: 7, id: 'mine', ic: '⛏', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
-    { lv: 8, id: 'legend', ic: '🏆', name: 'Main Character items', what: 'Wear your science\'s Main Character item while you top it for the week.' },
+    { lv: 1, id: 'clothes', px: 'shirt', ic: '', name: 'Clothes and gear', what: 'Change your outfit and single-hand items in the Wardrobe.' },
+    { lv: 2, id: 'spells', px: 'mana', ic: '', name: 'Mana and your first spell', what: 'Patch Up: +5 Health (+1 per 5 Magic) on Breadventure Land. Flashcards, missions and overnight rest fill your mana.' },
+    { lv: 2, id: 'hats', px: 'hat', ic: '', name: 'Hats', what: 'Wear hats you have found for your head.' },
+    { lv: 3, id: 'hands', px: 'gauntlet', ic: '', name: 'Two-handed items', what: 'Wield bigger items that take both hands.' },
+    { lv: 4, id: 'shop', px: 'slushie', ic: '', name: 'The Tuck Shop and brews', what: 'Spend your coins on brews that help in fights.' },
+    { lv: 4, id: 'events', px: 'calendar', ic: '', name: 'Weekly events', what: 'Every week something different happens on Breadventure Land.' },
+    { lv: 5, id: 'dungeons', px: 'torch', ic: '', name: 'Dungeons', what: 'Floors of questions with loot on every floor.' },
+    { lv: 6, id: 'shield', px: 'shield', ic: '', name: 'Jam Shield', what: 'A spell that halves the damage you take tonight.' },
+    { lv: 6, id: 'help', px: 'patch', ic: '', name: 'Helping other players', what: 'Patch up other players or give them brews when you share a square.' },
+    { lv: 7, id: 'fog', px: 'fog', ic: '', name: 'Lift the Fog', what: 'A spell that clears the fog around you for good.' },
+    { lv: 7, id: 'mine', px: 'mine', ic: '', name: 'The Abandoned Mine', what: 'Five floors down, and something underneath…' },
   ];
   const unlockLv = id => (UNLOCKS.find(u => u.id === id) || { lv: 1 }).lv;
   const can = id => level() >= unlockLv(id);
@@ -93,21 +99,30 @@ const ADV = (() => {
     return s;
   };
 
-  /* ---------- revision → Breadventure Land: Health and mana earned by missions and flashcards wait in the engine's pool
-     until a Questing page opens; the day's first revision (mission or today's flashcards) gives +1 move once a day. ---------- */
+  /* ---------- revision → Breadventure Land: Health and mana stay in Firestore's GAME.pool until the map itself claims them
+     (so switching devices between a mission and the map never loses them); same for today's +1 revision move (GAME.moveDay). ---------- */
   const MOVE_CAP = 5;
-  function collect() {
-    const s = stats(), p = QE.takePool(), g = { hp: 0, mana: 0, move: false };
-    if (p.hp) { const b = S.health; S.health = Math.min(s.hp, S.health + p.hp); g.hp = S.health - b; }
-    if (p.mana) { const b = S.mana; S.mana = Math.min(s.mana, S.mana + p.mana); g.mana = S.mana - b; }
+  function pending() {
+    const s = stats(), p = Object.assign({ hp: 0, mana: 0 }, QE.game.pool), o = S.out || {};
     const extra = s.gear.fx.revise ? 1 : 0;   // e.g. Roller Skates: +1 more move for the day's first revision
-    if (QE.revisedToday() && S.bonusDay !== QE.TODAY) { S.bonusDay = QE.TODAY; S.moves = Math.min(MOVE_CAP + extra, S.moves + 1 + extra); g.move = 1 + extra; }
-    /* the shared Breadventure Land picks these up next time the map opens (it holds the real Health, mana and moves) */
-    if (p.hp || p.mana || g.move) { const o = S.out = S.out || { hp: 0, mana: 0, move: 0 }; o.hp += p.hp || 0; o.mana += p.mana || 0; if (g.move) o.move += g.move; }
-    if (g.hp || g.mana || g.move || p.hp || p.mana) save();
-    return g;
+    const revMove = QE.revisedToday() && QE.game.moveDay !== QE.TODAY && S.bonusDay !== QE.TODAY ? (1 + extra) : 0;
+    return { hp: (p.hp || 0) + (o.hp || 0), mana: (p.mana || 0) + (o.mana || 0), move: revMove + (o.move || 0) };
   }
-  let gained = { hp: 0, mana: 0, move: false };
+  function collect(drain) {
+    if (!drain) return pending();
+    const s = stats(), p = QE.takePool(), o = S.out || {};
+    const extra = s.gear.fx.revise ? 1 : 0;
+    let revMove = 0;
+    if (QE.revisedToday() && QE.game.moveDay !== QE.TODAY && S.bonusDay !== QE.TODAY) {
+      revMove = 1 + extra;
+      QE.game.moveDay = QE.TODAY; QE.gameChanged();
+      S.bonusDay = QE.TODAY;
+    }
+    if (S.out) S.out = null;
+    if (revMove || o.hp || o.mana || o.move) save();
+    return { hp: (p.hp || 0) + (o.hp || 0), mana: (p.mana || 0) + (o.mana || 0), move: revMove + (o.move || 0) };
+  }
+  let gained = { hp: 0, mana: 0, move: 0 };
 
   /* ---------- nav bar (one bar: brand, Cakelab, the two big actions, then small links) ---------- */
   const DRAGON = 'Crumbmaw';
@@ -119,10 +134,10 @@ const ADV = (() => {
     if (S.lvSeen == null || S.lvSeen > l) { S.lvSeen = l; save(); return; }   // first time on this account: no flood of pop-ups
     if (l === S.lvSeen) return;
     const news = UNLOCKS.filter(u => u.lv > S.lvSeen && u.lv <= l), nx = UNLOCKS.find(u => u.lv > l);
-    S.lvSeen = l; save(); try { QE.log('⭐', `Reached level ${l}`); } catch (e) {}
+    S.lvSeen = l; save(); try { QE.log('★', `Reached level ${l}`); } catch (e) {}
     storyModal(`<div class="ch">Level up</div><h2>Level ${l}!</h2><div class="pics"><img src="${PIXEL.figure(eq(), look())}" width="100" alt=""></div>
-      ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${u.ic} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
-      ${nx ? `<p style="color:#666;font-size:15px">Next: ${nx.ic} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
+      ${news.length ? `<p><b>New for you:</b></p>${news.map(u => `<p>${ui(u.px, 20)} <b>${u.name}.</b> ${u.what}</p>`).join('')}` : '<p>Stronger, tougher and more magical.</p>'}
+      ${nx ? `<p style="color:#666;font-size:15px">Next: ${ui(nx.px, 16)} ${nx.name} at level ${nx.lv}. Secure spec points to keep levelling.</p>` : ''}`, 'Nice →');
   }
   QE.onChange(levelCheck);
   function nav(active) {
@@ -134,10 +149,14 @@ const ADV = (() => {
 .advnav a{text-decoration:none;white-space:nowrap}
 .advnav .brand{font:900 21px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:#eeeae0;letter-spacing:-.5px;margin-right:8px;line-height:1}
 .advnav .brand b{color:#00a03a}
-.advnav .site{flex:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:#eeeae0;border:2px solid #555;margin-right:2px}
-.advnav .site:hover{border-color:#facc15}
+.advnav .site{flex:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 10px 0 4px;border-radius:999px;background:#1e1e24;color:#eeeae0;border:2px solid #00a03a;margin-right:4px;font:700 13px/1 Barlow,Arial,sans-serif;transition:border-color .14s,background .14s,color .14s}
+.advnav .site:hover{border-color:#facc15;background:#005e22;color:#fff}
 .advnav .site img{width:26px;height:26px;object-fit:contain;display:block}
+@media(max-width:740px){.advnav .site{padding:0;width:34px}.advnav .site span{display:none}}
 .advnav .tab{color:#ccc;font-weight:700;font-size:15px;padding:7px 11px;border-radius:7px;border:2px solid transparent;display:inline-flex;align-items:center;gap:6px}
+img.ui-ic{display:inline-block;width:1.15em;height:1.15em;vertical-align:-0.2em;image-rendering:pixelated;image-rendering:crisp-edges;flex:none}
+img.ui-svg{display:inline-block;width:1.1em;height:1.1em;vertical-align:-0.18em;flex:none}
+.advnav .tab:not(.on):not(.cta) img.ui-svg,.advmenu a:not(.on) img.ui-svg,.advnav a.tab.due img.ui-svg{filter:brightness(0) invert(1)}
 .advnav .tab:hover{color:#fff;background:#ffffff14}
 .advnav .tab.on{background:#eeeae0;color:#111}
 .advnav .cta{font-size:17px;padding:8px 15px;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000}
@@ -150,6 +169,12 @@ const ADV = (() => {
 .advnav .dot{background:#e11d48;color:#fff;border-radius:10px;font-size:12px;font-weight:900;padding:0 6px;line-height:18px;animation:advpulse 1.6s infinite}
 @keyframes advpulse{50%{transform:scale(1.18)}}
 .advnav .sm{font-size:14px;padding:6px 8px}
+.advnav .morebtn{background:none;font-family:inherit;cursor:pointer;white-space:nowrap}
+.advmenu{position:fixed;z-index:120;background:#1b1b20;border:2px solid #00a03a;border-radius:8px;box-shadow:0 8px 24px #000a;padding:6px;min-width:176px;display:flex;flex-direction:column;gap:2px;font-family:Barlow,Arial,sans-serif}
+.advmenu[hidden]{display:none}
+.advmenu a{color:#eeeae0;text-decoration:none;font-weight:700;font-size:15px;padding:9px 12px;border-radius:6px;display:flex;align-items:center;gap:8px;min-height:40px;white-space:nowrap}
+.advmenu a:hover,.advmenu a:focus-visible{background:#ffffff1a;color:#fff;outline:none}
+.advmenu a.on{background:#eeeae0;color:#111}
 .advnav .gap{flex:1;min-width:8px}
 .advnav .acct{display:flex;gap:6px;align-items:center;white-space:nowrap;padding-left:8px;border-left:1px solid #333;color:#ccc;font-size:14px;font-weight:700}
 .advnav .acct button{font:700 14px Barlow,Arial;background:#eeeae0;border:2px solid #111;color:#111;padding:4px 10px;border-radius:7px;cursor:pointer}
@@ -161,26 +186,45 @@ const ADV = (() => {
     const noMission = !QE.revisedToday();   // the "!" goes once the day's revision is done: a mission or today's flashcards
     const n = document.createElement('nav');
     n.className = 'advnav';
-    n.setAttribute('aria-label', 'Cakebread Questing');
+    n.setAttribute('aria-label', 'Breadventure Land');
     const tab = (k, href, icon, label, cls = '', badge = '') => `<a href="${href}" class="tab ${cls} ${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon}<span class="lbl">${label}</span>${badge}</a>`;
-    n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""></a>`
-      + `<a class="brand" href="index.html" title="Cakebread Questing menu">Cakebread <b>Questing</b></a>`
-      + tab('home', 'adventurer-home.html', '🧁', 'Cakelab')
-      + tab('mission', 'adventurer-mission.html', '⚔️', 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
-      + tab('map', 'adventurer-map.html', '🗺️', 'Breadventure Land', 'cta map')
-      + tab('cards', '/Flashcards/', '🃏', 'Flashcards')
-      + tab('today', '/today/', '✅', 'To do')
+    const moreActive = ['cards', 'stats', 'guide'].includes(active);
+    n.innerHTML = `<a class="site" href="/" title="Cakebread Science home" aria-label="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt=""><span>Home</span></a>`
+      + `<a class="brand" href="${hasLook() ? 'adventurer-home.html' : 'index.html'}" title="Breadventure Land">Breadventure <b>Land</b></a>`
+      + tab('home', 'adventurer-home.html', ui('compass', 18), 'My Adventurer')
+      + tab('mission', 'adventurer-mission.html', ui('sword', 18), 'Mission', 'cta mission', noMission ? '<span class="dot">!</span>' : '')
+      + tab('map', 'adventurer-map.html', ui('map', 18), 'World Map', 'cta map')
+      + tab('wardrobe', 'adventurer-wardrobe.html', ui('shirt', 18), 'Wardrobe')
+      + tab('today', '/today/', mono('ui-check', 16), 'To do')
       + `<span class="gap"></span>`
-      + tab('stats', 'adventurer-stats.html', '📊', 'Stats', 'sm')
-      + tab('wardrobe', 'adventurer-wardrobe.html', '👕', 'Wardrobe', 'sm')
-      + tab('look', 'adventurer-create.html', '✏️', 'My look', 'sm')
+      + `<button type="button" class="tab sm morebtn${moreActive ? ' on' : ''}" id="advMoreBtn" aria-haspopup="menu" aria-expanded="false" aria-controls="advMoreMenu" title="More pages">⋯<span class="lbl"> More</span> ▾</button>`
       + `<span class="acct" id="advAcct"></span>`;
     document.body.prepend(n);
+    const menu = document.createElement('div');
+    menu.className = 'advmenu'; menu.id = 'advMoreMenu'; menu.setAttribute('role', 'menu'); menu.hidden = true;
+    const mlink = (k, href, icon, label) => `<a href="${href}" role="menuitem" class="${k === active ? 'on' : ''}"${k === active ? ' aria-current="page"' : ''}>${icon} <span>${label}</span></a>`;
+    menu.innerHTML = mlink('cards', '/Flashcards/', mono('res-flashcards', 16), 'Flashcards')
+      + mlink('stats', 'adventurer-stats.html', ui('stats', 18), 'Stats')
+      + mlink('guide', '/how-to-use/', mono('ui-guide', 16), 'Help');
+    document.body.appendChild(menu);
+    const mBtn = n.querySelector('#advMoreBtn');
+    const closeMenu = () => { if (!menu.hidden) { menu.hidden = true; mBtn.setAttribute('aria-expanded', 'false'); } };
+    const placeMenu = () => {
+      const r = mBtn.getBoundingClientRect(), mw = menu.offsetWidth || 180;
+      menu.style.top = Math.min(window.innerHeight - 200, Math.max(8, r.bottom + 6)) + 'px';
+      menu.style.left = Math.max(8, Math.min(window.innerWidth - mw - 8, r.right - mw)) + 'px';
+    };
+    mBtn.onclick = e => { e.stopPropagation(); menu.hidden = !menu.hidden; mBtn.setAttribute('aria-expanded', String(!menu.hidden)); if (!menu.hidden) placeMenu(); };
+    document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target) && e.target !== mBtn) closeMenu(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+    window.addEventListener('resize', closeMenu);
+    window.addEventListener('scroll', closeMenu, { passive: true });
+    if (!window.CBSTour) { const ts = document.createElement('script'); ts.src = '/js/tour.js'; document.head.appendChild(ts); }
     /* open set work (18 Nov, user): the To do tab turns red with a "!" (/js/openwork.js) */
     { const todo = n.querySelector('a[href="/today/"]'), go = () => CBSWork.onChange(w => {
         todo.classList.toggle('due', w.n > 0); todo.querySelectorAll('.dot').forEach(x => x.remove());
         const mis = n.querySelector('a.mission'); if (w.n > 0 && mis) mis.after(todo);   // next to Mission, so it shows on a phone too
-        if (w.n > 0) { todo.insertAdjacentHTML('beforeend', `<span class="dot">!</span>`); todo.title = `${w.n} piece${w.n > 1 ? 's' : ''} of set work to do${w.late ? ` (${w.late} overdue)` : ''}`; } else todo.title = ''; });
+        if (w.n > 0) { todo.insertAdjacentHTML('beforeend', `<span class="dot">${w.n}</span>`); todo.title = `${w.n} piece${w.n > 1 ? 's' : ''} of set work to do${w.late ? ` (${w.late} overdue)` : ''}`; } else todo.title = ''; });
       if (todo && window.firebase) { if (window.CBSWork) go(); else { const sc = document.createElement('script'); sc.src = '/js/openwork.js'; sc.onload = go; document.head.appendChild(sc); } } }
     const acct = n.querySelector('#advAcct');
     const draw = () => {
@@ -193,12 +237,15 @@ const ADV = (() => {
       acct.querySelector('#advOut').onclick = () => QE.signOut();
     };
     draw(); QE.onChange(draw);
-    gained = collect();
-    if (gained.hp || gained.mana || gained.move) {
+    gained = pending();
+    const toastSig = [QE.TODAY, gained.hp, gained.mana, gained.move].join('|');
+    let lastToast = ''; try { lastToast = sessionStorage.getItem('cbs.questing.toast') || ''; } catch (e) {}
+    if ((gained.hp || gained.mana || gained.move) && toastSig !== lastToast) {
+      try { sessionStorage.setItem('cbs.questing.toast', toastSig); } catch (e) {}
       const t = document.createElement('div');
       t.setAttribute('role', 'status');
       t.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#111;color:#fff;padding:9px 16px;border-radius:999px;font:700 15px Barlow,Arial;z-index:150;box-shadow:0 3px 0 #000;max-width:92vw;text-align:center;transition:opacity .5s';
-      t.textContent = 'From your revision: ' + [gained.hp && `❤ +${gained.hp} Health`, gained.mana && `🔮 +${gained.mana} mana`, gained.move && `+${gained.move} move${gained.move > 1 ? 's' : ''} on Breadventure Land`].filter(Boolean).join(' · ');
+      t.innerHTML = 'From your revision: ' + [gained.hp && `${ui('heart')} +${gained.hp} Health`, gained.mana && `${ui('mana')} +${gained.mana} mana`, gained.move && `+${gained.move} move${gained.move > 1 ? 's' : ''} on Breadventure Land`].filter(Boolean).join(' · ');
       document.body.appendChild(t); setTimeout(() => { t.style.opacity = 0; setTimeout(() => t.remove(), 600); }, 4200);
     }
   }
@@ -298,12 +345,7 @@ const ADV = (() => {
     dragonzz: ['................................', '................................', '................................', '................................', '................................', '................................', '................................', '................................', '.................KK....K........', '................KlrK..KK........', '..K........K....KrrrKKrr........', '...K......KK...KlrRRllrrK.......', '...KKK....KKKKKlRrRRRrRrK.......', '...KXKKKKKKKllKlrRRRrRRRrKK.....', '...KKllllrKKRKlRrRRrRRRRrrr.....', '..KllRRRRRlrKlRrRRrRRRRrrr......', '..KlRRRRRRRrKrRrRrRRRrrrKK......', '.KlKKKKRRKKKrKrrrRRrrrrrKrK...K.', '.KKKKKKKRRRRrKrrrrrrKKKKRrK..KK.', '.KlllllrKRRRrKKKrrKRRRRRRrK.KK..', 'KlRRRRRRrKRRrKRRRRRRRRRRRrKKrK..', 'KlKRRKRRrKRrrRRRRRRRRRRRrKKrKK..', 'KlRRRRRRrKrrKRRrRRRRRRRrrKKK....', 'KrKKKKKKrKKKRRRRRRRrRRrrK.......', '.KrrrrrrKKKKrrrrrrrrrrKK........', '..KKKKKKKKKKKKKKKKKKKKKKKKKKK...', '..KeeeeeeeeWeeeeeeeeeeeWeeeAK...', '..KeYYYYYYYYYYYYYYYYYYYYYYYYAK..', '.KeWYYYYYYYYYYWYYYYYYYYYYYWYAK..', '.KAAAAAAWAAAAAAAAAAAWAAAAAAAAK..', 'KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK.', '................................'],
     gate: ['....KKKKKKKK....', '...KUUUUUUUUK...', '..KUZZZZZZZZUK..', '..KUZKKKKKKZUK..', '..KUZKCCCCKZUK..', '..KUZKCWWCKZUK..', '..KUZKCCCCKZUK..', '..KUZKCCCCKZUK..', '..KUZKKKKKKZUK..', '.KKUUUUUUUUUUKK.', '.KUUUUUUUUUUUUK.'],
 
-    /* the Professor (cake-slice scientist mascot, after the top-left pose on the user's sheet): frosting dome with sprinkles,
-       sponge rim, big eyes, blush, lab coat open over the jam layers, flask. prof = no goggles (current pick); B goggles pushed up; C goggles on; D happy. */
-    prof: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
-    profB: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKTHHHTTTTTTHHHTKXK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKKKJJJJJJJKKKJJJK......', '.KJJKWKJJJJJJJKWKJJJK......', '.KJJKKKJJJJJJJKKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
-    profC: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJTTTTTJJJJJJTTTTTJK......', '.KJTHKHTTTTTTTTHKHTJK......', '.KJTTTTTJJJJJJTTTTTJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
-    profD: ['.......KKKKKKK.............', '.....KKeeeeeeeKKK..........', '....KeeReeeYeeeebK.........', '...KeeeebeeeeeReeeK........', '..KeeYeeeeeGeeeeeeeK.......', '..KeeeeeIeeeeeeYeeeK.......', '.KeeeeeeeeeeeeeeeeeeK......', '.KKeeeKKeeeeKKeeeKKeK......', '.KXKKKXXKKKKXXKKKXXKK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJJJJJJJJJJJJJJJJJK......', '.KJJKJJKJJJJJJKJJKJJK......', '.KJJJKKJJJJJJJJKKJJJK...C..', '.KJIIJJJKJJJKJJJIIJJK.C..C.', '..KJJJJJJKpKJJJJJJJK...KKK.', '..KXJJJJJJKJJJJJJJXK...KcK.', '.KKWWKJJJJJJJJJJKWWKK..KcK.', 'KWWWWKKJJJJJJJJKKWWWWKKHHHK', 'KWWWWWWKXXXXXXKWWWWWWKKHcHK', 'KWWKWWWWKJJJJKWWWWKWWKKHHHK', 'KWWKWWWWWKppKWWWWWKWWKKHHHK', 'KJJKWWWWWWKKWWWWWWKJJK.KKK.', '.KK.KWWWWWWWWWWWWK.KK......', '....KWWWWWKKWWWWWK.........', '.....KWWWK..KWWWK..........', '......KJK....KJK...........', '.....KKKK...KKKK...........'],
+    /* the Professor's map/story sprite is an image file in IMG below */
     crumbs: ['............', '............', '............', '............', '...F........', '.......Q....', '..I.........', '.....F...Y..', '.Q......F...', '....Q.......', '............', '............'],
     superbug: ['..............K.............', '..............K.............', '..............K.............', '.............KK.............', '..........KKKLgKKK..........', '...g....KKLLLGGLLgKK....g...', '....K..KLhhGGGGGGGLgK..K....', '.....K.KhGGGGGGGGGGgK.K.....', '......KLGGGGGGGGGGGGgK......', '......KLKKGGGGGGGGKKgK......', '......KLGGKKGGGKKGGGgK......', '.....KLGGWWWGGGWWWGGGgK.....', '.....KLGGWKKGGGKKWGGGgK.....', '.gKK.KLGGWKKGGGKKWGGGgK.KKg.', '...KKKLGGGGGGGGGGGGGGgKKK...', '.....KLgGGGGGGGGGGGGGgK.....', '.....KgGGGGGGGGGGGGGggK.....', '......KLGGKKKKKKKKGGgK......', '......KLGGKWKWKWKKGGgK......', '......KggGGKKKKKKGGGgK......', '......KKLGGGGGGGGGGgKK......', '.....K.KggGGgGGGGGggK.K.....', '....K...KKgggGGgggKK...K....', '...g......KKKggKKK......g...', '.............KK.............', '..............K.............', '..............K.............', '..............K.............'],
     superbug_hurt: ['...Y..........K.........Y...', '..YWY.........K........YWY..', '...Y..........K.........Y...', '.............KK.............', '..........KKKLgKKK..........', '...g....KKLLLGGLLgKK....g...', '....K..KLhhGGGGGGGLgK..K....', '.....K.KhGGGGGGGGGGgK.K.....', '......KLGGGGGGGGGGGGgK......', '......KLGGGGGGGGGGGGgK......', '......KLGGGGGGGGGGGGgK......', '.....KLGGKGGGGGGGKGGGgK.....', '.....KLGGGKGGGGGKGGGGgK.....', '.gKK.KLGGKGGGGGGGKGGGgK.KKg.', '...KKKLGGGGGGGGGGGGGGgKKK...', '.....KLgGGGGGGGGGGGGGgK.....', '.....KgGGGGGGGGGGGGGggK.....', '......KLGGGKKKKKKGGGgK......', '......KLGGGKppppKGGGgK......', '......KggGGKKKKKKGGGgK......', '......KKLGGGGGGGGGGgKK......', '.....K.KggGGgGGGGGggK.K.....', '....K...KKgggGGgggKK...K....', '...g......KKKggKKK......g...', '.............KK.............', '..............K.............', '..............K.............', '..............K.............'],
@@ -355,7 +397,43 @@ const ADV = (() => {
     flask: ['....KKKK....', '....KWWK....', '....KWWK....', '...KWWWWK...', '..KWWWWWWK..', '.KWGGGGGGWK.', '.KGGGLGGGGK.', '.KGGGGGLGGK.', '..KKKKKKKK..', '............', '............', '............'],
     coin: ['............', '....KKKK....', '...KYYYYK...', '..KYYWYYYK..', '..KYWYYYYK..', '..KYYYYYYK..', '..KYYYYYYK..', '...KYYYYK...', '....KKKK....', '............', '............', '............'],
     heart: ['............', '.KK....KK...', 'KRRK..KRRK..', 'KRWRKKRRRK..', 'KRRRRRRRRK..', '.KRRRRRRK...', '..KRRRRK....', '...KRRK.....', '....KK......', '............', '............', '............'],
+    /* 12x12 pixel-art UI icons (replacing OS emojis across Breadventure Land) */
+    sword: ['........KKK.', '.......KWWK.', '......KWSWK.', '.....KWSWK..', '....KWSWK...', '..KKWSWK....', '.KYYWWK.....', '..KYYK......', '..KBYK......', '.KBNK.......', '.KKK........', '............'],
+    spark: ['.....KK.....', '....KWWK....', '....KRRK....', '.KK.KRYK.KK.', 'KWWKKYYKKWWK', 'KRRYYWWYYRRK', 'KWWKKYYKKWWK', '.KK.KRYK.KK.', '....KRRK....', '....KWWK....', '.....KK.....', '............'],
+    mana: ['....KKKK....', '..KKVVPPKK..', '.KVWWVVPPPK.', '.KVVWVVPPqK.', '.KVVVVPPqqK.', '.KPPPPPPqqK.', '..KPPPPqqK..', '...KKKKKK...', '..KYYYYYYK..', '.KKKKKKKKKK.', '............', '............'],
+    key: ['............', '..KKKK......', '.KYYYYK.....', '.KYKKYK.....', '.KYKKYKKKKK.', '.KYYYYYYYYYK', '..KKKKKKYKYK', '........K.KK', '............', '............', '............', '............'],
+    camp: ['.....KK.....', '....KYYK....', '...KYQQYK...', '..KYQFFQYK..', '.KYQQKKQQYK.', '.KYQKrrKQYK.', 'KYQQKrrKQQYK', 'KYQFKrrKFQYK', 'KKKKKKKKKKKK', '.gg..OO..gg.', '............', '............'],
+    shield: ['..KKKKKKKK..', '.KwwSSSSssK.', '.KwKPPPPKsK.', '.KwKPWWPKsK.', '.KwKPPPPKsK.', '.KwKPPqqKsK.', '..KwKqqKsK..', '..KwKKKKsK..', '...KwSSsK...', '....KssK....', '.....KK.....', '............'],
+    compass: ['...KKKKKK...', '..KYYYYYYK..', '.KYWeeeeWYK.', '.KYeKRRKeYK.', '.KYeeRRWeYK.', '.KYeWbbKeYK.', '.KYeeKKeeYK.', '.KYWeeeeWYK.', '..KYYYYYYK..', '...KKKKKK...', '............', '............'],
+    map: ['............', '.KKKK..KKKK.', 'KeeeKKKeeeKK', 'KeGGKeebGeKK', 'KeGGKeebGGKK', 'KeeGKeebeeKK', 'KeRRKeebGeKK', 'KeeeKeebeeKK', 'KKKKKKKeeeeK', '.......KKKK.', '............', '............'],
+    shirt: ['............', '..KKK..KKK..', '.KbbKKKKbbK.', 'KbbbbbbbbbbK', 'KbbKbbbbKbbK', '.KKKbbbbKKK.', '...KbbbbK...', '...KbWWbK...', '...KbbbbK...', '...KbbbbK...', '...KKKKKK...', '............'],
+    pencil: ['........KK..', '.......KppK.', '......KpWK..', '.....KSSK...', '....KYYK....', '...KYYFK....', '..KYYFK.....', '.KeYFK......', '.KeKK.......', '.KK.........', '............', '............'],
+    stats: ['............', '........KKK.', '........KRK.', '....KKK.KRK.', '....KYK.KRK.', '....KYK.KRK.', 'KKK.KYK.KRK.', 'KGK.KYK.KRK.', 'KGK.KYK.KRK.', 'KGK.KYK.KRK.', 'KKKKKKKKKKKK', '............'],
+    dice: ['............', '.KKKKKKKKKK.', '.KWWWWWWWWK.', '.KWKKWWKKWK.', '.KWKKWWKKWK.', '.KWWWWWWWWK.', '.KWWWKKWWWK.', '.KWKKWWKKWK.', '.KWKKWWKKWK.', '.KwwwwwwwwK.', '.KKKKKKKKKK.', '............'],
+    scroll: ['..KKKKKKKK..', '.KeeeeeeeeK.', '.KeKKKKKKeK.', '.KeeeeeeeeK.', '.KeDDDDDDeK.', '.KeeeeeeeeK.', '.KeDDDDDDeK.', '.KeeeRRReeK.', '.KeeeeReeeK.', 'KeeeeeeeeKK.', 'KKKKKKKKKK..', '............'],
+    pin: ['...KKKKKK...', '..KRRRRRRK..', '.KRRWWRRRRK.', '.KRRWWRRRRK.', '.KRRRRRRRRK.', '..KRRRRRRK..', '...KRRRRK...', '....KRRK....', '.....KK.....', '.....KK.....', '............', '............'],
+    torch: ['.....KK.....', '....KOYK....', '...KOYYOK...', '...KOYWOK...', '....KOOOK...', '....KKKK....', '....KBBK....', '....KBNK....', '....KBNK....', '....KBNK....', '.....KK.....', '............'],
+    hat: ['.....KK.....', '....KPPK....', '...KPPPK....', '...KPPqK....', '..KPPPqqK...', '..KYYYYYK...', '.KPPPPPPqK..', 'KKKKKKKKKKKK', '............', '............', '............', '............'],
+    gauntlet: ['..KKKKKKKK..', '.KwSKwSKwSK.', '.KwSKwSKwSK.', '.KwwSSSSssK.', '.KwwSSSSssK.', '..KwSSSSsK..', '..KYYYYYYK..', '..KwSSSSsK..', '..KssssssK..', '...KKKKKK...', '............', '............'],
+    slushie: ['.......KK...', '......KRRK..', '..KKKKKKKK..', '.KCCWWWWCCK.', '.KCCCCCCCCK.', '..KCCbbCCK..', '..KCbbbbCK..', '..KbbbbbbK..', '...KbbbbK...', '...KKKKKK...', '............', '............'],
+    aura: ['....KKKK....', '....KBBK....', '...KWWWWK...', '..KWWYYWWK..', '.KWWYYYYWWK.', '.KWPYYYYPWK.', '.KWPPYYPPWK.', '..KPPPPPPK..', '...KKKKKK...', '............', '............', '............'],
+    fizz: ['....L..L....', '...KKKKKK...', '....KWWK....', '...KWWWWK...', '..KWLLLLWK..', '.KWLWLLWLLK.', '.KLLLLLLLLK.', '.KGGGGGGGGK.', '..KKKKKKKK..', '............', '............', '............'],
+    calm: ['....w..w....', '...w..w.....', '.KKKKKKKK...', '.KeeeeeeeKK.', '.KeBBBBBeK.K', '.KeBBBBBeK.K', '.KeeeeeeeKK.', '.KeeeeeeeK..', '..KKKKKKK...', '............', '............', '............'],
+    patch: ['...KKKKKK...', '..KWWWWWWK..', '.KWWKGGKWWK.', '.KWKKGGKKWK.', '.KWGGGGGGWK.', '.KWGGGGGGWK.', '.KWKKGGKKWK.', '.KWWKGGKWWK.', '..KWWWWWWK..', '...KKKKKK...', '............', '............'],
+    fog: ['............', '....KKKK....', '..KKwwwwKK..', '.KwwWWWWwwK.', 'KwwWWccWWwwK', 'KwSSccccSSwK', '.KKKKKKKKKK.', '..SS....SS..', '....SSSS....', '............', '............', '............'],
+    calendar: ['..K......K..', '.KKKKKKKKKK.', '.KRRRRRRRRK.', '.KKKKKKKKKK.', '.KWWKWWKWWK.', '.KWWWWWWWWK.', '.KWWKYYKWWK.', '.KWWWWWWWWK.', '.KKKKKKKKKK.', '............', '............', '............'],
+    eye: ['............', '............', '...KKKKKK...', '.KKWWWWWWKK.', 'KWWKbbbbKWWK', 'KWKbWKKbKWKK', 'KWWKbbbbKWWK', '.KKWWWWWWKK.', '...KKKKKK...', '............', '............', '............'],
+    unlock: ['......KKKK..', '.....K....K.', '.....K....K.', '.....K......', '..KKKKKKKK..', '..KYYYYYYK..', '..KYYKKYYK..', '..KYYKKYYK..', '..KYYYYYYK..', '..KKKKKKKK..', '............', '............'],
+    flame_ui: ['.....KK.....', '....KOOK....', '...KOOYOK...', '..KOOYYOOK..', '..KOYWWYOK..', '..KOYWWYOK..', '...KOYYOK...', '....KOOOK...', '.....KK.....', '............', '............', '............'],
+    trophy_ui: ['..KKKKKKKK..', '.KKYYYYYYKK.', 'K.KYWYYYYK.K', 'K.KYYYYYYK.K', '.KKYYYYYYKK.', '...KYYYYK...', '....KYYK....', '....KYYK....', '..KKKKKKKK..', '..KXXXXXXK..', '..KKKKKKKK..', '............'],
+    horn: ['............', '........KK..', '......KKYYK.', '....KKYYYYK.', '..KKYYWYYYK.', '.KYYYYYYYYK.', '.KYYYYYYYYK.', '..KKYYKKYYK.', '....KK..KK..', '............', '............', '............'],
+    leaf: ['.......KKK..', '.....KKGGGK.', '....KGGLLGK.', '...KGGLLGGK.', '..KGGgGGGGK.', '..KGgGGGGK..', '..KgGGGGK...', '.KgKKKKK....', '.KK.........', '............', '............', '............'],
+    bed: ['............', '............', '.KK.........', '.KBK.KKKK...', '.KBKKWWWWKK.', '.KBKRRRRRRK.', '.KBBBBBBBBK.', '.KBBBBBBBBK.', '.KBK....KBK.', '.KK......KK.', '............', '............'],
+    gift: ['...KK..KK...', '..KYYKKYYK..', '.KKKKKKKKKK.', '.KRRKYYKRRK.', '.KKKKKKKKKK.', '..KRKYYKRK..', '..KRKYYKRK..', '..KRKYYKRK..', '..KKKKKKKK..', '............', '............', '............'],
+    flag: ['..KK........', '..KRRRRRKK..', '..KRRRRRRRK.', '..KRRRRRRK..', '..KRRRRKK...', '..KKKK......', '..KK........', '..KK........', '..KK........', '.KKKK.......', '............', '............'],
+    rage: ['..K......K..', '.KRK....KRK.', '.KRRKKKKRRK.', '.KRRRRRRRRK.', '.KRWWRRWWRK.', '.KRRKRRKRRK.', '.KRRRRRRRRK.', '..KRKKKKRK..', '..KRRRRRRK..', '...KKKKKK...', '............', '............'],
   };
+  const UI_ICONS = ['sword', 'heart', 'spark', 'mana', 'coin', 'key', 'camp', 'shield', 'lock', 'unlock', 'flask', 'slushie', 'aura', 'fizz', 'calm', 'patch', 'fog', 'compass', 'map', 'shirt', 'pencil', 'stats', 'dice', 'scroll', 'pin', 'torch', 'hat', 'gauntlet', 'calendar', 'eye', 'flame_ui', 'trophy_ui', 'horn', 'leaf', 'bed', 'gift', 'flag', 'rage', 'mine', 'lift', 'chest'];
   const cache = {};
   // Sprites drawn from the mascot art (10 Nov 2026) are image files, not grids. icon() returns their URL.
   const IMG = { prof: '/img/mascot/professor-pixel.png', profHead: '/img/mascot/head-pixel.png' };
@@ -371,6 +449,8 @@ const ADV = (() => {
     g.forEach((row, j) => [...row].forEach((ch, i) => { if (ch === '.') return; x.fillStyle = swap && ch === 'R' ? swap : swap && ch === 'r' ? shade(swap, -.32) : swap && ch === 'l' ? shade(swap, .38) : PAL[ch]; x.fillRect(i + ox, j + oy, 1, 1); }));
     return cache[k] = c.toDataURL();
   }
+  const ui = (name, sz, swap) => `<img class="px ui-ic" src="${icon(name, swap)}"${sz ? ` style="width:${sz}px;height:${sz}px"` : ''} alt="" aria-hidden="true">`;
+  const mono = (name, sz) => `<img class="ui-svg" src="/img/icons/${name}.svg"${sz ? ` style="width:${sz}px;height:${sz}px"` : ''} alt="" aria-hidden="true">`;
 
-  return { get S() { return S; }, get gained() { return gained; }, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, levelCap, xpFor, rawLevel, level, stats, nav, icon, face, IMG, ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
+  return { get S() { return S; }, get gained() { return gained; }, pending, collect, MOVE_CAP, UNLOCKS, unlockLv, can, nextUnlock, SLOT_LOCK, save, reset, look, hasLook, nick, eq, gear, SET_PCT, LV, BASE, TOTAL, SCI, securedTotal, CAP_STEP, levelCap, xpFor, rawLevel, level, stats, nav, icon, ui, mono, face, IMG, ICONS, UI_ICONS, DRAGON, storyIntro, storyRescue, keys, CH1 };
 })();

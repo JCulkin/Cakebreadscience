@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cakebread Questing - Cakebread Science</title>
-<meta name="description" content="Cakebread Questing: questions on the whole Edexcel International GCSE Science (Double Award) spec. Power up a pixel adventurer, secure every spec point, or make a quick quiz for the class.">
+<title>Breadventure Land - Cakebread Science</title>
+<meta name="description" content="Breadventure Land: IGCSE Science revision game on the whole Edexcel Double Award spec. Power up a pixel adventurer, secure every spec point, and defeat bosses together.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,9 +40,9 @@ body.new .returning{display:none}body.new .newbie{display:grid}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub" data-course-sa="Single Award · Cakebread Questing">Double Award · Cakebread Questing</span></header>
+<header><a class="brand" href="/">Cakebread <span>Science</span></a><span class="sub" data-course-sa="Single Award · Breadventure Land">Double Award · Breadventure Land</span></header>
 <main class="wrap">
-  <h1>Cakebread Questing</h1>
+  <h1>Breadventure Land</h1>
   <p class="lede">Questions on the whole Edexcel International GCSE <span data-course-sa="Science (Single Award)">Science (Double Award)</span> spec. Answer them to secure every spec point and power up your adventurer.</p>
   <div class="card signin" id="signin" hidden><div><b>Sign in to save your adventure.</b> Your progress, loot and look are kept in your Google account, and you appear on the leaderboards. Without signing in, progress stays in this browser only.</div><button class="btn gold" id="signinBtn" type="button">Sign in with Google</button></div>
 
@@ -57,7 +57,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="go">Continue →</div>
   </a>
 
-  <a class="adv newbie" href="adventurer-create.html?new=1">
+  <a class="adv newbie" href="adventurer-wardrobe.html?tab=look&new=1">
     <div class="scene"><span class="sun"></span><img class="px" id="fig0" alt=""></div>
     <div class="mid">
       <span class="kick">New</span>
@@ -82,7 +82,7 @@ body.new .returning{display:none}body.new .newbie{display:grid}
     <div class="card">
       <h3>The story so far</h3>
       <p style="font-size:15px"><span id="storyNow"></span></p>
-      <p style="margin-top:8px"><a href="adventurer-map.html">Into Breadventure Land →</a></p>
+      <p style="margin-top:8px"><a href="adventurer-map.html">Open the World Map →</a></p>
     </div>
   </div>
 
@@ -113,10 +113,12 @@ $('fig').src = PIXEL.figure(ADV.eq(), ADV.look());
 $('fig0').src = PIXEL.figure({ head: 'paperhat', top: 'jumper', bottom: 'joggers', shoes: 'oddsocks', lhand: 'crisps', rhand: 'ruler' }, PIXEL.DEFAULT);
 $('nick').textContent = ADV.nick();
 const sec = ADV.securedTotal();
-$('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">💪 ${s.str}</span><span class="chip" style="color:var(--hp)">❤ ${s.hp}</span><span class="chip" style="color:var(--mag)">✨ ${s.mag}</span>`
-  + `<span class="chip">🔒 ${sec} spec point${sec === 1 ? '' : 's'} secured</span>`
-  + (S.missionsToday ? '' : `<span class="chip hot">⚔ Today's mission</span>`);
-$('storyNow').innerHTML = `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt="">🐉 <b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. Win them together in <b>Breadventure Land</b>. Every spec point you secure makes you stronger.`;
+$('chips').innerHTML = `<span class="chip">Level ${s.l}</span><span class="chip" style="color:var(--str)">${ADV.ui('sword')} ${s.str}</span><span class="chip" style="color:var(--hp)">${ADV.ui('heart')} ${s.hp}</span><span class="chip" style="color:var(--mag)">${ADV.ui('spark')} ${s.mag}</span>`
+  + `<span class="chip">${ADV.ui('lock')} ${sec} spec point${sec === 1 ? '' : 's'} secured</span>`
+  + (S.missionsToday ? '' : `<span class="chip hot">${ADV.ui('sword')} Today's mission</span>`);
+$('storyNow').innerHTML = S.chapter >= 2
+  ? `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated" alt=""><b>Chapter 2:</b> The Professor is free and back in the Cakelab! Now three tougher monsters are waking across <b>Breadventure Land</b>: the <b>Superbug</b>, the <b>Rust Wyrm</b> and the <b>Half-Life Horror</b>. Every spec point you secure makes you stronger.`
+  : `<img src="${ADV.icon('prof')}" width="44" style="float:right;image-rendering:pixelated;filter:grayscale(.6)" alt=""><b>${ADV.DRAGON}</b> has carried the Professor off to its lair and locked him in a cage. Three monsters guard the pieces of the key. Win them together in <b>Breadventure Land</b>. Every spec point you secure makes you stronger.`;
 
 /* sign-in prompt */
 const signDraw = () => { $('signin').hidden = !(QE.known && QE.online && !QE.user); };

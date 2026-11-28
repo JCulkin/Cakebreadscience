@@ -1,7 +1,7 @@
 /* One spec tracker (17 Nov 2026). One renderer for /specifications/{biology,chemistry,physics}.html (data-view="subject")
    and the overview /specifications/science.html (data-view="overview"), drawn from spec.js — no hand-written spec lists.
 
-   Colour = EVIDENCE, from the same progress as Cakebread Questing (QE.pointState): questions answered in Practice
+   Colour = EVIDENCE, from the same progress as Breadventure Land (QE.pointState): questions answered in Practice
    Questions (no game needed), Questing missions, Quick-quiz-free work, and Flashcards. So the tracker works with or
    without the game.
      not started · learning · secured (right on two different days) · rusty (secured, not practised for 3 weeks)
@@ -34,7 +34,8 @@
   function status(k) {
     const E = QEx(), p = (E && E.POINT_QS[k]) ? E.pointState(k) : null;
     if (!p || !p.has) return { s: 'na' };
-    return { s: p.rusty ? 'rusty' : p.secured ? 'secured' : p.started ? 'learning' : 'none', got: Math.min(p.need, (p.sec || 0) + (p.cSec || 0)), need: p.need };
+    const got = p.got != null ? p.got : Math.min(p.need, (p.sec || 0) + (p.cCredit != null ? p.cCredit : (p.cSec || 0)));
+    return { s: p.rusty ? 'rusty' : p.secured ? 'secured' : p.started ? 'learning' : 'none', got, need: p.need };
   }
 
   /* ---------- confidence (self-rating) ---------- */
@@ -60,7 +61,7 @@
     if (!user || !window.firebase || !firebase.firestore) return;
     const anon = readLocal('cbs.tracker.conf.anon'), uns = readLocal(unKey());
     try {
-      const snap = await within(firebase.firestore().collection('specProgress').doc(user.uid).get(), 6000);
+      const snap = window.CBSNet ? await CBSNet.fsGet('specProgress', user.uid, 7000) : await within(firebase.firestore().collection('specProgress').doc(user.uid).get(), 6000);
       const d = (snap.exists && snap.data()) || {};
       let remote = d.conf || null, fresh = false;
       if (!remote) { remote = migrate(d.subjects); fresh = true; }
@@ -79,7 +80,8 @@
     const uns = Object.assign(readLocal(unKey()), sent);
     try { localStorage.setItem(unKey(), JSON.stringify(uns)); } catch (e) {}
     try {
-      await within(firebase.firestore().collection('specProgress').doc(uid).set(body, { merge: true }), 8000);
+      if (window.CBSNet) await CBSNet.fsSetMerge('specProgress', uid, body, { ms: 8000, mergeMaps: ['conf'] });
+      else await within(firebase.firestore().collection('specProgress').doc(uid).set(body, { merge: true }), 8000);
       const left = readLocal(unKey()); Object.keys(sent).forEach(k => { if (left[k] === sent[k]) delete left[k]; });
       try { Object.keys(left).length ? localStorage.setItem(unKey(), JSON.stringify(left)) : localStorage.removeItem(unKey()); } catch (e) {}
     } catch (e) { console.warn('tracker: confidence not saved yet (will retry)', e); }
@@ -100,9 +102,14 @@
   }
 
   /* ---------- resources from the one spec index ---------- */
-  const KIND = { lesson: '🎓 Lesson', sheet: '📄 Worksheet', long: '✍️ 6-mark question', eq: '🧮 Equation' };
+  const KIND = { lesson: '🎓 Revision notes', sheet: '📄 Worksheet', booklet: '📚 Exam booklet', long: '✍️ 6-mark question', eq: '🧮 Equation', game: '🎮 Interactive' };
   const resOf = k => ((IDX.pts[k] || {}).r || []).map(i => IDX.res[i]).filter(Boolean);
   const cardsOf = k => (IDX.pts[k] || {}).c || (QEx() && QEx().CARDS_ON[k]) || 0;
+  const kwOf = k => {
+    const list = (window.KEYWORDS || {})[k] || [];
+    const sa = !!(window.CBSCourse && CBSCourse.sa);
+    return sa ? list.filter(x => x[2] !== 'DA') : list;
+  };
 
   /* ---------- subject page ---------- */
   let FILTER = new URLSearchParams(location.search).get('f') || 'all';
@@ -113,7 +120,7 @@
     root.innerHTML = `
       <div class="tr-head"><div class="tr-kick">Spec tracker · Edexcel International GCSE ${window.CBSCourse ? CBSCourse.label : 'Science (Double Award)'}</div>
         <h1>${SUBJ[subject]}</h1>
-        <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it: get its questions right on two different days in <a href="${Q}practice.html">Practice Questions</a> or Questing, or secure its flashcards. Your own rating just records how you feel.</p></div>
+        <p class="tr-lede">A spec point turns <b class="c-secured">green</b> when you prove it on two different days in <a href="${Q}practice.html">Practice Questions</a> or Questing (flashcards count for up to half). Your own rating just records how you feel.</p></div>
       <div class="tr-sum" id="trSum"></div>
       <div class="tr-filters" id="trFilters">${FILTERS.map(([k, t]) => `<button type="button" data-f="${k}"${k === FILTER ? ' class="on"' : ''}>${t}<span></span></button>`).join('')}</div>
       <nav class="tr-topics">${S.topics.map(t => `<a href="#t-${L}${t.n}">${t.n}. ${esc(t.name)}</a>`).join('')}</nav>
@@ -131,17 +138,19 @@
     if (location.hash) { const t = document.getElementById(decodeURIComponent(location.hash.slice(1))); if (t) setTimeout(() => { t.scrollIntoView({ block: 'center' }); t.classList.add('flash'); }, 300); }
   }
   function row(p, sk) {
-    const k = p.key, res = resOf(k), nc = cardsOf(k), hasQ = QEx() && QEx().POINT_QS[k];
+    const k = p.key, res = resOf(k), nc = cardsOf(k), kws = kwOf(k), hasQ = QEx() && QEx().POINT_QS[k];
     const groups = {}; res.forEach(([kind, title, url]) => (groups[kind] = groups[kind] || []).push(`<a href="${esc(url)}">${esc(title)}</a>`));
+    const hasDrawer = res.length || kws.length;
+    const kwHtml = kws.length ? `<div><b>🔑 Key words</b> ${kws.map(([w, m]) => `<span title="${esc(m)}"><b>${esc(w)}</b> (${esc(m)})</span>`).join(' · ')} · <a href="/Flashcards/?spec=${k}&deck=keywords">Practise as flashcards →</a></div>` : '';
     return `<div class="tr-pt" id="${k}" data-k="${k}" data-sub="${sk}">
       <div class="tr-main"><a class="code" href="#${k}" title="Link to this spec point">${k.slice(1)}</a>
         <div class="txt">${esc(p.text)}${p.bullets ? `<ul>${p.bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}${window.SPECPT ? SPECPT.extras(p) : ''}</div></div>
       <div class="tr-side">
         <span class="pill" data-pill></span>
         <div class="conf" role="group" aria-label="How sure do you feel?"><button type="button" data-conf="1" title="Not yet">Not yet</button><button type="button" data-conf="2" title="Unsure">Unsure</button><button type="button" data-conf="3" title="Confident">Confident</button></div>
-        <div class="acts">${hasQ ? `<a class="go" href="${Q}practice.html?point=${k}" title="Questions on this point, no game">Prove it →</a><a href="${Q}adventurer-mission.html?point=${k}" title="A Cakebread Questing mission on this point">⚔️</a>` : ''}${nc ? `<a href="/Flashcards/?spec=${k}" title="Flashcards on this point">🃏 ${nc}</a>` : ''}${res.length ? `<button type="button" data-res aria-expanded="false">📚 ${res.length}</button>` : ''}</div>
+        <div class="acts">${hasQ ? `<a class="go" href="${Q}practice.html?point=${k}" title="Questions on this point, no game">Prove it →</a>${window.CBSMode && CBSMode.isPlain() ? '' : `<a href="${Q}adventurer-mission.html?point=${k}" title="A Breadventure Land mission on this point">⚔️</a>`}` : ''}${nc ? `<a href="/Flashcards/?spec=${k}" title="Flashcards on this point">🃏 ${nc}</a>` : ''}${hasDrawer ? `<button type="button" data-res aria-expanded="false" title="Resources and key words">📚 ${res.length}${kws.length ? ` · 🔑${kws.length}` : ''}</button>` : ''}</div>
       </div>
-      ${res.length ? `<div class="tr-res" hidden>${Object.entries(groups).map(([kind, links]) => `<div><b>${KIND[kind] || kind}</b> ${links.join(' · ')}</div>`).join('')}</div>` : ''}
+      ${hasDrawer ? `<div class="tr-res" hidden>${kwHtml}${Object.entries(groups).map(([kind, links]) => `<div><b>${KIND[kind] || kind}</b> ${links.join(' · ')}</div>`).join('')}</div>` : ''}
     </div>`;
   }
   function drawRow(k) {
@@ -190,7 +199,7 @@
         return `<a class="ovc s-${s}" href="${s}.html"><h2>${SUBJ[s]}</h2>${bar(c)}<p><b>${c.secured}</b> of ${q} secured · ${c.learning} learning${c.rusty ? ` · ${c.rusty} rusty` : ''}</p>
           <p class="muted">${c.conf} rated confident${c.check ? ` · <b>${c.check} to check</b>` : ''}</p><span class="go">Open ${SUBJ[s]} →</span></a>`; }).join('')}
         <a class="ovc s-maths" href="maths.html"><h2>Maths</h2><p class="muted">The maths specification with worksheets for each topic.</p><span class="go">Open Maths →</span></a></div>
-      <p class="tr-lede" style="margin-top:14px">${uid ? '' : '<b>Not signed in:</b> progress shown is this browser only. '}Points turn green from <a href="${Q}practice.html">Practice Questions</a>, Cakebread Questing missions and <a href="/Flashcards/">Flashcards</a>.</p>`;
+      <p class="tr-lede" style="margin-top:14px">${uid ? '' : '<b>Not signed in:</b> progress shown is this browser only. '}Points turn green when proved in <a href="${Q}practice.html">Practice Questions</a> or Breadventure Land (<a href="/Flashcards/">Flashcards</a> count for up to half).</p>`;
   }
 
   function drawAll() {

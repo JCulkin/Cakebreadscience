@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 210" width="420" height="210" role="img" aria-label="Healthy plant compared with phosphate-deficient plant showing purple leaves and poor roots">
+  <rect width="420" height="210" fill="#faf8f2" stroke="#111" stroke-width="2"/>
+  <line x1="210" y1="12" x2="210" y2="198" stroke="#ccc" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <!-- Soil line -->
+  <rect x="2" y="132" width="416" height="76" fill="#e7dfd1"/>
+  <line x1="2" y1="132" x2="418" y2="132" stroke="#8b7355" stroke-width="2"/>
+
+  <!-- Left: Healthy plant -->
+  <text x="105" y="24" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111">Healthy (enough phosphate)</text>
+  <line x1="105" y1="132" x2="105" y2="54" stroke="#15803d" stroke-width="4"/>
+  <ellipse cx="83" cy="96" rx="22" ry="10" transform="rotate(-22 83 96)" fill="#22c55e" stroke="#111" stroke-width="1.5"/>
+  <ellipse cx="127" cy="90" rx="22" ry="10" transform="rotate(22 127 90)" fill="#22c55e" stroke="#111" stroke-width="1.5"/>
+  <ellipse cx="86" cy="68" rx="18" ry="8" transform="rotate(-28 86 68)" fill="#22c55e" stroke="#111" stroke-width="1.5"/>
+  <ellipse cx="124" cy="64" rx="18" ry="8" transform="rotate(28 124 64)" fill="#22c55e" stroke="#111" stroke-width="1.5"/>
+  <!-- Strong roots -->
+  <g stroke="#5c4033" stroke-width="2" fill="none" stroke-linecap="round">
+    <path d="M105 132 C105 152, 102 172, 104 192"/>
+    <path d="M105 138 C90 150, 74 162, 62 178"/>
+    <path d="M105 140 C122 152, 138 164, 150 180"/>
+    <path d="M96 150 C86 164, 80 176, 76 190"/>
+    <path d="M114 152 C124 166, 130 178, 136 192"/>
+    <path d="M104 162 C95 170, 90 178, 88 186"/>
+    <path d="M106 162 C116 170, 120 178, 124 186"/>
+  </g>
+  <text x="105" y="203" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="11" fill="#333">Green leaves · strong root system</text>
+
+  <!-- Right: Phosphate-deficient plant -->
+  <text x="315" y="24" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#7e22ce">Phosphate deficiency</text>
+  <line x1="315" y1="132" x2="315" y2="82" stroke="#6b21a8" stroke-width="3.5"/>
+  <ellipse cx="297" cy="108" rx="17" ry="8" transform="rotate(-18 297 108)" fill="#9333ea" stroke="#111" stroke-width="1.5"/>
+  <ellipse cx="333" cy="104" rx="17" ry="8" transform="rotate(18 333 104)" fill="#a855f7" stroke="#111" stroke-width="1.5"/>
+  <ellipse cx="301" cy="88" rx="14" ry="7" transform="rotate(-24 301 88)" fill="#7e22ce" stroke="#111" stroke-width="1.5"/>
+  <ellipse cx="329" cy="86" rx="14" ry="7" transform="rotate(24 329 86)" fill="#9333ea" stroke="#111" stroke-width="1.5"/>
+  <!-- Callouts -->
+  <text x="315" y="52" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="11" font-weight="700" fill="#111">Purple, stunted leaves</text>
+  <line x1="315" y1="56" x2="315" y2="75" stroke="#111" stroke-width="1.2"/>
+  <!-- Poor roots -->
+  <g stroke="#5c4033" stroke-width="1.8" fill="none" stroke-linecap="round">
+    <path d="M315 132 C315 142, 313 150, 314 158"/>
+    <path d="M315 138 C308 144, 304 149, 301 154"/>
+    <path d="M315 139 C322 145, 326 150, 328 155"/>
+  </g>
+  <text x="315" y="176" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="11" font-weight="700" fill="#111">Poor root growth</text>
+  <text x="315" y="203" text-anchor="middle" font-family="Barlow, Arial, sans-serif" font-size="11" fill="#333">Less DNA, membranes &amp; respiration</text>
+</svg>

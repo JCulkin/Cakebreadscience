@@ -11,7 +11,8 @@
 }
 
 .header { border-bottom-color: var(--accent-color); }
-.header::before { content: "🚀"; }
+.header::before { content: ""; display: block; width: 30px; height: 30px; background: url("../img/icons/subj-physics.svg") no-repeat center / contain; }
+@media print { .header::before { background-image: url("../img/icons/subj-physics-bw.svg"); } }
 .spec-ref { color: var(--primary-color); }
 h1 { color: var(--primary-color); }
 .subtitle { color: var(--primary-light); }

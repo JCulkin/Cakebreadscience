@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 220" width="560" height="220">
+  <rect width="560" height="220" fill="#fff"/>
+  <!-- Top parent gametes: R, R -->
+  <rect x="98" y="14" width="84" height="64" fill="#fff" stroke="#111" stroke-width="2.5"/>
+  <rect x="182" y="14" width="84" height="64" fill="#fff" stroke="#111" stroke-width="2.5"/>
+  <text x="140" y="54" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">R</text>
+  <text x="224" y="54" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">R</text>
+
+  <!-- Left parent gametes: r, r -->
+  <rect x="14" y="78" width="84" height="64" fill="#fff" stroke="#111" stroke-width="2.5"/>
+  <rect x="14" y="142" width="84" height="64" fill="#fff" stroke="#111" stroke-width="2.5"/>
+  <text x="56" y="118" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">r</text>
+  <text x="56" y="182" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">r</text>
+
+  <!-- Offspring cells -->
+  <rect x="98" y="78" width="84" height="64" fill="#ef4444" stroke="#111" stroke-width="2.5"/>
+  <rect x="182" y="78" width="84" height="64" fill="#ef4444" stroke="#111" stroke-width="2.5"/>
+  <rect x="98" y="142" width="84" height="64" fill="#ef4444" stroke="#111" stroke-width="2.5"/>
+  <rect x="182" y="142" width="84" height="64" fill="#ef4444" stroke="#111" stroke-width="2.5"/>
+
+  <text x="140" y="118" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">Rr</text>
+  <text x="224" y="118" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">Rr</text>
+  <text x="140" y="182" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">Rr</text>
+  <text x="224" y="182" font-family="Barlow, Arial, sans-serif" font-size="24" font-weight="700" fill="#111" text-anchor="middle">Rr</text>
+
+  <!-- Key / summary box on right -->
+  <rect x="308" y="80" width="160" height="66" fill="#fff" stroke="#111" stroke-width="2.5"/>
+  <rect x="468" y="80" width="76" height="66" fill="#ef4444" stroke="#111" stroke-width="2.5"/>
+  <text x="388" y="109" font-family="Barlow, Arial, sans-serif" font-size="18" font-weight="700" fill="#111" text-anchor="middle">100% red</text>
+  <text x="388" y="131" font-family="Barlow, Arial, sans-serif" font-size="18" font-weight="700" fill="#111" text-anchor="middle">flowers</text>
+  <text x="506" y="121" font-family="Barlow, Arial, sans-serif" font-size="22" font-weight="700" fill="#111" text-anchor="middle">Rr</text>
+</svg>

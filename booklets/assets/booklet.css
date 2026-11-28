@@ -4,15 +4,36 @@
 /* ---------- Cover page ---------- */
 .ps .cover { justify-content: flex-start; }
 .ps .cv-band {
-  margin: -9mm -12mm 0; padding: 12mm 12mm 8mm;
+  position: relative; overflow: hidden;
+  margin: -9mm -12mm 0; padding: 10mm 92mm 8mm 12mm;
+  min-height: 58mm;
+  display: flex; flex-direction: column; justify-content: center;
   background: var(--primary-color); color: #fff;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
 }
-.ps .cv-kick { font-size: 9pt; letter-spacing: 1.5px; text-transform: uppercase; opacity: .85; font-weight: bold; }
-.ps .cv-title { font-size: 30pt; font-weight: 800; line-height: 1.05; margin-top: 3mm; }
-.ps .cv-sub { font-size: 13pt; margin-top: 2mm; opacity: .95; }
+.ps .cv-band .cv-art {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: right center;
+  pointer-events: none; z-index: 0;
+}
+.ps .cv-band .cv-art-bw { display: none; }
+.ps .cv-band > :not(.cv-art) { position: relative; z-index: 2; }
+.ps .cv-kick { font-size: 8.5pt; letter-spacing: 1.6px; text-transform: uppercase; opacity: .9; font-weight: bold; }
+.ps .cv-title { font-size: 27pt; font-weight: 800; line-height: 1.02; margin-top: 2.5mm; }
+.ps .cv-sub { font-size: 10.5pt; line-height: 1.28; margin-top: 2.2mm; opacity: .94; max-width: 102mm; }
 .ps .cv-strip { display: flex; height: 3mm; margin: 0 -12mm; }
 .ps .cv-strip i { flex: 1; }
-.ps .cv-name { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 6mm; margin: 7mm 0 5mm; font-size: 10.5pt; }
+@media print {
+  .ps .cv-band { background: #f3f3f3 !important; color: #111 !important; border-bottom: 1.5pt solid #111; }
+  .ps .cv-band .cv-art-color { display: none !important; }
+  .ps .cv-band .cv-art-bw { display: block !important; }
+  .ps .cv-kick { color: #444; opacity: 1; }
+  .ps .cv-sub { color: #222; opacity: 1; }
+  .ps .cv-strip i:nth-child(1), .ps .cv-strip i:nth-child(5) { background: #111 !important; }
+  .ps .cv-strip i:nth-child(2), .ps .cv-strip i:nth-child(4) { background: #666 !important; }
+  .ps .cv-strip i:nth-child(3) { background: #ccc !important; }
+}
+.ps .cv-name { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 6mm; margin: 5mm 0 4mm; font-size: 10.5pt; }
 .ps .cv-name div { border-bottom: 1px solid #111; padding-bottom: 1mm; }
 .ps .cv-cols { display: grid; grid-template-columns: 1.15fr 1fr; gap: 7mm; }
 .ps .cv-box { border: 1.5px solid var(--accent-color); border-radius: 2mm; padding: 2.5mm 3.5mm; }
@@ -38,6 +59,7 @@
 .ps .qq > .qt .t { flex: 1; }
 .ps .mk { float: right; font-weight: bold; font-size: 9pt; color: #333; margin-left: 2mm; }
 .ps .star { color: var(--accent-color); font-weight: bold; }
+.ps .cue { display: inline-block; width: 3.4mm; height: 3.4mm; vertical-align: -0.55mm; margin-right: 0.4mm; }
 .ps .lines { margin: 0 0 0 8mm; }
 .ps .lines > i { display: block; height: 7mm; border-bottom: 0.75pt solid #8a8a8a; }
 .ps .box { border: 1px solid #777; border-radius: 1.5mm; position: relative; background: #fff; }

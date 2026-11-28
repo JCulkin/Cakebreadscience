@@ -100,13 +100,21 @@ function refreshChecks() {
   updateCount();
 }
 
-const keepQ = (q, hard, calc, diag) => (hard || !q.hard) && (calc || !q.calc) && (diag !== false || !q.dg);
-function selectedPool(hard = true, calc = true, diag = true) { return [...SEL].flatMap(k => QBY[k] || []).filter(q => keepQ(q, hard, calc, diag)); }
+/* lv = the difficulty levels to include, e.g. [1, 2] (questions.js); anything else = all levels */
+const lvOk = (lv, q) => !Array.isArray(lv) || lv.includes(q.lv || 1);
+const keepQ = (q, lv, calc, diag) => lvOk(lv, q) && (calc || !q.calc) && (diag !== false || !q.dg);
+function selectedPool(lv = null, calc = true, diag = true) { return [...SEL].flatMap(k => QBY[k] || []).filter(q => keepQ(q, lv, calc, diag)); }
+/* saved settings from before levels had hard: true|false */
+const cfgLv = s => { if (!Array.isArray(s.lv) || !s.lv.length) s.lv = s.hard === false ? [1, 2] : [1, 2, 3]; delete s.hard; return s; };
+const TEAM_PTS = { 1: 100, 2: 150, 3: 200 };
+const lvChips = s => `<h3 style="margin-top:16px">Levels</h3><div class="chips">${[1, 2, 3].map(l => `<button class="chip ${s.lv.includes(l) ? 'on' : ''}" data-lv="${l}">Level ${l}${l === 3 ? ' ★' : ''}</button>`).join('')}</div>
+        <p class="small" style="margin-top:6px">Level 1: facts and definitions. Level 2: explain, apply, calculate. Level 3 ★: several steps or a trap.</p>`;
+const lvWire = (box, s, draw) => box.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { const l = +b.dataset.lv, on = s.lv.includes(l); if (on && s.lv.length === 1) return; s.lv = on ? s.lv.filter(x => x !== l) : s.lv.concat(l).sort(); draw(); });
 
 function updateCount() {
   const pool = selectedPool();
-  const pts = new Set(pool.map(q => q.s)).size, hard = pool.filter(q => q.hard).length;
-  $('selCount').innerHTML = pool.length ? `<b>${pool.length}</b> questions from ${pts} spec point${pts === 1 ? '' : 's'}${hard ? ` <span class="small" style="color:#bbb">(${hard} ★ harder)</span>` : ''}` : '<b>0</b> questions: tick some spec points with questions';
+  const pts = new Set(pool.map(q => q.s)).size, byLv = [1, 2, 3].map(l => pool.filter(q => (q.lv || 1) === l).length);
+  $('selCount').innerHTML = pool.length ? `<b>${pool.length}</b> questions from ${pts} spec point${pts === 1 ? '' : 's'} <span class="small" style="color:#bbb">(level 1: ${byLv[0]} · level 2: ${byLv[1]} · level 3 ★: ${byLv[2]})</span>` : '<b>0</b> questions: tick some spec points with questions';
   $('soloBtn').disabled = $('teamBtn').disabled = !pool.length;
 }
 
@@ -137,12 +145,15 @@ $('colAll').onclick = () => { $('tree').querySelectorAll('.node').forEach(li => 
 /* ---------- screens ---------- */
 let SOLO = null, TEAM = null, KEYS = null;
 function show(id) {
-  ['menu', 'solosetup', 'teamsetup', 'play', 'results', 'campaign'].forEach(x => $(x).classList.toggle('hidden', x !== id));
+  ['menu', 'warmup', 'solosetup', 'teamsetup', 'play', 'results'].forEach(x => $(x).classList.toggle('hidden', x !== id));
   document.body.classList.toggle('proj', !!TEAM && (id === 'play' || id === 'results'));
   window.scrollTo(0, 0);
 }
-function menu() { if (TEAM && TEAM.stop) TEAM.stop(); SOLO = TEAM = KEYS = null; if (typeof CAMP !== 'undefined') CAMP.mission = null; show('menu'); }
-$('quit').onclick = menu;
+function menu() { if (TEAM && TEAM.stop) TEAM.stop(); SOLO = TEAM = KEYS = null; show('menu'); }
+$('quit').onclick = () => {
+  if (SOLO && SOLO.warmup) { const ex = SOLO.exclude || ''; SOLO = TEAM = KEYS = null; showWarmupPicker(ex); return; }
+  menu();
+};
 
 function scopeText() {
   const pts = [...new Set(selectedPool().map(q => q.s))];
@@ -152,12 +163,12 @@ function scopeText() {
 }
 
 /* build a quiz of n questions spread evenly over the selected spec points */
-function buildQuiz(n, hard = true, calc = true, diag = true) {
-  const groups = shuffle([...SEL].filter(k => QBY[k]).map(k => shuffle(QBY[k].filter(q => keepQ(q, hard, calc, diag)))).filter(g => g.length));
+function buildQuiz(n, lv = null, calc = true, diag = true) {
+  const groups = shuffle([...SEL].filter(k => QBY[k]).map(k => shuffle(QBY[k].filter(q => keepQ(q, lv, calc, diag)))).filter(g => g.length));
   const out = [], cap = Math.ceil(n / 3); let nd = 0;   // diagram questions: at most a third of the quiz
   const can = q => !q.dg || nd < cap;
   while (out.length < n && groups.some(g => g.some(can))) groups.forEach(g => { if (out.length >= n) return; const j = g.map(can).lastIndexOf(true); if (j < 0) return; const q = g.splice(j, 1)[0]; if (q.dg) nd++; out.push(q); });
-  return shuffle(out).map(inst);
+  return shuffle(out).sort((a, b) => (a.lv || 1) - (b.lv || 1)).map(inst);   // climbs from level 1 to level 3
 }
 
 /* ---------- "Report this question" ----------
@@ -166,14 +177,14 @@ function buildQuiz(n, hard = true, calc = true, diag = true) {
 const REPORT_REASONS = ['The marked answer is wrong', 'More than one answer is right', 'The wording is confusing', 'Spelling or typing mistake', 'Not on the spec / too hard', 'Something else'];
 const REPORTED = new Set();
 function reportPayload(q, opts, pickedIdx, reason, comment) {
-  const u = (typeof FB !== 'undefined' && FB.user) ? FB.user : null;
+  const u = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length && firebase.auth && firebase.auth().currentUser) || null;
   const n = u && u.displayName ? u.displayName.trim().split(/\s+/) : null;
   return {
     qid: q.id, reason, comment: (comment || '').slice(0, 400),
     shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400), ...(q.seed ? { seed: q.seed } : {}),
     options: opts.map(o => (o.t || '').replace(/<[^>]+>/g, '').slice(0, 120)),
     correct: opts.findIndex(o => o.ok), picked: pickedIdx === null ? -1 : pickedIdx,
-    mode: (typeof CAMP !== 'undefined' && CAMP.mission) ? 'campaign' : TEAM ? 'team' : 'solo',
+    mode: TEAM ? 'team' : 'solo',
     name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '',
     t: Date.now()
   };
@@ -228,7 +239,7 @@ function renderQ(q, box, onAnswer) {
   let opts = isTF ? [{ t: 'True', ok: q.tf === true }, { t: 'False', ok: q.tf === false }] : shuffle(q.o.map((t, i) => ({ t, ok: i === 0 })));
   let keys = isTF ? ['T', 'F'] : ['A', 'B', 'C', 'D'];
   if (q.svg && typeof DQ !== 'undefined') { const d = DQ.order(opts, o => o.t); opts = d.opts; if (d.letters) keys = ['1', '2', '3', '4']; }   // letter answers in order, numbered keys
-  box.innerHTML = `<span class="qtag" style="--sc:${SUBJ_COL[p.subject]}">${p.subject} ${p.id} <span class="tf">· ${isTF ? 'True or false?' : 'Multiple choice'}</span>${q.hard ? '<span class="hardtag">★ Harder</span>' : ''}</span>
+  box.innerHTML = `<span class="qtag" style="--sc:${SUBJ_COL[p.subject]}">${p.subject} ${p.id} <span class="tf">· ${isTF ? 'True or false?' : 'Multiple choice'}</span>${q.lv ? `<span class="hardtag lv${q.lv}">${lvLabel(q)}</span>` : ''}</span>
     ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="prompt">${nuc(q.q)}</div>
     <div class="opts ${isTF ? 'n2' : ''}">${opts.map((o, i) => `<button class="opt" data-i="${i}"><span class="key">${keys[i]}</span><span>${nuc(o.t)}</span></button>`).join('')}</div>
     <div class="qfoot"><button class="replink" type="button">⚑ Report this question</button><div class="repbox hidden"></div></div>`;
@@ -247,7 +258,7 @@ function renderQ(q, box, onAnswer) {
 }
 
 document.addEventListener('keydown', e => {
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.ctrlKey || e.metaKey || e.altKey || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
   if (e.key === 'Enter') { const nx = $('nx'); if (nx && !$('play').classList.contains('hidden')) { e.preventDefault(); nx.click(); } return; }
   if (!KEYS) return;
   const i = KEYS.keys.indexOf(e.key.toUpperCase());
@@ -256,11 +267,11 @@ document.addEventListener('keydown', e => {
 
 /* ---------- solo ---------- */
 $('soloBtn').onclick = () => {
-  const s = Object.assign({ n: 10, hard: true, calc: true, diag: true }, store.get('solocfg') || {});
+  const s = cfgLv(Object.assign({ n: 10, calc: true, diag: true }, store.get('solocfg') || {}));
   const box = $('solosetup');
   const draw = () => {
-    const total = selectedPool(s.hard, s.calc, s.diag).length;
-    if (!total && !(s.calc && s.hard && s.diag)) { s.calc = s.hard = s.diag = true; return draw(); }
+    const total = selectedPool(s.lv, s.calc, s.diag).length;
+    if (!total && !(s.calc && s.lv.length === 3 && s.diag)) { s.calc = s.diag = true; s.lv = [1, 2, 3]; return draw(); }
     const choices = [5, 10, 20, 30].filter(n => n < total).concat([total]);
     if (!choices.includes(s.n)) s.n = Math.min(10, total);
     box.innerHTML = `<a class="back" href="#" id="ssBack">← Choose content</a><h1>Solo</h1>
@@ -268,28 +279,37 @@ $('soloBtn').onclick = () => {
       <div class="card" style="margin-top:14px"><div class="in setup">
         <h3>How many questions?</h3>
         <div class="chips">${choices.map(n => `<button class="chip ${s.n === n ? 'on' : ''}" data-n="${n}">${n === total ? `All ${n}` : n}</button>`).join('')}</div>
-        <label class="toggle"><input type="checkbox" id="hardOn" ${s.hard ? 'checked' : ''}> Include ★ harder questions</label>
+        ${lvChips(s)}
         <label class="toggle"><input type="checkbox" id="calcOn" ${s.calc ? 'checked' : ''}> Include calculation questions</label>
         <label class="toggle"><input type="checkbox" id="diagOn" ${s.diag ? 'checked' : ''}> Include diagram and graph questions</label>
         <div style="margin-top:18px"><button class="btn big green" id="ssGo">Start →</button></div>
       </div></div>`;
     box.querySelector('#ssBack').onclick = ev => { ev.preventDefault(); menu(); };
     box.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { s.n = +b.dataset.n; draw(); });
-    box.querySelector('#hardOn').onchange = ev => { s.hard = ev.target.checked; draw(); };
+    lvWire(box, s, draw);
     box.querySelector('#calcOn').onchange = ev => { s.calc = ev.target.checked; draw(); };
     box.querySelector('#diagOn').onchange = ev => { s.diag = ev.target.checked; draw(); };
-    box.querySelector('#ssGo').onclick = () => { store.set('solocfg', s); startSolo(s.n, s.hard, s.calc, s.diag); };
+    box.querySelector('#ssGo').onclick = () => { store.set('solocfg', s); startSolo(s.n, s.lv, s.calc, s.diag); };
   };
   draw(); show('solosetup');
 };
 
-function startSolo(n, hard, calc, diag) {
-  SOLO = { qs: buildQuiz(n, hard, calc, diag), qi: -1, score: 0, res: [], n, hard, calc, diag };
+function startSolo(n, lv, calc, diag) {
+  SOLO = { qs: buildQuiz(n, lv, calc, diag), qi: -1, score: 0, res: [], n, lv, calc, diag };
   TEAM = null; show('play'); nextSolo();
 }
 function soloHud() {
   const pips = SOLO.qs.map((_, i) => `<i class="${i < SOLO.res.length ? (SOLO.res[i] ? 'done' : 'miss') : i === SOLO.qi ? 'now' : ''}"></i>`).join('');
-  $('hud').innerHTML = `<div><span class="meta">Question ${SOLO.qi + 1} of ${SOLO.qs.length}</span><div class="rname">Solo</div><div class="pips">${pips}</div></div><div class="score">${SOLO.score}<small>CORRECT</small></div>`;
+  const label = SOLO.title || 'Solo';
+  const yBar = SOLO.warmup
+    ? `<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:6px">${['ks3', 'ks4'].map(k => `<button type="button" class="chip ${SOLO.ks === k ? 'on' : ''}" data-wks="${k}" style="padding:3px 10px;font-size:13px">${KS_DEF[k].label} (${KS_DEF[k].short})</button>`).join('')}<button type="button" class="chip" id="wNew5" style="padding:3px 9px;font-size:13px;background:#facc15;color:#111;border-color:#111">↻ New 5</button><button type="button" class="chip" id="wBack" style="padding:3px 9px;font-size:13px">← KS3 / KS4</button></div>`
+    : '';
+  $('hud').innerHTML = `<div><span class="meta">Question ${SOLO.qi + 1} of ${SOLO.qs.length}${SOLO.sub ? ' · ' + esc(SOLO.sub) : ''}</span><div class="rname">${esc(label)}</div><div class="pips">${pips}</div>${yBar}</div><div class="score">${SOLO.score}<small>CORRECT</small></div>`;
+  if (SOLO.warmup) {
+    $('hud').querySelectorAll('[data-wks]').forEach(b => b.onclick = () => launchWarmup(b.dataset.wks, SOLO.exclude));
+    const nw = $('wNew5'); if (nw) nw.onclick = () => launchWarmup(SOLO.ks, SOLO.exclude);
+    const wb = $('wBack'); if (wb) wb.onclick = () => { const ex = SOLO.exclude; SOLO = KEYS = null; showWarmupPicker(ex); };
+  }
 }
 function nextSolo() {
   SOLO.qi++;
@@ -316,10 +336,10 @@ function soloResults() {
     <h2>Results</h2><div class="bigscore">${SOLO.score} / ${n}</div>
     <p style="font-size:18px;margin-top:4px">${pct}% · ${pct === 100 ? 'Perfect!' : pct >= 80 ? 'Great work.' : pct >= 50 ? 'Good start. Revise the points below.' : 'Go back over the points below, then try again.'}</p>
     ${pts.length ? `<h3>Revise these spec points</h3><ul class="revise">${pts.map(k => { const p = POINTS[k]; return `<li style="--sc:${SUBJ_COL[p.subject]}"><b>${p.subject} ${p.id}</b>${esc(p.text)}${missed.filter(q => q.s === k).map(q => `<span class="q">✗ ${nuc(q.q)}</span>`).join('')}</li>`; }).join('')}</ul>` : ''}
-    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">Play again</button><button class="btn big alt" id="tomenu">Change content</button></div>
+    <div style="margin-top:18px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn big green" id="again">${SOLO.warmup ? '↻ Another 5 Warm-Up questions' : 'Play again'}</button><button class="btn big alt" id="tomenu">${SOLO.warmup ? 'Choose KS3 / KS4' : 'Change content'}</button></div>
   </div></div>`;
-  $('again').onclick = () => startSolo(SOLO.n, SOLO.hard, SOLO.calc, SOLO.diag);
-  $('tomenu').onclick = menu;
+  $('again').onclick = () => SOLO.warmup ? launchWarmup(SOLO.ks, SOLO.exclude) : startSolo(SOLO.n, SOLO.lv, SOLO.calc, SOLO.diag);
+  $('tomenu').onclick = () => SOLO.warmup ? showWarmupPicker(SOLO.exclude) : menu();
   show('results');
 }
 
@@ -327,11 +347,11 @@ function soloResults() {
 /* ?team (the admin's "Team quiz" button, 17 Nov): team game only */
 if (new URLSearchParams(location.search).has('team')) { $('soloBtn').hidden = true; $('teamBtn').textContent = 'Set up the teams →'; $('teamBtn').classList.remove('alt'); $('teamBtn').classList.add('green'); }
 $('teamBtn').onclick = () => {
-  const s = Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, hard: true, calc: false, diag: true }, store.get('teamcfg') || {});
+  const s = cfgLv(Object.assign({ n: 4, names: TEAM_NAMES.slice(), per: 3, timer: 30, steal: true, calc: false, diag: true }, store.get('teamcfg') || {}));
   const box = $('teamsetup');
   const draw = () => {
-    const total = selectedPool(s.hard, s.calc, s.diag).length;
-    if (!total && !(s.calc && s.diag)) { s.calc = s.diag = true; return draw(); }
+    const total = selectedPool(s.lv, s.calc, s.diag).length;
+    if (!total && !(s.calc && s.diag && s.lv.length === 3)) { s.calc = s.diag = true; s.lv = [1, 2, 3]; return draw(); }
     const perChoices = [2, 3, 5, 8, 10].filter(p => p * s.n <= total);
     if (!perChoices.length) perChoices.push(Math.max(1, Math.floor(total / s.n)));
     if (!perChoices.includes(s.per)) s.per = perChoices.reduce((a, b) => Math.abs(b - 3) < Math.abs(a - 3) ? b : a);
@@ -345,7 +365,7 @@ $('teamBtn').onclick = () => {
         <p class="small" style="margin-top:6px">${s.n * s.per} questions in total (${total} available in the content you ticked).</p>
         <h3>3. Timer (optional)</h3><div class="chips">${[0, 20, 30, 45, 60].map(n => `<button class="chip ${s.timer === n ? 'on' : ''}" data-t="${n}">${n ? n + ' s' : 'Off'}</button>`).join('')}</div>
         <label class="toggle"><input type="checkbox" id="steal" ${s.steal ? 'checked' : ''}> Steals: a wrong answer passes to a random other team for half points (not on true-or-false questions)</label>
-        <label class="toggle"><input type="checkbox" id="hardOn" ${s.hard ? 'checked' : ''}> Include ★ harder questions: worth 200 points instead of 100 (steal 100)</label>
+        ${lvChips(s).replace('Level 3 ★: several steps or a trap.', 'Level 3 ★: several steps or a trap. Points: 100, 150 and 200 (half for a steal).')}
         <label class="toggle"><input type="checkbox" id="calcOn" ${s.calc ? 'checked' : ''}> Include calculation questions (off by default: they need working out, which is slow on the board)</label>
         <label class="toggle"><input type="checkbox" id="diagOn" ${s.diag ? 'checked' : ''}> Include diagram and graph questions</label>
         <div style="margin-top:18px"><button class="btn big green" id="tsGo">Start: ${s.n * s.per} questions →</button></div>
@@ -356,7 +376,7 @@ $('teamBtn').onclick = () => {
     box.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { s.timer = +b.dataset.t; draw(); });
     box.querySelectorAll('.teamnames input').forEach(i => i.oninput = () => { s.names[+i.dataset.i] = i.value; });
     box.querySelector('#steal').onchange = ev => { s.steal = ev.target.checked; };
-    box.querySelector('#hardOn').onchange = ev => { s.hard = ev.target.checked; draw(); };
+    lvWire(box, s, draw);
     box.querySelector('#calcOn').onchange = ev => { s.calc = ev.target.checked; draw(); };
     box.querySelector('#diagOn').onchange = ev => { s.diag = ev.target.checked; draw(); };
     box.querySelector('#tsGo').onclick = () => { store.set('teamcfg', s); startTeam(s); };
@@ -366,7 +386,7 @@ $('teamBtn').onclick = () => {
 
 function startTeam(s) {
   SOLO = null;
-  TEAM = { cfg: s, teams: Array.from({ length: s.n }, (_, i) => ({ name: (s.names[i] || '').trim() || TEAM_NAMES[i], col: TEAM_COLS[i], score: 0, right: 0 })), qs: buildQuiz(s.n * s.per, s.hard, s.calc, s.diag), qi: -1 };
+  TEAM = { cfg: s, teams: Array.from({ length: s.n }, (_, i) => ({ name: (s.names[i] || '').trim() || TEAM_NAMES[i], col: TEAM_COLS[i], score: 0, right: 0 })), qs: buildQuiz(s.n * s.per, s.lv, s.calc, s.diag), qi: -1 };
   show('play'); nextTeamQ();
 }
 
@@ -377,7 +397,7 @@ function nextTeamQ() {
   const q = TEAM.qs[TEAM.qi], n = TEAM.teams.length;
   let turn = TEAM.qi % n, steal = false, over = false, timer = null;
   const hud = () => {
-    $('hud').innerHTML = `<div class="teamturn" style="--c:${TEAM.teams[turn].col}"><span class="meta">Question ${TEAM.qi + 1} of ${TEAM.qs.length}${q.hard ? ' · ★ Harder: 200 points' : ''}</span><span class="tname">${steal ? 'STEAL! ' : ''}${esc(TEAM.teams[turn].name)}${steal ? ' (half points)' : '’s turn'}</span></div>
+    $('hud').innerHTML = `<div class="teamturn" style="--c:${TEAM.teams[turn].col}"><span class="meta">Question ${TEAM.qi + 1} of ${TEAM.qs.length}${` · ${lvLabel(q)}: ${TEAM_PTS[q.lv] || 100} points`}</span><span class="tname">${steal ? 'STEAL! ' : ''}${esc(TEAM.teams[turn].name)}${steal ? ' (half points)' : '’s turn'}</span></div>
       <div class="board">${TEAM.teams.map((t, i) => `<div class="tscore ${i === turn && !over ? 'now' : ''}" style="--c:${t.col}"><span>${esc(t.name)}</span><b>${t.score}</b></div>`).join('')}</div>`;
   };
   $('stage').innerHTML = `<div class="tbar hidden" id="tbar"><i></i><span></span></div><div id="qbox"></div><div id="fb"></div>
@@ -396,7 +416,7 @@ function nextTeamQ() {
   const ctl = renderQ(q, $('qbox'), ok => { if (over) return; clearInterval(timer); ok ? onRight() : onWrong(false); });
   KEYS = ctl;
   function onRight() {
-    over = true; const base = q.hard ? 200 : 100, pts = steal ? base / 2 : base;
+    over = true; const base = TEAM_PTS[q.lv] || 100, pts = steal ? base / 2 : base;
     TEAM.teams[turn].score += pts; TEAM.teams[turn].right++; ctl.stop();
     $('fb').innerHTML = `<div class="fb"><span class="pts">+${pts}</span><b>${esc(TEAM.teams[turn].name)} ${steal ? 'steal it!' : 'got it!'}</b> ${nuc(q.x)}</div>`;
     finish();
@@ -437,3 +457,206 @@ function podium() {
 }
 
 drawTree();
+
+/* ---------- Brain Warm-Up (?warmup=1) & Admin Reteach Quiz (?subs=...&n=5&auto=1) ---------- */
+const SUB_KEYS_MAP = {};
+SPEC.forEach(s => s.topics.forEach(t => t.subs.forEach(sb => {
+  const sk = s.name[0] + t.n + sb.l;
+  SUB_KEYS_MAP[sk.toUpperCase()] = keysOfSub(sb);
+})));
+
+const KS_DEF = {
+  ks3: { label: 'KS3', short: 'Y8 & Y9', years: ['Y8', 'Y9'], desc: 'Years 8 & 9' },
+  ks4: { label: 'KS4', short: 'Y10 & Y11', years: ['Y10', 'Y11'], desc: 'Years 10 & 11' }
+};
+const WARMUP = { exclude: '', data: null, err: '', loading: false, lastErrHtml: '' };
+
+function waitAuthReady(ms = 2500) {
+  return new Promise(resolve => {
+    if (!window.firebase || !firebase.apps || !firebase.apps.length || !firebase.auth) return resolve();
+    if (firebase.auth().currentUser) return resolve();
+    let done = false;
+    const finish = () => { if (!done) { done = true; clearTimeout(t); try { unsub(); } catch (e) {} resolve(); } };
+    const t = setTimeout(finish, ms);
+    const unsub = firebase.auth().onAuthStateChanged(() => finish());
+  });
+}
+
+async function fetchAllTaught(force) {
+  if (!force && WARMUP.data) return { ok: true, data: WARMUP.data };
+  WARMUP.loading = true;
+  await waitAuthReady(2500);
+  let lastErr = '';
+  try {
+    if (window.CBSNet && CBSNet.rtGet) {
+      const v = await CBSNet.rtGet('school/taught', 8000);
+      WARMUP.data = (v && typeof v === 'object') ? v : {};
+      WARMUP.err = ''; WARMUP.loading = false;
+      return { ok: true, data: WARMUP.data };
+    }
+    if (window.firebase && firebase.apps && firebase.apps.length && firebase.database) {
+      const snap = await Promise.race([
+        firebase.database().ref('school/taught').once('value'),
+        new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 8000))
+      ]);
+      const v = snap && snap.val();
+      WARMUP.data = (v && typeof v === 'object') ? v : {};
+      WARMUP.err = ''; WARMUP.loading = false;
+      return { ok: true, data: WARMUP.data };
+    }
+    lastErr = 'Firebase is not available.';
+  } catch (e) {
+    lastErr = (e && e.message) ? e.message : 'Could not read covered topics.';
+  }
+  WARMUP.data = null; WARMUP.err = lastErr; WARMUP.loading = false;
+  return { ok: false, err: lastErr };
+}
+
+/* Strict intersection: ONLY sub-topics covered by BOTH year groups in the chosen key stage (minus excluded lesson). */
+function warmupPool(ksKey, excludeCode, taughtData) {
+  const def = KS_DEF[ksKey];
+  const ex = String(excludeCode || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const [yA, yB] = def.years;
+  const setA = new Set(Object.keys((taughtData && taughtData[yA]) || {}).map(k => k.toUpperCase()));
+  const setB = new Set(Object.keys((taughtData && taughtData[yB]) || {}).map(k => k.toUpperCase()));
+  const sharedAll = [...setA].filter(k => setB.has(k));
+  const shared = sharedAll.filter(sk => !ex || !sk.startsWith(ex));
+  const pts = [...new Set(shared.flatMap(sk => SUB_KEYS_MAP[sk] || []))].filter(k => QBY[k]);
+  const qTotal = qCount(pts);
+  return { def, yA, yB, countA: setA.size, countB: setB.size, sharedAll, shared, pts, qTotal, ex };
+}
+
+function renderWarmupPicker() {
+  const box = $('warmup');
+  const ex = String(WARMUP.exclude || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const statusFor = ksKey => {
+    if (WARMUP.loading) return 'Checking covered topics…';
+    if (WARMUP.err) return 'Sign in or check connection to load covered topics';
+    if (!WARMUP.data) return 'Covered topics not loaded yet';
+    const p = warmupPool(ksKey, WARMUP.exclude, WARMUP.data);
+    if (!p.shared.length || !p.qTotal) return `No shared topics covered by both ${p.yA} & ${p.yB}`;
+    return `${p.shared.length} topic${p.shared.length === 1 ? '' : 's'} covered by both · ${p.qTotal} question${p.qTotal === 1 ? '' : 's'} available`;
+  };
+  box.innerHTML = `<h1>🔥 Warm-Up</h1>
+    <p class="lede">Choose a key stage first. Questions are drawn <b>only</b> from topics covered by <b>both</b> year groups${ex ? ` (excluding current lesson <b>${esc(ex)}</b>)` : ''}.</p>
+    <div class="wgrid">
+      <button type="button" class="wcard" data-wks="ks3">
+        <span class="wk">KS3</span>
+        <span class="wy">Years 8 &amp; 9</span>
+        <span class="ws">${esc(statusFor('ks3'))}</span>
+        <span class="wgo">Start KS3 Warm-Up →</span>
+      </button>
+      <button type="button" class="wcard" data-wks="ks4">
+        <span class="wk">KS4</span>
+        <span class="wy">Years 10 &amp; 11</span>
+        <span class="ws">${esc(statusFor('ks4'))}</span>
+        <span class="wgo">Start KS4 Warm-Up →</span>
+      </button>
+    </div>
+    ${WARMUP.lastErrHtml ? `<div class="werr" role="alert">${WARMUP.lastErrHtml}</div>` : ''}
+    <div class="wfoot">
+      <button type="button" class="btn alt" id="wReload">↻ Refresh covered topics</button>
+      <button type="button" class="linkbtn" id="wToMenu">Open full Quick Quiz topic picker →</button>
+    </div>`;
+  box.querySelectorAll('[data-wks]').forEach(b => b.onclick = () => launchWarmup(b.dataset.wks, WARMUP.exclude));
+  const rl = $('wReload');
+  if (rl) rl.onclick = async () => { WARMUP.lastErrHtml = ''; renderWarmupPicker(); await fetchAllTaught(true); renderWarmupPicker(); };
+  const tm = $('wToMenu');
+  if (tm) tm.onclick = menu;
+}
+
+async function showWarmupPicker(excludeCode, errHtml) {
+  WARMUP.exclude = excludeCode || '';
+  WARMUP.lastErrHtml = errHtml || '';
+  SOLO = TEAM = KEYS = null;
+  const needLoad = !WARMUP.data && !WARMUP.loading;
+  if (needLoad) WARMUP.loading = true;
+  show('warmup');
+  renderWarmupPicker();
+  if (needLoad) {
+    await fetchAllTaught(false);
+    if (!$('warmup').classList.contains('hidden')) renderWarmupPicker();
+  }
+}
+
+async function launchWarmup(ksKey, excludeCode) {
+  const ks = ksKey === 'ks3' ? 'ks3' : 'ks4';
+  WARMUP.exclude = excludeCode || '';
+  const res = await fetchAllTaught(!WARMUP.data);
+  if (!res.ok) {
+    showWarmupPicker(WARMUP.exclude,
+      `<b>⚠️ No questions error — could not load covered topics</b>` +
+      `<p>Could not read covered topics from the school list (${esc(res.err)}). Sign in at the top right or check your connection, then try again. No questions were drawn so students aren’t shown uncovered topics.</p>`);
+    return;
+  }
+  const p = warmupPool(ks, WARMUP.exclude, res.data);
+  if (!p.pts.length || !p.qTotal) {
+    const detail = p.ex && p.sharedAll.length && !p.shared.length
+      ? `The only shared covered topic (${esc(p.sharedAll.join(', '))}) is excluded because it’s the current lesson (${esc(p.ex)}).`
+      : `${p.yA} has <b>${p.countA}</b> covered topic${p.countA === 1 ? '' : 's'}, ${p.yB} has <b>${p.countB}</b>, and <b>${p.shared.length}</b> ${p.shared.length === 1 ? 'is' : 'are'} covered by both${p.ex ? ` (excluding ${esc(p.ex)})` : ''}.`;
+    showWarmupPicker(WARMUP.exclude,
+      `<b>⚠️ No questions error — no ${p.def.label} (${p.def.desc}) questions available</b>` +
+      `<p>Warm-Up only draws questions from topics covered by <b>both</b> ${p.yA.replace('Y', 'Year ')} and ${p.yB.replace('Y', 'Year ')}. ${detail} Tick shared topics in <b>Admin → Teaching</b> and refresh.</p>`);
+    return;
+  }
+  SEL = new Set(p.pts);
+  // Strictly draw from SEL (covered by both) — prefer Level 1 recall first, top up within SEL only if needed
+  let qs = buildQuiz(5, [1], false, false);
+  if (qs.length < 5) {
+    const q12 = buildQuiz(5, [1, 2], false, false);
+    if (q12.length > qs.length) qs = q12;
+  }
+  if (qs.length < 5) {
+    const qAll = buildQuiz(5, [1, 2, 3], true, true);
+    if (qAll.length > qs.length) qs = qAll;
+  }
+  if (!qs.length) {
+    showWarmupPicker(WARMUP.exclude,
+      `<b>⚠️ No questions error — no ${p.def.label} (${p.def.desc}) questions available</b>` +
+      `<p>None of the shared topics covered by both ${p.yA.replace('Y', 'Year ')} and ${p.yB.replace('Y', 'Year ')} have questions ready yet.</p>`);
+    return;
+  }
+  const subNote = `${p.def.label} (${p.def.short}) · ${p.shared.length} shared covered topic${p.shared.length === 1 ? '' : 's'}`;
+  SOLO = { qs, qi: -1, score: 0, res: [], n: qs.length, lv: [1], calc: false, diag: false, warmup: true, ks, exclude: WARMUP.exclude, title: '🔥 Warm-Up', sub: subNote };
+  TEAM = null; show('play'); nextSolo();
+}
+
+// If teacher signs in while on the neutral Warm-Up screen, automatically refresh covered topics
+try {
+  if (window.firebase && firebase.apps && firebase.apps.length && firebase.auth) {
+    firebase.auth().onAuthStateChanged(u => {
+      if (u && !$('warmup').classList.contains('hidden') && !WARMUP.data && !WARMUP.loading) {
+        fetchAllTaught(true).then(() => { if (!$('warmup').classList.contains('hidden')) renderWarmupPicker(); });
+      }
+    });
+  }
+} catch (e) {}
+
+(function bootUrlModes() {
+  const sp = new URLSearchParams(location.search);
+  if (sp.get('warmup') === '1') {
+    showWarmupPicker(sp.get('exclude') || '');
+    return;
+  }
+  const subsParam = sp.get('subs') || sp.get('point') || '';
+  if (subsParam) {
+    const tokens = subsParam.split(',').map(s => s.trim()).filter(Boolean);
+    const pts = [];
+    tokens.forEach(tok => {
+      if (POINTS[tok]) pts.push(tok);
+      else if (SUB_KEYS_MAP[tok.toUpperCase()]) pts.push(...SUB_KEYS_MAP[tok.toUpperCase()]);
+    });
+    if (pts.length) {
+      SEL = new Set(pts);
+      refreshChecks();
+      if (sp.get('auto') === '1') {
+        const n = Math.max(1, Math.min(20, +(sp.get('n') || 5)));
+        const qs = buildQuiz(n, [1, 2, 3], true, true);
+        if (qs.length) {
+          SOLO = { qs, qi: -1, score: 0, res: [], n: qs.length, lv: [1, 2, 3], calc: true, diag: true, title: '⚡ Board Reteach', sub: tokens.join(', ') };
+          TEAM = null; show('play'); nextSolo();
+        }
+      }
+    }
+  }
+})();

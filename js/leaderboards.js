@@ -13,7 +13,10 @@ const GAMES={
     elements_all_rounds:'Everything · Round by round',elements_all_random:'Everything · Randomised'}},
   cell:{name:'What The Cell',url:'/interactive/cell-game/',boards:{
     cell_normal_full:'Normal · Full game',cell_normal_all:'Normal · Marathon',cell_hard_full:'Hard · Full game',cell_hard_all:'Hard · Marathon'}},
-  typing:{name:'Type Fast or Perish',url:'/interactive/typing-game/',boards:{typing_sprint:'Sixty-Second Sprint',typing_storm:'Hard mode'}}
+  typing:{name:'Type Fast or Perish v2',url:'/interactive/typing-game/',boards:{
+    typing_v2_sprint:'Sixty-Second Sprint (v2)',typing_v2_storm:'Hard mode (v2)',
+    typing_sprint:'v1 Archive · Sprint',typing_storm:'v1 Archive · Hard mode'},
+    archived:['typing_sprint','typing_storm']}
 };
 const boardLabel=b=>{for(const g of Object.values(GAMES))if(g.boards[b])return g.name+' · '+g.boards[b];return b;};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -33,15 +36,19 @@ function nameOf(u){let c='';try{c=(localStorage.getItem('cbs.adventurer.nick')||
 function signIn(){if(!auth)return Promise.reject(new Error('offline'));return auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());}
 function signOut(){return auth?auth.signOut():Promise.resolve();}
 // save a score: keeps the student's best only
-function submit(board,score,extra){if(!db||!user)return Promise.reject(new Error('not signed in'));const u=user;
-  return db.ref('gameScores/'+board+'/'+u.uid).transaction(cur=>{if(cur&&cur.score>=score){cur.name=nameOf(u);return cur;}return Object.assign({name:nameOf(u),score,t:Date.now()},extra?{extra}:{});})
+function submit(board,score,extra){if((!db&&!window.CBSNet)||!user)return Promise.reject(new Error('not signed in'));const u=user;
+  const upd=cur=>{if(cur&&cur.score>=score){cur.name=nameOf(u);return cur;}return Object.assign({name:nameOf(u),score,t:Date.now()},extra?{extra}:{});};
+  if(window.CBSNet)return CBSNet.rtTx('gameScores/'+board+'/'+u.uid,upd,10000).then(r=>{const v=r.value||{};return {best:v.score||score,improved:(v.score===score)};});
+  return db.ref('gameScores/'+board+'/'+u.uid).transaction(upd)
     .then(r=>{const v=r.snapshot.val()||{};return {best:v.score||score,improved:(v.score===score)};});}
 /* Scores from before sign-in (8–9 Nov 2026: a typed name, no account) stay on the boards, read from the old frozen lists. Same scoring rules as now. */
 const LEGACY=b=>{let m=b.match(/^elements_(.+)$/);if(m)return 'elements20HighScores/'+m[1];m=b.match(/^typing_(sprint|storm)$/);if(m)return 'typingHighScores/'+m[1];return null;};
-function legacy(board){const path=LEGACY(board);if(!path||!db)return Promise.resolve([]);
-  return db.ref(path).once('value').then(s=>{const v=s.val()||[];return (Array.isArray(v)?v:Object.values(v)).filter(x=>x&&typeof x.score==='number').map((x,i)=>({uid:'legacy:'+i,name:String(x.name||'?').slice(0,20),score:x.score,t:Date.parse(x.date)||0,legacy:true}));}).catch(()=>[]);}
-function top(board){if(!db)return Promise.reject(new Error('offline'));
-  return Promise.race([Promise.all([db.ref('gameScores/'+board).once('value'),legacy(board)]).then(([s,old])=>{const v=s.val()||{};return Object.entries(v).filter(([,x])=>x&&typeof x.score==='number').map(([uid,x])=>({uid,name:x.name,score:x.score,t:x.t,extra:x.extra})).concat(old).sort((a,b)=>b.score-a.score||a.t-b.t);}),
+function legacy(board){const path=LEGACY(board);if(!path||(!db&&!window.CBSNet))return Promise.resolve([]);
+  const get=window.CBSNet?CBSNet.rtGet(path,8000,{public:true}):db.ref(path).once('value').then(s=>s.val());
+  return get.then(v=>{v=v||[];return (Array.isArray(v)?v:Object.values(v)).filter(x=>x&&typeof x.score==='number').map((x,i)=>({uid:'legacy:'+i,name:String(x.name||'?').slice(0,20),score:x.score,t:Date.parse(x.date)||0,legacy:true}));}).catch(()=>[]);}
+function top(board){if(!db&&!window.CBSNet)return Promise.reject(new Error('offline'));
+  const cur=window.CBSNet?CBSNet.rtGet('gameScores/'+board,9000,{public:true}):db.ref('gameScores/'+board).once('value').then(s=>s.val());
+  return Promise.race([Promise.all([cur,legacy(board)]).then(([v,old])=>{v=v||{};return Object.entries(v).filter(([,x])=>x&&typeof x.score==='number').map(([uid,x])=>({uid,name:x.name,score:x.score,t:x.t,extra:x.extra})).concat(old).sort((a,b)=>b.score-a.score||a.t-b.t);}),
     new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);}
 function css(){if(document.getElementById('lbcss'))return;const s=document.createElement('style');s.id='lbcss';s.textContent=`
 .lbx{margin-top:14px;font-family:inherit}
@@ -63,7 +70,8 @@ function css(){if(document.getElementById('lbcss'))return;const s=document.creat
 .lbx .lbsaved{margin:0 0 10px;padding:10px 14px;background:#e3f5e8;border-left:6px solid #00a03a;font-size:16px}
 .lbx .gbtn2{display:inline-flex;align-items:center;gap:8px;background:#fff;border:2px solid #111;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
 .lbx .gbtn2:hover{background:#111;color:#fff}
-.lbx .who{font-size:13px;color:#555;margin-top:6px}.lbx .who button{background:none;border:0;color:#005e22;text-decoration:underline;font:inherit;cursor:pointer;padding:0}`;document.head.appendChild(s);}
+.lbx .who{font-size:13px;color:#555;margin-top:6px}.lbx .who button{background:none;border:0;color:#005e22;text-decoration:underline;font:inherit;cursor:pointer;padding:0}
+.lbx .arch-wrap{margin-top:10px}.lbx .arch-btn{background:none;border:0;color:#555;text-decoration:underline;font:600 13px inherit;cursor:pointer;padding:0}.lbx .arch-box{margin-top:8px;opacity:.92}`;document.head.appendChild(s);}
 const G_ICON='<svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>';
 function listHtml(list,meUid){if(!list.length)return '<div class="empty">No scores yet. Be the first!</div>';
   const myIdx=meUid?list.findIndex(x=>x.uid===meUid):-1;let rows=list.slice(0,10).map((e,i)=>`<li class="${e.uid===meUid?'me':''}"><span class="rk">${i+1}</span><span class="nm">${esc(e.name)}${e.legacy?'<small class="old" title="Saved before sign-in, with a typed name">before sign-in</small>':''}</span><span class="sc">${e.score}${e.extra?`<small> · ${esc(e.extra)}</small>`:''}</span></li>`).join('');
@@ -81,9 +89,13 @@ function panel(el,board,o={}){if(!el)return;css();const tok=String(Math.random()
     let list;try{list=await top(board);}catch(e){if(el.dataset.lbtok!==tok)return;el.innerHTML=`<div class="lbx">${note}<h3>${esc(title)}</h3><div class="empty">Couldn’t load the leaderboard right now.</div></div>`;bind();return;}
     if(el.dataset.lbtok!==tok)return;
     const who=user?`<div class="who">Signed in as ${esc(nameOf(user))} · <button data-lbout>sign out</button></div>`:(o.score>0?'':`<div class="who"><button data-lbsign>Sign in with Google</button> to put your scores on the leaderboard.</div>`);
-    el.innerHTML=`<div class="lbx">${note}<h3>${esc(title)}</h3>${listHtml(list,user&&user.uid)}${who}</div>`;bind();};
+    const arch=o.archiveBoard?`<div class="arch-wrap"><button type="button" class="arch-btn" data-lbarch>${esc(o.archiveLabel||'View archived leaderboard')} ▸</button><div class="arch-box" hidden></div></div>`:'';
+    const archNote=o.archivedNote?`<p class="who" style="margin-top:4px">${esc(o.archivedNote)}</p>`:'';
+    el.innerHTML=`<div class="lbx">${note}<h3>${esc(title)}</h3>${listHtml(list,user&&user.uid)}${archNote}${who}${arch}</div>`;bind();};
   function bind(){el.querySelectorAll('[data-lbsign]').forEach(b=>b.onclick=()=>signIn().catch(e=>{if(e&&e.code!=='auth/popup-closed-by-user')alert('Sign-in didn’t work: '+(e.message||e));}));
-    el.querySelectorAll('[data-lbout]').forEach(b=>b.onclick=()=>signOut());}
+    el.querySelectorAll('[data-lbout]').forEach(b=>b.onclick=()=>signOut());
+    const ab=el.querySelector('[data-lbarch]');
+    if(ab&&o.archiveBoard)ab.onclick=()=>{const box=ab.nextElementSibling;if(!box)return;const open=box.hidden;box.hidden=!open;ab.textContent=(o.archiveLabel||'View archived leaderboard')+(open?' ▾':' ▸');if(open&&!box.dataset.loaded){box.dataset.loaded='1';panel(box,o.archiveBoard,{title:boardLabel(o.archiveBoard),archivedNote:'Archived v1 leaderboard (old word bank — read only).'});}};}
   // redraw when the sign-in state changes (after signing in, the pending score is saved first, then the board redraws)
   const sub=()=>{if(el.dataset.lbtok!==tok||!document.body.contains(el)){const i=subs.indexOf(sub);if(i>=0)subs.splice(i,1);return;}draw();};
   subs.push(sub);if(ready)draw();}

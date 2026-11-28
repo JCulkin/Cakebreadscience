@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 240" width="460" height="240">
+  <rect width="460" height="240" fill="#fff"/>
+  <rect x="64" y="24" width="366" height="168" fill="#fafaf7" stroke="#e5e7eb"/>
+  <!-- Axes -->
+  <line x1="64" y1="192" x2="430" y2="192" stroke="#111" stroke-width="2.5"/>
+  <line x1="64" y1="24" x2="64" y2="192" stroke="#111" stroke-width="2.5"/>
+  <!-- X ticks -->
+  <text x="64" y="210" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444" text-anchor="middle">Midnight</text>
+  <text x="155" y="210" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444" text-anchor="middle">Dawn</text>
+  <text x="247" y="210" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444" text-anchor="middle">Midday</text>
+  <text x="338" y="210" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444" text-anchor="middle">Dusk</text>
+  <text x="424" y="210" font-family="Barlow, Arial, sans-serif" font-size="12" fill="#444" text-anchor="middle">Midnight</text>
+  <text x="247" y="230" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="middle">Time of day</text>
+  <text x="24" y="108" font-family="Barlow, Arial, sans-serif" font-size="13" font-weight="700" fill="#111" text-anchor="middle" transform="rotate(-90 24 108)">Rate</text>
+  <!-- Respiration (steady horizontal red line) -->
+  <line x1="64" y1="138" x2="426" y2="138" stroke="#dc2626" stroke-width="3" stroke-dasharray="7 4"/>
+  <!-- Photosynthesis (0 at night, rises at dawn, peaks at midday, 0 at dusk) -->
+  <path d="M 64 191 L 122 191 C 155 191 190 46 247 46 C 304 46 339 191 372 191 L 426 191" fill="none" stroke="#15803d" stroke-width="3.5" stroke-linejoin="round"/>
+  <!-- Compensation points -->
+  <circle cx="163" cy="138" r="5" fill="#facc15" stroke="#111" stroke-width="1.5"/>
+  <circle cx="331" cy="138" r="5" fill="#facc15" stroke="#111" stroke-width="1.5"/>
+  <!-- Legend -->
+  <rect x="292" y="30" width="132" height="44" rx="4" fill="#fff" stroke="#d1d5db"/>
+  <line x1="300" y1="45" x2="322" y2="45" stroke="#15803d" stroke-width="3.5"/>
+  <text x="328" y="49" font-family="Barlow, Arial, sans-serif" font-size="12" font-weight="700" fill="#15803d">Photosynthesis</text>
+  <line x1="300" y1="63" x2="322" y2="63" stroke="#dc2626" stroke-width="3" stroke-dasharray="6 3"/>
+  <text x="328" y="67" font-family="Barlow, Arial, sans-serif" font-size="12" font-weight="700" fill="#dc2626">Respiration</text>
+</svg>

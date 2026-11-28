@@ -1,0 +1,190 @@
+{
+  "topic": "C1g",
+  "subject": "chemistry",
+  "title": "Covalent bonding",
+  "spec": "C1.44–C1.51",
+  "questions": [
+    {
+      "id": "C1g-01",
+      "title": "Double covalent bonds in carbon dioxide",
+      "spec": ["C1.44", "C1.45", "C1.46", "C1.47"],
+      "sa": true,
+      "level": "core",
+      "marks": 4,
+      "stimulus": "The dot-and-cross diagram shows the arrangement of outer-shell electrons in one molecule of carbon dioxide (CO₂).",
+      "diagram": {
+        "source": "dg",
+        "maker": "covalent",
+        "hard": true,
+        "seed": 51
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Describe",
+          "spec": ["C1.44", "C1.45", "C1.46"],
+          "sa": false,
+          "marks": 2,
+          "text": "State the total number of <b>shared pairs of electrons</b> in one CO₂ molecule, and describe the electrostatic attraction in a covalent bond.",
+          "markScheme": {
+            "rule": "1 mark each (max 2)",
+            "points": [
+              { "code": "B1", "text": "<b>4 shared pairs</b> of electrons (two double covalent bonds)" },
+              { "code": "B2", "text": "Strong <b>electrostatic attraction</b> between the <b>shared pair(s) of electrons</b> and the <b>nuclei</b> of both bonded atoms" }
+            ],
+            "accept": ["8 shared electrons = 4 pairs"],
+            "reject": ["attraction between oppositely charged ions", "electrons transferred"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["C1.47"],
+          "sa": true,
+          "marks": 2,
+          "text": "Explain why carbon dioxide has a very low boiling point and is a gas at room temperature.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "M1", "text": "Simple molecular substance with <b>weak intermolecular forces</b> between separate CO₂ molecules", "link": "so…" },
+              { "code": "M2", "text": "Only a <b>small amount of energy</b> is needed to overcome these intermolecular forces" }
+            ],
+            "accept": ["weak forces of attraction between molecules"],
+            "reject": ["weak covalent bonds", "covalent bonds are broken on boiling"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "C1g-02",
+      "title": "Simple molecules and relative molecular mass",
+      "spec": ["C1.46", "C1.47", "C1.48"],
+      "sa": false,
+      "level": "core",
+      "marks": 4,
+      "stimulus": "The diagram shows a dot-and-cross model of ammonia (NH₃), and the table compares the relative molecular mass (Mᵣ) and boiling point of four simple molecular Group 4 hydrides.",
+      "diagram": {
+        "source": "dg",
+        "maker": "covalent",
+        "hard": false,
+        "seed": 13
+      },
+      "table": {
+        "headers": ["Molecule", "Relative molecular mass (Mᵣ)", "Boiling point (°C)"],
+        "rows": [
+          ["CH₄", "16", "−162"],
+          ["SiH₄", "32", "−112"],
+          ["GeH₄", "77", "−88"],
+          ["SnH₄", "123", "−52"]
+        ]
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "State",
+          "spec": ["C1.46"],
+          "sa": false,
+          "marks": 1,
+          "text": "From the diagram of NH₃, state the number of <b>shared pairs</b> and the number of <b>unshared (lone) pairs</b> of electrons on the nitrogen atom.",
+          "markScheme": {
+            "rule": "1 mark (both required)",
+            "points": [
+              { "code": "B1", "text": "<b>3 shared pairs</b> and <b>1 lone (unshared) pair</b>" }
+            ],
+            "reject": ["6 shared pairs (counting electrons instead of pairs)"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["C1.48"],
+          "sa": false,
+          "marks": 3,
+          "stimulus": "The table compares the relative molecular mass (Mᵣ) and boiling point of four simple molecular Group 4 hydrides.",
+          "hideDiagram": true,
+          "text": "Use the table to explain why the boiling point increases from CH₄ to SnH₄.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "Any 3 linked points (max 3)",
+            "points": [
+              { "code": "M1", "text": "<b>Relative molecular mass (Mᵣ)</b> / molecule size increases from CH₄ to SnH₄", "link": "so…" },
+              { "code": "M2", "text": "The <b>intermolecular forces</b> between the molecules become <b>stronger</b>", "link": "therefore…" },
+              { "code": "M3", "text": "<b>More (thermal) energy</b> is needed to overcome the intermolecular forces", "link": "resulting in…" },
+              { "code": "M4", "text": "A higher boiling point" }
+            ],
+            "reject": ["covalent bonds become stronger", "more covalent bonds to break on boiling"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "C1g-03",
+      "title": "Structures and properties of carbon allotropes",
+      "spec": ["C1.49", "C1.50", "C1.51"],
+      "sa": true,
+      "level": "stretch",
+      "marks": 6,
+      "stimulus": "The diagram shows schematic models of three forms (allotropes) of pure carbon, labelled A, B and C.",
+      "diagram": {
+        "source": "dg",
+        "maker": "allotropes",
+        "hard": false,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Explain",
+          "spec": ["C1.49"],
+          "sa": true,
+          "marks": 2,
+          "text": "Structure <b>C</b> is a giant covalent structure. Explain why structure <b>C</b> is a solid with a very high melting point.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "M1", "text": "Contains <b>many strong covalent bonds</b> between carbon atoms throughout a <b>giant covalent lattice</b>", "link": "so…" },
+              { "code": "M2", "text": "A <b>large amount of (thermal) energy</b> is needed to break these strong covalent bonds" }
+            ],
+            "accept": ["diamond — each carbon forms 4 strong covalent bonds"],
+            "reject": ["strong intermolecular forces", "ionic lattice"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["C1.50"],
+          "sa": false,
+          "marks": 2,
+          "text": "Explain why structure <b>B</b> (graphite) conducts electricity and is soft enough to act as a lubricant.",
+          "markScheme": {
+            "rule": "1 mark each (max 2)",
+            "points": [
+              { "code": "B1", "text": "<b>Conducts electricity:</b> each carbon forms only 3 covalent bonds, leaving <b>delocalised electrons</b> free to move along the layers and carry charge" },
+              { "code": "B2", "text": "<b>Soft / lubricant:</b> only <b>weak forces between layers</b>, so the layers can <b>slide over each other</b> easily" }
+            ],
+            "reject": ["free ions carry charge", "sea of electrons (metallic bonding phrase)"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "Compare",
+          "spec": ["C1.47", "C1.50"],
+          "sa": false,
+          "marks": 2,
+          "text": "Explain why structure <b>A</b> (C₆₀ fullerene) has a much lower melting point than structure <b>C</b>.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "M1", "text": "C₆₀ fullerene is a <b>simple molecular</b> substance made of separate C₆₀ spheres with <b>weak intermolecular forces</b> between molecules", "link": "so…" },
+              { "code": "M2", "text": "Much <b>less energy</b> is needed to overcome these weak intermolecular forces than to break the many strong covalent bonds in diamond" }
+            ],
+            "reject": ["C₆₀ has weak covalent bonds"]
+          }
+        }
+      ]
+    }
+  ]
+}

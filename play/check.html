@@ -25,13 +25,20 @@
 
   function log(u) {
     if (logged) return; logged = true;
-    var ref = rt.ref('gameLog').push();
-    var now = firebase.database.ServerValue.TIMESTAMP;
-    ref.set({ uid: u.uid, name: u.displayName || '', email: u.email || '', game: game.slice(0, 120),
-      title: (P.get('title') || '').slice(0, 120), page: (P.get('page') || '').slice(0, 200), mode: mode, t: now, last: now })
-      .then(function () {
-        setInterval(function () { if (document.visibilityState === 'visible') ref.update({ last: firebase.database.ServerValue.TIMESTAMP }).catch(function () {}); }, 60000);
+    var now = Date.now();
+    var entry = { uid: u.uid, name: u.displayName || '', email: u.email || '', game: game.slice(0, 120),
+      title: (P.get('title') || '').slice(0, 120), page: (P.get('page') || '').slice(0, 200), mode: mode, t: now, last: now };
+    if (window.CBSNet) {
+      CBSNet.rtPush('gameLog', entry, 8000).then(function (key) {
+        if (!key) return;
+        setInterval(function () { if (document.visibilityState === 'visible') CBSNet.rtUpdate('gameLog/' + key, { last: Date.now() }, 6000).catch(function () {}); }, 60000);
       }).catch(function (e) { console.warn('game log', e); });
+      return;
+    }
+    var ref = rt.ref('gameLog').push();
+    ref.set(entry).then(function () {
+      setInterval(function () { if (document.visibilityState === 'visible') ref.update({ last: Date.now() }).catch(function () {}); }, 60000);
+    }).catch(function (e) { console.warn('game log', e); });
   }
 
   var first = true;
@@ -40,10 +47,11 @@
     if (mode === 'log') { if (u) log(u); return; }
     if (!u) { clearOk(); tell('deny'); return; }
     if ((window.ADMIN_EMAILS || []).indexOf(u.email) >= 0) { setOk(u.uid); tell('ok'); log(u); return; }
-    rt.ref('gameAccess/' + u.uid + '/status').once('value').then(function (s) {
-      if (s.val() === 'approved') { setOk(u.uid); tell('ok'); log(u); }
+    var check = window.CBSNet ? CBSNet.rtGet('gameAccess/' + u.uid + '/status', 8000) : rt.ref('gameAccess/' + u.uid + '/status').once('value').then(function (s) { return s.val(); });
+    check.then(function (val) {
+      if (val === 'approved') { setOk(u.uid); tell('ok'); log(u); }
       else { clearOk(); tell('deny'); }
-    }).catch(function (e) { console.warn('game access', e); clearOk(); tell('deny'); });
+    }).catch(function (e) { console.warn('game access', e); clearOk(); tell('offline'); });
   });
 })();
 </script>

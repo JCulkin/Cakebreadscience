@@ -56,9 +56,45 @@
     return out;
   }
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  const todayStr = () => (typeof QE !== 'undefined' && QE.TODAY) || (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); })();
   const isTest = a => a && a.type === 'test';
-  function testOf(userDoc, a) {   // {state: 'todo'|'started'|'done', answered, n, score}
-    const w = ((userDoc || {}).work || {})[a.id] || null, n = (a.qids || []).length;
+  const isSpaced = a => a && a.type === 'spaced';
+  function spacedOf(userDoc, a, today) {   // {state: 'todo'|'started'|'done', daysDone, daysNeed, qPerDay, doneToday, days, scores, lastAt}
+    const w = ((userDoc || {}).work || {})[a.id] || null;
+    const daysNeed = Math.max(1, +a.days || 2), qPerDay = Math.max(5, +a.qPerDay || 10);
+    const days = (w && w.days && typeof w.days === 'object') ? w.days : {};
+    const keys = Object.keys(days).sort();
+    const daysDone = keys.length;
+    const td = today || todayStr();
+    const doneToday = !!days[td];
+    const state = (daysDone >= daysNeed || (w && w.done)) ? 'done' : daysDone > 0 ? 'started' : 'todo';
+    const scores = keys.map(d => Object.assign({ day: d }, days[d]));
+    const lastAt = (w && w.at) || scores.reduce((m, x) => Math.max(m, x.at || 0), 0);
+    return { state, daysDone, daysNeed, qPerDay, doneToday, days, scores, lastAt };
+  }
+  async function recordSpaced(fs, uid, id, a, info) {
+    if ((!fs && !window.CBSNet) || !uid || !id || !a) return null;
+    const td = todayStr(), ref = fs && fs.collection ? fs.collection('users').doc(uid) : null;
+    let cur = {};
+    try {
+      const doc = window.CBSNet ? await CBSNet.fsGet('users', uid, 8000) : (ref ? (await ref.get()).data() : null);
+      cur = ((doc || {}).work || {})[id] || {};
+    } catch (e) {}
+    const days = Object.assign({}, cur.days || {});
+    const prev = days[td];
+    const entry = { n: info.n || a.qPerDay || 10, right: info.right || 0, mode: info.mode || 'quest', at: Date.now() };
+    if (!prev || entry.right >= (prev.right || 0)) days[td] = entry;
+    const daysNeed = Math.max(1, +a.days || 2);
+    const done = Object.keys(days).length >= daysNeed;
+    const next = { days, done, at: Date.now() };
+    if (window.CBSNet) await CBSNet.fsSetMerge('users', uid, { work: { [id]: next } }, { ms: 8000, mergeMaps: ['work'] });
+    else if (ref) await ref.set({ work: { [id]: next } }, { merge: true });
+    return spacedOf({ work: { [id]: next } }, Object.assign({ id }, a), td);
+  }
+  function testOf(userDoc, a, course) {   // {state: 'todo'|'started'|'done', answered, n, score}
+    const w = ((userDoc || {}).work || {})[a.id] || null;
+    const sa = isSA(course);
+    const n = sa && a.nSA > 0 ? a.nSA : (a.qids || []).length;
     if (!w) return { state: 'todo', answered: 0, n, score: 0 };
     const answered = Object.keys(w.ans || {}).length, score = Object.values(w.ans || {}).filter(Boolean).length;
     return { state: w.done ? 'done' : 'started', answered, n: w.n || n, score: w.done ? w.score : score, at: w.at, ans: w.ans || {} };
@@ -75,23 +111,11 @@
     return o; };
   /* how many of a test's questions a Single Award student gets (saved as nSA) */
   const testSA = a => CC() ? (a.qids || []).filter(CC().inSAid).length : null;
-  /* 18 Nov: one student's To do showed "Couldn't reach your teacher's work (Realtime Database)": the SDK's live connection
-     (a websocket) can be blocked or very slow on some networks, and once() then never answers. rtGet() also asks the plain
-     REST address (an ordinary HTTPS request with the student's sign-in token) after a moment, and takes whichever answers first. */
+  /* 18 Nov + 27 Nov: route RTDB reads through CBSNet (same-origin /_fb/rtdb HTTPS proxy on school Wi-Fi) */
   async function rtGet(rt, path, ms = 15000) {
-    let done = false;
-    const sdk = rt.ref(path).once('value').then(x => { done = true; return x.val(); });
-    const rest = (async () => {
-      await new Promise(r => setTimeout(r, 1500));
-      if (done) throw new Error('not needed');
-      const u = firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
-      if (!u || !base) throw new Error('no rest');
-      const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' });
-      if (!r.ok) throw new Error('rest ' + r.status);
-      return r.json();
-    })();
-    const all = Promise.any ? Promise.any([sdk, rest]) : sdk;
-    return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); all.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
+    if (window.CBSNet) return CBSNet.rtGet(path, ms);
+    const sdk = rt.ref(path).once('value').then(x => x.val());
+    return new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); sdk.then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
   }
   const CACHE = 'cbs.school';
   const shape = v => ({ taught: (v || {}).taught || {}, assign: (v || {}).assign || {} });
@@ -104,5 +128,67 @@
   }
   /* the last copy this browser loaded (shown, marked as saved, when the network won't answer) */
   const cached = () => { try { const c = JSON.parse(localStorage.getItem(CACHE) || 'null'); return c && c.v ? Object.assign(shape(c.v), { savedAt: c.t }) : null; } catch (e) { return null; } };
-  window.CBSSchool = { SUBS, POINT, isPoint, pointsOf, qsOf, label, shortLabel, practise, progress, offCourse, pickTest, isTest, testOf, forYear, forMe, isFor, audience, practiseNeed, testSA, load, cached, rtGet, YEARS: [8, 9, 10, 11] };
+  async function loadOne(rt, id) {
+    if (!id) return null;
+    try {
+      const a = await rtGet(rt, 'school/assign/' + id, 12000);
+      if (a) return Object.assign({ id }, a);
+    } catch (e) {}
+    const c = cached();
+    return c && c.assign && c.assign[id] ? Object.assign({ id }, c.assign[id]) : null;
+  }
+  const escH = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  /* Live homework progress bar shown during Practice & Questing when launched with ?hw=<id> */
+  function hwBarHtml(a, info) {
+    if (!a) return '';
+    const title = escH(a.title || 'Homework');
+    if (isSpaced(a)) {
+      const answered = Math.min(info.answered || 0, info.total || 10), total = Math.max(1, info.total || a.qPerDay || 10);
+      const dCur = Math.min((info.daysDone || 0) + (info.doneToday ? 0 : 1), info.daysNeed || a.days || 2);
+      const dNeed = info.daysNeed || a.days || 2;
+      const pct = Math.min(100, Math.round(answered / total * 100));
+      const col = answered >= total ? '#16a34a' : '#eab308';
+      return `<div class="hwbar" style="background:#fff;border:2px solid #111;border-left:6px solid ${col};padding:7px 12px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px">
+        <span><b>📌 ${title}</b> <span style="color:#555">· Day ${dCur}/${dNeed}</span></span>
+        <div style="flex:1;min-width:90px;height:10px;border:1.5px solid #111;background:#eeeae0;overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:${col};transition:width .25s"></i></div>
+        <span><b>${answered}/${total}</b> questions</span></div>`;
+    }
+    const p = info.prog || progress(typeof QE !== 'undefined' ? QE.prog : null, a);
+    const pct = p.target ? Math.min(100, Math.round(p.got / p.target * 100)) : 100;
+    const col = p.done ? '#16a34a' : '#eab308';
+    return `<div class="hwbar" style="background:#fff;border:2px solid #111;border-left:6px solid ${col};padding:7px 12px;margin:0 0 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px">
+      <span><b>📌 ${title}</b></span>
+      <div style="flex:1;min-width:90px;height:10px;border:1.5px solid #111;background:#eeeae0;overflow:hidden"><i style="display:block;height:100%;width:${pct}%;background:${col};transition:width .25s"></i></div>
+      <span><b>${p.got}/${p.target}</b> right${p.done ? ' ✓' : ''}</span></div>`;
+  }
+  /* End-of-round homework status banner (clearly tells students when homework is done vs still to continue) */
+  function hwDoneHtml(a, res, opts) {
+    if (!a || !res) return '';
+    const title = escH(a.title || 'Homework'), cid = (opts && opts.continueId) || 'hwCont';
+    if (isSpaced(a)) {
+      if (res.state === 'done') {
+        return `<div class="card" style="margin:12px 0;border:2px solid #15803d;border-left:8px solid #16a34a;background:#f0fdf4;text-align:left">
+          <h2 style="margin:0 0 4px;color:#166534">🎉 Homework complete!</h2>
+          <p style="margin:0 0 10px">You finished all <b>${res.daysDone} of ${res.daysNeed} days</b> for <b>${title}</b>. Your teacher can see it's done.</p>
+          <a class="btn green" href="/today/" style="background:#16a34a;color:#fff">← Back to To do</a></div>`;
+      }
+      return `<div class="card" style="margin:12px 0;border:2px solid #0369a1;border-left:8px solid #0284c7;background:#f0f9ff;text-align:left">
+        <h2 style="margin:0 0 4px;color:#075985">✓ Day ${res.daysDone} of ${res.daysNeed} done!</h2>
+        <p style="margin:0 0 10px">You've finished today's mission for <b>${title}</b>. Come back on another day for <b>Day ${Math.min(res.daysDone + 1, res.daysNeed)}</b> to finish this homework.</p>
+        <a class="btn" href="/today/" style="background:#111;color:#fff">← Back to To do</a></div>`;
+    }
+    if (res.done) {
+      return `<div class="card" style="margin:12px 0;border:2px solid #15803d;border-left:8px solid #16a34a;background:#f0fdf4;text-align:left">
+        <h2 style="margin:0 0 4px;color:#166534">🎉 Homework complete!</h2>
+        <p style="margin:0 0 10px">You reached <b>${res.got} of ${res.target}</b> right for <b>${title}</b>. Your teacher can see it's done.</p>
+        <a class="btn green" href="/today/" style="background:#16a34a;color:#fff">← Back to To do</a></div>`;
+    }
+    const left = Math.max(1, res.target - res.got), pct = res.target ? Math.min(100, Math.round(res.got / res.target * 100)) : 0;
+    return `<div class="card" style="margin:12px 0;border:2px solid #111;border-left:8px solid #dc2626;background:#fffbeb;text-align:left">
+      <h2 style="margin:0 0 4px;color:#991b1b">📌 Not finished yet — ${left} more to go</h2>
+      <p style="margin:0 0 8px"><b>${title}:</b> ${res.got} of ${res.target} different questions right so far.</p>
+      <div style="height:10px;border:1.5px solid #111;background:#eeeae0;overflow:hidden;max-width:360px;margin-bottom:10px"><i style="display:block;height:100%;width:${pct}%;background:#eab308"></i></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><button type="button" class="btn gold big" id="${cid}">Continue homework →</button><a class="btn alt" href="/today/">Finish later (To do)</a></div></div>`;
+  }
+  window.CBSSchool = { SUBS, POINT, isPoint, pointsOf, qsOf, label, shortLabel, practise, progress, offCourse, pickTest, isTest, isSpaced, spacedOf, recordSpaced, testOf, forYear, forMe, isFor, audience, practiseNeed, testSA, load, loadOne, hwBarHtml, hwDoneHtml, cached, rtGet, YEARS: [8, 9, 10, 11] };
 })();

@@ -5,7 +5,7 @@
    - A question is SECURED when answered right first time on two different days. A wrong answer drops it back.
    - True/false questions count half towards a spec point. A spec point is SECURED when its secured questions are worth
      at least min(4, total). A secured point goes RUSTY after 21 days with no correct answer; one correct answer polishes it.
-   - XP: 5 per correct answer (10 if ★ harder), +20 when a question is secured, +100 the first time a spec point is secured.
+   - XP: 5 per correct answer at level 1, 7 at level 2, 10 at level 3 (★ harder; questions.js), +20 when a question is secured, +100 the first time a spec point is secured.
 
    SAVED DATA
    Firestore users/{uid}.specQuiz = PROG, users/{uid}.specQuizSummary (+ points: {'B2.27': 's'|'r'|'l'} for the spec tracker), users/{uid}.questing = GAME
@@ -38,6 +38,9 @@ const QE = (() => {
     p.key = s.name[0] + p.id; POINTS[p.key] = { key: p.key, id: p.id, text: p.text, subject: s.name, topic: t.n, sub: sb.l };
   }))));
   const POINT_QS = {}; QUESTIONS.forEach(q => (POINT_QS[q.s] = POINT_QS[q.s] || []).push(q));
+  const LV_XP = { 1: 5, 2: 7, 3: 10 };
+  /* difficulty levels (questions.js, 23 Nov): shuffled, then lowest level first, so a run of questions climbs 1 → 3 */
+  const climb = a => shuffle(a).sort((x, y) => (x.lv || 1) - (y.lv || 1));
   const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const inst = q => (q.gen ? { ...q, ...q.gen(R) } : q);
 
@@ -82,7 +85,7 @@ const QE = (() => {
   };
   const UID_KEY = 'cbs.questing.uid';
   const blank = () => ({ v: 1, q: {}, cards: {}, weak: {}, xp: 0, correct: 0, hard: 0, subj: { Biology: 0, Chemistry: 0, Physics: 0 }, weeks: {}, ws: {}, dc: {}, missions: 0, unrusted: 0, earned: {}, hide: false, updatedAt: 0 });
-  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, tally: {}, seen: {}, look: null, eq: null, nick: null, updatedAt: 0 });
+  const gblank = () => ({ nickPending: null, nickAt: 0, coins: 0, bag: [], lastLoot: null, days: {}, cd: {}, pool: { hp: 0, mana: 0 }, moveDay: null, tally: {}, seen: {}, look: null, eq: null, nick: null, updatedAt: 0 });
   const progKey = uid => 'specquiz.camp.' + (uid || 'anon');
   const gameKey = uid => 'cbs.questing.game.' + (uid || 'anon');
   const readProg = uid => Object.assign(blank(), ls.get(progKey(uid)) || {});
@@ -108,12 +111,14 @@ const QE = (() => {
     o.hide = !!(a.hide || b.hide);
     return o;
   }
-  function mergeGame(a, b) {
+  function mergeGame(a, b, addAnon) {
     const newer = (b.updatedAt || 0) > (a.updatedAt || 0) ? b : a;
     const o = Object.assign(gblank(), newer);
     o.bag = [...new Set([...(a.bag || []), ...(b.bag || [])])];
     o.days = {}; for (const src of [a.days || {}, b.days || {}]) for (const k in src) o.days[k] = Math.max(o.days[k] || 0, src[k]);
-    o.coins = Math.max(a.coins || 0, b.coins || 0);
+    /* coins: follow the newer copy so spending isn't undone across devices; only add anonymous pre-sign-in coins */
+    o.coins = addAnon ? (a.coins || 0) + (b.coins || 0) : (newer.coins || 0);
+    o.moveDay = (a.moveDay || '') >= (b.moveDay || '') ? (a.moveDay || null) : b.moveDay;
     o.cd = {}; for (const src of [a.cd || {}, b.cd || {}]) for (const k in src) if (!o.cd[k] || (src[k].n || 0) > (o.cd[k].n || 0)) o.cd[k] = src[k];
     o.best = {}; for (const src of [a.best || {}, b.best || {}]) for (const k in src) { const x = o.best[k] || { r: 0, w: 0 }; o.best[k] = { r: Math.max(x.r, src[k].r || 0), w: x.w || src[k].w ? 1 : 0 }; }   // best score and 'busted' per mission (17 Nov)
     o.tally = {}; for (const src of [a.tally || {}, b.tally || {}]) for (const k in src) o.tally[k] = Math.max(o.tally[k] || 0, src[k] || 0);   // stats counters (17 Nov)
@@ -121,7 +126,9 @@ const QE = (() => {
     /* activity log (22 Nov): both copies' entries, oldest first, the last LOG_MAX */
     const lg = new Map(); for (const src of [a.log || [], b.log || []]) for (const e of src) if (e && e.t) lg.set(e.t + '|' + e.m, e);
     o.log = [...lg.values()].sort((x, y) => x.t - y.t).slice(-LOG_MAX);
-    o.pool = Object.assign({ hp: 0, mana: 0 }, newer.pool);   // the newer copy: the map may already have taken what was waiting
+    o.pool = addAnon
+      ? { hp: Math.min(200, ((a.pool || {}).hp || 0) + ((b.pool || {}).hp || 0)), mana: Math.min(200, ((a.pool || {}).mana || 0) + ((b.pool || {}).mana || 0)) }
+      : Object.assign({ hp: 0, mana: 0 }, newer.pool);   // the newer copy: the map may already have taken what was waiting
     for (const k of ['look', 'eq', 'nick']) if (!o[k]) o[k] = a[k] || b[k] || null;
     return o;
   }
@@ -155,6 +162,16 @@ const QE = (() => {
   const listeners = [];
   const emit = () => listeners.forEach(f => { try { f(); } catch (e) { console.error(e); } });
   let busy = false;
+  const within = (p, ms = 10000) => new Promise((ok, no) => {
+    const t = setTimeout(() => no(new Error('timeout')), ms);
+    Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); });
+  });
+  /* RTDB read with timeout + same-origin proxy / HTTPS REST fallback (for school filters that block RTDB websockets or firebasedatabase.app) */
+  async function rtGet(path, ms = 12000) {
+    if (window.CBSNet) return CBSNet.rtGet(path, ms);
+    if (!FB.rtdb) throw new Error('offline');
+    return within(FB.rtdb.ref(path).once('value').then(x => x.val()), ms);
+  }
 
   function writeLocal() { const u = FB.user ? FB.user.uid : (FB.known ? null : uid0); ls.set(progKey(u), PROG); ls.set(gameKey(u), GAME); }
 
@@ -202,22 +219,26 @@ const QE = (() => {
     if (!FB.ok || !FB.user) return;
     FB.status = 'saving'; emit();
     const st = securedStats();
+    const body = {
+      email: FB.user.email || null, displayName: FB.user.displayName || null, lastAccess: new Date().toISOString(),
+      specQuiz: PROG, questing: GAME,
+      specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, points: pointSummary(), updatedAt: new Date().toISOString() }
+    };
     try {
-      await FB.db.collection('users').doc(FB.user.uid).set({
-        email: FB.user.email || null, displayName: FB.user.displayName || null, lastAccess: new Date().toISOString(),
-        specQuiz: PROG, questing: GAME,
-        specQuizSummary: { xp: PROG.xp, rank: rankIndex(PROG.xp), securedQ: st.securedQ, securedP: st.securedP, correct: PROG.correct, points: pointSummary(), updatedAt: new Date().toISOString() }
-      }, { merge: true });
+      if (window.CBSNet) await CBSNet.fsSetMerge('users', FB.user.uid, body, { ms: 10000 });
+      else await within(FB.db.collection('users').doc(FB.user.uid).set(body, { merge: true }), 10000);
       FB.status = 'saved';
     } catch (e) { console.error('Questing save failed', e); FB.status = 'error'; }
     emit();
-    if (FB.rtdb) {
+    if (FB.rtdb || window.CBSNet) {
+      const row = { name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
+        bio: PROG.subj.Biology || 0, chem: PROG.subj.Chemistry || 0, phys: PROG.subj.Physics || 0,
+        wb: ((PROG.ws || {})[WEEK] || {}).B || 0, wc: ((PROG.ws || {})[WEEK] || {}).C || 0, wp: ((PROG.ws || {})[WEEK] || {}).P || 0,
+        d7: (() => { const dc = dayCounts(PROG), o = {}; for (const d of LAST7) if (dc[d]) o[d] = { b: dc[d].B || 0, c: dc[d].C || 0, p: dc[d].P || 0 }; return o; })(),
+        look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() };
       try {
-        await FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set({ name: boardName(), xp: PROG.xp, rank: rankIndex(PROG.xp), pts: st.securedP, wk: WEEK, wkCorrect: PROG.weeks[WEEK] || 0,
-          bio: PROG.subj.Biology || 0, chem: PROG.subj.Chemistry || 0, phys: PROG.subj.Physics || 0,
-          wb: ((PROG.ws || {})[WEEK] || {}).B || 0, wc: ((PROG.ws || {})[WEEK] || {}).C || 0, wp: ((PROG.ws || {})[WEEK] || {}).P || 0,
-          d7: (() => { const dc = dayCounts(PROG), o = {}; for (const d of LAST7) if (dc[d]) o[d] = { b: dc[d].B || 0, c: dc[d].C || 0, p: dc[d].P || 0 }; return o; })(),
-          look: GAME.look || null, eq: GAME.eq || null, hide: !!PROG.hide, t: Date.now() });
+        if (window.CBSNet) await CBSNet.rtSet('specQuizBoard/' + FB.user.uid, row, 10000);
+        else await within(FB.rtdb.ref('specQuizBoard/' + FB.user.uid).set(row), 10000);
       } catch (e) { console.warn('Leaderboard save failed', e); }
     }
   }
@@ -229,23 +250,29 @@ const QE = (() => {
     const before = sig();
     if (!u) {
       ls.del(UID_KEY); uid0 = null; if (window.CBSCourse) CBSCourse.update(null, null);
-      PROG = readProg(null); GAME = readGame(null); syncLookIntoGame(); writeLocal(); FB.status = 'local';
+      PROG = readProg(null); cardsV++; GAME = readGame(null); syncLookIntoGame(); writeLocal(); FB.status = 'local';
     } else {
       FB.status = 'loading'; emit();
       try {
-        const snap = await FB.db.collection('users').doc(u.uid).get();
+        const snap = window.CBSNet ? await CBSNet.fsGet('users', u.uid, 10000) : await within(FB.db.collection('users').doc(u.uid).get(), 10000);
         const data = (snap.exists && snap.data()) || {};
         const remote = Object.assign(blank(), data.specQuiz || {}), remoteG = Object.assign(gblank(), data.questing || {});
-        PROG = mergeProg(mergeProg(remote, readProg(u.uid)), readProg(null));
-        GAME = mergeGame(mergeGame(remoteG, readGame(u.uid)), readGame(null));
+        PROG = mergeProg(mergeProg(remote, readProg(u.uid)), readProg(null)); cardsV++;
+        GAME = mergeGame(mergeGame(remoteG, readGame(u.uid)), readGame(null), true);
         if ((remoteG.updatedAt || 0) >= (GAME.updatedAt || 0)) writeLookLocal(GAME); else syncLookIntoGame();
         ls.del(progKey(null)); ls.del(gameKey(null));
         ls.set(UID_KEY, u.uid); uid0 = u.uid;
-        writeLocal(); await saveRemote();
-        if (window.CBSCourse) CBSCourse.update(u.uid, data.course);
+        writeLocal();
+        /* update course before saving summary so a Single Award student on a new browser doesn't write Double Award totals */
+        if (window.CBSCourse) {
+          const switching = (data.course === 'SA') !== CBSCourse.sa;
+          CBSCourse.update(u.uid, data.course);
+          if (switching) return;
+        }
+        await saveRemote();
       } catch (e) {
         console.error('Questing load failed', e);
-        PROG = mergeProg(readProg(u.uid), readProg(null)); GAME = mergeGame(readGame(u.uid), readGame(null));
+        PROG = mergeProg(readProg(u.uid), readProg(null)); cardsV++; GAME = mergeGame(readGame(u.uid), readGame(null), true);
         ls.set(UID_KEY, u.uid); uid0 = u.uid; writeLocal(); FB.status = 'error';
       }
     }
@@ -260,7 +287,7 @@ const QE = (() => {
     try {
       if (typeof firebase === 'undefined' || !window.firebaseConfig) return;
       if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
-      FB.auth = firebase.auth(); FB.db = firebase.firestore(); FB.rtdb = firebase.database ? firebase.database() : null; FB.ok = true;
+      FB.auth = firebase.auth(); FB.db = window.CBSNet ? CBSNet.fsDb() : firebase.firestore(); FB.rtdb = window.CBSNet ? CBSNet.rtDb() : (firebase.database ? firebase.database() : null); FB.ok = true;
       FB.auth.onAuthStateChanged(onUser);
     } catch (e) { console.warn('Firebase unavailable', e); FB.ok = false; }
   }
@@ -290,10 +317,13 @@ const QE = (() => {
     const ci = cardIdx()[key] || { sec: 0, seen: 0, last: '' }, cTotal = CARDS_ON[key] || 0;
     if (ci.last > last) last = ci.last;
     const need = Math.min(4, total);
-    const secured = sec + ci.sec >= need - 1e-9 || (cTotal >= 2 && ci.sec >= cTotal);   // flashcards alone: every card on the point, if it has 2+
+    /* Flashcards count for up to half of need (normally 2 of 4); the rest must be proved via Practice / Questing questions */
+    const cCap = Math.floor(need / 2);
+    const cCredit = Math.min(ci.sec, cCap);
+    const secured = sec + cCredit >= need - 1e-9;
     const rusty = secured && last && dayNum(TODAY) - dayNum(last) > RUST_DAYS;
     const started = seen > 0 || ci.seen > 0;
-    return { has: true, total, sec, need, seen, cTotal, cSec: ci.sec, secured, rusty, started, state: rusty ? 'rusty' : secured ? 'secured' : started ? 'learning' : 'new' };
+    return { has: true, total, sec, need, seen, cTotal, cSec: ci.sec, cCap, cCredit, got: Math.min(need, sec + cCredit), secured, rusty, started, state: rusty ? 'rusty' : secured ? 'secured' : started ? 'learning' : 'new' };
   }
   function subState(sb) {
     const pts = sb.points.filter(p => POINT_QS[p.key]); if (!pts.length) return null;
@@ -360,13 +390,13 @@ const QE = (() => {
       PROG.ws = PROG.ws || {}; const w = PROG.ws[WEEK] = PROG.ws[WEEK] || {}; w[subj[0]] = (w[subj[0]] || 0) + 1;
       PROG.dc = PROG.dc || {}; const dd = PROG.dc[TODAY] = PROG.dc[TODAY] || {}; dd[subj[0]] = (dd[subj[0]] || 0) + 1;
       for (const d in PROG.dc) if (dayNum(d) < dayNum(TODAY) - 13) delete PROG.dc[d];
-      const xp = q.hard ? 10 : 5; PROG.xp += xp; if (q.hard) PROG.hard++;
+      const xp = LV_XP[q.lv] || 5; PROG.xp += xp; if (q.hard) PROG.hard++;
       notes.push(`+${xp} XP`);
       if (s.c === 0) { s.c = 1; s.d = TODAY; notes.push('Get it right again <b>on another day</b> to secure it.'); }
-      else if (s.c === 1 && s.d < TODAY) { s.c = 2; s.d = TODAY; PROG.xp += 20; notes.push('🔒 <b>Question secured!</b> +20 XP'); }
+      else if (s.c === 1 && s.d < TODAY) { s.c = 2; s.d = TODAY; PROG.xp += 20; notes.push('<b>Question secured!</b> +20 XP'); }
       else if (s.c === 1) notes.push('Already counted today: come back another day to secure it.');
-      else notes.push('Still secured ✔');
-      if (before.rusty) { PROG.unrusted++; notes.push('🧽 Rust polished off this spec point!'); }
+      else notes.push('Still secured ✓');
+      if (before.rusty) { PROG.unrusted++; notes.push('Rust polished off this spec point!'); }
       if (PROG.weak && PROG.weak[q.s]) delete PROG.weak[q.s];
       earn({ hp: HEAL_MISSION });
     } else {
@@ -382,7 +412,7 @@ const QE = (() => {
   function pointNotes(key, before, notes) {
     const after = pointState(key);
     if (after.secured && !before.secured && POINTS[key]) {
-      notes.push(`📌 <b>Spec point ${POINTS[key].subject} ${POINTS[key].id} secured!</b>`);
+      notes.push(`<b>Spec point ${POINTS[key].subject} ${POINTS[key].id} secured!</b>`);
       if (!PROG.earned['p:' + key]) { PROG.earned['p:' + key] = TODAY; PROG.xp += 100; notes.push('+100 XP'); }
     }
   }
@@ -413,8 +443,8 @@ const QE = (() => {
     if (ok) {
       c.l = TODAY;
       if (c.c === 0) { c.c = 1; c.d = TODAY; }
-      else if (c.c === 1 && c.d < TODAY) { c.c = 2; c.d = TODAY; if (spec) notes.push('🔒 Card secured'); }
-      if (before && before.rusty) { PROG.unrusted++; notes.push('🧽 Rust polished off a spec point'); }
+      else if (c.c === 1 && c.d < TODAY) { c.c = 2; c.d = TODAY; if (spec) notes.push('Card secured'); }
+      if (before && before.rusty) { PROG.unrusted++; notes.push('Rust polished off a spec point'); }
     } else {
       if (c.c === 2) { c.c = 1; c.d = TODAY; } else if (c.c === 1) c.c = 0;
       if (spec) { PROG.weak = PROG.weak || {}; PROG.weak[spec] = TODAY; }
@@ -459,14 +489,16 @@ const QE = (() => {
   function buildMission(keys, fill, opts = {}) {
     const LEN = opts.n || MISSION_LEN, AV = opts.avoid || null, CAP = Math.max(DG_CAP, Math.round(LEN / 5));
     const pick = [], used = new Set(), draw = canDraw(); let nd = 0;
-    const take = (list, n) => { if (AV) list = list.filter(q => !AV.has(q.id)); for (const q of shuffle(list)) { if (n <= 0 || pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
+    const take = (list, n, ordered) => { if (AV) list = list.filter(q => !AV.has(q.id)); for (const q of ordered ? list : shuffle(list)) { if (n <= 0 || pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); n--; if (q.dg) nd++; } } };
     const fillFrom = pool => {
       const ready = pool.filter(q => { const s = qState(q.id); return s.c === 1 && s.d < TODAY; });
       const rusty = pool.filter(q => pointState(q.s).rusty);
       const learning = pool.filter(q => { const s = qState(q.id); return s.n && s.c === 0; });
       const fresh = pool.filter(q => !qState(q.id).n);
       take(ready, 4); take(rusty, 2); take(learning, 2);
-      take(fresh, LEN); take(learning, LEN);
+      { const byL = l => fresh.filter(q => (q.lv || 1) === l), room = LEN - pick.length;   // new questions: about 40% level 1, 40% level 2, 20% level 3
+        take(byL(1), Math.ceil(room * .4)); take(byL(2), Math.ceil(room * .4)); take(byL(3), room); take(fresh, LEN); }
+      take(learning, LEN);
       take(pool.filter(q => qState(q.id).c === 1), LEN);
       take(pool, LEN);
     };
@@ -475,15 +507,21 @@ const QE = (() => {
     if (AV && pick.length < LEN) {   // not enough unseen ones: top up with recently seen
       const again = QUESTIONS.filter(q => (!keys || keys.has(q.s)) && AV.has(q.id));
       for (const q of shuffle(again)) { if (pick.length >= LEN) break; if (q.dg && (!draw || nd >= CAP)) continue; if (!used.has(q.id)) { used.add(q.id); pick.push(q); if (q.dg) nd++; } } }
-    return shuffle(pick).map(inst);
+    return climb(pick).map(inst);   // the run climbs from level 1 to level 3
   }
-  /* a finished mission: counts it, adds coins and loot, saves everything */
-  function finishMission({ coins = 0, loot = null, right = 0 } = {}) {
+  /* a finished mission: counts it, adds coins and loot, saves everything.
+     countDay = false when a student doesn't hit the honest-effort floor (< 3 right incl. Second Wind), so spam-clicking never earns daily moves/loot. */
+  function finishMission({ coins = 0, loot = null, right = 0, countDay = true } = {}) {
+    if ((!FB.user || !window.__cbsAuthApproved) && window.CBSAuth && CBSAuth.recordFreeMission) {
+      CBSAuth.recordFreeMission();
+    } else if (!FB.user) {
+      try { localStorage.setItem('cbs.free.missions', String((parseInt(localStorage.getItem('cbs.free.missions') || '0', 10) || 0) + 1)); } catch (e) {}
+    }
     PROG.missions++; PROG.updatedAt = Date.now();
     if (right) earn({ mana: Math.floor(right / 3) });
     GAME.coins = (GAME.coins || 0) + coins;
     if (loot) { GAME.bag = [...new Set([...(GAME.bag || []), loot])]; GAME.lastLoot = loot; }
-    GAME.days[TODAY] = (GAME.days[TODAY] || 0) + 1;
+    if (countDay) GAME.days[TODAY] = (GAME.days[TODAY] || 0) + 1;
     GAME.updatedAt = Date.now();
     return save(true);
   }
@@ -501,8 +539,8 @@ const QE = (() => {
   /* ---------- the class board (Realtime Database, signed-in only) ---------- */
   function board() {
     if (!FB.rtdb || !FB.user) return Promise.reject(new Error(FB.user ? 'offline' : 'signin'));
-    return FB.rtdb.ref('specQuizBoard').once('value').then(s => {
-      const v = s.val() || {};
+    return rtGet('specQuizBoard', 12000).then(val => {
+      const v = val || {};
       return Object.entries(v).filter(([, x]) => x && !x.hide).map(([uid, x]) => Object.assign({ uid, me: uid === FB.user.uid }, x, { l7: uid === FB.user.uid ? last7(PROG) : boardLast7(x) }));
     });
   }
@@ -514,8 +552,12 @@ const QE = (() => {
     const rep = { qid: q.id, reason, comment: (comment || '').slice(0, 400), shown: (q.q || '').replace(/<[^>]+>/g, '').slice(0, 400),
       options: options.map(o => String(o).replace(/<[^>]+>/g, '').slice(0, 120)), correct: correctIdx, picked: pickedIdx, mode: 'questing', ...(q.seed ? { seed: q.seed } : {}),
       name: n ? n[0] + (n.length > 1 ? ' ' + n[n.length - 1][0] + '.' : '') : '', uid: u ? u.uid : '', t: Date.now() };
-    try { if (!FB.ok || !FB.rtdb) throw new Error('offline'); return FB.rtdb.ref('specQuizReports').push(rep); }
-    catch (e) { return Promise.reject(e); }
+    try {
+      if (!FB.ok) throw new Error('offline');
+      if (window.CBSNet) return CBSNet.rtPush('specQuizReports', rep, 10000);
+      if (!FB.rtdb) throw new Error('offline');
+      return within(FB.rtdb.ref('specQuizReports').push(rep), 10000);
+    } catch (e) { return Promise.reject(e); }
   }
 
   /* ---------- admin console (10 Nov): read another student's saved PROG with the same rules ----------
@@ -535,13 +577,16 @@ const QE = (() => {
   }
 
   /* keep the look in the account when the creator/wardrobe pages change it (not on the admin console: window.QE_PASSIVE) */
-  if (!window.QE_PASSIVE) { if (syncLookIntoGame()) writeLocal(); initFirebase(); }
+  if (!window.QE_PASSIVE) {
+    if (!window.__cbsAuthGate && typeof document !== 'undefined') { const ag = document.createElement('script'); ag.src = '/js/auth-gate.js'; (document.head || document.documentElement).appendChild(ag); }
+    if (syncLookIntoGame()) writeLocal(); initFirebase();
+  }
 
   return {
     get prog() { return PROG; }, get game() { return GAME; }, get user() { return FB.user; }, get status() { return FB.status; }, get known() { return FB.known; },
     get online() { return FB.ok; }, set busy(v) { busy = !!v; }, get busy() { return busy; },
     TODAY, WEEK, RUST_DAYS, MISSION_LEN, POINTS, POINT_QS, tally, mark, log, onChange: f => listeners.push(f), checkName, cleanName, googleName, boardName, requestName,
-    signIn, signOut, save, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
+    signIn, signOut, save, within, rtGet, setHide, gameChanged, syncLook: () => { if (syncLookIntoGame()) save(); },
     qState, pointState, subState, allSubs, suggestion, picks, stats, securedBySci,
     recordAnswer, buildMission, finishMission, missionsToday, board, report, REPORT_REASONS, shuffle,
     inst, analyse, isoWeek, last7, boardLast7, dayCounts, LAST7, recordCard, importCards, cardsDue, cardsToday, cardsTarget, revisedToday, weakPoints, earn, takePool, CARD, HEAL_MISSION, CARDS_ON,

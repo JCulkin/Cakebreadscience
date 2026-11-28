@@ -6,17 +6,71 @@ usage:  python3 tools/lessons/freeze.py chemistry/1f [--date 2026-11-12]
 
 What it does
   1. copies interactive/lessons/<topic>/draft/  ->  interactive/lessons/<topic>/v<date>/
-  2. snapshots the shared engine (lesson.css, lesson.js, chem.js...) into v<date>/_assets/
+     (without duplicating draft/img/)
+  2. syncs only referenced media from draft/img/ into a shared interactive/lessons/<topic>/img/
+     folder (reusing identical files; hashing filenames on content collision so older frozen
+     versions never change) and rewrites img/... refs in v<date>/index.html to ../img/...
+  3. snapshots the shared engine (lesson.css, lesson.js, chem.js...) into v<date>/_assets/
      and rewrites the page to use that copy, so later engine changes can't alter a checked version
-  3. marks the page checked:  data-status="checked" data-version="<date>"
-  4. updates interactive/lessons/lessons.json  (status "checked", adds the version)
-  5. rewrites interactive/lessons/<topic>/index.html to redirect to the newest version
+  4. marks the page checked:  data-status="checked" data-version="<date>"
+  5. updates interactive/lessons/lessons.json  (status "checked", adds the version)
+  6. rewrites interactive/lessons/<topic>/index.html to redirect to the newest version
 Run from the repo root. Commit the result; never edit a v<date>/ folder afterwards.
 """
-import sys, os, re, json, shutil, datetime
+import sys, os, re, json, shutil, hashlib, datetime
 
 ROOT = os.path.join('interactive', 'lessons')
 ASSET_URL = '/interactive/lessons/assets/'
+IMG_REF_RE = re.compile(r'(?<![/\w.])img/([^\s"\'<>)?#]+)([?#][^\s"\'<>)]*)?')
+
+def sha256(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(65536), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+def sync_shared_images(topic_dir, draft_img, html):
+    """Copy referenced draft/img/ files into <topic>/img/ without duplicating unchanged media."""
+    shared_img = os.path.join(topic_dir, 'img')
+    mapping = {}
+    reused = added = 0
+    for m in IMG_REF_RE.finditer(html):
+        rel = m.group(1)
+        if rel in mapping:
+            continue
+        src_file = os.path.join(draft_img, *rel.split('/'))
+        if not os.path.isfile(src_file):
+            continue
+        os.makedirs(shared_img, exist_ok=True)
+        h = sha256(src_file)
+        dst_file = os.path.join(shared_img, *rel.split('/'))
+        if os.path.isfile(dst_file):
+            if sha256(dst_file) == h:
+                mapping[rel] = rel
+                reused += 1
+            else:
+                stem, ext = os.path.splitext(rel)
+                hashed = f'{stem}-{h[:8]}{ext}'
+                hashed_dst = os.path.join(shared_img, *hashed.split('/'))
+                if not os.path.isfile(hashed_dst):
+                    os.makedirs(os.path.dirname(hashed_dst), exist_ok=True)
+                    shutil.copy2(src_file, hashed_dst)
+                    added += 1
+                else:
+                    reused += 1
+                mapping[rel] = hashed
+        else:
+            os.makedirs(os.path.dirname(dst_file), exist_ok=True)
+            shutil.copy2(src_file, dst_file)
+            mapping[rel] = rel
+            added += 1
+
+    def repl(m):
+        rel, suffix = m.group(1), m.group(2) or ''
+        return f'../img/{mapping[rel]}{suffix}' if rel in mapping else m.group(0)
+
+    return IMG_REF_RE.sub(repl, html), added, reused
 
 def load():
     return json.load(open(os.path.join(ROOT, 'lessons.json'), encoding='utf-8'))
@@ -44,23 +98,56 @@ def write_root(topic, t):
 '''
     open(os.path.join(ROOT, topic, 'index.html'), 'w', encoding='utf-8').write(html)
 
-def freeze(topic, date):
-    src = os.path.join(ROOT, topic, 'draft'); dst = os.path.join(ROOT, topic, 'v' + date)
+def freeze(topic, date, deck_only=False):
+    topic_dir = os.path.join(ROOT, topic)
+    src = os.path.join(topic_dir, 'draft'); dst = os.path.join(topic_dir, 'v' + date)
     if not os.path.isdir(src): sys.exit(f'no draft at {src}')
     if os.path.exists(dst): sys.exit(f'{dst} already exists: versions are permanent; use another --date')
-    shutil.copytree(src, dst)
-    page = os.path.join(dst, 'index.html'); s = open(page, encoding='utf-8').read()
-    used = sorted(set(re.findall(re.escape(ASSET_URL) + r'([\w.-]+)', s)))
-    os.makedirs(os.path.join(dst, '_assets'))
-    for f in used: shutil.copy(os.path.join(ROOT, 'assets', f), os.path.join(dst, '_assets', f))
-    s = s.replace(ASSET_URL, '_assets/')
-    s = re.sub(r'data-status="draft"', f'data-status="checked" data-version="{date}" data-topic="{topic}"', s, count=1)
-    open(page, 'w', encoding='utf-8').write(s)
     m = load(); t = find(m, topic)
+    prev_vers = sorted(t.get('versions', []))
+    prev_dir = os.path.join(topic_dir, 'v' + prev_vers[-1]) if (deck_only and prev_vers) else None
+    shutil.copytree(src, dst, ignore=shutil.ignore_patterns('img'))
+    if deck_only and prev_dir and os.path.isfile(os.path.join(prev_dir, 'index.html')):
+        prev_idx = open(os.path.join(prev_dir, 'index.html'), encoding='utf-8').read()
+        if "location.hash==='#present'" not in prev_idx:
+            redir = "<script>if(location.hash==='#present')location.replace('deck.html'+location.search+'#present');</script>\n"
+            prev_idx = re.sub(r'(</title>\s*)', r'\1' + redir, prev_idx, count=1, flags=re.I)
+        open(os.path.join(dst, 'index.html'), 'w', encoding='utf-8').write(prev_idx)
+    pages = [os.path.join(dst, 'index.html')]
+    deck_page = os.path.join(dst, 'deck.html')
+    if os.path.isfile(deck_page):
+        pages.append(deck_page)
+    draft_img = os.path.join(src, 'img')
+    added_img = reused_img = 0
+    used_set = set()
+    contents = []
+    for p in pages:
+        s = open(p, encoding='utf-8').read()
+        is_prev_idx = (deck_only and prev_dir and os.path.basename(p) == 'index.html')
+        if not is_prev_idx and os.path.isdir(draft_img):
+            s, a_i, r_i = sync_shared_images(topic_dir, draft_img, s)
+            added_img += a_i; reused_img += r_i
+        used_set.update(re.findall(re.escape(ASSET_URL) + r'([\w.-]+)', s))
+        contents.append((p, s, is_prev_idx))
+    used = sorted(used_set)
+    assets_dst = os.path.join(dst, '_assets')
+    os.makedirs(assets_dst, exist_ok=True)
+    if deck_only and prev_dir and os.path.isdir(os.path.join(prev_dir, '_assets')):
+        for f in os.listdir(os.path.join(prev_dir, '_assets')):
+            src_f = os.path.join(prev_dir, '_assets', f)
+            if os.path.isfile(src_f):
+                shutil.copy2(src_f, os.path.join(assets_dst, f))
+    for f in used: shutil.copy(os.path.join(ROOT, 'assets', f), os.path.join(assets_dst, f))
+    for p, s, is_prev_idx in contents:
+        if not is_prev_idx:
+            s = s.replace(ASSET_URL, '_assets/')
+            s = re.sub(r'data-status="draft"', f'data-status="checked" data-version="{date}" data-topic="{topic}"', s, count=1)
+        open(p, 'w', encoding='utf-8').write(s)
     t['status'] = 'checked'; t.setdefault('versions', [])
     if date not in t['versions']: t['versions'].append(date)
     t['versions'].sort(); save(m); write_root(topic, t)
-    print(f'frozen {topic} -> {dst}  (assets: {", ".join(used)})')
+    mode = ' (deck-only: preserved prior checked index.html)' if (deck_only and prev_dir) else ''
+    print(f'frozen {topic} -> {dst}{mode}  (assets: {", ".join(used)}; shared img: +{added_img} new, {reused_img} reused)')
 
 if __name__ == '__main__':
     a = sys.argv[1:]
@@ -72,5 +159,6 @@ if __name__ == '__main__':
                 for t in sec['topics']:
                     if t.get('status'): write_root(f"{s['id']}/{t['code']}", t)
         print('roots written'); sys.exit()
+    deck_only = '--deck-only' in a
     date = a[a.index('--date') + 1] if '--date' in a else datetime.date.today().isoformat()
-    freeze(a[0], date)
+    freeze(a[0], date, deck_only=deck_only)

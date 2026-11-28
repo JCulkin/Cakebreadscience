@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Leaderboards - Cakebread Science</title>
-<meta name="description" content="Leaderboards for the Cakebread Science games: Elements 1–20, What The Cell, Type Fast or Perish and Cakebread Questing.">
+<meta name="description" content="Leaderboards for the Cakebread Science games: Elements 1–20, What The Cell, Type Fast or Perish and Breadventure Land.">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,13 +14,15 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
 .stripes{display:flex;flex-direction:column}.stripes i{display:block}
-header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
-@media(min-width:700px){header{padding:22px 40px 18px}}
+header{background:#111;padding:12px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+@media(min-width:700px){header{padding:14px 32px}}
 header a{text-decoration:none}
-header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
-header .brand span{color:var(--green2)}
+header .brand{display:inline-flex;align-items:center;gap:9px;font-family:'Barlow Condensed',sans-serif;font-size:clamp(24px,4.5vw,34px);font-weight:900;text-transform:uppercase;letter-spacing:-.5px;color:var(--cream);line-height:1;transition:color .14s}
+header .brand img{width:34px;height:34px;object-fit:contain;display:block}
+header .brand span{color:var(--green2);transition:color .14s}
+header .brand:hover{color:#fff}header .brand:hover span{color:#4ade80}
 header #cbs-account{margin-left:auto;align-self:center}
-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#9a968c}
 .wrap{max-width:900px;margin:0 auto;padding:20px 16px 56px}
 .back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
@@ -45,10 +47,9 @@ button{font:inherit;cursor:pointer;color:inherit}
 </head>
 <body>
 <div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
-<header><a href="/" class="brand">Cakebread <span>Science</span></a><span class="sub">Leaderboards</span><div id="cbs-account"></div></header>
+<header><a href="/" class="brand" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Leaderboards</span><div id="cbs-account"></div></header>
 <div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
 <main class="wrap">
-  <a class="back" href="/">← Home</a>
   <h1>Leaderboards</h1>
   <p class="lede">Every game’s leaderboard in one place. Sign in with your Google account to put your scores on them; your name shows as first name and last initial.</p>
   <div class="bar" id="bar">Loading…</div>
@@ -67,8 +68,8 @@ button{font:inherit;cursor:pointer;color:inherit}
 <script>
 (function(){
 const $=id=>document.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const COL={elements:'#b45309',cell:'#2e7d32',typing:'#c2185b',quiz:'#1d4ed8'};
-const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Cakebread Questing',url:'/interactive/spec-quiz/',boards:{quiz_xp:'XP (all time)',quiz_week:'Correct answers, last 7 days'}}});
+const COL={elements:'#c8001e',cell:'#005e22',typing:'#c2185b',quiz:'#005e22'};
+const TABS=Object.assign({},window.LB?LB.GAMES:{},{quiz:{name:'Breadventure Land',url:'/interactive/spec-quiz/',boards:{quiz_week:'Correct answers, last 7 days',quiz_xp:'XP (all time)'}}});
 let game=(location.hash||'#elements').slice(1);if(!TABS[game])game='elements';let board=null;
 function bar(){const el=$('bar');if(!window.LB||!LB.online()){el.textContent='Leaderboards need an internet connection.';return;}
   const u=LB.user;el.innerHTML=u?`Signed in as <b>${esc(LB.nameOf(u))}</b> <button class="linkbtn" id="out">Sign out</button>`:`<button class="gsign" id="in">Sign in with Google</button><span>to put your scores on the leaderboards.</span>`;
@@ -78,20 +79,21 @@ function draw(){const G=TABS[game];const keys=Object.keys(G.boards);if(!keys.inc
   $('games').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{game=b.dataset.g;board=null;history.replaceState(null,'','#'+game);draw();});
   $('boards').innerHTML=`<div class="chips">${keys.map(k=>`<button class="chip ${k===board?'on':''}" data-b="${k}">${esc(G.boards[k])}</button>`).join('')}</div><a class="play" href="${G.url}">Play ${esc(G.name)} →</a>`;
   $('boards').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>{board=b.dataset.b;draw();});
-  if(game==='quiz')quiz();else LB.panel($('list'),board,{title:G.boards[board]});}
-// Cakebread Questing keeps its own board (specQuizBoard/{uid}); show it here read-only
+  if(game==='quiz')quiz();else{const isArch=Array.isArray(G.archived)&&G.archived.includes(board);LB.panel($('list'),board,{title:G.boards[board],archivedNote:isArch?'Archived v1 leaderboard (old word bank — read only).':''});}}
+// Breadventure Land keeps its own board (specQuizBoard/{uid}); show it here read-only
 /* right answers over the last 7 days from the board's per-day counts (d7, since 16 Nov); older rows fall back to this week's total */
 const L7=(()=>{const n=Math.floor((Date.now()-new Date().getTimezoneOffset()*6e4)/864e5),o=[];for(let i=0;i<7;i++)o.push(new Date((n-i)*864e5).toISOString().slice(0,10));return o;})();
 function last7(x,wk){if(x.d7)return L7.reduce((t,d)=>{const v=x.d7[d];return t+(v?(v.b||0)+(v.c||0)+(v.p||0):0);},0);return x.wk===wk?(x.wkCorrect||0):0;}
 function quiz(){const el=$('list');el.innerHTML='<div class="lbx"><p class="note">Loading…</p></div>';
-  if(!window.firebase||!firebase.database){el.innerHTML='<p class="note">Needs an internet connection.</p>';return;}
-  firebase.database().ref('specQuizBoard').once('value').then(s=>{const v=s.val()||{};const wk=Object.values(v).reduce((m,x)=>x&&x.wk>m?x.wk:m,'');
+  if(!window.CBSNet&&(!window.firebase||!firebase.database)){el.innerHTML='<p class="note">Needs an internet connection.</p>';return;}
+  const get=window.CBSNet?CBSNet.rtGet('specQuizBoard',10000):firebase.database().ref('specQuizBoard').once('value').then(s=>s.val());
+  get.then(v=>{v=v||{};const wk=Object.values(v).reduce((m,x)=>x&&x.wk>m?x.wk:m,'');
     const rows=Object.entries(v).filter(([,x])=>x&&!x.hide).map(([uid,x])=>({uid,name:x.name,score:board==='quiz_xp'?(x.xp||0):last7(x,wk)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score);
     const me=LB.user&&LB.user.uid,idx=rows.findIndex(r=>r.uid===me);
     let html=rows.slice(0,10).map((r,i)=>`<li style="${r.uid===me?'background:#fff3c4':''}"><span style="font-family:'Barlow Condensed';font-weight:900;font-size:20px">${i+1}</span><b>${esc(r.name)}</b><span style="font-family:'Barlow Condensed';font-weight:900;font-size:22px;color:#005e22">${r.score}</span></li>`).join('');
     if(idx>=10)html+=`<li style="background:#fff3c4"><span>${idx+1}</span><b>${esc(rows[idx].name)}</b><span>${rows[idx].score}</span></li>`;
-    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Cakebread Questing scores come from its missions. Choose whether you appear on its leaderboards at Cakelab.</p></div>`;})
-   .catch(()=>{el.innerHTML='<p class="note">The Cakebread Questing leaderboard can’t be read right now. Try signing in.</p>';});}
+    el.innerHTML=`<div class="lbx">${rows.length?`<ol>${html}</ol>`:'<p class="note">No scores yet.</p>'}<p class="note">Breadventure Land scores come from its missions. Choose whether you appear on its leaderboards on My Adventurer.</p></div>`;})
+   .catch(()=>{el.innerHTML='<p class="note">The Breadventure Land leaderboard can’t be read right now. Try signing in.</p>';});}
 if(window.LB)LB.onUser(()=>{bar();draw();});else{bar();}
 })();
 </script>

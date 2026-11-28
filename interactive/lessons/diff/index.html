@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Lesson Comparer (Staging) · Cakebread Science</title>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#111;--paper:#eeeae0;--card:#fff;--muted:#555;--line:#d4cfc2;
+  --bio:#1d6b2f;--chem:#8c0013;--phys:#a85d00;
+  --amber:#d97706;--amberBg:#fef3c7;--green:#15803d;--greenBg:#dcfce7;
+  --red:#b91c1c;--redBg:#fee2e2;--slate:#475569;--slateBg:#e2e8f0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',Arial,sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+a{color:inherit}
+button{font-family:'Barlow',Arial,sans-serif;cursor:pointer}
+
+/* Staging header (list view) */
+.stbar{background:#facc15;color:#111;font:800 13px/1.2 'Barlow',sans-serif;letter-spacing:1.2px;text-transform:uppercase;padding:7px 20px;border-bottom:2px solid #111;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.lhead{background:#111;color:var(--paper);padding:22px 28px 20px;border-bottom:4px solid #facc15}
+.lhead .kick{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#facc15;font-weight:700}
+.lhead h1{font-family:'Barlow Condensed',Arial Narrow,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,5vw,52px);line-height:1;margin-top:4px}
+.lhead h1 span{color:#facc15}
+.lhead .meta{margin-top:8px;font-size:14px;color:#ccc;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.lhead .meta a{color:#7fd39b;font-weight:700;text-decoration:none}
+.lhead .meta a:hover{text-decoration:underline}
+
+.wrap{max-width:1040px;margin:0 auto;padding:24px 20px 64px}
+.grp{margin-bottom:32px}
+.grp h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:28px;border-bottom:3px solid #111;padding-bottom:4px;margin-bottom:12px;display:flex;align-items:baseline;gap:10px}
+.grp h2 small{font-family:'Barlow',sans-serif;font-size:14px;font-weight:600;color:var(--muted);text-transform:none}
+
+.lcard{display:grid;grid-template-columns:68px 1fr auto;gap:8px 16px;align-items:center;background:#fff;border:2px solid #111;border-left:10px solid var(--c,#111);padding:12px 16px;margin-bottom:10px;transition:transform .1s,box-shadow .1s}
+.lcard:hover{transform:translateY(-1px);box-shadow:0 4px 0 #111}
+.lcard .code{font:900 30px/1 'Barlow Condensed',sans-serif;color:var(--c,#111);text-transform:uppercase}
+.lcard .code small{display:block;font:700 11px/1.1 'Barlow',sans-serif;letter-spacing:1px;color:#666;margin-top:2px}
+.lcard .info h3{font-size:19px;font-weight:800;line-height:1.2}
+.lcard .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}
+.pill{display:inline-block;font:700 12px/1 'Barlow',sans-serif;padding:4px 8px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+.pill.changed{background:var(--amberBg);color:#92400e}
+.pill.added{background:var(--greenBg);color:#166534}
+.pill.removed{background:var(--redBg);color:#991b1b}
+.pill.moved{background:var(--slateBg);color:#334155}
+.pill.newl{background:#1d4ed8;color:#fff;border-color:#1d4ed8}
+.pill.chk{background:#00a03a;color:#fff;border-color:#00a03a}
+.pill.omit{background:#f5f5f4;color:#666;border-style:dashed}
+.lcard .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn{font:700 14px/1 'Barlow',sans-serif;padding:9px 14px;border:2px solid #111;background:#fff;color:#111;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn.primary{background:#111;color:#facc15}
+.btn.primary:hover{background:#222}
+.btn:hover{background:#f6f3ea}
+@media(max-width:700px){.lcard{grid-template-columns:54px 1fr}.lcard .acts{grid-column:1/-1;justify-content:flex-start}}
+
+/* Split-screen viewer mode */
+body.viewing{background:#141414;color:#eee;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+#listView{display:block}
+body.viewing #listView{display:none}
+#compareView{display:none}
+body.viewing #compareView{display:flex;flex-direction:column;height:100vh;width:100vw;overflow:hidden}
+
+.topbar{background:#111;border-bottom:2px solid #333;padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:none}
+.topbar .tbtn{font:700 14px/1 'Barlow',sans-serif;padding:7px 12px;border:1px solid #555;background:#222;color:#eee;border-radius:4px;text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+.topbar .tbtn:hover{background:#333;border-color:#888}
+.topbar .tbtn.acc{background:#facc15;color:#111;border-color:#facc15}
+.topbar .tbtn.acc:hover{background:#fde047}
+.topbar .tbtn:disabled{opacity:.35;cursor:default}
+.topbar .ltitle{font:800 17px/1.1 'Barlow',sans-serif;color:#fff;margin-right:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.topbar .ltitle .subtag{font:900 13px/1 'Barlow Condensed',sans-serif;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border-radius:3px;color:#fff;background:var(--c,#555)}
+.topbar .counter{font:700 15px/1 'Barlow',sans-serif;color:#facc15;min-width:110px;text-align:center}
+.topbar label.chkopt{font:600 13px/1 'Barlow',sans-serif;color:#ccc;display:inline-flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+
+.strip{background:#1c1c1c;border-bottom:1px solid #333;padding:6px 12px;display:flex;gap:6px;overflow-x:auto;flex:none;scrollbar-width:thin}
+.chip{flex:none;display:inline-flex;align-items:center;gap:6px;font:600 13px/1 'Barlow',sans-serif;padding:5px 10px;border-radius:4px;border:1px solid #3d3d3d;background:#262626;color:#d4d4d4;max-width:230px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip:hover{background:#333;color:#fff}
+.chip.on{background:#facc15;color:#111;border-color:#facc15;font-weight:800}
+.chip .dot{width:8px;height:8px;border-radius:50%;flex:none}
+.dot.changed{background:#f59e0b}.dot.added{background:#22c55e}.dot.removed{background:#ef4444}.dot.moved{background:#94a3b8}
+.chip.on .dot{outline:1.5px solid #111}
+
+.split{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;background:#0d0d0d}
+@media(max-width:900px){.split{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+.pane{display:flex;flex-direction:column;min-height:0;min-width:0;background:#181818;border:2px solid #333;border-radius:6px;overflow:hidden}
+.pane.after{border-color:#444}
+.phead{background:#222;padding:7px 12px;border-bottom:1px solid #333;display:flex;align-items:center;gap:8px;font:700 13px/1.2 'Barlow',sans-serif;flex:none}
+.phead .badge{font:900 12px/1 'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:3px}
+.phead .badge.before{background:#3f3f46;color:#f4f4f5}
+.phead .badge.after{background:#15803d;color:#fff}
+.phead .badge.k-changed{background:#d97706;color:#fff}
+.phead .badge.k-added{background:#15803d;color:#fff}
+.phead .badge.k-removed{background:#b91c1c;color:#fff}
+.phead .badge.k-moved{background:#475569;color:#fff}
+.phead .snum{color:#ccc}
+.phead .stitle{color:#fff;margin-left:auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.phead .snote{color:#facc15;font-weight:600;font-size:12px}
+
+.framewrap{flex:1;min-height:0;position:relative;background:#141414;display:flex;align-items:center;justify-content:center}
+.framewrap iframe{width:100%;height:100%;border:0;display:block;background:#141414}
+.empty-pane{padding:32px;text-align:center;color:#999;max-width:380px}
+.empty-pane b{display:block;font:900 26px/1.1 'Barlow Condensed',sans-serif;text-transform:uppercase;color:#ddd;margin-bottom:8px;letter-spacing:.5px}
+.empty-pane p{font-size:15px;line-height:1.4}
+
+.kbdbar{background:#111;border-top:1px solid #2b2b2b;padding:5px 14px;font:600 12px/1 'Barlow',sans-serif;color:#888;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;flex:none}
+.kbdbar kbd{background:#262626;border:1px solid #444;border-radius:3px;padding:1px 5px;color:#ddd;font-family:inherit}
+</style>
+</head>
+<body>
+<div id="listView">
+  <div class="stbar">
+    <span>STAGING ONLY · NOT PUBLISHED TO LIVE SITE</span>
+    <span id="baseInfo">Loading baseline…</span>
+  </div>
+  <header class="lhead">
+    <div class="kick">Staging Review Tool</div>
+    <h1>Lesson <span>Comparer</span></h1>
+    <div class="meta">
+      <a href="/staging-review/" style="background:#facc15;color:#111;padding:4px 10px;border-radius:4px;font-weight:800">← Staging Review Hub</a>
+      <a href="/interactive/lessons/">All lessons</a>
+      <a href="/">Home</a>
+      <span id="summaryText"></span>
+    </div>
+  </header>
+  <main class="wrap" id="lessonList"><p>Loading lesson diffs…</p></main>
+</div>
+
+<div id="compareView">
+  <div class="topbar">
+    <a class="tbtn" href="/staging-review/#decks">← Review Hub</a>
+    <button class="tbtn" id="btnBack">All decks</button>
+    <div class="ltitle" id="cmpTitle"></div>
+    <label class="chkopt" id="movedWrap" style="display:none"><input type="checkbox" id="chkMoved"> Show moved-only (<span id="movedCnt">0</span>)</label>
+    <button class="tbtn" id="btnPrev" title="Previous changed slide (←)">‹ Prev</button>
+    <span class="counter" id="cmpCounter"></span>
+    <button class="tbtn acc" id="btnNext" title="Next changed slide (→ or Space)">Next ›</button>
+    <a class="tbtn" id="btnOpenDraft" href="#" target="_blank" rel="noopener">Open full draft ↗</a>
+  </div>
+  <div class="strip" id="slideStrip"></div>
+  <div class="split">
+    <div class="pane before">
+      <div class="phead">
+        <span class="badge before">BEFORE</span>
+        <span class="snum" id="beforeNum"></span>
+        <span class="stitle" id="beforeTitle"></span>
+      </div>
+      <div class="framewrap" id="beforeWrap"></div>
+    </div>
+    <div class="pane after">
+      <div class="phead">
+        <span class="badge after">AFTER</span>
+        <span class="badge" id="kindBadge"></span>
+        <span class="snum" id="afterNum"></span>
+        <span class="snote" id="afterNote"></span>
+        <span class="stitle" id="afterTitle"></span>
+      </div>
+      <div class="framewrap" id="afterWrap"></div>
+    </div>
+  </div>
+  <div class="kbdbar">
+    <span>Unchanged slides are hidden · only altered, added, or removed slides are shown</span>
+    <span><kbd>←</kbd> <kbd>→</kbd> or <kbd>Space</kbd> step through changes · <kbd>Esc</kbd> back to list</span>
+  </div>
+</div>
+
+<script>
+(async function(){
+  // Hard staging-only guard (belt-and-suspenders on top of netlify.toml)
+  if (/^(www\.)?cakebreadscience\.com$/i.test(location.hostname)) {
+    document.body.innerHTML = '<main style="max-width:560px;margin:80px auto;font-family:sans-serif;text-align:center"><h1>404</h1><p>This staging review tool is not available on the live site.</p><p><a href="/interactive/lessons/">Go to Lessons</a></p></main>';
+    return;
+  }
+
+  const SUBJ_COLOR = { biology: '#1d6b2f', chemistry: '#8c0013', physics: '#a85d00' };
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  let DATA;
+  try {
+    DATA = await (await fetch('/interactive/lessons/diff/data.json', { cache: 'no-store' })).json();
+  } catch (e) {
+    document.getElementById('lessonList').innerHTML = '<p>Could not load diff data (<code>data.json</code>). Run <code>python tools/lessons/build_diff.py</code>.</p>';
+    return;
+  }
+
+  const baseLbl = DATA.baseLabel || DATA.baseRef;
+  document.getElementById('baseInfo').textContent = `Comparing staging (${DATA.headCommit}) vs ${baseLbl} (${DATA.baseCommit})`;
+  const drafts = DATA.lessons.filter(l => l.status !== 'checked');
+  const checked = DATA.lessons.filter(l => l.status === 'checked');
+  document.getElementById('summaryText').textContent = `${DATA.lessons.length} lesson${DATA.lessons.length === 1 ? '' : 's'} changed (${drafts.length} under review · ${checked.length} checked)`;
+
+  function renderCard(l) {
+    const c = l.counts;
+    const unchanged = Math.max(0, l.newTotal - c.changed - c.added - c.moved);
+    const pills = [];
+    if (l.beforeLabel) pills.push(`<span class="pill" style="background:#eef2ff;color:#3730a3;border-color:#c7d2fe">vs ${esc(l.beforeLabel)}</span>`);
+    if (l.isNew) pills.push(`<span class="pill newl">NEW LESSON · ${l.newTotal} slides</span>`);
+    else {
+      if (l.status === 'checked') pills.push('<span class="pill chk">Checked on staging</span>');
+      if (c.changed) pills.push(`<span class="pill changed">${c.changed} changed</span>`);
+      if (c.added) pills.push(`<span class="pill added">+${c.added} added</span>`);
+      if (c.removed) pills.push(`<span class="pill removed">−${c.removed} removed</span>`);
+      if (c.moved) pills.push(`<span class="pill moved">${c.moved} moved</span>`);
+      if (unchanged) pills.push(`<span class="pill omit">${unchanged} unchanged omitted</span>`);
+    }
+    const col = SUBJ_COLOR[l.subject] || '#111';
+    return `<div class="lcard" style="--c:${col}">
+      <div class="code">${esc(l.code)}<small>${esc(l.subjectName)}</small></div>
+      <div class="info">
+        <h3>${esc(l.title)}</h3>
+        <div class="pills">${pills.join('')}</div>
+      </div>
+      <div class="acts">
+        <a class="btn primary" href="#${esc(l.id)}">Compare changes →</a>
+        <a class="btn" href="${esc(l.baseUrl)}#present" target="_blank" rel="noopener">▶ Draft</a>
+      </div>
+    </div>`;
+  }
+
+  const listEl = document.getElementById('lessonList');
+  let html = '';
+  if (drafts.length) {
+    html += `<section class="grp"><h2>Needs review <small>drafts changed vs ${esc(baseLbl)}</small></h2>${drafts.map(renderCard).join('')}</section>`;
+  }
+  if (checked.length) {
+    html += `<section class="grp"><h2>Checked on staging <small>marked checked, changed vs ${esc(baseLbl)}</small></h2>${checked.map(renderCard).join('')}</section>`;
+  }
+  if (!html) html = `<p>No lesson differences vs ${esc(baseLbl)}.</p>`;
+  listEl.innerHTML = html;
+
+  // Split-screen state
+  let activeLesson = null;
+  let visibleSlides = [];
+  let slideIdx = 0;
+
+  function mapAssetPath(src, useBase, lesson) {
+    if (!useBase) return src;
+    const base = src.split('/').pop();
+    if (lesson && lesson.beforeAssetsUrl && base !== 'tags.css') {
+      return lesson.beforeAssetsUrl + base;
+    }
+    if (DATA.assetChanged && (base in DATA.assetChanged)) {
+      return '/interactive/lessons/diff/base-assets/' + base;
+    }
+    return src;
+  }
+
+  function buildSlideDoc(lesson, slideHtml, slideNumText, isBefore) {
+    const cssUrl = isBefore ? (lesson.beforeAssetsUrl ? lesson.beforeAssetsUrl + 'lesson.css' : '/interactive/lessons/diff/base-assets/lesson.css') : '/interactive/lessons/assets/lesson.css';
+    const tagsUrl = isBefore ? (lesson.beforeTagsUrl || '/interactive/lessons/diff/base-assets/tags.css') : '/interactive/lessons/tags.css';
+    const scripts = (isBefore ? lesson.oldScripts : lesson.newScripts) || [];
+    const scriptTags = scripts.map(s => `<script src="${esc(mapAssetPath(s, isBefore, lesson))}"><\/script>`).join('\n');
+    const extraCss = (isBefore ? lesson.oldStyles : lesson.newStyles) || '';
+    const baseHref = location.origin + (isBefore ? (lesson.beforeBaseUrl || lesson.baseUrl) : lesson.baseUrl);
+
+    return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<base href="${esc(baseHref)}">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="${cssUrl}">
+<link rel="stylesheet" href="${tagsUrl}">
+<style>
+${extraCss}
+.dbar, .pbtn, .rvbtn, #rvPanel, #rvPop { display: none !important; }
+body.pm, body.pm #deck { background: #141414 !important; }
+.ps.tslide > .tbg { animation: none !important; }
+</style>
+</head>
+<body class="subj-${esc(lesson.subject)}" data-deck-ui="v2">
+<div id="deck-src">${slideHtml}</div>
+${scriptTags}
+<script src="/interactive/lessons/assets/lesson.js"><\/script>
+<script>
+window.addEventListener('load', function(){
+  if (window.Lesson && Lesson.deck) {
+    Lesson.deck.enter();
+    for (var k = 0; k < 25; k++) {
+      var h = document.querySelector('#stage .ps.cur .hint');
+      if (!h || h.style.display === 'none') break;
+      Lesson.deck.next();
+    }
+    var p = document.querySelector('#stage .ps.cur');
+    if (p) {
+      p.querySelectorAll('[data-s]').forEach(function(e){ e.classList.add('on'); });
+      p.querySelectorAll('[data-hide-until]').forEach(function(e){ e.classList.remove('hidden-e'); });
+      p.querySelectorAll('[data-hide-from]').forEach(function(e){ e.classList.add('gone'); });
+      var h2 = p.querySelector('.hint'); if (h2) h2.style.display = 'none';
+      var num = p.querySelector('.num');
+      if (num) num.textContent = ${JSON.stringify(slideNumText)};
+    }
+  }
+  document.addEventListener('keydown', function(e){
+    if (['ArrowLeft','ArrowRight',' ','Escape'].indexOf(e.key) !== -1) {
+      e.preventDefault();
+      parent.postMessage({ type: 'cmp-key', key: e.key }, '*');
+    }
+  });
+});
+<\/script>
+</body>
+</html>`;
+  }
+
+  function mountPane(wrap, lesson, slideHtml, slideNumText, isBefore, emptyTitle, emptySub) {
+    wrap.innerHTML = '';
+    if (!slideHtml) {
+      wrap.innerHTML = `<div class="empty-pane"><b>${esc(emptyTitle)}</b><p>${esc(emptySub)}</p></div>`;
+      return;
+    }
+    const ifr = document.createElement('iframe');
+    ifr.setAttribute('title', isBefore ? 'Before slide' : 'After slide');
+    ifr.srcdoc = buildSlideDoc(lesson, slideHtml, slideNumText, isBefore);
+    wrap.appendChild(ifr);
+  }
+
+  function refreshVisibleSlides(keepItem) {
+    const showMoved = document.getElementById('chkMoved').checked;
+    visibleSlides = activeLesson.slides.filter(s => showMoved || s.kind !== 'moved');
+    if (!visibleSlides.length) visibleSlides = activeLesson.slides.slice();
+    if (keepItem) {
+      const idx = visibleSlides.indexOf(keepItem);
+      slideIdx = idx >= 0 ? idx : Math.min(slideIdx, visibleSlides.length - 1);
+    } else {
+      slideIdx = 0;
+    }
+    renderStrip();
+    renderSlide();
+  }
+
+  function renderStrip() {
+    const strip = document.getElementById('slideStrip');
+    strip.innerHTML = visibleSlides.map((s, i) => {
+      const numLbl = s.kind === 'removed' ? `−S${s.oldNum}` : s.kind === 'added' ? `+S${s.newNum}` : (s.oldNum === s.newNum ? `S${s.newNum}` : `S${s.oldNum}→${s.newNum}`);
+      return `<button class="chip${i === slideIdx ? ' on' : ''}" data-i="${i}" title="${esc(numLbl + ' · ' + s.title)}"><span class="dot ${s.kind}"></span><span>${esc(numLbl)} · ${esc(s.title)}</span></button>`;
+    }).join('');
+    strip.querySelectorAll('.chip').forEach(b => {
+      b.onclick = () => { slideIdx = +b.dataset.i; renderSlide(); };
+    });
+  }
+
+  function renderSlide() {
+    if (!activeLesson || !visibleSlides.length) return;
+    const s = visibleSlides[slideIdx];
+    document.getElementById('cmpCounter').textContent = `Change ${slideIdx + 1} / ${visibleSlides.length}`;
+    document.getElementById('btnPrev').disabled = slideIdx <= 0;
+    document.getElementById('btnNext').disabled = slideIdx >= visibleSlides.length - 1;
+
+    document.querySelectorAll('#slideStrip .chip').forEach((c, i) => {
+      c.classList.toggle('on', i === slideIdx);
+      if (i === slideIdx) c.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    });
+
+    const lbl = activeLesson.beforeLabel || baseLbl;
+    const beforeLabel = s.oldNum ? `${lbl} · Slide ${s.oldNum} / ${activeLesson.oldTotal}` : `Not in ${lbl}`;
+    const afterLabel = s.newNum ? `Slide ${s.newNum} / ${activeLesson.newTotal}` : 'Removed in staging';
+    document.getElementById('beforeNum').textContent = beforeLabel;
+    document.getElementById('beforeTitle').textContent = s.oldHtml ? s.title : '';
+
+    const kb = document.getElementById('kindBadge');
+    kb.className = 'badge k-' + s.kind;
+    kb.textContent = s.kind.toUpperCase();
+    document.getElementById('afterNum').textContent = afterLabel;
+    document.getElementById('afterNote').textContent = s.note || '';
+    document.getElementById('afterTitle').textContent = s.newHtml ? s.title : '';
+
+    mountPane(
+      document.getElementById('beforeWrap'),
+      activeLesson, s.oldHtml,
+      s.oldNum ? `${s.oldNum} / ${activeLesson.oldTotal}` : '',
+      true,
+      activeLesson.isNew ? 'Brand-new lesson' : 'New slide added',
+      activeLesson.isNew ? `This lesson did not exist in ${baseLbl}.` : `This slide did not exist in ${baseLbl}.`
+    );
+    mountPane(
+      document.getElementById('afterWrap'),
+      activeLesson, s.newHtml,
+      s.newNum ? `${s.newNum} / ${activeLesson.newTotal}` : '',
+      false,
+      'Slide removed / merged',
+      'This slide was removed or folded into another slide in the staging draft.'
+    );
+  }
+
+  function openLesson(id) {
+    const l = DATA.lessons.find(x => x.id === id);
+    if (!l) { closeCompare(); return; }
+    activeLesson = l;
+    document.body.classList.add('viewing');
+    const col = SUBJ_COLOR[l.subject] || '#555';
+    document.getElementById('cmpTitle').innerHTML = `<span class="subtag" style="--c:${col}">${esc(l.subjectName)} ${esc(l.code)}</span><span>${esc(l.title)}</span>`;
+    document.getElementById('btnOpenDraft').href = l.baseUrl + '#present';
+    const movedCnt = l.counts.moved || 0;
+    const mw = document.getElementById('movedWrap');
+    mw.style.display = movedCnt ? 'inline-flex' : 'none';
+    document.getElementById('movedCnt').textContent = movedCnt;
+    document.getElementById('chkMoved').checked = false;
+    refreshVisibleSlides();
+  }
+
+  function closeCompare() {
+    activeLesson = null;
+    document.body.classList.remove('viewing');
+    document.getElementById('beforeWrap').innerHTML = '';
+    document.getElementById('afterWrap').innerHTML = '';
+    if (location.hash) history.replaceState(null, '', location.pathname);
+  }
+
+  document.getElementById('btnBack').onclick = closeCompare;
+  document.getElementById('btnPrev').onclick = () => { if (slideIdx > 0) { slideIdx--; renderSlide(); } };
+  document.getElementById('btnNext').onclick = () => { if (slideIdx < visibleSlides.length - 1) { slideIdx++; renderSlide(); } };
+  document.getElementById('chkMoved').onchange = () => refreshVisibleSlides(visibleSlides[slideIdx]);
+
+  function handleKey(key) {
+    if (!activeLesson) return;
+    if (key === 'ArrowRight' || key === ' ') { if (slideIdx < visibleSlides.length - 1) { slideIdx++; renderSlide(); } }
+    else if (key === 'ArrowLeft') { if (slideIdx > 0) { slideIdx--; renderSlide(); } }
+    else if (key === 'Escape') closeCompare();
+  }
+  document.addEventListener('keydown', e => {
+    if (!activeLesson || e.target.closest('input,textarea,select')) return;
+    if (['ArrowLeft', 'ArrowRight', ' ', 'Escape'].includes(e.key)) { e.preventDefault(); handleKey(e.key); }
+  });
+  window.addEventListener('message', e => {
+    if (e.data && e.data.type === 'cmp-key') handleKey(e.data.key);
+  });
+
+  function syncRoute() {
+    const id = decodeURIComponent(location.hash.replace(/^#/, ''));
+    if (id) openLesson(id); else closeCompare();
+  }
+  window.addEventListener('hashchange', syncRoute);
+  syncRoute();
+})();
+</script>
+</body>
+</html>

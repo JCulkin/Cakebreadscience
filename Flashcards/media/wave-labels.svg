@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 245" width="480" height="245">
+  <rect width="480" height="245" fill="#fff"/>
+  <rect x="20" y="16" width="440" height="212" rx="6" fill="#fafaf7" stroke="#d1d5db" stroke-width="1.5"/>
+  <!-- Equilibrium rest line -->
+  <line x1="30" y1="122" x2="450" y2="122" stroke="#64748b" stroke-width="1.8" stroke-dasharray="6 4"/>
+  <!-- Sine wave: 2 full cycles from x=40 to x=440 (wavelength=200px: crests at 90 & 290, troughs at 190 & 390) -->
+  <path d="M 40 122 C 65 38 115 38 140 122 C 165 206 215 206 240 122 C 265 38 315 38 340 122 C 365 206 415 206 440 122" fill="none" stroke="#111" stroke-width="3.5"/>
+  <!-- D: wavelength (crest 90 to crest 290) -->
+  <line x1="90" y1="42" x2="290" y2="42" stroke="#d08000" stroke-width="3"/>
+  <polygon points="90,42 102,36 102,48" fill="#d08000"/>
+  <polygon points="290,42 278,36 278,48" fill="#d08000"/>
+  <line x1="90" y1="42" x2="90" y2="62" stroke="#d08000" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <line x1="290" y1="42" x2="290" y2="62" stroke="#d08000" stroke-width="1.5" stroke-dasharray="3 2"/>
+  <rect x="178" y="20" width="24" height="22" rx="4" fill="#fef3c7" stroke="#d08000" stroke-width="1.5"/>
+  <text x="190" y="36" font-family="Barlow, Arial, sans-serif" font-size="15" font-weight="900" fill="#92400e" text-anchor="middle">D</text>
+
+  <!-- A: amplitude (rest line 122 to crest 59 at x=90) -->
+  <line x1="90" y1="62" x2="90" y2="122" stroke="#dc2626" stroke-width="3"/>
+  <polygon points="90,59 84,71 96,71" fill="#dc2626"/>
+  <polygon points="90,122 84,110 96,110" fill="#dc2626"/>
+  <rect x="100" y="80" width="24" height="22" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="112" y="96" font-family="Barlow, Arial, sans-serif" font-size="15" font-weight="900" fill="#b91c1c" text-anchor="middle">A</text>
+
+  <!-- B: peak-to-trough height (2 x amplitude at x=390) -->
+  <line x1="390" y1="59" x2="390" y2="185" stroke="#1d4ed8" stroke-width="3"/>
+  <polygon points="390,59 384,71 396,71" fill="#1d4ed8"/>
+  <polygon points="390,185 384,173 396,173" fill="#1d4ed8"/>
+  <line x1="290" y1="59" x2="398" y2="59" stroke="#1d4ed8" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <rect x="400" y="109" width="24" height="22" rx="4" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="412" y="125" font-family="Barlow, Arial, sans-serif" font-size="15" font-weight="900" fill="#1e40af" text-anchor="middle">B</text>
+
+  <!-- C: half wavelength (x=140 to x=240) -->
+  <line x1="140" y1="202" x2="240" y2="202" stroke="#7c3aed" stroke-width="3"/>
+  <polygon points="140,202 152,196 152,208" fill="#7c3aed"/>
+  <polygon points="240,202 228,196 228,208" fill="#7c3aed"/>
+  <line x1="140" y1="122" x2="140" y2="206" stroke="#7c3aed" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <line x1="240" y1="122" x2="240" y2="206" stroke="#7c3aed" stroke-width="1.2" stroke-dasharray="3 3"/>
+  <rect x="178" y="206" width="24" height="20" rx="4" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.5"/>
+  <text x="190" y="221" font-family="Barlow, Arial, sans-serif" font-size="14" font-weight="900" fill="#6d28d9" text-anchor="middle">C</text>
+</svg>

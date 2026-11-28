@@ -100,6 +100,20 @@ for (const subj of Object.keys(L)) {
   }
 }
 
+/* ---- topic booklets ---- */
+for (const subj of Object.keys(L)) {
+  const dir = path.join(ROOT, 'booklets', subj);
+  if (!fs.existsSync(dir)) continue;
+  for (const f of fs.readdirSync(dir).sort()) {
+    if (!f.endsWith('.html') || f.endsWith('_ms.html')) continue;
+    const h = fs.readFileSync(path.join(dir, f), 'utf8');
+    const spec = (h.match(/class="cv-sub"[^>]*>[^<]*?Spec\s+([\d.,\s–\-—]+)/i) || h.match(/class="ps-spec"[^>]*>\s*([\d.,\s–\-—]+)/) || [])[1];
+    if (!spec) continue;
+    const title = ((h.match(/class="cv-title"[^>]*>([\s\S]*?)<\/div>/) || h.match(/<title>([^<·]*)/) || [])[1] || f).replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+    addRes('booklet', `Exam booklet: ${title}`, `/booklets/${subj}/${f}`, expand(L[subj], spec));
+  }
+}
+
 /* ---- physics long answers ---- */
 const lctx = vm.createContext({ console, Math, Date, JSON });
 vm.runInContext(rd('interactive/physics-long-answer/questions-data.js') + '\n;globalThis.T = TOPICS;', lctx);
@@ -108,6 +122,20 @@ for (const t of lctx.T) for (const q of t.questions) if (q.spec) addRes('long', 
 /* ---- physics equations ---- */
 for (const m of rd('interactive/physics-equations/index.html').matchAll(/\{id:'([^']+)',topic:\d+,spec:'([\d.]+)'[^}]*?title:'([^']+)'/g))
   addRes('eq', `Equation: ${m[3]}`, `/interactive/physics-equations/`, expand('P', m[2]));
+
+/* ---- standalone topic interactives (games & simulations) ---- */
+const GAMES = [
+  ['B', '1.2–1.3, 2.2–2.4', 'What The Cell', '/interactive/cell-game/'],
+  ['B', '1.2–1.4', 'Organisms Game', '/interactive/organisms/game.html'],
+  ['B', '3.14–3.27', 'Genetics Simulator', '/interactive/genetics-game/'],
+  ['B', '4.6–4.8', 'Food Webs', '/interactive/food-webs/'],
+  ['B', '4.7–4.9', 'Ecological Pyramids', '/interactive/ecological-pyramids/'],
+  ['C', '1.14–1.24, 1.37–1.38', 'Elements 1–20', '/interactive/elements-game/'],
+  ['C', '2.44–2.50', 'Chemical Tests', '/interactive/chemical-tests/'],
+  ['C', '2.5–2.8', 'Halogens Lab', '/interactive/halogen_lab_10.html'],
+  ['P', '3.2–3.5', 'Transverse & Longitudinal Waves', '/interactive/waves/']
+];
+for (const [letter, spec, title, url] of GAMES) addRes('game', title, url, expand(letter, spec));
 
 /* ---- write ---- */
 const pts = {}; let covered = { quiz: 0, cards: 0, other: 0 };
@@ -121,3 +149,6 @@ console.log(`${ORDER.length} points · quiz ${covered.quiz} · flashcards ${cove
 
 /* ---- the worksheet list for the admin review portal ---- */
 require('../review/list_worksheets.js');
+
+/* ---- exact Class Slide index for Admin Misconception Radar ---- */
+require('../lessons/build_slide_index.js');

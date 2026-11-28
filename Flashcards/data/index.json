@@ -1,22 +1,22 @@
 {
- "biology": {
-  "name": "Biology",
-  "subject": "B",
-  "cards": 367
- },
- "chemistry": {
-  "name": "Chemistry",
-  "subject": "C",
-  "cards": 234
- },
- "physics": {
-  "name": "Physics",
-  "subject": "P",
-  "cards": 287
- },
- "physics-eqns": {
-  "name": "Physics equations",
-  "subject": "P",
-  "cards": 26
- }
+  "biology": {
+    "name": "Biology",
+    "cards": 397,
+    "specs": 134
+  },
+  "chemistry": {
+    "name": "Chemistry",
+    "cards": 279,
+    "specs": 130
+  },
+  "physics": {
+    "name": "Physics",
+    "cards": 316,
+    "specs": 130
+  },
+  "physics-eqns": {
+    "name": "Physics Equations",
+    "cards": 26,
+    "specs": 26
+  }
 }

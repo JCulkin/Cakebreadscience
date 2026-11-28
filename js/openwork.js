@@ -12,20 +12,26 @@
   const load = src => new Promise(ok => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = ok; document.head.appendChild(s); });
   const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
   let uid = null;
-  /* Realtime Database read with a plain-HTTPS fallback (the live connection is blocked on some networks; see /js/school.js) */
+  /* Realtime Database read via CBSNet (same-origin /_fb/rtdb HTTPS proxy on school Wi-Fi) */
   function rtGet(path) {
+    if (window.CBSNet) return CBSNet.rtGet(path, 12000);
     if (window.CBSSchool && CBSSchool.rtGet) return CBSSchool.rtGet(firebase.database(), path, 12000);
-    let done = false;
-    const sdk = firebase.database().ref(path).once('value').then(x => { done = true; return x.val(); });
-    const rest = (async () => { await new Promise(r => setTimeout(r, 1500)); if (done) throw new Error('not needed'); const u = firebase.auth().currentUser, base = (window.firebaseConfig || {}).databaseURL;
-      if (!u || !base) throw new Error('no rest'); const r = await fetch(`${base}/${path}.json?auth=${encodeURIComponent(await u.getIdToken())}`, { cache: 'no-store' }); if (!r.ok) throw new Error('rest'); return r.json(); })();
-    return within(Promise.any ? Promise.any([sdk, rest]) : sdk, 12000);
+    return within(firebase.database().ref(path).once('value').then(x => x.val()), 12000);
   }
   const FRESH = /^\/(today|work)\b|practice\.html|adventurer-mission\.html/.test(location.pathname);   // pages where work gets done: never trust the cache
-  /* is this piece of work still open for this student? */
-  function open(a, id, u) {
+  /* is this piece of work still open for this student (and needing action today)? */
+  function open(a, id, u, d) {
     const sa = u.course === 'SA';   // Single Award students: work sized for their course (nSA / needSA, see /js/school.js)
     if (a.type === 'test') return !(sa && a.nSA === 0) && !(((u.work || {})[id] || {}).done);
+    if (a.type === 'spaced') {
+      if (sa && a.needSA === 0) return false;
+      const w = (u.work || {})[id] || {}, days = (w.days && typeof w.days === 'object') ? w.days : {};
+      const need = Math.max(1, +a.days || 2);
+      if (w.done || Object.keys(days).length >= need) return false;
+      // Already completed today's mission: stay quiet until tomorrow (unless already overdue)
+      if (days[d] && !(a.due && a.due < d)) return false;
+      return true;
+    }
     if (sa && a.needSA === 0) return false;
     const q = ((u.specQuiz || {}).q) || {}, set = a.set || '';
     if (a.pts && a.need) {
@@ -45,11 +51,11 @@
     if (!firebase.database) await load(`https://www.gstatic.com/firebasejs/${v}/firebase-database-compat.js`);
     if (!firebase.firestore || !firebase.database) return;
     try {
-      const [ud, as] = await Promise.all([within(firebase.firestore().collection('users').doc(me).get(), 6000), rtGet('school/assign')]);
+      const [ud, as] = await Promise.all([window.CBSNet ? CBSNet.fsGet('users', me, 6000) : within(firebase.firestore().collection('users').doc(me).get(), 6000), rtGet('school/assign')]);
       if (me !== uid) return;
       const u = ud.exists ? ud.data() || {} : {}, y = u.year, all = as || {}, d = today();
       const mine = Object.entries(all).filter(([, a]) => a && !a.archived && ((y && a.years && a.years['Y' + y]) || (a.students && a.students[me])));
-      const left = mine.filter(([id, a]) => open(a, id, u));
+      const left = mine.filter(([id, a]) => open(a, id, u, d));
       W.n = left.length; W.late = left.filter(([, a]) => a.due && a.due < d).length;
       try { sessionStorage.setItem(KEY + me, JSON.stringify({ t: Date.now(), n: W.n, late: W.late })); } catch (e) {}
       emit();

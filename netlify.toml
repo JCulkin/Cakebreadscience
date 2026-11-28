@@ -1,0 +1,182 @@
+"$schema" = "https://open-api.netlify.com/netlify.schema.json"
+
+[build]
+  publish = "."
+
+# First-party HTTPS proxies for Firebase RTDB & Firestore REST (school Wi-Fi compatibility)
+# Firebase still validates the student's Google/Firebase ID token and enforces all Security Rules.
+[[redirects]]
+  from = "/_fb/rtdb/*"
+  to = "https://elevenstudents-76f31-default-rtdb.europe-west1.firebasedatabase.app/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/_fb/fs/*"
+  to = "https://firestore.googleapis.com/v1/projects/elevenstudents-76f31/databases/(default)/documents/:splat"
+  status = 200
+  force = true
+
+# Block public access to internal repo docs, build tools, agent rules, and templates
+[[redirects]]
+  from = "/tools/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.agents/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/.claude/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/AGENTS.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/CLAUDE.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/README.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/netlify.toml"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/admin/templates/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/admin/VERSION_HISTORY.md"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Block the staging-only review hub on the live production domain
+[[redirects]]
+  from = "https://cakebreadscience.com/staging-review/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.cakebreadscience.com/staging-review/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Block the staging-only lesson comparer on the live production domain
+[[redirects]]
+  from = "https://cakebreadscience.com/interactive/lessons/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.cakebreadscience.com/interactive/lessons/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Block the staging-only worksheet comparer on the live production domain
+[[redirects]]
+  from = "https://cakebreadscience.com/worksheets/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "https://www.cakebreadscience.com/worksheets/diff/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+# Security headers site-wide
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+
+# Cache static site images for 7 days
+[[headers]]
+  for = "/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/interactive/organisms/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/interactive/cell-game/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+[[headers]]
+  for = "/Flashcards/media/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, stale-while-revalidate=86400"
+
+# Keep admin, testing, and signed-in utility pages out of search engines
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/test.html"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/today/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/guide/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/work/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/play/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/interactive/lessons/diff/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[headers]]
+  for = "/worksheets/diff/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"

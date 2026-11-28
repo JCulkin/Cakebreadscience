@@ -1,7 +1,7 @@
 /* Openly licensed photos from Wikimedia Commons, checked for What The Cell. Credits: credits.html */
 window.WIKI_PHOTOS=[
 {
-"src": "img/wiki/plant__onion-epidermis__01.jpg",
+"src": "img/wiki/plant__onion-epidermis__01.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -13,7 +13,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__02.jpg",
+"src": "img/wiki/plant__onion-epidermis__02.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -25,7 +25,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__03.jpg",
+"src": "img/wiki/plant__onion-epidermis__03.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -37,7 +37,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__04.jpg",
+"src": "img/wiki/plant__onion-epidermis__04.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -49,7 +49,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__05.jpg",
+"src": "img/wiki/plant__onion-epidermis__05.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -61,7 +61,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__elodea-leaf__01.jpg",
+"src": "img/wiki/plant__elodea-leaf__01.webp",
 "group": "plant",
 "type": "elodea-leaf",
 "cap": "Pondweed (Elodea) leaf cells",
@@ -73,7 +73,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__elodea-leaf__02.jpg",
+"src": "img/wiki/plant__elodea-leaf__02.webp",
 "group": "plant",
 "type": "elodea-leaf",
 "cap": "Pondweed (Elodea) leaf cells",
@@ -85,7 +85,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__elodea-leaf__03.jpg",
+"src": "img/wiki/plant__elodea-leaf__03.webp",
 "group": "plant",
 "type": "elodea-leaf",
 "cap": "Pondweed (Elodea) leaf cells",
@@ -97,7 +97,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__elodea-leaf__04.jpg",
+"src": "img/wiki/plant__elodea-leaf__04.webp",
 "group": "plant",
 "type": "elodea-leaf",
 "cap": "Pondweed (Elodea) leaf cells",
@@ -109,7 +109,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__elodea-leaf__05.jpg",
+"src": "img/wiki/plant__elodea-leaf__05.webp",
 "group": "plant",
 "type": "elodea-leaf",
 "cap": "Pondweed (Elodea) leaf cells",
@@ -121,7 +121,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__elodea-leaf__06.jpg",
+"src": "img/wiki/plant__elodea-leaf__06.webp",
 "group": "plant",
 "type": "elodea-leaf",
 "cap": "Pondweed (Elodea) leaf cells",
@@ -133,7 +133,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__01.jpg",
+"src": "img/wiki/plant__moss-leaf__01.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -145,7 +145,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__02.jpg",
+"src": "img/wiki/plant__moss-leaf__02.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -157,7 +157,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__03.jpg",
+"src": "img/wiki/plant__moss-leaf__03.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -169,7 +169,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__04.jpg",
+"src": "img/wiki/plant__moss-leaf__04.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -181,7 +181,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__05.jpg",
+"src": "img/wiki/plant__moss-leaf__05.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -193,7 +193,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__06.jpg",
+"src": "img/wiki/plant__moss-leaf__06.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -205,7 +205,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__moss-leaf__07.jpg",
+"src": "img/wiki/plant__moss-leaf__07.webp",
 "group": "plant",
 "type": "moss-leaf",
 "cap": "Moss leaf cells",
@@ -217,7 +217,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__01.jpg",
+"src": "img/wiki/plant__leaf-section__01.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -229,7 +229,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__02.jpg",
+"src": "img/wiki/plant__leaf-section__02.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -241,7 +241,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__03.jpg",
+"src": "img/wiki/plant__leaf-section__03.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -253,7 +253,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__04.jpg",
+"src": "img/wiki/plant__leaf-section__04.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -265,7 +265,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__05.jpg",
+"src": "img/wiki/plant__leaf-section__05.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -277,7 +277,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__06.jpg",
+"src": "img/wiki/plant__leaf-section__06.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -289,7 +289,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__leaf-section__07.jpg",
+"src": "img/wiki/plant__leaf-section__07.webp",
 "group": "plant",
 "type": "leaf-section",
 "cap": "Section through a leaf (stained)",
@@ -301,7 +301,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__stomata__01.jpg",
+"src": "img/wiki/plant__stomata__01.webp",
 "group": "plant",
 "type": "stomata",
 "cap": "Leaf surface: a stoma and its guard cells",
@@ -313,7 +313,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__stomata__02.jpg",
+"src": "img/wiki/plant__stomata__02.webp",
 "group": "plant",
 "type": "stomata",
 "cap": "Leaf surface: a stoma and its guard cells",
@@ -325,7 +325,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__stomata__03.jpg",
+"src": "img/wiki/plant__stomata__03.webp",
 "group": "plant",
 "type": "stomata",
 "cap": "Leaf surface: a stoma and its guard cells",
@@ -337,7 +337,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__stomata__04.jpg",
+"src": "img/wiki/plant__stomata__04.webp",
 "group": "plant",
 "type": "stomata",
 "cap": "Leaf surface: a stoma and its guard cells",
@@ -349,7 +349,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__root-tip__01.jpg",
+"src": "img/wiki/plant__root-tip__01.webp",
 "group": "plant",
 "type": "root-tip",
 "cap": "Onion root tip cells (stained)",
@@ -361,7 +361,7 @@ window.WIKI_PHOTOS=[
 "note": "cropped to remove caption text"
 },
 {
-"src": "img/wiki/plant__root-tip__02.jpg",
+"src": "img/wiki/plant__root-tip__02.webp",
 "group": "plant",
 "type": "root-tip",
 "cap": "Onion root tip cells (stained)",
@@ -373,7 +373,7 @@ window.WIKI_PHOTOS=[
 "note": "cropped to remove caption text"
 },
 {
-"src": "img/wiki/plant__root-tip__03.jpg",
+"src": "img/wiki/plant__root-tip__03.webp",
 "group": "plant",
 "type": "root-tip",
 "cap": "Onion root tip cells (stained)",
@@ -385,7 +385,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__root-tip__04.jpg",
+"src": "img/wiki/plant__root-tip__04.webp",
 "group": "plant",
 "type": "root-tip",
 "cap": "Onion root tip cells (stained)",
@@ -397,7 +397,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__01.jpg",
+"src": "img/wiki/animal__cheek__01.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -409,7 +409,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__02.jpg",
+"src": "img/wiki/animal__cheek__02.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -421,7 +421,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__03.jpg",
+"src": "img/wiki/animal__cheek__03.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -433,7 +433,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__04.jpg",
+"src": "img/wiki/animal__cheek__04.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -445,7 +445,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__05.jpg",
+"src": "img/wiki/animal__cheek__05.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -457,7 +457,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__06.jpg",
+"src": "img/wiki/animal__cheek__06.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -469,7 +469,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__07.jpg",
+"src": "img/wiki/animal__cheek__07.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -481,7 +481,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__08.jpg",
+"src": "img/wiki/animal__cheek__08.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -493,7 +493,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__09.jpg",
+"src": "img/wiki/animal__cheek__09.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -505,7 +505,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__cheek__10.jpg",
+"src": "img/wiki/animal__cheek__10.webp",
 "group": "animal",
 "type": "cheek",
 "cap": "Human cheek cells",
@@ -517,7 +517,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__blood__01.jpg",
+"src": "img/wiki/animal__blood__01.webp",
 "group": "animal",
 "type": "blood",
 "cap": "Human blood smear",
@@ -529,7 +529,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__blood__02.jpg",
+"src": "img/wiki/animal__blood__02.webp",
 "group": "animal",
 "type": "blood",
 "cap": "Human blood smear",
@@ -541,7 +541,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__neuron__01.jpg",
+"src": "img/wiki/animal__neuron__01.webp",
 "group": "animal",
 "type": "neuron",
 "cap": "Nerve cells (neurons), stained",
@@ -553,7 +553,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__yeast__01.jpg",
+"src": "img/wiki/fungus__yeast__01.webp",
 "group": "fungus",
 "type": "yeast",
 "cap": "Yeast cells",
@@ -565,7 +565,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__yeast__02.jpg",
+"src": "img/wiki/fungus__yeast__02.webp",
 "group": "fungus",
 "type": "yeast",
 "cap": "Yeast cells",
@@ -577,7 +577,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__yeast__03.jpg",
+"src": "img/wiki/fungus__yeast__03.webp",
 "group": "fungus",
 "type": "yeast",
 "cap": "Yeast cells",
@@ -589,7 +589,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__02.jpg",
+"src": "img/wiki/fungus__mould__02.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Mucor mould: hyphae and round spore cases",
@@ -601,7 +601,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__01.jpg",
+"src": "img/wiki/fungus__conidiophores__01.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -613,7 +613,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__02.jpg",
+"src": "img/wiki/fungus__conidiophores__02.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -625,7 +625,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__03.jpg",
+"src": "img/wiki/fungus__conidiophores__03.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -637,7 +637,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__04.jpg",
+"src": "img/wiki/fungus__conidiophores__04.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -649,7 +649,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__05.jpg",
+"src": "img/wiki/fungus__conidiophores__05.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -661,7 +661,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__06.jpg",
+"src": "img/wiki/fungus__conidiophores__06.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -673,7 +673,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__07.jpg",
+"src": "img/wiki/fungus__conidiophores__07.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -685,7 +685,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__conidiophores__08.jpg",
+"src": "img/wiki/fungus__conidiophores__08.webp",
 "group": "fungus",
 "type": "conidiophores",
 "cap": "Mould spore heads (Aspergillus)",
@@ -697,7 +697,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__hyphae__01.jpg",
+"src": "img/wiki/fungus__hyphae__01.webp",
 "group": "fungus",
 "type": "hyphae",
 "cap": "Fungal hyphae",
@@ -709,7 +709,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__hyphae__02.jpg",
+"src": "img/wiki/fungus__hyphae__02.webp",
 "group": "fungus",
 "type": "hyphae",
 "cap": "Fungal hyphae",
@@ -721,7 +721,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__hyphae__03.jpg",
+"src": "img/wiki/fungus__hyphae__03.webp",
 "group": "fungus",
 "type": "hyphae",
 "cap": "Fungal hyphae",
@@ -733,7 +733,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__01.jpg",
+"src": "img/wiki/bacteria__rods__01.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -745,7 +745,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__02.jpg",
+"src": "img/wiki/bacteria__rods__02.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -757,7 +757,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__03.jpg",
+"src": "img/wiki/bacteria__rods__03.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -769,7 +769,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__04.jpg",
+"src": "img/wiki/bacteria__rods__04.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -781,7 +781,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__05.jpg",
+"src": "img/wiki/bacteria__rods__05.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -793,7 +793,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__06.jpg",
+"src": "img/wiki/bacteria__rods__06.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -805,7 +805,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__07.jpg",
+"src": "img/wiki/bacteria__rods__07.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -817,7 +817,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__08.jpg",
+"src": "img/wiki/bacteria__rods__08.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -829,7 +829,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__09.jpg",
+"src": "img/wiki/bacteria__rods__09.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -841,7 +841,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__rods__10.jpg",
+"src": "img/wiki/bacteria__rods__10.webp",
 "group": "bacteria",
 "type": "rods",
 "cap": "Rod-shaped bacteria (Gram stained)",
@@ -853,7 +853,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__01.jpg",
+"src": "img/wiki/bacteria__cocci__01.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -865,7 +865,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__02.jpg",
+"src": "img/wiki/bacteria__cocci__02.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -877,7 +877,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__03.jpg",
+"src": "img/wiki/bacteria__cocci__03.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -889,7 +889,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__05.jpg",
+"src": "img/wiki/bacteria__cocci__05.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -901,7 +901,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__06.jpg",
+"src": "img/wiki/bacteria__cocci__06.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -913,7 +913,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__07.jpg",
+"src": "img/wiki/bacteria__cocci__07.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -925,7 +925,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__08.jpg",
+"src": "img/wiki/bacteria__cocci__08.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -937,7 +937,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__cocci__09.jpg",
+"src": "img/wiki/bacteria__cocci__09.webp",
 "group": "bacteria",
 "type": "cocci",
 "cap": "Spherical bacteria (Gram stained)",
@@ -949,7 +949,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__lactobacillus__01.jpg",
+"src": "img/wiki/bacteria__lactobacillus__01.webp",
 "group": "bacteria",
 "type": "lactobacillus",
 "cap": "Lactobacillus bacteria",
@@ -961,7 +961,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__lactobacillus__02.jpg",
+"src": "img/wiki/bacteria__lactobacillus__02.webp",
 "group": "bacteria",
 "type": "lactobacillus",
 "cap": "Lactobacillus bacteria",
@@ -973,7 +973,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__lactobacillus__03.jpg",
+"src": "img/wiki/bacteria__lactobacillus__03.webp",
 "group": "bacteria",
 "type": "lactobacillus",
 "cap": "Lactobacillus bacteria",
@@ -985,7 +985,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__lactobacillus__04.jpg",
+"src": "img/wiki/bacteria__lactobacillus__04.webp",
 "group": "bacteria",
 "type": "lactobacillus",
 "cap": "Lactobacillus bacteria",
@@ -997,7 +997,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__lactobacillus__05.jpg",
+"src": "img/wiki/bacteria__lactobacillus__05.webp",
 "group": "bacteria",
 "type": "lactobacillus",
 "cap": "Lactobacillus bacteria",
@@ -1009,7 +1009,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__electron__01.jpg",
+"src": "img/wiki/bacteria__electron__01.webp",
 "group": "bacteria",
 "type": "electron",
 "cap": "E. coli, rod-shaped bacteria (electron microscope, colour added)",
@@ -1021,7 +1021,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__electron__02.jpg",
+"src": "img/wiki/bacteria__electron__02.webp",
 "group": "bacteria",
 "type": "electron",
 "cap": "E. coli, rod-shaped bacteria (electron microscope, colour added)",
@@ -1033,7 +1033,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__electron__03.jpg",
+"src": "img/wiki/bacteria__electron__03.webp",
 "group": "bacteria",
 "type": "electron",
 "cap": "E. coli, rod-shaped bacteria (electron microscope, colour added)",
@@ -1045,7 +1045,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/bacteria__electron__05.jpg",
+"src": "img/wiki/bacteria__electron__05.webp",
 "group": "bacteria",
 "type": "electron",
 "cap": "E. coli, rod-shaped bacteria (electron microscope, colour added)",
@@ -1057,7 +1057,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__01.jpg",
+"src": "img/wiki/animal__other__01.webp",
 "group": "animal",
 "type": "other",
 "cap": "Human cells grown in a lab",
@@ -1069,7 +1069,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__02.jpg",
+"src": "img/wiki/animal__other__02.webp",
 "group": "animal",
 "type": "other",
 "cap": "Human cells grown in a lab",
@@ -1081,7 +1081,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__03.jpg",
+"src": "img/wiki/animal__other__03.webp",
 "group": "animal",
 "type": "other",
 "cap": "Human cells grown in a lab",
@@ -1093,7 +1093,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__04.jpg",
+"src": "img/wiki/animal__other__04.webp",
 "group": "animal",
 "type": "other",
 "cap": "Deer cells grown in a lab, stained with fluorescent dyes (nuclei blue)",
@@ -1105,7 +1105,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__05.jpg",
+"src": "img/wiki/animal__other__05.webp",
 "group": "animal",
 "type": "other",
 "cap": "Deer cells grown in a lab, stained with fluorescent dyes (nuclei blue)",
@@ -1117,7 +1117,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__06.jpg",
+"src": "img/wiki/animal__other__06.webp",
 "group": "animal",
 "type": "other",
 "cap": "A human cell dividing (electron microscope)",
@@ -1129,7 +1129,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__07.jpg",
+"src": "img/wiki/animal__other__07.webp",
 "group": "animal",
 "type": "other",
 "cap": "Frog blood cells (they have a nucleus)",
@@ -1141,7 +1141,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__08.jpg",
+"src": "img/wiki/animal__other__08.webp",
 "group": "animal",
 "type": "other",
 "cap": "Frog blood cells (they have a nucleus)",
@@ -1153,7 +1153,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/animal__other__09.jpg",
+"src": "img/wiki/animal__other__09.webp",
 "group": "animal",
 "type": "other",
 "cap": "Human red blood cells (electron microscope)",
@@ -1165,7 +1165,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__06.jpg",
+"src": "img/wiki/plant__onion-epidermis__06.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -1177,7 +1177,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__07.jpg",
+"src": "img/wiki/plant__onion-epidermis__07.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -1189,7 +1189,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/plant__onion-epidermis__08.jpg",
+"src": "img/wiki/plant__onion-epidermis__08.webp",
 "group": "plant",
 "type": "onion-epidermis",
 "cap": "Onion epidermis cells",
@@ -1201,7 +1201,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__yeast__04.jpg",
+"src": "img/wiki/fungus__yeast__04.webp",
 "group": "fungus",
 "type": "yeast",
 "cap": "Yeast cells",
@@ -1213,7 +1213,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__yeast__05.jpg",
+"src": "img/wiki/fungus__yeast__05.webp",
 "group": "fungus",
 "type": "yeast",
 "cap": "Yeast cells",
@@ -1225,7 +1225,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__03.jpg",
+"src": "img/wiki/fungus__mould__03.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Penicillium mould: hyphae and chains of spores",
@@ -1237,7 +1237,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__04.jpg",
+"src": "img/wiki/fungus__mould__04.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Penicillium mould: hyphae and chains of spores",
@@ -1249,7 +1249,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__05.jpg",
+"src": "img/wiki/fungus__mould__05.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Penicillium mould: hyphae and chains of spores",
@@ -1261,7 +1261,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__06.jpg",
+"src": "img/wiki/fungus__mould__06.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Penicillium mould: hyphae and chains of spores",
@@ -1273,7 +1273,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__07.jpg",
+"src": "img/wiki/fungus__mould__07.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Mucor mould: hyphae and round spore cases",
@@ -1285,7 +1285,7 @@ window.WIKI_PHOTOS=[
 "note": ""
 },
 {
-"src": "img/wiki/fungus__mould__08.jpg",
+"src": "img/wiki/fungus__mould__08.webp",
 "group": "fungus",
 "type": "mould",
 "cap": "Mucor mould: hyphae and round spore cases",

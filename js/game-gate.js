@@ -8,6 +8,8 @@
    play…" until the frame says ok; a 'deny', or no answer within 10 s (e.g. the network blocks Firebase), sends the
    player to /play/?next=<this page>. (A static site can't truly hide its files; this stops normal use.) */
 (function () {
+  var host = (location.hostname || '').toLowerCase();
+  if (!/^(www\.)?cakebreadscience\.com$/.test(host) && !/[?&]testgate=1(?:&|$)/.test(location.search || '')) return;
   var s = document.currentScript || {};
   var mode = (s.dataset && s.dataset.mode) === 'log' ? 'log' : 'gate';
   var KEY = 'cbs.games.ok';

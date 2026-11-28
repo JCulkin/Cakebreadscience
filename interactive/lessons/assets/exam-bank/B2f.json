@@ -1,0 +1,209 @@
+{
+  "topic": "B2f",
+  "subject": "biology",
+  "title": "Respiration",
+  "spec": "B2.34–B2.39",
+  "questions": [
+    {
+      "id": "B2f-01",
+      "title": "Blood lactic acid during and after a sprint",
+      "spec": ["B2.36", "B2.38"],
+      "sa": true,
+      "level": "core",
+      "marks": 5,
+      "stimulus": "An athlete runs a 4-minute maximum-effort sprint on a treadmill and then rests for 14 minutes. The graph shows how the concentration of lactic acid in the athlete's blood changes over time.",
+      "diagram": {
+        "source": "dg",
+        "maker": "respiration",
+        "hard": true,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "State",
+          "spec": ["B2.36"],
+          "sa": true,
+          "marks": 1,
+          "text": "State the peak blood lactic acid concentration reached at the end of the sprint.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>15</b> mmol/dm³" }
+            ],
+            "accept": ["14.8 to 15.2 mmol/dm³"],
+            "reject": ["6 (time on x-axis instead of y-axis)"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["B2.36", "B2.38"],
+          "sa": true,
+          "marks": 3,
+          "text": "Explain why the blood lactic acid concentration rises steeply between 2 minutes and 6 minutes.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "Any 3 linked points (max 3)",
+            "points": [
+              { "code": "M1", "text": "Muscles contract rapidly and need more <b>energy / ATP</b>", "link": "so…" },
+              { "code": "M2", "text": "Heart and lungs cannot supply enough <b>oxygen</b> to the muscle cells fast enough", "link": "so…" },
+              { "code": "M3", "text": "<b>Aerobic respiration</b> alone cannot meet the energy demand", "link": "therefore…" },
+              { "code": "M4", "text": "Muscle cells carry out <b>anaerobic respiration</b> (incomplete breakdown of glucose)", "link": "which produces…" },
+              { "code": "M5", "text": "<b>Lactic acid</b> builds up in the muscles and diffuses into the blood" }
+            ],
+            "accept": ["oxygen supply is insufficient for aerobic respiration"],
+            "reject": ["there is no oxygen at all", "aerobic respiration produces lactic acid", "muscles make energy"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "State",
+          "spec": ["B2.36"],
+          "sa": true,
+          "marks": 1,
+          "text": "Name the term used for the extra oxygen required during recovery (6 to 20 minutes) to break down the lactic acid.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>Oxygen debt</b>" }
+            ],
+            "accept": ["EPOC (excess post-exercise oxygen consumption)"],
+            "reject": ["oxygen deficit alone", "breathing rate"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "B2f-02",
+      "title": "Heat released by germinating beans",
+      "spec": ["B2.39"],
+      "sa": false,
+      "level": "core",
+      "marks": 5,
+      "stimulus": "A student investigates whether germinating beans release thermal energy during respiration. Equal masses of live germinating beans and boiled, cooled beans are placed into identical vacuum flasks for 48 hours.",
+      "diagram": {
+        "source": "dg",
+        "maker": "respiration",
+        "hard": false,
+        "seed": 101
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Calculate",
+          "spec": ["B2.39"],
+          "sa": false,
+          "marks": 1,
+          "text": "Calculate the temperature difference between Flask A and Flask B after 48 hours.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "A1", "text": "29 − 19 = <b>10 °C</b>" }
+            ],
+            "accept": ["10"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Explain",
+          "spec": ["B2.39"],
+          "sa": false,
+          "marks": 2,
+          "text": "Explain why the beans in both flasks were washed in disinfectant before the start of the investigation.",
+          "markScheme": {
+            "style": "chain",
+            "rule": "2 linked marks",
+            "points": [
+              { "code": "M1", "text": "To kill <b>microorganisms / bacteria / fungi</b> on the surface of the beans", "link": "so…" },
+              { "code": "M2", "text": "Their <b>respiration</b> does not release extra <b>heat</b> (so any temperature rise is caused only by the beans)" }
+            ],
+            "accept": ["prevents microbes respiring and warming the flask"],
+            "reject": ["to clean them / make it hygienic", "to kill the germinating beans"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "Explain",
+          "spec": ["B2.39"],
+          "sa": false,
+          "marks": 2,
+          "text": "Explain the purpose of using (i) <b>vacuum flasks</b> and (ii) <b>Flask B</b> containing boiled beans.",
+          "markScheme": {
+            "rule": "1 mark each (max 2)",
+            "points": [
+              { "code": "B1", "text": "<b>Vacuum flasks:</b> insulate the contents / reduce <b>heat loss</b> to the surroundings" },
+              { "code": "B2", "text": "<b>Flask B (boiled beans):</b> acts as a <b>control</b> to show that living/respiring seeds cause the temperature rise (not the apparatus or room temperature)" }
+            ],
+            "accept": ["boiling denatures enzymes so dead seeds cannot respire"],
+            "reject": ["to make it a fair test (unqualified)"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "B2f-03",
+      "title": "Aerobic respiration in cells",
+      "spec": ["B2.34", "B2.35", "B2.37"],
+      "sa": true,
+      "level": "foundation",
+      "marks": 4,
+      "stimulus": "The diagram shows an animal cell with four subcellular structures labelled A, B, C and D.",
+      "diagram": {
+        "source": "dg",
+        "maker": "cell",
+        "hard": false,
+        "seed": 274
+      },
+      "parts": [
+        {
+          "label": "a",
+          "command": "Identify",
+          "spec": ["B2.34"],
+          "sa": true,
+          "marks": 1,
+          "text": "Name structure <b>D</b>, where most of the reactions of aerobic respiration take place.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>Mitochondrion</b> / <b>mitochondria</b>" }
+            ],
+            "reject": ["nucleus", "cytoplasm", "chloroplast"]
+          }
+        },
+        {
+          "label": "b",
+          "command": "Write",
+          "spec": ["B2.37"],
+          "sa": true,
+          "marks": 2,
+          "text": "Write the <b>balanced chemical symbol equation</b> for aerobic respiration.",
+          "markScheme": {
+            "rule": "2 marks",
+            "points": [
+              { "code": "M1", "text": "All four chemical formulae correct: <b>C₆H₁₂O₆ + O₂ → CO₂ + H₂O</b>" },
+              { "code": "A1", "text": "Correctly balanced: <b>C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O</b>" }
+            ],
+            "accept": ["'+ energy' or '+ ATP' written on the right-hand side"],
+            "reject": ["word equation only", "CO2 with superscripts"]
+          }
+        },
+        {
+          "label": "c",
+          "command": "State",
+          "spec": ["B2.34", "B2.35"],
+          "sa": true,
+          "marks": 1,
+          "text": "Name the molecule produced by respiration that transfers energy for cellular processes such as active transport.",
+          "markScheme": {
+            "rule": "1 mark",
+            "points": [
+              { "code": "B1", "text": "<b>ATP</b> (adenosine triphosphate)" }
+            ],
+            "reject": ["glucose", "respiration makes/creates energy"]
+          }
+        }
+      ]
+    }
+  ]
+}

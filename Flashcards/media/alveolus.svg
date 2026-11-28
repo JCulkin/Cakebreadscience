@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 250" width="380" height="250">
+  <rect width="380" height="250" fill="#fff"/>
+  <!-- Outer capillary wall wrapping under alveolus -->
+  <path d="M 28 118 C 78 118 86 138 96 172 C 110 214 146 234 190 234 C 234 234 270 214 284 172 C 294 138 302 118 352 118" fill="none" stroke="#111" stroke-width="22" stroke-linecap="round"/>
+  <path d="M 28 118 C 78 118 86 138 96 172 C 110 214 146 234 190 234 C 234 234 270 214 284 172 C 294 138 302 118 352 118" fill="none" stroke="#fff" stroke-width="17" stroke-linecap="round"/>
+  <!-- Red blood cells inside capillary -->
+  <ellipse cx="44" cy="119" rx="7" ry="4.5" fill="#dc2626"/>
+  <ellipse cx="64" cy="122" rx="7" ry="4.5" fill="#dc2626" transform="rotate(14 64 122)"/>
+  <ellipse cx="81" cy="134" rx="7" ry="4.5" fill="#dc2626" transform="rotate(42 81 134)"/>
+  <ellipse cx="91" cy="153" rx="7" ry="4.5" fill="#dc2626" transform="rotate(68 91 153)"/>
+  <ellipse cx="98" cy="175" rx="7" ry="4.5" fill="#dc2626" transform="rotate(66 98 175)"/>
+  <ellipse cx="109" cy="195" rx="7" ry="4.5" fill="#dc2626" transform="rotate(52 109 195)"/>
+  <ellipse cx="126" cy="212" rx="7" ry="4.5" fill="#dc2626" transform="rotate(36 126 212)"/>
+  <ellipse cx="147" cy="224" rx="7" ry="4.5" fill="#dc2626" transform="rotate(20 147 224)"/>
+  <ellipse cx="168" cy="231" rx="7" ry="4.5" fill="#dc2626" transform="rotate(8 168 231)"/>
+  <ellipse cx="190" cy="234" rx="7" ry="4.5" fill="#dc2626"/>
+  <ellipse cx="212" cy="231" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-8 212 231)"/>
+  <ellipse cx="233" cy="224" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-20 233 224)"/>
+  <ellipse cx="254" cy="212" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-36 254 212)"/>
+  <ellipse cx="271" cy="195" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-52 271 195)"/>
+  <ellipse cx="282" cy="175" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-66 282 175)"/>
+  <ellipse cx="289" cy="153" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-68 289 153)"/>
+  <ellipse cx="299" cy="134" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-42 299 134)"/>
+  <ellipse cx="316" cy="122" rx="7" ry="4.5" fill="#dc2626" transform="rotate(-14 316 122)"/>
+  <ellipse cx="336" cy="119" rx="7" ry="4.5" fill="#dc2626"/>
+
+  <!-- Alveolus outer wall (1-cell-thick sac) -->
+  <path d="M 168 32 L 168 78 C 168 92 122 108 118 148 C 114 190 146 218 190 218 C 234 218 266 190 262 148 C 258 108 212 92 212 78 L 212 32" fill="#fff" stroke="#111" stroke-width="3" stroke-linecap="round"/>
+  <!-- Thin blue moist lining inside alveolus -->
+  <path d="M 173 36 L 173 80 C 173 96 127 112 123 148 C 119 186 149 213 190 213 C 231 213 261 186 257 148 C 253 112 207 96 207 80 L 207 36" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+
+  <!-- CO2 arrow going UP (out) -->
+  <line x1="184" y1="164" x2="184" y2="20" stroke="#65a30d" stroke-width="3.2" stroke-linecap="round"/>
+  <polygon points="184,10 177,24 191,24" fill="#65a30d"/>
+  <!-- O2 arrow going DOWN (in) -->
+  <line x1="196" y1="16" x2="196" y2="160" stroke="#65a30d" stroke-width="3.2" stroke-linecap="round"/>
+  <polygon points="196,170 189,156 203,156" fill="#65a30d"/>
+
+  <!-- Simple CO2 and O2 labels inside sac -->
+  <text x="168" y="152" font-family="Barlow, Arial, sans-serif" font-size="16" font-weight="700" fill="#111" text-anchor="end">CO<tspan dy="4" font-size="11">2</tspan></text>
+  <text x="212" y="152" font-family="Barlow, Arial, sans-serif" font-size="16" font-weight="700" fill="#111" text-anchor="start">O<tspan dy="4" font-size="11">2</tspan></text>
+</svg>

@@ -4,55 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Breadventure Land - Cakebread Questing</title>
+<title>World Map · Breadventure Land</title>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="adventurer.css">
 <style>
-:root{--green:#005e22;--green2:#00a03a;--ink:#111;--cream:#eeeae0;--paper:#fff;--muted:#555;--line:#d8d3c4;--soft:#f6f4ee;--str:#d08000;--hp:#16a34a;--mag:#c8001e;--sea:#4f9fd1}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
-header{background:#111;padding:10px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
-@media(min-width:700px){header{padding:10px 28px}}
-header a{text-decoration:none}
-header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(24px,4vw,32px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
-header .brand span{color:var(--green2)}
-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
-.wrap{max-width:1500px;margin:0 auto;padding:10px 12px 40px}
-h2{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:24px;line-height:1.05;margin:0 0 8px}
-h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;text-transform:uppercase;font-size:18px;margin:12px 0 4px}
-button{font:inherit;cursor:pointer;color:inherit}
-.btn{background:var(--ink);color:var(--cream);border:2px solid var(--ink);padding:6px 12px;font-weight:700;white-space:nowrap}
-.btn.alt{background:var(--paper);color:var(--ink)}
-.btn.green{background:var(--green);border-color:var(--green);color:#fff}
-.btn.gold{background:#facc15;color:#111}
+:root{--sea:#4f9fd1}
+.wrap{max-width:1500px;padding:10px 12px 40px}
+.btn{padding:6px 12px;white-space:nowrap}
 .btn:disabled{opacity:.35;cursor:default}
-img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* HUD */
 .gate{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.gate[hidden]{display:none}
+.gate.err{background:#fee2e2;border-color:#991b1b;color:#7f1d1d}
+.gate.wait{background:#fef9c3;border-color:#a16207;color:#713f12}
+.conn{font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;border:1.5px solid #111;white-space:nowrap}
+.conn.ok{background:#dcfce7;color:#14532d;border-color:#16a34a}
+.conn.wait{background:#fef9c3;color:#713f12;border-color:#ca8a04}
+.conn.off{background:#fee2e2;color:#991b1b;border-color:#dc2626}
+.netdiag{margin-top:14px;background:#fff;border:2px solid var(--ink);padding:10px 14px;font-size:13.5px}
+.netdiag.err{border-color:#dc2626;background:#fff5f5}
+.netdiag summary{font-weight:700;cursor:pointer;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.netdiag .dbody{margin-top:8px;border-top:1px solid var(--line);padding-top:8px}
+.netdiag ul{margin:4px 0 8px 18px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.netdiag li{margin:2px 0}
+.netdiag .dprobe{display:grid;gap:4px;margin-top:8px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px}
+.netdiag .prow{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;padding:3px 6px;background:var(--soft);border-left:4px solid #16a34a}
+.netdiag .prow.no{border-left-color:#dc2626;background:#fee2e2}
+.netdiag .dacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .preview{background:#fde047;border:2px solid var(--ink);padding:10px 14px;margin:10px 0 12px;font-size:15px}
 .preview b{font-size:17px}
-.hud{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;background:#fff;border:2px solid var(--ink);border-bottom:0;padding:7px 10px}
-.hud .who{display:flex;align-items:center;gap:8px}
-.hud .who img{width:40px;height:40px;border:2px solid var(--ink);background:var(--soft);border-radius:6px}
-.hud .nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:20px;text-transform:uppercase;line-height:1}
-.hud .lv{font-size:13px;color:var(--muted);font-weight:700}
-.hud .hp{display:flex;align-items:center;gap:6px;font-weight:700;font-size:14px}
-.hud .hp .bar{width:110px;height:12px;border:2px solid var(--ink);background:#eee;position:relative}
+.hud{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 14px;background:#fff;border:2px solid var(--ink);border-bottom:0;padding:6px 10px}
+.hud-l,.hud-r{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.hud .who{display:flex;align-items:center;gap:8px;background:none;border:0;padding:0;text-align:left;cursor:pointer;border-radius:6px}
+.hud .who:hover .nm{color:var(--green)}
+.hud .who img{width:38px;height:38px;border:2px solid var(--ink);background:var(--soft);border-radius:6px}
+.hud .nm{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}
+.hud .lv{font-size:12.5px;color:var(--muted);font-weight:700}
+.hud .hp{display:flex;align-items:center;gap:5px;font-weight:700;font-size:14px}
+.hud .hp .bar{width:92px;height:12px;border:2px solid var(--ink);background:#eee;position:relative}
 .hud .hp .bar i{position:absolute;inset:0 auto 0 0;background:var(--hp)}
-.hud .st{font-weight:700;font-size:14px;display:flex;gap:10px}
+.hud .st{font-weight:700;font-size:14px;display:flex;gap:8px;align-items:center}
 .hud .moves{display:flex;gap:4px;align-items:center;font-weight:700;font-size:13px}
 .hud .moves span{width:22px;height:22px;border:2px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:12px;background:#fde047}
 .hud .moves span.used{background:#eee;color:#aaa}
-.hud .tools{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
-.hud .tools .btn{padding:4px 10px;font-size:14px}
-.hud .day{font-size:13px;color:var(--muted);font-weight:700}
+.hud .tools{display:flex;gap:5px;flex-wrap:wrap}
+.hud .tools .btn{padding:4px 9px;font-size:13.5px}
 .questbar{position:absolute;left:10px;top:10px;z-index:4;display:flex;gap:8px;align-items:center;background:#fffaf0;border:2px solid #111;box-shadow:3px 3px 0 #0004;padding:5px 12px 5px 6px;pointer-events:none}
 .hud .mana.lk{opacity:.55;font-size:13px}
 .questbar img{width:38px;image-rendering:pixelated}.questbar small{display:block;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;font-weight:700}
 .questbar .ev{display:block;margin-top:3px;padding-top:3px;border-top:1px dashed #bbb;font-size:12px;font-weight:600;max-width:270px;line-height:1.25}.questbar .ev u{text-decoration:none;font-weight:900;color:#b45309}
+.questbar .rally{display:block;margin-top:4px;padding:3px 7px;background:#fef9c3;border:1.5px solid #111;font-size:12px;font-weight:700;color:#111;cursor:pointer;pointer-events:auto;text-align:left;max-width:270px;line-height:1.25}.questbar .rally:hover{background:#fde047}
 .questbar b{display:block;font-family:'Barlow Condensed',Arial,sans-serif;font-weight:900;font-size:19px;text-transform:uppercase;line-height:1}.questbar span{font-size:13px;font-weight:700}
 @media(max-width:760px){.questbar{position:sticky;left:0;top:0;box-shadow:none;border-width:0 0 2px;padding:3px 8px 4px 4px}.questbar img{width:30px}.questbar small{display:none}.questbar b{display:inline;font-size:15px;margin-right:4px}.questbar span{font-size:12px}.questbar .ev{max-width:none;font-size:11.5px;margin-top:2px;padding-top:2px}}
 #map .pp{cursor:pointer}#map .pp:hover rect{stroke:#facc15;stroke-width:2}
@@ -77,7 +81,7 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 /* map */
 .mapwrap{position:relative;border:2px solid var(--ink);background:var(--sea)}
 .mapscroll{overflow:auto;-webkit-overflow-scrolling:touch}
-#map{display:block;width:100%;height:auto;max-height:calc(100vh - 180px);min-height:340px;background:var(--sea);user-select:none;-webkit-user-select:none}
+#map{display:block;width:100%;height:auto;max-height:calc(100vh - 140px);min-height:340px;background:var(--sea);user-select:none;-webkit-user-select:none}
 @media(max-width:760px){#map{width:1000px;max-height:none}}
 #map .hit{fill:transparent;cursor:pointer}
 #map .hit:hover{fill:#ffffff22}
@@ -86,7 +90,8 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 @media(hover:none){.tip{display:none!important}}
 .panel{position:absolute;top:10px;right:10px;width:310px;max-height:calc(100% - 20px);overflow:auto;background:#fff;border:2px solid var(--ink);box-shadow:4px 4px 0 #0005;padding:12px 14px;z-index:6;display:none}
 .panel.on{display:block}
-.panel .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:20px;line-height:1}
+.panel .x{position:absolute;top:4px;right:4px;border:0;background:none;font-size:22px;line-height:1;min-width:36px;min-height:36px;display:grid;place-items:center;border-radius:6px}
+.panel .x:hover{background:var(--soft)}
 .panel .tp{font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted)}
 .panel .tn{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:24px;line-height:1;text-transform:uppercase;padding-right:20px;display:flex;gap:8px;align-items:center}
 .panel .tn img{width:36px;height:36px;flex:none}
@@ -120,6 +125,9 @@ img.px{image-rendering:pixelated;image-rendering:crisp-edges}
 #dunBody .pips{display:flex;gap:5px;margin:6px 0}#dunBody .pips i{width:16px;height:16px;border:2px solid #facc15;border-radius:50%}#dunBody .pips i.ok{background:#22c55e;border-color:#22c55e}#dunBody .pips i.no{background:#ef4444;border-color:#ef4444}
 #dunBody .dx{font-size:14px;margin-top:8px;padding:7px 10px;background:#1c1917;border-left:4px solid #facc15}
 #dunBody .stairs{display:flex;gap:6px;margin-bottom:6px}#dunBody .stairs span{flex:1;text-align:center;font:700 12px Barlow,Arial;text-transform:uppercase;padding:3px;border:1.5px solid #555;color:#888}#dunBody .stairs span.on{border-color:#facc15;color:#facc15}#dunBody .stairs span.done{border-color:#22c55e;color:#22c55e}
+.nuc{display:inline-flex;align-items:center;font-family:'Barlow Condensed',sans-serif;font-size:1.2em;line-height:1;vertical-align:middle}
+.nuc .ns{display:inline-flex;flex-direction:column;align-items:flex-end;font-size:.55em;line-height:1.05;margin-right:1px}
+.nuc .ns i{font-style:normal}
 
 details.notes{margin-top:16px;background:#fff;border:2px solid var(--ink);padding:10px 14px}
 details.notes summary{font-weight:700;cursor:pointer}
@@ -129,11 +137,11 @@ details.notes .cols{display:grid;gap:16px;margin-top:6px}
 table.st{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
 table.st td,table.st th{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
 table.st th{background:var(--soft)}
-@media(max-width:760px){.hud{gap:3px 10px;padding:5px 8px}.hud .lv{display:none}.hud .hp .bar{width:48px}.hud .hp #spellBtn{font-size:12px!important}.hud .st{gap:8px}.hud .tools{width:auto;margin-left:auto}.hud .tools .btn{padding:3px 8px}}
+@media(max-width:760px){.hud{gap:3px 10px;padding:5px 8px}.hud .lv{display:none}.hud .hp .bar{width:48px}.hud .hp #spellBtn{font-size:12px!important;min-height:32px}.hud .st{gap:8px}.hud .tools{width:auto;margin-left:auto}.hud .tools .btn{padding:6px 10px;min-height:36px}}
 </style>
 </head>
 <body>
-<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Cakebread Questing · Breadventure Land</span></header>
+<header><a class="brand" href="/">Cakebread<span>Science</span></a><span class="sub">Breadventure Land · World Map</span></header>
 <div class="wrap">
   <div class="gate" id="gate" hidden></div>
   <div class="hud" id="hud"></div>
@@ -156,10 +164,10 @@ table.st th{background:var(--soft)}
           <li><b>Same square, same fight.</b> Players on a boss's square at the same move fight it together, with a <b>rally bonus</b> of +10% damage for each ally. On the same square as another player you can tap them to patch them up (3 mana) or give them a brew. <b>Each week has an event</b> (shown under the quest).</li>
           <li><b>Bosses:</b>  Boss health carries over night to night and never goes back up.</li>
           <li><b>Small monsters</b> (orange bars) are your own: beat them on your own for coins. They come back two days later.</li>
-          <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards and missions. Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
+          <li><b>Health only comes back through revision:</b> +2 per right mission answer, +1 per flashcard, +5 for a night resting in the Cakelab. <b>Mana</b> for spells comes from flashcards, missions and a small overnight refill (+1 a night, plus +1 per 10 Magic). Knocked out = back to the Cakelab on a quarter of your Health; nothing lost.</li>
           <li><b>Water can't be crossed</b> except at the bridges. <b>Fog:</b> you only see 2 squares around anywhere you've been.</li>
-          <li><b>New things open as you level up</b> (and you level up by securing spec points): mana and spells at level 2, hats at 3, the Tuck Shop and weekly events at 4, dungeons at 5, the Abandoned Mine at 7. Locked places show a padlock and the level.</li>
-          <li><b>Dungeons</b> are played awake. End a move at a dungeon door, then open the map and go in: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
+          <li><b>New things open as you level up</b> (and you level up by securing spec points): mana, spells and hats at level 2, two-handed items at 3, the Tuck Shop and weekly events at 4, dungeons at 5, the Abandoned Mine at 7. Locked places show a padlock and the level.</li>
+          <li><b>Dungeons</b> are played awake. Walk to a dungeon door and tap Enter: three floors of questions on its theme, 3 right clears a floor, loot on each one (a brew and something to wear at the bottom). Once a day per dungeon.</li>
           <li><b>Rewards:</b> coins from monsters and dungeons; when a boss falls, everyone who ever hit it gets coins and its item. They arrive next time you open the map.</li>
         </ul>
       </div>
@@ -167,20 +175,21 @@ table.st th{background:var(--soft)}
         <h3 style="margin-top:0">Stats</h3>
         <ul>
           <li><b>Strength</b> (damage) = Physics spec points secured + 2 per level + gear.</li>
-          <li><b>Health</b> = Biology spec points secured + 3 per level.</li>
-          <li><b>Magic</b> = Chemistry spec points secured + 1 per level. More Magic, more mana.</li>
-          <li><b>Level</b> comes from XP, capped by spec points secured: 2 + 1 per 8.</li>
+          <li><b>Health</b> = Biology spec points secured + 3 per level + gear. Against Biology monsters and bosses, your Biology training hits just as hard as Strength.</li>
+          <li><b>Magic</b> = Chemistry spec points secured + 1 per level + gear. Raises max mana, boosts Patch Up (+1 Health per 5 Magic), speeds up overnight mana refill, and matches Strength against Chemistry monsters and bosses.</li>
+          <li><b>Level</b> comes from XP, capped by spec points secured: 2 + 1 per 5 (4 on Single Award).</li>
         </ul>
         <h3>The quest</h3>
         <ul>
           <li><b>Chapter 1:</b> beat the Spore Lord, the Stone Golem and the Acid Hydra to win the three key pieces and free the Professor.</li>
           <li><b>Chapter 2</b> wakes the Superbug, the Rust Wyrm and the Half-Life Horror.</li>
-          <li><b>The Abandoned Mine</b> is five floors deep and remembers how far down you got. Clear the bottom floor and its lift takes you to <b>the Underworld</b>: a second map under this one, with tougher monsters, two more dungeons and a boss of its own. Ride the lift from the mine (down) or the Mine Lift (up); it's free, but it cancels the moves you'd planned.</li>
+          <li><b>The Abandoned Mine</b> is five floors deep and remembers how far down you got. Clear the bottom floor and its lift takes you to <b>the Underworld</b>: a second map under this one, with tougher monsters, two more dungeons and a boss of its own. Ride the lift from the mine (down) or the Mine Lift (up) for free.</li>
           <li>The Ancient Gate and the Broken Bridge are for later chapters.</li>
         </ul>
       </div>
     </div>
   </details>
+  <details class="netdiag" id="netDiag" hidden></details>
 </div>
 
 <div class="modal" id="dunModal" role="dialog" aria-modal="true" aria-label="Dungeon"><div class="box" id="dunBody"></div></div>
@@ -208,9 +217,11 @@ table.st th{background:var(--soft)}
 <script src="adventurer-shell.js"></script>
 <script>
 ADV.nav('map');
-const S = ADV.S, icon = ADV.icon;
+const S = ADV.S, icon = ADV.icon, ui = ADV.ui;
 const IS_ADMIN = () => !!(QE.user && (window.ADMIN_EMAILS || []).includes(QE.user.email));
 const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const nuc = h => String(h || '').replace(/<span class="nuc"><sup>(.*?)<\/sup><sub>(.*?)<\/sub>/g, '<span class="nuc"><span class="ns"><i>$1</i><i>$2</i></span>');
 
 /* ===================== the world (shared data: bland.js) ===================== */
 const { SURF_ROWS, UNDER0, MINE, LIFT, ROWS_TXT, COLS, ROWS, T_AT, WATER, LAND, WATER_NAME, PLACES, DENS, WILD, HEAL, CRUMBS } = BL;
@@ -275,12 +286,15 @@ function visibleSet() {
 let PEOPLE = [];
 S.people = [];
 function buildPeople() {
-  PEOPLE = Object.entries(BL.pubs).filter(([u]) => u !== BL.uid && BL.states[u]).map(([u, p], i) => {
+  /* Build from BL.states so a player whose pub profile lagged or failed to write is NEVER invisible on the map */
+  const pubs = BL.pubs || {}, sts = BL.states || {};
+  PEOPLE = Object.keys(sts).filter(u => u !== BL.uid && sts[u] && sts[u].at).map((u, i) => {
+    const p = pubs[u] || {};
     const base = p.look || PIXEL.DEFAULT;
     let face; try { face = PIXEL.portrait(base, p.eq || {}); } catch (e) { face = PIXEL.portrait(PIXEL.DEFAULT); }
-    const planned = p.plan && p.plan.day === BL.world.day ? (p.plan.steps || []).length : 0;
+    const planned = p.plan && BL.world && p.plan.day === BL.world.day ? (p.plan.steps || []).length : 0;
     let fig; try { fig = PIXEL.figure(p.eq || {}, base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
-    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: BL.states[u].at || BL.HOME };
+    return { uid: u, i, nick: p.name || 'Adventurer', base, eq: p.eq || {}, lvl: p.lvl || 1, face, fig, planned, at: sts[u].at || BL.HOME };
   });
   S.people = PEOPLE.map(p => p.at);
 }
@@ -315,7 +329,7 @@ function stayUseful(k) { const P = PLACES[k]; if (!P) return false;
   if (P.type === 'event') return S.puddleDay !== QE.TODAY;
   return false; }
 function reachable() {
-  if (S.moves <= 0 || walking) return new Set();
+  if (!shared || S.moves <= 0 || walking) return new Set();
   const [lc, lr] = unkey(S.at);
   return new Set([...neighbours(lc, lr).filter(([c, r]) => walkable(c, r)).map(([c, r]) => key(c, r)), ...(stayUseful(S.at) ? [S.at] : [])]);
 }
@@ -427,7 +441,7 @@ function renderMap() {
       if (P.type === 'cage') {   /* bars over the Professor (or an empty open cage once he's free) */
         const L = x - 18, T = y - 26;
         things += `<rect x="${L}" y="${T}" width="36" height="40" fill="none" stroke="#334155" stroke-width="3"/>` + (freed ? `<line x1="${L + 36}" y1="${T}" x2="${L + 50}" y2="${T + 8}" stroke="#334155" stroke-width="3"/>` : [1, 2, 3, 4, 5].map(i => `<line x1="${L + i * 6}" y1="${T}" x2="${L + i * 6}" y2="${T + 40}" stroke="#334155" stroke-width="2.2"/>`).join(''));
-        things += `<text x="${x}" y="${y + 24}" text-anchor="middle" font-size="11" font-weight="900" fill="#111" paint-order="stroke" stroke="#fff" stroke-width="3">🔑 ${S.chapter >= 2 ? 3 : ADV.keys()}/3</text>`;
+        things += img(icon('key'), x - 18, y + 14, 13) + `<text x="${x + 5}" y="${y + 24}" text-anchor="middle" font-size="11" font-weight="900" fill="#111" paint-order="stroke" stroke="#fff" stroke-width="3">${S.chapter >= 2 ? 3 : ADV.keys()}/3</text>`;
       }
       if (asleep) things += `<text x="${x + 16}" y="${y - 16}" font-size="12" font-weight="900" fill="#334155">z</text><text x="${x + 23}" y="${y - 24}" font-size="9" font-weight="900" fill="#334155">z</text>`;
       if (P.type === 'boss' && !asleep) {
@@ -490,23 +504,42 @@ function renderMap() {
 </defs>
     <rect y="${HEXR * 1.5 * (R0 - 2)}" width="${VB_W}" height="${HEXR * 1.5 * (R1 - R0 + 4)}" fill="${DARK ? '#2b2733' : '#4f9fd1'}"/>${water}${land}${coast}<g>${decor}</g><g>${regionLabels(vis)}</g>${things}
     <g filter="url(#fogblur)" opacity=".97">${fog}</g>${fogTop}${route}
-    ${hits}${ppl}${S.camp ? (() => { const [x, y] = center(...unkey(S.camp.k)); return `<g style="pointer-events:none"><rect x="${x - 17}" y="${y - 50}" width="34" height="17" rx="8" fill="#111" stroke="#facc15" stroke-width="1.5"/><text x="${x}" y="${y - 37}" text-anchor="middle" font-size="11" font-weight="900" fill="#facc15">⛺ ${S.camp.n}</text></g>`; })() : ''}`;
+    ${hits}${ppl}${S.camp ? (() => { const [x, y] = center(...unkey(S.camp.k)); return `<g style="pointer-events:none"><rect x="${x - 17}" y="${y - 50}" width="34" height="17" rx="8" fill="#111" stroke="#facc15" stroke-width="1.5"/>${img(icon('camp'), x - 13, y - 48, 13)}<text x="${x + 7}" y="${y - 37}" text-anchor="middle" font-size="11" font-weight="900" fill="#facc15">${S.camp.n}</text></g>`; })() : ''}`;
 }
 
 /* ===================== HUD, panel, tooltip ===================== */
 function renderHud() {
   setLayer();
   const s = ADV.stats(), l = s.l, cap = ADV.levelCap();
-  $('hud').innerHTML = `<div class="who"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${ADV.nick()}</div><div class="lv">Level ${l}${l >= cap ? ' (cap — secure more spec points)' : ''}</div></div></div>
-    <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">❤ <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
-    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">🔮 <span>🔒 Level ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers. Holds up to 10 + Magic.">🔮 <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px">Spells & brews${S.shield ? ' · 🛡' : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ' · ' + BL.BREWS[b].ic).join('')}</button></div>`}
-    <div class="st"><span style="color:var(--str)">💪 ${s.str}</span><span style="color:var(--mag)">✨ ${s.mag}</span><span>🪙 ${S.coins}</span>${ADV.can('shop') ? `<span title="Brews">🧪 ${Object.values(S.brews).reduce((a, b) => a + b, 0)}</span>` : ''}</div>
-    <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' 🎁' : ''}</div>
-    <div class="day">Day ${S.dayNo || 1} · boss fights happen at midnight</div>
-    <div class="tools"><button class="btn alt" id="meBtn" title="Find me on the map">📍<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">📜<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? '🌫<span class="t"> Fog on</span>' : '👁<span class="t"> Whole map</span>'}</button>` : ''}</div>`;
-  $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">🔑</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
+  const brewN = Object.values(S.brews).reduce((a, b) => a + b, 0);
+  $('hud').innerHTML = `<div class="hud-l"><button type="button" class="who" id="whoBtn" title="Strength ${s.str} · Health ${S.health}/${s.hp} · Magic ${s.mag} · Day ${S.dayNo || 1} — click for full stats"><img class="px" src="${ME_FACE}" alt=""><div><div class="nm">${esc(ADV.nick())}</div><div class="lv">Lv ${l}${l >= cap ? ' (cap)' : ''} · Day ${S.dayNo || 1}</div></div></button>
+    <div class="hp" title="Health recharges with missions (+${HEAL.mission} per right answer), flashcards (+${HEAL.card} per card) and resting in the Cakelab (+${HEAL.rest} a night)">${ui('heart')} <div class="bar"><i style="width:${S.health / s.hp * 100}%"></i></div>${S.health}/${s.hp}</div>
+    ${!ADV.can('spells') ? `<div class="hp mana lk" title="Mana and spells unlock at level ${ADV.unlockLv('spells')}">${ui('mana')} <span>${ui('lock', 13)} Lv ${ADV.unlockLv('spells')}</span></div>` : `<div class="hp mana" title="Mana for spells: +1 per flashcard, +1 per 3 right mission answers, plus overnight refill (+1 + 1 per 10 Magic). Holds up to 10 + Magic.">${ui('mana')} <div class="bar"><i style="width:${S.mana / s.mana * 100}%;background:#8b5cf6"></i></div>${S.mana}/${s.mana}<button class="btn alt" id="spellBtn" style="padding:2px 8px;font-size:13px;margin-left:4px" ${shared ? '' : 'disabled title="Connect to the shared world to cast spells or drink brews"'}>Spells${ADV.can('shop') && brewN ? ` &amp; ${brewN} brew${brewN === 1 ? '' : 's'}` : ''}${S.shield ? ` · ${ui('shield', 14)}` : ''}${['aura','fizz','calm'].filter(b => S[b]).map(b => ` · ${ui(BL.BREWS[b].px, 14)}`).join('')}</button></div>`}
+    <div class="st"><span title="Coins">${ui('coin')} ${S.coins}</span></div>
+    <div class="moves" title="${S.bonus ? `Includes ${S.bonus} extra from your teacher (kept until you use them)` : ''}">Moves ${S.moves > 8 ? `<b style="font-size:15px">${S.moves} left</b>` : S.moves ? [...Array(S.moves)].map((_, i) => `<span>${i + 1}</span>`).join('') : '<span class="used" style="width:auto;border-radius:11px;padding:0 7px">none left</span>'}${S.bonus ? ' ' + ui('gift', 15) : ''}</div></div>
+    <div class="hud-r">${conn === 'live' ? `<span class="conn ok" title="Synced with the shared world · boss fights happen at midnight">● Live · ${PEOPLE.length + 1} player${PEOPLE.length ? 's' : ''}</span>` : conn === 'connecting' ? `<span class="conn wait" title="Connecting to the shared world">◌ Connecting…</span>` : `<span class="conn off" title="Viewing map only — actions locked until reconnected">● Offline (view only)</span>`}
+    <div class="tools"><button class="btn alt" id="meBtn" title="Find me on the map">${ui('pin', 15)}<span class="t"> Find me</span></button><button class="btn alt" id="repBtn" title="Morning report">${ui('scroll', 15)}<span class="t"> Report</span></button>${IS_ADMIN() ? `<button class="btn alt" id="peekBtn" title="Admin: look at the other layer">${LAYER ? '⬆' : '⬇'}<span class="t"> ${LAYER ? 'Surface' : 'Underworld'}</span></button><button class="btn alt" id="fogBtn" title="Admin: see the whole map">${revealAll ? `${ui('fog', 15)}<span class="t"> Fog on</span>` : `${ui('eye', 15)}<span class="t"> Whole map</span>`}</button>` : ''}</div></div>`;
+  $('questbar').innerHTML = S.chapter < 2 ? `<img src="${icon('prof')}" alt=""><div><small>Chapter 1 · everyone's quest</small><b>Free the Professor</b><span>${[0, 1, 2].map(i => `<span style="opacity:${i < ADV.keys() ? 1 : .22}">${ui('key', 15)}</span>`).join('')} ${ADV.keys()}/3 key pieces</span></div>`
     : `<img src="${icon('prof')}" alt=""><div><small>Chapter 2</small><b>The monsters wake</b><span>Superbug · Rust Wyrm · Half-Life Horror</span></div>`;
-  if (ADV.can('events')) { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ev.ic} <u>${ev.name}</u>: ${ev.text}</span>`); }
+  if (ADV.can('events')) { const ev = BL.eventOf(shared && BL.world ? BL.world.day : QE.TODAY), d = $('questbar').querySelector('div'); if (d) d.insertAdjacentHTML('beforeend', `<span class="ev" title="${ev.text}">${ui(ev.px, 14)} <u>${ev.name}</u>: ${ev.text}</span>`); }
+  if (shared && BL.world && BL.states) {
+    const camps = {};
+    Object.entries(BL.states).forEach(([u, st]) => {
+      if (u === BL.uid || !st || !st.camp || st.camp.day !== BL.world.day || st.at !== st.camp.k) return;
+      const P = PLACES[st.camp.k];
+      if (!P || P.type !== 'boss' || (P.ch || 1) > S.chapter || !(S.boss[st.camp.k] > 0)) return;
+      (camps[st.camp.k] = camps[st.camp.k] || []).push(((BL.pubs || {})[u] || {}).name || 'Someone');
+    });
+    const top = Object.entries(camps).sort((a, b) => b[1].length - a[1].length)[0];
+    const d = $('questbar').querySelector('div');
+    if (top && d) {
+      const [bk, names] = top, shown = names.length <= 2 ? names.map(esc).join(' & ') : `${esc(names[0])} + ${names.length - 1} more`;
+      d.insertAdjacentHTML('beforeend', `<button type="button" class="rally" data-rally="${bk}">${ui('camp', 14)} Rally: ${shown} at ${esc(PLACES[bk].name)} tonight (+10% each)</button>`);
+      const rb = d.querySelector('[data-rally]');
+      if (rb) rb.onclick = () => { sel = bk; renderAll(); };
+    }
+  }
+  $('whoBtn').onclick = () => { sel = null; renderMap(); renderPerson('me'); };
   $('repBtn').onclick = () => showReport();
   $('meBtn').onclick = () => { const m = document.querySelector('#map .pp[data-p="me"]'); if (m && m.scrollIntoView) m.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); };
   if ($('fogBtn')) $('fogBtn').onclick = () => { revealAll = !revealAll; renderAll(); };
@@ -517,14 +550,15 @@ function renderHud() {
 /* ===================== spells (mana from flashcards and missions) ===================== */
 function brewRows() {
   const have = Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0);
-  return `<h3 style="margin:14px 0 4px">🧪 Brews</h3>` + (have.length ? have.map(([id, b]) => { const on = b.when === 'night' && S[id];
-    return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:26px">${b.ic}</span><div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
+  return `<h3 style="margin:14px 0 4px">${ui('flask', 18)} Brews</h3>` + (have.length ? have.map(([id, b]) => { const on = b.when === 'night' && S[id];
+    return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0">${ui(b.px, 28)}<div style="flex:1"><b>${b.name}</b> × ${S.brews[id]}<br><span class="small">${b.what}${on ? ' <i>Already drunk for tonight.</i>' : ''}</span></div><button class="btn green" data-brew="${id}" ${on ? 'disabled' : ''}>Drink</button></div>`; }).join('')
     : '<p class="small">None yet. Buy them at the Tuck Shop with coins from missions, flashcards and the map, or find them in dungeons.</p>');
 }
+const patchHeal = () => 5 + Math.floor(ADV.stats().mag / 5) + (FX().heal || 0);
 const SPELL_FN = {
-  heal: { ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.', cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + 5 + (FX().heal || 0)); return `💚 +${S.health - b} Health.`; } },
-  shield: { ok: () => !S.shield, why: 'Already up for tonight.', cast: () => { S.shield = true; return '🛡 Jam Shield is up: half damage tonight.'; } },
-  fog: { ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.', cast: () => { S.lifted = [...(S.lifted || []), S.at]; return '🌫 The fog lifts around you.'; } },
+  heal: { ok: () => S.health < ADV.stats().hp, why: 'Already at full Health.', cast: () => { const s = ADV.stats(), b = S.health; S.health = Math.min(s.hp, S.health + patchHeal()); return `${ui('patch')} +${S.health - b} Health.`; } },
+  shield: { ok: () => !S.shield, why: 'Already up for tonight.', cast: () => { S.shield = true; return `${ui('shield')} Jam Shield is up: half damage tonight.`; } },
+  fog: { ok: () => !(S.lifted || []).includes(S.at), why: 'Already cleared here.', cast: () => { S.lifted = [...(S.lifted || []), S.at]; return `${ui('fog')} The fog lifts around you.`; } },
 };
 const SPELLS = BL.SPELL_INFO.map(sp => Object.assign({}, sp, SPELL_FN[sp.id]));   // names and costs live in bland.js
 /* ---------- dungeons (16 Nov): three floors of themed questions, played awake, once a day per dungeon ----------
@@ -532,6 +566,7 @@ const SPELLS = BL.SPELL_INFO.map(sp => Object.assign({}, sp, SPELL_FN[sp.id])); 
    Answers go through QE.recordAnswer, so they count towards securing spec points like a mission. */
 const FLOOR_COINS = BL.FLOOR_COINS;
 function delve(k) {
+  if (!shared) return;
   const P = PLACES[k], keys = new Set(); QE.allSubs().filter(s => P.subs.includes(s.key)).forEach(s => s.keys.forEach(x => keys.add(x)));
   let all = QUESTIONS.filter(q => keys.has(q.s));
   /* a Single Award course (/js/course.js) can leave a dungeon's theme thin: top up from the same topics, then the same science */
@@ -540,26 +575,35 @@ function delve(k) {
     if (all.length < 12) all = all.concat(QUESTIONS.filter(q => !keys.has(q.s) && !tops.has(q.s.split('.')[0]) && Ls.has(q.s[0]))); }
   const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
   const dgOk = typeof DQ !== 'undefined' && DQ.ok(), cap = list => { let n = 0; return list.filter(q => !q.dg || (dgOk && n++ < 2)); };   // at most 2 diagram questions of each sort per run
-  const easy = cap(sh(all.filter(q => !q.hard))), hard = cap(sh(all.filter(q => q.hard)));
-  const take = n => { const f = n >= 2 ? hard.splice(0, 2).concat(easy.splice(0, 2)) : n === 1 ? hard.splice(0, 1).concat(easy.splice(0, 3)) : easy.splice(0, 4); return sh(f.concat(easy.splice(0, 4 - f.length))).map(QE.inst); };
+  /* difficulty levels (questions.js): floor 1 is levels 1–2, floor 2 adds a level 3, floor 3 onwards is levels 2–3; asked in level order */
+  const LV = [1, 2, 3].map(l => cap(sh(all.filter(q => (q.lv || 1) === l)))), PLAN = [[1, 1, 2, 2], [1, 2, 2, 3], [2, 2, 3, 3]];
+  const one = want => { for (const l of [want, want - 1, want + 1, want - 2, want + 2]) { const p = LV[l - 1]; if (p && p.length) return p.shift(); } return null; };
+  const take = n => PLAN[Math.min(n, 2)].map(one).filter(Boolean).sort((a, b) => (a.lv || 1) - (b.lv || 1)).map(QE.inst);
   const NF = P.rooms.length, first = P.keep ? Math.min((S.depth || {})[k] || 0, NF - 1) : 0;   // the mine remembers how deep you got
   const D = { k, P, floor: first, qs: take(first), i: 0, ok: 0, no: 0, coins: 0, got: [], right: 0 };
   S.delve = S.delve || {}; S.delve[k] = QE.TODAY; QE.busy = true; persist();
   const body = $('dunBody'), m = $('dunModal'); m.classList.add('on');
   const stairs = () => `<div class="stairs">${P.rooms.map((_, f) => `<span class="${f < D.floor ? 'done' : f === D.floor ? 'on' : ''}">${NF > 3 ? '' : 'Floor '}${f + 1}</span>`).join('')}</div>`;
-  const close = () => { m.classList.remove('on'); QE.busy = false; if (D.right) QE.earn({ mana: Math.floor(D.right / 3) }); QE.gameChanged(); persist(); renderAll(); };
+  const close = () => {
+    m.classList.remove('on'); QE.busy = false;
+    if (D.right) QE.earn({ mana: Math.floor(D.right / 3) });
+    const p = QE.takePool(), stNow = ADV.stats();
+    if (p.hp) S.health = Math.min(stNow.hp, S.health + p.hp);
+    if (p.mana) S.mana = Math.min(stNow.mana, (S.mana || 0) + p.mana);
+    QE.gameChanged(); persist(); renderAll();
+  };
   function ask() {
     const q = D.qs[D.i]; let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
     if (q.svg && typeof DQ !== 'undefined') opts = DQ.order(opts, o => o[0]).opts;
-    body.innerHTML = `${stairs()}<h2 style="margin:0">${P.name}</h2><div class="small">Floor ${D.floor + 1}: ${P.rooms[D.floor]} · 3 right to clear it${q.hard ? ' · ★ harder' : ''}</div>
+    body.innerHTML = `${stairs()}<h2 style="margin:0">${P.name}</h2><div class="small">Floor ${D.floor + 1}: ${P.rooms[D.floor]} · 3 right to clear it · ${lvLabel(q)}</div>
       <div class="pips">${[0, 1, 2].map(j => `<i class="${j < D.ok ? 'ok' : ''}"></i>`).join('')}<span style="width:10px"></span>${[0, 1].map(j => `<i class="${j < D.no ? 'no' : ''}" style="border-color:#ef4444"></i>`).join('')}</div>
-      ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+      ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="dq">${nuc((q.tf !== undefined ? 'True or false? ' : '') + q.q)}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${nuc(t)}</button>`).join('')}</div><div id="dunFb"></div>`;
     body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
       const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
       QE.recordAnswer(q, ok); let hurt = 0;
       if (ok) { D.ok++; D.right++; } else { D.no++; hurt = Math.min(2, Math.max(0, S.health - 1)); S.health -= hurt; }
       const cleared = D.ok >= 3, out = D.no >= 2;
-      $('dunFb').innerHTML = `<div class="dx"><b class="${ok ? 'good' : 'bad'}">${ok ? 'Right.' : `Wrong${hurt ? `: a trap nips you (−${hurt} Health)` : ''}.`}</b> ${q.x || ''}</div><button class="btn gold" id="dunNext">${cleared ? 'Floor cleared →' : out ? 'Uh oh →' : 'Next →'}</button>`;
+      $('dunFb').innerHTML = `<div class="dx"><b class="${ok ? 'good' : 'bad'}">${ok ? 'Right.' : `Wrong${hurt ? `: a trap nips you (−${hurt} Health)` : ''}.`}</b> ${nuc(q.x || '')}</div><button class="btn gold" id="dunNext">${cleared ? 'Floor cleared →' : out ? 'Uh oh →' : 'Next →'}</button>`;
       $('dunNext').onclick = () => { if (cleared) floorDone(); else if (out) end(false); else { D.i++; ask(); } }; $('dunNext').focus();
     });
   }
@@ -570,9 +614,9 @@ function delve(k) {
     if (D.floor === NF - 1 && k === MINE && S.under) return end(true);   // the bottom of the mine only pays out its treasure once
     if (D.floor === NF - 1) {
       if (k === MINE) { S.under = true; D.broke = true; }
-      const b = Math.random() < .5 ? 'fizz' : 'aura'; S.brews[b] = (S.brews[b] || 0) + 1; D.got.push(BL.BREWS[b].ic + ' ' + BL.BREWS[b].name);
-      const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !(QE.game.bag || []).includes(i.id));
-      if (pool.length) { const it = pool[Math.floor(Math.random() * pool.length)]; QE.game.bag = (QE.game.bag || []).concat(it.id); QE.game.lastLoot = it.id; D.got.push('🎁 ' + it.name); }
+      const b = Math.random() < .5 ? 'fizz' : 'aura'; S.brews[b] = (S.brews[b] || 0) + 1; D.got.push(`${ui(BL.BREWS[b].px, 15)} ${BL.BREWS[b].name}`);
+      const pool = ADV_ITEMS.filter(i => ['common', 'uncommon'].includes(i.r) && i.from !== 'Starter outfit' && !i.dark && !(QE.game.bag || []).includes(i.id));
+      if (pool.length) { const it = pool[Math.floor(Math.random() * pool.length)]; QE.game.bag = (QE.game.bag || []).concat(it.id); QE.game.lastLoot = it.id; D.got.push(`${ui('chest', 15)} ${it.name}`); }
       else { S.coins += 10; D.coins += 10; }
       return end(true);
     }
@@ -582,7 +626,7 @@ function delve(k) {
     $('dunLeave').onclick = () => end(null);
   }
   function end(won) {
-    LOG('🕯', `${P.name}: ${won ? 'cleared to the bottom' : won === false ? `thrown out on floor ${D.floor + 1}` : `left after floor ${D.floor}`} · ${D.right} right, +${D.coins} coins`);
+    LOG('•', `${P.name}: ${won ? 'cleared to the bottom' : won === false ? `thrown out on floor ${D.floor + 1}` : `left after floor ${D.floor}`} · ${D.right} right, +${D.coins} coins`);
     body.innerHTML = `<h2 style="margin:0">${D.broke ? 'You break through!' : won ? `${P.name}: ${NF === 3 ? 'all three floors' : 'the bottom floor'} cleared!` : won === false ? `Floor ${D.floor + 1} throws you out` : 'Back in the daylight'}</h2>
       ${D.broke ? `<p class="new">The last wall of the deep seam gives way. Behind it: a rusty lift cage, a very long cable, and warm air coming up from below. <b>The Underworld is open to you.</b> Stand at the mine and take the lift down whenever you like.</p>` : ''}<p>${won === false ? `Two wrong on one floor and the room resets. ${P.keep ? 'You keep your place: next time you start from this floor. ' : ''}` : ''}You got <b>${D.right}</b> right${D.coins ? ` and carried out <span class="lt">${D.coins} coins</span>${D.got.length ? ', ' + D.got.map(g => `<span class="lt">${g}</span>`).join(', ') : ''}` : ''}. Right answers here count towards securing spec points, like a mission.</p>
       <p class="small">The rooms refill overnight: you can go in again tomorrow.</p><button class="btn gold" id="dunOut">Back to the map →</button>`;
@@ -591,26 +635,28 @@ function delve(k) {
   ask();
 }
 function showSpells() {
+  if (!shared) return;
   $('spellClose').onclick = () => $('spellModal').classList.remove('on');
   const m = $('spellModal'), s = ADV.stats();
   const LK = { heal: 'spells', shield: 'shield', fog: 'fog' };
-  const row = sp => { if (!ADV.can(LK[sp.id])) return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0;opacity:.5"><span style="font-size:28px;filter:grayscale(1)">${sp.ic}</span><div style="flex:1"><b>${sp.name}</b><br><span class="small">${sp.what}</span></div><b>🔒 Level ${ADV.unlockLv(LK[sp.id])}</b></div>`;
-    const can = S.mana >= costOf(sp.cost) && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0"><span style="font-size:28px">${sp.ic}</span>
-    <div style="flex:1"><b>${sp.name}</b> · ${costOf(sp.cost)} mana<br><span class="small">${sp.what}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
+  const desc = sp => sp.id === 'heal' ? `+${patchHeal()} Health now (5 + ${Math.floor(s.mag / 5)} from Magic${FX().heal ? ` + ${FX().heal} from gear` : ''}).` : sp.what;
+  const row = sp => { if (!ADV.can(LK[sp.id])) return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0;opacity:.5"><span style="filter:grayscale(1)">${ui(sp.px, 28)}</span><div style="flex:1"><b>${sp.name}</b><br><span class="small">${desc(sp)}</span></div><b>${ui('lock', 14)} Level ${ADV.unlockLv(LK[sp.id])}</b></div>`;
+    const can = S.mana >= costOf(sp.cost) && sp.ok(); return `<div style="display:flex;gap:10px;align-items:center;border-top:1px solid #ddd;padding:8px 0">${ui(sp.px, 28)}
+    <div style="flex:1"><b>${sp.name}</b> · ${costOf(sp.cost)} mana<br><span class="small">${desc(sp)}${!sp.ok() ? ` <i>${sp.why}</i>` : ''}</span></div>
     <button class="btn ${can ? 'green' : 'alt'}" data-sp="${sp.id}" ${can ? '' : 'disabled'}>Cast</button></div>`; };
-  $('spellBody').innerHTML = `<h2 style="margin-top:0">🔮 Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision: <b>+1 per flashcard</b> you review and <b>+1 per 3 right answers</b> in a mission. More Magic (Chemistry spec points) lets you hold more.</p>
-    ${SPELLS.map(row).join('')}${ADV.can('shop') ? brewRows() : `<h3 style="margin:14px 0 4px;opacity:.5">🧪 Brews · 🔒 Level ${ADV.unlockLv('shop')}</h3><p class="small">Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.${Object.values(S.brews).some(n => n > 0) ? ' The ones you have are kept for you.' : ''}</p>`}`;
+  $('spellBody').innerHTML = `<h2 style="margin-top:0">${ui('mana', 22)} Spells & brews</h2><p>You have <b>${S.mana}</b> of ${s.mana} mana. Mana comes from revision (<b>+1 per flashcard</b>, <b>+1 per 3 right mission answers</b>) and refills by <b>+${1 + Math.floor(s.mag / 10)}</b> each night. More Magic raises max mana, Patch Up healing and overnight refill.</p>
+    ${SPELLS.map(row).join('')}${ADV.can('shop') ? brewRows() : `<h3 style="margin:14px 0 4px;opacity:.5">${ui('flask', 18)} Brews · ${ui('lock', 14)} Level ${ADV.unlockLv('shop')}</h3><p class="small">Brews and the Tuck Shop open at level ${ADV.unlockLv('shop')}.${Object.values(S.brews).some(n => n > 0) ? ' The ones you have are kept for you.' : ''}</p>`}`;
   m.classList.add('on');
   $('spellBody').querySelectorAll('[data-brew]').forEach(b => b.onclick = () => {
     const id = b.dataset.brew, br = BL.BREWS[id]; if (!(S.brews[id] > 0)) return;
-    S.brews[id]--; QE.tally('brews'); LOG('🧪', `Drank ${br.name}`); let msg;
-    if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `🥤 Health refilled (+${S.health - b0}).`; }
-    else { S[id] = true; msg = `${br.ic} ${br.name}: ${br.what}`; }
+    S.brews[id]--; QE.tally('brews'); LOG('•', `Drank ${br.name}`); let msg;
+    if (id === 'slushie') { const b0 = S.health; S.health = ADV.stats().hp; msg = `${ui('slushie')} Health refilled (+${S.health - b0}).`; }
+    else { S[id] = true; msg = `${ui(br.px)} ${br.name}: ${br.what}`; }
     persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
   $('spellBody').querySelectorAll('[data-sp]').forEach(b => b.onclick = () => {
-    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= costOf(sp.cost); QE.tally('spells'); const msg = sp.cast(); LOG('🔮', `Cast ${sp.name}: ${String(msg).replace(/<[^>]+>/g, '')}`); persist(); renderAll(); showSpells();
+    const sp = SPELLS.find(x => x.id === b.dataset.sp); S.mana -= costOf(sp.cost); QE.tally('spells'); const msg = sp.cast(); LOG('•', `Cast ${sp.name}: ${String(msg).replace(/<[^>]+>/g, '').trim()}`); persist(); renderAll(); showSpells();
     $('spellBody').insertAdjacentHTML('afterbegin', `<p style="background:#dcfce7;color:#14532d;font-weight:700;padding:6px 10px;border:2px solid #16a34a">${msg}</p>`);
   });
 }
@@ -628,7 +674,7 @@ function describe(k) {
   if (P) return { tp: TYPE[P.type] + (P.science ? ' · ' + ADV.SCI[P.science] : '') + ((P.ch || 1) > S.chapter ? ' · Chapter ' + P.ch + ' (asleep)' : ''), name: P.name, P, text: P.text + ((P.ch || 1) > S.chapter ? ' <b>Asleep until the Professor is free.</b>' : '') };
   if (WATER.has(t)) return { tp: t === '#' ? 'Rock · no way through' : t === 'L' ? 'Lava · can\'t cross' : 'Water · can\'t cross', name: WATER_NAME[t][0], text: WATER_NAME[t][1], water: true };
   if (CRUMBS.includes(k) && S.chapter < 2) return { tp: 'A clue', name: 'A trail of cake crumbs', text: 'Crumbs, sprinkles and the odd scorch mark, leading north towards the Cold Store Hills…' };
-  return { tp: 'Land', name: LAND[t].name, text: t === 'B' ? 'The only ways across the River Tangent are this bridge and the one further south.' : 'Walk through. Each night here has a small chance of a random event.' };
+  return { tp: 'Land', name: LAND[t].name, text: t === 'B' ? 'The only ways across the River Tangent are this bridge and the one further south.' : 'Open land. Walking through has a small chance of a wild critter jumping out.' };
 }
 
 function renderPanel() {
@@ -640,62 +686,72 @@ function renderPanel() {
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && P.tier) h += `<div class="cap" style="margin-top:2px"><b style="color:${{ Starter: '#16a34a', 'Next step': '#0284c7', Tough: '#b45309', 'Very tough': '#dc2626', Hardest: '#7c3aed' }[P.tier] || '#111'}">${P.tier === 'Starter' ? '★ Starter boss: you can beat this one on your own' : P.tier}</b>${S.boss[sel] === 0 && P.respawn && BL.world && (BL.world.back || {})[sel] ? ` · beaten, back in ${Math.max(1, BL.world.back[sel] - BL.dayNum(QE.TODAY))} day${BL.world.back[sel] - BL.dayNum(QE.TODAY) > 1 ? 's' : ''}` : ''}</div>`;
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter) h += `<div class="bosshp"><i style="width:${S.boss[sel] / P.max * 100}%"></i></div><div class="cap">${S.boss[sel]} / ${P.max} health · hits back for about ${P.power}</div>`;
   h += `<p>${D.text}</p>`;
-  if (D.chest) { const C = chestKind(sel); h += `<div class="loot">✨ <b>Might hold:</b> ${C.coins[0]}–${C.coins[1]} coins and a ${C.odds}. Walking onto it opens it straight away (no extra move).${chestAt(sel).t === 'wood' ? ' Not every wooden chest is what it seems…' : ''}${chestAt(sel).m && FX().mimic ? ' <b>🔍 You can see its teeth: it\'s a mimic.</b> It won\'t get a bite in, though.' : ''}</div>`
+  if (D.chest) { const C = chestKind(sel); h += `<div class="loot">${ui('chest')} <b>Might hold:</b> ${C.coins[0]}–${C.coins[1]} coins and a ${C.odds}. Walking onto it opens it straight away (no extra move).${chestAt(sel).t === 'wood' ? ' Not every wooden chest is what it seems…' : ''}${chestAt(sel).m && FX().mimic ? ` <b>${ui('eye')} You can see its teeth: it's a mimic.</b> It won't get a bite in, though.` : ''}</div>`
     + (layerOf(sel) && !S.under && layerOf(S.at) === 0 ? `<div class="cap">It's in the Underworld: you'll need to dig through the Abandoned Mine first.</div>` : ''); }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && BL.BOSS_STORY[sel]) { const st = BL.BOSS_STORY[sel], hp = S.boss[sel];
     h += `<p class="cap" style="font-style:italic">${hp === 0 ? st.fall : hp <= P.max / 3 ? st.low : hp < P.max ? st.taunt[S.day % st.taunt.length] : st.meet}</p>`; }
+  if (P && (P.science === 'b' || P.science === 'c') && ((P.type === 'monster' && denHp(sel) > 0) || (P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0))) {
+    const stNow = ADV.stats(), aff = P.science === 'b' ? stNow.hp - 7 - stNow.l : ADV.BASE.str + stNow.l + stNow.mag;
+    if (aff > stNow.str) {
+      const isB = P.science === 'b';
+      h += `<div class="loot" style="background:${isB ? '#effaf2' : '#fdf0f0'};border-left:4px solid var(--${isB ? 'hp' : 'mag'});padding:5px 8px">${isB ? `${ui('leaf')} <b>Biology affinity active:</b>` : `${ui('flask')} <b>Chemistry affinity active:</b>`} your ${ADV.SCI[P.science]} training hits with <b>${aff}</b> power instead of ${stNow.str} Strength.</div>`;
+    }
+  }
   if (P && P.type === 'monster') {
-    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (ADV.stats().str * 1.5)));
-    h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits you for about ${P.power} if you get its question wrong</div><div class="loot">⚔ <b>Fight it now, on your own.</b> Each move here is one ${ADV.SCI[P.science] || ''} question: right and you hit it (about ${n} right answer${n > 1 ? 's' : ''} to beat it), wrong and it hits you. Beat it for ${monsterCoins()} coins.</div>`
+    const hp = denHp(sel), n = Math.max(1, Math.ceil(hp / (fightStr(P.science) * 1.5)));
+    h += hp ? `<div class="bosshp"><i style="width:${hp / P.max * 100}%;background:#f59e0b"></i></div><div class="cap">${hp} / ${P.max} health · hits you for about ${P.power} if you get its question wrong</div><div class="loot">${ui('sword')} <b>Fight it now, on your own.</b> Each move here is one ${ADV.SCI[P.science] || ''} question: right and you hit it (about ${n} right answer${n > 1 ? 's' : ''} to beat it), wrong and it hits you. Beat it for ${monsterCoins()} coins.</div>`
       : `<div class="cap">Beaten — it'll be back in a day or two.</div>`;
   }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[sel] > 0) {
-    const str = ADV.stats().str, solo = Math.ceil(S.boss[sel] / str), team = Math.ceil(S.boss[sel] / ((str + 3 * 16) * 1.3));   // attacks: you alone / you + 3 others (rally +30%)
+    const str = fightStr(P.science), solo = Math.ceil(S.boss[sel] / str), team = Math.ceil(S.boss[sel] / ((str + 3 * 16) * 1.3));   // attacks: you alone / you + 3 others (rally +30%)
     const campers = Object.entries(BL.states || {}).filter(([u, st]) => u !== BL.uid && st && st.camp && st.camp.k === sel && st.at === sel && BL.world && st.camp.day === BL.world.day).map(([u]) => (BL.pubs[u] || {}).name || 'Someone');
-    h += `<div class="loot">⛺ <b>Boss fights happen at midnight.</b> Step here to make camp: every move you spend here is one attack tonight, alongside everyone else camped here (📣 +10% damage for each of them). Alone about ${solo} attack${solo > 1 ? 's' : ''} to beat it · with 3 others about ${team} each. It hits each camper back for about ${P.power} a round.</div>`
-      + (S.camp && S.camp.k === sel ? `<div class="loot" style="background:#fef9c3;padding:4px 8px;border:2px solid #111">⛺ <b>You're camped here with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight.</b> Walking away breaks camp and gives those moves back.</div>` : '')
-      + (campers.length ? `<div class="loot">👥 Also camped here tonight: <b>${campers.join(', ')}</b></div>` : '');
+    h += `<div class="loot">${ui('camp')} <b>Boss fights happen at midnight.</b> Step here to make camp: every move you spend here is one attack tonight, alongside everyone else camped here (${ui('horn', 14)} +10% damage for each of them). Alone about ${solo} attack${solo > 1 ? 's' : ''} to beat it · with 3 others about ${team} each. It hits each camper back for about ${P.power} a round.</div>`
+      + (S.camp && S.camp.k === sel ? `<div class="loot" style="background:#fef9c3;padding:4px 8px;border:2px solid #111">${ui('camp')} <b>You're camped here with ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight.</b> Walking away breaks camp and gives those moves back.</div>` : '')
+      + (campers.length ? `<div class="loot">Also camped here tonight: <b>${campers.map(esc).join(', ')}</b></div>` : '');
   }
   if (P && P.loot) h += `<div class="loot"><b>Drops:</b> ${P.loot.join(' · ')}</div>`;
-  if (P && P.stock && !ADV.can('shop')) h += `<div class="no">🔒 The shutters are down for you. The Tuck Shop opens at level ${ADV.unlockLv('shop')}.</div>`;
+  if (P && P.stock && !ADV.can('shop')) h += `<div class="no">${ui('lock')} The shutters are down for you. The Tuck Shop opens at level ${ADV.unlockLv('shop')}.</div>`;
   else if (P && P.stock) {
     const here = S.at === sel && shared;
-    h += `<div class="loot"><b>In stock</b> · you have 🪙 ${S.coins}${here ? '' : '<br><i>Walk here to buy.</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
-      `<div style="display:flex;gap:8px;align-items:center;margin-top:6px"><span style="font-size:22px">${b.ic}</span><span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
+    h += `<div class="loot"><b>In stock</b> · you have ${ui('coin')} ${S.coins}${here ? '' : '<br><i>Walk here to buy.</i>'}</div>` + Object.entries(BL.BREWS).map(([id, b]) =>
+      `<div style="display:flex;gap:8px;align-items:center;margin-top:6px">${ui(b.px, 24)}<span style="flex:1;font-size:14px"><b>${b.name}</b> · ${b.cost} coins<br><span class="cap">${b.what}</span></span>${here ? `<button class="btn ${S.coins >= b.cost ? 'gold' : 'alt'}" data-buy="${id}" ${S.coins >= b.cost ? '' : 'disabled'}>Buy</button>` : ''}</div>`).join('');
   }
   const dLock = P && P.type === 'dungeon' ? (sel === MINE ? 'mine' : 'dungeons') : null;
-  if (dLock && !ADV.can(dLock)) h += `<div class="no">🔒 ${sel === MINE ? 'The boards are nailed back on for you.' : 'The door won\'t budge yet.'} ${sel === MINE ? 'The mine' : 'Dungeons'} open at level ${ADV.unlockLv(dLock)}.</div>`;
+  if (dLock && !ADV.can(dLock)) h += `<div class="no">${ui('lock')} ${sel === MINE ? 'The boards are nailed back on for you.' : 'The door won\'t budge yet.'} ${sel === MINE ? 'The mine' : 'Dungeons'} open at level ${ADV.unlockLv(dLock)}.</div>`;
   else if (P && P.type === 'dungeon' && (P.ch || 1) <= S.chapter) {
     const done = (S.delve || {})[sel] === QE.TODAY, NF = P.rooms.length, dep = P.keep ? Math.min((S.depth || {})[sel] || 0, NF - 1) : 0;
-    if (P.keep) h += `<div class="loot">⛏ <b>You've dug down to floor ${dep + 1} of ${NF}.</b> ${S.under ? 'The lift at the bottom is open.' : 'You keep your place from day to day. Clear the bottom floor and you break through to whatever is making those noises.'}</div>`;
-    h += mine && shared ? (done ? `<div class="loot">🕯 You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>${NF} floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">${dep ? `Carry on from floor ${dep + 1}` : `Enter ${P.name}`} →</button></div>`)
+    if (P.keep) h += `<div class="loot">${ui('mine')} <b>You've dug down to floor ${dep + 1} of ${NF}.</b> ${S.under ? 'The lift at the bottom is open.' : 'You keep your place from day to day. Clear the bottom floor and you break through to whatever is making those noises.'}</div>`;
+    h += mine && shared ? (done ? `<div class="loot">${ui('torch')} You've explored it today. The rooms refill overnight: come back tomorrow.</div>` : `<div class="loot"><b>${NF} floors.</b> Each floor is a room of questions: get 3 right to clear it and take its loot. Two wrong and the floor throws you out.</div><div class="act"><button class="btn green" id="dunGo">${dep ? `Carry on from floor ${dep + 1}` : `Enter ${P.name}`} →</button></div>`)
       : `<div class="loot"><b>${NF} floors of questions</b>, loot on every floor. Walk to the door to go in.</div>`;
-    if (sel === MINE && S.under) h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${LIFT}">🛗 Take the lift down to the Underworld ↓</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to take the lift down to the Underworld.</div>`;
+    if (sel === MINE && S.under) h += mine && shared ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${LIFT}">${ui('lift')} Take the lift down to the Underworld ↓</button></div>` : `<div class="cap" style="margin-top:6px">${ui('lift')} Stand here to take the lift down to the Underworld.</div>`;
   }
-  if (P && P.type === 'lift') h += mine ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${MINE}">🛗 Ride the lift up to the surface ↑</button></div>` : `<div class="cap" style="margin-top:6px">🛗 Stand here to ride back up to the Abandoned Mine.</div>`;
-  if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${p.nick}" alt="${p.nick}">`).join('')}</div>`;
+  if (P && P.type === 'lift') h += mine && shared ? `<div class="act"><button class="btn gold" id="rideBtn" data-to="${MINE}">${ui('lift')} Ride the lift up to the surface ↑</button></div>` : `<div class="cap" style="margin-top:6px">${ui('lift')} Stand here to ride back up to the Abandoned Mine.</div>`;
+  if (people.length || mine) h += `<div class="loot"><b>Here now:</b></div><div class="people">${mine ? `<img class="px" src="${ME_FACE}" title="You" style="border-color:#00a03a">` : ''}${people.map(p => `<img class="px" src="${p.face}" title="${esc(p.nick)}" alt="${esc(p.nick)}">`).join('')}</div>`;
   const left = S.moves, stay = sel === last, path = stay ? (stayUseful(sel) ? [sel] : null) : left > 0 ? pathTo(sel) : null;
-  if (left > 0 && path && path.length && !walking) {
+  if (!shared) {
+    h += `<div class="no">${conn === 'connecting' ? 'Connecting to Breadventure Land… moving and actions unlock once synced.' : conn === 'signed-out' ? `${ui('lock')} Sign in to move and play on the shared map.` : 'Connectivity issue — view-only mode. Moves and actions are locked so nothing gets lost.'}</div>`;
+  } else if (left > 0 && path && path.length && !walking) {
     const far = path.length > left, endK = path[Math.min(path.length, left) - 1], endP = PLACES[endK];
-    const what = far ? 'Head that way' : stay ? (P.type === 'boss' ? '⛺ Add an attack for tonight' : P.type === 'monster' ? '⚔ Fight it' : P.type === 'home' ? '🛏 Rest' : '👀 Poke it')
-      : endP && endP.type === 'boss' && (endP.ch || 1) <= S.chapter && S.boss[endK] > 0 ? '⛺ Go and make camp' : endP && endP.type === 'monster' && denHp(endK) ? '⚔ Go and fight' : P && P.type === 'dungeon' ? 'Go to the door' : 'Go';
+    const what = far ? 'Head that way' : stay ? (P.type === 'boss' ? `${ui('camp')} Add an attack for tonight` : P.type === 'monster' ? `${ui('sword')} Fight it` : P.type === 'home' ? `${ui('bed')} Rest` : 'Poke it')
+      : endP && endP.type === 'boss' && (endP.ch || 1) <= S.chapter && S.boss[endK] > 0 ? `${ui('camp')} Go and make camp` : endP && endP.type === 'monster' && denHp(endK) ? `${ui('sword')} Go and fight` : P && P.type === 'dungeon' ? 'Go to the door' : 'Go';
     h += `<div class="act"><button class="btn gold" id="goBtn">${what} (${far ? `${left} of ${path.length} moves` : `${path.length} move${path.length > 1 ? 's' : ''}`})</button></div>`
       + (far ? `<div class="cap" style="margin-top:4px">It's ${path.length} squares away: you'll get part of the way now and can carry on tomorrow.</div>` : '');
-  } else if (D.water) h += `<div class="no">🚫 ${T_AT(...unkey(sel)) === '#' ? 'Solid rock — go round.' : T_AT(...unkey(sel)) === 'L' ? 'Lava — go round.' : layerOf(sel) ? 'Too deep and too cold — go round.' : 'Water — find a bridge.'}</div>`;
-  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">🔑 ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
-  else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">💤 Asleep until the Professor is free (chapter ${P.ch}).</div>`;
-  else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">🔒 Can't go here yet.</div>`;
+  } else if (D.water) h += `<div class="no">${T_AT(...unkey(sel)) === '#' ? 'Solid rock — go round.' : T_AT(...unkey(sel)) === 'L' ? 'Lava — go round.' : layerOf(sel) ? 'Too deep and too cold — go round.' : 'Water — find a bridge.'}</div>`;
+  else if (P && P.type === 'cage' && S.chapter < 2) h += `<div class="no">${ui('key')} ${ADV.keys()}/3 key pieces. The cage opens for everyone the night the third boss falls.</div>`;
+  else if (P && (P.ch || 1) > S.chapter) h += `<div class="no">Asleep until the Professor is free (chapter ${P.ch}).</div>`;
+  else if (P && (P.type === 'locked' || P.type === 'worldboss')) h += `<div class="no">${ui('lock')} Can't go here yet.</div>`;
   else if (S.moves <= 0) h += `<div class="no">No moves left today. You get 2 more at midnight, and +1 for your first mission or flashcards of the day.</div>`;
   else if (sel !== last) h += `<div class="cap" style="margin-top:8px">No way there yet through the squares you've uncovered. Explore closer first.</div>`;
   pn.innerHTML = h; pn.classList.add('on');
-  if ($('dunGo')) $('dunGo').onclick = () => delve(sel);
-  if ($('rideBtn')) $('rideBtn').onclick = () => ride($('rideBtn').dataset.to);
+  if ($('dunGo')) $('dunGo').onclick = () => { if (shared) delve(sel); };
+  if ($('rideBtn')) $('rideBtn').onclick = () => { if (shared) ride($('rideBtn').dataset.to); };
   $('pClose').onclick = () => { sel = null; renderAll(); };
-  if ($('goBtn')) $('goBtn').onclick = () => walk(path.slice(0, left));
+  if ($('goBtn')) $('goBtn').onclick = () => { if (shared) walk(path.slice(0, left)); };
   pn.querySelectorAll('[data-buy]').forEach(b => b.onclick = () => {
+    if (!shared) return;
     const id = b.dataset.buy, br = BL.BREWS[id]; if (S.coins < br.cost) return;
-    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); LOG('🥤', `Bought ${br.name} (${br.cost} coins)`); persist(); renderAll();
-    toast(`${br.ic} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
+    S.coins = S.coins - br.cost; S.brews[id] = (S.brews[id] || 0) + 1; QE.tally('bought'); LOG('•', `Bought ${br.name} (${br.cost} coins)`); persist(); renderAll();
+    toast(`${ui(br.px)} Bought a ${br.name}. Drink it from <b>Spells & brews</b>.`);
   });
 }
 
@@ -703,22 +759,24 @@ function renderPerson(who) {
   const me = who === 'me', p = me ? null : PEOPLE[who], at = me ? S.at : S.people[p.i], [c, r] = unkey(at), P = PLACES[at];
   const where = P ? P.name : LAND[T_AT(c, r)] ? LAND[T_AT(c, r)].name : '';
   let fig; try { fig = me ? PIXEL.figure(ADV.eq(), ADV.look()) : PIXEL.figure(p.eq, p.base); } catch (e) { fig = PIXEL.figure({}, PIXEL.DEFAULT); }
-  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? ADV.stats().l : p.lvl}</div>
-    <div class="tn">${me ? ADV.nick() : p.nick}</div><img class="px fig" src="${fig}" alt="">
-    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : (() => { const c = (BL.states[p.uid] || {}).camp; return c && BL.world && c.day === BL.world.day && PLACES[c.k] ? ` ⛺ Camped at ${PLACES[c.k].name} with ${c.n} attack${c.n > 1 ? 's' : ''} for midnight.` : ''; })()}</p>
+  const mySt = me ? ADV.stats() : null;
+  $('panel').innerHTML = `<button class="x" id="pClose" aria-label="Close">×</button><div class="tp">${me ? 'You' : 'Adventurer'} · level ${me ? mySt.l : p.lvl}</div>
+    <div class="tn">${esc(me ? ADV.nick() : p.nick)}</div><img class="px fig" src="${fig}" alt="">
+    ${me ? `<div class="loot" style="display:flex;flex-wrap:wrap;gap:6px 12px;font-weight:700"><span style="color:var(--str)">${ui('sword')} ${mySt.str} Strength</span><span style="color:var(--hp)">${ui('heart')} ${S.health}/${mySt.hp} Health</span><span style="color:var(--mag)">${ui('spark')} ${mySt.mag} Magic</span><span>${ui('coin')} ${S.coins}</span></div>` : ''}
+    <p>${me ? 'You are' : 'Currently'} at <b>${where}</b>.${me ? '' : (() => { const c = (BL.states[p.uid] || {}).camp; return c && BL.world && c.day === BL.world.day && PLACES[c.k] ? ` ${ui('camp')} Camped at ${PLACES[c.k].name} with ${c.n} attack${c.n > 1 ? 's' : ''} for midnight.` : ''; })()}</p>
     ${!me && P && P.type === 'boss' && (P.ch || 1) <= S.chapter ? `<p class="cap">Camp here too and you'll fight alongside them at midnight (rally: +10% damage each).</p>` : ''}
-    ${!me && shared && at === S.at && !ADV.can('help') ? `<p class="cap">🔒 Helping other players opens at level ${ADV.unlockLv('help')}.</p>` : ''}
+    ${!me && shared && at === S.at && !ADV.can('help') ? `<p class="cap">${ui('lock')} Helping other players opens at level ${ADV.unlockLv('help')}.</p>` : ''}
     ${!me && shared && at === S.at && ADV.can('help') ? `<div class="loot"><b>You're on the same square.</b> Help them out:</div><div class="act" style="display:flex;flex-wrap:wrap;gap:6px">
-      <button class="btn ${S.mana >= costOf(3) ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= costOf(3) ? '' : 'disabled'}>🩹 Patch them up (${costOf(3)} mana, +${5 + (FX().heal || 0)} Health)</button>
-      ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${b.ic} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
+      <button class="btn ${S.mana >= costOf(3) ? 'green' : 'alt'}" data-aid="heal" ${S.mana >= costOf(3) ? '' : 'disabled'}>${ui('patch')} Patch them up (${costOf(3)} mana, +${patchHeal()} Health)</button>
+      ${Object.entries(BL.BREWS).filter(([id]) => S.brews[id] > 0).map(([id, b]) => `<button class="btn gold" data-aid="${id}">Give ${ui(b.px)} ${b.name}</button>`).join('')}</div><div class="cap" id="aidMsg"></div>`
       : !me && shared && at !== S.at && ADV.can('help') ? `<p class="cap">Stand on the same square to patch them up or give them a brew.</p>` : ''}`;
   $('panel').querySelectorAll('[data-aid]').forEach(b => b.onclick = async () => {
     const id = b.dataset.aid; $('panel').querySelectorAll('[data-aid]').forEach(x => x.disabled = true);
     try {
-      QE.tally('helped'); LOG('🩹', id === 'heal' ? `Patched up ${p.nick}` : `Gave ${p.nick} a ${BL.BREWS[id].name}`);
-      if (id === 'heal') { if (S.mana < costOf(3)) return; S.mana -= costOf(3); await BL.aid(p.uid, { heal: 5 + (FX().heal || 0) }, ADV.nick()); }
+      QE.tally('helped'); LOG('•', id === 'heal' ? `Patched up ${p.nick}` : `Gave ${p.nick} a ${BL.BREWS[id].name}`);
+      if (id === 'heal') { if (S.mana < costOf(3)) return; S.mana -= costOf(3); await BL.aid(p.uid, { heal: patchHeal() }, ADV.nick()); }
       else { if (!(S.brews[id] > 0)) return; S.brews[id]--; await BL.aid(p.uid, { brew: id }, ADV.nick()); }
-      persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +${5 + (FX().heal || 0)} Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
+      persist(); renderHud(); renderPerson(who); $('aidMsg').textContent = id === 'heal' ? `Done: ${p.nick} gets +${patchHeal()} Health.` : `Done: ${p.nick} gets your ${BL.BREWS[id].name}.`;
     } catch (e) { $('aidMsg').textContent = 'That did not go through. Try again.'; }
   });
   $('panel').classList.add('on');
@@ -738,7 +796,7 @@ svg.addEventListener('pointermove', e => {
   let k = e.target.dataset && e.target.dataset.k;
   if (pp && pp.dataset.p !== undefined) {
     const me = pp.dataset.p === 'me', p = me ? null : PEOPLE[+pp.dataset.p];
-    tip.innerHTML = `<b>${me ? ADV.nick() + ' (you)' : p.nick}</b><small>Level ${me ? ADV.stats().l : p.lvl} · click for details</small>`;
+    tip.innerHTML = `<b>${esc(me ? ADV.nick() + ' (you)' : p.nick)}</b><small>Level ${me ? ADV.stats().l : p.lvl} · click for details</small>`;
     k = null;
   } else if (pp && pp.dataset.k2) k = pp.dataset.k2;
   if (!k && !pp) { tip.style.display = 'none'; return; }
@@ -777,50 +835,54 @@ function spendMove() {   // normal moves first, then the teacher's extra ones
   S.moves--; return true;
 }
 function knockOut(where) {
-  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); QE.tally('knockouts'); LOG('💫', `Knocked out by ${String(where).replace(/<[^>]+>/g, '')}: back in the Cakelab on ${S.health} Health`);
-  toast(`💫 ${where} knocks you out. You wake up in the Cakelab on ${S.health} Health. Missions and flashcards heal you.`);
+  S.at = BL.HOME; S.camp = null; S.health = Math.max(1, Math.round(ADV.stats().hp / 4)); QE.tally('knockouts'); LOG('•', `Knocked out by ${String(where).replace(/<[^>]+>/g, '')}: back in the Cakelab on ${S.health} Health`);
+  toast(`${where} knocks you out. You wake up in the Cakelab on ${S.health} Health. Missions and flashcards heal you.`);
 }
 const hurtMe = h => { if (FX().armour) h = Math.max(1, Math.round(h * (1 - FX().armour / 100))); h = S.shield ? Math.ceil(h / 2) : h; S.health = Math.max(S.calm ? 1 : 0, S.health - h); return h; };
-const fightStr = () => (ADV.stats().str + (S.aura ? 5 : 0)) * (S.fizz ? 1.5 : 1);
+const fightStr = sci => {
+  const s = ADV.stats();
+  const eff = sci === 'b' ? Math.max(s.str, s.hp - 7 - s.l) : sci === 'c' ? Math.max(s.str, ADV.BASE.str + s.l + s.mag) : s.str;
+  return (eff + (S.aura ? 5 : 0)) * (S.fizz ? 1.5 : 1);
+};
 const pause = ms => new Promise(r => setTimeout(r, ms));
 async function walk(steps) {
   if (walking || !shared) return;
   walking = true; sel = null; let nWalk = 0;
   try {
     for (const k of steps) {
-      if (!spendMove()) break;
+      if (!shared || !spendMove()) break;
       QE.tally('steps'); nWalk++;
       const from = S.at, stop = await arrive(k, from);
-      persist(); renderAll(); if (k !== from) centreOnMe();
-      if (stop) break;
+      const saved = await persist(); renderAll(); if (k !== from) centreOnMe();
+      if (!saved || stop) break;
       await pause(160);
     }
-  } finally { walking = false; if (nWalk) LOG('👣', `Walked ${nWalk} square${nWalk > 1 ? 's' : ''} to ${sqName(S.at)} (${BL.movesOf(S)} move${BL.movesOf(S) === 1 ? '' : 's'} left)`); persist(); sel = S.at; renderAll(); }
+  } finally { walking = false; if (nWalk && shared) LOG('•', `Walked ${nWalk} square${nWalk > 1 ? 's' : ''} to ${sqName(S.at)} (${S.moves} move${S.moves === 1 ? '' : 's'} left)`); if (shared) await persist(); sel = S.at; renderAll(); }
 }
 /* one step onto k: returns true if the walk should stop there */
 async function arrive(k, from) {
   const P = PLACES[k], [c, r] = unkey(k);
-  if (S.camp && S.camp.k !== k) { const n = S.camp.n; S.moves += n; S.camp = null; toast(`⛺ You break camp: ${n} move${n > 1 ? 's' : ''} back.`); LOG('⛺', `Broke camp (${n} move${n > 1 ? 's' : ''} back)`); }
+  if (S.camp && S.camp.k !== k) { const n = S.camp.n; S.moves += n; S.camp = null; toast(`${ui('camp')} You break camp: ${n} move${n > 1 ? 's' : ''} back.`); LOG('•', `Broke camp (${n} move${n > 1 ? 's' : ''} back)`); }
   S.at = k; if (!S.visited.includes(k)) S.visited.push(k);
   if (chestAt(k)) { await openChest(k); return true; }
   if (P && P.type === 'boss' && (P.ch || 1) <= S.chapter && S.boss[k] > 0) {
     S.camp = { k, n: (S.camp && S.camp.k === k ? S.camp.n : 0) + 1, day: BL.world.day };
-    QE.tally('attacks'); LOG('⛺', `Camped at ${P.name}: ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight`); toast(`⛺ ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
+    QE.tally('attacks'); LOG('•', `Camped at ${P.name}: ${S.camp.n} attack${S.camp.n > 1 ? 's' : ''} ready for midnight`); toast(`${ui('camp')} ${S.camp.n === 1 ? `You make camp by ${P.name}, ready for battle at midnight.` : `Another attack ready for midnight: ${S.camp.n} in all.`}`);
     return true;
   }
   if (P && P.type === 'monster' && denHp(k) > 0) { await fightMonster(k); return true; }
   if (P && P.type === 'home') {
-    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1) + (FX().rest || 0)); S.restDay = QE.TODAY; QE.tally('rests'); if (S.health > b) LOG('🛏', `Rested in the Cakelab: +${S.health - b} Health`); toast(`🛏 You rest in the Cakelab: +${S.health - b} Health.`); }
+    if (S.restDay !== QE.TODAY) { const b = S.health; S.health = Math.min(ADV.stats().hp, S.health + HEAL.rest * (EVNOW() === 'rest' ? 2 : 1) + (FX().rest || 0)); S.restDay = QE.TODAY; QE.tally('rests'); if (S.health > b) LOG('•', `Rested in the Cakelab: +${S.health - b} Health`); toast(`${ui('bed')} You rest in the Cakelab: +${S.health - b} Health.`); }
     return true;
   }
   if (P && P.type === 'event') {
     if (S.puddleDay === QE.TODAY) toast('The puddle has nothing more for you today.');
-    else { S.puddleDay = QE.TODAY; QE.tally('puddles'); if (Math.random() < .4) { const n = coinsX(EVNOW() === 'coins' ? 10 : 5); S.coins = S.coins + n; LOG('💧', `Poked the puddle: +${n} coins`); toast(`You poke the puddle and fish out 🪙 ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
+    else { S.puddleDay = QE.TODAY; QE.tally('puddles'); if (Math.random() < .4) { const n = coinsX(EVNOW() === 'coins' ? 10 : 5); S.coins = S.coins + n; LOG('•', `Poked the puddle: +${n} coins`); toast(`You poke the puddle and fish out ${ui('coin')} ${n} coins.`); } else toast('You poke the puddle. It pokes back. You lose a sock.'); }
     return true;
   }
   if (P) return k === from;   // shop, dungeon, lift…: you've arrived
   if (EVNOW() !== 'quiet' && !FX().critter && Math.random() < .3 && BL.WILD[T_AT(c, r)]) {
-    const h = hurtMe(1 + Math.floor(Math.random() * 3)); QE.tally('critters'); LOG('🐾', `Jumped by ${BL.WILD[T_AT(c, r)]}: −${h} Health`); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
+    const h = hurtMe(1 + Math.floor(Math.random() * 3)); QE.tally('critters'); LOG('•', `Jumped by ${BL.WILD[T_AT(c, r)]}: −${h} Health`); toast(`On the way you're jumped by <b>${BL.WILD[T_AT(c, r)]}</b>. You see it off (−${h} Health).`);
     if (S.health === 0) { knockOut(BL.WILD[T_AT(c, r)].replace(/^an? /, 'A ')); return true; }
   }
   return false;
@@ -839,16 +901,19 @@ function chestLoot(ch) {
   return { coins: coins + (item ? 0 : 20), item, brew: Math.random() < C.brew ? pick(Object.keys(BL.BREWS)) : null };
 }
 async function openChest(k) {
+  if (!shared) return;
   const C = chestKind(k);
+  let ch = null;
+  try { ch = await BL.claimChest(k); }
+  catch (e) { console.warn('chest', e); lockOffline('Opening treasure chest', e); return; }
   delete S.chests[k];
-  let ch = null; try { ch = await BL.claimChest(k); } catch (e) { console.warn('chest', e); }
   if (!ch) { toast(`The ${C.name.toLowerCase()} is gone: someone got here first.`); return; }
   const L = chestLoot(ch), m = $('dunModal'), body = $('dunBody'), RC = { common: '#9ca3af', uncommon: '#4ade80', rare: '#60a5fa', lowkey: '#a78bfa', unhinged: '#f472b6' };
   L.coins = coinsX(L.coins); S.coins = S.coins + L.coins;
   if (L.item) { QE.game.bag = QE.game.bag || []; QE.game.bag.push(L.item.id); QE.game.lastLoot = L.item.id; QE.gameChanged(); }
   if (L.brew) { S.brews = S.brews || {}; S.brews[L.brew] = (S.brews[L.brew] || 0) + 1; }
   let bit = 0; if (L.mimic) { bit = FX().mimic ? 0 : hurtMe(3); QE.tally('mimics'); } else QE.tally('chest_' + ch.t);
-  LOG(L.mimic ? '👾' : '✨', L.mimic ? `Opened a mimic${bit ? `: bitten for ${bit}` : ' (spotted it)'}, +${L.coins} coins` : `Opened a ${C.name.toLowerCase()}: ${L.item ? L.item.name + ', ' : ''}+${L.coins} coins${L.brew ? ', ' + BL.BREWS[L.brew].name : ''}`);
+  LOG('•', L.mimic ? `Opened a mimic${bit ? `: bitten for ${bit}` : ' (spotted it)'}, +${L.coins} coins` : `Opened a ${C.name.toLowerCase()}: ${L.item ? L.item.name + ', ' : ''}+${L.coins} coins${L.brew ? ', ' + BL.BREWS[L.brew].name : ''}`);
   persist();   // saved before the pop-up, in case they head straight to the Wardrobe
   BL.logFind({ n: (QE.boardName() || 'Someone').split(' ')[0], t: ch.t, it: L.mimic ? 'it was a mimic' : L.item ? L.item.name : '', day: BL.world.day }).catch(() => {});
   const eq = L.item ? ADV_PUT(ADV.eq(), L.item) : ADV.eq();
@@ -856,10 +921,10 @@ async function openChest(k) {
   return new Promise(res => {
     QE.busy = true; m.classList.add('on');
     body.innerHTML = L.mimic
-      ? `<h2 style="margin:0;text-align:center">It's a mimic!</h2><div class="chestwin"><img src="${icon('mimic', C.col)}" width="110" alt=""></div><div class="dx">${bit ? `The chest grows teeth and bites you (−${bit} Health), then coughs up` : 'You spotted the teeth before it could bite. It coughs up'} 🪙 ${L.coins} coins and scuttles off, embarrassed.</div>`
+      ? `<h2 style="margin:0;text-align:center">It's a mimic!</h2><div class="chestwin"><img src="${icon('mimic', C.col)}" width="110" alt=""></div><div class="dx">${bit ? `The chest grows teeth and bites you (−${bit} Health), then coughs up` : 'You spotted the teeth before it could bite. It coughs up'} ${ui('coin')} ${L.coins} coins and scuttles off, embarrassed.</div>`
       : `<h2 style="margin:0;text-align:center">${C.name}!</h2><div class="chestwin"><img src="${icon('chest_open', C.col)}" width="96" alt="">${L.item ? `<img src="${PIXEL.figure(eq, ADV.look())}" width="88" alt="">` : ''}</div>
-        ${L.item ? `<div class="prize"><span class="rar" style="color:${RC[L.item.r] || '#facc15'}">${ADV_TAG(L.item)} · ${ADV_WHERE(L.item)}</span><br><b>${L.item.name}</b><br><span class="small">${[ADV_STATS_TXT(L.item), ...ADV_FX_TXT(L.item.fx)].filter(Boolean).join(' · ')}</span><br><span class="small">${L.item.d}</span>${lock ? `<br><span class="small">🔒 You can wear it from level ${lock}. It waits in your bag till then.</span>` : ''}</div>` : `<div class="prize">You already own everything this chest could hold, so it's full of extra coins instead.</div>`}
-        <div class="dx">🪙 +${L.coins} coins${L.brew ? ` · ${BL.BREWS[L.brew].ic} ${BL.BREWS[L.brew].name}` : ''}</div>`;
+        ${L.item ? `<div class="prize"><span class="rar" style="color:${RC[L.item.r] || '#facc15'}">${ADV_TAG(L.item)} · ${ADV_WHERE(L.item)}</span><br><b>${L.item.name}</b><br><span class="small">${[ADV_STATS_TXT(L.item), ...ADV_FX_TXT(L.item.fx)].filter(Boolean).join(' · ')}</span><br><span class="small">${L.item.d}</span>${lock ? `<br><span class="small">${ui('lock')} You can wear it from level ${lock}. It waits in your bag till then.</span>` : ''}</div>` : `<div class="prize">You already own everything this chest could hold, so it's full of extra coins instead.</div>`}
+        <div class="dx">${ui('coin')} +${L.coins} coins${L.brew ? ` · ${ui(BL.BREWS[L.brew].px)} ${BL.BREWS[L.brew].name}` : ''}</div>`;
     body.innerHTML += `<div class="act" style="display:flex;gap:8px;margin-top:10px">${L.item ? `<a class="btn alt" href="adventurer-wardrobe.html">Wardrobe →</a>` : ''}<button class="btn gold" id="dunNext">Back to the map →</button></div>`;
     $('dunNext').focus();
     $('dunNext').onclick = () => { m.classList.remove('on'); QE.busy = false; if (S.health === 0) knockOut('A mimic'); res(); };
@@ -870,51 +935,84 @@ function fightMonster(k) {
   return new Promise(resolve => {
     const P = PLACES[k], L = (P.science || 'b').toUpperCase(), keys = new Set();
     QE.allSubs().filter(s => s.L === L).forEach(s => s.keys.forEach(x => keys.add(x)));
-    const pool = QE.buildMission(keys), q = QE.inst(pool[Math.floor(Math.random() * Math.min(3, pool.length))]);
+    const pool = QE.buildMission(keys), q = QE.inst(pool[Math.floor(Math.random() * pool.length)]);   // buildMission now returns questions in level order, so pick from all of them
     const sh = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
     let opts = q.tf !== undefined ? [['True', q.tf === true], ['False', q.tf === false]] : sh(q.o.map((o, j) => [o, j === 0]));
     if (q.svg && typeof DQ !== 'undefined') opts = DQ.order(opts, o => o[0]).opts;
     const body = $('dunBody'), m = $('dunModal'), hp0 = denHp(k);
     QE.busy = true; m.classList.add('on');
     body.innerHTML = `<div style="display:flex;gap:12px;align-items:center"><img class="px" src="${icon(P.icon, P.col)}" width="72" style="image-rendering:pixelated" alt=""><div style="flex:1"><h2 style="margin:0">${P.name}</h2>
-      <div style="height:12px;border:2px solid #facc15;background:#222;margin:6px 0"><i id="mHp" style="display:block;height:100%;width:${hp0 / P.max * 100}%;background:#f59e0b;transition:width .4s"></i></div><div class="small">${hp0} / ${P.max} health · ${ADV.SCI[P.science] || ''}${q.hard ? ' · ★ harder' : ''}</div></div></div>
-      ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="dq">${q.tf !== undefined ? 'True or false? ' : ''}${q.q}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${t}</button>`).join('')}</div><div id="dunFb"></div>`;
+      <div style="height:12px;border:2px solid #facc15;background:#222;margin:6px 0"><i id="mHp" style="display:block;height:100%;width:${hp0 / P.max * 100}%;background:#f59e0b;transition:width .4s"></i></div><div class="small">${hp0} / ${P.max} health · ${ADV.SCI[P.science] || ''} · ${lvLabel(q)}</div></div></div>
+      ${typeof DQ !== 'undefined' ? DQ.fig(q) : ''}<div class="dq">${nuc((q.tf !== undefined ? 'True or false? ' : '') + q.q)}</div><div class="dopts">${opts.map(([t, ok]) => `<button class="dopt" data-ok="${ok ? 1 : 0}">${nuc(t)}</button>`).join('')}</div><div id="dunFb"></div>`;
     body.querySelectorAll('.dopt').forEach(b => b.onclick = () => {
       const ok = b.dataset.ok === '1'; body.querySelectorAll('.dopt').forEach(o => { o.disabled = true; if (o.dataset.ok === '1') o.classList.add('right'); }); if (!ok) b.classList.add('wrong');
       QE.recordAnswer(q, ok); QE.tally('monsterQs');
       let msg, done = false, out = false;
       if (ok) {
-        const d = Math.round(fightStr() * (1.2 + Math.random() * 0.6) * (q.hard ? 1.25 : 1) * (1 + (FX().monster || 0) / 100)), hp = Math.max(0, hp0 - d);
+        const d = Math.round(fightStr(P.science) * (1.2 + Math.random() * 0.6) * ({ 2: 1.1, 3: 1.25 }[q.lv] || 1) * (1 + (FX().monster || 0) / 100)), hp = Math.max(0, hp0 - d);
         S.dens[k] = hp ? { hp } : { back: S.day + 2 }; $('mHp').style.width = (hp / P.max * 100) + '%';
         if (!hp) { S.coins = S.coins + monsterCoins(); done = true; QE.tally('monsters'); QE.mark('m:' + k); }
-        LOG('⚔️', `${P.name}: right answer, hit it for ${d}${hp ? ` (${hp} health left)` : `, beaten! +${monsterCoins()} coins`}`);
+        LOG('•', `${P.name}: right answer, hit it for ${d}${hp ? ` (${hp} health left)` : `, beaten! +${monsterCoins()} coins`}`);
         msg = `<b class="good">Right: you hit it for ${d}!</b> ${hp ? `${P.name} has ${hp} health left.` : `<span class="lt">★ ${P.name} beaten! +${monsterCoins()} coins.</span> It'll be back in two days.`}`;
       } else {
         const h = hurtMe(Math.round(P.power * (0.5 + Math.random())));
-        LOG('⚔️', `${P.name}: wrong answer, it hit back for ${h}`);
+        LOG('•', `${P.name}: wrong answer, it hit back for ${h}`);
         msg = `<b class="bad">Wrong: ${P.name} hits you (−${h} Health).</b>`; if (S.health === 0) out = true;
       }
-      $('dunFb').innerHTML = `<div class="dx">${msg} ${q.x || ''}</div><button class="btn gold" id="dunNext">${out ? 'Ouch →' : 'Back to the map →'}</button>`;
+      $('dunFb').innerHTML = `<div class="dx">${msg} ${nuc(q.x || '')}</div><button class="btn gold" id="dunNext">${out ? 'Ouch →' : 'Back to the map →'}</button>`;
       $('dunNext').focus();
-      $('dunNext').onclick = () => { m.classList.remove('on'); QE.busy = false; if (out) knockOut(P.name); else if (done) toast(`★ ${P.name} beaten! 🪙 +${monsterCoins()}`); QE.gameChanged(); resolve(); };
+      $('dunNext').onclick = () => {
+        m.classList.remove('on'); QE.busy = false;
+        const pool = QE.takePool(), stNow = ADV.stats();
+        if (pool.hp && !out) S.health = Math.min(stNow.hp, S.health + pool.hp);
+        if (pool.mana) S.mana = Math.min(stNow.mana, (S.mana || 0) + pool.mana);
+        if (out) knockOut(P.name); else if (done) toast(`★ ${P.name} beaten! ${ui('coin')} +${monsterCoins()}`);
+        QE.gameChanged(); resolve();
+      };
     });
   });
 }
 
-/* ===================== the shared world: sync, the night, rewards ===================== */
-let shared = false;
-function persist() {
+/* ===================== the shared world: sync, connectivity safeguards, diagnostics ===================== */
+let shared = false, conn = 'connecting', starting = false, pollTimer = null, lastSyncAt = 0;
+const connErrors = [];
+function noteConnError(step, e) {
+  const msg = (e && e.message) ? e.message : String(e || 'unknown error');
+  connErrors.push({ t: new Date().toLocaleTimeString('en-GB'), step, msg });
+  if (connErrors.length > 12) connErrors.shift();
+  renderDiag();
+}
+function lockOffline(step, e) {
+  shared = false; conn = 'offline';
+  noteConnError(step, e);
+  gate('<b>Connectivity issue — view-only mode.</b> You can look around the map, but moves and actions are paused so nothing gets lost. <button class="btn" id="retryConn">Try again</button> <a href="#netDiag" style="color:inherit;font-weight:700;font-size:14px">See what failed ↓</a>', 'err');
+  if ($('retryConn')) $('retryConn').onclick = () => { starting = false; start(true); };
+  renderAll(); renderDiag(true);
+}
+async function persist() {
   ADV.save();
-  if (!shared) return;
-  BL.saveMine({ at: S.at, visited: S.visited.slice(), moves: Math.max(0, S.moves - (S.bonus || 0)), bonus: S.bonus || null, camp: S.camp || null, dens: S.dens || {}, restDay: S.restDay || null, puddleDay: S.puddleDay || null, health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm }).catch(e => console.warn('state not saved', e));
+  if (!shared) return false;
+  const fields = { at: S.at, visited: S.visited.slice(), moves: Math.max(0, S.moves - (S.bonus || 0)), bonus: S.bonus || null, camp: S.camp || null, dens: S.dens || {}, restDay: S.restDay || null, puddleDay: S.puddleDay || null, health: S.health, mana: S.mana || 0, shield: !!S.shield, lifted: S.lifted || [], brews: S.brews || {}, delve: S.delve || {}, depth: S.depth || {}, under: !!S.under, aura: !!S.aura, fizz: !!S.fizz, calm: !!S.calm };
+  for (let i = 0; i < 2; i++) {
+    try { await BL.saveMine(fields); return true; }
+    catch (e) {
+      if (i === 0) { await pause(600); continue; }
+      console.warn('state not saved', e);
+      lockOffline('Saving your move to Breadventure Land', e);
+      return false;
+    }
+  }
+  return false;
 }
 /* the lift between the mine and the Underworld: instant and free */
-function ride(to) {
+async function ride(to) {
+  if (!shared) return;
   S.at = to; if (!S.visited.includes(to)) S.visited.push(to); sel = null; peek = null; ADV.save();
-  if (shared) BL.saveMine({ at: to, visited: S.visited.slice() }).catch(e => console.warn('lift not saved', e));
+  try { await BL.saveMine({ at: to, visited: S.visited.slice() }); }
+  catch (e) { lockOffline('Saving lift travel', e); return; }
   renderAll(); renderLegend(); centreOnMe(); window.scrollTo({ top: 0 });
-  LOG('🛗', layerOf(to) ? 'Took the lift down to the Underworld' : 'Took the lift back up');
-  toast(layerOf(to) ? '🛗 The lift rattles down for a very long time. <b>Welcome to the Underworld.</b>' : '🛗 The lift hauls you back up into the daylight.');
+  LOG('•', layerOf(to) ? 'Took the lift down to the Underworld' : 'Took the lift back up');
+  toast(layerOf(to) ? `${ui('lift')} The lift rattles down for a very long time. <b>Welcome to the Underworld.</b>` : `${ui('lift')} The lift hauls you back up into the daylight.`);
 }
 function fromShared() {
   const w = BL.world, st = BL.me(), pub = BL.pubs[BL.uid] || {};
@@ -926,6 +1024,25 @@ function fromShared() {
   S.plan = [];   // (no more planning: kept empty for older readers)
   buildPeople(); ADV.save(); noteBossHits();
 }
+/* lightweight live sync so classmates in the same room actually see each other move */
+async function syncWorld() {
+  if (!shared || walking || QE.busy || document.visibilityState !== 'visible' || Date.now() - lastSyncAt < 8000) return;
+  lastSyncAt = Date.now();
+  try {
+    await BL.load();
+    if (!BL.world) return;
+    S.chapter = BL.world.chapter; S.boss = BL.bossNow(BL.world); S.chests = Object.assign({}, BL.world.chests || {});
+    buildPeople();
+    const my = BL.me();
+    if (my && my.inbox && my.inbox.length) { await BL.saveMine({ inbox: null }); my.inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); }
+    renderAll();
+  } catch (e) { /* transient background poll glitch: keep current view; actual moves check saveMine */ }
+}
+function startPolling() {
+  if (pollTimer) clearInterval(pollTimer);
+  pollTimer = setInterval(syncWorld, 25000);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syncWorld(); });
 const profile = () => { const s = ADV.stats(); return { name: QE.boardName(), look: ADV.look(), eq: ADV.eq(), lvl: s.l, str: s.str, hp: s.hp, mag: s.mag, fx: s.gear.fx }; };
 function toast(msg) {
   document.querySelectorAll('.maptoast').forEach(x => x.remove());   // one at a time
@@ -936,21 +1053,27 @@ function toast(msg) {
 async function claimPending() {
   const p = BL.me().pending; if (!p) return;
   const items = (p.items || []).filter(id => typeof ADV_ITEMS === 'undefined' || ADV_ITEMS.some(i => i.id === id));
-  const got = [];
-  QE.game.coins = (QE.game.coins || 0) + (p.coins || 0);
+  const got = []; let totalCoins = p.coins || 0;
+  QE.game.coins = (QE.game.coins || 0) + totalCoins;
   QE.game.bag = QE.game.bag || [];
-  items.forEach(id => { if (!QE.game.bag.includes(id)) { QE.game.bag.push(id); QE.game.lastLoot = id; got.push(ADV_ITEMS.find(i => i.id === id).name); } else QE.game.coins += 20; });
-  QE.gameChanged();
+  items.forEach(id => { if (!QE.game.bag.includes(id)) { QE.game.bag.push(id); QE.game.lastLoot = id; got.push(ADV_ITEMS.find(i => i.id === id).name); } else { QE.game.coins += 20; totalCoins += 20; } });
+  QE.game.updatedAt = Date.now();
+  await QE.save(true);
   await BL.saveMine({ pending: null });
-  toast(`From Breadventure Land: 🪙 +${p.coins || 0} coins${got.length ? ' · ' + got.join(', ') : ''}`);
-  LOG('🎁', `Collected rewards from the night: +${p.coins || 0} coins${got.length ? ', ' + got.join(', ') : ''}`);
+  toast(`From Breadventure Land: ${ui('coin')} +${totalCoins} coins${got.length ? ' · ' + got.join(', ') : ''}`);
+  LOG('•', `Collected rewards from the night: +${totalCoins} coins${got.length ? ', ' + got.join(', ') : ''}`);
 }
 async function applyOutbox() {
-  const o = S.out; if (!o || !(o.hp || o.mana || o.move)) return;
-  const st = BL.me(), s = ADV.stats();
-  const f = { health: Math.min(s.hp, (st.health ?? s.hp) + (o.hp || 0)), mana: Math.min(s.mana, (st.mana || 0) + (o.mana || 0)), moves: Math.min(ADV.MOVE_CAP + (s.gear.fx.revise || 0), (st.moves || 0) + (o.move || 0)) };
-  S.out = null; ADV.save();
+  const o = ADV.collect(true);
+  if (!o || !(o.hp || o.mana || o.move)) return;
+  const st = BL.me(), s = ADV.stats(), extra = s.gear.fx.revise ? 1 : 0;
+  const curMoves = st.moves || 0;
+  /* Day-1 players start with 6 moves (FIRST_MOVES), so capping at MOVE_BANK + 1 (5) used to subtract a move */
+  const cap = (st.joined === QE.TODAY ? BL.FIRST_MOVES : BL.MOVE_BANK) + 1 + extra;
+  const nextMoves = o.move ? Math.max(curMoves, Math.min(cap, curMoves + o.move)) : curMoves;
+  const f = { health: Math.min(s.hp, (st.health ?? s.hp) + (o.hp || 0)), mana: Math.min(s.mana, (st.mana || 0) + (o.mana || 0)), moves: nextMoves };
   await BL.saveMine(f);
+  await QE.save(true);
 }
 const FIRST_REPORT = [
   '<p class="lt">Welcome to Breadventure Land! You start in the Cakelab with <b>6 moves</b>.</p>',
@@ -966,23 +1089,67 @@ function showReport() {
 $('repClose').onclick = () => $('modal').classList.remove('on');
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal') $('modal').classList.remove('on'); });
 
+let probeRows = null;
+function renderDiag(forceOpen) {
+  const el = $('netDiag'); if (!el) return;
+  const netLog = (window.CBSNet && CBSNet.log) || [];
+  const hasErr = conn === 'offline' || connErrors.length > 0;
+  el.hidden = false;
+  el.classList.toggle('err', hasErr);
+  if (forceOpen) el.open = true;
+  const tr = window.CBSNet ? CBSNet.transport : { rtdb: 'sdk', fs: 'sdk' };
+  const viaLabel = { proxy: 'site HTTPS proxy (/_fb)', 'direct-rest': 'direct HTTPS REST', sdk: 'live WebSocket SDK', auto: 'connecting' };
+  const errItems = [
+    ...connErrors.map(x => `<li><b>[${esc(x.t)}] ${esc(x.step)}:</b> ${esc(x.msg)}</li>`),
+    ...netLog.slice(-6).map(x => `<li>[${new Date(x.t).toLocaleTimeString('en-GB')}] ${esc(x.op)}${x.path ? ' (' + esc(x.path) + ')' : ''}: ${esc(x.msg)}</li>`)
+  ];
+  el.innerHTML = `<summary>${hasErr ? 'Connectivity diagnostics — what failed loading' : `Connection status · ${conn === 'live' ? `Live (${viaLabel[tr.rtdb] || tr.rtdb})` : conn === 'connecting' ? 'Connecting…' : 'Signed out'}`}</summary>
+    <div class="dbody">
+      <p><b>Status:</b> ${conn === 'live' ? 'Connected to Breadventure Land' : conn === 'connecting' ? 'Connecting…' : conn === 'signed-out' ? 'Not signed in' : 'Offline — view-only mode (moves paused so nothing is lost)'} · <b>Realtime DB:</b> ${esc(viaLabel[tr.rtdb] || tr.rtdb)} · <b>Account DB:</b> ${esc(viaLabel[tr.fs] || tr.fs)} · <b>Host:</b> ${esc(location.hostname)}</p>
+      ${errItems.length ? `<p style="margin-top:6px"><b>What failed:</b></p><ul>${errItems.join('')}</ul>` : '<p style="margin-top:4px;color:var(--muted)">No connection errors recorded in this session.</p>'}
+      ${probeRows ? `<div class="dprobe">${probeRows.map(r => `<div class="prow${r.ok ? '' : ' no'}"><b>${r.ok ? '✓' : '✗'} ${esc(r.name)}</b><span>${esc(r.detail)} (${r.ms} ms)</span></div>`).join('')}</div>` : ''}
+      <div class="dacts"><button type="button" class="btn alt" id="diagProbe">Run network check</button><button type="button" class="btn alt" id="diagRetry">Reconnect</button>${(errItems.length || probeRows) ? '<button type="button" class="btn alt" id="diagCopy">Copy diagnostics</button>' : ''}</div>
+    </div>`;
+  if ($('diagProbe')) $('diagProbe').onclick = async () => {
+    $('diagProbe').disabled = true; $('diagProbe').textContent = 'Checking…';
+    if (window.CBSNet && CBSNet.probe) probeRows = await CBSNet.probe();
+    renderDiag(true);
+  };
+  if ($('diagRetry')) $('diagRetry').onclick = () => { starting = false; start(true); };
+  if ($('diagCopy')) $('diagCopy').onclick = () => {
+    const txt = [`Host: ${location.href}`, `Status: ${conn}`, `RTDB via: ${tr.rtdb} | FS via: ${tr.fs}`,
+      ...connErrors.map(x => `ERR [${x.t}] ${x.step}: ${x.msg}`),
+      ...netLog.slice(-6).map(x => `NET ${x.op} (${x.path}): ${x.msg}`),
+      ...(probeRows || []).map(r => `${r.ok ? 'OK' : 'FAIL'} ${r.name}: ${r.detail} (${r.ms}ms)`)].join('\n');
+    try { navigator.clipboard.writeText(txt); $('diagCopy').textContent = 'Copied ✓'; } catch (e) { prompt('Copy diagnostics:', txt); }
+  };
+}
+
 function renderAll() { renderHud(); renderMap(); renderPanel(); }
 function centreOnMe() { const sc = $('scroll'); if (sc.scrollWidth > sc.clientWidth) { const [x] = center(...unkey(S.at)); sc.scrollLeft = x / VB_W * sc.scrollWidth - sc.clientWidth / 2; } }
-function gate(html) { const g = $('gate'); g.hidden = !html; g.innerHTML = html || ''; }
-renderLegend(); buildPeople(); renderAll(); centreOnMe();
+function gate(html, cls = '') { const g = $('gate'); g.hidden = !html; g.className = 'gate' + (cls ? ' ' + cls : ''); g.innerHTML = html || ''; }
+gate('<b>Connecting to Breadventure Land…</b> You can look around the map; moves unlock as soon as you\'re synced.', 'wait');
+renderLegend(); buildPeople(); renderAll(); renderDiag(); centreOnMe();
 
 /* wait for the account, then join the shared world, run the night if it's due, and draw */
-async function start() {
-  if (!QE.online) { gate('<b>Breadventure Land needs the internet.</b> It\'s one world shared by every player, so it can\'t run offline.'); return; }
+async function start(manual) {
+  if (!QE.online) {
+    conn = 'offline'; shared = false;
+    noteConnError('Firebase SDK', 'Firebase scripts did not load (www.gstatic.com may be blocked on this network)');
+    gate('<b>Connectivity issue — view-only mode.</b> Firebase could not load on this network, so moves and actions are paused. <a href="#netDiag" style="color:inherit;font-weight:700;font-size:14px">See what failed ↓</a>', 'err');
+    renderAll(); renderDiag(true); return;
+  }
   if (!QE.known || QE.status === 'loading') return;
   if (!QE.user) {
-    shared = false;
-    gate('<b>Sign in to join Breadventure Land.</b> It\'s one world shared by everyone who plays: your moves, Health and key pieces are saved with your account. <button class="btn gold" id="gateIn">Sign in</button>');
+    shared = false; conn = 'signed-out';
+    gate('<b>Sign in to play Breadventure Land.</b> You can look around, and signing in unlocks your moves, Health and the shared world. <button class="btn gold" id="gateIn">Sign in</button>');
     $('gateIn').onclick = () => QE.signIn().catch(() => {});
-    return;
+    renderAll(); renderDiag(); return;
   }
-  if (shared) return;
-  shared = true; gate('');
+  if ((shared && !manual) || starting) return;
+  starting = true; shared = false; conn = 'connecting';
+  gate('<b>Connecting to Breadventure Land…</b> Syncing with the shared world.', 'wait');
+  renderAll();
   try {
     BL.init(firebase.database(), QE.user);
     await BL.load();
@@ -992,20 +1159,28 @@ async function start() {
     await applyOutbox();
     await claimPending();
     { const inbox = BL.me().inbox; if (inbox && inbox.length) { await BL.saveMine({ inbox: null }); inbox.forEach((m, i) => setTimeout(() => toast(m), i * 1200)); } }
-    fromShared(); renderAll(); centreOnMe();
+    shared = true; conn = 'live'; lastSyncAt = Date.now();
+    gate('');
+    fromShared(); renderAll(); renderDiag(); centreOnMe(); startPolling();
     const rescueNow = S.chapter >= 2 && !S.rescueSeen;
     const showRep = () => { if ((S.seenRep || {})[BL.uid] === (S.reportDay || 'first')) return;
-      if (S.report && !S.big) { S.seenRep = S.seenRep || {}; S.seenRep[BL.uid] = S.reportDay; ADV.save(); toast((S.report[S.report.length - 1] || '').replace(/<\/?p[^>]*>/g, '') + (S.report.some(l => /chests? ha(s|ve) appeared/.test(l)) ? '<br>✨ New treasure on the map!' : '')); }   // a quiet night: just the new moves
+      if (S.report && !S.big) { S.seenRep = S.seenRep || {}; S.seenRep[BL.uid] = S.reportDay; ADV.save(); toast((S.report[S.report.length - 1] || '').replace(/<\/?p[^>]*>/g, '') + (S.report.some(l => /chests? ha(s|ve) appeared/.test(l)) ? `<br>${ui('chest')} New treasure on the map!` : '')); }   // a quiet night: just the new moves
       else showReport(); };
     if (!S.storySeen) ADV.storyIntro(() => rescueNow ? ADV.storyRescue(showRep) : showRep());
     else if (rescueNow) ADV.storyRescue(showRep);
     else showRep();
   } catch (e) {
-    console.error('Breadventure Land', e); shared = false;
-    gate('<b>Breadventure Land couldn\'t load just now.</b> Your missions and flashcards still count. Try again in a minute.');
-  }
+    console.error('Breadventure Land', e);
+    lockOffline(e && e.step ? e.step : 'Connecting to Breadventure Land', e);
+  } finally { starting = false; }
 }
-QE.onChange(start); start();
+/* never stay stuck on "Connecting…" if auth/Firestore takes too long on school Wi-Fi */
+setTimeout(() => {
+  if (conn === 'connecting' && !starting) {
+    lockOffline('Account sign-in / Firestore load', 'Timed out waiting for Firebase Auth/Firestore (8s)');
+  }
+}, 8000);
+QE.onChange(() => start(false)); start(false);
 </script>
 </body>
 </html>

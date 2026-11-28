@@ -43,12 +43,12 @@ function chlorella(){
   return {svg, w:400, h:280, kind:'Chlorella (protoctist)', parts:{wall:[200,30], membrane:[296,140], chloro:[200,222], nucleus:[200,118], cytoplasm:[240,90]}, has:['wall','membrane','chloro','nucleus','cytoplasm']};
 }
 function virus(){
-  const R = 104, cx = 200, cy = 140, pts = [...Array(6)].map((_,i) => [cx+R*Math.cos(Math.PI/6+i*Math.PI/3), cy+R*Math.sin(Math.PI/6+i*Math.PI/3)]);
-  let caps = ''; for(let ring=1; ring<=2; ring++) for(let i=0;i<6;i++){ const a=Math.PI/6+i*Math.PI/3; for(let j=0;j<ring*2;j++){ const t=j/(ring*2); const p=[cx+R*(ring===2?0.93:0.93)*Math.cos(a)*(1-t)+R*0.93*Math.cos(a+Math.PI/3)*t, cy+R*0.93*Math.sin(a)*(1-t)+R*0.93*Math.sin(a+Math.PI/3)*t]; if(ring===2) caps+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="7" fill="#ce93d8" stroke="#6a1b9a" stroke-width="1.2"/>`; } }
-  let rna = 'M150 140'; for(let i=0;i<14;i++){ rna += ` Q${160+i*7} ${i%2?110:170} ${157+i*7} 140`; }
-  const svg = `<polygon points="${pts.map(p=>p.map(f1).join(',')).join(' ')}" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="4"/>${caps}
-    <path d="${rna}" fill="none" stroke="#e53935" stroke-width="4" stroke-linecap="round"/>`;
-  return {svg, w:400, h:280, kind:'Virus (not a cell)', parts:{coat:pts[0], genes:[200,140]}, has:['coat','genes']};
+  const R = 108, cx = 140, cy = 140, pts = [...Array(6)].map((_,i) => [cx+R*Math.cos(Math.PI/6+i*Math.PI/3), cy+R*Math.sin(Math.PI/6+i*Math.PI/3)]);
+  let caps = ''; for(let ring=1; ring<=2; ring++) for(let i=0;i<6;i++){ const a=Math.PI/6+i*Math.PI/3; for(let j=0;j<ring*2;j++){ const t=j/(ring*2); const p=[cx+R*0.93*Math.cos(a)*(1-t)+R*0.93*Math.cos(a+Math.PI/3)*t, cy+R*0.93*Math.sin(a)*(1-t)+R*0.93*Math.sin(a+Math.PI/3)*t]; if(ring===2) caps+=`<circle cx="${f1(p[0])}" cy="${f1(p[1])}" r="7.5" fill="#ce93d8" stroke="#6a1b9a" stroke-width="1.3"/>`; } }
+  let rna = 'M90 140'; for(let i=0;i<14;i++){ rna += ` Q${100+i*7} ${i%2?110:170} ${97+i*7} 140`; }
+  const svg = `<polygon points="${pts.map(p=>p.map(f1).join(',')).join(' ')}" fill="#f3e5f5" stroke="#6a1b9a" stroke-width="4.5"/>${caps}
+    <path d="${rna}" fill="none" stroke="#e53935" stroke-width="4.5" stroke-linecap="round"/>`;
+  return {svg, w:280, h:280, kind:'Virus (not a cell)', parts:{coat:pts[3], genes:[154,142]}, has:['coat','genes']};
 }
 const EXTRA = {amoeba, chlorella, virus};
 const KIND = {animal:'Animal cell', plant:'Plant cell', yeast:'Yeast cell', hypha:'Fungal hypha (e.g. Mucor)', rod:'Rod-shaped bacterium', coccus:'Spherical bacterium'};
@@ -62,39 +62,63 @@ function partName(k, type){
   if(k==='wall') return {plant:'Cell wall (cellulose)', yeast:'Cell wall (chitin)', hypha:'Cell wall (chitin)', rod:'Cell wall', coccus:'Cell wall', chlorella:'Cell wall'}[type] || 'Cell wall';
   return (EXTRA_PARTS[k] || (window.Cells && window.Cells.PARTS[k]) || {name:k}).name;
 }
+function wrapLabel(name, maxLen){
+  if(name.length <= maxLen || !name.includes(' ')) return [name];
+  const idx = name.indexOf('(');
+  if(idx > 2 && idx <= maxLen + 4) return [name.slice(0, idx).trim(), name.slice(idx).trim()];
+  let best = -1, bestDist = 1e9, mid = name.length / 2;
+  for(let i=0;i<name.length;i++) if(name[i]===' ' && Math.abs(i-mid) < bestDist){ best=i; bestDist=Math.abs(i-mid); }
+  return best > 0 ? [name.slice(0,best), name.slice(best+1)] : [name];
+}
 /* draw a cell with leader-line labels down both sides */
 function labelled(type, opts){
   opts = opts || {}; const c = getCell(type, opts.style, opts.seed);
   const keys = (opts.labels || c.has).filter(k => c.parts[k]);
-  const fs = opts.big ? 30 : 15, gap = fs*1.45, z = opts.zoom || 1, W = 400*z, Hh = 280*z;
-  const items = keys.map(k => ({k, p:[c.parts[k][0]*z, c.parts[k][1]*z], name:partName(k, type)}));
+  const cw = c.w || 400, ch = c.h || 280;
+  const fs = opts.fs || (opts.big ? 40 : 25), z = opts.zoom || 1, W = cw*z, Hh = ch*z;
+  const items = keys.map(k => {
+    const name = partName(k, type);
+    const lines = wrapLabel(name, opts.big ? 14 : 15);
+    return {k, p:[c.parts[k][0]*z, c.parts[k][1]*z], name, lines, h: lines.length * fs * 1.16};
+  });
 
   const sides = {L:[], R:[]}; items.forEach(it => sides[it.p[0] < W/2 ? 'L' : 'R'].push(it));
   // balance sides
   while(sides.L.length > sides.R.length+1){ sides.L.sort((a,b)=>b.p[0]-a.p[0]); sides.R.push(sides.L.shift()); }
   while(sides.R.length > sides.L.length+1){ sides.R.sort((a,b)=>a.p[0]-b.p[0]); sides.L.push(sides.R.shift()); }
+  const padY = opts.big ? 18 : 14, lineGap = opts.big ? fs*0.42 : fs*0.36;
   let out = '', n = 0;
   for(const side of ['L','R']){
     const arr = sides[side].sort((a,b) => a.p[1]-b.p[1]);
-    arr.forEach(it => it.y = Math.max(14, Math.min(Hh-14, it.p[1])));
-    for(let i=1;i<arr.length;i++) arr[i].y = Math.max(arr[i].y, arr[i-1].y+gap);
-    for(let i=arr.length-1;i>=0;i--){ const lim = i===arr.length-1 ? Hh-10 : arr[i+1].y-gap; arr[i].y = Math.min(arr[i].y, lim); }
+    arr.forEach(it => it.y = Math.max(it.h/2, Math.min(Hh - it.h/2, it.p[1])));
+    for(let i=1;i<arr.length;i++){
+      const minY = arr[i-1].y + arr[i-1].h/2 + arr[i].h/2 + lineGap;
+      arr[i].y = Math.max(arr[i].y, minY);
+    }
+    for(let i=arr.length-1;i>=0;i--){
+      const lim = i===arr.length-1 ? Hh + padY - arr[i].h/2 : arr[i+1].y - arr[i+1].h/2 - arr[i].h/2 - lineGap;
+      arr[i].y = Math.min(arr[i].y, lim);
+    }
     arr.forEach(it => {
-      n++; const tx = side==='L' ? -12 : W+12, lx = side==='L' ? -6 : W+6;
+      n++; const tx = side==='L' ? -14 : W+14, lx = side==='L' ? -6 : W+6;
       const step = opts.steps ? ` data-s="${keys.indexOf(it.k)+1}"` : '';
-      out += `<g class="lab"${step}><line x1="${lx}" y1="${f1(it.y)}" x2="${f1(it.p[0])}" y2="${f1(it.p[1])}" stroke="#111" stroke-width="${opts.big?2:1.4}"/><circle cx="${f1(it.p[0])}" cy="${f1(it.p[1])}" r="${opts.big?4:3}" fill="#111"/>
-        <text x="${tx}" y="${f1(it.y + fs*0.35)}" text-anchor="${side==='L'?'end':'start'}" font-size="${fs}" font-weight="700" font-family="Barlow,Arial,sans-serif" fill="#111">${it.name}</text></g>`;
+      const anchor = side==='L' ? 'end' : 'start';
+      const firstY = it.y - ((it.lines.length - 1) * fs * 1.12)/2 + fs*0.35;
+      const tspans = it.lines.map((ln, idx) => `<tspan x="${tx}" ${idx===0 ? `y="${f1(firstY)}"` : `dy="${f1(fs*1.12)}"`}>${ln}</tspan>`).join('');
+      out += `<g class="lab"${step}><line x1="${lx}" y1="${f1(it.y)}" x2="${f1(it.p[0])}" y2="${f1(it.p[1])}" stroke="#111" stroke-width="${opts.big?2.8:2}"/><circle cx="${f1(it.p[0])}" cy="${f1(it.p[1])}" r="${opts.big?5.5:4}" fill="#111"/>
+        <text text-anchor="${anchor}" font-size="${fs}" font-weight="${opts.big?800:700}" font-family="Barlow,Arial,sans-serif" fill="#111">${tspans}</text></g>`;
     });
   }
-  const wid = arr => arr.length ? 30 + fs*0.53*Math.max(...arr.map(it => it.name.length)) : 10;
+  const wid = arr => arr.length ? 30 + fs*0.60*Math.max(...arr.map(it => Math.max(...it.lines.map(s=>s.length)))) : 12;
   const ML = wid(sides.L), MR = wid(sides.R);
-  return `<svg viewBox="${-ML} 0 ${W+ML+MR} ${Hh}" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><svg x="0" y="0" width="${W}" height="${Hh}" viewBox="0 0 400 280" overflow="hidden">${c.svg}</svg>${out}</svg>`;
+  return `<svg viewBox="${f1(-ML)} ${-padY} ${f1(W+ML+MR)} ${f1(Hh+padY*2)}" role="img" aria-label="${c.kind || KIND[type] || type} with labels"><svg x="0" y="0" width="${W}" height="${Hh}" viewBox="0 0 ${cw} ${ch}" overflow="hidden">${c.svg}</svg>${out}</svg>`;
 }
 L.cellSVG = labelled;
 C['cell'] = el => {
   const big = isDeck(el);
-  const zoom = el.dataset.zoom ? +el.dataset.zoom : (big ? 1.6 : 1);
-  const draw = seed => { el.innerHTML = labelled(el.dataset.type, {labels: el.dataset.labels ? el.dataset.labels.split(',') : null, seed: seed, style: el.dataset.style, big, zoom, steps: el.dataset.steps==='1'}); };
+  const zoom = el.dataset.zoom ? +el.dataset.zoom : (big ? 1.35 : 1);
+  const fs = el.dataset.fs ? +el.dataset.fs : null;
+  const draw = seed => { el.innerHTML = labelled(el.dataset.type, {labels: el.dataset.labels ? el.dataset.labels.split(',') : null, seed: seed, style: el.dataset.style, big, zoom, fs, steps: el.dataset.steps==='1'}); };
   draw(+(el.dataset.seed || 7));
 };
 

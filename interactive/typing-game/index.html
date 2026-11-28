@@ -15,12 +15,16 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Barlow','Arial Narrow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:16px}
 .stripes{display:flex;flex-direction:column}.stripes i{display:block}
-header{background:#111;padding:18px 16px;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px}
-@media(min-width:700px){header{padding:22px 40px 18px}}
+header{background:#111;padding:12px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+@media(min-width:700px){header{padding:14px 32px}}
 header a{text-decoration:none}
-header .brand{font-family:'Barlow Condensed',sans-serif;font-size:clamp(26px,5vw,40px);font-weight:900;text-transform:uppercase;letter-spacing:-1px;color:var(--cream);line-height:1}
-header .brand span{color:var(--green2)}
-header .sub{font-size:13px;text-transform:uppercase;letter-spacing:3px;color:#888}
+header .brand{display:inline-flex;align-items:center;gap:9px;font-family:'Barlow Condensed',sans-serif;font-size:clamp(24px,4.5vw,34px);font-weight:900;text-transform:uppercase;letter-spacing:-.5px;color:var(--cream);line-height:1;transition:color .14s}
+header .brand img{width:34px;height:34px;object-fit:contain;display:block}
+header .brand span{color:var(--green2);transition:color .14s}
+header .brand:hover{color:#fff}header .brand:hover span{color:#4ade80}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#9a968c}
+header .homebtn{margin-left:auto;font:700 13px/1 Barlow,Arial,sans-serif;color:var(--cream);border:1.5px solid #444;border-radius:999px;padding:6px 13px;white-space:nowrap}
+header .homebtn:hover{background:var(--green);border-color:var(--green2);color:#fff}
 .wrap{max-width:1050px;margin:0 auto;padding:20px 16px 56px}
 .back{display:inline-block;margin-bottom:12px;color:var(--green);font-weight:600;text-decoration:none}
 h1{font-family:'Barlow Condensed',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(34px,7vw,56px);line-height:.95}
@@ -155,21 +159,20 @@ button{font:inherit;cursor:pointer;color:inherit}
 </head>
 <body>
 <div class="stripes"><i style="height:4px;background:#005e22"></i><i style="height:2px;background:#111"></i><i style="height:16px;background:#005e22"></i><i style="height:3px;background:#111"></i><i style="height:2px;background:#005e22"></i></div>
-<header><a href="/" class="brand">Cakebread <span>Science</span></a><span class="sub">Science key words · Typing</span></header>
+<header><a href="/" class="brand" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Science key words · Typing</span><a class="homebtn" href="/">← Home</a></header>
 <div class="stripes"><i style="height:3px;background:#005e22"></i><i style="height:8px;background:#eeeae0"></i><i style="height:2px;background:#111"></i></div>
 
 <main class="wrap">
   <section id="menu">
-    <a class="back" href="/">← Home</a>
     <h1>Type Fast or Perish</h1>
-    <p class="lede">Type GCSE science key words as fast as you can, spelt properly (yes, <i>haemoglobin</i> has an <i>a</i>). Watch out for the occasional wombat, existential teapot or slightly damp parrot.</p>
+    <p class="lede">Type Edexcel IGCSE examiner key words as fast as you can, spelt properly (yes, <i>haemoglobin</i> has an <i>a</i>). Powered by the site’s reviewed key-words bank — plus the occasional wombat, existential teapot or slightly damp parrot.</p>
     <div class="bigmodes">
       <button class="bigmode" id="sprintBtn" style="--c:#005e22"><span class="diff">Normal</span><h3>Sixty-Second Sprint</h3><p>60 seconds. Type a line of 5 words in order; they stay put so you can see what’s coming, then a fresh line appears. Clean words build a combo up to ×4. Long words score more.</p><span class="best" id="bestSprint"></span></button>
       <button class="bigmode" id="stormBtn" style="--c:#c2185b"><span class="diff">Really hard</span><h3>Hard mode</h3><p>Words fall from the sky and speed up. Start typing any word to lock onto it. Three lives. Improbability events flip, shrink, hide and reverse the words. Type the golden <b>towel</b> to clear the sky.</p><span class="best" id="bestStorm"></span></button>
     </div>
     <div class="key"><span style="--k:var(--bio)">Biology</span><span style="--k:var(--chem)">Chemistry</span><span style="--k:var(--phys)">Physics</span><span style="--k:var(--silly)">Nonsense</span></div>
-    <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 Leaderboards</button></p>
-    <p class="small" style="margin-top:20px">Key words from Edexcel International GCSE Science (Double Award): biology, chemistry and physics, with UK spellings. Capital letters don’t matter. Works best on a real keyboard.</p>
+    <p style="margin-top:16px"><button class="linkbtn" id="hsBtn">🏆 Leaderboards (v2 &amp; v1 archive)</button></p>
+    <p class="small" style="margin-top:20px">Version 2 uses the reviewed Edexcel International GCSE Science (Double Award) examiner key words from across the site, with UK spellings. Version 1 scores are kept in the v1 archive leaderboard. Capital letters don’t matter. Works best on a real keyboard.</p>
   </section>
 
   <section id="play" class="hidden">
@@ -188,6 +191,7 @@ button{font:inherit;cursor:pointer;color:inherit}
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <script src="/js/firebase-config.js"></script>
 <script src="/js/leaderboards.js"></script>
+<script src="/js/key-words.js"></script>
 <script src="words.js"></script>
 <script src="game.js"></script>
 </body>

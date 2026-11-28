@@ -93,7 +93,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="/js/admin-config.js"></script>
-<script src="/js/account.js" data-bar></script>
+<script src="/js/account.js" data-bar data-back="/interactive/physics-long-answer/" data-back-label="Physics 6-markers" data-section="Learning bank"></script>
 <script src="questions-data.js"></script>
 <script src="tracker.js"></script>
 <script>
@@ -109,7 +109,7 @@ function render() {
   const u = Store.user;
   document.getElementById("who").textContent = viewing
     ? `Viewing: ${viewing.name}`
-    : (u ? (u.displayName || u.email) : "");
+    : (u ? (u.displayName || "") : "");
 
   // Stats
   let attempted = 0, firstMarks = 0, possible = 0, learnedPoints = 0, addCount = 0;
@@ -192,7 +192,7 @@ function renderAccount() {
   const u = Store.user;
   if (!Store.available) statusEl.textContent = "Showing answers saved on this device.";
   else if (!u) statusEl.textContent = "Showing answers saved on this device. Sign in to see your account's learning bank.";
-  else statusEl.textContent = Store.status === "loading" ? "Loading…" : `Signed in as ${u.displayName || u.email}.`;
+  else statusEl.textContent = Store.status === "loading" ? "Loading…" : (u.displayName ? `Signed in as ${u.displayName}.` : "Signed in.");
   signInBtn.hidden = !Store.available || !!u;
   signOutBtn.hidden = !u;
   if (!u) { studentSel.hidden = true; studentsLoaded = false; viewing = null; }
@@ -207,6 +207,5 @@ Store.init();
 renderAccount();
 render();
 </script>
-<script src="/js/home-link.js" data-back="/interactive/physics-long-answer/" data-back-label="Physics 6-markers"></script>
 </body>
 </html>

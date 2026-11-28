@@ -1,1 +1,1963 @@
-[{"id":1675696422636,"front":"Name the processes\nresponsible for the following\nphase changes: solid ⇄ gas","back":"Sublimation (s to g)<br>Deposition (g to s)","spec":"C1.2","topic":"C1"},{"id":1675696443829,"front":"What is diffusion and in which substances does it occur?","back":"Diffusion is the process where particles spread out, moving from an area of higher concentration to an area of lower concentration (down the concentration gradient).<br><br>It occurs in gases and liquids (solutions).","spec":"C1.3","topic":"C1"},{"id":1675696492148,"front":"What is an element?","back":"An element is a substance made up of only one type of atom.","spec":"C1.8","topic":"C1"},{"id":1675696527529,"front":"Elements can be classified into\ntwo groups based on their\nproperties; what are these\ngroups?","back":"Metals and non-metals","spec":"C1.21","topic":"C1"},{"id":1675696547897,"front":"What is a compound?","back":"Two or more elements combined chemically in fixed proportions which can\nbe represented by formulae","spec":"C1.8","topic":"C1"},{"id":1675696556890,"front":"Do compounds have the\nsame properties as their\nconstituent elements?","back":"No, they have different properties.","spec":"C1.8","topic":"C1"},{"id":1675696572626,"front":"Do mixtures have the\nsame chemical properties as their constituent materials?","back":"The constituent materials keep their own chemical\nproperties, but the mixture may have different chemical properties (e.g.\nmelting point) as a whole.","spec":"C1.8","topic":"C1"},{"id":1675696596376,"front":"What are the five methods to separate mixtures?<br><br>Do these involve chemical reactions?","back":"<ul><li>Filtration</li><li>evaporation/crystallisation</li><li>simple distillation</li><li>fractional</li><li>distillation</li><li>chromatography</li></ul><br>They do not involve chemical reactions","spec":"C1.10","topic":"C1"},{"id":1675696629222,"front":"Describe and explain fractional distillation","back":"Fractional distillation separates a <b>mixture of liquids</b> based on their different boiling points<br><br>The mixture is heated until it vaporizes and passes into a fractionating column. The column is hot at the bottom and cool at the top - the liquids condense at different heights based on their boiling points.","spec":"C1.10","topic":"C1"},{"id":1675696638491,"front":"Describe and explain\nfiltration","back":"Filtration separates an <b>insoluble solid</b> from a <b>liquid </b>(within which it is suspended)<br><br>The mixture is poured onto filter paper on a funnel. The liquid (filtrate) passes through the filter paper, but the&nbsp;insoluble solid (the residue) is caught as pits articles are too big.","spec":"C1.10","topic":"C1"},{"id":1675696648339,"front":"Describe and explain\nchromatography","back":"Chromatography separates a <b>mixture of substances</b> dissolved in a <b>solvent&nbsp;</b>based on their movement through a medium.<br><br>A piece of paper with a spot containing a mixture is placed in a beaker with some solvent. The bottom of the paper is in contact with\nthe solvent. The solvent level slowly rises, separating the spot\n(mixture) into few spots (components).","spec":"C1.10","topic":"C1"},{"id":1675696710622,"front":"In a paper chromatography experiment, a compound A has an R<span style=\"font-size:medium\">f</span> value of 0.85 - what does it tell you about the compound?","back":"It has a higher affinity for the solvent than for the paper.","spec":"C1.12","topic":"C1"},{"id":1675696745024,"front":"Describe the structure of an\natom","back":"The atom has a small central nucleus (made up of protons and neutrons)\naround which there are electrons.","spec":"C1.15","topic":"C1"},{"id":1675696841328,"front":"State the relative masses and\nrelative charges of the proton,\nneutron and electron","back":"<b>Proton</b>: mass 1, charge 1<br><b>Neutron</b>: mass 1, charge 0<br><b>Electron</b>: mass 1/2000, charge -1","spec":"C1.15","topic":"C1"},{"id":1675696880966,"front":"Atoms of the same element have\nthe same number of which particle\nin the nucleus?","back":"Protons","spec":"C1.16","topic":"C1"},{"id":1675696893070,"front":"Where is the majority of\nmass of an atom?","back":"The nucleus","spec":"C1.15","topic":"C1"},{"id":1675696911120,"front":"How does one calculate the\nnumber of neutrons using mass\nnumber and atomic number?","back":"Subtract the atomic number from the mass number.","spec":"C1.16","topic":"C1"},{"id":1675696923382,"front":"What is an isotope? Do isotopes\nof a certain element have the same\nchemical properties?","back":"Atoms of the same element (same proton number) that have a different\nnumber of neutrons.\nThey have the same chemical properties as they have the same\nelectronic structure.","spec":"C1.16","topic":"C1"},{"id":1675696946235,"front":"Describe the properties of noble\ngases. Discuss the trend in boiling\npoint down the group.","back":"Non-metals, colourless gases at room temperature, low boiling points,\nunreactive (full outer shell; they don’t easily accept or lose electrons).\nThe boiling point increases down the group, as the atoms get heavier.","spec":"C1.24","topic":"C1"},{"id":1675697029802,"front":"The elements of Group 0\nare more commonly known\nas…?","back":"The noble gases","spec":"C1.24","topic":"C1"},{"id":1675697057629,"front":"What is the difference in electron shell configuration between elements in the same period?","back":"Same number of electron shells, but number of electrons in their outermost shell increases from left to right across the period.","spec":"C1.22","topic":"C1"},{"id":1675697065281,"front":"What change in shell\nnumber is seen as one\nmoves down a group?","back":"The number of shells increases","spec":"C1.22","topic":"C1"},{"id":1675697090301,"front":"Elements that react to form\npositive ions are…?","back":"Metals","spec":"C1.38","topic":"C1"},{"id":1675697097850,"front":"Which elements do not typically form positive ions during chemical reactions?","back":"Non-metals (they usually gain electrons to form negative ions or share electrons in covalent bonds).","spec":"C1.38","topic":"C1"},{"id":1675697106418,"front":"Elements in Group 1 are\nknown as…?","back":"The alkali metals","spec":"C2.1","topic":"C2"},{"id":1675697113599,"front":"Elements in Group 7 are\nknown as…?","back":"The halogens","spec":"C2.5","topic":"C2"},{"id":1675697132023,"front":"What is ionic bonding?","back":"Ionic bonding is the transfer of electron(s) from a <b>metal atom to a\nnon-metal atom</b> to form positive and negative ions which are then strongly electrostatically attracted.","spec":"C1.37","topic":"C1"},{"id":1675697143002,"front":"How are ionic compounds held together?","back":"They are held together by electrostatic attraction between positive and negative ions&nbsp;in a giant lattice.","spec":"C1.41","topic":"C1"},{"id":1675697153653,"front":"State properties of ionic<br>substances","back":"High melting and boiling point (strong electrostatic forces between oppositely charged ions).<br><br>Do not conduct electricity when solid (ions in fixed positions).<br><br>Conduct when molten or dissolved in water - ions are free to move.","spec":"C1.43","topic":"C1"},{"id":1675697173889,"front":"How are ionic compounds\nformed?&nbsp;","back":"Reaction of a metal with a non-metal.\nElectron transfer occurs - metal gives away its outer shell electrons to\nnon-metal.","spec":"C1.41","topic":"C1"},{"id":1675697182313,"front":"What is a covalent bond?","back":"Covalent bond is the strong electrostatic force of attraction of a shared pair of electrons of two atoms and their nuclei.","spec":"C1.44","topic":"C1"},{"id":1675697236860,"front":"Describe the structure and properties of simple molecular covalent substances","back":"- Weak intermolecular forces, so low melting and boiling points<br>- Small molecules<br>- Do not conduct electricity (no ions)","spec":"C1.48","topic":"C1"},{"id":1675697246874,"front":"How do intermolecular forces<br>change as the mass/size of the<br>molecule increases? How does this affect boiling/melting points?","back":"They increase. That causes melting/boiling points to increase as well (more<br>energy needed to overcome these forces)","spec":"C1.23","topic":"C1"},{"id":1675697265186,"front":"What are giant covalent<br>substances? Give properties and examples","back":"Solids, atoms covalently bonded together in a giant lattice.<br><br>High melting/boiling points – strong covalent bonds.<br><br>Mostly don’t conduct electricity (no delocalised e−)<br><br>Diamond, graphite, silicon dioxide (silica).","spec":"C1.49","topic":"C1"},{"id":1675697318657,"front":"Describe the structure and properties of diamond","back":"– four, strong covalent bonds for each carbon atom<br>– very hard (Strong bonds) <br>– very high melting point (strong bonds) <br>– does not conduct electricity (no delocalised electrons)","spec":"C1.50","topic":"C1"},{"id":1675697350699,"front":"What is graphite? Explain its properties.","back":"– Giant covalent structure with three covalent bonds for each carbon atom forming&nbsp;layers of hexagonal rings<br>– layers free to slide as weak intermolecular forces\nbetween layers; soft, can be used as a lubricant\n<br>– high melting point<br>– conduct thermal and electricity due to one delocalised\nelectron per each carbon atom","spec":"C1.50","topic":"C1"},{"id":1675697377954,"front":"Describe and explain the properties of fullerenes and give the most common example ","back":"– hollow shaped molecules<br><br>– based on carbon 6-rings, some 5/7<br><br>– C60 (Buckminsterfullerene)","spec":"C1.50","topic":"C1"},{"id":1675697398453,"front":"Describe and explain the\nproperties of nanotubes","back":"– cylindrical fullerene with high length to\ndiameter ratio<br>- High tensile strength (strong bonds)<br>- Conductivity (deloc. electrons)","spec":"C1.50","topic":"C1"},{"id":1675697413391,"front":"What is graphene","back":"A single layer of graphite.","spec":"C1.50","topic":"C1"},{"id":1675697545909,"front":"What affects the energy needed to change state from solid to liquid or liquid to gas?","back":"The strength of forces between particles. Stronger forces mean higher energy, melting, and boiling points.","spec":"C1.2","topic":"C1"},{"id":1675697557881,"front":"A pure substance will melt\nor boil at…? What about the\nmixture?","back":"A fixed temperature.\n<br>A mixture will melt over a range of temperatures.","spec":"C1.9","topic":"C1"},{"id":1675697565588,"front":"What are the three states of\nmatter?","back":"Solid, liquid and gas","spec":"C1.1","topic":"C1"},{"id":1675697711016,"front":"Write a balanced equation\nof magnesium reacting with\nhydrochloric acid.","back":"Mg<sub>(s)</sub> + 2HCl<sub>(aq)</sub> → MgCl<sub>2(aq)</sub> + H<sub>2(g)</sub>","spec":"C1.25","topic":"C1"},{"id":1675697771049,"front":"The following reaction occurs in a heated test tube:<br><br>4MgO<sub>(s)</sub> + CH<sub>4(g)</sub> → 4Mg<sub>(s)</sub> + 2H<sub>2</sub>O<sub>(g)</sub> + CO<sub>2(g)</sub><br><br>The mass <b>appears </b>to decrease. Why?","back":"The carbon dioxide and water escape as they are gases","spec":"C1.25","topic":"C1"},{"id":1675697786119,"front":"What is the formula that\nlinks mass, molecular mass\nand moles together","back":"Mass (g) = Mr x Moles","spec":"C1.26","topic":"C1"},{"id":1675697831097,"front":"Why is it often not possible to obtain the theoretical yield in a chemical reaction?","back":"<b>Reversibility</b>: The reaction may not go to completion because it is reversible, leading to an equilibrium where both reactants and products are present.<br><br><b>Product Loss</b>: Some of the product may be lost during the process of separation from the reaction mixture<br><br><b>Side Reactions</b>: Some of the reactants might undergo side reactions, producing unintended by-products.","spec":"C1.30","topic":"C1"},{"id":1675745352017,"front":"State three characteristics of\nthe alkali metals","back":"<ul><li>One electron in their outer shell</li><li>Low density</li><li>Very reactive (stored\nunder oil to prevent reactions with oxygen or water)</li><li>Soft (can be cut\nwith knife).</li></ul>","spec":"C2.3","topic":"C2"},{"id":1675745370216,"front":"Describe the product (and its colour) formed by reacting Group 1 elements with non-metals.<br><br>Why are these reactions similar for the different Group 1 elements?","back":"The products are soluble white <b><u>ionic compounds</u></b> that form colourless solutions.<br><br>They all have one electron in their outer shell.","spec":"C2.1","topic":"C2"},{"id":1675745378683,"front":"How do Group 1 elements react with water? Describe the products.","back":"They react vigorously with water, fizzing and moving around on the surface.<br><br>Products: <b>hydrogen</b> gas is released and <b>hydroxides</b> are formed which dissolve to make an alkaline solution","spec":"C2.1","topic":"C2"},{"id":1675745411696,"front":"State five characteristics of Group 7 (halogens)","back":"- 7 electrons in outer shell<br>- Coloured vapours<br>- Mostly diatomic molecules<br>- Form ionic salts with metals<br>- Form molecular compounds with non-metals","spec":"C2.5","topic":"C2"},{"id":1675745445361,"front":"State the first five halogens and their states of matter and colour (at room temperature)","back":"- Fluorine, pale yellow gas.<br>- Chlorine, pale green gas.<br>- Bromine, dark brown liquid (orange vapour and solution).<br>- Iodine, grey solid (gives off purple vapour when heated).<br><img alt=\"Iodine crystals, 99.8+%\" src=\"iodine-crystals-7553-56-2.jpg\" width=\"123\"><br>- Astatine, solid","spec":"C2.5","topic":"C2"},{"id":1675745460277,"front":"State three trends seen down group 7 (halogens)","back":"- Higher atomic mass<br>- Higher melting and boiling point<br>- <b>Less</b> reactive (electrons less easily gained)","spec":"C2.5","topic":"C2"},{"id":1675745596270,"front":"Write the\nequation and state the colour change seen when a bromine solution reacts with a sodium iodide solution.","back":"Br<sub>2</sub>(aq)&nbsp; + 2NaI(aq)&nbsp;→ I<sub>2</sub>(aq)&nbsp; + 2NaBr(aq);&nbsp;a <b><span style=\"color: rgb(170, 0, 0);\">brown </span></b>colour of I<sub>2</sub>&nbsp;in solution would appear","spec":"C2.7","topic":"C2"},{"id":1675758861057,"front":"Name the commonly <b>soluble </b>ionic compounds","back":"All <b>nitrate</b> salts<br>Common&nbsp;potassium, sodium and ammonium salts<br>Common <b>sulfate</b> salts -<b>&nbsp;</b>except barium, calcium and lead(II)<br>Common <b>chloride</b> salts -&nbsp;except silver and lead(II)<br><br>[Think: common salt and fertilisers must easily dissolve]","spec":"C2.34","topic":"C2"},{"id":1675759945185,"front":"You have a sample of a<br>pure liquid. What's the simple way to check its identity?","back":"Measure the boiling point.<br>Say we have water - it boils at 100 Celsius degrees.&nbsp;","spec":"C1.9","topic":"C1"},{"id":1675759964102,"front":"How can you show that a<br>liquid <b>contains</b> pure water? (More tricky than checking boiling point)","back":"Add the liquid being tested to a sample of pure, anhydrous crystals of CuSO<sub>4</sub> (white). The positive test will result in the formation of the blue, hydrated copper (II) sulfate.","spec":"C2.49","topic":"C2"},{"id":1675760050314,"front":"What is the test for ammonium (NH<sub>4</sub><sup>+</sup>) ions?","back":"Add a few drops of dilute sodium hydroxide solution (NaOH), then warm gently. Ammonia (NH3) gas is produced if ammonium ions are present. Put damp litmus paper near the end of the test tube - it should turn blue","spec":"C2.47","topic":"C2"},{"id":1675760323029,"front":"State the colours of flames\nobserved when lithium,\nsodium, potassium, calcium and copper ions burn\nin oxygen","back":"Red, Li<sup>+</sup>\n<br>Yellow, Na<sup>+</sup> <br>Lilac, K<sup>+<br></sup>Orange-red, Ca<sup>2+</sup><br>Blue-green, Cu<sup>2+</sup>","spec":"C2.46","topic":"C2"},{"id":1675760375076,"front":"What is\noxidation/reduction in terms of oxygen?","back":"Oxidation is the addition of oxygen<br>Reduction is the loss of oxygen","spec":"C2.20","topic":"C2"},{"id":1675760478304,"front":"What is oxidation/reduction in terms of\nelectron transfer ?","back":"Oxidation – loss of electrons.&nbsp; &nbsp;OIL<br>Reduction – gain of electrons.&nbsp; RIG","spec":"C2.20","topic":"C2"},{"id":1675760490620,"front":"What is the general equation for a\nreaction between metals and\nacids? What type of reaction is\nthis?","back":"Metal + acid → salt + hydrogen\n<br>Redox reaction, also a displacement reaction.","spec":"C2.37","topic":"C2"},{"id":1675760499003,"front":"Which metals in the reactivity\nseries will react with acid? What gas is given off?","back":"Those above hydrogen. Hydrogen (H<sub>2</sub>) is given off.","spec":"C2.15","topic":"C2"},{"id":1675760507269,"front":"What is the general equation for a\nneutralisation reaction?","back":"Acid + Base → Salt + Water","spec":"C2.32","topic":"C2"},{"id":1675760516164,"front":"What is the general equation for\nthe reaction between metal\ncarbonate and acid?","back":"Metal Carbonate + Acid → Salt + Water + Carbon Dioxide","spec":"C2.37","topic":"C2"},{"id":1675760530052,"front":"What is the general equation for\nthe reaction between metal oxide\nand acid?","back":"Metal Oxide + Acid → Salt + Water<br>(Same as alkali + acid)","spec":"C2.37","topic":"C2"},{"id":1675760539483,"front":"What is a redox reaction?","back":"A reaction where both oxidation and reduction occurs","spec":"C2.20","topic":"C2"},{"id":1675760565999,"front":"Explain in terms of gain or loss of\nelectrons which species has been\noxidised and which species has been\nreduced when magnesium reacts with\nhydrochloric acid","back":"Magnesium has lost electrons and thus has been oxidised (Mg to Mg<sup>2+</sup>)\nThe hydrogen in HCl has gained electrons and thus has been reduced (H<sup>+</sup> to H<sub>2</sub>)","spec":"C2.20","topic":"C2"},{"id":1675760591813,"front":"What do acids and alkalis\nproduce in aqueous solutions?","back":"Acids produce hydrogen ions, alkalis produce hydroxide ions","spec":"C2.31","topic":"C2"},{"id":1675760674208,"front":"What is the pH scale and what\ndoes a pH of 7 show?","back":"The measure of acidity/alkalinity of a solution; neutral solution.","spec":"C2.29","topic":"C2"},{"id":1675760693941,"front":"State the general equation for a\nneutralisation reaction in a short,\nionic form.","back":"H<sup>+</sup>\n + OH<sup>−</sup>\n → H<sub>2</sub>O","spec":"C2.32","topic":"C2"},{"id":1675760702355,"front":" Explain the difference in how strong and weak acids behave when dissolved in water (aqueous solution)","back":"Strong acid is completely ionised in aqueous solution - it dissociates fully into its ions<br><br>Weak acid is only partially ionised - only a fraction of the acid molecules dissociate into ions","spec":"C2.31","topic":"C2"},{"id":1675760715224,"front":"What happens to pH as\nconcentration of H<sup>+</sup>\n increases?","back":"It decreases.","spec":"C2.31","topic":"C2"},{"id":1675760728787,"front":"What is the difference between a concentrated acid and a dilute acid, and how does this compare to strong and weak acids?","back":"A concentrated acid has more moles of acid per unit volume of water, while a dilute acid has fewer.<br><br>This differs from acid strength: a strong acid, which fully ionizes in water, typically has a lower pH, whereas a weak acid, which only partially ionizes, has a higher pH at the same concentration.","spec":"C3.15","topic":"C3"},{"id":1675760773053,"front":"Name the following salts:\nLiNO<sub>3</sub>\n, K<sub>2</sub>CO<sub>3</sub>\n, MgBr<sub>2</sub>\n, BaSO<sub>4</sub>","back":"Lithium nitrate<br>Potassium carbonate<br>Magnesium bromide<br>Barium sulfate","spec":"C2.37","topic":"C2"},{"id":1675760794466,"front":"Describe the tests for<br>hydrogen, oxygen, carbon<br>dioxide and chlorine","back":"Hydrogen – ‘pop’ heard when burning splint placed over the gas.<br><br>Oxygen – glowing splint relights.<br><br>Carbon dioxide – turns limewater (Ca(OH)<sub>2</sub>) milky.<br><br>Chlorine – bleaches damp litmus paper white.","spec":"C2.44","topic":"C2"},{"id":1675760919278,"front":"How is sodium hydroxide used to test for copper and iron?","back":"Copper(II) forms a <span style=\"color: rgb(0, 170, 255);\"><b>blue </b></span>precipitate<br>Iron(II) forms a <span style=\"color: rgb(170, 170, 0);\"><b>dirty green</b></span> precipitate<br>Iron(III) forms a <b><span style=\"color: rgb(139, 0, 0);\">brown </span></b>precipitate<br>","spec":"C2.47","topic":"C2"},{"id":1675760960491,"front":"Describe the test for\ncarbonate anions","back":"Add dilute acid, e.g. HCl\n<br>Fizzing observed, as CO<sub>2</sub>\n is evolved -&gt; then do limewater test<br>E.g. Na<sub>2</sub>CO<sub>3</sub> + 2HCl → 2NaCl + H<sub>2</sub>O + CO<sub>2</sub>","spec":"C2.48","topic":"C2"},{"id":1675761029921,"front":"Describe the test for sulfate anions","back":"Add a solution containing barium ions - Ba<sup>2+</sup> (E.g. BaCl<sub>2</sub> solution). If sulfate anions are present, a white precipitate of BaSO<sub>4</sub> forms<br><br>E.g. K<sub>2</sub>SO<sub>4</sub> + BaCl<sub>2</sub> → 2KCl + BaSO<sub>4</sub>","spec":"C2.48","topic":"C2"},{"id":1675761089599,"front":"What are the approximate proportions of the top four gases in the modern atmosphere","back":"78% of N<sub>2</sub><br>21% of O<sub>2<br></sub>1% of Argon<br>0.04% of CO<sub>2</sub>","spec":"C2.9","topic":"C2"},{"id":1675761120831,"front":"How have human activities led to an increase in the greenhouse gases <b>carbon dioxide</b> and <b>methane</b>?","back":"<b>Carbon dioxide</b> – combustion of fossil fuels and deforestation.<br><b>Methane</b> – increased farming and decomposition in landfills.","spec":"C2.13","topic":"C2"},{"id":1675761154814,"front":"Name four potential effects\nof global climate change","back":"Any of these:<br>- Global warming<br>- Melting of glaciers and polar ice caps; sea level rise, flooding and increased coastal erosion.<br>- Changes in the amount, timing and distribution of rainfall and storms.<br>- Temperature and water stress for humans and wildlife.<br>- Changes in the food-producing capacity of some regions.<br>- Changes to the distribution of wildlife species.","spec":"C2.13","topic":"C2"},{"id":1675761163929,"front":"What are two issues regarding sulfur dioxide and oxides of nitrogen?","back":"They cause respiratory problems in humans and cause acid rain. <br><br>Acid rain kills animals (by making the lakes in which they live in acidic) and damages plants and buildings.","spec":"C4.16","topic":"C4"},{"id":1675761200194,"front":"Give four examples of exothermic reaction","back":"Freezing, condensing, combustion, oxidation, respiration and neutralisation.","spec":"C3.1","topic":"C3"},{"id":1675761206695,"front":"Give four examples of endothermic reaction","back":"Melting, boiling, thermal decomposition and photosynthesis ","spec":"C3.1","topic":"C3"},{"id":1675761217127,"front":"What is activation energy?","back":"Minimum amount of energy that particles need to react.","spec":"C3.13","topic":"C3"},{"id":1675761342869,"front":"Name three common ways of<br>measuring rate of reaction","back":"1. Loss in mass of reactants<br><br>2. Volume of gas produced<br><br>3. Time for a solution to become opaque (precipitation).","spec":"C3.9","topic":"C3"},{"id":1675761353600,"front":"Describe how to measure the rate of reaction by monitoring mass loss.","back":"Place the reaction flask on a balance. In these reactions (e.g. metal carbonate +\nacid) a gas is given off, so record the decrease in mass in time intervals (note\nhydrogen is too light). Plot a graph of mass vs time.","spec":"C3.9","topic":"C3"},{"id":1675761361818,"front":"Describe how to measure the rate of reaction by monitoring the volume of a gas","back":"Connect a gas syringe to a reaction flask and measure the volume of a gas\nformed in time intervals. Plot a graph of volume vs time.","spec":"C3.9","topic":"C3"},{"id":1675761373152,"front":"Describe how to measure the rate of reaction by monitoring the disappearance\nof a cross.","back":"Take a piece of paper and mark a cross (X) on it. Put the reaction flask on this\ncross. Mix the reagents, and measure how long it takes for a cloudy mixture to\nconceal a cross.","spec":"C3.9","topic":"C3"},{"id":1675761386134,"front":"How do you determine the rate of reaction at a specific time <b>t</b> from a graph of reactant amount versus time?","back":"Draw a tangent to the curve at the point <b>t</b>. The slope of the tangent line represents the rate of reaction at time <b>t</b>. <br><br>A steeper tangent line indicates a faster rate.","spec":"C3.9","topic":"C3"},{"id":1675761405982,"front":"State five factors affecting the\nrate of a chemical reaction","back":"Concentration of reactants<br>Pressure of gases (volume)<br>Surface area<br>Temperature<br>Catalysts","spec":"C3.10","topic":"C3"},{"id":1675761461494,"front":"Describe <b>and explain</b> the effect of increasing concentration on the rate of reaction","back":"- Conc. increases = faster reaction,<br>- More reactants = more frequent collisions","spec":"C3.10","topic":"C3"},{"id":1675761482260,"front":"Describe and explain the effect of increasing pressure of a gas on the rate of reaction","back":"More gas molecules in the same volume lead to more frequent collisions, increasing the reaction rate. (Similar to increasing concentration)","spec":"C3.10","topic":"C3"},{"id":1675761496828,"front":"Describe and explain the effect of increasing surface<br>area on a reaction","back":"Increasing the surface area of solid reactants (by e.g. cutting into smaller pieces) increases the frequency of<br>collisions and so increases the rate of reaction<br><br>e.g. block of magnesium reacts slower with acid then magnesium powder","spec":"C3.10","topic":"C3"},{"id":1675761578170,"front":"Describe the effect of changing the concentration of reactant and product on the position of the equilibrium in a reversible reaction","back":"The system is no longer at equilibrium and the concentrations of all the substances will change until equilibrium is reached again.<br><br>- If the concentration of a reactant is increased, more products will be formed until equilibrium is reached again.<br><br>- If the concentration of a product is decreased, more reactants will react until equilibrium is reached again.","spec":"C3.10","topic":"C3"},{"id":1675762423435,"front":"What is the empirical\nformula? How is it related to\nmolecular formula?","back":"Simplest whole-number ratio of atoms of different elements in the compound.\n<br>The two are related by some numerical constant.\n<br>E.g. the empirical formula for heptene, C7H14, is CH2\n. Multiplying the empirical\nformula by a numerical constant (7) would yield the molecular formula of heptene.","spec":"C1.32","topic":"C1"},{"id":1675762478466,"front":"What is a homologous<br>series?","back":"Series of <b>compounds</b> with same general formula, same functional groups<br><br>similar chemical properties<br>gradual change in physical properties","spec":"C4.3","topic":"C4"},{"id":1675762496998,"front":"Hydrocarbon combustion: what kind of reaction and possible products.","back":"An exothermic reaction with oxygen, releasing energy.<br><br><b>Products</b>: water and either carbon dioxide or carbon monoxide/carbon. (depending on oxygen availability)","spec":"C4.12","topic":"C4"},{"id":1675762511513,"front":"Describe the physical properties of alkanes (including the trend with bigger molecules)","back":"- Poor reactivity.<br>- Boiling points and viscosity <b>increase </b>as molecules get bigger (smallest molecules are gases, then liquids and biggest are solids.)<br>- Volatility and flammability <b>decrease </b>as molecules get bigger.<br><br>","spec":"C4.10","topic":"C4"},{"id":1675762550245,"front":"What is the first step in the fractional distillation of crude oil?","back":"<div>Crude oil is heated and vaporized, and the vapor rises up the fractionating column, which is hotter at the bottom and cooler at the top.</div>","spec":"C4.8","topic":"C4"},{"id":1675762567276,"front":"What type of reaction is\ncracking?","back":"Thermal decomposition.","spec":"C4.17","topic":"C4"},{"id":1675762644521,"front":"How are the products of cracking used in polymerisation?","back":"Alkanes and alkenes are used as monomers in polymerisation to form plastics and other products","spec":"C4.44","topic":"C4"},{"id":1675762675803,"front":"What is the test for alkenes?","back":"Add bromine water. Colour change occurs from orange to colourless.","spec":"C4.28","topic":"C4"},{"id":1675762685653,"front":"Compare the combustion of alkanes and alkenes","back":"<div><b>Alkanes:</b>&nbsp;Burn with a cleaner flame, producing less\nsoot and primarily forming carbon dioxide and water.</div><div><b><br></b></div><div><b>Alkenes:</b>&nbsp;Burn\nwith a smokier flame, often producing more soot due to a lower\nhydrogen-to-carbon ratio and the presence of double bonds.</div>","spec":"C4.12","topic":"C4"},{"id":1675762729333,"front":"What are addition reactions\nof alkenes?","back":"<div>When atoms are added across a carbon-carbon double bond, converting it to a single bond.&nbsp;</div><div><br></div><div>(This reaction increases the <b>saturation </b>of the molecule.)<br></div>","spec":"C4.45","topic":"C4"},{"id":1675762871226,"front":"Explain what happens to the double bond when alkanes are used to produce polymers?","back":"The C=C double bond&nbsp;becomes just a single bond, and the the two carbons make other bonds.","spec":"C4.44","topic":"C4"},{"id":1675762888158,"front":"Give 3 examples of addition<br>polymers and their uses.","back":"<b>Polyethene</b> - plastic bags<br><br><b>Polytetrafluoroethene</b> (PTFE) - teflon surfaces, for use in non-stick kitchenware<br><br><b>Polychloroethene</b> [previously know as PVC] - water pipes","spec":"C4.45","topic":"C4"},{"id":1675762933521,"front":"What is the arrangement of\nC-H bonds in methane?","back":"Tetrahedral&nbsp;<img alt=\"Tetrahedral molecular geometry - Wikipedia\" src=\"Tetrahedral-3D-balls.png\">","spec":"C4.21","topic":"C4"},{"id":1675762943239,"front":"Why are alkanes considered\nunreactive?","back":"They exclusively contain relatively strong C-C and C-H bonds; these are quite\ndifficult to break.","spec":"C4.20","topic":"C4"},{"id":1675762970604,"front":"How do alkanes undergo halogenation, and what conditions are necessary for this reaction to occur?","back":"The reaction replaces hydrogen atoms with halogen atoms.  <br><br>UV light is needed to break halogen molecules into free atoms (e.g. Cl<sub>2</sub> becomes 2Cl).<br><br>For example, making chloromethane from methane: CH<sub>4</sub> + Cl<sub>2</sub> → CH<sub>3</sub>Cl + HCl","spec":"C4.22","topic":"C4"},{"id":1675763043715,"front":"What are isomers? How many isomers of C<sub>5</sub>H<sub>12</sub> are there?","back":"Isomers are compounds of the same molecular formula having different structural formulae.<br><br>Three:<br><img src=\"1730836706558840789708458303347936836671245942596.jpg\">","spec":"C4.21","topic":"C4"},{"id":1675763053497,"front":"Addition polymerisation requires an additive - what’s its name and role?","back":"An initiator.<br><br>It helps one of the C=C bonds to break, starting the process.","spec":"C4.44","topic":"C4"},{"id":1675763153076,"front":"Define acid","back":"Produces hydrogen ions (H<sup>+</sup>) in aqueous solutions (proton donors) and so have a pH range between 0 and 7","spec":"C2.36","topic":"C2"},{"id":1675763160758,"front":"Define alkali","back":"Alkalis are soluble bases that produce hydroxide ions (OH<sup>-</sup>) in aqueous solutions. They have a pH range between 7 and 14.&nbsp;","spec":"C2.31","topic":"C2"},{"id":1675763188440,"front":"Define base","back":"A substance which reacts with an acid in a neutralisation reaction to form a salt and\nwater only. Bases are known as proton acceptors.","spec":"C2.36","topic":"C2"},{"id":1675763202822,"front":"Define climate change","back":"A change in global climate patterns largely caused by the\nincrease in concentration of carbon dioxide in the atmosphere.","spec":"C2.13","topic":"C2"},{"id":1675763210206,"front":"Describe combustion","back":"The burning of a substance in oxygen. Exothermic.","spec":"C2.11","topic":"C2"},{"id":1675763217872,"front":"Define corrosion","back":"The destruction of materials by chemical reactions with substances in the\nenvironment, e.g. rusting occurs when iron is exposed to water and oxygen.","spec":"C2.18","topic":"C2"},{"id":1675763227321,"front":"Define displacement reaction","back":"A chemical reaction in which a more reactive element displaces a less reactive element from a compound.","spec":"C2.16","topic":"C2"},{"id":1675763248570,"front":"Describe the flame test","back":"Qualitative test used to identify <b>metal ions (cations).</b><br><br>Carried out by inserting a nichrome wire loop with the unknown compound on into a flame and observing the colour.","spec":"C2.45","topic":"C2"},{"id":1675763265435,"front":"Define galvanise","back":"A process used to protect against <b>corrosion</b> by coating the metal with a protective layer of zinc.","spec":"C2.19","topic":"C2"},{"id":1675763279868,"front":"Describe the greenhouse effect","back":"The increase in the temperature of the Earth’s atmosphere due to the\ngreenhouse gases in the atmosphere trapping infrared radiation emitted from the surface.","spec":"C2.13","topic":"C2"},{"id":1675763321515,"front":"Define halides","back":"The ions formed when halogen atoms gain an electron. E.g. Cl<sup>-</sup>,  Br<sup>-</sup> and I<sup>-</sup>","spec":"C2.7","topic":"C2"},{"id":1675763348614,"front":"Define indicators and give 3 examples","back":"A substance used to distinguish between acidic and alkaline solutions.<br><br>Examples include phenolphthalein, litmus and methyl orange.","spec":"C2.28","topic":"C2"},{"id":1675763360814,"front":"Define neutralisation","back":"The reaction in which an acid and a base (including alkalis) react to form a salt and water.","spec":"C2.32","topic":"C2"},{"id":1675763395394,"front":"Define pH scale","back":"A measure of the acidity or alkalinity of a solution ranging from 0 to 14. The pH\ncan be measured using universal indicator or a pH probe.","spec":"C2.29","topic":"C2"},{"id":1675763408242,"front":"Define reactivity series","back":"A series in which metals are arranged in order of their reactivity. This can be used to predict products from reactions.","spec":"C2.15","topic":"C2"},{"id":1675763426093,"front":"Define reducing agent","back":"A substance that brings about reduction by losing electrons. The reducing\nagent is itself oxidised.","spec":"C2.20","topic":"C2"},{"id":1675763433475,"front":"Define reduction","back":"A reaction involving the loss of oxygen. Reduction is the gain of electrons.","spec":"C2.20","topic":"C2"},{"id":1675763448658,"front":"What is rust and what causes it?","back":"iron oxide which forms on iron when it undergoes oxidation - in the presence of oxygen <b>and water</b>","spec":"C2.18","topic":"C2"},{"id":1675763460658,"front":"Describe sacrificial protection","back":"The protection of a metal (e.g. iron) against corrosion by coating with&nbsp;<b>a more\nreactive metal (e.g zinc).</b>&nbsp;This creates a\nphysical barrier to oxygen and water, preventing corrosion","spec":"C2.19","topic":"C2"},{"id":1675763470489,"front":"Define thermal decomposition","back":"The breaking down of a <b>compound</b> by heating","spec":"C2.12","topic":"C2"},{"id":1675763494122,"front":"Define universial indicator","back":"A <b>mixture of dyes</b> that changes colour gradually over a range of pH and\nis used in testing for acids and alkalis.","spec":"C2.30","topic":"C2"},{"id":1675763569584,"front":"Define atomic nucleus","back":"Positively charged object composed of protons and neutrons at the centre\nof every atom with one or more electrons orbiting it.","spec":"C1.15","topic":"C1"},{"id":1675763584500,"front":"Define atomic number","back":"The number of protons in the nucleus.","spec":"C1.16","topic":"C1"},{"id":1675763920244,"front":"Define conductor","back":"A material that contains charged particles which are free to move to carry\nelectrical or thermal energy.","spec":"C1.43","topic":"C1"},{"id":1675763941126,"front":"Describe evaporation/crystallisation (as a separation method)","back":"Evaporation/crystallisation separates dissolved&nbsp;<b>soluble solids</b> from <b>solutions</b><b>&nbsp;</b>(e.g., salt from water).<br><br>Heat the solution until crystals start to form, leave the solution to cool and then filter the formed crystals from the solution as the solvent evaporates.","spec":"C1.10","topic":"C1"},{"id":1675764015238,"front":"Define electron","back":"Negatively charged subatomic particle which orbits the nucleus at various energy\nlevels. Very small relative mass (negligible).","spec":"C1.15","topic":"C1"},{"id":1675764024921,"front":"Define electron shell","back":"Different energy levels in atoms, occupied by electrons.","spec":"C1.19","topic":"C1"},{"id":1675764034054,"front":"Define electrostatic forces","back":"The strong forces of attraction or repulsion between charged ions","spec":"C1.41","topic":"C1"},{"id":1675764048586,"front":"Define empirical formula","back":"The simplest whole number ratio of atoms of each element in a\ncompound.","spec":"C4.2","topic":"C4"},{"id":1675764097250,"front":"Define gas","back":"The state of matter where the particles have the most energy. The particles in a gas are\nrelatively spread out and move randomly in all directions. Intermolecular forces acting between the particles are very weak.<br>","spec":"C1.1","topic":"C1"},{"id":1675764126632,"front":"Define group","back":"A <b>column</b> of the periodic table. Elements in the same group have similar chemical properties because they have the same number of electrons in the outer shell.","spec":"C1.18","topic":"C1"},{"id":1675764135215,"front":"What does inert mean?","back":"Unreactive.","spec":"C1.24","topic":"C1"},{"id":1675764148180,"front":"What are intermolecular forces, and what property do they affect?","back":"The forces which exist between molecules.<br><br>The strength of the intermolecular forces impact physical properties like boiling/melting point.","spec":"C1.47","topic":"C1"},{"id":1675764150612,"front":"Define ion","back":"An atom <b>or molecule</b> with an electric charge due to the loss or gain of electrons.","spec":"C1.37","topic":"C1"},{"id":1675764185229,"front":"Describe lattices - what do they form?","back":"A repeating regular arrangement of atoms/ions/molecules that occurs in <b>crystals</b>.","spec":"C1.42","topic":"C1"},{"id":1675764191178,"front":"Define liquid","back":"The state of matter where the particles are arranged randomly and close together.\nThe particles are able to move past each other. Intermolecular forces act between the particles.","spec":"C1.1","topic":"C1"},{"id":1675764211442,"front":"Define mass number","back":"The total number of protons and neutrons in the nucleus.","spec":"C1.16","topic":"C1"},{"id":1675764224026,"front":"Define metals","back":"Elements that react to form positive ions. Found to the left and towards the bottom of\nthe periodic table.","spec":"C1.20","topic":"C1"},{"id":1675764230909,"front":"Define mixture. Comment on their boiling/melting points.","back":"Contains at least two different <b>elements or compounds</b> which are not chemically bonded together. <br><br>They may melt or boil over a range of temperatures.","spec":"C1.8","topic":"C1"},{"id":1675764240859,"front":"Define mobile phase","back":"The fluid (gas or liquid) which moves through the chromatography system,\ncarrying the mixture which is to be separated.","spec":"C1.10","topic":"C1"},{"id":1675764283256,"front":"Define mole","back":"Standard unit for measuring amounts of chemicals. The mole is the unit for amount of\nsubstance. The symbol for the unit mole is mol.","spec":"C1.27","topic":"C1"},{"id":1675764292105,"front":"Define molecular formula","back":"The actual ratio of atoms of each element present in a compound.","spec":"C4.2","topic":"C4"},{"id":1675764299320,"front":"Define molecule","back":"A group of at least two atoms held together by <b>covalent</b> bonds.","spec":"C1.14","topic":"C1"},{"id":1675764331753,"front":"Describe noble gases","back":"The elements in Group 0 of the periodic table. They have a stable full outer\nshell of electrons which makes them very unreactive.","spec":"C1.24","topic":"C1"},{"id":1675764337919,"front":"Define neutron","back":"Neutral subatomic particle present in the nucleus of the atom. Relative mass of 1.","spec":"C1.15","topic":"C1"},{"id":1675764345702,"front":"Define non-metals","back":"Elements that react to form negative ions. Found towards the right and top of\nthe periodic table.","spec":"C1.20","topic":"C1"},{"id":1675764406532,"front":"Define percentage yield","back":"The percentage ratio of the actual yield of product from a reaction\ncompared with the theoretical yield.<br><img src=\"paste-16f2220cdbbb27c6ef3dae5214fae09a822ec09a.jpg\">","spec":"C1.30","topic":"C1"},{"id":1675764415180,"front":"Define period with reference to electron shells","back":"A <b>row </b>of the periodic table. Elements in the same period have the same number of electron shells.","spec":"C1.18","topic":"C1"},{"id":1675764423096,"front":"What is the periodic table?","back":"Table of elements arranged in order of increasing atomic number and such\nthat elements with similar properties are in the same column (group).","spec":"C1.18","topic":"C1"},{"id":1675764429981,"front":"Define proton","back":"Positively charged subatomic particle present in the nucleus of the atom. Relative\nmass of 1.","spec":"C1.15","topic":"C1"},{"id":1675764443231,"front":"Define pure substance","back":"A substance which contains only <b>one compound or element</b> and so has fixed melting and boiling points.","spec":"C1.9","topic":"C1"},{"id":1675764485977,"front":"Define relative atomic mass","back":"An average value that takes account of the abundance of the\nisotopes of the element.","spec":"C1.17","topic":"C1"},{"id":1675764496293,"front":"Define relative formula mass.","back":"The sum of the relative atomic masses of the atoms in the numbers\nshown in the formula","spec":"C1.26","topic":"C1"},{"id":1675764514026,"front":"Define saturated solution","back":"A solution which contains the maximum amount of solute that can be\ndissolved in the solvent. If any more solute is added, it will not dissolve in the solution.","spec":"C1.4","topic":"C1"},{"id":1675764522907,"front":"Describe simple distillation","back":"A separation technique used to separate a liquid from a solution.<br><br>The solution is heated so that only the liquid with the lowest boiling point evaporates. This gas is then condensed in a condenser before being collected as a liquid.","spec":"C1.10","topic":"C1"},{"id":1675764541541,"front":"Define solid","back":"The state of matter where the particles hold a regular arrangement and have the least\namount of energy. They are tightly packed together and can only vibrate about their fixed positions. Strong intermolecular forces act between the particles","spec":"C1.1","topic":"C1"},{"id":1675764548090,"front":"Define solute","back":"A substance which is dissolved in a solvent to create a solution.","spec":"C1.4","topic":"C1"},{"id":1675764554906,"front":"Define solution","back":"A homogeneous mixture in which a solute is dissolved in a solvent.","spec":"C1.4","topic":"C1"},{"id":1675764562454,"front":"Define solvent","back":"A substance which dissolves a solute.","spec":"C1.4","topic":"C1"},{"id":1675764581371,"front":"Define state symbols","back":"The symbols used in chemical equations to denote the states of the\nchemicals reacting: (s) - solid, (l) - liquid, (g) - gas, (aq) - aqueous solution.","spec":"C1.25","topic":"C1"},{"id":1675764589604,"front":"Define stationary phase","back":"The nonmoving phase which the mobile phase passes over during\nchromatography.","spec":"C1.10","topic":"C1"},{"id":1675764599970,"front":"Define subatomic particles","back":"Particles smaller than an atom. Protons, neutrons and electrons are\nthe three most common subatomic particles.","spec":"C1.15","topic":"C1"},{"id":1675764610203,"front":"Define water crystalisation","back":"Water molecules forming part of a crystal structure.","spec":"C1.31","topic":"C1"},{"id":1675765252147,"front":"Define activation energy","back":"The minimum amount of energy that particles must collide with to react.","spec":"C3.13","topic":"C3"},{"id":1675765261114,"front":"Define calorimetry","back":"The process used to measure the amount of heat energy released or absorbed\nduring a chemical reaction.","spec":"C3.2","topic":"C3"},{"id":1675765268048,"front":"Define catalyst","back":"Increases the rate of reaction by providing a different reaction pathway with a lower\nactivation energy. They are not used up during the reaction.","spec":"C3.12","topic":"C3"},{"id":1675765276896,"front":"According to collision theory, what is required for a reaction to happen?","back":"Chemical reactions only occur when colliding particles collide with the\ncorrect orientation and with sufficient energy (activation energy).","spec":"C3.11","topic":"C3"},{"id":1675765376125,"front":"Define effect of surface area on reaction rate","back":"Increasing the surface area of the reactants means\nthere are more exposed reacting particles. This means there are more frequent successful\ncollisions, so the rate of reaction increases.","spec":"C3.10","topic":"C3"},{"id":1675765404889,"front":"Define effect of temperature on reaction rate","back":"Increasing the temperature means the particles will\nhave more kinetic energy and so will move faster. If the molecules are moving faster they will\ncollide more often and, since they’ve gained kinetic energy, a larger proportion of the\nparticles will have at least the activation energy. For both these reasons the rate of reaction\nincreases.","spec":"C3.10","topic":"C3"},{"id":1675765413023,"front":"Define endothermic reaction","back":"A reaction in which energy is taken in from the surroundings so the\ntemperature of the surroundings decreases.","spec":"C3.1","topic":"C3"},{"id":1675765426072,"front":"Define enthalpy change","back":"The amount of heat energy given out or absorbed during a reaction.","spec":"C3.4","topic":"C3"},{"id":1675765436371,"front":"Define exothermic reaction","back":"A reaction in which energy is transferred to the surroundings so the\ntemperature of the surroundings increases.","spec":"C3.1","topic":"C3"},{"id":1675765476952,"front":"Define molar enthalpy change","back":"The amount of heat energy given out or absorbed by one mole of a\nsubstance during a reaction. It can be calculated from heat energy change, Q, by dividing Q\nby the amount of moles of the substance which took part in the reaction. The value is made\nnegative if the reaction was exothermic.","spec":"C3.4","topic":"C3"},{"id":1675765535980,"front":"Define rate of reaction (including units)","back":"The measure of the amount of product formed or reactant used over time.\nThe units of rate of reaction may be given as g/s, cm<sup>3</sup>/s or mol/s.","spec":"C3.9","topic":"C3"},{"id":1675765551763,"front":"Define reversible reaction","back":"A reaction in which the products can react together to reform the\nreactants. Reversible reactions are denoted by the symbol ⇌.","spec":"C3.17","topic":"C3"},{"id":1675765570080,"front":"Define addition polymerisation","back":"The reaction in which many small molecule monomers bond\ntogether to form a long chain polymer.","spec":"C4.44","topic":"C4"},{"id":1675765578146,"front":"Define addition reaction","back":"A reaction in which at least two molecules combine together to form a\nsingle larger product.","spec":"C4.6","topic":"C4"},{"id":1675765605044,"front":"Define alkanes, including the general formula","back":"The most common hydrocarbon found in crude oil. Alkanes have the general\nformula C<sub>n</sub>H<sub>2n+2</sub>.","spec":"C4.19","topic":"C4"},{"id":1675765619627,"front":"Define&nbsp;alkenes, including the general formula","back":"Hydrocarbons with a double bond between two of the carbon atoms in their chain (C=C),\ncausing them to be unsaturated. They have the general formula C<sub>n</sub>H<sub>2n</sub>.","spec":"C4.24","topic":"C4"},{"id":1675765637758,"front":"Define biodegradable","back":"Able to be broken down by living organisms.","spec":"C4.47","topic":"C4"},{"id":1675765685123,"front":"What is catalytic cracking (incl conditions)","back":"Long-chain hydrocarbons are heated to 600-700°C, turning to gas. The vapor passes over a catalyst, splitting the molecules.","spec":"C4.17","topic":"C4"},{"id":1675765707088,"front":"Define complete combustion","back":"Combustion carried out in sufficient oxygen. Water and carbon\ndioxide are the only products of the complete combustion of a hydrocarbon.","spec":"C4.12","topic":"C4"},{"id":1675765729037,"front":"Define cracking","back":"A process that involves breaking down larger hydrocarbons to produce smaller\nmore useful molecules.","spec":"C4.17","topic":"C4"},{"id":1675765736302,"front":"Define crude oil","back":"A finite resource found in rocks. It is the remains of an ancient biomass consisting\nmainly of plankton that was buried in mud. Most of the compounds in crude oil are\nhydrocarbons.","spec":"C4.7","topic":"C4"},{"id":1675765746352,"front":"Define displayed formula","back":"A type of structural formula that shows all the bonds between every\natom in the compound.","spec":"C4.2","topic":"C4"},{"id":1675765954571,"front":"Define finite resource","back":"A resource which will one day run out, e.g. crude oil.","spec":"C4.7","topic":"C4"},{"id":1675766478526,"front":"Define fuel","back":"A substance which releases energy when burned","spec":"C4.11","topic":"C4"},{"id":1675766496958,"front":"Define general formula","back":"A chemical formula which applies to a class of compounds, representing\nthe composition of the atoms present in the compound. For example, alkanes have the\ngeneral formula C<sub>n</sub>H<sub>2n+2</sub>, where n is the number of carbon atoms in the molecule.","spec":"C4.2","topic":"C4"},{"id":1675766520073,"front":"Define hydrocarbons","back":"Compounds made up of hydrogen and carbon atoms only.","spec":"C4.1","topic":"C4"},{"id":1675766543922,"front":"What are impurities? Give an example of an issue with combustion.","back":"Substances within a compound different to compound itself.<br>E.g. combustion of hydrocarbons continuing <b>sulfur </b>impurities leads\nto the formation of sulfur dioxide.","spec":"C4.15","topic":"C4"},{"id":1675766564188,"front":"Define incomplete combustion","back":"Combustion which is carried out with insufficient oxygen. It can\nlead to the production of toxic carbon monoxide and carbon particulates.","spec":"C4.12","topic":"C4"},{"id":1675766591769,"front":"Define isomerism","back":"The existence of molecules with exactly the same molecular formula but a\ndifferent arrangement of atoms in space","spec":"C4.3","topic":"C4"},{"id":1675766631416,"front":"Define monomer","back":"Small short chain molecules which can join together to form a long chain polymer.","spec":"C4.44","topic":"C4"},{"id":1675766638917,"front":"What do particulates come from and why are they bad?","back":"Carbon particulates (soot) are a product of incomplete combustion. They cause global dimming and health problems for\nhumans.&nbsp;","spec":"C4.12","topic":"C4"},{"id":1675766668415,"front":"Define polymer","back":"Large long-chain molecules made up of lots of small monomers joined together by\n<b>covalent </b>bonds.","spec":"C4.44","topic":"C4"},{"id":1675766689163,"front":"Define saturated hydrocarbons","back":"A hydrocarbon compound containing only single bonds between\ncarbon atoms. Alkanes are saturated compounds.","spec":"C4.20","topic":"C4"},{"id":1675766732011,"front":"Define structural formula","back":"A formula which shows the arrangement of atoms in the molecule of a\ncompound but does not show all the bonds between them. E.g. CH<sub>3</sub>CH<sub>2</sub>COCH<sub>3</sub>.","spec":"C4.2","topic":"C4"},{"id":1675766760241,"front":"Define substitution reaction","back":"A reaction in which a functional group of a compound is replaced by\nanother functional group.","spec":"C4.6","topic":"C4"},{"id":1675766773126,"front":"Define unsaturated compounds","back":"A compound that contains double or triple carbon bonds so\nthat it does not contain the maximum number of hydrogen atoms. Alkenes are unsaturated\ncompounds.","spec":"C4.25","topic":"C4"},{"id":1681459340395,"front":"What is the formula for R<sub>f</sub>?","back":"<img src=\"paste-1ae84b12056967fb55290ea952176e2ef19a1f1c.jpg\">","spec":"C1.12","topic":"C1"},{"id":1681460012697,"front":"What is the general formula for the reaction between a metal and water?","back":"<img src=\"paste-79bd98442c99ed17f5ff6941aecde80c0c781edd.jpg\">","spec":"C2.15","topic":"C2"},{"id":1681460212115,"front":"What are the colours for litmus paper?","back":"<img src=\"paste-dccb78a922eed47bc7be6d5c892f04ab6ca255c2.jpg\">","spec":"C2.28","topic":"C2"},{"id":1681460249907,"front":"What are the colours for phenolpthalein?","back":"<img src=\"paste-141c5632f28e35f7976f152525460070b8300573.jpg\">","spec":"C2.28","topic":"C2"},{"id":1681460281420,"front":"What are the colours of methyl orange?","back":"<img src=\"paste-82b7d561de471a8c3b1deec97913f66ffa527d4d.jpg\"><br>Orange in neutral","spec":"C2.28","topic":"C2"},{"id":1681460541377,"front":"How do you test for halides?","back":"<img src=\"paste-bb617199078b5dd548b5c01f26bb87b1bc4b8fc8.jpg\">","spec":"C2.48","topic":"C2"},{"id":1681460772739,"front":"What are refinery gases used for?","back":"Domestic heating and cooking","spec":"C4.9","topic":"C4"},{"id":1681460786746,"front":"What is gasoline used for?","back":"Fuel in cars","spec":"C4.9","topic":"C4"},{"id":1681460798233,"front":"What is kerosene used for?","back":"Fuel in aircraft","spec":"C4.9","topic":"C4"},{"id":1681460817253,"front":"What is diesel used for?","back":"Fuel in some cars, larger vehicles and trains","spec":"C4.9","topic":"C4"},{"id":1681460836481,"front":"What is fuel oil used for?","back":"Fuel for large ships and some power stations","spec":"C4.9","topic":"C4"},{"id":1681460850140,"front":"What is bitumen used for?","back":"To surface roads and roofs","spec":"C4.9","topic":"C4"},{"id":1681460920680,"front":"What is the general formula for the combustion of a hydrocarbon?","back":"<img src=\"paste-b3da699c317236d4de1247139d0d0b2283c60eec.jpg\">","spec":"C4.12","topic":"C4"},{"id":1723925882840,"front":"Write the equation and state the colour change seen when a chlorine solution reacts with a sodium bromide solution.","back":"Cl<sub>2</sub>(aq) + 2NaBr(aq)&nbsp;→ Br<sub>2</sub>(aq)&nbsp; + 2NaCl(aq)<br><br>in this reaction, an <b><span style=\"color: rgb(255, 170, 0);\">orange </span></b>colour of Br<sub>2</sub> in solution would appear","spec":"C2.5","topic":"C2"},{"id":1723926877866,"front":"Name the commonly <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span> </b>ionic compounds","back":"Common carbonates - all <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and ammonium<br><br>Common hydroxides - all&nbsp;<b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and calcium","spec":"C2.34","topic":"C2"},{"id":1724938322045,"front":"How are hydrocarbons separated during fractional distillation?","back":"Hydrocarbons cool and condense at different heights in the column based on their boiling points. <br><br><b>Large molecules</b> with high boiling points condense at the bottom, while <b>small molecules</b> with low boiling points condense at the top.","spec":"C4.8","topic":"C4"},{"id":1724940002797,"front":"<span style=\"color: rgb(0, 0, 0);\">Draw the displayed formula for the reaction of ethene (C<sub>2</sub>H<sub>4</sub>) with&nbsp;</span><span style=\"font-weight: bold; color: fuchsia;\">bromine </span><span style=\"color: rgb(0, 0, 0);\">(</span><span style=\"color: fuchsia;\"><span style=\"font-weight: bold;\">Br</span><sub><span style=\"font-weight: bold;\">2</span></sub></span>).","back":"<div>The reaction results in the addition of bromine atoms across the double bond, producing a compound where each of the original carbon atoms in the double bond now has a bromine atom attached.<br></div><div><br></div><div><img src=\"paste-5de0518de542729eb17d762ec789e575c0c230a7.jpg\"><br></div><div><br></div>","spec":"C4.45","topic":"C4"},{"id":1725305739118,"front":"What is the relationship between alkalis and bases?<br>","back":"Alkalis are a subset of bases that are <b>soluble</b> in water.<br><br>All alkalis are bases. Not all bases are alkalis.","spec":"C2.31","topic":"C2"},{"id":1725649686880,"front":"What is physical chemistry?","back":"The study of how substances react, focusing on energy, rates of reaction, and molecular interactions","spec":null,"topic":"C3"},{"id":1725649701207,"front":"What is organic chemistry?","back":"The study of carbon-containing compounds and their reactions.","spec":null,"topic":"C4"},{"id":1725649716911,"front":"What is inorganic chemistry?","back":"The study of non-carbon compounds, including metals and salts.","spec":null,"topic":"C2"},{"id":1732286586754,"front":"What does soluble mean?","back":"A substance is&nbsp;<b>soluble&nbsp;</b>if it can be dissolved in a solvent, e.g. salt in water. An insoluble substance won’t dissolve in a particular solvent.","spec":"C1.4","topic":"C1"},{"id":1740669287138,"front":"What is the link between relative formula mass and moles&nbsp;","back":"Relative formula mass of a substance is numerically equal to the mass of one mole of the substance in grams","spec":"C1.26","topic":"C1"}]
+[
+  {
+    "id": 1675696422636,
+    "front": "Name the processes\nresponsible for the following\nphase changes: solid ⇄ gas",
+    "back": "Sublimation (s to g)<br>Deposition (g to s)",
+    "spec": "C1.2",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696443829,
+    "front": "Define diffusion and state which states of matter it occurs in",
+    "back": "<ul class=\"fc-points\"><li><b>Net movement of particles</b> from an area of <b>higher concentration to lower concentration</b> (down a concentration gradient)</li><li>Occurs in <b>gases and liquids</b> (solutions)</li></ul>",
+    "spec": "C1.3",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696492148,
+    "front": "What is an element?",
+    "back": "An element is a substance made up of only one type of atom.",
+    "spec": "C1.8",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696527529,
+    "front": "Elements can be classified into\ntwo groups based on their\nproperties; what are these\ngroups?",
+    "back": "Metals and non-metals",
+    "spec": "C1.21",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696547897,
+    "front": "What is a compound?",
+    "back": "Two or more elements combined chemically in fixed proportions which can\nbe represented by formulae",
+    "spec": "C1.8",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696556890,
+    "front": "Do compounds have the\nsame properties as their\nconstituent elements?",
+    "back": "No, they have different properties.",
+    "spec": "C1.8",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696572626,
+    "front": "Do mixtures have the\nsame chemical properties as their constituent materials?",
+    "back": "The constituent materials keep their own chemical\nproperties, but the mixture may have different chemical properties (e.g.\nmelting point) as a whole.",
+    "spec": "C1.8",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696596376,
+    "front": "What are the five methods to separate mixtures?<br><br>Do these involve chemical reactions?",
+    "back": "<ul><li>Filtration</li><li>evaporation/crystallisation</li><li>simple distillation</li><li>fractional</li><li>distillation</li><li>chromatography</li></ul><br>They do not involve chemical reactions",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696629222,
+    "front": "Describe fractional distillation (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Separates a <b>mixture of miscible liquids</b> with different <b>boiling points</b></li><li>Mixture is heated until it <b>vaporises</b> and rises up a <b>fractionating column</b> (hot at bottom, cool at top)</li><li>Each liquid <b>condenses</b> at the height matching its boiling point</li></ul>",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696638491,
+    "front": "Describe filtration (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Separates an <b>insoluble solid</b> from a <b>liquid</b></li><li>Mixture is poured through <b>filter paper</b> in a funnel</li><li>Liquid (<b>filtrate</b>) passes through; insoluble solid (<b>residue</b>) is trapped because its particles are too large</li></ul>",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696648339,
+    "front": "Describe paper chromatography (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Separates a mixture of <b>soluble substances</b> (e.g. dyes/inks) in a solvent</li><li>Spot mixture on a <b>pencil baseline</b> above the solvent level</li><li>Solvent rises up the paper, carrying components at <b>different speeds</b> depending on their solubility and attraction to the paper</li></ul>",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696710622,
+    "front": "In a paper chromatography experiment, a compound A has an R<span style=\"font-size:medium\">f</span> value of 0.85 - what does it tell you about the compound?",
+    "back": "It has a higher affinity for the solvent than for the paper.",
+    "spec": "C1.12",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696745024,
+    "front": "Describe the structure of an\natom",
+    "back": "The atom has a small central nucleus (made up of protons and neutrons)\naround which there are electrons.",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696841328,
+    "front": "State the relative masses and\nrelative charges of the proton,\nneutron and electron",
+    "back": "<b>Proton</b>: mass 1, charge 1<br><b>Neutron</b>: mass 1, charge 0<br><b>Electron</b>: mass 1/2000, charge -1",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696880966,
+    "front": "Atoms of the same element have\nthe same number of which particle\nin the nucleus?",
+    "back": "Protons",
+    "spec": "C1.16",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696893070,
+    "front": "Where is the majority of\nmass of an atom?",
+    "back": "The nucleus",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696911120,
+    "front": "How does one calculate the\nnumber of neutrons using mass\nnumber and atomic number?",
+    "back": "Subtract the atomic number from the mass number.",
+    "spec": "C1.16",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696923382,
+    "front": "What is an isotope? Why do isotopes have the same chemical properties?",
+    "back": "<ul class=\"fc-points\"><li>Atoms of the <b>same element</b> (same number of protons) with <b>different numbers of neutrons</b></li><li>Same chemical properties because they have the <b>same electronic configuration</b> (same outer-shell electrons)</li></ul>",
+    "spec": "C1.16",
+    "topic": "C1"
+  },
+  {
+    "id": 1675696946235,
+    "front": "Describe the properties of noble gases (Group 0) and their boiling point trend (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Colourless, monatomic gases</b> at room temperature with low boiling points</li><li><b>Unreactive (inert)</b> — they have a <b>full outer shell</b> of electrons</li><li><b>Boiling point increases down the group</b> as atoms get larger / intermolecular forces get stronger</li></ul>",
+    "spec": "C1.24",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697029802,
+    "front": "The elements of Group 0\nare more commonly known\nas…?",
+    "back": "The noble gases",
+    "spec": "C1.24",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697057629,
+    "front": "What is the difference in electron shell configuration between elements in the same period?",
+    "back": "Same number of electron shells, but number of electrons in their outermost shell increases from left to right across the period.",
+    "spec": "C1.22",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697065281,
+    "front": "What change in shell\nnumber is seen as one\nmoves down a group?",
+    "back": "The number of shells increases",
+    "spec": "C1.22",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697090301,
+    "front": "Elements that react to form\npositive ions are…?",
+    "back": "Metals",
+    "spec": "C1.38",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697097850,
+    "front": "Which elements do not typically form positive ions during chemical reactions?",
+    "back": "Non-metals (they usually gain electrons to form negative ions or share electrons in covalent bonds).",
+    "spec": "C1.38",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697106418,
+    "front": "Elements in Group 1 are\nknown as…?",
+    "back": "The alkali metals",
+    "spec": "C2.1",
+    "topic": "C2"
+  },
+  {
+    "id": 1675697113599,
+    "front": "Elements in Group 7 are\nknown as…?",
+    "back": "The halogens",
+    "spec": "C2.5",
+    "topic": "C2"
+  },
+  {
+    "id": 1675697132023,
+    "front": "Describe ionic bonding (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Transfer of electrons</b> from a <b>metal atom to a non-metal atom</b></li><li>Forms <b>positive metal ions</b> and <b>negative non-metal ions</b></li><li>Held together by <b>strong electrostatic attraction</b> between oppositely charged ions</li></ul>",
+    "spec": "C1.37",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697143002,
+    "front": "How are ionic compounds held together?",
+    "back": "They are held together by electrostatic attraction between positive and negative ions in a giant lattice.",
+    "spec": "C1.41",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697153653,
+    "front": "State and explain the properties of ionic compounds (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>High melting/boiling points</b> — strong electrostatic attractions between oppositely charged ions need lots of energy to overcome</li><li><b>Do not conduct when solid</b> — ions are in fixed positions</li><li><b>Conduct when molten or aqueous</b> — ions are free to move and carry charge</li></ul>",
+    "spec": "C1.43",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697173889,
+    "front": "How are ionic compounds\nformed? ",
+    "back": "Reaction of a metal with a non-metal.\nElectron transfer occurs - metal gives away its outer shell electrons to\nnon-metal.",
+    "spec": "C1.41",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697182313,
+    "front": "What is a covalent bond?",
+    "back": "Covalent bond is the strong electrostatic force of attraction of a shared pair of electrons of two atoms and their nuclei.",
+    "spec": "C1.44",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697236860,
+    "front": "Describe the structure and properties of simple molecular covalent substances",
+    "back": "- Weak intermolecular forces, so low melting and boiling points<br>- Small molecules<br>- Do not conduct electricity (no ions)",
+    "spec": "C1.48",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697246874,
+    "front": "How do intermolecular forces<br>change as the mass/size of the<br>molecule increases? How does this affect boiling/melting points?",
+    "back": "They increase. That causes melting/boiling points to increase as well (more<br>energy needed to overcome these forces)",
+    "spec": "C1.23",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697265186,
+    "front": "Describe giant covalent structures: properties &amp; examples (4 points)",
+    "back": "<ul class=\"fc-points\"><li>Billions of atoms joined by <b>strong covalent bonds</b> in a giant lattice</li><li><b>Very high melting/boiling points</b> (many strong covalent bonds to break)</li><li>Usually <b>do not conduct electricity</b> (no delocalised electrons — except graphite)</li><li>Examples: <b>diamond</b>, <b>graphite</b>, <b>silicon dioxide (SiO<sub>2</sub>)</b></li></ul>",
+    "spec": "C1.49",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697318657,
+    "front": "Describe the structure and properties of diamond (4 points)",
+    "back": "<ul class=\"fc-points\"><li>Each carbon forms <b>4 strong covalent bonds</b> (tetrahedral giant lattice)</li><li><b>Very hard</b> and <b>very high melting point</b> (many strong covalent bonds)</li><li><b>Does not conduct electricity</b> (no delocalised electrons)</li></ul>",
+    "spec": "C1.50",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697350699,
+    "front": "Describe the structure and properties of graphite (4 points)",
+    "back": "<ul class=\"fc-points\"><li>Each carbon forms <b>3 strong covalent bonds</b> in layers of <b>hexagonal rings</b></li><li><b>Soft / slippery</b> — weak intermolecular forces between layers let layers slide</li><li><b>High melting point</b> — strong covalent bonds within layers</li><li><b>Conducts electricity</b> — 1 <b>delocalised electron</b> per carbon is free to move</li></ul>",
+    "spec": "C1.50",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697377954,
+    "front": "Describe and explain the properties of fullerenes and give the most common example ",
+    "back": "– hollow shaped molecules<br><br>– based on carbon 6-rings, some 5/7<br><br>– C60 (Buckminsterfullerene)",
+    "spec": "C1.50",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697398453,
+    "front": "Describe and explain the\nproperties of nanotubes",
+    "back": "– cylindrical fullerene with high length to\ndiameter ratio<br>- High tensile strength (strong bonds)<br>- Conductivity (deloc. electrons)",
+    "spec": "C1.50",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697413391,
+    "front": "What is graphene",
+    "back": "A single layer of graphite.",
+    "spec": "C1.50",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697545909,
+    "front": "What affects the energy needed to change state from solid to liquid or liquid to gas?",
+    "back": "The strength of forces between particles. Stronger forces mean higher energy, melting, and boiling points.",
+    "spec": "C1.2",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697557881,
+    "front": "A pure substance will melt\nor boil at…? What about the\nmixture?",
+    "back": "A fixed temperature.\n<br>A mixture will melt over a range of temperatures.",
+    "spec": "C1.9",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697565588,
+    "front": "What are the three states of\nmatter?",
+    "back": "Solid, liquid and gas",
+    "spec": "C1.1",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697711016,
+    "front": "Write a balanced equation\nof magnesium reacting with\nhydrochloric acid.",
+    "back": "Mg<sub>(s)</sub> + 2HCl<sub>(aq)</sub> → MgCl<sub>2(aq)</sub> + H<sub>2(g)</sub>",
+    "spec": "C1.25",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697771049,
+    "front": "The following reaction occurs in a heated test tube:<br><br>4MgO<sub>(s)</sub> + CH<sub>4(g)</sub> → 4Mg<sub>(s)</sub> + 2H<sub>2</sub>O<sub>(g)</sub> + CO<sub>2(g)</sub><br><br>The mass <b>appears </b>to decrease. Why?",
+    "back": "The carbon dioxide and water escape as they are gases",
+    "spec": "C1.25",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697786119,
+    "front": "What is the formula that\nlinks mass, molecular mass\nand moles together",
+    "back": "Mass (g) = Mr x Moles",
+    "spec": "C1.26",
+    "topic": "C1"
+  },
+  {
+    "id": 1675697831097,
+    "front": "Give 3 reasons why actual yield is often less than theoretical yield",
+    "back": "<ul class=\"fc-points\"><li><b>Reversible reaction</b> — may not go to completion</li><li><b>Product loss</b> — during transfer, filtration or purification</li><li><b>Side reactions</b> — reactants form unwanted by-products</li></ul>",
+    "spec": "C1.30",
+    "topic": "C1"
+  },
+  {
+    "id": 1675745352017,
+    "front": "State three characteristics of\nthe alkali metals",
+    "back": "<ul><li>One electron in their outer shell</li><li>Low density</li><li>Very reactive (stored\nunder oil to prevent reactions with oxygen or water)</li><li>Soft (can be cut\nwith knife).</li></ul>",
+    "spec": "C2.3",
+    "topic": "C2"
+  },
+  {
+    "id": 1675745370216,
+    "front": "Describe the product (and its colour) formed by reacting Group 1 elements with non-metals.<br><br>Why are these reactions similar for the different Group 1 elements?",
+    "back": "The products are soluble white <b><u>ionic compounds</u></b> that form colourless solutions.<br><br>They all have one electron in their outer shell.",
+    "spec": "C2.1",
+    "topic": "C2"
+  },
+  {
+    "id": 1675745378683,
+    "front": "How do Group 1 metals react with water, and what are the products?",
+    "back": "<ul class=\"fc-points\"><li>React vigorously: <b>fizz</b>, float and move on the surface (potassium burns with a lilac flame)</li><li>Produce <b>hydrogen gas</b> and a <b>metal hydroxide</b> (dissolves to form an <b>alkaline</b> solution)</li></ul>",
+    "spec": "C2.1",
+    "topic": "C2"
+  },
+  {
+    "id": 1675745411696,
+    "front": "State five characteristics of Group 7 (halogens)",
+    "back": "- 7 electrons in outer shell<br>- Coloured vapours<br>- Mostly diatomic molecules<br>- Form ionic salts with metals<br>- Form molecular compounds with non-metals",
+    "spec": "C2.5",
+    "topic": "C2"
+  },
+  {
+    "id": 1675745445361,
+    "front": "State the colour and state at room temperature of the halogens (Group 7)",
+    "back": "<ul class=\"fc-points\"><li><b>Fluorine:</b> pale yellow gas · <b>Chlorine:</b> pale green gas</li><li><b>Bromine:</b> red-brown liquid (orange vapour)</li><li><b>Iodine:</b> grey solid (purple vapour when heated) · <b>Astatine:</b> black solid</li></ul><img alt=\"Iodine crystals, 99.8+%\" src=\"iodine-crystals-7553-56-2.jpg\" width=\"123\">",
+    "spec": "C2.5",
+    "topic": "C2"
+  },
+  {
+    "id": 1675745460277,
+    "front": "State three trends seen down group 7 (halogens)",
+    "back": "- Higher atomic mass<br>- Higher melting and boiling point<br>- <b>Less</b> reactive (electrons less easily gained)",
+    "spec": "C2.5",
+    "topic": "C2"
+  },
+  {
+    "id": 1675745596270,
+    "front": "Write the\nequation and state the colour change seen when a bromine solution reacts with a sodium iodide solution.",
+    "back": "Br<sub>2</sub>(aq)  + 2NaI(aq) → I<sub>2</sub>(aq)  + 2NaBr(aq); a <b><span style=\"color: rgb(170, 0, 0);\">brown </span></b>colour of I<sub>2</sub> in solution would appear",
+    "spec": "C2.7",
+    "topic": "C2"
+  },
+  {
+    "id": 1675758861057,
+    "front": "State the solubility rules for common salts (4 rules)",
+    "back": "<ul class=\"fc-points\"><li><b>All</b> sodium, potassium and ammonium salts are soluble</li><li><b>All nitrates</b> are soluble</li><li><b>Chlorides</b> are soluble <b>except</b> silver and lead(II)</li><li><b>Sulfates</b> are soluble <b>except</b> barium, calcium and lead(II)</li></ul>",
+    "spec": "C2.34",
+    "topic": "C2"
+  },
+  {
+    "id": 1675759945185,
+    "front": "You have a sample of a<br>pure liquid. What's the simple way to check its identity?",
+    "back": "Measure the boiling point.<br>Say we have water - it boils at 100 Celsius degrees. ",
+    "spec": "C1.9",
+    "topic": "C1"
+  },
+  {
+    "id": 1675759964102,
+    "front": "What is the chemical test for the presence of water?",
+    "back": "<ul class=\"fc-points\"><li>Add the liquid to <b>anhydrous copper(II) sulfate</b> (<b>white</b>)</li><li>Turns <b>blue</b> (hydrated copper(II) sulfate) if water is present</li></ul>",
+    "spec": "C2.49",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760050314,
+    "front": "Describe the test for ammonium ions (NH<sub>4</sub><sup>+</sup>) (3 steps)",
+    "back": "<ul class=\"fc-points\"><li>Add <b>dilute sodium hydroxide (NaOH)</b> and <b>warm gently</b></li><li><b>Ammonia gas (NH<sub>3</sub>)</b> is given off</li><li>Test gas with <b>damp red litmus paper</b> → turns <b>blue</b></li></ul>",
+    "spec": "C2.47",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760323029,
+    "front": "State the colours of flames\nobserved when lithium,\nsodium, potassium, calcium and copper ions burn\nin oxygen",
+    "back": "Red, Li<sup>+</sup>\n<br>Yellow, Na<sup>+</sup> <br>Lilac, K<sup>+<br></sup>Orange-red, Ca<sup>2+</sup><br>Blue-green, Cu<sup>2+</sup>",
+    "spec": "C2.46",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760375076,
+    "front": "What is\noxidation/reduction in terms of oxygen?",
+    "back": "Oxidation is the addition of oxygen<br>Reduction is the loss of oxygen",
+    "spec": "C2.20",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760478304,
+    "front": "What is oxidation/reduction in terms of\nelectron transfer ?",
+    "back": "Oxidation – loss of electrons.   OIL<br>Reduction – gain of electrons.  RIG",
+    "spec": "C2.20",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760490620,
+    "front": "What is the general equation for a\nreaction between metals and\nacids? What type of reaction is\nthis?",
+    "back": "Metal + acid → salt + hydrogen\n<br>Redox reaction, also a displacement reaction.",
+    "spec": "C2.37",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760499003,
+    "front": "Which metals in the reactivity\nseries will react with acid? What gas is given off?",
+    "back": "Those above hydrogen. Hydrogen (H<sub>2</sub>) is given off.",
+    "spec": "C2.15",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760507269,
+    "front": "What is the general equation for a\nneutralisation reaction?",
+    "back": "Acid + Base → Salt + Water",
+    "spec": "C2.32",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760516164,
+    "front": "What is the general equation for\nthe reaction between metal\ncarbonate and acid?",
+    "back": "Metal Carbonate + Acid → Salt + Water + Carbon Dioxide",
+    "spec": "C2.37",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760530052,
+    "front": "What is the general equation for\nthe reaction between metal oxide\nand acid?",
+    "back": "Metal Oxide + Acid → Salt + Water<br>(Same as alkali + acid)",
+    "spec": "C2.37",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760539483,
+    "front": "What is a redox reaction?",
+    "back": "A reaction where both oxidation and reduction occurs",
+    "spec": "C2.20",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760565999,
+    "front": "Explain in terms of gain or loss of\nelectrons which species has been\noxidised and which species has been\nreduced when magnesium reacts with\nhydrochloric acid",
+    "back": "Magnesium has lost electrons and thus has been oxidised (Mg to Mg<sup>2+</sup>)\nThe hydrogen in HCl has gained electrons and thus has been reduced (H<sup>+</sup> to H<sub>2</sub>)",
+    "spec": "C2.20",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760591813,
+    "front": "What do acids and alkalis\nproduce in aqueous solutions?",
+    "back": "Acids produce hydrogen ions, alkalis produce hydroxide ions",
+    "spec": "C2.31",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760674208,
+    "front": "What is the pH scale and what\ndoes a pH of 7 show?",
+    "back": "The measure of acidity/alkalinity of a solution; neutral solution.",
+    "spec": "C2.29",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760693941,
+    "front": "State the general equation for a\nneutralisation reaction in a short,\nionic form.",
+    "back": "H<sup>+</sup>\n + OH<sup>−</sup>\n → H<sub>2</sub>O",
+    "spec": "C2.32",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760702355,
+    "front": "Compare strong acids and weak acids in aqueous solution",
+    "back": "<ul class=\"fc-points\"><li><b>Strong acid:</b> <b>completely ionises</b> (dissociates) in water → higher H<sup>+</sup> concentration, lower pH</li><li><b>Weak acid:</b> only <b>partially ionises</b> in water → lower H<sup>+</sup> concentration, higher pH</li></ul>",
+    "spec": "C2.31",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760715224,
+    "front": "What happens to pH as\nconcentration of H<sup>+</sup>\n increases?",
+    "back": "It decreases.",
+    "spec": "C2.31",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760728787,
+    "front": "Compare concentrated vs dilute acids with strong vs weak acids",
+    "back": "<ul class=\"fc-points\"><li><b>Concentrated vs dilute:</b> how many <b>moles of acid</b> are dissolved per unit volume of water</li><li><b>Strong vs weak:</b> whether the acid <b>fully or partially ionises</b> in water (at the same concentration, strong acids have lower pH)</li></ul>",
+    "spec": "C2.31",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760773053,
+    "front": "Name the following salts:\nLiNO<sub>3</sub>\n, K<sub>2</sub>CO<sub>3</sub>\n, MgBr<sub>2</sub>\n, BaSO<sub>4</sub>",
+    "back": "Lithium nitrate<br>Potassium carbonate<br>Magnesium bromide<br>Barium sulfate",
+    "spec": "C2.37",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760794466,
+    "front": "State the tests for H<sub>2</sub>, O<sub>2</sub>, CO<sub>2</sub> and Cl<sub>2</sub> (4 gases)",
+    "back": "<ul class=\"fc-points\"><li><b>Hydrogen:</b> lit splint gives a <b>squeaky pop</b></li><li><b>Oxygen:</b> <b>relights</b> a glowing splint</li><li><b>Carbon dioxide:</b> turns <b>limewater milky/cloudy</b></li><li><b>Chlorine:</b> <b>bleaches</b> damp litmus paper white</li></ul>",
+    "spec": "C2.44",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760919278,
+    "front": "How is sodium hydroxide used to test for copper and iron?",
+    "back": "Copper(II) forms a <span style=\"color: rgb(0, 170, 255);\"><b>blue </b></span>precipitate<br>Iron(II) forms a <span style=\"color: rgb(170, 170, 0);\"><b>dirty green</b></span> precipitate<br>Iron(III) forms a <b><span style=\"color: rgb(139, 0, 0);\">brown </span></b>precipitate<br>",
+    "spec": "C2.47",
+    "topic": "C2"
+  },
+  {
+    "id": 1675760960491,
+    "front": "Describe the test for\ncarbonate anions",
+    "back": "Add dilute acid, e.g. HCl\n<br>Fizzing observed, as CO<sub>2</sub>\n is evolved -&gt; then do limewater test<br>E.g. Na<sub>2</sub>CO<sub>3</sub> + 2HCl → 2NaCl + H<sub>2</sub>O + CO<sub>2</sub>",
+    "spec": "C2.48",
+    "topic": "C2"
+  },
+  {
+    "id": 1675761029921,
+    "front": "Describe the test for sulfate ions (SO<sub>4</sub><sup>2−</sup>)",
+    "back": "<ul class=\"fc-points\"><li>Add <b>dilute hydrochloric acid</b>, then <b>barium chloride (BaCl<sub>2</sub>) solution</b></li><li>Positive result: <b>white precipitate</b> of barium sulfate (BaSO<sub>4</sub>)</li></ul>",
+    "spec": "C2.48",
+    "topic": "C2",
+    "daOnly": true
+  },
+  {
+    "id": 1675761089599,
+    "front": "What are the approximate proportions of the top four gases in the modern atmosphere",
+    "back": "78% of N<sub>2</sub><br>21% of O<sub>2<br></sub>1% of Argon<br>0.04% of CO<sub>2</sub>",
+    "spec": "C2.9",
+    "topic": "C2"
+  },
+  {
+    "id": 1675761120831,
+    "front": "How have human activities led to an increase in the greenhouse gases <b>carbon dioxide</b> and <b>methane</b>?",
+    "back": "<b>Carbon dioxide</b> – combustion of fossil fuels and deforestation.<br><b>Methane</b> – increased farming and decomposition in landfills.",
+    "spec": "C2.13",
+    "topic": "C2"
+  },
+  {
+    "id": 1675761154814,
+    "front": "Give 4 potential effects of global climate change",
+    "back": "<ul class=\"fc-points\"><li><b>Melting glaciers &amp; ice caps</b> → rising sea levels and coastal flooding</li><li>More extreme weather &amp; changed <b>rainfall patterns</b></li><li><b>Habitat loss</b> and shifts in wildlife distribution</li><li>Reduced <b>crop yields</b> / water stress in some regions</li></ul>",
+    "spec": "C2.13",
+    "topic": "C2"
+  },
+  {
+    "id": 1675761163929,
+    "front": "Give 2 problems caused by sulfur dioxide and oxides of nitrogen",
+    "back": "<ul class=\"fc-points\"><li>Dissolve in rainwater to form <b>acid rain</b> (acidifies lakes, damages plants &amp; limestone buildings)</li><li>Cause <b>respiratory problems</b> in humans</li></ul>",
+    "spec": "C4.16",
+    "topic": "C4"
+  },
+  {
+    "id": 1675761200194,
+    "front": "Give four examples of exothermic reaction",
+    "back": "Freezing, condensing, combustion, oxidation, respiration and neutralisation.",
+    "spec": "C3.1",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761206695,
+    "front": "Give four examples of endothermic reaction",
+    "back": "Melting, boiling, thermal decomposition and photosynthesis ",
+    "spec": "C3.1",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761217127,
+    "front": "What is activation energy?",
+    "back": "Minimum amount of energy that particles need to react.",
+    "spec": "C3.13",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761342869,
+    "front": "Name three common ways of<br>measuring rate of reaction",
+    "back": "1. Loss in mass of reactants<br><br>2. Volume of gas produced<br><br>3. Time for a solution to become opaque (precipitation).",
+    "spec": "C3.9",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761353600,
+    "front": "How do you measure reaction rate by mass loss? (3 steps)",
+    "back": "<ul class=\"fc-points\"><li>Place the reaction flask (with cotton wool plug) on a <b>mass balance</b></li><li>Record the <b>decrease in mass</b> at regular time intervals as gas escapes (not suitable for H<sub>2</sub> — too light)</li><li>Plot <b>mass against time</b>; steeper gradient = faster rate</li></ul>",
+    "spec": "C3.9",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761361818,
+    "front": "Describe how to measure the rate of reaction by monitoring the volume of a gas",
+    "back": "Connect a gas syringe to a reaction flask and measure the volume of a gas\nformed in time intervals. Plot a graph of volume vs time.",
+    "spec": "C3.9",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761373152,
+    "front": "How do you measure reaction rate using the disappearing cross method?",
+    "back": "<ul class=\"fc-points\"><li>Place the reaction flask over a paper marked with a <b>black cross (X)</b></li><li>Mix reactants and start a stopwatch</li><li>Measure the <b>time taken for the precipitate/cloudiness to obscure the cross</b> (rate ∝ 1 ÷ time)</li></ul>",
+    "spec": "C3.9",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761386134,
+    "front": "How do you find the rate of reaction at a specific time <i>t</i> from a graph?",
+    "back": "<ul class=\"fc-points\"><li>Draw a <b>tangent</b> to the curve at time <i>t</i></li><li>Calculate the <b>gradient (slope)</b> of the tangent (steeper tangent = faster rate)</li></ul>",
+    "spec": "C3.9",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761405982,
+    "front": "State five factors affecting the\nrate of a chemical reaction",
+    "back": "Concentration of reactants<br>Pressure of gases (volume)<br>Surface area<br>Temperature<br>Catalysts",
+    "spec": "C3.10",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761461494,
+    "front": "Describe <b>and explain</b> the effect of increasing concentration on the rate of reaction",
+    "back": "- Conc. increases = faster reaction,<br>- More reactants = more frequent collisions",
+    "spec": "C3.10",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761482260,
+    "front": "Describe and explain the effect of increasing pressure of a gas on the rate of reaction",
+    "back": "More gas molecules in the same volume lead to more frequent collisions, increasing the reaction rate. (Similar to increasing concentration)",
+    "spec": "C3.10",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761496828,
+    "front": "Explain the effect of increasing surface area on reaction rate",
+    "back": "<ul class=\"fc-points\"><li>Breaking a solid into smaller pieces exposes <b>more surface particles</b></li><li>Increases the <b>frequency of successful collisions</b> → faster rate</li><li>Example: magnesium powder reacts faster with acid than a magnesium block</li></ul>",
+    "spec": "C3.11",
+    "topic": "C3"
+  },
+  {
+    "id": 1675761578170,
+    "front": "How does changing reactant or product concentration shift a reversible equilibrium?",
+    "back": "<ul class=\"fc-points\"><li><b>Increase reactant concentration:</b> equilibrium shifts right → <b>more product</b> formed</li><li><b>Decrease product concentration:</b> equilibrium shifts right → <b>more reactants react</b> to replace it</li></ul>",
+    "spec": "C3.17",
+    "topic": "C3"
+  },
+  {
+    "id": 1675762423435,
+    "front": "What is the empirical formula and how does it relate to the molecular formula?",
+    "back": "<ul class=\"fc-points\"><li><b>Empirical formula:</b> simplest <b>whole-number ratio</b> of atoms of each element in a compound</li><li><b>Molecular formula</b> = empirical formula × a whole-number multiplier (e.g. CH<sub>2</sub> × 7 → C<sub>7</sub>H<sub>14</sub>)</li></ul>",
+    "spec": "C1.32",
+    "topic": "C1"
+  },
+  {
+    "id": 1675762478466,
+    "front": "What is a homologous<br>series?",
+    "back": "Series of <b>compounds</b> with same general formula, same functional groups<br><br>similar chemical properties<br>gradual change in physical properties",
+    "spec": "C4.3",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762496998,
+    "front": "Hydrocarbon combustion: what kind of reaction and possible products.",
+    "back": "An exothermic reaction with oxygen, releasing energy.<br><br><b>Products</b>: water and either carbon dioxide or carbon monoxide/carbon. (depending on oxygen availability)",
+    "spec": "C4.12",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762511513,
+    "front": "Describe the physical properties and trends of alkanes as chain length increases (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Boiling point</b> and <b>viscosity increase</b> (stronger intermolecular forces)</li><li><b>Volatility</b> and <b>flammability decrease</b></li><li>Generally <b>unreactive</b> (saturated — only single C–C bonds)</li></ul>",
+    "spec": "C4.10",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762550245,
+    "front": "What is the first step in the fractional distillation of crude oil?",
+    "back": "<div>Crude oil is heated and vaporised, and the vapour rises up the fractionating column, which is hotter at the bottom and cooler at the top.</div>",
+    "spec": "C4.8",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762567276,
+    "front": "What type of reaction is\ncracking?",
+    "back": "Thermal decomposition.",
+    "spec": "C4.17",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762644521,
+    "front": "How are the products of cracking used in polymerisation?",
+    "back": "Alkanes and alkenes are used as monomers in polymerisation to form plastics and other products",
+    "spec": "C4.44",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762675803,
+    "front": "What is the test for alkenes?",
+    "back": "Add bromine water. Colour change occurs from orange to colourless.",
+    "spec": "C4.28",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762685653,
+    "front": "Compare the combustion of alkanes and alkenes",
+    "back": "<ul class=\"fc-points\"><li><b>Alkanes:</b> burn with a <b>cleaner flame</b> (less soot; mostly CO<sub>2</sub> + H<sub>2</sub>O)</li><li><b>Alkenes:</b> burn with a <b>smokier flame</b> (more incomplete combustion / soot due to a higher C:H ratio)</li></ul>",
+    "spec": "C4.12",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762729333,
+    "front": "What are addition reactions\nof alkenes?",
+    "back": "<div>When atoms are added across a carbon-carbon double bond, converting it to a single bond. </div><div><br></div><div>(This reaction increases the <b>saturation </b>of the molecule.)<br></div>",
+    "spec": "C4.27",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762871226,
+    "front": "Explain what happens to the double bond when alkenes are used to produce polymers?",
+    "back": "The C=C double bond becomes a single bond, and the two carbons form bonds to neighbouring monomers.",
+    "spec": "C4.44",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762888158,
+    "front": "Give 3 examples of addition<br>polymers and their uses.",
+    "back": "<b>Polyethene</b> - plastic bags<br><br><b>Polytetrafluoroethene</b> (PTFE) - teflon surfaces, for use in non-stick kitchenware<br><br><b>Polychloroethene</b> [previously know as PVC] - water pipes",
+    "spec": "C4.45",
+    "topic": "C4",
+    "daOnly": true
+  },
+  {
+    "id": 1675762933521,
+    "front": "What is the arrangement of\nC-H bonds in methane?",
+    "back": "Tetrahedral <img alt=\"Tetrahedral molecular geometry - Wikipedia\" src=\"Tetrahedral-3D-balls.png\">",
+    "spec": "C4.21",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762943239,
+    "front": "Why are alkanes considered\nunreactive?",
+    "back": "They exclusively contain relatively strong C-C and C-H bonds; these are quite\ndifficult to break.",
+    "spec": "C4.20",
+    "topic": "C4"
+  },
+  {
+    "id": 1675762970604,
+    "front": "Describe the reaction of alkanes with halogens (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Substitution reaction:</b> a halogen atom replaces a hydrogen atom</li><li>Requires <b>UV light</b></li><li>Example: CH<sub>4</sub> + Br<sub>2</sub> → CH<sub>3</sub>Br + HBr (or CH<sub>4</sub> + Cl<sub>2</sub> → CH<sub>3</sub>Cl + HCl)</li></ul>",
+    "spec": "C4.22",
+    "topic": "C4"
+  },
+  {
+    "id": 1675763043715,
+    "front": "What are isomers? How many isomers of C<sub>5</sub>H<sub>12</sub> are there?",
+    "back": "Compounds with the <b>same molecular formula</b> but <b>different structural formulae</b>.<br>C<sub>5</sub>H<sub>12</sub> has <b>3 isomers</b>:<img src=\"c5h12-isomers.svg\" alt=\"Three IUPAC isomers of C5H12: pentane, 2-methylbutane, 2,2-dimethylpropane\">",
+    "spec": "C4.21",
+    "topic": "C4"
+  },
+  {
+    "id": 1675763053497,
+    "front": "Addition polymerisation requires an additive - what’s its name and role?",
+    "back": "An initiator.<br><br>It helps one of the C=C bonds to break, starting the process.",
+    "spec": "C4.44",
+    "topic": "C4"
+  },
+  {
+    "id": 1675763153076,
+    "front": "Define acid",
+    "back": "Produces hydrogen ions (H<sup>+</sup>) in aqueous solutions (proton donors) and so have a pH range between 0 and 7",
+    "spec": "C2.36",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763160758,
+    "front": "Define alkali",
+    "back": "Alkalis are soluble bases that produce hydroxide ions (OH<sup>-</sup>) in aqueous solutions. They have a pH range between 7 and 14. ",
+    "spec": "C2.31",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763188440,
+    "front": "Define base",
+    "back": "A substance which reacts with an acid in a neutralisation reaction to form a salt and\nwater only. Bases are known as proton acceptors.",
+    "spec": "C2.36",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763202822,
+    "front": "Define climate change",
+    "back": "A change in global climate patterns largely caused by the\nincrease in concentration of carbon dioxide in the atmosphere.",
+    "spec": "C2.13",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763210206,
+    "front": "Describe combustion",
+    "back": "The burning of a substance in oxygen. Exothermic.",
+    "spec": "C2.11",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763217872,
+    "front": "Define corrosion",
+    "back": "The destruction of materials by chemical reactions with substances in the\nenvironment, e.g. rusting occurs when iron is exposed to water and oxygen.",
+    "spec": "C2.18",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763227321,
+    "front": "Define displacement reaction",
+    "back": "A chemical reaction in which a more reactive element displaces a less reactive element from a compound.",
+    "spec": "C2.16",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763248570,
+    "front": "How do you carry out a flame test? (3 steps)",
+    "back": "<ul class=\"fc-points\"><li>Identifies <b>metal ions (cations)</b></li><li>Clean a <b>nichrome/platinum wire loop</b> in concentrated HCl and dip into the sample</li><li>Hold in a <b>roaring blue Bunsen flame</b> and observe the flame colour</li></ul>",
+    "spec": "C2.45",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763265435,
+    "front": "Define galvanise",
+    "back": "A process used to protect against <b>corrosion</b> by coating the metal with a protective layer of zinc.",
+    "spec": "C2.19",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763279868,
+    "front": "Describe the greenhouse effect",
+    "back": "The increase in the temperature of the Earth’s atmosphere due to the\ngreenhouse gases in the atmosphere trapping infrared radiation emitted from the surface.",
+    "spec": "C2.13",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763321515,
+    "front": "Define halides",
+    "back": "The ions formed when halogen atoms gain an electron. E.g. Cl<sup>-</sup>,  Br<sup>-</sup> and I<sup>-</sup>",
+    "spec": "C2.7",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763348614,
+    "front": "Define indicators and give 3 examples",
+    "back": "A substance used to distinguish between acidic and alkaline solutions.<br><br>Examples include phenolphthalein, litmus and methyl orange.",
+    "spec": "C2.28",
+    "topic": "C2",
+    "daOnly": true
+  },
+  {
+    "id": 1675763360814,
+    "front": "Define neutralisation",
+    "back": "The reaction in which an acid and a base (including alkalis) react to form a salt and water.",
+    "spec": "C2.32",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763395394,
+    "front": "Define pH scale",
+    "back": "A measure of the acidity or alkalinity of a solution ranging from 0 to 14. The pH\ncan be measured using universal indicator or a pH probe.",
+    "spec": "C2.29",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763408242,
+    "front": "Define reactivity series",
+    "back": "A series in which metals are arranged in order of their reactivity. This can be used to predict products from reactions.",
+    "spec": "C2.15",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763426093,
+    "front": "Define reducing agent",
+    "back": "A substance that brings about reduction by losing electrons. The reducing\nagent is itself oxidised.",
+    "spec": "C2.20",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763433475,
+    "front": "Define reduction",
+    "back": "A reaction involving the loss of oxygen. Reduction is the gain of electrons.",
+    "spec": "C2.20",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763448658,
+    "front": "What is rust and what causes it?",
+    "back": "iron oxide which forms on iron when it undergoes oxidation - in the presence of oxygen <b>and water</b>",
+    "spec": "C2.18",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763460658,
+    "front": "Explain how sacrificial protection prevents iron from rusting (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Attach or coat iron with a <b>more reactive metal</b> (e.g. zinc or magnesium)</li><li>The more reactive metal <b>loses electrons (oxidises) more easily</b> than iron</li><li>It corrodes <b>instead of the iron</b> — even if the coating is scratched</li></ul>",
+    "spec": "C2.19",
+    "topic": "C2",
+    "daOnly": true
+  },
+  {
+    "id": 1675763470489,
+    "front": "Define thermal decomposition",
+    "back": "The breaking down of a <b>compound</b> by heating",
+    "spec": "C2.12",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763494122,
+    "front": "Define universial indicator",
+    "back": "A <b>mixture of dyes</b> that changes colour gradually over a range of pH and\nis used in testing for acids and alkalis.",
+    "spec": "C2.30",
+    "topic": "C2"
+  },
+  {
+    "id": 1675763569584,
+    "front": "Define atomic nucleus",
+    "back": "Positively charged object composed of protons and neutrons at the centre\nof every atom with one or more electrons orbiting it.",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675763584500,
+    "front": "Define atomic number",
+    "back": "The number of protons in the nucleus.",
+    "spec": "C1.16",
+    "topic": "C1"
+  },
+  {
+    "id": 1675763920244,
+    "front": "Define conductor",
+    "back": "A material that contains charged particles which are free to move to carry\nelectrical or thermal energy.",
+    "spec": "C1.43",
+    "topic": "C1"
+  },
+  {
+    "id": 1675763941126,
+    "front": "Describe crystallisation (3 steps)",
+    "back": "Separates a <b>soluble solid</b> from a solution:<ul class=\"fc-points\"><li><b>Heat gently</b> to evaporate some water until a saturated solution forms (crystals appear at the edge)</li><li><b>Leave to cool</b> so crystals form</li><li><b>Filter</b> off the crystals and <b>pat dry</b> with filter paper</li></ul>",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764015238,
+    "front": "Define electron",
+    "back": "Negatively charged subatomic particle which orbits the nucleus at various energy\nlevels. Very small relative mass (negligible).",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764024921,
+    "front": "Define electron shell",
+    "back": "Different energy levels in atoms, occupied by electrons.",
+    "spec": "C1.19",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764034054,
+    "front": "Define electrostatic forces",
+    "back": "The strong forces of attraction or repulsion between charged ions",
+    "spec": "C1.41",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764048586,
+    "front": "Define empirical formula",
+    "back": "The simplest whole number ratio of atoms of each element in a\ncompound.",
+    "spec": "C4.2",
+    "topic": "C4",
+    "daOnly": true
+  },
+  {
+    "id": 1675764097250,
+    "front": "Describe the arrangement, movement and energy of particles in a gas (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Far apart</b> and randomly arranged</li><li>Move <b>rapidly and randomly</b> in all directions</li><li><b>Highest kinetic energy</b>; very weak forces between particles</li></ul>",
+    "spec": "C1.1",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764126632,
+    "front": "Define group",
+    "back": "A <b>column</b> of the periodic table. Elements in the same group have similar chemical properties because they have the same number of electrons in the outer shell.",
+    "spec": "C1.18",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764135215,
+    "front": "What does inert mean?",
+    "back": "Unreactive.",
+    "spec": "C1.24",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764148180,
+    "front": "What are intermolecular forces, and what property do they affect?",
+    "back": "The forces which exist between molecules.<br><br>The strength of the intermolecular forces impact physical properties like boiling/melting point.",
+    "spec": "C1.47",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764150612,
+    "front": "Define ion",
+    "back": "An atom <b>or molecule</b> with an electric charge due to the loss or gain of electrons.",
+    "spec": "C1.37",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764185229,
+    "front": "Describe lattices - what do they form?",
+    "back": "A repeating regular arrangement of atoms/ions/molecules that occurs in <b>crystals</b>.",
+    "spec": "C1.42",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764191178,
+    "front": "Describe the arrangement and movement of particles in a liquid (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Close together</b> in a <b>random/irregular</b> arrangement</li><li>Can <b>slide / move past each other</b></li><li>Moderate forces of attraction between particles</li></ul>",
+    "spec": "C1.1",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764211442,
+    "front": "Define mass number",
+    "back": "The total number of protons and neutrons in the nucleus.",
+    "spec": "C1.16",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764224026,
+    "front": "Define metals",
+    "back": "Elements that react to form positive ions. Found to the left and towards the bottom of\nthe periodic table.",
+    "spec": "C1.20",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764230909,
+    "front": "Define mixture. Comment on their boiling/melting points.",
+    "back": "Contains at least two different <b>elements or compounds</b> which are not chemically bonded together. <br><br>They may melt or boil over a range of temperatures.",
+    "spec": "C1.8",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764240859,
+    "front": "Define mobile phase",
+    "back": "The fluid (gas or liquid) which moves through the chromatography system,\ncarrying the mixture which is to be separated.",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764283256,
+    "front": "Define mole",
+    "back": "Standard unit for measuring amounts of chemicals. The mole is the unit for amount of\nsubstance. The symbol for the unit mole is mol.",
+    "spec": "C1.27",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764292105,
+    "front": "Define molecular formula",
+    "back": "The actual ratio of atoms of each element present in a compound.",
+    "spec": "C4.2",
+    "topic": "C4"
+  },
+  {
+    "id": 1675764299320,
+    "front": "Define molecule",
+    "back": "A group of at least two atoms held together by <b>covalent</b> bonds.",
+    "spec": "C1.14",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764331753,
+    "front": "Describe noble gases",
+    "back": "The elements in Group 0 of the periodic table. They have a stable full outer\nshell of electrons which makes them very unreactive.",
+    "spec": "C1.24",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764337919,
+    "front": "Define neutron",
+    "back": "Neutral subatomic particle present in the nucleus of the atom. Relative mass of 1.",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764345702,
+    "front": "Define non-metals",
+    "back": "Elements that react to form negative ions. Found towards the right and top of\nthe periodic table.",
+    "spec": "C1.20",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764406532,
+    "front": "Define percentage yield",
+    "back": "Ratio of actual product obtained to the theoretical maximum, as a percentage:<div class=\"fc-eq\">Percentage yield = <span class=\"fc-frac\"><span>actual yield</span><span>theoretical yield</span></span> × 100</div>",
+    "spec": "C1.30",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764415180,
+    "front": "Define period with reference to electron shells",
+    "back": "A <b>row </b>of the periodic table. Elements in the same period have the same number of electron shells.",
+    "spec": "C1.18",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764423096,
+    "front": "What is the periodic table?",
+    "back": "Table of elements arranged in order of increasing atomic number and such\nthat elements with similar properties are in the same column (group).",
+    "spec": "C1.18",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764429981,
+    "front": "Define proton",
+    "back": "Positively charged subatomic particle present in the nucleus of the atom. Relative\nmass of 1.",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764443231,
+    "front": "Define pure substance",
+    "back": "A substance which contains only <b>one compound or element</b> and so has fixed melting and boiling points.",
+    "spec": "C1.9",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764485977,
+    "front": "Define relative atomic mass",
+    "back": "An average value that takes account of the abundance of the\nisotopes of the element.",
+    "spec": "C1.17",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764496293,
+    "front": "Define relative formula mass.",
+    "back": "The sum of the relative atomic masses of the atoms in the numbers\nshown in the formula",
+    "spec": "C1.26",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764514026,
+    "front": "Define saturated solution",
+    "back": "A solution which contains the maximum amount of solute that can be\ndissolved in the solvent. If any more solute is added, it will not dissolve in the solution.",
+    "spec": "C1.4",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764522907,
+    "front": "Describe simple distillation (3 points)",
+    "back": "Separates a <b>pure liquid (solvent)</b> from a solution:<ul class=\"fc-points\"><li>Heat the solution so the solvent <b>evaporates / boils</b></li><li>Vapour passes into a <b>cold condenser</b> and <b>condenses</b> back into liquid</li><li>Pure liquid is collected as the <b>distillate</b></li></ul>",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764541541,
+    "front": "Describe the arrangement, movement and energy of particles in a solid (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Regular arrangement</b>, tightly packed together</li><li><b>Vibrate about fixed positions</b> only</li><li><b>Least kinetic energy</b>; strong forces between particles</li></ul>",
+    "spec": "C1.1",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764548090,
+    "front": "Define solute",
+    "back": "A substance which is dissolved in a solvent to create a solution.",
+    "spec": "C1.4",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764554906,
+    "front": "Define solution",
+    "back": "A homogeneous mixture in which a solute is dissolved in a solvent.",
+    "spec": "C1.4",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764562454,
+    "front": "Define solvent",
+    "back": "A substance which dissolves a solute.",
+    "spec": "C1.4",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764581371,
+    "front": "Define state symbols",
+    "back": "The symbols used in chemical equations to denote the states of the\nchemicals reacting: (s) - solid, (l) - liquid, (g) - gas, (aq) - aqueous solution.",
+    "spec": "C1.25",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764589604,
+    "front": "Define stationary phase",
+    "back": "The nonmoving phase which the mobile phase passes over during\nchromatography.",
+    "spec": "C1.10",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764599970,
+    "front": "Define subatomic particles",
+    "back": "Particles smaller than an atom. Protons, neutrons and electrons are\nthe three most common subatomic particles.",
+    "spec": "C1.15",
+    "topic": "C1"
+  },
+  {
+    "id": 1675764610203,
+    "front": "Define water crystalisation",
+    "back": "Water molecules forming part of a crystal structure.",
+    "spec": "C1.31",
+    "topic": "C1"
+  },
+  {
+    "id": 1675765252147,
+    "front": "Define activation energy",
+    "back": "The minimum amount of energy that particles must collide with to react.",
+    "spec": "C3.13",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765261114,
+    "front": "Define calorimetry",
+    "back": "The process used to measure the amount of heat energy released or absorbed\nduring a chemical reaction.",
+    "spec": "C3.2",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765268048,
+    "front": "Define catalyst",
+    "back": "Increases the rate of reaction by providing a different reaction pathway with a lower\nactivation energy. They are not used up during the reaction.",
+    "spec": "C3.12",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765276896,
+    "front": "According to collision theory, what is required for a reaction to happen?",
+    "back": "Chemical reactions only occur when colliding particles collide with the\ncorrect orientation and with sufficient energy (activation energy).",
+    "spec": "C3.11",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765376125,
+    "front": "Explain in terms of collisions why increasing surface area increases reaction rate",
+    "back": "<ul class=\"fc-points\"><li><b>More reacting particles are exposed</b> at the surface</li><li><b>More frequent successful collisions</b> → higher rate of reaction</li></ul>",
+    "spec": "C3.11",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765404889,
+    "front": "Explain in terms of collisions why increasing temperature increases reaction rate (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Particles have <b>more kinetic energy</b> and move faster → <b>more frequent collisions</b></li><li>A <b>greater proportion of particles</b> have energy ≥ the <b>activation energy</b></li><li>Many <b>more frequent successful collisions</b> → faster rate</li></ul>",
+    "spec": "C3.11",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765413023,
+    "front": "Define endothermic reaction",
+    "back": "A reaction in which energy is taken in from the surroundings so the\ntemperature of the surroundings decreases.",
+    "spec": "C3.1",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765426072,
+    "front": "Define enthalpy change",
+    "back": "The amount of heat energy given out or absorbed during a reaction.",
+    "spec": "C3.4",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765436371,
+    "front": "Define exothermic reaction",
+    "back": "A reaction in which energy is transferred to the surroundings so the\ntemperature of the surroundings increases.",
+    "spec": "C3.1",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765476952,
+    "front": "Define molar enthalpy change (Δ<i>H</i>) and how to calculate it (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Heat energy released or absorbed per <b>1 mole</b> of substance reacted</li><li>Formula: <b>Δ<i>H</i> = <i>Q</i> ÷ moles</b> (in kJ/mol)</li><li>Sign: <b>negative (−)</b> for exothermic, <b>positive (+)</b> for endothermic</li></ul>",
+    "spec": "C3.4",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765535980,
+    "front": "Define rate of reaction (including units)",
+    "back": "The measure of the amount of product formed or reactant used over time.\nThe units of rate of reaction may be given as g/s, cm<sup>3</sup>/s or mol/s.",
+    "spec": "C3.9",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765551763,
+    "front": "Define reversible reaction",
+    "back": "A reaction in which the products can react together to reform the\nreactants. Reversible reactions are denoted by the symbol ⇌.",
+    "spec": "C3.17",
+    "topic": "C3"
+  },
+  {
+    "id": 1675765570080,
+    "front": "Define addition polymerisation",
+    "back": "The reaction in which many small molecule monomers bond\ntogether to form a long chain polymer.",
+    "spec": "C4.44",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765578146,
+    "front": "Define addition reaction",
+    "back": "A reaction in which at least two molecules combine together to form a\nsingle larger product.",
+    "spec": "C4.6",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765605044,
+    "front": "Define alkanes, including the general formula",
+    "back": "The most common hydrocarbon found in crude oil. Alkanes have the general\nformula C<sub>n</sub>H<sub>2n+2</sub>.",
+    "spec": "C4.19",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765619627,
+    "front": "Define alkenes, including the general formula",
+    "back": "Hydrocarbons with a double bond between two of the carbon atoms in their chain (C=C),\ncausing them to be unsaturated. They have the general formula C<sub>n</sub>H<sub>2n</sub>.",
+    "spec": "C4.24",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765637758,
+    "front": "Define biodegradable",
+    "back": "Able to be broken down by living organisms.",
+    "spec": "C4.47",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765685123,
+    "front": "What is catalytic cracking (incl conditions)",
+    "back": "Long-chain hydrocarbons are heated to 600-700°C, turning to gas. The vapour passes over a catalyst, splitting the molecules.",
+    "spec": "C4.17",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765707088,
+    "front": "Define complete combustion",
+    "back": "Combustion carried out in sufficient oxygen. Water and carbon\ndioxide are the only products of the complete combustion of a hydrocarbon.",
+    "spec": "C4.12",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765729037,
+    "front": "Define cracking",
+    "back": "A process that involves breaking down larger hydrocarbons to produce smaller\nmore useful molecules.",
+    "spec": "C4.17",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765736302,
+    "front": "What is crude oil? (3 points)",
+    "back": "<ul class=\"fc-points\"><li>A <b>finite fossil fuel</b> found in rocks</li><li>Formed from ancient <b>plankton / marine biomass</b> buried under mud over millions of years</li><li>A <b>mixture of hydrocarbons</b> (mostly alkanes)</li></ul>",
+    "spec": "C4.7",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765746352,
+    "front": "Define displayed formula",
+    "back": "A type of structural formula that shows all the bonds between every\natom in the compound.",
+    "spec": "C4.2",
+    "topic": "C4"
+  },
+  {
+    "id": 1675765954571,
+    "front": "Define finite resource",
+    "back": "A resource which will one day run out, e.g. crude oil.",
+    "spec": "C4.7",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766478526,
+    "front": "Define fuel",
+    "back": "A substance which releases energy when burned",
+    "spec": "C4.11",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766496958,
+    "front": "Define general formula and give an example",
+    "back": "<ul class=\"fc-points\"><li>An algebraic formula that applies to <b>every member of a homologous series</b></li><li>Example: alkanes = <b>C<sub><i>n</i></sub>H<sub>2<i>n</i>+2</sub></b> (where <i>n</i> = number of carbon atoms)</li></ul>",
+    "spec": "C4.2",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766520073,
+    "front": "Define hydrocarbons",
+    "back": "Compounds made up of hydrogen and carbon atoms only.",
+    "spec": "C4.1",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766543922,
+    "front": "What are impurities? Give an example of an issue with combustion.",
+    "back": "Substances within a compound different to compound itself.<br>E.g. combustion of hydrocarbons continuing <b>sulfur </b>impurities leads\nto the formation of sulfur dioxide.",
+    "spec": "C4.15",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766564188,
+    "front": "Define incomplete combustion",
+    "back": "Combustion which is carried out with insufficient oxygen. It can\nlead to the production of toxic carbon monoxide and carbon particulates.",
+    "spec": "C4.12",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766591769,
+    "front": "Define isomerism",
+    "back": "The existence of molecules with exactly the same molecular formula but a\ndifferent arrangement of atoms in space",
+    "spec": "C4.3",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766631416,
+    "front": "Define monomer",
+    "back": "Small short chain molecules which can join together to form a long chain polymer.",
+    "spec": "C4.44",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766638917,
+    "front": "What do particulates come from and why are they bad?",
+    "back": "Carbon particulates (soot) are a product of incomplete combustion. They cause global dimming and health problems for\nhumans. ",
+    "spec": "C4.12",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766668415,
+    "front": "Define polymer",
+    "back": "Large long-chain molecules made up of lots of small monomers joined together by\n<b>covalent </b>bonds.",
+    "spec": "C4.44",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766689163,
+    "front": "Define saturated hydrocarbons",
+    "back": "A hydrocarbon compound containing only single bonds between\ncarbon atoms. Alkanes are saturated compounds.",
+    "spec": "C4.20",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766732011,
+    "front": "Define structural formula",
+    "back": "A formula which shows the arrangement of atoms in the molecule of a\ncompound but does not show all the bonds between them. E.g. CH<sub>3</sub>CH<sub>2</sub>COCH<sub>3</sub>.",
+    "spec": "C4.2",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766760241,
+    "front": "Define substitution reaction",
+    "back": "A reaction in which a functional group of a compound is replaced by\nanother functional group.",
+    "spec": "C4.6",
+    "topic": "C4"
+  },
+  {
+    "id": 1675766773126,
+    "front": "Define unsaturated compounds",
+    "back": "A compound that contains double or triple carbon bonds so\nthat it does not contain the maximum number of hydrogen atoms. Alkenes are unsaturated\ncompounds.",
+    "spec": "C4.25",
+    "topic": "C4"
+  },
+  {
+    "id": 1681459340395,
+    "front": "What is the formula for R<sub>f</sub>?",
+    "back": "<div class=\"fc-eq\"><i>R</i><sub>f</sub> = <span class=\"fc-frac\"><span>distance moved by spot (solute)</span><span>distance moved by solvent front</span></span></div><div style=\"font-size:16px;color:#555;margin-top:4px\">(Always between 0 and 1 — no units)</div>",
+    "spec": "C1.12",
+    "topic": "C1"
+  },
+  {
+    "id": 1681460012697,
+    "front": "What is the general formula for the reaction between a metal and water?",
+    "back": "<div class=\"fc-eq\">metal + water → metal hydroxide + hydrogen</div>",
+    "spec": "C2.15",
+    "topic": "C2"
+  },
+  {
+    "id": 1681460212115,
+    "front": "What are the colours for litmus paper?",
+    "back": "<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fecaca;color:#991b1b\"><small>Acidic</small>Red</span><span class=\"fc-ind\" style=\"background:#e9d5ff;color:#581c87\"><small>Neutral</small>Purple</span><span class=\"fc-ind\" style=\"background:#bfdbfe;color:#1e3a8a\"><small>Alkaline</small>Blue</span></div>",
+    "spec": "C2.28",
+    "topic": "C2"
+  },
+  {
+    "id": 1681460249907,
+    "front": "What are the colours for phenolphthalein?",
+    "back": "<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fff;color:#111\"><small>Acidic / Neutral</small>Colourless</span><span class=\"fc-ind\" style=\"background:#fbcfe8;color:#9d174d\"><small>Alkaline</small>Pink</span></div>",
+    "spec": "C2.28",
+    "topic": "C2",
+    "daOnly": true
+  },
+  {
+    "id": 1681460281420,
+    "front": "What are the colours of methyl orange?",
+    "back": "<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fecaca;color:#991b1b\"><small>Acidic</small>Red</span><span class=\"fc-ind\" style=\"background:#fed7aa;color:#9a3412\"><small>Neutral</small>Orange</span><span class=\"fc-ind\" style=\"background:#fef08a;color:#854d0e\"><small>Alkaline</small>Yellow</span></div>",
+    "spec": "C2.28",
+    "topic": "C2",
+    "daOnly": true
+  },
+  {
+    "id": 1681460541377,
+    "front": "How do you test for halides?",
+    "back": "Add <b>dilute nitric acid (HNO<sub>3</sub>)</b>, then <b>silver nitrate solution (AgNO<sub>3</sub>)</b>:<div class=\"fc-ind-row\"><span class=\"fc-ind\" style=\"background:#fff\"><small>Chloride (Cl⁻)</small>White ppt (AgCl)</span><span class=\"fc-ind\" style=\"background:#fef9c3\"><small>Bromide (Br⁻)</small>Cream ppt (AgBr)</span><span class=\"fc-ind\" style=\"background:#fde047\"><small>Iodide (I⁻)</small>Yellow ppt (AgI)</span></div><ul class=\"fc-points\"><li>Ag<sup>+</sup>(aq) + Cl<sup>−</sup>(aq) → AgCl(s)</li><li>Ag<sup>+</sup>(aq) + Br<sup>−</sup>(aq) → AgBr(s)</li><li>Ag<sup>+</sup>(aq) + I<sup>−</sup>(aq) → AgI(s)</li></ul>",
+    "spec": "C2.48",
+    "topic": "C2",
+    "daOnly": true
+  },
+  {
+    "id": 1681460772739,
+    "front": "What are refinery gases used for?",
+    "back": "Domestic heating and cooking",
+    "spec": "C4.9",
+    "topic": "C4"
+  },
+  {
+    "id": 1681460786746,
+    "front": "What is gasoline used for?",
+    "back": "Fuel in cars",
+    "spec": "C4.9",
+    "topic": "C4"
+  },
+  {
+    "id": 1681460798233,
+    "front": "What is kerosene used for?",
+    "back": "Fuel in aircraft",
+    "spec": "C4.9",
+    "topic": "C4"
+  },
+  {
+    "id": 1681460817253,
+    "front": "What is diesel used for?",
+    "back": "Fuel in some cars, larger vehicles and trains",
+    "spec": "C4.9",
+    "topic": "C4"
+  },
+  {
+    "id": 1681460836481,
+    "front": "What is fuel oil used for?",
+    "back": "Fuel for large ships and some power stations",
+    "spec": "C4.9",
+    "topic": "C4"
+  },
+  {
+    "id": 1681460850140,
+    "front": "What is bitumen used for?",
+    "back": "To surface roads and roofs",
+    "spec": "C4.9",
+    "topic": "C4"
+  },
+  {
+    "id": 1681460920680,
+    "front": "What is the general formula for the combustion of a hydrocarbon?",
+    "back": "<div class=\"fc-eq\">hydrocarbon + oxygen → carbon dioxide + water</div><div style=\"font-size:15px;color:#555;margin-top:4px\">(Complete combustion in plentiful oxygen)</div>",
+    "spec": "C4.12",
+    "topic": "C4"
+  },
+  {
+    "id": 1723925882840,
+    "front": "Write the equation and state the colour change seen when a chlorine solution reacts with a sodium bromide solution.",
+    "back": "Cl<sub>2</sub>(aq) + 2NaBr(aq) → Br<sub>2</sub>(aq)  + 2NaCl(aq)<br><br>in this reaction, an <b><span style=\"color: rgb(255, 170, 0);\">orange </span></b>colour of Br<sub>2</sub> in solution would appear",
+    "spec": "C2.5",
+    "topic": "C2"
+  },
+  {
+    "id": 1723926877866,
+    "front": "Name the commonly <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span> </b>ionic compounds",
+    "back": "Common carbonates - all <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and ammonium<br><br>Common hydroxides - all <b><span style=\"color: rgb(255, 0, 0);\">insoluble</span></b>, except potassium, sodium and calcium",
+    "spec": "C2.34",
+    "topic": "C2"
+  },
+  {
+    "id": 1724938322045,
+    "front": "How does a fractionating column separate crude oil? (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Crude oil is heated until it <b>vaporises</b> and enters a column that is <b>hot at the bottom, cool at the top</b></li><li><b>Long-chain hydrocarbons</b> (high boiling points) condense near the <b>bottom</b></li><li><b>Short-chain hydrocarbons</b> (low boiling points) rise and condense near the <b>top</b></li></ul>",
+    "spec": "C4.8",
+    "topic": "C4"
+  },
+  {
+    "id": 1724940002797,
+    "front": "Draw the displayed formula for the reaction of ethene (C<sub>2</sub>H<sub>4</sub>) with <b>bromine</b> (<b>Br<sub>2</sub></b>).",
+    "back": "Addition reaction — a bromine atom adds across the C=C double bond to form <b>1,2-dibromoethane</b> (orange bromine water turns <b>colourless</b>):<img src=\"ethene-bromine.svg\" alt=\"Displayed formula equation for ethene plus bromine forming 1,2-dibromoethane\">",
+    "spec": "C4.27",
+    "topic": "C4"
+  },
+  {
+    "id": 1725305739118,
+    "front": "What is the relationship between alkalis and bases?<br>",
+    "back": "Alkalis are a subset of bases that are <b>soluble</b> in water.<br><br>All alkalis are bases. Not all bases are alkalis.",
+    "spec": "C2.31",
+    "topic": "C2"
+  },
+  {
+    "id": 1725649686880,
+    "front": "What is physical chemistry?",
+    "back": "The study of how substances react, focusing on energy, rates of reaction, and molecular interactions",
+    "spec": null,
+    "topic": "C3"
+  },
+  {
+    "id": 1725649701207,
+    "front": "What is organic chemistry?",
+    "back": "The study of carbon-containing compounds and their reactions.",
+    "spec": null,
+    "topic": "C4"
+  },
+  {
+    "id": 1725649716911,
+    "front": "What is inorganic chemistry?",
+    "back": "The study of non-carbon compounds, including metals and salts.",
+    "spec": null,
+    "topic": "C2"
+  },
+  {
+    "id": 1732286586754,
+    "front": "What does soluble mean?",
+    "back": "A substance is <b>soluble </b>if it can be dissolved in a solvent, e.g. salt in water. An insoluble substance won’t dissolve in a particular solvent.",
+    "spec": "C1.4",
+    "topic": "C1"
+  },
+  {
+    "id": 1740669287138,
+    "front": "What is the link between relative formula mass and moles ",
+    "back": "Relative formula mass of a substance is numerically equal to the mass of one mole of the substance in grams",
+    "spec": "C1.26",
+    "topic": "C1"
+  },
+  {
+    "id": 2026112600021,
+    "spec": "C1.11",
+    "topic": "C1",
+    "front": "What information can you read from a paper chromatogram? (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>1 spot</b> = pure substance; <b>2 or more spots</b> = mixture</li><li>Spots at the <b>same height (same <i>R</i><sub>f</sub> value)</b> indicate the same substance</li><li>A spot that <b>stays on the baseline</b> is insoluble in that solvent</li></ul>"
+  },
+  {
+    "id": 2026112600022,
+    "spec": "C1.13",
+    "topic": "C1",
+    "front": "Core practical: give 3 key precautions when setting up paper chromatography",
+    "back": "<ul class=\"fc-points\"><li>Draw the baseline in <b>pencil</b> (graphite is insoluble so it won’t run up the paper)</li><li>Keep the <b>solvent level below the pencil line</b> so spots don’t dissolve directly into the solvent</li><li><b>Cover the beaker</b> with a lid to prevent volatile solvent evaporating; mark the <b>solvent front</b> before drying</li></ul>"
+  },
+  {
+    "id": 2026112600023,
+    "spec": "C1.28",
+    "topic": "C1",
+    "front": "State the formula linking moles, mass and relative formula mass (<i>M</i><sub>r</sub>)",
+    "back": "<div class=\"fc-eq\">moles = <span class=\"fc-frac\"><span>mass (g)</span><span><i>M</i><sub>r</sub> (or <i>A</i><sub>r</sub>)</span></span></div><ul class=\"fc-points\"><li>Rearranged: <b>mass = moles × <i>M</i><sub>r</sub></b></li><li><i>M</i><sub>r</sub> = sum of the relative atomic masses (<i>A</i><sub>r</sub>) of all atoms in the formula</li></ul>"
+  },
+  {
+    "id": 2026112600024,
+    "spec": "C1.29",
+    "topic": "C1",
+    "front": "What are the 3 steps to calculate a reacting mass from a balanced equation?",
+    "back": "<ul class=\"fc-points\"><li><b>Step 1:</b> find <b>moles</b> of the known substance (moles = mass ÷ <i>M</i><sub>r</sub>)</li><li><b>Step 2:</b> use the <b>molar ratio</b> from the balanced equation to find moles of the unknown</li><li><b>Step 3:</b> convert back to mass (<b>mass = moles × <i>M</i><sub>r</sub></b>)</li></ul>"
+  },
+  {
+    "id": 2026112600025,
+    "spec": "C1.33",
+    "topic": "C1",
+    "front": "How do you calculate empirical formula and then molecular formula from data? (3 steps)",
+    "back": "<ul class=\"fc-points\"><li><b>Step 1:</b> divide the mass (or %) of each element by its <b><i>A</i><sub>r</sub></b> to get moles</li><li><b>Step 2:</b> divide every mole value by the <b>smallest</b> → simplest whole-number ratio (<b>empirical formula</b>)</li><li><b>Step 3:</b> multiplier = <b><i>M</i><sub>r</sub> ÷ empirical formula mass</b>; multiply empirical subscripts by this number</li></ul>"
+  },
+  {
+    "id": 2026112600026,
+    "spec": "C1.36",
+    "topic": "C1",
+    "front": "Core practical: how do you determine the formula of magnesium oxide by combustion? (4 points)",
+    "back": "<ul class=\"fc-points\"><li>Weigh crucible + lid, add coiled <b>magnesium</b> and reweigh</li><li>Heat strongly, <b>lifting the lid briefly</b> to let O<sub>2</sub> in without letting white MgO smoke escape</li><li><b>Heat to constant mass</b> so all Mg has completely reacted</li><li>Mass of O = mass of MgO − mass of Mg → convert both masses to moles (÷ <i>A</i><sub>r</sub>) for the ratio</li></ul>"
+  },
+  {
+    "id": 2026112600027,
+    "spec": "C1.39",
+    "topic": "C1",
+    "front": "How do you write the formula of an ionic compound from its ions?",
+    "back": "<ul class=\"fc-points\"><li>Balance the ion numbers so <b>total positive charge = total negative charge</b> (overall neutral)</li><li>Use <b>brackets</b> if you need more than one compound ion (e.g. Mg<sup>2+</sup> + 2 OH<sup>−</sup> → <b>Mg(OH)<sub>2</sub></b>; 2 NH<sub>4</sub><sup>+</sup> + SO<sub>4</sub><sup>2−</sup> → <b>(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></b>)</li></ul>"
+  },
+  {
+    "id": 2026112600028,
+    "spec": "C1.40",
+    "topic": "C1",
+    "front": "What are the 3 rules for drawing an ionic dot-and-cross diagram?",
+    "back": "<ul class=\"fc-points\"><li>Show <b>outer-shell electrons</b> using dots for one element and crosses for the other</li><li>Metal atom <b>loses</b> outer electrons; non-metal <b>gains</b> them to achieve a full outer shell</li><li>Put <b>square brackets</b> around each ion with its <b>charge outside top-right</b> (e.g. [Mg]<sup>2+</sup>)</li></ul>"
+  },
+  {
+    "id": 2026112600029,
+    "spec": "C1.45",
+    "topic": "C1",
+    "front": "Define a covalent bond in terms of electrostatic attraction",
+    "back": "<ul class=\"fc-points\"><li>A <b>strong electrostatic attraction</b> between the <b>positively charged nuclei</b> of two non-metal atoms and the <b>shared pair(s) of negatively charged electrons</b> between them</li></ul>"
+  },
+  {
+    "id": 2026112600030,
+    "spec": "C1.46",
+    "topic": "C1",
+    "front": "How many covalent bonds do H, halogens, O, N and C normally form in dot-and-cross diagrams?",
+    "back": "<ul class=\"fc-points\"><li><b>H &amp; halogens (Group 7):</b> 1 bond (e.g. H<sub>2</sub>, HCl, Cl<sub>2</sub>)</li><li><b>Oxygen:</b> 2 bonds (H<sub>2</sub>O has 2 singles; O<sub>2</sub> has 1 double bond)</li><li><b>Nitrogen:</b> 3 bonds (NH<sub>3</sub> has 3 singles; N<sub>2</sub> has 1 triple bond)</li><li><b>Carbon:</b> 4 bonds (CH<sub>4</sub> 4 singles; CO<sub>2</sub> two double bonds; C<sub>2</sub>H<sub>4</sub> one C=C double bond)</li></ul>"
+  },
+  {
+    "id": 2026112600031,
+    "spec": "C1.51",
+    "topic": "C1",
+    "front": "Why do covalent compounds not usually conduct electricity?",
+    "back": "<ul class=\"fc-points\"><li>Covalent molecules are <b>electrically neutral</b> (no overall charge)</li><li>They have <b>no free-moving ions</b> and <b>no delocalised electrons</b> to carry charge (exception: graphite)</li></ul>"
+  },
+  {
+    "id": 2026112600032,
+    "spec": "C2.2",
+    "topic": "C2",
+    "front": "How do reactions of Li, Na and K with water show the Group 1 reactivity trend? (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Reactivity <b>increases down Group 1</b> (Li &lt; Na &lt; K)</li><li><b>Evidence:</b> Li fizzes steadily; Na melts into a ball and fizzes faster; K ignites immediately with a <b>lilac flame</b></li><li>Outer electron is <b>further from the nucleus</b> (more shells/shielding) → weaker attraction → lost more easily</li></ul>"
+  },
+  {
+    "id": 2026112600033,
+    "spec": "C2.6",
+    "topic": "C2",
+    "front": "How do colour, melting/boiling point and reactivity change going down Group 7 (halogens)?",
+    "back": "Going down Group 7 (F → Cl → Br → I → At):<ul class=\"fc-points\"><li><b>Colour gets darker</b> (pale yellow → pale green → red-brown → grey → black)</li><li><b>Melting &amp; boiling points increase</b> (gas → liquid → solid)</li><li><b>Reactivity decreases</b> (outer shell further from nucleus → harder to gain an electron)</li></ul>"
+  },
+  {
+    "id": 2026112600034,
+    "spec": "C2.10",
+    "topic": "C2",
+    "front": "How do iron or phosphorus experiments determine the percentage of oxygen in air?",
+    "back": "<ul class=\"fc-points\"><li>Wet iron filings (rusting) or heated phosphorus <b>reacts with all the O<sub>2</sub></b> in a trapped volume of air</li><li>The gas volume decreases by about <b>21%</b> (water rises up the tube)</li><li><b>% O<sub>2</sub> = (decrease in volume ÷ initial volume of air) × 100</b></li></ul>"
+  },
+  {
+    "id": 2026112600035,
+    "spec": "C2.14",
+    "topic": "C2",
+    "front": "Core practical: give 3 precautions when finding the % of oxygen in air",
+    "back": "<ul class=\"fc-points\"><li>Use an <b>excess</b> of iron/copper/phosphorus so <b>all the oxygen</b> reacts</li><li>Ensure the apparatus is completely <b>airtight</b></li><li>Allow the apparatus to <b>cool back to room temperature</b> before measuring the final gas volume</li></ul>"
+  },
+  {
+    "id": 2026112600036,
+    "spec": "C2.17",
+    "topic": "C2",
+    "front": "State the Reactivity Series of metals from most reactive to least reactive",
+    "back": "<b>Potassium &gt; Sodium &gt; Lithium &gt; Calcium &gt; Magnesium &gt; Aluminium &gt; (Carbon) &gt; Zinc &gt; Iron &gt; (Hydrogen) &gt; Copper &gt; Silver &gt; Gold</b>"
+  },
+  {
+    "id": 2026112600037,
+    "spec": "C2.21",
+    "topic": "C2",
+    "front": "Core practical: how do you compare the reactivity of Mg, Zn, Fe and Cu with dilute acid?",
+    "back": "<ul class=\"fc-points\"><li>Add equal masses/surface areas of each metal to equal volumes &amp; concentrations of <b>dilute HCl or H<sub>2</sub>SO<sub>4</sub></b></li><li>Compare <b>rate of fizzing (H<sub>2</sub>)</b> and <b>temperature rise</b></li><li>Order: <b>Mg</b> (vigorous) &gt; <b>Zn</b> (steady) &gt; <b>Fe</b> (slow) &gt; <b>Cu</b> (no reaction)</li></ul>"
+  },
+  {
+    "id": 2026112600038,
+    "spec": "C2.35",
+    "topic": "C2",
+    "front": "Define an acid and a base in terms of proton transfer",
+    "back": "<ul class=\"fc-points\"><li><b>Acid:</b> a <b>proton (H<sup>+</sup>) donor</b></li><li><b>Base:</b> a <b>proton (H<sup>+</sup>) acceptor</b></li></ul>"
+  },
+  {
+    "id": 2026112600039,
+    "spec": "C2.38",
+    "topic": "C2",
+    "front": "What types of substance act as bases, and how is an alkali different?",
+    "back": "<ul class=\"fc-points\"><li><b>Bases:</b> substances that neutralise acids — <b>metal oxides</b>, <b>metal hydroxides</b>, and <b>ammonia</b></li><li><b>Alkalis:</b> <b>soluble bases</b> that dissolve in water to produce <b>OH<sup>−</sup> ions</b></li></ul>"
+  },
+  {
+    "id": 2026112600040,
+    "spec": "C2.39",
+    "topic": "C2",
+    "front": "Describe how to prepare a pure, dry soluble salt from an acid and an insoluble base (4 steps)",
+    "back": "<ul class=\"fc-points\"><li>Warm the dilute acid and add <b>excess insoluble base</b> (until solid remains, ensuring all acid reacts)</li><li><b>Filter</b> to remove the excess unreacted solid</li><li><b>Heat gently</b> to evaporate some water until saturated (crystals start forming)</li><li><b>Leave to cool</b> to crystallise, filter off crystals, and <b>pat dry</b> with filter paper</li></ul>"
+  },
+  {
+    "id": 2026112600041,
+    "spec": "C2.42",
+    "topic": "C2",
+    "front": "Core practical: how do you make pure, dry hydrated copper(II) sulfate crystals?",
+    "back": "<ul class=\"fc-points\"><li>Warm <b>dilute sulfuric acid (H<sub>2</sub>SO<sub>4</sub>)</b> and add <b>excess black copper(II) oxide (CuO)</b> while stirring</li><li><b>Filter</b> out excess black CuO to obtain a clear <b>blue CuSO<sub>4</sub> solution</b></li><li>Evaporate some water over a water bath/gentle flame, then <b>cool to form blue crystals</b></li><li>Filter off crystals and <b>pat dry</b> between filter papers</li></ul>"
+  },
+  {
+    "id": 2026112600042,
+    "spec": "C2.50",
+    "topic": "C2",
+    "front": "What is the physical test to show a sample of water is pure?",
+    "back": "<ul class=\"fc-points\"><li>Measure its <b>boiling point</b> (pure water boils sharply at <b>100 °C</b>) or <b>melting/freezing point</b> (<b>0 °C</b>)</li><li>Impurities raise the boiling point and lower the freezing point</li></ul>"
+  },
+  {
+    "id": 2026112600043,
+    "spec": "C3.3",
+    "topic": "C3",
+    "front": "State the equation for heat energy change (<i>Q</i>) and define every symbol",
+    "back": "<div class=\"fc-eq\"><i>Q</i> = <i>m c</i> Δ<i>T</i></div><ul class=\"fc-points\"><li><b><i>Q</i></b> = heat energy transferred (J)</li><li><b><i>m</i></b> = mass of water/solution heated (g; 1 cm<sup>3</sup> = 1 g)</li><li><b><i>c</i></b> = specific heat capacity of water (<b>4.18 J/(g °C)</b>)</li><li><b>Δ<i>T</i></b> = temperature change (°C)</li></ul>"
+  },
+  {
+    "id": 2026112600044,
+    "spec": "C3.8",
+    "topic": "C3",
+    "front": "Core practical: how do you reduce errors when measuring temperature changes (calorimetry)? (3 points)",
+    "back": "<ul class=\"fc-points\"><li><b>Solutions (dissolving/neutralisation/displacement):</b> use an insulated <b>polystyrene cup + lid</b> inside a beaker and stir continuously</li><li><b>Combustion (spirit burner):</b> use a <b>draught shield</b> and stir the water in a copper can</li><li>Main source of error: <b>heat loss to the surroundings</b> (and incomplete combustion)</li></ul>"
+  },
+  {
+    "id": 2026112600045,
+    "spec": "C3.16",
+    "topic": "C3",
+    "front": "Core practical: how do you investigate different solid catalysts on H<sub>2</sub>O<sub>2</sub> decomposition? (3 points)",
+    "back": "<ul class=\"fc-points\"><li>Add equal masses of different solids (e.g. MnO<sub>2</sub>, CuO) to equal volumes/concentrations of <b>hydrogen peroxide (H<sub>2</sub>O<sub>2</sub>)</b></li><li>Measure the <b>volume of O<sub>2</sub></b> collected in a gas syringe in a fixed time (fastest = best catalyst)</li><li>Filter, dry and reweigh the solid to confirm its <b>mass is unchanged</b></li></ul>"
+  },
+  {
+    "id": 2026112600046,
+    "spec": "C3.18",
+    "topic": "C3",
+    "front": "Describe the 2 specification examples of reversible reactions",
+    "back": "<ul class=\"fc-points\"><li><b>Hydrated copper(II) sulfate (blue)</b> ⇌ <b>anhydrous CuSO<sub>4</sub> (white) + water</b> (heat → white; add water → blue + gets hot)</li><li><b>Ammonium chloride (white solid)</b> ⇌ <b>ammonia (NH<sub>3</sub>) + hydrogen chloride (HCl)</b> (heat decomposes; cooling reforms white solid)</li></ul>"
+  },
+  {
+    "id": 2026112600047,
+    "spec": "C4.4",
+    "topic": "C4",
+    "front": "State the IUPAC prefixes for 1–6 carbons and endings for alkanes &amp; alkenes",
+    "back": "<ul class=\"fc-points\"><li><b>1 C:</b> meth- · <b>2 C:</b> eth- · <b>3 C:</b> prop- · <b>4 C:</b> but- · <b>5 C:</b> pent- · <b>6 C:</b> hex-</li><li><b>-ane:</b> alkane (single bonds) · <b>-ene:</b> alkene (C=C double bond; number gives lowest position, e.g. but-1-ene)</li><li>Halogens use prefixes: <b>chloro-</b>, <b>bromo-</b> (e.g. 1,2-dibromoethane)</li></ul>"
+  },
+  {
+    "id": 2026112600048,
+    "spec": "C4.5",
+    "topic": "C4",
+    "front": "Distinguish between molecular, structural and displayed formulae (plus isomers)",
+    "back": "<ul class=\"fc-points\"><li><b>Molecular:</b> actual numbers of each atom (e.g. C<sub>4</sub>H<sub>10</sub>)</li><li><b>Structural:</b> atoms grouped carbon-by-carbon (e.g. CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>)</li><li><b>Displayed:</b> draws every atom and every covalent bond</li><li><b>Isomers:</b> same molecular formula, <b>different structural formula</b></li></ul>"
+  },
+  {
+    "id": 2026112600049,
+    "spec": "C4.13",
+    "topic": "C4",
+    "front": "Why is carbon monoxide (CO) poisonous? (2 points)",
+    "back": "<ul class=\"fc-points\"><li>CO binds strongly (irreversibly) to <b>haemoglobin</b> in red blood cells</li><li><b>Reduces the blood’s capacity to carry oxygen</b> around the body (can cause suffocation/death)</li></ul>"
+  },
+  {
+    "id": 2026112600050,
+    "spec": "C4.14",
+    "topic": "C4",
+    "front": "How are oxides of nitrogen formed in car engines?",
+    "back": "<ul class=\"fc-points\"><li><b>Very high temperatures</b> inside car engines provide enough energy for <b>nitrogen and oxygen from the air</b> to react together</li><li>Forms <b>oxides of nitrogen (NO<sub><i>x</i></sub>)</b>, which contribute to acid rain</li></ul>"
+  },
+  {
+    "id": 2026112600051,
+    "spec": "C4.18",
+    "topic": "C4",
+    "front": "Why is cracking necessary in the oil industry? (2 points)",
+    "back": "<ul class=\"fc-points\"><li>Crude oil has a <b>surplus of long-chain hydrocarbons</b> (low demand, thick/viscous) and a <b>shortage of short-chain alkanes</b> (high demand for petrol/fuels)</li><li>Cracking also produces <b>alkenes</b>, needed as raw materials for making <b>polymers</b></li></ul>"
+  },
+  {
+    "id": 2026112600052,
+    "spec": "C4.23",
+    "topic": "C4",
+    "front": "What is the functional group of alkenes?",
+    "back": "<ul class=\"fc-points\"><li>A <b>carbon–carbon double covalent bond (<code>&gt;C=C&lt;</code>)</b></li><li>Makes alkenes <b>unsaturated</b> and more reactive than alkanes</li></ul>"
+  },
+  {
+    "id": 2026112600053,
+    "spec": "C4.26",
+    "topic": "C4",
+    "front": "Name the alkenes with 2, 3 and 4 carbons (including the two unbranched butene isomers)",
+    "back": "<ul class=\"fc-points\"><li><b>2 C:</b> ethene (CH<sub>2</sub>=CH<sub>2</sub>)</li><li><b>3 C:</b> propene (CH<sub>2</sub>=CHCH<sub>3</sub>)</li><li><b>4 C (unbranched isomers):</b> <b>but-1-ene</b> (CH<sub>2</sub>=CHCH<sub>2</sub>CH<sub>3</sub>) and <b>but-2-ene</b> (CH<sub>3</sub>CH=CHCH<sub>3</sub>)</li></ul>"
+  },
+  {
+    "id": 2026112600054,
+    "spec": "C4.46",
+    "topic": "C4",
+    "front": "How do you convert between an alkene monomer and its addition polymer repeat unit?",
+    "back": "<ul class=\"fc-points\"><li><b>Monomer → repeat unit:</b> change <b>C=C</b> to a <b>C–C</b> single bond, draw <b>two trailing bonds</b> extending through brackets, add subscript <b><i>n</i></b></li><li><b>Repeat unit → monomer:</b> remove brackets &amp; trailing bonds and restore the <b>C=C double bond</b></li></ul>"
+  },
+  {
+    "id": 2026112600074,
+    "spec": "C3.15",
+    "topic": "C3",
+    "front": "Core practical: how do you investigate surface area and acid concentration using marble chips and dilute HCl? (4 points)",
+    "back": "<ul class=\"fc-points\"><li>React <b>calcium carbonate (marble chips) + dilute HCl</b> → CO<sub>2</sub> gas</li><li>Measure rate by <b>volume of CO<sub>2</sub></b> (gas syringe / upturned cylinder) or <b>mass loss</b> on a balance at regular time intervals</li><li><b>Surface area:</b> compare equal masses of large vs small marble chips (same acid volume, concentration &amp; temperature)</li><li><b>Concentration:</b> vary HCl concentration (same mass/size of marble chips &amp; temperature) → smaller chips / higher concentration give steeper initial gradient</li></ul>"
+  },
+  {
+    "id": 2026112700011,
+    "spec": "C1.11",
+    "topic": "C1",
+    "front": "On a chromatogram, how can you tell if an unknown dye contains a specific reference colouring?",
+    "back": "<ul class=\"fc-points\"><li>Run both samples on the <b>same chromatogram in the same solvent</b></li><li>If the unknown produces a spot at the <b>exact same height (same <i>R</i><sub>f</sub> value)</b> as the reference, that substance is present</li></ul>"
+  },
+  {
+    "id": 2026112700012,
+    "spec": "C1.13",
+    "topic": "C1",
+    "front": "In paper chromatography, why must the baseline be drawn in pencil and kept above the solvent level?",
+    "back": "<ul class=\"fc-points\"><li><b>Pencil (graphite):</b> insoluble in the solvent, so it <b>won’t dissolve and smudge/run</b> up the paper like ink would</li><li><b>Above solvent level:</b> stops the sample spots <b>dissolving straight into the solvent</b> at the bottom</li></ul>"
+  },
+  {
+    "id": 2026112700013,
+    "spec": "C1.39",
+    "topic": "C1",
+    "front": "Write the chemical formulae for: magnesium chloride, aluminium oxide, and calcium hydroxide",
+    "back": "<ul class=\"fc-points\"><li><b>Magnesium chloride</b> (Mg<sup>2+</sup>, Cl<sup>−</sup>): <b>MgCl<sub>2</sub></b></li><li><b>Aluminium oxide</b> (Al<sup>3+</sup>, O<sup>2−</sup>): <b>Al<sub>2</sub>O<sub>3</sub></b></li><li><b>Calcium hydroxide</b> (Ca<sup>2+</sup>, OH<sup>−</sup>): <b>Ca(OH)<sub>2</sub></b></li></ul>"
+  },
+  {
+    "id": 2026112700014,
+    "spec": "C2.2",
+    "topic": "C2",
+    "front": "Write the balanced symbol equation for sodium reacting with water",
+    "back": "<div class=\"fc-eq\">2Na(s) + 2H<sub>2</sub>O(l) → 2NaOH(aq) + H<sub>2</sub>(g)</div><div style=\"font-size:15px;color:#555;margin-top:4px\">(Same pattern for Li and K: forms alkaline metal hydroxide + hydrogen gas)</div>"
+  },
+  {
+    "id": 2026112700015,
+    "spec": "C2.6",
+    "topic": "C2",
+    "front": "Predict the state, colour and reactivity of astatine (bottom of Group 7)",
+    "back": "<ul class=\"fc-points\"><li><b>State &amp; colour:</b> dark <b>black solid</b> at room temperature (highest melting/boiling point in Group 7)</li><li><b>Reactivity:</b> <b>least reactive</b> halogen (outer shell furthest from nucleus, hardest to gain an electron)</li></ul>"
+  },
+  {
+    "id": 2026112700016,
+    "spec": "C2.10",
+    "topic": "C2",
+    "front": "In the copper / iron % oxygen in air experiment, why might your measured value come out <b>less</b> than 21%?",
+    "back": "<ul class=\"fc-points\"><li>Not enough metal (not in <b>excess</b>) or not heated/left long enough → <b>not all O<sub>2</sub> reacted</b></li><li>Apparatus was <b>not cooled back to room temperature</b> before reading final gas volume (warm gas expands)</li></ul>"
+  },
+  {
+    "id": 2026112700017,
+    "spec": "C2.17",
+    "topic": "C2",
+    "front": "Which metals in the Reactivity Series do <b>not</b> react with dilute acids, and why?",
+    "back": "<ul class=\"fc-points\"><li><b>Copper, silver and gold</b></li><li>They are <b>below hydrogen</b> in the reactivity series, so they cannot displace H<sup>+</sup> ions from acids</li></ul>"
+  },
+  {
+    "id": 2026112700018,
+    "spec": "C3.3",
+    "topic": "C3",
+    "front": "In <i>Q</i> = <i>mc</i>Δ<i>T</i>, what mistake do students make with <i>m</i> when a small mass of solid dissolves in 50 cm<sup>3</sup> of water?",
+    "back": "<ul class=\"fc-points\"><li><b><i>m</i> is the mass of water/solution heated (50 g)</b>, <b>not</b> the mass of the solid added</li><li>For aqueous solutions assume <b>1 cm<sup>3</sup> = 1 g</b> and <i>c</i> = 4.18 J/(g °C)</li></ul>"
+  },
+  {
+    "id": 2026112700019,
+    "spec": "C4.13",
+    "topic": "C4",
+    "front": "How is carbon monoxide (CO) formed from hydrocarbon fuels?",
+    "back": "<ul class=\"fc-points\"><li>Formed by <b>incomplete combustion</b> when a hydrocarbon burns in a <b>limited supply of oxygen</b></li><li>Also produces soot (carbon) and water</li></ul>"
+  },
+  {
+    "id": 2026112700020,
+    "spec": "C4.23",
+    "topic": "C4",
+    "front": "What is the chemical test to distinguish an alkene from an alkane?",
+    "back": "<ul class=\"fc-points\"><li>Shake with <b>orange bromine water</b></li><li><b>Alkene (C=C):</b> <b>decolourises</b> bromine water (orange → <b>colourless</b>)</li><li><b>Alkane:</b> stays <b>orange</b> (no reaction in the dark)</li></ul>"
+  }
+]

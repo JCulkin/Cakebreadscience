@@ -1,7 +1,7 @@
 /* Randomised calculation questions. Each generator is ONE question in the bank (one stable id, e.g. 'P3.5-g1'),
    but makes fresh numbers every time it is shown, so the answer can't be memorised.
    G(id, fn, hard?)  fn(r) returns { q, o: [correct, wrong, wrong, wrong], x }. r = random helpers. Needs questions.js. */
-function G(id, fn, hard) { QUESTIONS.push({ id, s: id.split('-')[0], gen: fn, hard: !!hard }); }
+function G(id, fn, hard) { const q = { id, s: id.split('-')[0], gen: fn, hard: !!hard }; QUESTIONS.push(typeof setLevel === 'function' ? setLevel(q) : q); }   // level 2, or 3 if hard
 
 const R = {
   int: (a, b) => a + Math.floor(Math.random() * (b - a + 1)),

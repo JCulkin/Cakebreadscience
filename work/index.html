@@ -13,9 +13,12 @@
 body{font-family:'Barlow',Arial,sans-serif;background:var(--cream);color:var(--ink);line-height:1.45;font-size:17px}
 a{color:var(--dk)}
 h1,h2,.btn{font-family:'Barlow Condensed','Arial Narrow',Arial,sans-serif;font-weight:900;text-transform:uppercase;line-height:1.05}
-header{background:#111;padding:12px 18px;display:flex;align-items:center;gap:10px}
-header img{width:40px}header a{font:900 24px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;color:var(--cream);text-decoration:none}header a span{color:#00a03a}
-header .back{margin-left:auto;font:700 15px Barlow,Arial;text-transform:none;color:#ddd}
+header{background:#111;border-bottom:3px solid #00a03a;padding:10px 18px;display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap}
+header a.brand{display:inline-flex;align-items:center;gap:9px;font:900 24px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:-.3px;color:var(--cream);text-decoration:none;transition:color .14s}
+header a.brand img{width:32px;height:32px;object-fit:contain;display:block}
+header a.brand span{color:#00a03a;transition:color .14s}
+header a.brand:hover{color:#fff}header a.brand:hover span{color:#4ade80}
+header .sub{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9a968c}
 main{max-width:760px;margin:0 auto;padding:20px 16px 60px}
 .card{background:var(--paper);border:2px solid var(--ink);padding:16px 18px;margin-bottom:14px}
 h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
@@ -40,7 +43,7 @@ h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
 </style>
 </head>
 <body>
-<header><img src="/img/mascot/head-pixel-hd.webp" alt=""><a href="/">Cakebread <span>Science</span></a><div id="cbs-account" style="margin-left:auto"></div></header>
+<header><a class="brand" href="/" title="Cakebread Science home"><img src="/img/mascot/head-pixel-hd.webp" alt="">Cakebread <span>Science</span></a><span class="sub">Set work</span><div id="cbs-account" style="margin-left:auto"></div></header>
 <main id="main"><p class="muted">Loading…</p></main>
 
 <script src="/js/firebase-config.js"></script>
@@ -65,7 +68,7 @@ h1{font-size:34px;margin-bottom:6px}h2{font-size:22px;margin-bottom:8px}
 /* Set work (17 Nov 2026). /work/?id=<school/assign id>.
    type 'test': the fixed questions in a.qids, one go; answers saved as they go to users/{uid}.work[id] =
    {ans: {qid: 1|0}, n, started, done, score, at} so leaving and coming back resumes (no retakes). Answers also count in
-   Cakebread Questing (QE.recordAnswer), and finishing counts as the day's revision (QE.finishMission).
+   Breadventure Land (QE.recordAnswer), and finishing counts as the day's revision (QE.finishMission).
    type 'practise' (or old work with no type): links to Practice, progress = CBSSchool.progress. */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -75,8 +78,8 @@ const QBY = {}; QUESTIONS.forEach(q => QBY[q.id] = q);
 let A = null, W = null, RUN = null, booted = false;
 const within = (p, ms) => new Promise((ok, no) => { const t = setTimeout(() => no(new Error('timeout')), ms); Promise.resolve(p).then(v => { clearTimeout(t); ok(v); }, e => { clearTimeout(t); no(e); }); });
 const fmt = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-const ref = () => firebase.firestore().collection('users').doc(QE.user.uid);
-const saveW = () => ref().set({ work: { [ID]: W } }, { merge: true }).catch(e => console.warn('work save', e));
+const ref = () => (window.CBSNet ? CBSNet.fsDb() : firebase.firestore()).collection('users').doc(QE.user.uid);
+const saveW = () => (window.CBSNet ? CBSNet.fsSetMerge('users', QE.user.uid, { work: { [ID]: W } }, { ms: 8000, mergeMaps: ['work'] }) : ref().set({ work: { [ID]: W } }, { merge: true })).catch(e => console.warn('work save', e));
 
 let waited = false; setTimeout(() => { waited = true; boot(); }, 5000);
 async function boot() {
@@ -87,32 +90,54 @@ async function boot() {
   try { A = await CBSSchool.rtGet(firebase.database(), 'school/assign/' + ID, 16000); } catch (e) { A = ((CBSSchool.cached() || {}).assign || {})[ID] || null; failed = !A; }
   if (failed) { booted = false; $('main').innerHTML = `<div class="card"><h2>Couldn't load the work</h2><p>The work your teacher set couldn't be reached just now (the school network may be blocking part of Firebase). Try reloading; if it keeps happening, tell your teacher.</p><p style="margin-top:12px"><button class="btn" onclick="location.reload()">Try again</button></p></div>`; return; }
   if (!A) { $('main').innerHTML = `<div class="card"><h2>Not found</h2><p>This piece of work doesn't exist any more. <a href="/today/">Back to your To do list</a></p></div>`; return; }
-  try { W = (((await within(ref().get(), 5000)).data() || {}).work || {})[ID] || null; } catch (e) { W = null; }
+  try { const snap = window.CBSNet ? await CBSNet.fsGet('users', QE.user.uid, 6000) : await within(ref().get(), 5000); W = (((snap && snap.exists && snap.data()) || {}).work || {})[ID] || null; } catch (e) { W = null; }
   if (A.type === 'test') { if (W && W.done) results(); else intro(); }
+  else if (A.type === 'spaced') spaced();
   else practise();
 }
 
 function head() {
   return `<h1>${esc(A.title || 'Set work')}</h1><p class="muted small">${A.due ? 'Due ' + fmt(A.due) + ' · ' : ''}${(A.items || []).map(k => esc(CBSSchool.label(k))).join(' · ')}</p>${A.note ? `<p style="margin-top:8px">${esc(A.note)}</p>` : ''}`;
 }
+function spaced() {
+  const items = (A.items || []).filter(onCourse);
+  if (!items.length) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p><p style="margin-top:14px"><a class="btn alt" href="/today/">← Back to To do</a></p></div>`; return; }
+  const r = CBSSchool.spacedOf({ work: { [ID]: W } }, Object.assign({ id: ID }, A));
+  const encSubs = encodeURIComponent(items.join(',')), encT = encodeURIComponent(A.title || 'Homework'), encHw = encodeURIComponent(ID);
+  const qUrl = `/interactive/spec-quiz/adventurer-mission.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
+  const pUrl = `/interactive/spec-quiz/practice.html?subs=${encSubs}&n=${r.qPerDay}&t=${encT}&hw=${encHw}`;
+  const stLine = r.state === 'done'
+    ? `<b>✓ Finished!</b> You completed ${r.daysDone} of ${r.daysNeed} days.`
+    : r.doneToday
+      ? `<b>✓ Day ${r.daysDone} of ${r.daysNeed} done today.</b> Come back on another day for your next mission to finish this homework.`
+      : `<b>Day ${r.daysDone + 1} of ${r.daysNeed}</b> · complete one ${r.qPerDay}-question mission today (in Questing or Practice).`;
+  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">${stLine}</p>
+    <p style="margin-top:14px;display:flex;flex-wrap:wrap;gap:8px">${r.state === 'done' || r.doneToday ? `<a class="btn" href="/today/">← Back to To do</a><a class="btn alt" href="${pUrl}">📝 Extra practice</a>` : `<a class="btn" href="${qUrl}">⚔️ Start mission (${r.qPerDay} Qs) →</a><a class="btn alt" href="${pUrl}">📝 Do in Practice →</a><a class="btn alt" href="/today/">← To do</a>`}</p></div>`;
+}
 function practise() {
   const p = CBSSchool.progress(QE.prog, A);
-  if (p.none) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p></div>`; return; }
+  const items = (A.items || []).filter(onCourse);
+  if (p.none || !items.length) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p><p style="margin-top:14px"><a class="btn alt" href="/today/">← Back to To do</a></p></div>`; return; }
+  const left = Math.max(5, Math.min(20, p.target - p.got || p.target));
+  const encHw = encodeURIComponent(ID);
+  const mixUrl = `/interactive/spec-quiz/practice.html?subs=${encodeURIComponent(items.join(','))}&n=${left}&t=${encodeURIComponent(A.title || 'Set work')}&hw=${encHw}`;
   $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>${p.got} of ${p.target}</b> different questions right since it was set${p.done ? ' · Done ✓' : ''}.</p>
-    <p class="small muted">Practise any of these until you reach ${p.target}:</p><div class="chips">${(A.items || []).filter(onCourse).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
+    <p style="margin-top:12px"><a class="btn" href="${mixUrl}">📝 Practise now →</a> <a class="btn alt" href="/today/">← To do</a></p>
+    <p class="small muted" style="margin-top:12px">Or pick one topic:</p><div class="chips">${items.map(k => `<a href="${CBSSchool.practise(k)}&hw=${encHw}">${esc(CBSSchool.shortLabel(k))}</a>`).join('')}</div></div>`;
 }
-/* Single Award students (/js/course.js): only chips for spec points and sections on their course */
+/* Single Award students (/js/course.js): only chips and questions on their course */
 const onCourse = k => !window.CBSCourse || !CBSCourse.sa || (/\./.test(k) ? CBSCourse.has(k) : QE.allSubs().some(x => x.key === k));
+const testQids = () => (A.qids || []).filter(id => QBY[id] && (!window.CBSCourse || !CBSCourse.sa || CBSCourse.inSAid(id)));
 function intro() {
-  const qids = (A.qids || []).filter(id => QBY[id]), done = W ? Object.keys(W.ans || {}).length : 0;
-  if (!qids.length && window.CBSCourse && CBSCourse.sa) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">None of these questions are on the Single Award course, so there's nothing for you to do here.</p></div>`; return; }
-  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Cakebread Questing.</p>
+  const qids = testQids(), done = W ? qids.filter(id => id in (W.ans || {})).length : 0;
+  if (!qids.length) { $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px">${window.CBSCourse && CBSCourse.sa ? 'None of these questions are on the Single Award course, so there\'s nothing for you to do here.' : 'This test has no questions yet.'}</p><p style="margin-top:14px"><a class="btn alt" href="/today/">← Back to To do</a></p></div>`; return; }
+  $('main').innerHTML = `<div class="card">${head()}<p style="margin-top:10px"><b>Test · ${qids.length} questions.</b> One go: each answer is saved as soon as you give it and can't be changed. Your score goes to your teacher. The questions also count in Breadventure Land.</p>
     ${done ? `<p style="margin-top:8px">You've answered ${done} of ${qids.length}. Carry on where you stopped.</p>` : ''}
-    <p style="margin-top:14px"><button class="btn" id="go">${done ? 'Carry on →' : 'Start the test →'}</button></p></div>`;
+    <p style="margin-top:14px"><button class="btn" id="go">${done ? 'Carry on →' : 'Start the test →'}</button> <a class="btn alt" href="/today/">← To do</a></p></div>`;
   $('go').onclick = start;
 }
 function start() {
-  const qids = (A.qids || []).filter(id => QBY[id]);
+  const qids = testQids();
   W = W || { ans: {}, n: qids.length, started: Date.now() }; W.ans = W.ans || {}; W.n = qids.length;
   RUN = { qids, i: qids.findIndex(id => !(id in W.ans)) };
   if (RUN.i < 0) return finish();
@@ -136,7 +161,7 @@ function show() {
     if (!ok) b.classList.add('wrong');
     W.ans[raw.id] = ok ? 1 : 0; saveW();
     try { QE.recordAnswer(q, ok); } catch (err) {}
-    const last = Object.keys(W.ans).length >= RUN.qids.length;
+    const last = RUN.qids.filter(id => id in W.ans).length >= RUN.qids.length;
     $('fb').innerHTML = `<div class="fb ${ok ? '' : 'bad'}"><b>${ok ? 'Correct.' : 'Not quite.'}</b>${nuc(q.x || '')}</div><p class="next"><button class="btn" id="nx">${last ? 'See your score →' : 'Next →'}</button></p>`;
     $('nx').focus();
     $('nx').onclick = () => { RUN.i = RUN.qids.findIndex(id => !(id in W.ans)); if (RUN.i < 0) finish(); else show(); };
@@ -144,20 +169,25 @@ function show() {
 }
 document.addEventListener('keydown', e => { const o = $('opts'); if (!o) return; const k = e.key.toLowerCase(); let i = 'abcd'.indexOf(k); if (i < 0) i = '1234'.indexOf(k); const bs = [...o.children]; if (i >= 0 && bs[i] && !bs[i].disabled) bs[i].click(); });
 async function finish() {
-  const vals = Object.values(W.ans || {});
-  W.done = true; W.score = vals.filter(Boolean).length; W.at = Date.now();
+  const qids = (RUN && RUN.qids) || testQids();
+  W.done = true; W.n = qids.length; W.score = qids.filter(id => W.ans && W.ans[id]).length; W.at = Date.now();
   await saveW();
   try { QE.finishMission({ coins: 0, right: W.score }); } catch (e) {}
+  if (window.CBSWork) CBSWork.refresh();
   QE.busy = false;
   results();
 }
 function results() {
-  const qids = (A.qids || []).filter(id => QBY[id]), ans = W.ans || {};
+  const qids = testQids(), ans = W.ans || {};
   const plain = h => String(h || '').replace(/<[^>]+>/g, '');
-  $('main').innerHTML = `<div class="card">${head()}<div class="score">${W.score} / ${W.n || qids.length}</div><p class="muted">Done ${W.at ? new Date(W.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}. Your teacher can see this score.</p></div>
+  const missedPts = [...new Set(qids.filter(id => !ans[id]).map(id => QBY[id] && QBY[id].s).filter(Boolean))];
+  const dirtBtn = missedPts.length
+    ? `<a class="btn" style="background:#facc15;color:#111;border:2px solid #111;margin-right:8px" href="/interactive/spec-quiz/practice.html?subs=${encodeURIComponent(missedPts.join(','))}&n=${Math.min(15, Math.max(5, missedPts.length * 2))}&t=${encodeURIComponent('Fix mistakes: ' + (A.title || 'Test'))}">🛠️ Fix your ${missedPts.length} missed point${missedPts.length === 1 ? '' : 's'} →</a>`
+    : '';
+  $('main').innerHTML = `<div class="card">${head()}<div class="score">${W.score} / ${W.n || qids.length}</div><p class="muted">Done ${W.at ? new Date(W.at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}. Your teacher can see this score.${missedPts.length ? ' Practising the points you missed straight away locks in the corrections.' : ' Clean sweep!'}</p><p style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px">${dirtBtn}<a class="btn ${missedPts.length ? 'alt' : ''}" href="/today/">← Back to To do</a></p></div>
     <div class="card"><h2>Your answers</h2>${qids.map((id, j) => { const raw = QBY[id], ok = ans[id], sd = (W.seeds || {})[id], d = raw.dg && sd && typeof DQ !== 'undefined' ? DQ.make(id, sd) : null, q = d ? { ...raw, ...d, gen: null } : raw;
       return `<div class="res"><span class="mk ${ok ? 'ok' : 'no'}">${ok ? '✓' : '✗'} ${j + 1}.</span> ${esc(plain(q.gen ? (q.q || 'Calculation question (different numbers each time)') : q.q)).slice(0, 160)}${!ok && !q.gen && q.o ? `<div class="small muted">Answer: ${esc(plain(q.o[0]))}</div>` : !ok && q.tf !== undefined ? `<div class="small muted">Answer: ${q.tf ? 'True' : 'False'}</div>` : ''}</div>`; }).join('')}
-      <p style="margin-top:12px" class="small">Practise these again: ${(A.items || []).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join(' · ')}</p></div>`;
+      <p style="margin-top:12px" class="small">Practise these again: ${(A.items || []).filter(onCourse).map(k => `<a href="${CBSSchool.practise(k)}">${esc(CBSSchool.shortLabel(k))}</a>`).join(' · ')}</p></div>`;
 }
 QE.onChange(boot); boot();
 </script>

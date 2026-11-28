@@ -11,15 +11,15 @@ const store={get(k){try{return JSON.parse(localStorage.getItem('cellspotter:'+k)
 
 /* ---------------- media pools ---------------- */
 const PHOTOS=[
- {src:'img/saccharomyces_cerevisiae.jpg',group:'fungus',cap:'Yeast cells (scanning electron microscope). Some are budding.',clue:'Small oval cells, some with buds growing off them: yeast, a single-celled fungus.'},
- {src:'img/candida_albicans.jpg',group:'fungus',cap:'Candida, a fungus, growing threads (hyphae) and round spores.',clue:'Thread-like hyphae with round spores: a fungus.'},
- {src:'img/rhizopus_stolonifer.jpeg',group:'fungus',cap:'Bread mould: a tangle of hyphae with black spore cases.',clue:'A mesh of thin threads (a mycelium of hyphae) with dark spore cases: a mould, which is a fungus.'},
- {src:'img/mucor_mucedo.jpg',group:'fungus',cap:'Mucor mould growing as a fluffy mycelium.',clue:'The fluffy white mass is a mycelium made of hyphae: Mucor, a fungus.'},
- {src:'img/escherichia_coli.jpg',group:'bacteria',cap:'E. coli, rod-shaped bacteria (scanning electron microscope). The scale bar is 1 µm.',clue:'Tiny rod-shaped cells, only about 2 µm long: bacteria.'},
- {src:'img/lactobacillus_acidophilus.jpg',group:'bacteria',cap:'Lactobacillus, rod-shaped bacteria like those used to make yoghurt.',clue:'Tiny rods in chains: Lactobacillus bacteria.'},
- {src:'img/streptococcus_pneumoniae.jpg',group:'bacteria',cap:'Pneumococcus, spherical bacteria that cause pneumonia (stained).',clue:'Tiny round cells, mostly in pairs: Pneumococcus bacteria.'},
- {src:'img/bacillus_subtilis.jpg',group:'bacteria',cap:'Rod-shaped bacteria (stained). The scale bar is 10 µm.',clue:'Very small rod-shaped cells with no visible nucleus: bacteria.'},
- {src:'img/staphylococcus_aureus.jpg',group:'bacteria',cap:'Spherical bacteria in clusters (stained).',clue:'Masses of tiny round cells: spherical bacteria.'}
+ {src:'img/saccharomyces_cerevisiae.webp',group:'fungus',cap:'Yeast cells (scanning electron microscope). Some are budding.',clue:'Small oval cells, some with buds growing off them: yeast, a single-celled fungus.'},
+ {src:'img/candida_albicans.webp',group:'fungus',cap:'Candida, a fungus, growing threads (hyphae) and round spores.',clue:'Thread-like hyphae with round spores: a fungus.'},
+ {src:'img/rhizopus_stolonifer.webp',group:'fungus',cap:'Bread mould: a tangle of hyphae with black spore cases.',clue:'A mesh of thin threads (a mycelium of hyphae) with dark spore cases: a mould, which is a fungus.'},
+ {src:'img/mucor_mucedo.webp',group:'fungus',cap:'Mucor mould growing as a fluffy mycelium.',clue:'The fluffy white mass is a mycelium made of hyphae: Mucor, a fungus.'},
+ {src:'img/escherichia_coli.webp',group:'bacteria',cap:'E. coli, rod-shaped bacteria (scanning electron microscope). The scale bar is 1 µm.',clue:'Tiny rod-shaped cells, only about 2 µm long: bacteria.'},
+ {src:'img/lactobacillus_acidophilus.webp',group:'bacteria',cap:'Lactobacillus, rod-shaped bacteria like those used to make yoghurt.',clue:'Tiny rods in chains: Lactobacillus bacteria.'},
+ {src:'img/streptococcus_pneumoniae.webp',group:'bacteria',cap:'Pneumococcus, spherical bacteria that cause pneumonia (stained).',clue:'Tiny round cells, mostly in pairs: Pneumococcus bacteria.'},
+ {src:'img/bacillus_subtilis.webp',group:'bacteria',cap:'Rod-shaped bacteria (stained). The scale bar is 10 µm.',clue:'Very small rod-shaped cells with no visible nucleus: bacteria.'},
+ {src:'img/staphylococcus_aureus.webp',group:'bacteria',cap:'Spherical bacteria in clusters (stained).',clue:'Masses of tiny round cells: spherical bacteria.'}
 ];
 /* Openly licensed Wikimedia photos (img/wiki/photos.js), with a GCSE clue per type */
 const WIKI_CLUE={
@@ -138,12 +138,12 @@ const MYSTERY=[
  {name:'Yeast',group:'fungus',clues:['I’m single-celled.','My cell has a nucleus and a cell wall.','My cell wall is made of chitin, not cellulose.','Bakers and brewers use me, and I reproduce by budding.'],media:()=>photoItem(PHOTOS[0])},
  {name:'Lactobacillus bulgaricus',group:'bacteria',clues:['I’m single-celled and microscopic.','I have a cell wall, but it isn’t made of cellulose or chitin.','I have no nucleus: my DNA is a circular chromosome, plus plasmids.','I’m rod-shaped and I turn milk into yoghurt.'],media:()=>photoItem(PHOTOS[5])},
  {name:'Pneumococcus',group:'bacteria',clues:['I’m single-celled and only about 1 µm across.','I have no nucleus.','I have plasmids and a circular chromosome.','I’m spherical and I’m a pathogen that causes pneumonia.'],media:()=>photoItem(PHOTOS[6])},
- {name:'Pea plant',group:'plant',clues:['I’m multicellular.','My cells have walls made of cellulose.','Some of my cells contain chloroplasts and I photosynthesise.','I store carbohydrate as starch. My group includes peas and maize.'],media:()=>({html:'<img src="img/pisum_sativum.jpg" alt="Pea plant flower">',cap:'Pea plant (Pisum sativum), in flower.'})},
- {name:'Maize',group:'plant',clues:['I’m multicellular.','I can make my own food.','My leaf cells contain chloroplasts and have cellulose walls.','I’m a cereal crop; my seeds are corn.'],media:()=>({html:'<img src="img/zea_mays.jpeg" alt="Maize plant">',cap:'Maize (Zea mays).'})},
- {name:'Pondweed (Elodea)',group:'plant',clues:['I’m multicellular.','My cells have a large permanent vacuole full of cell sap.','My leaf cells are packed with chloroplasts.','I live underwater; teachers use me to show photosynthesis making bubbles of oxygen.'],media:()=>({html:'<img src="img/elodea_canadensis.jpg" alt="Pondweed">',cap:'Canadian pondweed (Elodea).'})},
- {name:'Housefly',group:'animal',clues:['I’m multicellular.','My cells have a nucleus but no cell wall.','I can’t photosynthesise; I feed on organic substances made by other living things.','I store carbohydrate as glycogen, I have a nervous system and I can fly.'],media:()=>({html:'<img src="img/musca_domestica.jpeg" alt="Housefly">',cap:'Housefly (Musca domestica).'})},
+ {name:'Pea plant',group:'plant',clues:['I’m multicellular.','My cells have walls made of cellulose.','Some of my cells contain chloroplasts and I photosynthesise.','I store carbohydrate as starch. My group includes peas and maize.'],media:()=>({html:'<img src="img/pisum_sativum.webp" alt="Pea plant flower">',cap:'Pea plant (Pisum sativum), in flower.'})},
+ {name:'Maize',group:'plant',clues:['I’m multicellular.','I can make my own food.','My leaf cells contain chloroplasts and have cellulose walls.','I’m a cereal crop; my seeds are corn.'],media:()=>({html:'<img src="img/zea_mays.webp" alt="Maize plant">',cap:'Maize (Zea mays).'})},
+ {name:'Pondweed (Elodea)',group:'plant',clues:['I’m multicellular.','My cells have a large permanent vacuole full of cell sap.','My leaf cells are packed with chloroplasts.','I live underwater; teachers use me to show photosynthesis making bubbles of oxygen.'],media:()=>({html:'<img src="img/elodea_canadensis.webp" alt="Pondweed">',cap:'Canadian pondweed (Elodea).'})},
+ {name:'Housefly',group:'animal',clues:['I’m multicellular.','My cells have a nucleus but no cell wall.','I can’t photosynthesise; I feed on organic substances made by other living things.','I store carbohydrate as glycogen, I have a nervous system and I can fly.'],media:()=>({html:'<img src="img/musca_domestica.webp" alt="Housefly">',cap:'Housefly (Musca domestica).'})},
  {name:'Human',group:'animal',clues:['I’m multicellular.','My cells have no chloroplasts and no cell wall.','My cells store carbohydrate as glycogen.','You can scrape some of my cells off the inside of your cheek.'],media:()=>fieldItem('cheek')},
- {name:'Mushroom',group:'fungus',clues:['I’m multicellular.','I can’t photosynthesise.','My cell walls are made of chitin.','I feed by saprotrophic nutrition; the part you eat is made of tightly packed hyphae.'],media:()=>({html:'<img src="img/agaricus_bisporus.jpg" alt="Mushrooms">',cap:'Mushrooms (Agaricus).'})},
+ {name:'Mushroom',group:'fungus',clues:['I’m multicellular.','I can’t photosynthesise.','My cell walls are made of chitin.','I feed by saprotrophic nutrition; the part you eat is made of tightly packed hyphae.'],media:()=>({html:'<img src="img/agaricus_bisporus.webp" alt="Mushrooms">',cap:'Mushrooms (Agaricus).'})},
  {name:'E. coli',group:'bacteria',clues:['I’m single-celled.','I have a cell wall and a cell membrane, but no nucleus.','I’m only about 2 µm long.','I’m rod-shaped and live in your gut.'],media:()=>photoItem(PHOTOS[4])}
 ];
 

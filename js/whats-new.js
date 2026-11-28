@@ -1,42 +1,37 @@
-/* "What's new" box (v5.0.0, 18 Nov 2026; items and key updated for v5.1.0, 23 Nov). Shown once per browser until dismissed; one dismissal hides it on every page.
-   <script src="/js/whats-new.js" data-place="prepend" data-target="main.wrap"></script>
-   data-place: "prepend" = first thing inside the target; default = just before the target (for pages that redraw <main>).
-   For the next round of news, change KEY (e.g. cbs.whatsnew.v6) so it shows again. */
+/* Cakebread Science — Dismiss-once feature popup helper (replaced the old top-of-page What's New banner, 28 Nov 2026).
+   User rule: no permanent/inline "What's new" strip at the top of the homepage. New features worth pointing out
+   use a clean, obvious dismiss-once popup (like the tutorial) that stays away once clicked away.
+   Usage: call CBSAnnounce.show({ key: 'cbs.pop.xyz', badge: 'New', title: '...', body: '...', cta: { label, url } }). */
 (function () {
-  const KEY = 'cbs.whatsnew.v51';
-  try { if (localStorage.getItem(KEY)) return; } catch (e) { return; }
-  const me = document.currentScript;
-  const ITEMS = [
-    ['📄', 'Worksheets', 'new sheets for your year: KS4 and KS3 lists', '/worksheets/science.html'],
-    ['📖', 'Study guides', 'what\'s in your test, on To do, with Revise buttons', '/today/'],
-    ['📊', 'Diagram questions', 'graphs, circuits, cells and more in Practice and Questing', '/interactive/spec-quiz/practice.html'],
-    ['🗡️', 'Questing gear', 'items with stats and abilities, science sets that glow', '/interactive/spec-quiz/'],
-    ['📋', 'Spec trackers', 'points turn green when you prove them', '/specifications/science.html']
-  ];
-  const css = `.cbs-new{position:relative;max-width:1100px;margin:14px auto;background:#fff;border:2px solid #111;box-shadow:0 4px 0 #111;padding:12px 44px 12px 14px;font-family:'Barlow',Arial,sans-serif;color:#111;line-height:1.35}
-.cbs-new-wrap{padding:0 18px}.cbs-new-wrap .cbs-new{max-width:1064px}.cbs-new-wrap.in{padding:0}.cbs-new-wrap.in .cbs-new{max-width:none;margin-top:0}
-.cbs-new h2{font:900 20px/1 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin:0 0 8px;display:flex;align-items:center;gap:8px}
-.cbs-new h2 i{font-style:normal;background:#facc15;border:1.5px solid #111;padding:1px 6px;font-size:13px;letter-spacing:.5px}
-.cbs-new ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:3px 18px}
-.cbs-new li{font-size:14.5px}
-.cbs-new li a{color:#005e22;font-weight:800;text-decoration:none}.cbs-new li a:hover{text-decoration:underline}
-.cbs-new p{margin:8px 0 0;font-size:13.5px;color:#555}
-.cbs-new .x{position:absolute;top:8px;right:8px;width:30px;height:30px;border:1.5px solid #111;background:#fff;font:700 16px Arial;cursor:pointer;line-height:1}
-.cbs-new .x:hover{background:#facc15}
-.cbs-new .ok{margin-top:8px;font:800 14px 'Barlow',Arial;background:#111;color:#fff;border:0;padding:5px 14px;cursor:pointer}
-@media(max-width:600px){.cbs-new{padding:10px 40px 10px 12px;margin:10px auto}.cbs-new h2{font-size:18px;margin-bottom:6px}.cbs-new li{font-size:14px}.cbs-new p{font-size:13px;margin-top:6px}.cbs-new .ok{margin-top:6px}}
-@media print{.cbs-new-wrap{display:none}}`;
-  const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
-  const wrap = document.createElement('div'); wrap.className = 'cbs-new-wrap';
-  wrap.innerHTML = `<section class="cbs-new" role="region" aria-label="What's new"><h2><i>NEW</i> New on Cakebread Science</h2>
-    <ul>${ITEMS.map(([ic, name, what, url]) => `<li>${ic} <a href="${url}">${name}</a>: ${what}</li>`).join('')}</ul>
-    <p>One Google sign-in (top right) now saves your progress everywhere.</p>
-    <button type="button" class="ok">Got it</button><button type="button" class="x" aria-label="Close">✕</button></section>`;
-  const close = () => { try { localStorage.setItem(KEY, String(Date.now())); } catch (e) {} wrap.remove(); };
-  wrap.querySelector('.x').onclick = close; wrap.querySelector('.ok').onclick = close;
-  const place = () => {
-    const t = document.querySelector((me && me.dataset.target) || 'main') || document.body.firstElementChild;
-    if (me && me.dataset.place === 'prepend') { wrap.classList.add('in'); t.prepend(wrap); } else t.before(wrap);
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', place); else place();
+  if (window.CBSAnnounce) return;
+  function show(opts) {
+    if (!opts || !opts.key || !opts.title) return;
+    if (/^\/admin(\/|$)/.test(location.pathname || '')) return;
+    try { if (localStorage.getItem(opts.key)) return; } catch (e) { return; }
+    if (document.getElementById('cbs-pop-dim')) return;
+    const st = document.createElement('style');
+    st.textContent = `#cbs-pop-dim{position:fixed;inset:0;background:rgba(10,10,14,.62);z-index:2147482500;display:grid;place-items:center;padding:18px;font-family:'Barlow',Arial,sans-serif}
+#cbs-pop{background:#fff;color:#111;border:3px solid #111;box-shadow:0 8px 0 #111;max-width:460px;width:100%;padding:20px 22px;position:relative;border-top:8px solid #00a03a}
+#cbs-pop .badge{display:inline-block;background:#facc15;color:#111;border:1.5px solid #111;font:900 12px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;margin-bottom:8px}
+#cbs-pop h2{font:900 28px/1.02 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;margin:0 0 8px}
+#cbs-pop p{font-size:15.5px;line-height:1.5;color:#222;margin:0}
+#cbs-pop .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+#cbs-pop .btn{font:900 18px 'Barlow Condensed',Arial,sans-serif;text-transform:uppercase;background:#facc15;color:#111;border:2px solid #111;box-shadow:0 3px 0 #000;padding:7px 15px;text-decoration:none;cursor:pointer}
+#cbs-pop .btn.alt{background:#fff}
+#cbs-pop .x{position:absolute;top:10px;right:10px;width:32px;height:32px;border:2px solid #111;background:#fff;font:700 16px Arial;cursor:pointer}`;
+    document.head.appendChild(st);
+    const dim = document.createElement('div');
+    dim.id = 'cbs-pop-dim';
+    dim.setAttribute('role', 'dialog');
+    dim.setAttribute('aria-modal', 'true');
+    const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    dim.innerHTML = `<div id="cbs-pop"><button type="button" class="x" aria-label="Close">✕</button>${opts.badge ? `<span class="badge">${esc(opts.badge)}</span>` : ''}<h2>${esc(opts.title)}</h2><p>${opts.body || ''}</p><div class="acts">${opts.cta ? `<a class="btn" id="cbsPopCta" href="${esc(opts.cta.url)}">${esc(opts.cta.label)}</a>` : ''}<button type="button" class="btn ${opts.cta ? 'alt' : ''}" id="cbsPopOk">Got it</button></div></div>`;
+    const dismiss = () => { try { localStorage.setItem(opts.key, String(Date.now())); } catch (e) {} dim.remove(); };
+    dim.querySelector('.x').onclick = dismiss;
+    dim.querySelector('#cbsPopOk').onclick = dismiss;
+    if (dim.querySelector('#cbsPopCta')) dim.querySelector('#cbsPopCta').onclick = dismiss;
+    dim.addEventListener('click', e => { if (e.target === dim) dismiss(); });
+    document.body.appendChild(dim);
+  }
+  window.CBSAnnounce = { show };
 })();

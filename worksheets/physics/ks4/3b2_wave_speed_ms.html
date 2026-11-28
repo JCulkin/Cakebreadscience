@@ -9,6 +9,17 @@
 <title>3b2 · Wave Speed · Mark Scheme</title>
 <link rel="stylesheet" href="../../../css/physics.css">
 <link rel="stylesheet" href="../../../css/print-sheet.css">
+<style>
+  /* Mark scheme: flowing pages, the browser breaks pages between items */
+  @page { size: A4; margin: 10mm 12mm; }
+  .ps.ps-ms .page { height: auto; min-height: 0; overflow: visible; }
+  @media print { .ps.ps-ms .page { padding: 0; break-after: auto; page-break-after: auto; } }
+  .ps.ps-ms .item, .ps.ps-ms table, .ps.ps-ms .fig { break-inside: avoid; page-break-inside: avoid; }
+  .ps.ps-ms h2 { break-after: avoid; page-break-after: avoid; }
+  .ps.ps-ms .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm 5mm; }
+  .ps.ps-ms .ms.one { grid-template-columns: 1fr; }
+  .ps.ps-ms .item .w { font-size: 10pt; }
+</style>
 </head>
 <body class="ps ps-ms">
 <div class="screen-links"><a href="3b2_wave_speed.html">← Back to the worksheet</a><a href="../../ks4.html">KS4 worksheets</a></div>
@@ -50,11 +61,7 @@
     <div class="item "><div class="iq">4. Rope: T = 0.25 s, λ = 0.8 m</div><div class="w">f = 1 ÷ 0.25 = 4 Hz<br>v = f × λ = 4 × 0.8</div><div class="a">f = 4 Hz, &nbsp; v = 3.2 m/s</div><div class="tip">Step 1's answer feeds into step 2. If f is wrong, v will be too.</div></div>
   </div>
 
-  <div class="foot">Side 1 of 2 · Turn over →</div>
-</div>
-
-<div class="page">
-  <h2 style="margin-top:0">D &nbsp;Conversion drill</h2>
+  <h2>D &nbsp;Conversion drill</h2>
   <table class="key">
     <tr><th>question</th><th>how</th><th>answer</th><th>question</th><th>how</th><th>answer</th></tr>
     <tr><td>1. 2.5 kHz</td><td>× 1000</td><td class="ka">2500 Hz</td><td>6. 20 ms</td><td>÷ 1000</td><td class="ka">0.02 s</td></tr>
@@ -85,7 +92,6 @@
     <div class="item "><div class="iq">1. Sonar</div><div class="w">(a) The pulse goes down AND back up:<br>&nbsp;&nbsp;&nbsp;distance = 2 × 600 = 1200 m<br>&nbsp;&nbsp;&nbsp;v = d ÷ t = 1200 ÷ 0.8 = 1500 m/s<br>(b) f = 2.4 kHz = 2400 Hz<br>&nbsp;&nbsp;&nbsp;λ = v ÷ f = 1500 ÷ 2400</div><div class="a">(a) v = 1500 m/s &nbsp; (b) λ = 0.625 m</div><div class="tip">Using 600 m gives 750 m/s, which is half the right answer. Always ask: does the wave go there and back?</div></div>
     <div class="item "><div class="iq">2. Beach waves</div><div class="w">(a) f = 15 ÷ 30 = 0.5 Hz<br>(b) T = 1 ÷ 0.5 = 2 s<br>(c) λ = 4 m (crest to crest)<br>&nbsp;&nbsp;&nbsp;v = f × λ = 0.5 × 4 = 2 m/s<br>(d) t = d ÷ v = 50 ÷ 2</div><div class="a">(a) 0.5 Hz &nbsp;(b) 2 s &nbsp;(c) 2 m/s &nbsp;(d) 25 s</div><div class="tip">The distance between two crests IS the wavelength.</div></div>
   </div>
-
-  <div class="foot">Side 2 of 2</div>
 </div><script src="/js/home-link.js" data-back="/worksheets/science.html#ks4" data-back-label="Science worksheets"></script>
+<script src="/worksheets/sheet-links.js" defer></script>
 </body></html>

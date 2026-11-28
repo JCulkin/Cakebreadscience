@@ -1472,13 +1472,213 @@ const DG = (() => {
     return { title: 'Pressure in a liquid', spec: 'P5.7', kind: 'diagram', svg, q: `The density of ${liquid[0]} is ${liquid[1]} kg/m³ and g = 10 N/kg. What is the pressure due to the liquid at ${L[i]}?`, o: [n(dp) + ' Pa', ...uniq(n(dp), [depths[i] * liquid[1] * 10, dp / 10, h * liquid[1], dp * 10].map(n)).map(v => v + ' Pa')], x: `p = hρg = ${n(h)} m × ${liquid[1]} × 10 = ${n(dp)} Pa.${depthU === 'cm' ? ` (Convert ${depths[i]} cm to ${n(h)} m first.)` : ''}` };
   };
 
+  /* ---------- respiration practical & oxygen debt (B2.36, B2.39) ---------- */
+  M.respiration = r => {
+    if (r.hard) {
+      const rest = r.pick([1.0, 1.2, 1.5]), peak = r.pick([10, 12, 14, 15]), tStart = 2, tEnd = 6, tRec = r.pick([18, 20]);
+      const f = t => t <= tStart ? rest : t <= tEnd ? rest + (peak - rest) * ((t - tStart) / (tEnd - tStart)) ** 1.15 : rest + (peak - rest) * Math.exp(-3.1 * (t - tEnd) / (tRec - tEnd));
+      const ymax = Math.ceil((peak + 2) / 2) * 2;
+      const svg = chart({ xmax: tRec, ymax, xstep: 2, ystep: 2, xl: 'Time (min)', yl: 'Blood lactic acid (mmol/dm³)', w: 420, h: 270,
+        series: [{ pts: curve(f, 0, tRec, 80), col: '#005e22' }],
+        extra: (px, py) => `<rect x="${px(tStart)}" y="${py(ymax)}" width="${px(tEnd) - px(tStart)}" height="${py(0) - py(ymax)}" fill="#fee2e2" opacity=".55"/>`
+          + T((px(tStart) + px(tEnd)) / 2, py(ymax) + 14, 'Sprint', { size: 11, w: 700, fill: '#991b1b' })
+          + T((px(tEnd) + px(tRec)) / 2, py(ymax) + 14, 'Recovery', { size: 11, w: 700, fill: '#005e22' }) });
+      return { title: 'Blood lactic acid during exercise', spec: 'B2.36', kind: 'graph', svg,
+        q: 'Why does the blood lactic acid concentration rise steeply during the sprint?',
+        o: ['Muscles respire anaerobically because oxygen cannot be supplied fast enough', 'Aerobic respiration produces lactic acid in mitochondria', 'Muscles stop respiring during hard exercise', 'Lactic acid is absorbed from the lungs during fast breathing'],
+        x: 'During intense exercise, oxygen cannot reach muscles fast enough for aerobic respiration alone, so muscles respire anaerobically and produce lactic acid.' };
+    }
+    const tB = r.pick([19, 20, 21]), rise = r.pick([7, 8, 9, 10]), tA = tB + rise, seed = r.pick(['peas', 'beans', 'barley seeds']);
+    const W = 440, H = 285;
+    const flask = (cx, label, sub, temp, live) => {
+      const colH = 26 + (temp - 15) * 3.4;
+      let s = '';
+      // Outer + inner vacuum wall
+      s += `<path d="M${cx - 34} 58 H${cx + 34} V76 L${cx + 56} 118 V226 Q${cx + 56} 238 ${cx + 44} 238 H${cx - 44} Q${cx - 56} 238 ${cx - 56} 226 V118 L${cx - 34} 76 Z" fill="#e5e7eb" stroke="${INK}" stroke-width="2"/>`;
+      s += `<path d="M${cx - 26} 64 H${cx + 26} V80 L${cx + 46} 120 V222 Q${cx + 46} 230 ${cx + 38} 230 H${cx - 38} Q${cx - 46} 230 ${cx - 46} 222 V120 L${cx - 26} 80 Z" fill="#fff" stroke="${INK}" stroke-width="1.4"/>`;
+      // Cotton wool bung
+      s += `<rect x="${cx - 25}" y="62" width="50" height="22" rx="4" fill="#f3f4f6" stroke="${INK}" stroke-width="1.2" stroke-dasharray="3 2"/>`;
+      // Seeds at bottom
+      const pts = [[-26,216],[-10,218],[8,217],[24,215],[-20,204],[-3,205],[15,204],[28,206],[-12,193],[6,194],[20,193]];
+      pts.forEach(([dx, y]) => { s += `<ellipse cx="${cx + dx}" cy="${y}" rx="9" ry="6" fill="${live ? '#bbf7d0' : '#d1d5db'}" stroke="${INK}" stroke-width="1.2"/>`; });
+      // Thermometer
+      s += `<rect x="${cx - 4}" y="22" width="8" height="170" rx="4" fill="#fff" stroke="${INK}" stroke-width="1.5"/>`;
+      s += `<circle cx="${cx}" cy="196" r="8" fill="#dc2626" stroke="${INK}" stroke-width="1.4"/>`;
+      s += `<rect x="${cx - 2}" y="${192 - colH}" width="4" height="${colH}" fill="#dc2626"/>`;
+      // Temperature badge
+      s += `<rect x="${cx + 12}" y="24" width="54" height="24" rx="5" fill="#fff" stroke="${INK}" stroke-width="1.5"/>` + T(cx + 39, 41, `${temp} °C`, { size: 13, w: 700 });
+      s += T(cx, 258, label, { size: 13, w: 700 }) + T(cx, 274, sub, { size: 11, fill: '#444' });
+      return s;
+    };
+    let g = flask(112, `Flask A: germinating ${seed}`, '(washed in disinfectant)', tA, 1)
+      + flask(328, `Flask B: boiled ${seed}`, '(washed in disinfectant)', tB, 0);
+    g += T(220, 76, 'cotton wool', { size: 11, w: 600 }) + `<line x1="184" y1="73" x2="140" y2="73" stroke="#555"/><line x1="256" y1="73" x2="300" y2="73" stroke="#555"/>`;
+    g += T(220, 146, 'vacuum', { size: 11, w: 600 }) + T(220, 159, 'flask wall', { size: 11, w: 600 }) + `<line x1="186" y1="150" x2="165" y2="150" stroke="#555"/><line x1="254" y1="150" x2="275" y2="150" stroke="#555"/>`;
+    const svg = wrap(W, H, g);
+    return { title: 'Respiring seeds practical', spec: 'B2.39', kind: 'diagram', svg,
+      q: `Why are the ${seed} washed in disinfectant before the experiment starts?`,
+      o: ['To kill bacteria/microorganisms so their respiration does not release heat', 'To supply extra oxygen to the seeds', 'To stop heat escaping through the flask wall', 'To kill the germinating seeds in Flask A'],
+      x: 'Disinfectant kills microorganisms on the seed surface so any temperature rise comes only from the germinating seeds respiring.' };
+  };
+
+  /* ---------- carbon allotropes (C1.50) ---------- */
+  M.allotropes = r => {
+    const order = sh(['diamond', 'graphite', 'c60'], r), labs = ['A', 'B', 'C'], W = 480, H = 225;
+    let g = '';
+    const panel = (idx, kind, lab) => {
+      const x0 = 10 + idx * 156, cx = x0 + 74;
+      let s = `<rect x="${x0}" y="12" width="148" height="190" rx="8" fill="#fff" stroke="${INK}" stroke-width="1.6"/>`;
+      s += `<rect x="${x0 + 8}" y="20" width="26" height="24" rx="4" fill="#111"/>` + T(x0 + 21, 37, lab, { size: 14, w: 700, fill: '#fff' });
+      if (kind === 'diamond') {
+        const pts = [[cx,58],[cx-36,88],[cx+36,88],[cx,104],[cx-50,136],[cx-15,134],[cx+19,134],[cx+50,136],[cx-32,172],[cx+2,172],[cx+34,172]];
+        const edges = [[0,1],[0,2],[0,3],[1,4],[1,5],[2,6],[2,7],[3,5],[3,6],[4,8],[5,8],[5,9],[6,9],[6,10],[7,10]];
+        edges.forEach(([a,b]) => { s += `<line x1="${pts[a][0]}" y1="${pts[a][1]}" x2="${pts[b][0]}" y2="${pts[b][1]}" stroke="${INK}" stroke-width="2.4"/>`; });
+        pts.forEach(([x,y]) => { s += `<circle cx="${x}" cy="${y}" r="7.5" fill="#111" stroke="#fff" stroke-width="1.3"/>`; });
+      } else if (kind === 'graphite') {
+        const layer = y0 => {
+          const xs = [cx-48, cx-24, cx, cx+24, cx+48], p = xs.map((x,i) => [x, y0 + (i%2 ? -10 : 6)]);
+          const p2 = xs.map((x,i) => [x, y0 + 22 + (i%2 ? -10 : 6)]);
+          let t = '';
+          for (let i = 0; i < 4; i++) { t += `<line x1="${p[i][0]}" y1="${p[i][1]}" x2="${p[i+1][0]}" y2="${p[i+1][1]}" stroke="${INK}" stroke-width="2.4"/>`; t += `<line x1="${p2[i][0]}" y1="${p2[i][1]}" x2="${p2[i+1][0]}" y2="${p2[i+1][1]}" stroke="${INK}" stroke-width="2.4"/>`; }
+          for (let i = 0; i < 5; i += 2) t += `<line x1="${p[i][0]}" y1="${p[i][1]}" x2="${p2[i][0]}" y2="${p2[i][1]}" stroke="${INK}" stroke-width="2.4"/>`;
+          [...p, ...p2].forEach(([x,y]) => { t += `<circle cx="${x}" cy="${y}" r="5.5" fill="#111" stroke="#fff" stroke-width="1.1"/>`; });
+          return t;
+        };
+        s += layer(68) + layer(146);
+        [-24, 0, 24].forEach(dx => { s += `<line x1="${cx+dx}" y1="100" x2="${cx+dx}" y2="132" stroke="#666" stroke-width="2" stroke-dasharray="4 4"/>`; });
+      } else {
+        const ball = (bx, by) => {
+          let t = `<circle cx="${bx}" cy="${by}" r="30" fill="#f1f5f9" stroke="${INK}" stroke-width="2"/>`;
+          const hex = Array.from({length:6}, (_,k) => [bx + 12*Math.cos(k*Math.PI/3), by + 12*Math.sin(k*Math.PI/3)]);
+          t += `<polygon points="${hex.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${INK}" stroke-width="1.6"/>`;
+          hex.forEach(([hx,hy],k) => { const ox = bx + 28*Math.cos(k*Math.PI/3), oy = by + 28*Math.sin(k*Math.PI/3); t += `<line x1="${hx.toFixed(1)}" y1="${hy.toFixed(1)}" x2="${ox.toFixed(1)}" y2="${oy.toFixed(1)}" stroke="${INK}" stroke-width="1.4"/>`; });
+          return t;
+        };
+        s += ball(cx - 31, 118) + ball(cx + 33, 118);
+        s += `<line x1="${cx - 1}" y1="108" x2="${cx + 3}" y2="108" stroke="#666" stroke-width="2" stroke-dasharray="3 3"/>`
+          + `<line x1="${cx - 1}" y1="128" x2="${cx + 3}" y2="128" stroke="#666" stroke-width="2" stroke-dasharray="3 3"/>`;
+      }
+      return s;
+    };
+    order.forEach((k, i) => { g += panel(i, k, labs[i]); });
+    g += T(W - 12, H - 6, 'Not to scale', { size: 10, a: 'end', fill: '#555' });
+    const svg = wrap(W, H, g);
+    const want = r.pick(['diamond', 'graphite', 'c60']), ans = labs[order.indexOf(want)];
+    const qs = {
+      diamond: ['Which structure represents diamond?', 'Each carbon atom in diamond forms 4 strong covalent bonds in a rigid 3D giant lattice.'],
+      graphite: ['Which structure conducts electricity well because of delocalised electrons between layers?', 'Graphite has carbon atoms bonded to 3 others in flat layers, leaving delocalised electrons free to move along the layers.'],
+      c60: ['Which structure is C₆₀ fullerene, a simple molecular substance with a lower melting point than diamond?', 'C₆₀ fullerene consists of separate hollow sphere molecules with weak intermolecular forces between them.']
+    };
+    return { title: 'Allotropes of carbon', spec: 'C1.50', kind: 'diagram', svg, q: qs[want][0], o: [ans, ...labs.filter(x => x !== ans), 'All three equally'], x: qs[want][1] };
+  };
+
+  /* ---------- astrophysics: orbits & orbital speed (P8.4, P8.5, P8.6) ---------- */
+  M.orbit = r => {
+    const W = 440, H = 260;
+    if (r.hard) {
+      const body = r.pick([
+        { name: 'Earth', R: 6400, h: r.pick([600, 1600, 3600]), T: r.pick([96, 120, 160]), u: 'min' },
+        { name: 'Planet K', R: 5000, h: r.pick([1000, 3000]), T: r.pick([100, 150]), u: 'min' }
+      ]);
+      const rTot = body.R + body.h, v = 2 * Math.PI * (rTot * 1000) / (body.T * 60);
+      let g = `<circle cx="200" cy="130" r="96" fill="none" stroke="${INK}" stroke-width="1.8" stroke-dasharray="6 4"/>`;
+      g += `<circle cx="200" cy="130" r="46" fill="#dbeafe" stroke="${INK}" stroke-width="2"/>` + T(200, 134, body.name, { size: 13, w: 700 });
+      g += `<circle cx="296" cy="130" r="8" fill="#111"/>` + T(312, 134, 'Satellite', { size: 12, w: 700, a: 'start' });
+      g += arrow(296, 122, 296, 68, '#005e22', 2.4) + T(306, 88, 'velocity', { size: 11, w: 700, a: 'start', fill: '#005e22' });
+      g += arrow(288, 130, 250, 130, '#c8001e', 2.4) + T(269, 122, 'gravity', { size: 11, w: 700, fill: '#c8001e' });
+      g += `<line x1="200" y1="130" x2="200" y2="226" stroke="#555" stroke-width="1.6" stroke-dasharray="3 3"/>`;
+      g += `<line x1="195" y1="176" x2="205" y2="176" stroke="${INK}" stroke-width="1.6"/><line x1="195" y1="226" x2="205" y2="226" stroke="${INK}" stroke-width="1.6"/>`;
+      g += `<rect x="208" y="146" width="76" height="18" rx="3" fill="#fff" opacity=".92"/>` + T(212, 159, `R = ${body.R} km`, { size: 11, w: 600, a: 'start' });
+      g += `<rect x="208" y="193" width="72" height="18" rx="3" fill="#fff" opacity=".92"/>` + T(212, 206, `h = ${body.h} km`, { size: 11, w: 600, a: 'start' });
+      g += T(W - 12, H - 8, 'Not to scale', { size: 10, a: 'end', fill: '#555' });
+      const svg = wrap(W, H, g);
+      return { title: 'Satellite in circular orbit', spec: 'P8.6', kind: 'diagram', svg,
+        q: `What is the orbital radius r of the satellite around ${body.name}?`,
+        o: [`${rTot} km`, `${body.h} km`, `${body.R} km`, `${body.R - body.h} km`],
+        x: `Orbital radius is measured from the centre of ${body.name}: r = R + h = ${body.R} + ${body.h} = ${rTot} km.` };
+    }
+    let g = '';
+    // Sun at left focus of ellipse
+    const sx = 148, sy = 132;
+    // Nearly circular planet orbit centred on Sun
+    g += `<circle cx="${sx}" cy="${sy}" r="66" fill="none" stroke="#1d4ed8" stroke-width="2"/>`;
+    // Highly elliptical comet orbit with Sun near left focus
+    g += `<ellipse cx="242" cy="${sy}" rx="156" ry="74" fill="none" stroke="#c8001e" stroke-width="2" stroke-dasharray="7 4"/>`;
+    // Sun
+    g += `<circle cx="${sx}" cy="${sy}" r="18" fill="#fde047" stroke="${INK}" stroke-width="2"/>` + T(sx, sy + 4, 'Sun', { size: 12, w: 700 });
+    // Planet + Moon orbit
+    const px = sx - 46, py = sy - 47;
+    g += `<circle cx="${px}" cy="${py}" r="20" fill="none" stroke="#555" stroke-width="1.3" stroke-dasharray="3 2"/>`;
+    g += `<circle cx="${px}" cy="${py}" r="7.5" fill="#1d4ed8" stroke="${INK}" stroke-width="1.4"/>`;
+    g += `<circle cx="${px - 17}" cy="${py - 10}" r="3.5" fill="#9ca3af" stroke="${INK}" stroke-width="1.1"/>`;
+    g += T(px - 22, py - 24, 'Moon', { size: 11, w: 600 }) + T(px - 44, py + 12, 'Planet', { size: 11, w: 700, fill: '#1d4ed8' });
+    // Comet positions X (closest) and Y (furthest)
+    g += `<circle cx="86" cy="${sy}" r="5.5" fill="#c8001e" stroke="${INK}" stroke-width="1.3"/>` + T(72, sy + 4, 'X', { size: 14, w: 700, a: 'end', fill: '#c8001e' });
+    g += `<circle cx="398" cy="${sy}" r="5.5" fill="#c8001e" stroke="${INK}" stroke-width="1.3"/>` + T(412, sy + 4, 'Y', { size: 14, w: 700, a: 'start', fill: '#c8001e' });
+    g += T(286, 48, 'Comet orbit (elliptical)', { size: 12, w: 700, fill: '#c8001e' });
+    g += T(sx, 218, 'Planet orbit (nearly circular)', { size: 12, w: 700, fill: '#1d4ed8' });
+    g += T(W - 12, H - 8, 'Not to scale', { size: 10, a: 'end', fill: '#555' });
+    const svg = wrap(W, H, g);
+    return r.int(0, 1)
+      ? { title: 'Orbits in the Solar System', spec: 'P8.5', kind: 'diagram', svg, q: 'At which point does the comet travel fastest?', o: ['X (closest to the Sun)', 'Y (furthest from the Sun)', 'Halfway between X and Y', 'Its speed is constant all the way round'], x: 'Gravity from the Sun is stronger when the comet is closer (at X), so the comet travels fastest at X and slowest at Y.' }
+      : { title: 'Orbits in the Solar System', spec: 'P8.5', kind: 'diagram', svg, q: 'How does the comet\'s orbit differ from the planet\'s orbit?', o: ['The comet\'s orbit is highly elliptical with the Sun off-centre', 'The comet orbits the planet rather than the Sun', 'The comet\'s orbit is a perfect circle centred on the Sun', 'The planet\'s orbit is much more stretched than the comet\'s'], x: 'Planets have nearly circular orbits around the Sun, moons orbit planets, and comets have highly elliptical orbits around the Sun.' };
+  };
+
+  /* ---------- astrophysics: stellar evolution & star colour (P8.7–P8.10) ---------- */
+  M.starlife = r => {
+    if (r.hard) {
+      const stars = [
+        { name: 'Star P', col: 'Red', temp: r.pick([3100, 3300, 3500]), fill: '#fca5a5' },
+        { name: 'Star Q', col: 'Yellow', temp: r.pick([5600, 5800, 6000]), fill: '#fde047' },
+        { name: 'Star R', col: 'White', temp: r.pick([9200, 9800, 10500]), fill: '#f3f4f6' },
+        { name: 'Star S', col: 'Blue-white', temp: r.pick([21000, 24000, 27000]), fill: '#93c5fd' }
+      ];
+      const shown = sh(stars, r), W = 440, H = 220, maxT = 30000;
+      let g = T(220, 22, 'Surface temperature and colour of four stars', { size: 13, w: 700 });
+      shown.forEach((st, i) => {
+        const y = 42 + i * 40, bw = Math.max(38, st.temp / maxT * 245);
+        g += T(68, y + 18, st.name, { size: 13, w: 700, a: 'end' });
+        g += `<rect x="78" y="${y}" width="${bw.toFixed(1)}" height="26" rx="4" fill="${st.fill}" stroke="${INK}" stroke-width="1.6"/>`;
+        g += T(86 + bw, y + 18, `${st.temp.toLocaleString('en-GB')} K (${st.col})`, { size: 12, w: 600, a: 'start' });
+      });
+      const svg = wrap(W, H, g), hot = shown.find(s => s.col === 'Blue-white');
+      return { title: 'Star colour and temperature', spec: 'P8.8', kind: 'graph', svg,
+        q: 'Which star has the highest surface temperature?',
+        o: [`${hot.name} (${hot.col})`, ...shown.filter(s => s !== hot).map(s => `${s.name} (${s.col})`)],
+        x: `Blue-white stars are the hottest and red stars are the coolest. ${hot.name} is blue-white at ${hot.temp.toLocaleString('en-GB')} K.` };
+    }
+    const W = 540, H = 245;
+    const hideKey = r.pick(['red giant', 'white dwarf', 'red supergiant', 'supernova']);
+    const box = (x, y, w, h, txt, hi) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${hi ? '#fef3c7' : '#fff'}" stroke="${INK}" stroke-width="${hi ? 2.2 : 1.6}"${hi ? ' stroke-dasharray="4 3"' : ''}/>`
+      + txt.split('\n').map((l, i, a) => T(x + w / 2, y + h / 2 + 4 + (i - (a.length - 1) / 2) * 14, l, { size: 11, w: hi ? 700 : 600 })).join('');
+    let g = '';
+    g += box(8, 94, 62, 36, 'Nebula', 0) + arrow(70, 112, 86, 112, INK, 1.8);
+    g += box(86, 94, 72, 36, 'Protostar', 0) + arrow(158, 112, 174, 112, INK, 1.8);
+    g += box(174, 90, 78, 44, 'Main\nsequence', 0);
+    // Split to Sun-like (top) and Massive (bottom)
+    g += `<path d="M252 102 L276 58" stroke="${INK}" stroke-width="1.8" fill="none"/>` + T(276, 28, 'Similar mass to Sun', { size: 11, w: 700, fill: '#005e22', a: 'start' });
+    g += box(276, 40, 88, 38, hideKey === 'red giant' ? '?' : 'Red giant', hideKey === 'red giant') + arrow(364, 59, 384, 59, INK, 1.8);
+    g += box(384, 40, 108, 38, hideKey === 'white dwarf' ? '?' : 'White dwarf', hideKey === 'white dwarf');
+    g += `<path d="M252 122 L276 174" stroke="${INK}" stroke-width="1.8" fill="none"/>` + T(276, 224, 'Much larger mass than Sun (DA)', { size: 11, w: 700, fill: '#c8001e', a: 'start' });
+    g += box(276, 154, 76, 42, hideKey === 'red supergiant' ? '?' : 'Red\nsupergiant', hideKey === 'red supergiant') + arrow(352, 175, 368, 175, INK, 1.8);
+    g += box(368, 154, 64, 42, hideKey === 'supernova' ? '?' : 'Super-\nnova', hideKey === 'supernova') + arrow(432, 175, 448, 175, INK, 1.8);
+    g += box(448, 152, 84, 46, 'Neutron star\nor black hole', 0);
+    const svg = wrap(W, H, g);
+    const pool = ['Red giant', 'White dwarf', 'Red supergiant', 'Supernova', 'Black dwarf', 'Protostar'];
+    const ans = hideKey[0].toUpperCase() + hideKey.slice(1);
+    return { title: 'Life cycle of stars', spec: (hideKey === 'red giant' || hideKey === 'white dwarf') ? 'P8.9' : 'P8.10', kind: 'diagram', svg,
+      q: 'Which stage of a star\'s life cycle belongs in the box marked ?',
+      o: [ans, ...others(ans, pool, r)],
+      x: 'Sun-like stars: Nebula → Protostar → Main sequence → Red giant → White dwarf. Much larger mass stars: … → Red supergiant → Supernova → Neutron star or black hole.' };
+  };
+
   const MAKERS = [
     ['vt', 'P1.8'], ['dt', 'P1.3'], ['forces', 'P1.15'], ['stopping', 'P1.19'], ['fe', 'P1.23'], ['scales', 'P5.4'], ['density', 'P5.3'], ['circuit', 'P2.19'], ['iv', 'P2.9'],
     ['wave', 'P3.3'], ['emspec', 'P3.11'], ['reflect', 'P3.15'], ['ray', 'P3.16'], ['tir', 'P3.21'], ['sankey', 'P4.4'], ['pressure', 'P5.7'], ['gaslaw', 'P5.20'],
-    ['magnet', 'P6.4'], ['motor', 'P6.13'], ['penetration', 'P7.5'], ['half', 'P7.13'],
-    ['particles', 'C1.1'], ['cool', 'C1.1'], ['separation', 'C1.10'], ['chrom', 'C1.12'], ['nucleus', 'C1.16'], ['atom', 'C1.22'], ['ionic', 'C1.40'], ['covalent', 'C1.46'],
+    ['magnet', 'P6.4'], ['motor', 'P6.13'], ['penetration', 'P7.5'], ['half', 'P7.13'], ['orbit', 'P8.5'], ['starlife', 'P8.9'],
+    ['particles', 'C1.1'], ['cool', 'C1.1'], ['separation', 'C1.10'], ['chrom', 'C1.12'], ['nucleus', 'C1.16'], ['atom', 'C1.22'], ['ionic', 'C1.40'], ['covalent', 'C1.46'], ['allotropes', 'C1.50'],
     ['airO2', 'C2.14'], ['displace', 'C2.16'], ['ph', 'C2.29'], ['calorim', 'C3.3'], ['profile', 'C3.1'], ['rate', 'C3.10'], ['table', 'C3.15'], ['fraccol', 'C4.8'], ['displayed', 'C4.21'],
-    ['cell', 'B2.2'], ['enzyme', 'B2.11'], ['osmosis', 'B2.17'], ['photo', 'B2.20'], ['leaf', 'B2.21'], ['gut', 'B2.27'], ['thorax', 'B2.46'], ['heart', 'B2.65'], ['reflex', 'B2.90'], ['eye', 'B2.91'],
+    ['cell', 'B2.2'], ['enzyme', 'B2.11'], ['osmosis', 'B2.17'], ['photo', 'B2.20'], ['leaf', 'B2.21'], ['gut', 'B2.27'], ['respiration', 'B2.39'], ['thorax', 'B2.46'], ['heart', 'B2.65'], ['reflex', 'B2.90'], ['eye', 'B2.91'],
     ['flower', 'B3.3'], ['menstrual', 'B3.9'], ['punnett', 'B3.23'], ['pedigree', 'B3.24'], ['quadrat', 'B4.2'], ['foodweb', 'B4.6'], ['pyramid', 'B4.9'], ['carbon', 'B4.10'], ['bars', '—']];
   /* DG.make(name, hard, seed): seed (a whole number) picks the drawing and the question; leave it out for a random one. The result carries its seed. */
   const newSeed = () => 1 + Math.floor(Math.random() * 2147483646);

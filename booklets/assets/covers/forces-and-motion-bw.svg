@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" width="800" height="300" role="img" aria-label="Greyscale line art of velocity-time graph, force arrow and coiled spring">
+  <g fill="none" stroke="#1a1a1a" stroke-linecap="round" stroke-linejoin="round" opacity="0.28">
+    <!-- Left motif: Velocity-time graph + horizontal resultant force arrow -->
+    <g transform="translate(468,66)">
+      <path d="M 10 8 L 10 108 L 160 108" stroke-width="4.2"/>
+      <path d="M 10 108 L 54 34 L 114 34 L 148 108" stroke-width="4.8"/>
+      <g stroke-width="2.2" opacity="0.55">
+        <line x1="40" y1="108" x2="68" y2="34"/>
+        <line x1="64" y1="108" x2="92" y2="34"/>
+        <line x1="88" y1="108" x2="116" y2="34"/>
+        <line x1="112" y1="108" x2="132" y2="70"/>
+      </g>
+      <rect x="26" y="132" width="48" height="36" rx="5" stroke-width="4.2"/>
+      <line x1="74" y1="150" x2="146" y2="150" stroke-width="4.8"/>
+      <path d="M 132 138 L 150 150 L 132 162" stroke-width="4.8"/>
+    </g>
+
+    <!-- Right motif: Hooke's law coiled spring + hanging mass -->
+    <g transform="translate(706,56)">
+      <line x1="-36" y1="6" x2="36" y2="6" stroke-width="4.8"/>
+      <path d="M -28 6 L -20 -4 M -12 6 L -4 -4 M 4 6 L 12 -4 M 20 6 L 28 -4" stroke-width="2.6"/>
+      <path d="M 0 6 L 0 22 L -18 32 L 18 46 L -18 60 L 18 74 L -18 88 L 18 102 L 0 112 L 0 128" stroke-width="4.4"/>
+      <rect x="-22" y="128" width="44" height="36" rx="5" stroke-width="4.4"/>
+      <line x1="0" y1="164" x2="0" y2="194" stroke-width="4.2"/>
+      <path d="M -10 183 L 0 196 L 10 183" stroke-width="4.2"/>
+    </g>
+  </g>
+</svg>
